@@ -282,7 +282,7 @@ Each DCM system policy family maps to one or more industry standards. This table
 | **HLT-001–006** | RFC 8615, Kubernetes probe conventions, Prometheus OpenMetrics | Liveness/readiness; unauthenticated probes; profile-governed metrics exposure |
 | **DPO-001–006** | Design-by-contract; security-first architecture principles | Design priority order; security as Priority 1 |
 | **ZTS-001–005** | Zero Trust Architecture (NIST SP 800-207); NIST SP 800-63B | Five-check boundary model; mTLS; scoped interaction credentials |
-| **MPX-001–008** | Service mesh composition patterns; dependency graph execution | Meta Provider constituent orchestration; compensation |
+| **MPX-001–008** | Service mesh composition patterns; dependency graph execution | compound service definition constituent orchestration; compensation |
 | **SMX-001–010** | Risk scoring; NIST RMF; organizational risk tolerance | Hybrid scoring; approval routing; enforcement class |
 | **FCM-001–008** | GitOps contribution model; CNCF governance practices | Federated policy contribution; shadow validation; trust levels |
 | **GMX-001–006** | Governance Matrix; policy-as-code; organizational controls | Cross-domain policy enforcement; data classification |

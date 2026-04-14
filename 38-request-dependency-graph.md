@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Reference — Cross-Request Ordering
-**Related Documents:** [Service Dependencies](07-service-dependencies.md) | [Scheduled Requests](37-scheduled-requests.md) | [Meta Provider Composability](30-meta-provider-model.md) | [Operational Models](24-operational-models.md) | [Consumer API Specification](../specifications/consumer-api-spec.md)
+**Related Documents:** [Service Dependencies](07-service-dependencies.md) | [Scheduled Requests](37-scheduled-requests.md) | [compound service definition Composability](30-meta-provider-model.md) | [Operational Models](24-operational-models.md) | [Consumer API Specification](../specifications/consumer-api-spec.md)
 
 > **Events:** Dependency resolution events (`request.dependencies_resolved`, `dependency.state_changed`) are defined in the [Event Catalog](33-event-catalog.md).
 
@@ -10,7 +10,7 @@
 >
 > **Distinction from existing dependency models:**
 > - Doc 07 (Service Dependencies): *type-level* dependencies — DCM knows that a VM *type* requires an IP type. Resolved automatically during layer assembly.
-> - Doc 30 (Meta Provider): *compound service* dependencies — a Meta Provider declares its own constituents and DCM sequences them. Consumer does not manage this.
+> - Doc 30 (compound service definition): *compound service* dependencies — a compound service definition declares its own constituents and DCM sequences them. Consumer does not manage this.
 > - **This document**: *consumer-declared cross-request ordering* — a consumer submitting multiple independent requests says "Request B may not dispatch until Request A is realized." These are requests for different resource types that have no type-level dependency; the consumer is expressing an ordering constraint for their specific deployment.
 
 ---
@@ -21,7 +21,7 @@ A consumer deploying a three-tier application submits three requests: a database
 
 This is not a type-level dependency (the VM type does not require a VM type). It is a *deployment-time ordering constraint* declared by the consumer for this specific deployment.
 
-Meta Provider composition handles this when a platform team has pre-defined the compound service. But consumers also need to express ad-hoc ordering for their own deployments without requiring a Meta Provider to exist.
+compound service definition composition handles this when a platform team has pre-defined the compound service. But consumers also need to express ad-hoc ordering for their own deployments without requiring a compound service definition to exist.
 
 ---
 
@@ -242,20 +242,20 @@ Group timeout reached
 
 ---
 
-## 6. Relationship to Meta Providers
+## 6. Relationship to compound service definitions
 
-Request dependency groups and Meta Providers solve overlapping but distinct problems:
+Request dependency groups and compound service definitions solve overlapping but distinct problems:
 
-| | Request Dependency Group | Meta Provider |
+| | Request Dependency Group | compound service definition |
 |--|---|---|
 | **Who declares** | Consumer at request time | Platform team at catalog time |
 | **Reusable** | No — ad hoc | Yes — catalog item |
-| **Type constraints** | None — any resources | Defined by Meta Provider spec |
-| **Policy governance** | Standard consumer request policies | Meta Provider policies (MPX-*) |
-| **Field injection** | Consumer-declared inject_fields | Meta Provider handles internally |
+| **Type constraints** | None — any resources | Defined by compound service definition spec |
+| **Policy governance** | Standard consumer request policies | compound service definition policies (MPX-*) |
+| **Field injection** | Consumer-declared inject_fields | compound service definition handles internally |
 | **Use case** | Ad-hoc deployment ordering | Standard compound service |
 
-When a standard compound service exists as a Meta Provider, consumers should use it. Request dependency groups are for deployments that don't fit a predefined compound service pattern.
+When a standard compound service exists as a compound service definition, consumers should use it. Request dependency groups are for deployments that don't fit a predefined compound service pattern.
 
 ---
 
@@ -294,7 +294,7 @@ When a standard compound service exists as a Meta Provider, consumers should use
 | Policy | Rule |
 |--------|------|
 | `RDG-001` | Circular dependencies within a request group are rejected at submission time (422 Unprocessable Entity). DCM validates the dependency graph is a DAG before acknowledging the group. |
-| `RDG-002` | Maximum group size is 50 requests. Groups exceeding this must use Meta Provider composition or be split into multiple groups. |
+| `RDG-002` | Maximum group size is 50 requests. Groups exceeding this must use compound service definition composition or be split into multiple groups. |
 | `RDG-003` | Field injection (`inject_fields`) is subject to all active Transformation policies. Injected values are not exempt from policy evaluation. |
 | `RDG-004` | `PENDING_DEPENDENCY` requests count against the consumer's quota. Resources are reserved at group submission, not at dispatch time. |
 | `RDG-005` | Group-level `timeout` is measured from group submission. Individual requests do not have independent timeouts while in PENDING_DEPENDENCY status. |

@@ -58,7 +58,7 @@ The Meta Provider's execution responsibility is limited to: naturalizing and rea
 
 ## 2. Compound Service Definition
 
-The compound service definition is the Meta Provider's primary contribution to DCM. It is declared at registration and stored in the Resource Type Registry as a compound Resource Type Specification.
+The compound service definition is the primary contribution of compound resource type specifications to DCM. It is declared at registration and stored in the Resource Type Registry as a compound Resource Type Specification.
 
 ### 2.1 Constituent Declaration
 
@@ -305,7 +305,7 @@ This table is the definitive statement of responsibility.
 | Lifecycle management of Composite Entity | ✅ — Standard DCM entity lifecycle | Handles decommission of `self` constituents when decommission payload received |
 | Audit trail | ✅ — Each constituent request has its own audit record; composite audit assembled by DCM | — |
 
-### 4.1 The Meta Provider's Execution Scope Is Narrow
+### 4.1 The Compound Orchestration Scope Is Narrow
 
 For each `self` constituent, the Meta Provider:
 1. Receives a standard DCM constituent payload (already fully assembled by DCM)
@@ -360,7 +360,7 @@ Round 2: components whose depends_on are realized → rehydrate next
 Round N: continue until all constituents complete
 ```
 
-The Meta Provider's dependency declarations give DCM exactly the information it needs to sequence rehydration correctly without requiring any special Meta Provider involvement beyond standard constituent execution.
+The compound spec's dependency declarations give DCM exactly the information it needs to sequence rehydration correctly without requiring any special Meta Provider involvement beyond standard constituent execution.
 
 ### 6.2 Rehydration Provider Selection
 
