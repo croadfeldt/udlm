@@ -136,7 +136,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 | **Service Provider** | Realizes infrastructure resources | DCM → Provider → DCM |
 | **Information Provider** | Serves authoritative external data | DCM queries → Provider responds |
 | **Storage Provider** | Persists DCM state | DCM reads/writes ↔ Provider |
-| **Meta Provider** | Composes multiple providers | DCM → Meta → Children → DCM |
+
 | **Policy Provider** | Evaluates policies externally | DCM sends payload → Provider decides |
 | **Credential Provider** | Manages secrets and credentials | DCM requests → Provider issues |
 | **Auth Provider** | Authenticates identities | DCM verifies → Provider confirms |

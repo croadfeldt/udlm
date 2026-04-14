@@ -25,7 +25,7 @@
 
 An **Information Provider** is a registered DCM provider that serves as the authoritative source for a specific category of data that DCM needs to reference but does not own. It exposes external data to DCM through a standard interface, enabling DCM to look up, verify, and relate external records without caching or owning them.
 
-Information Providers are a first-class provider type in DCM alongside Service Providers and Meta Providers. They follow the same registration, health check, trust, and contract model as Service Providers — adapted where applicable to the lookup-only nature of information retrieval.
+Information Providers are a first-class provider type in DCM alongside Service Providers and compound service definitions. They follow the same registration, health check, trust, and contract model as Service Providers — adapted where applicable to the lookup-only nature of information retrieval.
 
 ---
 
@@ -49,7 +49,7 @@ DCM defines eleven provider types, all implementing the unified Provider base co
 |--------------|---------|---------------|-----------------|
 | **Service Provider** | Executes work, realizes resources | DCM → Provider → DCM | Yes — DCM owns the realized entity |
 | **Information Provider** | Serves authoritative external data | DCM → Provider (lookup only) | No — external system is authoritative |
-| **Meta Provider** | Composes multiple providers | DCM → Meta → Child Providers → DCM | Yes — DCM owns the composite result |
+| **compound service definition** | Composes multiple providers | DCM → Meta → Child Providers → DCM | Yes — DCM owns the composite result |
 
 ---
 
