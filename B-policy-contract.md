@@ -1103,7 +1103,7 @@ Policy Engine evaluates request
 | **Modify request** | Consumer changes the blocked fields to be compliant | Request re-enters pipeline from assembly with updated fields. All policies re-evaluate. |
 | **Request override** | Consumer requests an override with justification | Request enters PENDING_OVERRIDE. Override approval flow begins (§18.9). |
 | **Cancel request** | Consumer abandons the request | Request moves to CANCELLED. Audit trail records cancellation with blocking context. |
-| **Escalate** | Consumer requests platform admin review | Notification routed to platform admin with full context. Admin can modify policies, register exception grant, or advise consumer. |
+| **Escalate** | Consumer requests review by the responsible policy domain owner | Notification routed to the role responsible for the blocking policy domain (e.g., sovereignty admin, security admin, cost admin) with full context. The domain owner can modify policies, register exception grant, or advise consumer. Routing is configurable per policy domain and profile. |
 
 **Resolution guidance (built by Policy Engine):**
 
@@ -1167,7 +1167,7 @@ Body: {
 POST /api/v1/requests/{request_uuid}:resolve
 Body: { action: "cancel" }
 
-# Escalate to platform admin
+# Escalate to responsible policy domain owner
 POST /api/v1/requests/{request_uuid}:resolve
 Body: {
   action: "escalate",
