@@ -189,7 +189,7 @@ An entity in `PENDING_REVIEW`:
 
 ### 2.2 Composite Resource Entity
 
-A **Composite Resource Entity** is produced by a Meta Provider that orchestrates multiple constituent Infrastructure Resource Entities to deliver a higher-order service. The composite is a first-class entity — it has its own UUID, Tenant ownership, and lifecycle. Its constituents each retain their own entity identity.
+A **Composite Resource Entity** is produced by a compound resource type specification that orchestrates multiple constituent Infrastructure Resource Entities to deliver a higher-order service. The composite is a first-class entity — it has its own UUID, Tenant ownership, and lifecycle. Its constituents each retain their own entity identity.
 
 **Characteristics:**
 - Represents the logical aggregate, not a physical resource

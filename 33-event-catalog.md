@@ -97,8 +97,8 @@ links:
 | `request.approved` | info | Required tier approval recorded; pipeline resumes |
 | `request.placement_complete` | info | Provider placement complete; Requested State committed |
 | `request.dispatched` | info | Payload dispatched to provider(s) |
-| `request.compound_assembled` | info | Compound service payload assembled (Meta Provider compound request) |
-| `request.dependencies_resolved` | info | Constituent dependencies resolved (Meta Provider) |
+| `request.compound_assembled` | info | Compound service payload assembled (compound service compound request) |
+| `request.dependencies_resolved` | info | Constituent dependencies resolved (compound service) |
 | `request.realized` | medium | Provider confirmed realization; Realized State written |
 | `request.failed` | high | Request failed at any stage |
 | `request.gatekeeper_rejected` | high | GateKeeper policy denied the request |
@@ -190,7 +190,7 @@ payload:
   request_uuid: <uuid>
   provider_uuid: <uuid>
   realized_fields: {}                # key fields returned by provider
-  composite_entity: <bool>           # true for Meta Provider compound services
+  composite_entity: <bool>           # true for compound service compound services
   composite_status: <string | null>
 ```
 
@@ -303,7 +303,7 @@ payload:
 ```yaml
 payload:
   provider_uuid: <uuid>
-  provider_type: service_provider | meta_provider | service_provider | auth_provider | ...
+  provider_type: service_provider | compound_service | service_provider | auth_provider | ...
   provider_handle: <string>
   resource_types_affected: [<string>]  # on deregistered: types now unserviced
   active_entity_count: <int>           # on deregistered: entities at risk

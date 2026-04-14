@@ -162,7 +162,7 @@ POST {dcm_lifecycle_endpoint}
 
 ## 7. Capability Extensions — Provider Types
 
-DCM defines six provider types. Each shares the base contract (Section 1–6) and adds a typed capability extension declaring what the provider can do.
+DCM defines five provider types. Each shares the base contract (Section 1–6) and adds a typed capability extension declaring what the provider can do.
 
 ### 7.1 Service Provider
 
@@ -228,7 +228,9 @@ information_provider_capabilities:
 
 ---
 
-### 7.3 Meta Provider
+### 7.3 Compound Service Definitions (formerly Meta Provider)
+
+> **Architecture update:** Compound service composition is handled by the DCM control plane via Compound Resource Type Specifications in the Resource Type Registry. There is no separate Meta Provider type. Service providers fulfill individual constituents; DCM handles decomposition, dependency resolution, binding field injection, and compensation. See doc 05 (Resource Type Hierarchy) and doc 30 (Compound Resource Type Specifications) for the full model.
 
 **What it does:** Composes multiple child providers to deliver a compound service as a single catalog item. The Meta Provider declares a compound service definition — constituent resource types, dependencies, and delivery requirements — so DCM can place, sequence, and govern the constituents. For its own resource types (`provided_by: self`), the Meta Provider executes as a standard Service Provider. All orchestration, placement, sequencing, failure handling, and compensation is performed by DCM using the declared dependency graph.
 
