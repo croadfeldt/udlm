@@ -98,7 +98,7 @@ Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by
 
 ### 3.1 What Accreditation Is
 
-An **Accreditation** is a formal, versioned, time-bounded attestation that a DCM component — a Service Provider, a Policy Provider, a Storage Provider, a Notification Provider, or a DCM deployment itself — satisfies the requirements of a specific compliance framework. Accreditations are issued by an **Accreditor** and registered with DCM as first-class artifacts.
+An **Accreditation** is a formal, versioned, time-bounded attestation that a DCM component — a Service Provider, a External Policy Evaluator, a data store, a notification service, or a DCM deployment itself — satisfies the requirements of a specific compliance framework. Accreditations are issued by an **Accreditor** and registered with DCM as first-class artifacts.
 
 Accreditation answers: **"Is this component certified to handle this type of data?"**
 
@@ -621,7 +621,7 @@ Zero trust enforcement levels are bound to deployment profiles. The profile dete
 | `fsi` | full | up to restricted (with regulatory cert) | Restricted to same jurisdiction |
 | `sovereign` | hardware_attested | sovereign stays sovereign (no crossing) | Zero crossing of sovereign data |
 
-The `sovereign` profile enforces the hardest constraint: **sovereign-classified data never crosses any boundary** — not to providers, not to federation tunnels, not to Notification Providers with external endpoints. The enforcement is at the Data/Capability Matrix level as a `hard_constraint: true` rule that cannot be overridden by any policy.
+The `sovereign` profile enforces the hardest constraint: **sovereign-classified data never crosses any boundary** — not to providers, not to federation tunnels, not to notification services with external endpoints. The enforcement is at the Data/Capability Matrix level as a `hard_constraint: true` rule that cannot be overridden by any policy.
 
 ---
 

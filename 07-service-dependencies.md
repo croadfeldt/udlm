@@ -434,7 +434,7 @@ In practice, well-designed service compositions rarely exceed 5-6 levels. Depth 
 compound service definitions declare how their internal composition is exposed to DCM. This determines whether sub-resources are DCM entities subject to standard lifecycle management, or opaque to DCM.
 
 ```yaml
-meta_provider_registration:
+compound_service_registration:
   composition_visibility:
     mode: <opaque|transparent|selective>
     # opaque:      Consumer sees only top-level service entity

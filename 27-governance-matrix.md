@@ -70,9 +70,9 @@ subject:
   # actor                — human or service account making a request
   # service_provider     — Service Provider sending/receiving data
   # dcm_peer             — federated DCM instance
-  # external_policy_evaluation      — Policy Provider receiving payload data for evaluation
-  # (prescribed infrastructure)     — Storage Provider receiving/returning state data
-  # service_provider — Notification Provider receiving notification envelopes
+  # external_policy_evaluation      — External Policy Evaluator receiving payload data for evaluation
+  # (prescribed infrastructure)     — data store receiving/returning state data
+  # service_provider — notification service receiving notification envelopes
   # information_provider — Information Provider returning external data
   # system               — DCM internal component (Request Orchestrator, etc.)
 

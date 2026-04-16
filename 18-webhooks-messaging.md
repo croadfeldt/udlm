@@ -30,7 +30,7 @@ DCM communicates with the outside world through three complementary mechanisms:
 
 - **Outbound Webhooks** — DCM pushes event notifications to external HTTP endpoints
 - **Inbound Webhooks** — External systems push requests, queries, and events to DCM HTTP endpoints
-- **Message Bus Providers** — DCM integrates with external message buses for persistent, high-throughput bidirectional event streaming
+- **event routing services** — DCM integrates with external message buses for persistent, high-throughput bidirectional event streaming
 
 All three mechanisms are authenticated, authorized, and audited identically to any other DCM API call. There is no privileged back-channel. Every integration is a registered DCM actor subject to full Policy Engine evaluation.
 
@@ -252,9 +252,9 @@ quota_policy:
 
 > **⚠️ Architecture Update — Notification Model Supersedes Outbound Webhooks**
 >
-> The outbound webhook model described in Section 3 has been one delivery channel within the Notification Model. Outbound webhooks are now one delivery channel type within the Notification Provider model rather than a parallel mechanism.
+> The outbound webhook model described in Section 3 has been one delivery channel within the Notification Model. Outbound webhooks are now one delivery channel type within the notification service model rather than a parallel mechanism.
 >
-> **For new implementations:** Use the Notification Provider subscription model (doc 23, Section 6) with a webhook-type Notification Provider.
+> **For new implementations:** Use the notification service subscription model (doc 23, Section 6) with a webhook-type notification service.
 >
 >
 > The key improvement in the new model: audience is derived from the **entity relationship graph**, not from a manually maintained subscriber list. A webhook subscription for VLAN drift events will now automatically include all VMs attached to that VLAN as audience context.
@@ -465,11 +465,11 @@ webhook_actor:
 
 ---
 
-## 5. Message Bus Provider
+## 5. event routing service
 
 ### 5.1 Concept
 
-A **Message Bus Provider** is the sixth DCM provider type — a persistent, high-throughput integration with an external message bus for bidirectional event streaming. Where webhooks are point-to-point HTTP calls, a Message Bus Provider is a durable pub/sub connection.
+A **event routing service** is the sixth DCM provider type — a persistent, high-throughput integration with an external message bus for bidirectional event streaming. Where webhooks are point-to-point HTTP calls, a event routing service is a durable pub/sub connection.
 
 ### 5.2 Registration
 
@@ -542,7 +542,7 @@ DCM internal Message Bus (internal pub/sub backbone)
   │
   ├── Webhook Delivery Service ──────→ External HTTP endpoints (outbound webhooks)
   │
-  └── Message Bus Bridge Service ────→ External message bus (Message Bus Provider)
+  └── Message Bus Bridge Service ────→ External message bus (event routing service)
                                  ←─── External message bus (inbound)
 ```
 
@@ -818,7 +818,7 @@ ingress_surface_taxonomy:
 | `WHK-011` | All inbound webhook calls are recorded in the audit trail with the webhook actor as the immediate actor. |
 | `WHK-012` | Inbound webhook endpoints return 202 Accepted + request_uuid for async operations. |
 | `WHK-013` | Rate limiting is enforced per registered webhook actor. Exceeding rate limits returns 429 Too Many Requests. |
-| `WHK-014` | All credential references in webhook and message bus configurations must resolve through a registered Credential Provider. |
+| `WHK-014` | All credential references in webhook and message bus configurations must resolve through a registered credential management service. |
 
 ---
 

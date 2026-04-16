@@ -896,7 +896,7 @@ The ITSM Action policy type triggers actions in connected ITSM systems as a side
 ```yaml
 itsm_action_output:
   type: itsm_action
-  itsm_provider_uuid: <uuid>       # registered ITSM Provider UUID
+  itsm_provider_uuid: <uuid>       # registered ITSM integration UUID
   action: create_change_request | update_change_request | close_change_request |
           create_incident | update_incident | close_incident |
           update_cmdb_ci | create_cmdb_ci | retire_cmdb_ci |
@@ -910,7 +910,7 @@ itsm_action_output:
   on_failure: log_and_continue | alert_and_continue | alert_only
 ```
 
-> **See [ITSM Integration](42-itsm-integration.md)** for full ITSM Provider registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
+> **See [ITSM Integration](42-itsm-integration.md)** for full ITSM integration registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
 
 **Key constraints:**
 - ITSM Action policies are side-effect only — they do not produce allow/deny decisions
