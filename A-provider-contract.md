@@ -238,8 +238,8 @@ information_provider_capabilities:
 
 **Capability declaration extension (summary — full schema in doc 30):**
 ```yaml
-meta_provider_capabilities:
-  constituent_provider_types: [service_provider, information_provider, meta_provider]
+compound_service_capabilities:
+  constituent_provider_types: [service_provider, information_provider]
   composition_model:
     execution: dependency_ordered
     max_concurrent_realizations: 10

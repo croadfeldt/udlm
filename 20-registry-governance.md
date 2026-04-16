@@ -14,7 +14,7 @@
 >
 > **This document maps to: DATA + PROVIDER**
 >
-> Data: registry artifacts. Provider: Registry Provider extension
+> Data: registry artifacts. Provider: Resource Type Registry extension
 
 
 
@@ -387,16 +387,16 @@ provider_registration:
 
 ---
 
-## 7. The Registry Provider
+## 7. The Resource Type Registry
 
 ### 7.1 Concept
 
-The Registry Provider is a specialized sub-type of Information Provider — the mechanism through which a DCM deployment accesses its authoritative Resource Type Registry. Every DCM deployment has exactly one active Registry Provider.
+The Resource Type Registry is a specialized sub-type of Information Provider — the mechanism through which a DCM deployment accesses its authoritative Resource Type Registry. Every DCM deployment has exactly one active Resource Type Registry.
 
 ### 7.2 Registration
 
 ```yaml
-registry_provider_registration:
+internal_registry_registration:
   artifact_metadata:
     uuid: <uuid>
     handle: "providers/registry/org-primary"
@@ -445,7 +445,7 @@ registry_provider_registration:
 Online workstation (with registry access)
   │
   Pull registry delta since last sync
-  Sign with organization private key (via Credential Provider)
+  Sign with organization private key (via credential management service)
   Package: registry-update-YYYY-MM-DD.bundle
   │
   Transfer via approved secure channel
@@ -457,9 +457,9 @@ Air-gapped DCM deployment
   Emit: registry.sync_completed audit event
 ```
 
-### 7.4 Registry Provider Policies
+### 7.4 Resource Type Registry Policies
 
-The Registry Provider is fully policy-governed — policies act on registry operations at every stage:
+The Resource Type Registry is fully policy-governed — policies act on registry operations at every stage:
 
 **Sovereignty enforcement:**
 ```yaml
@@ -528,7 +528,7 @@ Organizations can replace or extend these groups using standard Policy Group com
 | `REG-004` | Version constraints in requests are strictly enforced. DCM never automatically upgrades across major versions regardless of version_policy. Version resolution policy is profile-governed. |
 | `REG-005` | When multiple providers satisfy all placement criteria equally, the tie-breaking hierarchy applies: policy preference → provider priority → tenant affinity → cost analysis (if available) → least loaded → consistent hash on request_uuid. |
 | `REG-006` | The registry uses a federated model. Air-gapped and sovereign deployments use offline registries populated via signed bundles verified against the organization's public key. |
-| `REG-007` | The Registry Provider is policy-governed. Profile-appropriate registry policy groups are activated by default. Organizations may extend or replace these groups using standard Policy Group composition. |
+| `REG-007` | The Resource Type Registry is policy-governed. Profile-appropriate registry policy groups are activated by default. Organizations may extend or replace these groups using standard Policy Group composition. |
 | `REG-DP-001` | Default deprecation notification period: P30D before deprecation status is applied. Overridable. |
 | `REG-DP-002` | Default sunset period: Tier 1 = P12M, Tier 2 = P6M. Overridable; locked as immutable in fsi and sovereign profiles. |
 | `REG-DP-003` | Default migration window after retirement: P90D. Overridable. |
@@ -545,7 +545,7 @@ Organizations can replace or extend these groups using standard Policy Group com
 |---|----------|--------|--------|
 | 1 | Should there be a certified registry tier between Tier 2 and DCM Core for formally audited types? | Ecosystem | ✅ Resolved — no fourth tier; certification metadata within existing tier structure serves same purpose (REG-008) |
 | 2 | Should organizations be able to publish their Tier 3 types to the Verified Community registry? | Community | ✅ Resolved — Tier 3 to Tier 2 promotion via PR pathway with additional requirements: production deployment + OSS license + named maintainer + migration path (REG-009) |
-| 3 | How does the Registry Provider handle a scenario where the upstream DCM Project Registry is permanently unavailable? | Resilience | ✅ Resolved — Organization Registry mirror is self-sufficient; upstream loss is governance decision not operational crisis; three long-term options (REG-010) |
+| 3 | How does the Resource Type Registry handle a scenario where the upstream DCM Project Registry is permanently unavailable? | Resilience | ✅ Resolved — Organization Registry mirror is self-sufficient; upstream loss is governance decision not operational crisis; three long-term options (REG-010) |
 | 4 | Should cost metadata on provider registrations be sourced from the Cost Analysis component or declared statically? | Architecture | ✅ Resolved — static or Cost Analysis sourcing; hybrid with Cost Analysis preferred; placement engine uses freshest available (REG-011) |
 
 ---
@@ -602,7 +602,7 @@ The Organization Registry mirror operates independently from the upstream DCM Pr
 
 **Short-term:** Organization Registry mirror is self-sufficient for all operations. Existing types continue working normally.
 
-**Medium-term:** Registry Provider enters "independent operation" mode — new Tier 1/2 types cannot be added (no upstream to sync from); existing types continue operating; Tier 3 unaffected (organization-governed).
+**Medium-term:** Resource Type Registry enters "independent operation" mode — new Tier 1/2 types cannot be added (no upstream to sync from); existing types continue operating; Tier 3 unaffected (organization-governed).
 
 **Long-term governance options:**
 - **Option A:** Designate a community mirror as the new upstream (community self-governance)

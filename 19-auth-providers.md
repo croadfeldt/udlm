@@ -14,7 +14,7 @@
 >
 > **This document maps to: PROVIDER**
 >
-> The Provider abstraction — Auth Provider and Credential Provider extensions
+> The Provider abstraction — Auth Provider and credential management service extensions
 
 
 
@@ -33,9 +33,9 @@ Every authentication mode DCM supports — static API key, local users, GitHub O
 
 ---
 
-## 2. Auth and Credential Provider Types
+## 2. Auth and credential management service Types
 
-Auth Providers and Credential Providers are two of the eleven DCM provider types (see [Unified Provider Contract](A-provider-contract.md)). This section covers the authentication modes and configurations supported:
+Auth Providers and credential management services are two of the eleven DCM provider types (see [Unified Provider Contract](A-provider-contract.md)). This section covers the authentication modes and configurations supported:
 
 Auth Provider completes the DCM provider ecosystem:
 
@@ -44,13 +44,13 @@ Auth Provider completes the DCM provider ecosystem:
 | 1 | **Service Provider** | Realizes resources |
 | 2 | **Information Provider** | Serves authoritative external data |
 | 3 | **compound service definition** | Composes multiple providers |
-| 4 | **Storage Provider** | Persists DCM state |
-| 5 | **Policy Provider** | Evaluates policies externally |
-| 6 | **Credential Provider** | Manages secrets and credentials |
+| 4 | **Data Store (PostgreSQL)** | Persists DCM state |
+| 5 | **External Policy Evaluator** | Evaluates policies externally |
+| 6 | **credential management service** | Manages secrets and credentials |
 | 7 | **Auth Provider** | Authenticates actor identities |
-| 8 | **Notification Provider** | Delivers notifications |
-| 9 | **Message Bus Provider** | Async event streaming |
-| 10 | **Registry Provider** | Serves the Resource Type Registry |
+| 8 | **notification service** | Delivers notifications |
+| 9 | **event routing service** | Async event streaming |
+| 10 | **Resource Type Registry** | Serves the Resource Type Registry |
 | 11 | **Peer DCM** | Another DCM instance (federation) |
 
 ---
@@ -356,9 +356,9 @@ auth_provider_chain:
 
 ---
 
-## 6. Credential Provider
+## 6. credential management service
 
-A **Credential Provider** is the seventh DCM provider type — a cross-cutting dependency that any DCM component or provider registration references for secret resolution. DCM never stores credentials directly.
+A **credential management service** is the seventh DCM provider type — a cross-cutting dependency that any DCM component or provider registration references for secret resolution. DCM never stores credentials directly.
 
 ```yaml
 service_provider_registration:
@@ -411,7 +411,7 @@ credentials_ref:
   secret_path: "dcm/providers/kubevirt/service-account"
 ```
 
-Credentials are cached in memory per the configured TTL. On cache miss, DCM fetches from the Credential Provider. Credentials never appear in audit records (only the `secret_path` is recorded), never in Git, never in logs.
+Credentials are cached in memory per the configured TTL. On cache miss, DCM fetches from the credential management service. Credentials never appear in audit records (only the `secret_path` is recorded), never in Git, never in logs.
 
 ---
 
@@ -494,7 +494,7 @@ dcm auth configure \
 | `AUTH-004` | Auth Provider role and tenant mappings are versioned artifacts subject to standard DCM artifact lifecycle. Changes go through proposed → active validation. |
 | `AUTH-005` | If an Auth Provider becomes unhealthy, existing sessions remain valid until TTL expiry. New authentication attempts route to the configured fallback provider or are rejected. |
 | `AUTH-006` | The Auth Provider used to authenticate a request is recorded in the ingress block and carried into the audit record. Policies may act on auth_provider_uuid and provider_type. |
-| `AUTH-007` | Auth Provider configuration credentials must reference a registered Credential Provider. Plaintext credentials are rejected. |
+| `AUTH-007` | Auth Provider configuration credentials must reference a registered credential management service. Plaintext credentials are rejected. |
 | `AUTH-008` | There is no anonymous access in any DCM profile. Minimal and dev profiles support lightweight authenticated modes requiring minimal setup. |
 | `AUTH-009` | Webhook and message bus inbound surfaces always require authentication regardless of active Profile. Anonymous actors are never permitted on these surfaces. |
 | `AUTH-010` | Rate limiting is enforced per authenticated actor. Limits are declared on the Auth Provider or webhook actor registration. |
@@ -517,7 +517,7 @@ dcm auth configure \
 - **Webhooks and Messaging** (doc 18) — ingress/egress actor model; webhook actor registration
 - **Policy Organization** (doc 14) — policies act on auth_provider_type and ingress fields
 - **Universal Audit Model** (doc 16) — auth provider and ingress context in every audit record
-- **Credential Provider** — resolves all Auth Provider connection secrets
+- **credential management service** — resolves all Auth Provider connection secrets
 - **Universal Group Model** (doc 15) — group memberships resolved via Auth Provider group sync
 
 ## 10. Git Identity Resolution
@@ -652,7 +652,7 @@ step_up_mfa_config:
 
 ### 11.4 Built-In Auth Provider Storage Backend (Q4)
 
-The built-in Auth Provider's local user store uses a pluggable storage backend following the Storage Provider model.
+The built-in Auth Provider's local user store uses a pluggable storage backend following the data store model.
 
 ```yaml
 builtin_auth_provider_config:

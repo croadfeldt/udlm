@@ -3,7 +3,7 @@
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Four States](02-four-states.md) | [Storage Providers](11-storage-providers.md) | [Context and Purpose](00-context-and-purpose.md)
+**Related Documents:** [Four States](02-four-states.md) | [data stores](11-storage-providers.md) | [Context and Purpose](00-context-and-purpose.md)
 
 > **Foundation Document Reference**
 >
@@ -82,7 +82,7 @@ Every DCM component that modifies data carries a provenance obligation — it mu
 | Request Payload Processor | Record source UUID and type for every field assembled from layers |
 | Policy Engine | Record policy UUID, level, operation type, and reason for every field modified or locked |
 | Service Provider (Denaturalization) | Record provider UUID and timestamp for every field in the realized payload |
-| Storage Provider | Emit provenance event to Audit component on every write |
+| data store | Emit provenance event to Audit component on every write |
 | Resource Discovery | Record provider UUID, timestamp, and method for every discovered field |
 | Rehydration Pipeline | Record source store, source record UUID, rehydration reason, and actor UUID |
 
@@ -126,7 +126,7 @@ Audit is a **separate component** — not a query against the GitOps stores, not
 ### 3.2 Architecture
 
 ```
-All Storage Providers emit provenance events (contractual obligation)
+All data stores emit provenance events (contractual obligation)
   │
   │  Events include: entity_uuid, operation, actor_uuid,
   │  timestamp, payload_hash, store_reference
@@ -194,7 +194,7 @@ audit_record:
 
   source_store:
     store_type: <gitops|event_stream|audit>
-    store_uuid: <Storage Provider UUID>
+    store_uuid: <data store UUID>
     store_reference: <git commit hash | event ID | etc.>
     payload_hash: <hash of the payload at this store reference>
 
@@ -216,9 +216,9 @@ audit_record:
 
 ### 3.5 Audit Integrity
 
-Audit records are immutable. The Audit component verifies payload hashes against the Storage Provider's stored values on every read — if a hash mismatch is detected, the Audit component flags the record as potentially tampered and escalates to the Policy Engine.
+Audit records are immutable. The Audit component verifies payload hashes against the data store's stored values on every read — if a hash mismatch is detected, the Audit component flags the record as potentially tampered and escalates to the Policy Engine.
 
-The Audit Store itself is a Storage Provider with the highest consistency and durability requirements — linearizable consistency, synchronous replication, cryptographic payload hashing, and compliance-grade retention.
+The Audit Store itself is a data store with the highest consistency and durability requirements — linearizable consistency, synchronous replication, cryptographic payload hashing, and compliance-grade retention.
 
 ---
 
@@ -351,10 +351,10 @@ Persona-based access control is enforced at the API Gateway level for all endpoi
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | Should the Audit Store be a specialized Storage Provider or can a general pipeline_events table satisfy the audit contract? | Architecture | ✅ Resolved — specialized Storage Provider sub-type; append-only; hash chain integrity; reference-based retention; compliance queries; see doc 11 (STO-004) |
+| 1 | Should the Audit Store be a specialized data store or can a general pipeline_events table satisfy the audit contract? | Architecture | ✅ Resolved — specialized PostgreSQL store contract; append-only; hash chain integrity; reference-based retention; compliance queries; see doc 11 (STO-004) |
 | 2 | How are audit records replicated across sites in air-gapped or geographically distributed deployments? | Sovereignty | ✅ Resolved — live sync for Regional DCMs; signed bundle for Sovereign DCMs; sovereignty check required; hash chain preserved across transport (AUD-018) |
 | 3 | Should DCM provide a default observability dashboard or only the telemetry? | Deployment | ✅ Resolved — default Grafana dashboard for minimal/dev/standard; enterprise integration recommended for prod; required for fsi; local-only for sovereign (OBS-002) |
-| 4 | How does the Audit component handle provenance events from a Storage Provider that has been deregistered? | Operational | ✅ Resolved — two-stage model handles this; Commit Log independent of Storage Providers; gap record inserted on Audit Store recovery; chain makes gap explicit (AUD-019) |
+| 4 | How does the Audit component handle provenance events from a data store that has been deregistered? | Operational | ✅ Resolved — two-stage model handles this; Commit Log independent of data stores; gap record inserted on Audit Store recovery; chain makes gap explicit (AUD-019) |
 
 ---
 
@@ -363,7 +363,7 @@ Persona-based access control is enforced at the API Gateway level for all endpoi
 - **Provenance** — field-level data lineage embedded in every DCM payload
 - **Audit Store** — compliance-grade, immutable store of all audit records
 - **Observability Store** — time-series metrics, traces, and logs
-- **Storage Provider** — formal provider type for all DCM stores
+- **data store** — formal provider type for all DCM stores
 - **API Gateway** — unified access point for all DCM capabilities including audit and observability
 - **Drift Detection** — uses discovered vs realized state comparison; drift events feed the Audit component
 - **Unsanctioned Change** — a specific audit event type triggered by unauthorized resource modification
@@ -373,7 +373,7 @@ Persona-based access control is enforced at the API Gateway level for all endpoi
 
 ### 7.1 Audit Store Architecture (Q1)
 
-Resolved as STO-004 in doc 11 (Storage Providers). The Audit Store is a specialized Storage Provider sub-type — append-only with immutability enforcement, hash chain integrity, reference-based retention tracking, and compliance-grade multi-dimensional queries. The Event Stream is the delivery channel only, not the compliance destination.
+Resolved as STO-004 in doc 11 (data stores). The Audit Store is a specialized PostgreSQL store contract — append-only with immutability enforcement, hash chain integrity, reference-based retention tracking, and compliance-grade multi-dimensional queries. The Event Stream is the delivery channel only, not the compliance destination.
 
 ### 7.2 Audit Record Replication Across Sites (Q2)
 
@@ -424,14 +424,14 @@ default_observability_dashboard:
   export_formats: [prometheus, opentelemetry, json]
 ```
 
-### 7.4 Audit Component Handling Failing Storage Provider (Q4)
+### 7.4 Audit Component Handling Failing data store (Q4)
 
-The two-stage audit model handles this by design — the Stage 1 Commit Log (etcd) has no dependency on any Storage Provider.
+The two-stage audit model handles this by design — the Stage 1 Commit Log (etcd) has no dependency on any data store.
 
 ```
-Storage Provider failure detected
+store failure detected
   │
-  ▼ Stage 1 Commit Log (etcd) — independent of Storage Provider
+  ▼ Stage 1 Commit Log (etcd) — independent of data store
   │   Records: STORAGE_PROVIDER_FAILURE event immediately
   │
   ▼ Stage 2 Audit Forward Service — async, after recovery
@@ -450,10 +450,10 @@ The gap record is not a failure — it is evidence of correct behavior. Auditors
 
 | Policy | Rule |
 |--------|------|
-| `STO-004` | The Audit Store is a specialized Storage Provider sub-type — append-only, hash chain integrity, reference-based retention, compliance-grade queries. Event Stream is the delivery channel only. (See doc 11) |
+| `STO-004` | The Audit Store is a specialized PostgreSQL store contract — append-only, hash chain integrity, reference-based retention, compliance-grade queries. Event Stream is the delivery channel only. (See doc 11) |
 | `AUD-018` | Audit records are replicated using live sync (Regional DCMs) or signed bundle export (Sovereign DCMs). Sovereignty checks required before any replication. Hash chain integrity preserved across transport. Fully isolated Sovereign DCMs maintain local-only audit stores with manual export. |
 | `OBS-002` | DCM ships a default Grafana-based observability dashboard for minimal/dev/standard profiles. Standard+ profiles may substitute enterprise platforms. FSI requires enterprise observability. Sovereign DCMs use local dashboard only with no external connections. |
-| `AUD-019` | Storage Provider failures are recorded via the Stage 1 Commit Log (etcd), which is independent of all Storage Providers. Audit Store self-failures produce pending_forward records. On recovery, a gap record (AUDIT_STORE_UNAVAILABLE) is inserted with the outage window timestamps. The hash chain gap is explicit and auditable. |
+| `AUD-019` | store failures are recorded via the Stage 1 Commit Log (etcd), which is independent of all data stores. Audit Store self-failures produce pending_forward records. On recovery, a gap record (AUDIT_STORE_UNAVAILABLE) is inserted with the outage window timestamps. The hash chain gap is explicit and auditable. |
 
 
 ---

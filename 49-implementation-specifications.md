@@ -2,7 +2,7 @@
 
 **Document Status:** 📋 Draft — Ready for Implementation Feedback
 **Document Type:** Implementation Reference
-**Related Documents:** [Control Plane Components](25-control-plane-components.md) | [Storage Providers](11-storage-providers.md) | [Universal Audit](16-universal-audit.md) | [Credential Provider Model](31-credential-provider-model.md) | [Deployment Redundancy](17-deployment-redundancy.md) | [Session Revocation](35-session-revocation.md)
+**Related Documents:** [Control Plane Components](25-control-plane-components.md) | [data stores](11-storage-providers.md) | [Universal Audit](16-universal-audit.md) | [credential management service Model](31-credential-provider-model.md) | [Deployment Redundancy](17-deployment-redundancy.md) | [Session Revocation](35-session-revocation.md)
 
 > **AEP Alignment:** API endpoints follow [AEP](https://aep.dev) conventions.
 > See `schemas/openapi/dcm-admin-api.yaml` and `dcm-consumer-api.yaml` for normative specs.
@@ -36,7 +36,7 @@ DCM uses the **token bucket** algorithm with a per-actor bucket:
 Actor makes request:
   │
   ▼ API Gateway looks up actor_uuid in rate limit store
-  │   (in-memory cache backed by a fast Storage Provider sub-type)
+  │   (in-memory cache backed by a fast PostgreSQL store contract)
   │
   ▼ Current bucket state:
   │   tokens_remaining: <current count>
@@ -75,9 +75,9 @@ System components (service accounts, provider callbacks) use `prod` bucket param
 
 ### 2.4 Rate Limit State Store
 
-The rate limit state is stored in a **dedicated in-memory cache** backed by a fast Storage Provider:
+The rate limit state is stored in a **dedicated in-memory cache** backed by a fast data store:
 - Cache TTL: 2× the rate limit window (120 seconds for 60 req/min rate)
-- Storage Provider type: key-value (Redis or equivalent)
+- PostgreSQL store contract: key-value (Redis or equivalent)
 - Consistency: eventual — brief over-counting tolerated to avoid distributed lock overhead
 - Cross-replica sharing: rate limit state is shared across all API Gateway replicas via the backing store
 
@@ -149,7 +149,7 @@ The Audit component runs a full-chain verification sweep on a profile-governed s
 
 Hash chain verification is owned by the **Audit component** — the same component that writes audit records. It is not a separate service. The Audit component runs verification as a background goroutine with no external trigger required.
 
-For Storage Provider implementations: the Audit Store must support ordered range queries by `(entity_uuid, chain_sequence)` to enable efficient sweep verification.
+For data store implementations: the Audit Store must support ordered range queries by `(entity_uuid, chain_sequence)` to enable efficient sweep verification.
 
 ### 3.4 Breach Response Protocol
 
@@ -172,7 +172,7 @@ Chain break detected (during write-time or sweep verification):
   │
   └── Human investigation required:
         Normal resolution paths:
-        - Storage Provider failure caused write corruption → Storage Provider replacement
+        - store failure caused write corruption → data store replacement
         - Clock skew between replicas caused ordering issue → Non-malicious; document and reseal
         - Administrative error (direct DB edit) → Incident report, access review
         - Malicious tampering → Security incident declared
@@ -242,22 +242,22 @@ For `fsi` and `sovereign` profiles, realized state records are encrypted at rest
 ```
 Tenant provisioned:
   │
-  ▼ Credential Provider generates tenant encryption key (AES-256-GCM)
-  │   Key stored in: Credential Provider (e.g., Vault)
+  ▼ credential management service generates tenant encryption key (AES-256-GCM)
+  │   Key stored in: credential management service (e.g., Vault)
   │   Key reference stored in: Tenant record as tenant_encryption_key_ref
   │
   ▼ On write to realized data domain:
   │   API Gateway fetches tenant encryption key
   │   Payload encrypted with tenant key before storage
-  │   Storage Provider stores ciphertext only
+  │   data store stores ciphertext only
   │
   ▼ On read from realized data domain:
   │   API Gateway fetches tenant encryption key
   │   Decrypts payload in memory
-  │   Plaintext never written to Storage Provider logs
+  │   Plaintext never written to data store logs
   │
   ▼ Tenant decommission:
-      Tenant encryption key revoked in Credential Provider
+      Tenant encryption key revoked in credential management service
       All tenant data becomes unreadable without external recovery
       This is the cryptographic equivalent of data deletion
 ```
@@ -273,7 +273,7 @@ Platform admin endpoints that query across tenants use a separate database role 
 | `STI-001` | Every query to a tenant-scoped store must include `tenant_uuid` as a mandatory predicate. Queries without tenant scope are rejected by the storage layer. |
 | `STI-002` | Row-level security is enabled on all relational snapshot stores. Disabling RLS requires platform admin action and produces an audit record. |
 | `STI-003` | For `fsi` and `sovereign` profiles, tenant-scoped encryption is mandatory. Key rotation is performed on a profile-governed schedule (P90D for fsi; P30D for sovereign). |
-| `STI-004` | Storage Provider implementations must declare their tenant isolation strategy at registration. DCM validates the declared strategy against the active profile's isolation requirements during the registration approval pipeline. |
+| `STI-004` | data store implementations must declare their tenant isolation strategy at registration. DCM validates the declared strategy against the active profile's isolation requirements during the registration approval pipeline. |
 
 ---
 
@@ -292,7 +292,7 @@ DCM's multi-region deployment model is specified in [Deployment Redundancy](17-d
 
 ### 5.2 Sovereignty-Aware Replication
 
-Every entity carries `sovereignty_zone` declarations that constrain which Storage Provider instances may hold copies:
+Every entity carries `sovereignty_zone` declarations that constrain which data store instances may hold copies:
 
 ```yaml
 entity:
@@ -309,7 +309,7 @@ The replication controller evaluates `sovereignty_zones` before routing any repl
 ### 5.3 Replication Lag Monitoring
 
 ```
-Storage Provider declares: max_replication_lag: PT30S
+data store declares: max_replication_lag: PT30S
 
 DCM monitoring:
   Every PT10S: measure replication lag across all replica pairs
@@ -342,11 +342,11 @@ DCM uses a **last-write-wins with causality tracking** model for cross-region co
 
 ## 6. Secret Zero — Initial Credential Bootstrap
 
-The bootstrap sequence is specified in [Deployment Redundancy](17-deployment-redundancy.md) §6. This section specifies the credential bootstrap specifically — how DCM components authenticate to each other before the Credential Provider is running.
+The bootstrap sequence is specified in [Deployment Redundancy](17-deployment-redundancy.md) §6. This section specifies the credential bootstrap specifically — how DCM components authenticate to each other before the credential management service is running.
 
 ### 6.1 The Bootstrap Credential Problem
 
-At day-0, no Credential Provider exists. DCM components need credentials to communicate. The resolution is a **declarative bootstrap manifest** that contains one-time bootstrap credentials, plus a mandatory rotation on first successful startup.
+At day-0, no credential management service exists. DCM components need credentials to communicate. The resolution is a **declarative bootstrap manifest** that contains one-time bootstrap credentials, plus a mandatory rotation on first successful startup.
 
 ### 6.2 Bootstrap Sequence — Credential Perspective
 
@@ -375,15 +375,15 @@ At day-0, no Credential Provider exists. DCM components need credentials to comm
    - Pre-shared secrets replaced by mTLS certificates on first successful CA handshake
    - Pre-shared secrets deleted from memory and manifest after replacement
 
-3. Credential Provider starts:
+3. credential management service starts:
    - Bootstrapped with Internal CA certificate (trusts DCM's CA)
-   - Registered as the primary Credential Provider via bootstrap admin credential
+   - Registered as the primary credential management service via bootstrap admin credential
    - Takes ownership of internal CA key management
-   - Internal CA private key: transferred to Credential Provider, deleted from bootstrap manifest
+   - Internal CA private key: transferred to credential management service, deleted from bootstrap manifest
 
 4. Bootstrap admin credential rotation (BOOT-002 — mandatory):
    - Bootstrap admin password must be rotated on first login
-   - New credential issued by Credential Provider (not the bootstrap manifest)
+   - New credential issued by credential management service (not the bootstrap manifest)
    - Old password hash deleted from manifest
    - Manifest sealed: no more secrets, only configuration
 
@@ -395,11 +395,11 @@ At day-0, no Credential Provider exists. DCM components need credentials to comm
 
 ### 6.3 Air-Gapped Bootstrap
 
-For sovereign/air-gapped deployments where the Credential Provider requires network access to an external vault:
+For sovereign/air-gapped deployments where the credential management service requires network access to an external vault:
 
 ```
-Option A — Embedded Credential Provider:
-  Use a locally-running Credential Provider (e.g., HashiCorp Vault in dev mode)
+Option A — Embedded credential management service:
+  Use a locally-running credential management service (e.g., HashiCorp Vault in dev mode)
   bootstrapped from the bootstrap manifest.
   Upgrade to production Vault config post-bootstrap.
 
@@ -421,7 +421,7 @@ Option C — HSM-backed bootstrap:
 | `BOOT-001` | The bootstrap manifest must not contain secrets after bootstrap completion. Any secret that persists in the manifest after first successful startup is a security violation. |
 | `BOOT-002` | The bootstrap admin credential must be rotated on first login. DCM enforces this — the bootstrap admin account is locked from normal use until rotation is complete. |
 | `BOOT-003` | Pre-shared component credentials must be replaced by mTLS certificates within PT5M of Internal CA startup. Any component still using pre-shared secrets after this window generates a security alert. |
-| `BOOT-004` | The Internal CA private key must be transferred to the Credential Provider on Credential Provider registration. The key must not remain in any component's memory or storage after transfer is confirmed. |
+| `BOOT-004` | The Internal CA private key must be transferred to the credential management service on credential management service registration. The key must not remain in any component's memory or storage after transfer is confirmed. |
 
 ---
 
@@ -453,27 +453,27 @@ The Operation resource lives in a fast-queryable store owned by the API Gateway.
 
 ### 7.2 Who Owns the Credential Revocation Registry?
 
-**Decision: The Credential Provider owns the Credential Revocation Registry.**
+**Decision: The credential management service owns the Credential Revocation Registry.**
 
-Rationale: The Credential Provider is the authoritative source of credential lifecycle state. It issues credentials, rotates them, and revokes them. The revocation registry is a projection of that lifecycle state optimized for fast lookup.
+Rationale: The credential management service is the authoritative source of credential lifecycle state. It issues credentials, rotates them, and revokes them. The revocation registry is a projection of that lifecycle state optimized for fast lookup.
 
 ```
 Credential Revocation Registry:
-  Owner: Credential Provider
+  Owner: credential management service
   Storage: dedicated fast cache (Redis or equivalent)
   Key structure: credential_uuid → {revoked_at, revocation_reason, effective_at}
   TTL: max(credential_ttl, P90D)  — persists at minimum 90 days after revocation
 
 Access model:
-  Write: Credential Provider (on revocation event)
-  Read:  All DCM components (via Credential Provider query API)
-         OR via local cache synced from Credential Provider push events
+  Write: credential management service (on revocation event)
+  Read:  All DCM components (via credential management service query API)
+         OR via local cache synced from credential management service push events
 
 Cache sync protocol:
-  Credential Provider publishes: credential.revoked event (Message Bus)
+  credential management service publishes: credential.revoked event (Message Bus)
   All subscribed components update local revocation cache
   Cache TTL: PT1M standard; PT30S fsi/sovereign
-  On cache miss: component queries Credential Provider directly (not the cache)
+  On cache miss: component queries credential management service directly (not the cache)
 
 Session Revocation Registry: separate, owned by the Auth component
   (Session revocation is distinct from credential revocation)
@@ -513,11 +513,11 @@ DCM's attack surface has five distinct boundaries. Each boundary has a specific 
 
 **Boundary 5 — Storage Layer**
 - Threat: Direct database access bypassing application controls
-- Mitigations: Row-level security enforces tenant isolation even with direct DB access using application credentials; platform admin credentials are separate, audited, and require MFA; Storage Provider provenance emission means all direct writes are detectable
+- Mitigations: Row-level security enforces tenant isolation even with direct DB access using application credentials; platform admin credentials are separate, audited, and require MFA; data store provenance emission means all direct writes are detectable
 
 **Highest-risk paths (not mitigated by single control):**
-1. Credential Provider compromise → cascading trust failure. Mitigation: Credential Provider is air-gapped from consumer traffic; HSM-backed key storage for sovereign profiles; separate backup credential authority.
-2. Internal CA compromise → all component trust fails. Mitigation: CA private key held only in Credential Provider (HSM-backed for fsi/sovereign); CA certificate rotation procedure documented.
+1. credential management service compromise → cascading trust failure. Mitigation: credential management service is air-gapped from consumer traffic; HSM-backed key storage for sovereign profiles; separate backup credential authority.
+2. Internal CA compromise → all component trust fails. Mitigation: CA private key held only in credential management service (HSM-backed for fsi/sovereign); CA certificate rotation procedure documented.
 
 ### 8.2 Supply Chain Security
 
@@ -546,7 +546,7 @@ Service Providers must declare a Software Bill of Materials reference at registr
 | `SEC-002` | DCM GitOps stores enforce secrets scanning on all commits. Commits with detected secrets are rejected. |
 | `SEC-003` | For `fsi` and `sovereign` profiles, SBOM declaration is mandatory for all Service Providers before activation. |
 | `SEC-004` | The Internal CA private key must be stored in an HSM for `sovereign` profile deployments. Software-only key storage is not permitted at sovereign profile. |
-| `SEC-005` | Any direct database write to a DCM store that bypasses the application layer is detectable via Storage Provider provenance emission. Detection triggers `audit.chain_integrity_alert` for affected records. |
+| `SEC-005` | Any direct database write to a DCM store that bypasses the application layer is detectable via data store provenance emission. Detection triggers `audit.chain_integrity_alert` for affected records. |
 
 ---
 
