@@ -482,7 +482,7 @@ Admin API extensions:
 
 ## 10. Subscription Store
 
-Subscriptions are stored in the DCM operational store alongside other first-class artifacts. The store implementation follows the Storage Provider contract (doc 11).
+Subscriptions are stored in the DCM operational store alongside other first-class artifacts. The store implementation follows the data store contract (doc 11).
 
 ```sql
 CREATE TABLE subscriptions (

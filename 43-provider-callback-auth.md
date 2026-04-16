@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Reference
-**Related Documents:** [Unified Provider Contract](A-provider-contract.md) | [Credential Provider Model](31-credential-provider-model.md) | [Accreditation, Auth Matrix, Zero Trust](26-accreditation-and-authorization-matrix.md) | [Internal Component Auth](36-internal-component-auth.md) | [Registration Specification](../specifications/dcm-registration-spec.md) | [Provider Callback API](../schemas/openapi/dcm-provider-callback-api.yaml)
+**Related Documents:** [Unified Provider Contract](A-provider-contract.md) | [credential management service Model](31-credential-provider-model.md) | [Accreditation, Auth Matrix, Zero Trust](26-accreditation-and-authorization-matrix.md) | [Internal Component Auth](36-internal-component-auth.md) | [Registration Specification](../specifications/dcm-registration-spec.md) | [Provider Callback API](../schemas/openapi/dcm-provider-callback-api.yaml)
 
 > **Foundation Document Reference**
 >
@@ -121,7 +121,7 @@ The mTLS certificate is **not sufficient alone** for operation authorization. Kn
 
 ### 5.1 Provider Callback Credential
 
-The **Provider Callback Credential** is a `dcm_interaction` type credential issued to the provider by DCM's Credential Provider at registration activation time. It is the mechanism by which providers prove authorization for specific callback operations.
+The **Provider Callback Credential** is a `dcm_interaction` type credential issued to the provider by DCM's credential management service at registration activation time. It is the mechanism by which providers prove authorization for specific callback operations.
 
 ```yaml
 provider_callback_credential:
@@ -158,14 +158,14 @@ Provider callback credentials are issued through the following lifecycle:
 ```
 Registration approved (provider status → ACTIVE):
   │
-  ▼ DCM API Gateway requests credential from Credential Provider:
+  ▼ DCM API Gateway requests credential from credential management service:
   │   credential_type: dcm_interaction
   │   issued_to.provider_uuid: <newly activated provider UUID>
   │   allowed_operations: [realized_state_push, capacity_report, interim_status,
   │                         update_notification, lifecycle_event, notification_poll]
   │   expires_at: <now + profile-governed lifetime>
   │
-  ▼ Credential Provider issues credential
+  ▼ credential management service issues credential
   │   Returns credential_value (the bearer token)
   │   Stores credential_record in Credential Store
   │
@@ -173,7 +173,7 @@ Registration approved (provider status → ACTIVE):
   │   POST /api/v1/admin/providers/{uuid}:approve
   │   Response includes: credential_ref (UUID for retrieval)
   │
-  ▼ Provider retrieves credential value via Credential Provider endpoint:
+  ▼ Provider retrieves credential value via credential management service endpoint:
   │   GET {service_provider_endpoint}/credentials/{credential_ref}/value
   │   (Requires the registration token used at initial registration — one-time bootstrap)
   │
@@ -201,11 +201,11 @@ Registration approved (provider status → ACTIVE):
 PT{rotation_trigger} before credential expiry:
   │
   ▼ DCM initiates rotation:
-  │   Requests new credential from Credential Provider
+  │   Requests new credential from credential management service
   │   rotation_of: <current credential_uuid>
   │   same allowed_operations scope; new expires_at
   │
-  ▼ Credential Provider issues new credential
+  ▼ credential management service issues new credential
   │   Old credential NOT yet revoked
   │
   ▼ DCM pushes rotation notification to provider:
@@ -409,7 +409,7 @@ The revocation cache ensures revocation propagates within PT30S even without a c
 | `PCA-002` | Provider callback credentials are scoped to the provider_uuid and cannot be used to act on entities hosted at other providers. |
 | `PCA-003` | Entity-level authorization is checked on every realized_state_push, update_notification, and lifecycle_event call, independent of credential validity. A valid credential does not grant access to entities the provider was not dispatched to. |
 | `PCA-004` | Five consecutive credential scope violations or IP binding violations from the same provider within PT1H triggers automatic provider suspension and platform admin notification. |
-| `PCA-005` | Provider callback credentials are issued by the Credential Provider, not directly by the DCM API Gateway. The Credential Provider is the authoritative source for all credential issuance, rotation, and revocation. |
+| `PCA-005` | Provider callback credentials are issued by the credential management service, not directly by the DCM API Gateway. The credential management service is the authoritative source for all credential issuance, rotation, and revocation. |
 | `PCA-006` | Registration tokens are single-use. A registration token that has been used once is permanently invalidated regardless of its `expires_at` timestamp. |
 | `PCA-007` | Re-registration that changes the sovereignty declaration requires a new registration token and triggers a new approval pipeline. Version and capability updates do not require a new registration token. |
 | `PCA-008` | Provider callback credentials must be rotated before expiry. DCM initiates rotation automatically. If a credential expires without rotation, the provider enters a CREDENTIAL_EXPIRED state and must obtain a new credential via the platform admin. |

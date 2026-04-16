@@ -201,7 +201,7 @@ A provider **type** is justified when the provider's **interaction contract** �
 |------|---------------------|----------|
 | `service_provider` | Full lifecycle CRUD on resources — create, update, decommission, discover. Naturalization/denaturalization of payloads. Capacity reporting. Health events. | KubeVirt (VMs), NSX (networks), Vault (credentials), SMTP (notifications), ACM (clusters) |
 | `information_provider` | Read-only data queries. No create/decommission. Authority levels, confidence models, scheduled/pushed/on-demand retrieval modes. | CMDB, LDAP directory, compliance scanner, cost data feed |
-| `meta_provider` | Composes other providers. Declares composition graph, manages cascading lifecycle, aggregates status across constituent providers. | Three-tier app (composes VM + network + DNS + software providers) |
+
 | `auth_provider` | Authentication and identity services. Provides actor authentication, token issuance, group/role claims, MFA capabilities. Multiple auth providers can be registered — tenant routing determines which provider authenticates a given actor. | Keycloak, Okta, Azure AD, LDAP + Dex, SAML IdP |
 | `peer_dcm` | DCM-to-DCM federation protocol. Entity migration, cross-instance placement, distributed governance. | Regional DCM instances, sovereign DCM peers |
 | `process_provider` | Executes ephemeral workflows to completion. No persistent resources — produces a result and terminates. May orchestrate external automation (AAP, Tekton). | Software install, backup execution, migration job, compliance scan |
@@ -243,7 +243,7 @@ DCM supports two policy evaluation modes. The distinction is whether DCM or an e
 - Data minimization — only declared fields sent
 - Full audit record per query-response cycle
 - Default failure behavior is `gatekeep` — unknown is not safe
-- Enrichment fields carry provenance with `source_type: external_policy_provider`
+- Enrichment fields carry provenance with `source_type: external_external_policy_evaluator`
 - External evaluation requires minimum `verified` trust level; GateKeeper authority requires `trusted`
 
 ### 3.5 Resource Type Categories as Capability Declarations
@@ -381,7 +381,7 @@ These are functions within the services above — not independently deployed com
 | `lifecycle_enforcer` | Request Orchestrator | Lifecycle events (TTL expiry, state transitions) enter the same pipeline as any other event. The orchestrator routes them to policy evaluation. No separate service needed. |
 | `notification_router` | Request Orchestrator | Notifications are pipeline side-effects. When the orchestrator completes a pipeline stage, it emits notification events. A `service_provider` for `Notification.*` resources handles delivery. |
 | `session_store` | PostgreSQL table | Sessions are rows in a `sessions` table. JWT is stateless. Revocation is a status update. No separate infrastructure. |
-| `credential_provider_proxy` | Standard service_provider call | Credential retrieval is a standard API call to whichever service_provider handles `Credential.*` resource types. No proxy needed. |
+| `service_provider_proxy` | Standard service_provider call | Credential retrieval is a standard API call to whichever service_provider handles `Credential.*` resource types. No proxy needed. |
 | `drift_reconciler` | Discovery Service | Drift detection is the primary function of discovery. Compare Discovered vs Realized, produce drift records. Same data, same service. |
 | `request_scheduler` | Request Orchestrator | Scheduled requests are cron entries that produce pipeline events. The orchestrator's scheduler emits events at the scheduled time. |
 | `discovery_scheduler` | Discovery Service | Same pattern — built-in scheduler. |
@@ -471,7 +471,7 @@ This is a consumer convenience — a structured workspace for declaring intent. 
 | Required infrastructure | PostgreSQL-compatible DB |
 | Internal capabilities | Authentication (local accounts + JWT), secrets (envelope encryption), event routing (`LISTEN/NOTIFY`) |
 | Optional infrastructure | OIDC IdP (external auth), Vault (external secrets), Kafka (event streaming), Redis (caching), Git (ingress), Service mesh (mTLS) |
-| Provider types | 6: `service_provider`, `information_provider`, `meta_provider`, `auth_provider`, `peer_dcm`, `process_provider` |
+| Provider types | 5: `service_provider`, `information_provider`, `auth_provider`, `peer_dcm`, `process_provider` |
 | Policy evaluation modes | 2: Internal (DCM evaluates via OPA, any delivery mechanism) and External (external provider evaluates) |
 | Control plane services | 9 deployable services |
 | Data domains | 4 logical domains (Intent, Requested, Realized, Discovered) in 1 database |

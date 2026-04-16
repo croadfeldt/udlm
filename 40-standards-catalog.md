@@ -31,7 +31,7 @@
 |-----|-------|-----------|-----------|
 | **RFC 8446** | TLS 1.3 | All external API communication; preferred TLS version; mandatory cipher suite compliance | Normative |
 | **RFC 5246** | TLS 1.2 | Permitted TLS version for compatibility; minimum acceptable version; TLS 1.0/1.1 prohibited | Normative |
-| **RFC 5280** | X.509 PKI Certificate and CRL Profile | All DCM certificates (component mTLS, Internal CA, Credential Provider certs); CRL format for revocation; certificate chain validation | Normative |
+| **RFC 5280** | X.509 PKI Certificate and CRL Profile | All DCM certificates (component mTLS, Internal CA, credential management service certs); CRL format for revocation; certificate chain validation | Normative |
 | **RFC 6960** | Online Certificate Status Protocol (OCSP) | Internal CA OCSP endpoint for real-time certificate status; Internal CA CRL supplement | Normative |
 
 ### 1.3 Certificate Enrollment
@@ -125,9 +125,9 @@ DCM prohibits the following algorithms in all profiles:
 | **SPIFFE** | CNCF SPIFFE Specification v1.0 | Workload identity framework that inspired DCM's internal component identity model (ICOM); each DCM component has a stable UUID and certificate analogous to a SPIFFE ID; Istio/Envoy enforce SPIFFE-compatible workload identity | Informative |
 | **Istio / Service Mesh** | Istio service mesh specification | Internal component mTLS enforcement; traffic policies; circuit breaking; observability; service-to-service authorization | Normative (distributed deployments) |
 
-| **HashiCorp Vault PKI** | HashiCorp Vault PKI Secrets Engine | External CA Credential Provider backend (optional); issues x509 component certificates via native API or EST/ACME; recommended for fsi/sovereign profiles where enterprise PKI chain is required; typically operates as a subordinate CA of the organization root | Optional |
-| **Venafi TLS Protect** | Venafi Platform | External CA Credential Provider backend (optional); enterprise certificate lifecycle management; ACME/EST/REST API integration | Optional |
-| **EJBCA** | Enterprise JavaBeans Certificate Authority | External CA Credential Provider backend (optional); ACME/CMP/SCEP integration | Optional |
+| **HashiCorp Vault PKI** | HashiCorp Vault PKI Secrets Engine | External CA credential management service backend (optional); issues x509 component certificates via native API or EST/ACME; recommended for fsi/sovereign profiles where enterprise PKI chain is required; typically operates as a subordinate CA of the organization root | Optional |
+| **Venafi TLS Protect** | Venafi Platform | External CA credential management service backend (optional); enterprise certificate lifecycle management; ACME/EST/REST API integration | Optional |
+| **EJBCA** | Enterprise JavaBeans Certificate Authority | External CA credential management service backend (optional); ACME/CMP/SCEP integration | Optional |
 
 ---
 
@@ -250,7 +250,7 @@ DCM maps profile security postures to NIST Authentication Assurance Levels:
 
 ## 10. ITSM Integration Standards
 
-These standards and protocols are used by ITSM Provider implementations:
+These standards and protocols are used by ITSM integration implementations:
 
 | Standard / Protocol | Use in DCM ITSM Integration | Obligation |
 |--------------------|-----------------------------|------------|
@@ -258,7 +258,7 @@ These standards and protocols are used by ITSM Provider implementations:
 | **Jira REST API v3** | Primary integration for Jira Service Management; issue create/update/transition | Normative for Jira provider |
 | **BMC AR REST API v1** | Integration for BMC Remedy/Helix ITSM; form-based create/update | Normative for BMC provider |
 | **PagerDuty Events API v2** | Incident creation and update for alert-type integrations | Normative for PagerDuty provider |
-| **HMAC-SHA256** | Inbound webhook signature verification for all ITSM systems; shared secret via Credential Provider | Normative |
+| **HMAC-SHA256** | Inbound webhook signature verification for all ITSM systems; shared secret via credential management service | Normative |
 | **ITIL v4 Change Management** | Conceptual framework for DCM change record lifecycle mapping (Normal, Standard, Emergency change types) | Informative |
 | **JSON:API** | Used by several ITSM REST APIs for response formatting | Informative |
 | **JSONPath** | Template expression resolution for `generic_rest` action payloads; response field extraction | Normative for generic_rest |
@@ -286,7 +286,7 @@ Each DCM system policy family maps to one or more industry standards. This table
 | **SMX-001–010** | Risk scoring; NIST RMF; organizational risk tolerance | Hybrid scoring; approval routing; enforcement class |
 | **FCM-001–008** | GitOps contribution model; CNCF governance practices | Federated policy contribution; shadow validation; trust levels |
 | **GMX-001–006** | Governance Matrix; policy-as-code; organizational controls | Cross-domain policy enforcement; data classification |
-| **ITSM-001–007 + ITSM-POL-001–004** | ITIL v4, ServiceNow/Jira/Remedy REST APIs, HMAC-SHA256, ITIL change management | ITSM Provider registration; inbound webhook auth; ITSM Policy evaluation; blocking gate with timeout guarantee |
+| **ITSM-001–007 + ITSM-POL-001–004** | ITIL v4, ServiceNow/Jira/Remedy REST APIs, HMAC-SHA256, ITIL change management | ITSM integration registration; inbound webhook auth; ITSM Policy evaluation; blocking gate with timeout guarantee |
 
 ---
 

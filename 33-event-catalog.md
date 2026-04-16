@@ -2,13 +2,13 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Reference — Authoritative Event Catalog
-**Related Documents:** [Notification Model](23-notification-model.md) | [Webhooks and Messaging](18-webhooks-messaging.md) | [Universal Audit](16-universal-audit.md) | [Credential Provider Model](31-credential-provider-model.md) | [Authority Tier Model](32-authority-tier-model.md) | [Control Plane Components](25-control-plane-components.md)
+**Related Documents:** [Notification Model](23-notification-model.md) | [Webhooks and Messaging](18-webhooks-messaging.md) | [Universal Audit](16-universal-audit.md) | [credential management service Model](31-credential-provider-model.md) | [Authority Tier Model](32-authority-tier-model.md) | [Control Plane Components](25-control-plane-components.md)
 
 > **This is the single authoritative source for all DCM event types.**
 >
 > The Notification Model (doc 23) defines delivery pipeline, audience resolution, and urgency routing. The Webhooks doc (doc 18) defines the Message Bus integration. This document defines **what events exist, when they fire, and what their payloads contain**. Any document referencing an event type is authoritative only if it agrees with this catalog. Conflicts resolve in favor of this document.
 
-> **Implementation note:** Consumers (webhook receivers, Notification Providers, Message Bus subscribers, audit tooling) must implement idempotency using `event_uuid`. Events are delivered at-least-once. Per-entity ordering is guaranteed; cross-entity ordering is not.
+> **Implementation note:** Consumers (webhook receivers, notification services, Message Bus subscribers, audit tooling) must implement idempotency using `event_uuid`. Events are delivered at-least-once. Per-entity ordering is guaranteed; cross-entity ordering is not.
 
 ---
 
@@ -678,7 +678,7 @@ payload:
 | `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as already-processed. DCM may re-deliver events on failure; this is not a bug. |
 | `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write. It represents when the event was authoritatively recorded, not when it was delivered. |
 | `EVT-004` | `event_schema_version` must increment on any breaking change to a payload schema. Adding optional fields is not a breaking change. Removing fields, changing field types, or changing field semantics are breaking changes. |
-| `EVT-005` | Events with `urgency: critical` must be delivered via the push channel if the Notification Provider supports it, regardless of consumer subscription preferences. |
+| `EVT-005` | Events with `urgency: critical` must be delivered via the push channel if the notification service supports it, regardless of consumer subscription preferences. |
 | `EVT-006` | This catalog is the authoritative source for event type names. Any event type not in this catalog is non-standard. Non-standard events may be published by providers or extensions but must use a reverse-DNS prefix (e.g. `com.acme.custom_event`). |
 | `EVT-007` | The `audit.*` events with `urgency: critical` are non-suppressable. They are delivered regardless of audience subscription rules and cannot be filtered by consumer preference. |
 
@@ -688,9 +688,9 @@ payload:
 
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
-| `itsm.record_created` | info | ITSM Provider successfully created a record in the external ITSM system |
-| `itsm.record_updated` | info | ITSM Provider successfully updated an existing ITSM record |
-| `itsm.record_failed` | medium | ITSM Provider failed to create/update a record; or `block_until_created` timeout reached |
+| `itsm.record_created` | info | ITSM integration successfully created a record in the external ITSM system |
+| `itsm.record_updated` | info | ITSM integration successfully updated an existing ITSM record |
+| `itsm.record_failed` | medium | ITSM integration failed to create/update a record; or `block_until_created` timeout reached |
 
 ### 21.1 Payload Schema
 

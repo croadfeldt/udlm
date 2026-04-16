@@ -3,7 +3,7 @@
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Entity Relationships](09-entity-relationships.md) | [Storage Providers](11-storage-providers.md) | [Audit, Provenance, and Observability](12-audit-provenance-observability.md)
+**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Entity Relationships](09-entity-relationships.md) | [data stores](11-storage-providers.md) | [Audit, Provenance, and Observability](12-audit-provenance-observability.md)
 
 > **Foundation Document Reference**
 >
@@ -804,7 +804,7 @@ Discovered State records are **NOT** stored in the Audit Store — they are too 
 
 ## 9. Related Concepts
 
-- **Storage Provider** — the formal provider type for all DCM stores
+- **data store** — the formal provider type for all DCM stores
 - **Entity UUID** — the universal linking key across all four states
 - **Rehydration** — using a prior state record as the starting point for a new request
 - **Provider-Portable Rehydration** — rehydration with provider selection re-evaluated

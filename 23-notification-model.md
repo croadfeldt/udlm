@@ -14,7 +14,7 @@
 >
 > **This document maps to: PROVIDER + POLICY**
 >
-> Provider: Notification Provider. Policy: audience resolution and subscription rules
+> Provider: notification service. Policy: audience resolution and subscription rules
 
 
 **Related Documents:** [Webhooks, Messaging, and External Integration](18-webhooks-messaging.md) | [Entity Relationships](09-entity-relationships.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Auth Providers](19-auth-providers.md) | [Universal Audit](16-universal-audit.md)
@@ -29,14 +29,14 @@
 The DCM Notification Model defines a **unified, configurable notification pipeline** that routes event notifications to all parties with a stake in a changed resource — not just the original requestor. The audience for any notification is derived from the **entity relationship graph**, not from who submitted the original request.
 
 This document defines:
-- The Notification Provider — the ninth DCM provider type
+- The notification service — the ninth DCM provider type
 - The event taxonomy — a closed vocabulary of notification-worthy events
 - The audience resolution model — how the relationship graph determines who gets notified
 - The subscription model — how actors declare their notification preferences
-- The notification payload structure — the unified envelope all Notification Providers receive
+- The notification payload structure — the unified envelope all notification services receive
 - The delivery pipeline — from event trigger through audience resolution through provider delivery
 
-Outbound webhooks are one delivery channel within this model, implemented via the Notification Provider.
+Outbound webhooks are one delivery channel within this model, implemented via the notification service.
 
 ---
 
@@ -44,7 +44,7 @@ Outbound webhooks are one delivery channel within this model, implemented via th
 
 **Relationship graph determines audience.** When a resource changes, DCM traverses the entity relationship graph to find all stakeholders. A VLAN decommission notifies every VM attached to that VLAN, regardless of which Tenant owns each VM. The graph is the source of truth for notification scope.
 
-**Delivery mechanism is configurable, not prescribed.** DCM generates and routes notifications. How they are delivered — email, Slack, PagerDuty, ServiceNow, webhook, SMS — is the concern of a Notification Provider. Organizations register the Notification Provider(s) that fit their operations.
+**Delivery mechanism is configurable, not prescribed.** DCM generates and routes notifications. How they are delivered — email, Slack, PagerDuty, ServiceNow, webhook, SMS — is the concern of a notification service. Organizations register the notification service(s) that fit their operations.
 
 **Three notification tiers.** Some notifications are mandatory and non-suppressable (security, sovereignty violations, audit chain breaks). Some are Tenant-default (all resource lifecycle events in a Tenant). Some are actor-subscription (specific events on specific resources). All three compose without conflict.
 
@@ -54,9 +54,9 @@ Outbound webhooks are one delivery channel within this model, implemented via th
 
 ---
 
-## 3. The Notification Provider
+## 3. The notification service
 
-The Notification Provider is the ninth formal DCM provider type. It handles the translation from DCM's unified notification envelope to the delivery channel's native format, and it handles delivery, retry, and delivery confirmation.
+The notification service is the ninth formal DCM provider type. It handles the translation from DCM's unified notification envelope to the delivery channel's native format, and it handles delivery, retry, and delivery confirmation.
 
 ### 3.1 Provider Types Table Update
 
@@ -65,14 +65,14 @@ The Notification Provider is the ninth formal DCM provider type. It handles the 
 | 1 | Service Provider | Realizes resources |
 | 2 | Information Provider | Serves authoritative external data |
 | 3 | compound service definition | Composes multiple providers |
-| 4 | Storage Provider | Persists DCM state |
-| 5 | Message Bus Provider | Event streaming and messaging |
-| 6 | Policy Provider | External policy logic |
-| 7 | Credential Provider | Resolves secrets |
+| 4 | data store | Persists DCM state |
+| 5 | event routing service | Event streaming and messaging |
+| 6 | External Policy Evaluator | External policy logic |
+| 7 | credential management service | Resolves secrets |
 | 8 | Auth Provider | Authenticates identities |
-| **9** | **Notification Provider** | **Delivers notifications via configured channels** |
+| **9** | **notification service** | **Delivers notifications via configured channels** |
 
-### 3.2 Notification Provider Registration
+### 3.2 notification service Registration
 
 ```yaml
 service_provider_registration:
@@ -84,7 +84,7 @@ service_provider_registration:
     owned_by: { display_name: "Platform Engineering" }
 
   provider_type: notification
-  display_name: "Slack Notification Provider"
+  display_name: "Slack notification service"
   description: "Delivers DCM notifications to configured Slack channels"
 
   # Delivery channels this provider supports
@@ -120,9 +120,9 @@ service_provider_registration:
   delivery_endpoint: https://notif-provider.corp.example.com/deliver
 ```
 
-### 3.3 Multiple Notification Providers
+### 3.3 Multiple notification services
 
-Organizations may register multiple Notification Providers — one for Slack, one for PagerDuty, one for ServiceNow tickets. Notification subscriptions declare which provider to use for delivery. The Notification Router in DCM routes each notification to the correct provider based on the subscription's `service_provider_uuid`.
+Organizations may register multiple notification services — one for Slack, one for PagerDuty, one for ServiceNow tickets. Notification subscriptions declare which provider to use for delivery. The Notification Router in DCM routes each notification to the correct provider based on the subscription's `service_provider_uuid`.
 
 ---
 
@@ -196,7 +196,7 @@ The notification event taxonomy is a **closed vocabulary** — a finite, version
 |-----------|---------|-----------------|
 | `policy.activated` | Policy moved to active status | Platform Admin, Policy Owner |
 | `policy.deactivated` | Policy deactivated | Platform Admin, Policy Owner |
-| `external_policy_evaluation.trust_elevated` | Policy Provider mode level elevated | Platform Admin, Security Team |
+| `external_policy_evaluation.trust_elevated` | External Policy Evaluator mode level elevated | Platform Admin, Security Team |
 | `profile.changed` | Active deployment profile changed | Platform Admin, All Tenant Admins |
 | `catalog_item.deprecated` | Catalog item deprecated | All consumers with active resources of that type |
 
@@ -256,7 +256,7 @@ Event fires on entity E (e.g., VLAN-100 decommissioning)
   │   Same actor via multiple paths → one notification with all audience_roles listed
   │   Resolve each actor to their configured notification channels
   │
-  ▼ Step 7: Route to Notification Provider(s)
+  ▼ Step 7: Route to notification service(s)
       One notification per actor per configured channel
       Notification envelope includes audience_role
 ```
@@ -392,7 +392,7 @@ When multiple subscription tiers match for the same actor and event:
 
 ## 7. Notification Payload — The Unified Envelope
 
-Every notification delivered to a Notification Provider uses this unified envelope. The Notification Provider translates it to the delivery channel's native format.
+Every notification delivered to a notification service uses this unified envelope. The notification service translates it to the delivery channel's native format.
 
 ```yaml
 notification:
@@ -487,14 +487,14 @@ Event fires (e.g., VLAN-100 enters DECOMMISSIONING state)
   │     Resolve Tier 1 mandatory notifications
   │     Apply Tier 2 Tenant defaults
   │     Apply Tier 3 actor subscriptions
-  │     Determine: which Notification Provider(s); which channel config; urgency
+  │     Determine: which notification service(s); which channel config; urgency
   │
   ▼ Stage 4: Notification envelope generation
   │   One envelope per audience member per delivery
   │   Audience role set correctly (owner / stakeholder / approver / observer)
   │   Stakeholder reason populated for non-owners
   │
-  ▼ Stage 5: Route to Notification Provider(s)
+  ▼ Stage 5: Route to notification service(s)
   │   POST to provider delivery endpoint with notification envelope
   │   Provider translates to delivery channel (Slack, PagerDuty, email, etc.)
   │   Provider returns delivery_uuid and status
@@ -555,16 +555,16 @@ Provider Update Notifications (doc 06, Section 7a) integrate with the notificati
 
 ### 10.1 Webhooks as a Notification Channel
 
-Outbound webhooks (doc 18) are now **one delivery channel type within the Notification Provider model** rather than a parallel mechanism. A Notification Provider with `channel_type: webhook` delivers notifications to configured HTTP endpoints using the unified notification envelope.
+Outbound webhooks (doc 18) are now **one delivery channel type within the notification service model** rather than a parallel mechanism. A notification service with `channel_type: webhook` delivers notifications to configured HTTP endpoints using the unified notification envelope.
 
-The webhook registration model (doc 18, Section 3.2) is implemented as actor-level subscriptions (Section 6.1, Tier 3) with a webhook-type Notification Provider. 
+The webhook registration model (doc 18, Section 3.2) is implemented as actor-level subscriptions (Section 6.1, Tier 3) with a webhook-type notification service. 
 
 ### 10.2 Message Bus as Notification Infrastructure
 
-The Message Bus Provider (doc 18, Section 5) is the **internal transport** for the notification pipeline. The Notification Router publishes notification events to the Message Bus. Notification Providers subscribe to their assigned topics. This decouples event generation from delivery and enables high-throughput notification processing.
+The event routing service (doc 18, Section 5) is the **internal transport** for the notification pipeline. The Notification Router publishes notification events to the Message Bus. notification services subscribe to their assigned topics. This decouples event generation from delivery and enables high-throughput notification processing.
 
 ```
-DCM Event → Notification Router → Message Bus → Notification Provider subscription
+DCM Event → Notification Router → Message Bus → notification service subscription
 ```
 
 The Message Bus is infrastructure — not a notification channel. Consumers do not subscribe to the Message Bus directly for notifications; they use the subscription model (Section 6.1).
@@ -581,20 +581,20 @@ The Message Bus is infrastructure — not a notification channel. Consumers do n
 | `NOT-004` | Every notification dispatch is an audit record. Delivery failures are tracked. Critical urgency delivery exhaustion triggers immediate escalation to Platform Admin. |
 | `NOT-005` | Provider Update Notifications that require consumer approval carry `action.type: approve` and `action.deadline`. If the deadline passes without resolution, the notification escalates per policy. |
 | `NOT-006` | Notification traversal depth is bounded. Resource Type Specifications declare the maximum traversal depth for each event type. Default: depth 1 (direct relationships only). |
-| `NOT-007` | A Notification Provider must be registered and active before notifications can be delivered. DCM does not have a built-in delivery channel — at minimum a webhook-type Notification Provider must be configured for external delivery. |
+| `NOT-007` | A notification service must be registered and active before notifications can be delivered. DCM does not have a built-in delivery channel — at minimum a webhook-type notification service must be configured for external delivery. |
 | `NOT-008` | The notification event taxonomy is a closed vocabulary. Custom event types are not supported. New event types require a DCM registry proposal following standard governance. |
 
 ---
 
 ## 12. Related Concepts
 
-- **Notification Provider** — the ninth DCM provider type; handles translation and delivery
+- **notification service** — the ninth DCM provider type; handles translation and delivery
 - **Notification Router** — DCM control plane component that resolves audiences and routes to providers
 - **Audience Resolution** — deriving notification recipients from the entity relationship graph
 - **Notification Subscription** — actor or Tenant declaration of notification preferences
 - **Notification Delivery Store** — lightweight store tracking delivery status
 - **Provider Update Notification** — formal provider mechanism for reporting authorized state changes (see doc 06, Section 7a)
-- **Outbound Webhook** — one delivery channel type within the Notification Provider model
+- **Outbound Webhook** — one delivery channel type within the notification service model
 
 ---
 
