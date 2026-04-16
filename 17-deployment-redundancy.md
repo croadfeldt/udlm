@@ -2,7 +2,7 @@
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Storage Providers](11-storage-providers.md) | [Universal Audit Model](16-universal-audit.md) | [Policy Organization](14-policy-profiles.md)
+**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [data stores](11-storage-providers.md) | [Universal Audit Model](16-universal-audit.md) | [Policy Organization](14-policy-profiles.md)
 
 > **Foundation Document Reference**
 >
@@ -14,7 +14,7 @@
 >
 > **This document maps to: DATA + PROVIDER**
 >
-> Data: deployment specification. Provider: Storage Provider redundancy
+> Data: deployment specification. Provider: data store redundancy
 
 
 
@@ -349,7 +349,7 @@ DCM's own deployment is managed through the same model it uses to manage custome
 ### 6.1 What Self-Hosting Means
 
 - DCM control plane components are defined as Resource Entities in DCM
-- DCM data stores are defined as Storage Provider resources in DCM
+- DCM data stores are defined as data store resources in DCM
 - DCM's own Policy Groups govern DCM's own deployment constraints
 - DCM runs drift detection on its own components — a component running the wrong image version is drift
 - DCM can rehydrate its own deployment from the `dcm_deployment` declaration in Git
@@ -517,7 +517,7 @@ All DCM components address each other via Kubernetes Service DNS. No hardcoded I
 
 - **Universal Audit Model** (doc 16) — two-stage audit; Commit Log quorum model
 - **Policy Organization** (doc 14) — Profile-governed redundancy configuration
-- **Storage Providers** (doc 11) — Store contracts include replication requirements
+- **data stores** (doc 11) — Store contracts include replication requirements
 - **Four States** (doc 02) — all state stores are redundant per this model
 - **Ingestion Model** (doc 13) — DCM's own deployment recovery uses the repave/rehydration pattern
 
@@ -658,8 +658,8 @@ DCM starts
   │
   ▼ Step 6: Register built-in providers
   │   Built-in Auth Provider
-  │   Search Index Storage Provider
-  │   Audit Store Storage Provider
+  │   Search Index data store
+  │   Audit Store data store
   │   (All owned by __platform__ Tenant)
   │
   ▼ Step 7: DCM ready
@@ -777,7 +777,7 @@ These Tenants are exempt from the normal Tenant decommission workflow — they c
 | Policy | Rule |
 |--------|------|
 | `BOOT-001` | The __platform__ and __transitional__ system Tenants are created by the bootstrap process before the Policy Engine comes online. They are immutable and cannot be decommissioned while DCM is running. |
-| `BOOT-002` | The bootstrap admin credential must be rotated on first login. The bootstrap manifest declares the initial credential reference only; the credential itself is managed by the Credential Provider. |
+| `BOOT-002` | The bootstrap admin credential must be rotated on first login. The bootstrap manifest declares the initial credential reference only; the credential itself is managed by the credential management service. |
 | `BOOT-003` | After bootstrap, all Tenant creation and modification goes through the standard request pipeline. The bootstrap process is a one-time operation. |
 
 

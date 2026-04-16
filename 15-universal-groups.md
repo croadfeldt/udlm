@@ -213,7 +213,7 @@ dcm_group:
   concern_tags: [pci-dss, encryption, network-segmentation]
   member_types_permitted: [policy]
   enforcement_model: enforced
-  # Source — local or Policy Provider
+  # Source — local or External Policy Evaluator
   source:
     type: <local|external_policy_evaluation>
     provider_uuid: <uuid — if external_policy_evaluation>
@@ -382,7 +382,7 @@ A **Federated Tenant** structure is a `federation` group containing multiple ind
 
 ### 6.1 Universal Registry
 
-All groups are stored in a single **Group Registry** — a GitOps store following the standard Storage Provider contract. The registry is queryable by any combination of fields.
+All groups are stored in a single **Group Registry** — a GitOps store following the standard data store contract. The registry is queryable by any combination of fields.
 
 ### 6.2 Class-Filtered API Views
 

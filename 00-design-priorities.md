@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Stable — Foundational reference
 **Document Type:** Architecture Reference — Design Philosophy
-**Related Documents:** [Foundational Abstractions](00-foundations.md) | [Policy Profiles](14-policy-profiles.md) | [Scoring Model](29-scoring-model.md) | [Credential Provider Model](31-credential-provider-model.md)
+**Related Documents:** [Foundational Abstractions](00-foundations.md) | [Policy Profiles](14-policy-profiles.md) | [Scoring Model](29-scoring-model.md) | [credential management service Model](31-credential-provider-model.md)
 
 > **This document maps to: DATA + PROVIDER + POLICY**
 >
@@ -189,7 +189,7 @@ DCM defines four approval tiers that apply to requests, policy contributions, pr
 | Tier | Required authority level | DCM provides | Organization provides | DCM gate condition |
 |------|-------------------------|-------------|----------------------|-------------------|
 | `auto` | None — `decision_gravity: none`; system confidence sufficient | Structural and governance validation; automatic activation on pass | Nothing — fully automated | All validation checks pass |
-| `reviewed` | Standard authority — `decision_gravity: routine`; one qualified reviewer in the relevant domain | Approval record; eligible reviewer notification via Notification Provider; pipeline hold; decision recording via Admin API; activation or rejection | Who constitutes a qualified reviewer; the review process; recording the decision via DCM API or an external system that calls it | One actor with reviewer role records a decision via the Admin API |
+| `reviewed` | Standard authority — `decision_gravity: routine`; one qualified reviewer in the relevant domain | Approval record; eligible reviewer notification via notification service; pipeline hold; decision recording via Admin API; activation or rejection | Who constitutes a qualified reviewer; the review process; recording the decision via DCM API or an external system that calls it | One actor with reviewer role records a decision via the Admin API |
 | `verified` | Elevated authority — `decision_gravity: elevated`; independent confirmation required; separation of duties | Approval record requiring two independent decisions; enforces distinct actors (same actor cannot provide both); eligible reviewer notification; pipeline hold | Who constitutes qualified reviewers; both review processes; may use external workflow tools that call the DCM API | Two distinct actors with reviewer role each record a decision via the Admin API |
 | `authorized` | Senior/governing authority — `decision_gravity: critical`; highest organizational weight; most consequential decisions | Approval record specifying the required DCMGroup and threshold (N of M); group member notification; pipeline hold; individual decision tracking via Admin API; threshold evaluation; activation when N reached | Who constitutes the authority group (one person with delegated authority, a CTO, a CISO and legal counsel, a change board — the organization decides); how they deliberate; what external tools they use; DCM records decisions, not deliberation | N members of the declared DCMGroup record decisions via the Admin API within the declared window |
 
@@ -211,7 +211,7 @@ DCM builds:
 
 1. **DCMGroup membership management** — which actors constitute the authorized group; configurable by platform admins
 2. **Quorum declaration** — `N of M` threshold declared in the profile or per-decision configuration
-3. **Notification routing** — when a decision enters `pending_authorized` state, the Notification Provider fires to all DCMGroup members
+3. **Notification routing** — when a decision enters `pending_authorized` state, the notification service fires to all DCMGroup members
 4. **Vote recording API** — the Admin API endpoint that authorized group members (or external systems acting on their behalf) call to record `approve` or `reject`
 5. **Quorum tracking** — DCM counts votes and advances the pipeline when N is reached
 6. **Audit trail** — every vote is audited with actor UUID, timestamp, decision, and the system that recorded it
