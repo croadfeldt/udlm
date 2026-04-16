@@ -173,7 +173,7 @@ The Request Payload Processor expands the compound intent into the full constitu
 ```yaml
 entity_uuid: <uuid>
 composite_entity: true
-meta_provider_uuid: <uuid>
+compound_service_provider_uuid: <uuid>
 
 top_level:
   app_name: payments-api
@@ -205,7 +205,7 @@ constituents:
   - component_id: dns-primary
     resource_type: DNS.Record
     provided_by: self
-    provider_uuid: <meta_provider_uuid>
+    provider_uuid: <provider_uuid>
     fields:
       hostname: payments-api.internal.corp.example
       record_type: A
@@ -215,7 +215,7 @@ constituents:
   - component_id: lb-frontend
     resource_type: Network.LoadBalancer
     provided_by: self
-    provider_uuid: <meta_provider_uuid>
+    provider_uuid: <provider_uuid>
     fields:
       backend_component: vm-primary
     depends_on: [vm-primary, ip-primary]
@@ -255,13 +255,13 @@ constituents_realized:
 
   - component_id: dns-primary
     status: FAILED
-    provider_uuid: <meta_provider_uuid>
+    provider_uuid: <provider_uuid>
     failure_reason: "DNS service degraded — record not created"
     required_for_delivery: partial
 
   - component_id: lb-frontend
     status: REALIZED
-    provider_uuid: <meta_provider_uuid>
+    provider_uuid: <provider_uuid>
     realized_fields:
       lb_id: lb-7f8e9d
       endpoint: lb-7f8e9d.eu-west.corp
@@ -393,8 +393,8 @@ Consumer submits compound request
   │     ip-primary → network_provider (standard Services API)
   │
   │   Round 2 (vm+ip REALIZED): dispatch dns-primary, lb-frontend in parallel
-  │     dns-primary → meta_provider (standard Services API)
-  │     lb-frontend → meta_provider (standard Services API)
+  │     dns-primary → designated_service_provider (standard Services API)
+  │     lb-frontend → designated_service_provider (standard Services API)
   │
   │   Any constituent FAILS:
   │     required  → Recovery Policy fires; unstarted constituents cancelled
@@ -435,7 +435,7 @@ Compound service requests are scored using the standard five-signal model with t
 ## 10. Meta Provider Registration Contract
 
 ```yaml
-meta_provider_capabilities:
+compound_service_capabilities:
   # Resource types this Meta Provider handles as a self provider
   resource_types_provided:
     - DNS.Record

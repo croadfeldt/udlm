@@ -18,7 +18,7 @@ DCM has architecturally similar needs in both areas. The evaluation concludes:
 
 - **Kessel Relations** has strong alignment with DCM's access control requirements. The permission model maps cleanly, and the operational benefits — Zanzibar-style consistency, scalable graph traversal, shared source of truth across Red Hat products — are meaningful. Integration path exists via DCM's Auth Provider abstraction.
 
-- **Kessel Inventory** has partial alignment with DCM's Discovered State store. The fit is real but narrower than it might appear: Kessel Inventory is a current-state snapshot system; DCM's inventory is a four-state lifecycle model with field-level provenance, drift detection, and append-only audit. Integration path exists via DCM's Storage Provider abstraction.
+- **Kessel Inventory** has partial alignment with DCM's Discovered State store. The fit is real but narrower than it might appear: Kessel Inventory is a current-state snapshot system; DCM's inventory is a four-state lifecycle model with field-level provenance, drift detection, and append-only audit. Integration path exists via DCM's data store abstraction.
 
 **Recommended next step:** Discussion with the Kessel development team to validate assumptions, confirm schema extensibility for DCM-specific resource types, and understand the Kessel Relations API stability and sovereign/air-gapped deployment model.
 
@@ -196,7 +196,7 @@ None of checks 3–5 can be delegated to Kessel Relations. They remain in DCM's 
 
 #### 4.1.5 Integration Path via Auth Provider Abstraction
 
-DCM's Auth Provider abstraction (doc 19) is the natural integration point. Kessel Relations would register as a DCM Auth Provider or Policy Provider:
+DCM's Auth Provider abstraction (doc 19) is the natural integration point. Kessel Relations would register as a DCM Auth Provider or External Policy Evaluator:
 
 ```yaml
 kessel_relations_auth_provider:
@@ -261,9 +261,9 @@ Kessel Inventory is a state store, not a drift detection system. Even if DCM use
 
 Kessel Inventory's role is purely as the data source for the "what currently exists" side of the comparison. The intelligence stays in DCM.
 
-#### 4.2.4 Integration Path via Storage Provider Abstraction
+#### 4.2.4 Integration Path via data store Abstraction
 
-DCM's Storage Provider abstraction (doc 11) is the natural integration point. The Discovered Store would be implemented as a `storage_sub_type: snapshot_store` Storage Provider backed by Kessel Inventory:
+DCM's data store abstraction (doc 11) is the natural integration point. The Discovered Store would be implemented as a `storage_sub_type: snapshot_store` data store backed by Kessel Inventory:
 
 ```yaml
 kessel_inventory_(prescribed infrastructure):
@@ -283,7 +283,7 @@ kessel_inventory_(prescribed infrastructure):
   read_model: streaming_query_by_type_and_tenant
 ```
 
-This means the Kessel Inventory integration requires **no changes to DCM's data model** — only a new Storage Provider implementation. The Drift Reconciliation Component calls the same Discovered State Store interface; the underlying implementation happens to be Kessel Inventory.
+This means the Kessel Inventory integration requires **no changes to DCM's data model** — only a new data store implementation. The Drift Reconciliation Component calls the same Discovered State Store interface; the underlying implementation happens to be Kessel Inventory.
 
 ---
 
@@ -395,7 +395,7 @@ Discovery Cycle:
   ▼ Service Provider returns RealizedStatePayload stream
   │   (current state in DCM Unified Data Model format)
   │
-  ▼ Kessel Inventory Storage Provider:
+  ▼ Kessel Inventory data store:
   │   Translates DCM format → Kessel Inventory Protobuf schema
   │   Upserts to Kessel Inventory (replaces prior discovered state)
   │
@@ -407,7 +407,7 @@ Discovery Cycle:
 ```
 
 **Impact on DCM architecture:**
-- Discovered State Store: implement as Storage Provider backed by Kessel Inventory
+- Discovered State Store: implement as data store backed by Kessel Inventory
 - No changes to data model, drift detection logic, or Drift Reconciliation Component
 - Resource type mapping: DCM Resource Type Specs → Kessel Inventory resource types (new tooling required)
 
@@ -442,7 +442,7 @@ These policies should be reviewed and confirmed after Kessel team alignment:
 |--------|------|
 | `KESSEL-001` | Kessel Relations, if registered as a DCM Auth Provider, handles authorization checks 1 and 2 of the five-check boundary model only. Checks 3–5 remain in DCM's Policy Engine and cannot be delegated. |
 | `KESSEL-002` | DCM's entity relationship graph (operational relationships between infrastructure resources) must never be stored in Kessel Relations. Only access-control relationships (actor→group→tenant→resource permissions) are stored in Kessel Relations. |
-| `KESSEL-003` | Kessel Inventory, if registered as a DCM Storage Provider for Discovered State, holds only ephemeral current-state snapshots. Intent, Requested, and Realized State stores remain in DCM-managed Storage Providers. |
+| `KESSEL-003` | Kessel Inventory, if registered as a DCM data store for Discovered State, holds only ephemeral current-state snapshots. Intent, Requested, and Realized State stores remain in DCM-managed data stores. |
 | `KESSEL-004` | If Kessel Relations is unavailable, DCM enters safe-deny mode: no new requests are accepted. Fail-open behavior is not permitted under any profile. |
 | `KESSEL-005` | Zookie tokens from Kessel Relations CheckPermission responses must be threaded through the DCM request context to guarantee consistency across authorization checks within the same request. |
 | `KESSEL-006` | Cross-tenant authorization DCMGroups that are backed by Kessel Relations must be written atomically: the DCM Group Registry record and the Kessel Relations tuple must both succeed or both fail. Partial writes are treated as failures. |
@@ -461,7 +461,7 @@ These policies should be reviewed and confirmed after Kessel team alignment:
 | 5 | Kessel Inventory resource type extensibility confirmation | Kessel team | Yes (for inventory integration) |
 | 6 | HA/DR pattern review for production Kessel deployment | Kessel team | Yes |
 | 7 | DCM Auth Provider interface extension for `kessel_rebac` mode | DCM team | No (can design in parallel) |
-| 8 | DCM Storage Provider implementation for Kessel Inventory | DCM team | No (can design in parallel) |
+| 8 | DCM data store implementation for Kessel Inventory | DCM team | No (can design in parallel) |
 | 9 | Zookie lifecycle management design in DCM request pipeline | DCM team | No (can design in parallel) |
 | 10 | Resource type mapping: DCM Resource Type Specs → Kessel Inventory schema | DCM + Kessel | No (can design in parallel) |
 

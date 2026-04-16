@@ -2,7 +2,7 @@
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Audit, Provenance, and Observability](12-audit-provenance-observability.md) | [Storage Providers](11-storage-providers.md) | [Universal Groups](15-universal-groups.md)
+**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Audit, Provenance, and Observability](12-audit-provenance-observability.md) | [data stores](11-storage-providers.md) | [Universal Groups](15-universal-groups.md)
 
 > **Foundation Document Reference**
 >
@@ -586,7 +586,7 @@ Output: all leaves for the request + inclusion proofs + payload hash chain verif
 
 - **Audit, Provenance, and Observability** (doc 12) — three distinct concerns; this document covers the audit concern in full
 - **Field-Level Provenance** — data lineage embedded in every payload; separate from audit records
-- **Storage Providers** (doc 11) — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
+- **data stores** (doc 11) — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
 - **Universal Groups** (doc 15) — all group changes produce audit records per this model
 - **Policy Organization** (doc 14) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
 

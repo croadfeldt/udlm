@@ -2,7 +2,7 @@
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Federated Contribution Model](28-federated-contribution-model.md) | [Universal Group Model](15-universal-groups.md) | [Storage Providers](11-storage-providers.md) | [Auth Providers](19-auth-providers.md) | [Information Providers Advanced](21-information-providers-advanced.md)
+**Related Documents:** [Federated Contribution Model](28-federated-contribution-model.md) | [Universal Group Model](15-universal-groups.md) | [data stores](11-storage-providers.md) | [Auth Providers](19-auth-providers.md) | [Information Providers Advanced](21-information-providers-advanced.md)
 
 > **Foundation Document Reference**
 >
@@ -222,10 +222,10 @@ A **DCM Provider** is a ninth provider type that wraps another DCM instance's AP
 | 1 | Service Provider | Realizes resources |
 | 2 | Information Provider | Serves authoritative external data |
 | 3 | compound service definition | Composes multiple providers |
-| 4 | Storage Provider | Persists DCM state |
-| 5 | Policy Provider | Supplies and evaluates policies |
-| 6 | Message Bus Provider | Bridges internal/external event streams |
-| 7 | Credential Provider | Resolves secrets |
+| 4 | data store | Persists DCM state |
+| 5 | External Policy Evaluator | Supplies and evaluates policies |
+| 6 | event routing service | Bridges internal/external event streams |
+| 7 | credential management service | Resolves secrets |
 | 8 | Auth Provider | Authenticates identities |
 | 9 | **DCM Provider** | Wraps another DCM instance's API |
 
@@ -581,7 +581,7 @@ Depth is measured as hops from the deepest instance to the Hub DCM. Depth 3 cove
 ## 10. Related Concepts
 
 - **Universal Group Model** (doc 15) — federation and nesting group classes
-- **Storage Providers** (doc 11) — storage never federated by default
+- **data stores** (doc 11) — storage never federated by default
 - **Auth Providers** (doc 19) — mTLS for DCM-to-DCM authentication
 - **Universal Audit Model** (doc 16) — audit records in both DCM instances; correlation_id
 - **Registry Governance** (doc 20) — signed bundles for air-gapped registry updates

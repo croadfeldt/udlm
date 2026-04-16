@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Reference — Session Lifecycle and Revocation
-**Related Documents:** [Auth Providers](19-auth-providers.md) | [Credential Provider Model](31-credential-provider-model.md) | [Accreditation and Zero Trust](26-accreditation-and-authorization-matrix.md) | [Event Catalog](33-event-catalog.md) | [Design Priorities](00-design-priorities.md)
+**Related Documents:** [Auth Providers](19-auth-providers.md) | [credential management service Model](31-credential-provider-model.md) | [Accreditation and Zero Trust](26-accreditation-and-authorization-matrix.md) | [Event Catalog](33-event-catalog.md) | [Design Priorities](00-design-priorities.md)
 
 > **This document maps to: DATA + POLICY**
 >
@@ -151,7 +151,7 @@ Security event detected
   │     sovereign: PT5S
   │
   ▼ auth.security_session_revoked event published (critical urgency)
-  │   Routed to security team via configured Notification Provider
+  │   Routed to security team via configured notification service
   │
   ▼ Platform admin notified regardless of profile
   │
@@ -312,7 +312,7 @@ New authentication succeeds
   ▼ New session created
 ```
 
-The evicted actor receives an `auth.session_revoked` notification if a Notification Provider is configured with the actor's notification preferences. The event does not block the new session creation.
+The evicted actor receives an `auth.session_revoked` notification if a notification service is configured with the actor's notification preferences. The event does not block the new session creation.
 
 ---
 
@@ -343,7 +343,7 @@ Session revocation (this document) and credential revocation (doc 31, CPX-001–
 | `AUTH-018` | All DCM components that accept bearer tokens must check the Session Revocation Registry on each request. Cache age must not exceed the profile-governed maximum (sovereign: no cache). |
 | `AUTH-019` | Emergency session revocation (security_event trigger) fires immediately with no grace period. The `auth.security_session_revoked` event has `urgency: critical` and is non-suppressable. |
 | `AUTH-020` | The token introspection endpoint (`POST /api/v1/auth:introspect`) must be authenticated. Access requires an actor or service account with the `introspection` scope. |
-| `AUTH-021` | When concurrent session limits are enforced, the oldest session is revoked before the new session is created. The evicted actor is notified via Notification Provider if configured. |
+| `AUTH-021` | When concurrent session limits are enforced, the oldest session is revoked before the new session is created. The evicted actor is notified via notification service if configured. |
 | `AUTH-022` | Refresh tokens are invalidated when their parent session is revoked. A revoked refresh token returns 401 on exchange; it cannot be used to create a new session. |
 
 ---

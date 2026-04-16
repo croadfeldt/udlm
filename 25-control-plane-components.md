@@ -578,7 +578,7 @@ Process Resource enters EXECUTING state
 
 The Search Index is a **non-authoritative, queryable projection** of the GitOps stores (Intent Store and Requested Store). It enables millisecond-latency queries against stored entities without traversing Git history, while the GitOps stores remain the authoritative source of truth.
 
-The Search Index is a Storage Provider sub-type. It has its own registration, health check, and sovereignty declaration. It is never the source of truth — if the Search Index and the GitOps store disagree, the GitOps store wins unconditionally.
+The Search Index is a PostgreSQL store contract. It has its own registration, health check, and sovereignty declaration. It is never the source of truth — if the Search Index and the GitOps store disagree, the GitOps store wins unconditionally.
 
 ### 6.2 What It Indexes
 
