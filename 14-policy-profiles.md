@@ -1,10 +1,10 @@
-# DCM Data Model — Policy Organization: Groups, Profiles, and Policy Providers
+# DCM Data Model — Policy Organization: Groups, Profiles, and External Policy Evaluators
 
 
 > **Universal Group Model:** Policy Groups (`group_class: policy_collection`) and Policy Profiles (`group_class: policy_profile`) are expressions of the [Universal Group Model](15-universal-groups.md). The structures defined in this document remain authoritative for policy-specific behavior; the universal model adds composability, cross-type membership, and the ability to include policy groups within composite groups.
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Scoring Model](29-scoring-model.md) | [Context and Purpose](00-context-and-purpose.md) | [Data Layers and Assembly](03-layering-and-versioning.md) | [Entity Relationships](09-entity-relationships.md) | [Storage Providers](11-storage-providers.md)
+**Related Documents:** [Scoring Model](29-scoring-model.md) | [Context and Purpose](00-context-and-purpose.md) | [Data Layers and Assembly](03-layering-and-versioning.md) | [Entity Relationships](09-entity-relationships.md) | [data stores](11-storage-providers.md)
 
 > **Foundation Document Reference**
 >
@@ -32,7 +32,7 @@ Three concepts work together:
 
 - **Policy Groups** — cohesive collections of policies addressing a single identifiable concern (a technology, a compliance standard, a sovereignty requirement, a business process)
 - **Policy Profiles** — complete DCM configurations for a specific use case, composed of Policy Groups
-- **Policy Providers** — external authoritative sources that supply policies directly into DCM, extending the provider model to its fifth type
+- **External Policy Evaluators** — external authoritative sources that supply policies directly into DCM, extending the provider model to its fifth type
 
 The relationship is compositional:
 
@@ -46,7 +46,7 @@ Policy Groups      — single-concern policy collections
 Policies           — individual Transformation / Validation / GateKeeper rules
   │  optionally sourced from
   ▼
-Policy Providers   — external authoritative policy sources
+External Policy Evaluators   — external authoritative policy sources
 ```
 
 ---
@@ -383,7 +383,7 @@ policy_group:
   concern_tags: [pci-dss, financial, encryption, network-segmentation]
   extends: null   # or another group handle — inherits all parent policies
 
-  # Source — locally authored or from a Policy Provider
+  # Source — locally authored or from a External Policy Evaluator
   source:
     type: <local | external>
     provider_uuid: <uuid — if external>
@@ -814,7 +814,7 @@ External evaluation introduces governance concerns that Internal mode does not:
 | BBQ-004 | Full audit record per query-response cycle, including `audit_token` for cross-system correlation |
 | BBQ-005 | Default failure behavior is `gatekeep` — if the external system is unavailable, the request is denied (fail-closed) |
 | BBQ-006 | Cached results must include the original query timestamp and validity period in provenance |
-| BBQ-007 | Fields injected by external enrichment carry standard field-level provenance: `source_type: external_policy_provider`, `source_uuid`, and `audit_token` |
+| BBQ-007 | Fields injected by external enrichment carry standard field-level provenance: `source_type: external_external_policy_evaluator`, `source_uuid`, and `audit_token` |
 | BBQ-008 | The override control model applies to enrichment-injected fields — a GateKeeper policy may restrict or refuse external enrichment on specific fields |
 | BBQ-009 | External enrichment requires minimum `verified` trust level; GateKeeper authority requires `trusted` with dual-approval elevation |
 
@@ -1074,9 +1074,9 @@ rehydration_tenancy_conflict_record:
 |---|----------|--------|--------|
 | 1 | Should organizations be able to submit custom profiles and groups back to the DCM project registry? | Community | ✅ Resolved — community submissions via PR-based workflow; Tier 2; documented use case + deployment reference + test results + named maintainer (PROF-005) |
 | 2 | Should there be a certified profile program — profiles that have been validated against specific regulatory frameworks? | Compliance | ✅ Resolved — certified profile program with third-party certification metadata; certified profiles promoted to Tier 1; applies to artifact not deployment (PROF-006) |
-| 3 | Should Policy Provider trust elevation require a formal approval workflow in DCM UI or is out-of-band approval sufficient? | Security | ✅ Resolved — formal approval workflow; profile-governed approvers (1 standard → 3 sovereign); P7D shadow period; POLICY_PROVIDER_ELEVATED audit (PROF-007) |
+| 3 | Should External Policy Evaluator trust elevation require a formal approval workflow in DCM UI or is out-of-band approval sufficient? | Security | ✅ Resolved — formal approval workflow; profile-governed approvers (1 standard → 3 sovereign); P7D shadow period; POLICY_PROVIDER_ELEVATED audit (PROF-007) |
 | 4 | Should the default TTL for dev profile resources be configurable at the platform level or only at the group level? | Configuration | ✅ Resolved — overridable at platform domain layer; per-resource-type TTL overrides; on_expiry action configurable (PROF-008) |
-| 5 | How does Policy Provider delivery interact with air-gapped deployments — pull from internal mirror? | Sovereignty | ✅ Resolved — signed bundle model identical to registry; Mode 4 in sovereign restricted to within-boundary endpoints (PROF-009) |
+| 5 | How does External Policy Evaluator delivery interact with air-gapped deployments — pull from internal mirror? | Sovereignty | ✅ Resolved — signed bundle model identical to registry; Mode 4 in sovereign restricted to within-boundary endpoints (PROF-009) |
 
 ---
 
@@ -1137,9 +1137,9 @@ profile_certification:
 
 **Important:** Profile certification applies to the profile artifact only — it does not certify the deploying organization's compliance posture. A certified profile is evidence that the profile implements the required controls; it is not a compliance certification of any specific deployment.
 
-### 8.3 Policy Provider Trust Elevation Approval (Q3)
+### 8.3 External Policy Evaluator Trust Elevation Approval (Q3)
 
-Policy Provider trust elevation (increasing the mode level) requires a formal approval workflow. Approval requirements are profile-governed.
+External Policy Evaluator trust elevation (increasing the mode level) requires a formal approval workflow. Approval requirements are profile-governed.
 
 ```yaml
 external_evaluation_trust_elevation:
@@ -1189,9 +1189,9 @@ layer:
         DNS.Record: P3D
 ```
 
-### 8.5 Air-Gapped Policy Provider Delivery (Q5)
+### 8.5 Air-Gapped External Policy Evaluator Delivery (Q5)
 
-Policy Provider delivery in air-gapped deployments uses signed bundles — same model as the registry bundle system.
+External Policy Evaluator delivery in air-gapped deployments uses signed bundles — same model as the registry bundle system.
 
 ```yaml
 external_evaluation_airgap:
@@ -1206,7 +1206,7 @@ external_evaluation_airgap:
   expires_at: <ISO 8601>
 ```
 
-**Mode 4 sovereign constraint:** In sovereign profiles, Mode 4 Policy Providers may only call endpoints within the sovereignty boundary. External AI service calls are blocked by the BBQ-001 sovereignty check before any Mode 4 query.
+**Mode 4 sovereign constraint:** In sovereign profiles, Mode 4 External Policy Evaluators may only call endpoints within the sovereignty boundary. External AI service calls are blocked by the BBQ-001 sovereignty check before any Mode 4 query.
 
 ### 8.6 System Policies — Policy Profile Gaps
 
@@ -1214,9 +1214,9 @@ external_evaluation_airgap:
 |--------|------|
 | `PROF-005` | Organizations may submit custom profiles and policy groups to the DCM community registry via the same PR-based proposal workflow as Resource Types. Community contributions live in Tier 2. Submissions require documented use case, at least one production deployment reference, test results, and a named maintainer. |
 | `PROF-006` | DCM supports a certified profile program where profiles carry formal third-party certification metadata. Certified profiles are promoted to Tier 1. Profile certification applies to the artifact only — it does not certify the deploying organization's compliance posture. |
-| `PROF-007` | Policy Provider trust elevation requires a formal approval workflow (standard: 1 platform admin; prod: platform admin + security owner; fsi/sovereign: dual approval + compliance officer). Elevated providers run in shadow mode for P7D before activation. All elevations produce a POLICY_PROVIDER_ELEVATED audit record. |
+| `PROF-007` | External Policy Evaluator trust elevation requires a formal approval workflow (standard: 1 platform admin; prod: platform admin + security owner; fsi/sovereign: dual approval + compliance officer). Elevated providers run in shadow mode for P7D before activation. All elevations produce a POLICY_PROVIDER_ELEVATED audit record. |
 | `PROF-008` | The default TTL for dev profile resources is declared in the system domain layer and overridable at the platform domain level. Per-resource-type TTL overrides are supported. The on_expiry action is configurable. |
-| `PROF-009` | Policy Provider delivery in air-gapped deployments uses signed bundles identical to the registry bundle model. Mode 4 providers in sovereign profiles may only call endpoints within the sovereignty boundary. |
+| `PROF-009` | External Policy Evaluator delivery in air-gapped deployments uses signed bundles identical to the registry bundle model. Mode 4 providers in sovereign profiles may only call endpoints within the sovereignty boundary. |
 
 
 

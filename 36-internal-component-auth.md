@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Reference — Zero Trust Internal Auth
-**Related Documents:** [Accreditation and Zero Trust](26-accreditation-and-authorization-matrix.md) | [Deployment and Redundancy](17-deployment-redundancy.md) | [Credential Provider Model](31-credential-provider-model.md) | [Auth Providers](19-auth-providers.md) | [Session Revocation](35-session-revocation.md) | [Design Priorities](00-design-priorities.md)
+**Related Documents:** [Accreditation and Zero Trust](26-accreditation-and-authorization-matrix.md) | [Deployment and Redundancy](17-deployment-redundancy.md) | [credential management service Model](31-credential-provider-model.md) | [Auth Providers](19-auth-providers.md) | [Session Revocation](35-session-revocation.md) | [Design Priorities](00-design-priorities.md)
 
 > **This document maps to: DATA + POLICY**
 >
@@ -82,10 +82,10 @@ Lifecycle Enforcer → Audit Store
 Lifecycle Enforcer → Message Bus
 
 Notification Router → Message Bus (subscribe)
-Notification Router → Credential Provider Proxy (notification channel credentials)
+Notification Router → credential management service Proxy (notification channel credentials)
 
 All components → Session Store (revocation check)
-All components → Credential Provider Proxy (interaction credential requests)
+All components → credential management service Proxy (interaction credential requests)
 ```
 
 **ICOM-004:** Components may only call components declared in their `allowed_targets` list. A call from an unexpected source component is rejected with `403 Forbidden` and an audit record.
@@ -100,11 +100,11 @@ Each DCM deployment uses a **registered Certificate Authority (CA)** for issuing
 
 **Option A — Built-in Internal CA (default):** DCM operates its own CA per deployment. Simple to configure; no external dependencies; suitable for minimal through standard profiles.
 
-**Option B — External CA via Credential Provider:** An enterprise CA registered as a Credential Provider (HashiCorp Vault PKI, Venafi TLS Protect, EJBCA, AWS ACM Private CA, Azure Key Vault). The external CA issues component certificates using the standard Credential Provider interface — DCM requests certificates via the provider's API (ACME/EST/SCEP/CMP). See [Credential Provider Model](31-credential-provider-model.md) for registration. Recommended for fsi and sovereign profiles where the enterprise PKI chain must be maintained.
+**Option B — External CA via credential management service:** An enterprise CA registered as a credential management service (HashiCorp Vault PKI, Venafi TLS Protect, EJBCA, AWS ACM Private CA, Azure Key Vault). The external CA issues component certificates using the standard credential management service interface — DCM requests certificates via the provider's API (ACME/EST/SCEP/CMP). See [credential management service Model](31-credential-provider-model.md) for registration. Recommended for fsi and sovereign profiles where the enterprise PKI chain must be maintained.
 
 Both options satisfy ICOM-001 (mTLS required). The distinction is who issues the certificates, not whether mTLS is used.
 
-**The registered CA's root certificate is installed in all component trust stores at deployment time.** For Option B, the Credential Provider's CA root (which may itself be a subordinate of an enterprise root) is the trust anchor.
+**The registered CA's root certificate is installed in all component trust stores at deployment time.** For Option B, the credential management service's CA root (which may itself be a subordinate of an enterprise root) is the trust anchor.
 
 ```yaml
 internal_ca:
@@ -185,7 +185,7 @@ Every internal component call follows the same ZTS-002 scoped interaction creden
 ```
 Component A prepares to call Component B
   │
-  ▼ Request interaction credential from Credential Provider Proxy:
+  ▼ Request interaction credential from credential management service Proxy:
   │   credential_type: dcm_interaction
   │   issued_to.component_uuid: <component_a_uuid>
   │   scope.operations: [<specific_operation>]
@@ -339,7 +339,7 @@ Certificate compromise detected
 │                             └──────────┘                        │
 │                                                                  │
 │  ┌──────────────────┐  ┌─────────────┐  ┌──────────────────┐   │
-│  │Credential Provider│  │Session Store│  │Internal CA       │   │
+│  │credential management service│  │Session Store│  │Internal CA       │   │
 │  │Proxy             │  │             │  │(cert authority)   │   │
 │  └──────────────────┘  └─────────────┘  └──────────────────┘   │
 │                                                                  │
@@ -362,7 +362,7 @@ Certificate compromise detected
 | `ICOM-006` | Component certificates are issued by the Internal CA with a maximum validity of P90D and renewed automatically P14D before expiry. Component certificates may not be issued by external CAs. |
 | `ICOM-007` | Bootstrap tokens are one-time-use and expire within PT1H. A bootstrap token that has been used is immediately invalidated. Unused tokens are invalidated at expiry. |
 | `ICOM-008` | Compromised internal component certificates are added to the Internal CA CRL immediately. All components refresh their CRL cache within the profile-governed SLA. |
-| `ICOM-009` | The trust anchor for internal component mTLS is a registered root or intermediate CA whose certificate is installed in all component trust stores at deployment time. The trust anchor may be the built-in Internal CA or an external CA registered as a Certificate Provider (e.g. HashiCorp Vault PKI, Venafi, EJBCA) — see [Credential Provider Model](31-credential-provider-model.md) Section on External CAs. Components do not accept certificates from unregistered trust anchors. |
+| `ICOM-009` | The trust anchor for internal component mTLS is a registered root or intermediate CA whose certificate is installed in all component trust stores at deployment time. The trust anchor may be the built-in Internal CA or an external CA registered as a Certificate Provider (e.g. HashiCorp Vault PKI, Venafi, EJBCA) — see [credential management service Model](31-credential-provider-model.md) Section on External CAs. Components do not accept certificates from unregistered trust anchors. |
 
 ---
 

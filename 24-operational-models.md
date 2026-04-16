@@ -97,7 +97,7 @@ The nine-step assembly has per-step sub-timeouts. These are not independently co
 | Placement Engine Loop | 40% |
 | Requested State Persistence | 10% |
 
-A external policy evaluation that takes longer than PT2M per query causes an ASSEMBLY_TIMEOUT regardless of the overall assembly_timeout remaining. This prevents a single slow Policy Provider from consuming the entire assembly budget.
+A external policy evaluation that takes longer than PT2M per query causes an ASSEMBLY_TIMEOUT regardless of the overall assembly_timeout remaining. This prevents a single slow External Policy Evaluator from consuming the entire assembly budget.
 
 ### 2.3 Timeout Audit Records
 

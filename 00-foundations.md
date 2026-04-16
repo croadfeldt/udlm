@@ -135,16 +135,16 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 |--------------|-----------|---------------|
 | **Service Provider** | Realizes infrastructure resources | DCM → Provider → DCM |
 | **Information Provider** | Serves authoritative external data | DCM queries → Provider responds |
-| **Storage Provider** | Persists DCM state | DCM reads/writes ↔ Provider |
+| **data store** | Persists DCM state | DCM reads/writes ↔ Provider |
 
-| **Policy Provider** | Evaluates policies externally | DCM sends payload → Provider decides |
-| **Credential Provider** | Manages secrets and credentials | DCM requests → Provider issues |
+| **External Policy Evaluator** | Evaluates policies externally | DCM sends payload → Provider decides |
+| **credential management service** | Manages secrets and credentials | DCM requests → Provider issues |
 | **Auth Provider** | Authenticates identities | DCM verifies → Provider confirms |
-| **Notification Provider** | Delivers notifications | DCM sends envelope → Provider delivers |
-| **Message Bus Provider** | Async event streaming | DCM publishes/subscribes ↔ Provider |
-| **Registry Provider** | Serves the resource type registry | DCM pulls → Provider serves |
+| **notification service** | Delivers notifications | DCM sends envelope → Provider delivers |
+| **event routing service** | Async event streaming | DCM publishes/subscribes ↔ Provider |
+| **Resource Type Registry** | Serves the resource type registry | DCM pulls → Provider serves |
 | **Peer DCM** | Another DCM instance (federation) | DCM ↔ DCM via federation tunnel |
-| **ITSM Provider** | Bidirectional integration with ITSM systems (ServiceNow, Jira, Remedy, etc.); creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
+| **ITSM integration** | Bidirectional integration with ITSM systems (ServiceNow, Jira, Remedy, etc.); creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
 
 **The unified Provider base contract** is defined in [A-provider-contract.md](A-provider-contract.md). All twelve Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
 
@@ -229,9 +229,9 @@ The components in [Control Plane Components](25-control-plane-components.md) are
 | Cost Analysis | Information Provider (internal; data derivation) |
 | Lifecycle Constraint Enforcer | Scheduled Recovery Policy trigger |
 | Discovery Scheduler | Scheduled Provider invocation |
-| Notification Router | Transformation Policy + Notification Provider invocation |
+| Notification Router | Transformation Policy + notification service invocation |
 | Drift Reconciliation | Data comparison producing new Data (drift records) |
-| Search Index | Storage Provider sub-type (queryable projection) |
+| Search Index | PostgreSQL store contract (queryable projection) |
 
 ---
 

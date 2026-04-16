@@ -1,28 +1,28 @@
 # DCM Data Model — ITSM Integration
 
 **Document Status:** 🔄 In Progress
-**Document Type:** Architecture Reference — ITSM Provider Type and ITSM Policy Type
+**Document Type:** Architecture Reference — ITSM integration Type and ITSM Policy Type
 **Related Documents:** [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md) | [Notification Model](23-notification-model.md) | [Event Catalog](33-event-catalog.md) | [Authority Tier Model](32-authority-tier-model.md) | [Consumer API Specification](../specifications/consumer-api-spec.md)
 
 > **Design principle:** DCM is built to *replace* the infrastructure ticket as the primary provisioning mechanism. ITSM integration is additive — it enriches DCM entities with ITSM metadata, enables ITSM-initiated requests, and provides bidirectional lifecycle traceability for organizations that need it for compliance. **DCM never requires an ITSM system to function.**
 >
 > Two new additions to the DCM architecture:
-> 1. **ITSM Provider** — a new Provider type (12th) that speaks ITSM system APIs bidirectionally
+> 1. **ITSM integration** — a new Provider type (12th) that speaks ITSM system APIs bidirectionally
 > 2. **ITSM Policy** — a new Policy output type (8th) that triggers ITSM actions as a side-effect of DCM pipeline events
 
 ---
 
-## 1. ITSM Provider
+## 1. ITSM Integration
 
-### 1.1 What an ITSM Provider Is
+### 1.1 What ITSM Integration Is
 
-An ITSM Provider is a DCM Provider that connects DCM to an external IT Service Management system. It handles:
+ITSM integration connects DCM to an external IT Service Management system. It handles:
 
 - **Outbound**: DCM lifecycle events → ITSM records (create change requests, update CMDB CIs, close incidents, link tickets to entities)
 - **Inbound**: ITSM approvals and decisions → DCM (change approval recorded via approval vote API, request initiation from ITSM workflow)
 - **Sync**: ITSM record references stored on DCM entities as business data (bidirectional link)
 
-The ITSM Provider is **not** a Service Provider (it doesn't realize resources), **not** a Notification Provider (though it may create notification-like records), and **not** a Policy Provider (though ITSM approval status may inform DCM policies). It is its own type because it has a bidirectional contract, manages external record lifecycle, and requires specific capability declarations around ITSM system connectivity.
+ITSM integration is **not** a separate provider type (it doesn't realize resources), **not** a notification service (though it may create notification-like records), and **not** a External Policy Evaluator (though ITSM approval status may inform DCM policies). It is its own type because it has a bidirectional contract, manages external record lifecycle, and requires specific capability declarations around ITSM system connectivity.
 
 ### 1.2 Data Flow
 
@@ -32,17 +32,17 @@ DCM lifecycle event fires (e.g. request.dispatched)
   ▼ ITSM Policy evaluates (see Section 3)
   │   Determines: should an ITSM action fire? Which action?
   │
-  ▼ ITSM Provider receives action request
+  ▼ ITSM integration receives action request
   │   Translates to target system's API format
   │   Calls ITSM system (ServiceNow, Jira, etc.)
   │
   ▼ ITSM system creates/updates record
   │   Returns record ID (CHG0012345, INC-4821, etc.)
   │
-  ▼ ITSM Provider stores reference on DCM entity
+  ▼ ITSM integration stores reference on DCM entity
   │   entity.business_data.itsm_references[] updated
   │
-  ▼ ITSM Provider reports back to DCM
+  ▼ ITSM integration reports back to DCM
       itsm_reference_created event published
       External record ID in audit record
 
@@ -88,7 +88,7 @@ itsm_provider_capabilities:
   # System connectivity
   endpoint_url: <url>            # ITSM system API base URL
   api_version: <string>          # system-specific API version
-  auth_credential_uuid: <uuid>   # references Credential Provider
+  auth_credential_uuid: <uuid>   # references credential management service
   
   # Bidirectional webhook (for inbound)
   inbound_webhook:
@@ -108,7 +108,7 @@ itsm_provider_capabilities:
       itsm_ci_type: cmdb_ci_storage_device
 ```
 
-### 1.4 Required API Endpoints (ITSM Provider implements)
+### 1.4 Required API Endpoints (ITSM integration implements)
 
 ```
 POST {provider_base}/actions              # DCM submits action requests
@@ -152,7 +152,7 @@ itsm_references:
 **API:** REST Table API (`/api/now/table/`), Business Rule webhooks, Flow Designer
 
 ```yaml
-# ServiceNow ITSM Provider registration
+# ServiceNow ITSM integration registration
 itsm_provider_registration:
   provider_handle: "servicenow-prod"
   itsm_system: servicenow
@@ -379,7 +379,7 @@ itsm_provider_registration:
 
 An **ITSM Policy** is a new DCM Policy output type (8th, alongside GateKeeper, Validation, Transformation, Recovery, Orchestration Flow, Governance Matrix Rule, and Lifecycle Policy).
 
-It fires as a **side-effect policy** — it does not block pipeline execution (it is not a GateKeeper) and does not transform the payload. It fires on a DCM event and triggers an ITSM action via a registered ITSM Provider. The pipeline continues whether or not the ITSM action succeeds; ITSM failures are logged and alerted but do not block DCM operations.
+It fires as a **side-effect policy** — it does not block pipeline execution (it is not a GateKeeper) and does not transform the payload. It fires on a DCM event and triggers an ITSM action via a registered ITSM integration. The pipeline continues whether or not the ITSM action succeeds; ITSM failures are logged and alerted but do not block DCM operations.
 
 **Key distinction:** An ITSM Policy is about *record-keeping and integration* with external governance systems. A GateKeeper Policy is about *allowing or blocking* operations. These are complementary, not competing.
 
@@ -391,13 +391,13 @@ itsm_policy_output:
   type: itsm_action            # new output type identifier
   
   # Required
-  itsm_provider_uuid: <uuid>   # which ITSM Provider to call
+  itsm_provider_uuid: <uuid>   # which ITSM integration to call
   action: create_change_request | update_change_request | close_change_request |
           create_incident | update_incident | close_incident |
           update_cmdb_ci | create_cmdb_ci | retire_cmdb_ci |
           create_service_request | link_parent_record
           
-  # Payload — fields to pass to ITSM Provider
+  # Payload — fields to pass to ITSM integration
   # Supports template variables from the triggering event payload
   action_payload:
     <field>: <value or "{{ template_expression }}">
@@ -593,16 +593,16 @@ output:
 
 ---
 
-## 4. ITSM Provider System Policies
+## 4. ITSM integration System Policies
 
 | Policy | Rule |
 |--------|------|
-| `ITSM-001` | ITSM Providers implement the base Provider contract (PRV-001) including registration, health check, sovereignty declaration, and zero trust authentication. ITSM system connectivity credentials must reference a registered Credential Provider — no plaintext credentials in provider registration. |
+| `ITSM-001` | ITSM integrations implement the base Provider contract (PRV-001) including registration, health check, sovereignty declaration, and zero trust authentication. ITSM system connectivity credentials must reference a registered credential management service — no plaintext credentials in provider registration. |
 | `ITSM-002` | DCM does not require ITSM integration to function. ITSM Policies with `on_failure: alert_and_continue` (the default) never block DCM pipeline execution. Organizations must explicitly set `block_until_created: true` to gate pipeline on ITSM record creation. |
-| `ITSM-003` | Inbound events from ITSM systems must be authenticated. ITSM Providers must verify HMAC signatures or OAuth tokens on all inbound webhooks before forwarding to DCM. Unauthenticated inbound events are rejected and logged. |
+| `ITSM-003` | Inbound events from ITSM systems must be authenticated. ITSM integrations must verify HMAC signatures or OAuth tokens on all inbound webhooks before forwarding to DCM. Unauthenticated inbound events are rejected and logged. |
 | `ITSM-004` | ITSM record references stored on DCM entities follow entity lifecycle — they are included in the Realized State record, preserved through updates, and retained in the decommissioned entity record for audit purposes. |
 | `ITSM-005` | ITSM Policies that use `block_until_created: true` must declare a `block_timeout`. If the ITSM system does not confirm record creation within the timeout, the policy fires `on_failure` behavior and the block is released — the pipeline continues. A blocked pipeline is never permanently stalled by ITSM unavailability. |
-| `ITSM-006` | Field mappings between DCM entities and ITSM CI types must be declared in the ITSM Provider capability registration. Unmapped resource types are silently skipped for CMDB sync actions. |
+| `ITSM-006` | Field mappings between DCM entities and ITSM CI types must be declared in the ITSM integration capability registration. Unmapped resource types are silently skipped for CMDB sync actions. |
 | `ITSM-007` | Template expressions in ITSM Policy `action_payload` fields must resolve using values from the triggering event payload. Template expressions that reference unavailable fields produce a warning in the audit record and substitute an empty string. They do not block ITSM action execution. |
 
 ---
@@ -624,7 +624,7 @@ The foundations document provider type table gains a 12th row:
 
 | Provider Type | Capability | Data direction |
 |--------------|-----------|----------------|
-| **ITSM Provider** | Bidirectional integration with ITSM systems; creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
+| **ITSM integration** | Bidirectional integration with ITSM systems; creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
 
 The foundations document policy type table gains an 8th entry:
 
@@ -640,8 +640,8 @@ Two new events for the Event Catalog (doc 33):
 
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
-| `itsm.record_created` | info | ITSM Provider successfully created a record in external system |
-| `itsm.record_failed` | medium | ITSM Provider failed to create/update record; `block_until_created` timeout reached |
+| `itsm.record_created` | info | ITSM integration successfully created a record in external system |
+| `itsm.record_failed` | medium | ITSM integration failed to create/update record; `block_until_created` timeout reached |
 
 These extend the existing event catalog with a new `itsm.*` domain prefix.
 
