@@ -91,14 +91,14 @@ links:
 |-----------|---------|---------|
 | `request.submitted` | info | Consumer submitted a request via API or UI |
 | `request.intent_captured` | info | Intent State created; entity UUID assigned |
-| `request.layers_assembled` | info | Layer assembly complete; compound payload ready for policy evaluation |
+| `request.layers_assembled` | info | Layer assembly complete; composite payload ready for policy evaluation |
 | `request.policies_evaluated` | info | Policy evaluation complete; score computed; routing tier determined |
 | `request.requires_approval` | medium | Score routed to `reviewed`, `verified`, or `authorized` tier; pipeline holds |
 | `request.approved` | info | Required tier approval recorded; pipeline resumes |
 | `request.placement_complete` | info | Provider placement complete; Requested State committed |
 | `request.dispatched` | info | Payload dispatched to provider(s) |
-| `request.compound_assembled` | info | Compound service payload assembled (compound service compound request) |
-| `request.dependencies_resolved` | info | Constituent dependencies resolved (compound service) |
+| `request.compound_assembled` | info | Compound service payload assembled (composite service composite request) |
+| `request.dependencies_resolved` | info | Constituent dependencies resolved (composite service) |
 | `request.realized` | medium | Provider confirmed realization; Realized State written |
 | `request.failed` | high | Request failed at any stage |
 | `request.gatekeeper_rejected` | high | GateKeeper policy denied the request |
@@ -149,7 +149,7 @@ payload:
   outcome: realized | failed | degraded
   failure_reason: <string | null>
   realized_fields: {}                # key provider-returned values (IP, VM ID, etc.)
-  composite_status: <string | null>  # for compound requests
+  composite_status: <string | null>  # for composite requests
 ```
 
 #### `request.gatekeeper_rejected`
@@ -190,7 +190,7 @@ payload:
   request_uuid: <uuid>
   provider_uuid: <uuid>
   realized_fields: {}                # key fields returned by provider
-  composite_entity: <bool>           # true for compound service compound services
+  composite_entity: <bool>           # true for composite service composite services
   composite_status: <string | null>
 ```
 
@@ -303,7 +303,7 @@ payload:
 ```yaml
 payload:
   provider_uuid: <uuid>
-  provider_type: service_provider | compound_service | service_provider | auth_provider | ...
+  provider_type: service_provider | information_provider | auth_provider | peer_dcm | process_provider
   provider_handle: <string>
   resource_types_affected: [<string>]  # on deregistered: types now unserviced
   active_entity_count: <int>           # on deregistered: entities at risk

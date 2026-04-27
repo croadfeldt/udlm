@@ -485,13 +485,13 @@ The consumer reviews and chooses UPDATE_DEFINITION — the memory was legitimate
 
 ---
 
-## 8. Example 6 — Three-Tier Application (Compound Service with Binding Fields)
+## 8. Example 6 — Three-Tier Application (Composite Service with Binding Fields)
 
-This example shows how a compound service request flows through the dependency graph, with runtime values from one resource injected into dependent resources via `binding_fields`.
+This example shows how a composite service request flows through the dependency graph, with runtime values from one resource injected into dependent resources via `binding_fields`.
 
 ### 8.1 Consumer Request
 
-A consumer requests a "Web Application — Standard" from the catalog. This is a single catalog item backed by a compound resource type that composes three resources:
+A consumer requests a "Web Application — Standard" from the catalog. This is a single catalog item backed by a composite resource type that composes three resources:
 
 ```yaml
 # Consumer submits via API
@@ -510,7 +510,7 @@ POST /api/v1/requests
 
 ### 8.2 Resource Type Spec — WebApp.ThreeTier
 
-The compound resource type spec declares three constituent resources and the binding fields that connect them:
+The composite resource type spec declares three constituent resources and the binding fields that connect them:
 
 ```yaml
 resource_type: WebApp.ThreeTier

@@ -429,12 +429,12 @@ In practice, well-designed service compositions rarely exceed 5-6 levels. Depth 
 
 ---
 
-## 11d. compound service definition Composition Visibility (Q34)
+## 11d. Composite Service Composition Visibility (Q34)
 
-compound service definitions declare how their internal composition is exposed to DCM. This determines whether sub-resources are DCM entities subject to standard lifecycle management, or opaque to DCM.
+A Composite Service registration declares how its internal composition is exposed to DCM. This determines whether sub-resources are DCM entities subject to standard lifecycle management, or opaque to DCM.
 
 ```yaml
-compound_service_registration:
+composite_service_registration:
   composition_visibility:
     mode: <opaque|transparent|selective>
     # opaque:      Consumer sees only top-level service entity
@@ -450,7 +450,7 @@ compound_service_registration:
 ```
 
 **Drift detection interaction:**
-- `opaque` — drift detection only on what the compound service definition reports via realized payload; sub-resources are provider's responsibility
+- `opaque` — drift detection only on what the composite service definition reports via realized payload; sub-resources are provider's responsibility
 - `transparent` — drift detection on all sub-resources as full DCM entities
 - `selective` — drift detection on declared DCM-visible sub-resources only
 
@@ -464,7 +464,7 @@ compound_service_registration:
 | 2 | Should the dependency graph be stored as a separate entity or embedded in the request payload? | Data model structure | ✅ Resolved — embedded in assembly provenance; declared in Resource Type Spec; resolved in placement.yaml (ENT-007) |
 | 3 | How are cross-tenant dependencies handled? | Multi-tenancy | ✅ Resolved — governed by REL-010/011/012 and DEP-001/002/003; see Entity Relationships doc |
 | 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — profile-governed max (10 standard/prod, 7 fsi/sovereign); circular detection always enforced (ENT-008) |
-| 5 | How does the dependency graph interact with the compound service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as DCM entities (ENT-009) |
+| 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as DCM entities (ENT-009) |
 
 ---
 
@@ -475,7 +475,7 @@ compound_service_registration:
 | `ENT-006` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in a realization is captured in assembly provenance. |
 | `ENT-007` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
 | `ENT-008` | Dependency graph depth is limited to a profile-governed maximum (default: 10 for standard/prod; 7 for fsi/sovereign). Requests exceeding the maximum depth are rejected with a clear error. Circular dependency detection is always enforced regardless of depth configuration. |
-| `ENT-009` | compound service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as DCM entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
+| `ENT-009` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as DCM entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
 
 ---
 
@@ -492,11 +492,11 @@ compound_service_registration:
 
 ---
 
-## 8. Compound Service Compensation Declaration
+## 8. Composite Service Compensation Declaration
 
 ### 8.1 Overview
 
-Compound services (delivered by compound service definitions) must declare compensation behavior for each component. This declaration is part of the service definition — not discovered at runtime. See [Operational Models](24-operational-models.md) Section 6 for the full compensation execution model.
+Compound services (delivered by composite service definitions) must declare compensation behavior for each component. This declaration is part of the service definition — not discovered at runtime. See [Operational Models](24-operational-models.md) Section 6 for the full compensation execution model.
 
 ### 8.2 Compensation Fields on Service Components
 
@@ -506,7 +506,7 @@ service_component:
   resource_type: Compute.VirtualMachine
   required_for_delivery: <atomic|partial>
   # atomic: must succeed; failure triggers full compensation rollback
-  # partial: failure → DEGRADED state; compound service delivered partially
+  # partial: failure → DEGRADED state; composite service delivered partially
 
   compensation_on_failure: <decommission_immediately|release_allocation|skip|notify>
   # decommission_immediately: decommission this component as part of rollback
@@ -525,7 +525,7 @@ service_component:
 
 ```yaml
 partial_delivery_policy:
-  min_required_components: [vm, ip]  # compound DEGRADED if only these succeed
+  min_required_components: [vm, ip]  # composite DEGRADED if only these succeed
   degraded_is_acceptable: true
   auto_retry_optional_components:
     enabled: true
@@ -540,7 +540,7 @@ partial_delivery_policy:
 |--------|------|
 | `DEP-010` | Compensation executes in reverse dependency order (highest compensation_order first). |
 | `DEP-011` | Compensation failure triggers COMPENSATION_FAILED state and immediate orphan detection. |
-| `DEP-012` | Components with required_for_delivery: partial are not compensation-triggering. Their failure produces a DEGRADED compound entity. |
+| `DEP-012` | Components with required_for_delivery: partial are not compensation-triggering. Their failure produces a DEGRADED composite entity. |
 
 
 ---
