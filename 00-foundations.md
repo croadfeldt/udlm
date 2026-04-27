@@ -71,7 +71,7 @@ This is the complete DCM operational model. Everything else is a typed specializ
 |-----------|-------------|---------|
 | **Resource Entity** | A realized infrastructure resource; the primary managed thing | Realized Store |
 | **Process Entity** | An ephemeral execution (job, playbook, pipeline) | Realized Store |
-| **Composite Entity** | A Meta Provider composition of Resource Entities | Realized Store |
+| **Composite Entity** | A composition of Resource Entities produced by a Composite Service request (see doc 30) | Realized Store |
 | **Intent State** | Consumer's raw declaration before processing | Intent Store (GitOps) |
 | **Requested State** | Fully assembled, policy-validated provider payload | Requested Store |
 | **Discovered State** | What actually exists per discovery observation | Discovered Store |
