@@ -228,17 +228,17 @@ information_provider_capabilities:
 
 ---
 
-### 7.3 Compound Service Definitions (formerly Meta Provider)
+### 7.3 Composite Service Definitions
 
-> **Architecture update:** Compound service composition is handled by the DCM control plane via Compound Resource Type Specifications in the Resource Type Registry. There is no separate Meta Provider type. Service providers fulfill individual constituents; DCM handles decomposition, dependency resolution, binding field injection, and compensation. See doc 05 (Resource Type Hierarchy) and doc 30 (Compound Resource Type Specifications) for the full model.
+> DCM treats compound payloads (multiple constituent resource types delivered as one catalog item) as Composite Services registered by ordinary Service Providers. There is no separate provider type for composition — a Service Provider that handles a multi-resource catalog item registers a Composite Service definition and fulfills the constituents it owns (those flagged `provided_by: self`). DCM handles expansion, placement of `external` constituents, dependency resolution, binding field injection, sequencing, and compensation. See doc 05 (Resource Type Hierarchy) and doc 30 (Composite Service Composition Model) for the full model.
 
-**What it does:** Composes multiple child providers to deliver a compound service as a single catalog item. The Meta Provider declares a compound service definition — constituent resource types, dependencies, and delivery requirements — so DCM can place, sequence, and govern the constituents. For its own resource types (`provided_by: self`), the Meta Provider executes as a standard Service Provider. All orchestration, placement, sequencing, failure handling, and compensation is performed by DCM using the declared dependency graph.
+**What it does:** Delivers a compound payload — multiple constituent resource types with declared dependencies and delivery requirements — as a single catalog item. The registering Service Provider declares a Composite Service definition (constituent resource types, dependencies, and delivery requirements) so DCM can place, sequence, and govern the constituents. For its own resource types (`provided_by: self`), the registering provider executes as a standard Service Provider — one constituent payload in, one realized state out. All orchestration, placement, sequencing, failure handling, and compensation are performed by DCM using the declared dependency graph.
 
-> **Full specification:** See [Meta Provider Composability Model](30-meta-provider-model.md) for the complete orchestration contract, four-state model, failure propagation, compensation, and system policies (MPX-001–MPX-008).
+> **Full specification:** See [Composite Service Composition Model](30-composite-service-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (CMP-001–CMP-008).
 
 **Capability declaration extension (summary — full schema in doc 30):**
 ```yaml
-compound_service_capabilities:
+composite_service_capabilities:
   constituent_provider_types: [service_provider, information_provider]
   composition_model:
     execution: dependency_ordered
@@ -261,11 +261,11 @@ compound_service_capabilities:
 ```
 
 **Composite status determination:**
-- `REALIZED` — all required constituents succeeded
+- `OPERATIONAL` — all required constituents succeeded
 - `DEGRADED` — required constituents succeeded; one or more partial constituents failed
 - `FAILED` — one or more required constituents failed → compensation executes
 
-**Data direction:** DCM sends fully assembled compound payload → Meta Provider orchestrates constituents in dependency order → aggregates realized states → returns compound realized state to DCM.
+**Data direction:** DCM expands the catalog request, applies policies to the assembled composite payload, dispatches each constituent's payload to its resolved provider in dependency order (`self` constituents go to the registering provider, `external` constituents go to placed providers), and aggregates the returned realized states into the Composite Entity's realized state.
 
 ---
 
