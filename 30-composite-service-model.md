@@ -4,7 +4,7 @@
 **Status:** Active
 **Audience:** Architects, Service Provider implementers, Policy authors
 
-> A Composite Service is a catalog item that delivers a compound payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary DCM policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is DCM's standard machinery.
+> A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary DCM policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is DCM's standard machinery.
 
 ---
 
@@ -61,7 +61,7 @@ The registering provider's execution responsibility is limited to: naturalizing 
 
 ## 2. Composite Service Definition
 
-A Composite Service registration declares a compound payload structure: which constituent resource types make up the service, how they relate, and who fulfills each one.
+A Composite Service registration declares a composite payload structure: which constituent resource types make up the service, how they relate, and who fulfills each one.
 
 ### 2.1 Constituent Declaration
 
@@ -219,7 +219,7 @@ Discovered State for a Composite Entity is derived: there is no provider-side "d
 
 ### 4.1 The Composite Orchestration Scope Is Narrow
 
-The registering provider's responsibility for a Composite Service is structurally identical to a standard Service Provider's responsibility for a single resource type. It receives constituent payloads one at a time (one per dispatched constituent it owns), it returns realized states one at a time, and it implements standard decommission handling. There is no "compound dispatch" API, no "constituent orchestration loop" inside the provider, and no provider-side aggregation.
+The registering provider's responsibility for a Composite Service is structurally identical to a standard Service Provider's responsibility for a single resource type. It receives constituent payloads one at a time (one per dispatched constituent it owns), it returns realized states one at a time, and it implements standard decommission handling. There is no "composite dispatch" API, no "constituent orchestration loop" inside the provider, and no provider-side aggregation.
 
 Aggregation is DCM's responsibility. Sequencing is DCM's responsibility. Failure handling is DCM's responsibility.
 

@@ -82,7 +82,7 @@ Every request flows through these stages in order:
 |------|---------------|
 | `service_provider` | Provisioning, decommission, discovery, drift |
 | `information_provider` | Data queries, confidence scoring, staleness |
-| `compound_service` | Composition, dependency ordering, partial failure, compensation |
+| `composite_service` | Composition, dependency ordering, partial failure, compensation |
 | `auth_provider` | Login, token validation, group claim mapping, session revocation |
 | `peer_dcm` | Federation, cross-instance placement, entity migration |
 | `process_provider` | Job execution, timeout, cancellation, result reporting |
