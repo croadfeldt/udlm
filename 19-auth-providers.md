@@ -43,7 +43,7 @@ Auth Provider completes the DCM provider ecosystem:
 |---|------|---------|
 | 1 | **Service Provider** | Realizes resources |
 | 2 | **Information Provider** | Serves authoritative external data |
-| 3 | **compound service definition** | Composes multiple providers |
+| 3 | **composite service definition** | Composes multiple providers |
 | 4 | **Data Store (PostgreSQL)** | Persists DCM state |
 | 5 | **External Policy Evaluator** | Evaluates policies externally |
 | 6 | **credential management service** | Manages secrets and credentials |

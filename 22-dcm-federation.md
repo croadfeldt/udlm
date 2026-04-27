@@ -221,7 +221,7 @@ A **DCM Provider** is a ninth provider type that wraps another DCM instance's AP
 |---|------|---------|
 | 1 | Service Provider | Realizes resources |
 | 2 | Information Provider | Serves authoritative external data |
-| 3 | compound service definition | Composes multiple providers |
+| 3 | composite service definition | Composes multiple providers |
 | 4 | data store | Persists DCM state |
 | 5 | External Policy Evaluator | Supplies and evaluates policies |
 | 6 | event routing service | Bridges internal/external event streams |

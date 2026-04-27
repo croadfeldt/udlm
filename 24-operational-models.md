@@ -415,7 +415,7 @@ recovery_policy:
 | `DISCARD_AND_REQUEUE` | Best-effort cleanup sent to provider; new request cycle created immediately from Intent State |
 | `DISCARD_NO_REQUEUE` | Best-effort cleanup sent to provider; entity FAILED; no automatic requeue |
 | `ACCEPT_LATE_REALIZATION` | Accept late provider response; write Realized State; entity proceeds to OPERATIONAL |
-| `COMPENSATE_AND_FAIL` | Execute compensation rollback for compound service; entity FAILED when complete |
+| `COMPENSATE_AND_FAIL` | Execute compensation rollback for composite service; entity FAILED when complete |
 | `NOTIFY_AND_WAIT` | Fire notification to configured audience; wait for human decision up to deadline |
 | `ESCALATE` | Notify platform admin immediately; no automatic action |
 | `RETRY` | Retry the failed operation with configured backoff |
@@ -673,14 +673,14 @@ Multiple recovery policies for the same trigger at the same domain level
 
 ---
 
-## 6. Compound Service Compensation Model
+## 6. Composite Service Compensation Model
 
 ### 6.1 Compensation Declaration in Service Dependencies
 
-Each component in a compound service declares its compensation behavior:
+Each component in a composite service declares its compensation behavior:
 
 ```yaml
-compound_service_spec:
+composite_service_spec:
   service_type: ApplicationStack.WebApp
   components:
     - id: vm
@@ -709,7 +709,7 @@ compound_service_spec:
       depends_on: [vm, ip]
 
   partial_delivery_policy:
-    min_required_components: [vm, ip]     # compound DEGRADED if only these succeed
+    min_required_components: [vm, ip]     # composite DEGRADED if only these succeed
     degraded_is_acceptable: true          # DEGRADED entity is delivered; not FAILED
     auto_retry_optional_components:
       enabled: true

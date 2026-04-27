@@ -72,7 +72,7 @@ Both corrected in place. The `allocated_resource` correction includes a comment:
 
 The three valid `entity_type` values are:
 - `infrastructure_resource` — persistent physical or virtual resource
-- `composite_resource` — compound service definition-orchestrated aggregate
+- `composite_resource` — composite service definition-orchestrated aggregate
 - `process_resource` — ephemeral execution (automation job, playbook)
 
 Pool resources and shared resources are `infrastructure_resource` entities with `ownership_model: whole_allocation` or `ownership_model: shareable`. There is no separate pool or shared entity type.

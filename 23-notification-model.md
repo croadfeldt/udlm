@@ -64,7 +64,7 @@ The notification service is the ninth formal DCM provider type. It handles the t
 |---|------|---------|
 | 1 | Service Provider | Realizes resources |
 | 2 | Information Provider | Serves authoritative external data |
-| 3 | compound service definition | Composes multiple providers |
+| 3 | composite service definition | Composes multiple providers |
 | 4 | data store | Persists DCM state |
 | 5 | event routing service | Event streaming and messaging |
 | 6 | External Policy Evaluator | External policy logic |

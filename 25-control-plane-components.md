@@ -183,7 +183,7 @@ The named workflow and the dynamic policies are independent artifacts. Adding a 
 | Event routing | Receive all request lifecycle events; route to appropriate components |
 | Pipeline coordination | Sequence component interactions per data dependencies |
 | Timeout monitoring | Track dispatch_timeout and assembly_timeout; fire recovery triggers |
-| Dependency resolution | For compound services, sequence component provisioning per dependency graph |
+| Dependency resolution | For composite services, sequence component provisioning per dependency graph |
 | Status tracking | Maintain current status of all in-flight requests; respond to status queries |
 | Recovery coordination | On timeout/failure, invoke Recovery Policy evaluation |
 
