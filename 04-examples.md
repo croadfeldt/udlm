@@ -625,7 +625,7 @@ pet-clinic (WebApp.ThreeTier) — OPERATIONAL
     ip_addresses: [10.0.3.10, 10.0.3.11], config.api_host: 10.0.2.30
 ```
 
-If the database is decommissioned, the `lifecycle_policy: rollback_all` cascades to backend and frontend. If the consumer requests a tier upgrade, the Meta Provider coordinates the upgrade across all three constituents, maintaining the binding field connections throughout.
+If the database is decommissioned, the `lifecycle_policy: rollback_all` cascades to backend and frontend. If the consumer requests a tier upgrade, DCM coordinates the upgrade across all three constituents using the Composite Service's dependency graph, maintaining the binding field connections throughout.
 
 ---
 

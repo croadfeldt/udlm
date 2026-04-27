@@ -37,9 +37,8 @@ Storage Providers are one of eleven DCM provider types (see [Unified Provider Co
 
 | Provider Type | Purpose | Data Direction | DCM Owns Result? |
 |--------------|---------|---------------|-----------------|
-| **Service Provider** | Realizes resources | DCM → Provider → DCM | Yes |
+| **Service Provider** | Realizes resources; may register Composite Services to deliver compound payloads | DCM → Provider → DCM | Yes |
 | **Information Provider** | Serves external authoritative data | DCM → Provider (lookup) | No |
-| **Meta Provider** | Composes multiple providers | DCM → Meta → Children → DCM | Yes |
 | **Storage Provider** | Persists and streams DCM state | DCM ↔ Provider | Yes — DCM is authoritative |
 
 ---
