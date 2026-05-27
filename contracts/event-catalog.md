@@ -1,12 +1,12 @@
-# DCM Data Model — Event Catalog
+# UDLM — Event Catalog
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Reference — Authoritative Event Catalog
-**Related Documents:** [Notification Model](23-notification-model.md) | [Webhooks and Messaging](18-webhooks-messaging.md) | [Universal Audit](16-universal-audit.md) | [credential management service Model](31-credential-provider-model.md) | [Authority Tier Model](32-authority-tier-model.md) | [Control Plane Components](25-control-plane-components.md)
+**Related Documents:** [Universal Audit](../observability/universal-audit.md) | [Credentials](../governance/credentials.md) | [Authority Tier Model](../governance/authority-tier-model.md)
 
 > **This is the single authoritative source for all DCM event types.**
 >
-> The Notification Model (doc 23) defines delivery pipeline, audience resolution, and urgency routing. The Webhooks doc (doc 18) defines the Message Bus integration. This document defines **what events exist, when they fire, and what their payloads contain**. Any document referencing an event type is authoritative only if it agrees with this catalog. Conflicts resolve in favor of this document.
+> The Notification Model and Webhooks docs (implementation-specific; see DCM repo) define the delivery pipeline, audience resolution, urgency routing, and Message Bus integration. This document defines **what events exist, when they fire, and what their payloads contain**. Any document referencing an event type is authoritative only if it agrees with this catalog. Conflicts resolve in favor of this document.
 
 > **Implementation note:** Consumers (webhook receivers, notification services, Message Bus subscribers, audit tooling) must implement idempotency using `event_uuid`. Events are delivered at-least-once. Per-entity ordering is guaranteed; cross-entity ordering is not.
 
@@ -81,7 +81,9 @@ links:
 | `sovereignty.*` | 2 | Sovereignty constraint events |
 | `federation.*` | 1 | Federation tunnel events |
 | `auth.*` | 1 | Authentication provider events |
-| **Total** | **82** | |
+| `conformance.*` | 3 | UDLM conformance lifecycle (version deprecation, bundle updates, level changes) |
+| `schema.*` | 1 | Schema bundle updates |
+| **Total** | **87** | |
 
 ---
 
@@ -632,6 +634,85 @@ payload:
   changed_by: <actor_uuid>
   effective_at: <ISO 8601>
   affected_threshold_tiers: [<string>]
+```
+
+---
+
+## 16.5. Conformance and Schema Events (`conformance.*`, `schema.*`)
+
+Conformance events let a UDLM-conformant peer signal lifecycle changes in its
+conformance state and schema bundle. Other peers subscribe to these so they
+can re-negotiate compatibility, refresh cached schemas, or plan migrations
+before a deprecated major version is removed.
+
+See [`CONFORMANCE.md`](../CONFORMANCE.md) §9 for the versioning and deprecation
+policy that drives these events, and
+[`schema-sharing.md`](schema-sharing.md) for the bundle update flow.
+
+| Event Type | Urgency | Trigger |
+|-----------|---------|---------|
+| `conformance.version_deprecated` | high | The publishing peer has deprecated a major UDLM version it previously supported. Per CONFORMANCE.md §9.2, peers receive at least 6 months notice before removal. |
+| `conformance.level_changed` | medium | The publishing peer's conformance level changed (e.g., `partial` → `full`, or exclusions added/removed). |
+| `conformance.declaration_updated` | low | The publishing peer's conformance declaration was re-published (e.g., after a fresh test-suite run or independent verification). |
+| `schema.bundle_updated` | medium | The publishing peer published a new schema bundle version. Subscribers SHOULD refresh cached schemas. |
+
+### 16.5.1 Payload Schemas
+
+#### `conformance.version_deprecated`
+```yaml
+payload:
+  realization:
+    name: <string>             # e.g., "DCM"
+    vendor: <string>
+    version: <semver>
+  deprecated_udlm_version: <semver>   # the major version being deprecated
+  remaining_supported_versions: [<semver>, ...]
+  removal_at: <ISO 8601>       # earliest date support will be removed
+  reason: <string>             # human-readable rationale
+  migration_guide_url: <string>
+```
+
+#### `conformance.level_changed`
+```yaml
+payload:
+  realization:
+    name: <string>
+    vendor: <string>
+    version: <semver>
+  previous_level: full | partial
+  new_level: full | partial
+  previous_exclusions: [<string>, ...]
+  new_exclusions: [<string>, ...]
+  effective_at: <ISO 8601>
+  conformance_declaration_url: <string>
+```
+
+#### `conformance.declaration_updated`
+```yaml
+payload:
+  realization:
+    name: <string>
+    vendor: <string>
+    version: <semver>
+  udlm_version: <semver>
+  conformance_test_suite_version: <semver>
+  self_certified_at: <ISO 8601>
+  independent_verification_uuid: <uuid> | null
+  conformance_declaration_url: <string>
+```
+
+#### `schema.bundle_updated`
+```yaml
+payload:
+  realization:
+    name: <string>
+    vendor: <string>
+    version: <semver>
+  previous_bundle_version: <semver>
+  new_bundle_version: <semver>
+  changed_schemas: [{ category: <string>, id: <string>, version: <semver>, change_type: added | modified | removed }]
+  schema_bundle_url: <string>
+  published_at: <ISO 8601>
 ```
 
 ---
