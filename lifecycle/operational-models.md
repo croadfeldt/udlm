@@ -1,29 +1,27 @@
-# DCM Data Model — Operational Models
+# UDLM — Operational Models
 
-
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Reference
+**Document Status:** ✅ Stable — UDLM substrate contract
+**Document Type:** Substrate Reference
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: POLICY**
 >
-> The Policy abstraction — Recovery Policy types, trigger vocabulary, action vocabulary
+> The Policy abstraction — Recovery Policy types, trigger vocabulary, action vocabulary.
 
-
-**Related Documents:** [Four States](02-four-states.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Service Dependencies](07-service-dependencies.md) | [Policy Profiles](14-policy-profiles.md) | [Notification Model](23-notification-model.md)
+**Related Documents:** [Four States](../foundations/four-states.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Service Dependencies](../entities/service-dependencies.md) | [Retry Semantics](../contracts/retry-semantics.md)
 
 ---
 
 ## 1. Purpose
 
-This document defines the operational models that govern DCM behavior at the edges of the normal provisioning lifecycle — when things go wrong, take too long, or produce ambiguous outcomes. Four operational models are defined:
+This document defines the operational models that govern UDLM-conformant behavior at the edges of the normal provisioning lifecycle — when things go wrong, take too long, or produce ambiguous outcomes. Four operational models are defined:
 
 1. **Timeout Model** — assembly, dispatch, and reserve-query timeouts
 2. **Cancellation Propagation Model** — consumer-initiated cancellation at any lifecycle stage
@@ -36,14 +34,14 @@ The Recovery Policy Model is the foundational concept. Timeouts, cancellation ou
 
 ## 2. Timeout Model
 
-### 2.1 Three Timeout Scopes
+### 2.1 Three Timeout Scopes (Substrate Contract)
 
-There are three distinct timeout concerns in the DCM pipeline. Each is independently configurable and independently audited.
+The substrate defines three distinct timeout concerns. Each is independently configurable and independently audited. Specific default durations are realization-configurable; the contract is that these three scopes exist and each has profile-governed defaults.
 
 ```yaml
 timeout_declarations:
   assembly_timeout:
-    description: "Maximum time for the Request Payload Processor to complete nine-step assembly"
+    description: "Maximum time for the Request Payload Processor to complete assembly"
     profile_defaults:
       minimal: PT5M
       dev: PT5M
@@ -52,9 +50,7 @@ timeout_declarations:
       fsi: PT2M
       sovereign: PT2M
     on_timeout: trigger ASSEMBLY_TIMEOUT recovery policy
-    includes: layer_resolution, policy_evaluation, placement_engine_loop
-    # Assembly timeout fires if the total assembly pipeline exceeds this duration
-    # Individual sub-steps also have per-step timeouts (see below)
+    includes: layer_resolution, policy_evaluation, placement_loop
 
   dispatch_timeout:
     description: "Maximum time to wait for provider realization after dispatch"
@@ -85,23 +81,9 @@ timeout_declarations:
     # unless ALL candidates have timed out or been exhausted
 ```
 
-### 2.2 Per-Step Assembly Sub-Timeouts
+### 2.2 Timeout Audit Record (Wire Contract)
 
-The nine-step assembly has per-step sub-timeouts. These are not independently configurable — they are proportional fractions of the assembly_timeout:
-
-| Step | Fraction of assembly_timeout |
-|------|----------------------------|
-| Layer Resolution | 20% |
-| Layer Merge | 10% |
-| Policy Evaluation (each policy) | 15% total, 5% per Mode 1/2, 30s per Internal evaluation, PT2M per external evaluation |
-| Placement Engine Loop | 40% |
-| Requested State Persistence | 10% |
-
-A external policy evaluation that takes longer than PT2M per query causes an ASSEMBLY_TIMEOUT regardless of the overall assembly_timeout remaining. This prevents a single slow External Policy Evaluator from consuming the entire assembly budget.
-
-### 2.3 Timeout Audit Records
-
-Every timeout produces an audit record:
+Every timeout produces an audit record. The shape is normative:
 
 ```yaml
 audit_record:
@@ -109,7 +91,7 @@ audit_record:
   actor:
     type: system
     system_actor:
-      component: request_payload_processor | provider_dispatch | placement_engine
+      component: <realization-named component>
       trigger: timeout
   entity_uuid: <uuid>
   details:
@@ -123,14 +105,14 @@ audit_record:
 
 ## 3. Cancellation Propagation Model
 
-### 3.1 Three Cancellation Scenarios
+### 3.1 Three Cancellation Scenarios (Substrate Contract)
 
-Cancellation behavior depends on the entity's lifecycle state at the time the consumer submits a cancellation request.
+Cancellation behavior depends on the entity's lifecycle state at the time the consumer submits a cancellation request. The three scenarios below are the substrate contract.
 
 **Scenario 1 — Cancel before dispatch (ACKNOWLEDGED → ASSEMBLING → AWAITING_APPROVAL):**
 
 ```
-Consumer submits DELETE /api/v1/requests/{uuid}
+Consumer submits cancellation
   │
   ▼ Entity state: pre-DISPATCHED
   │   Assembly halted immediately
@@ -146,10 +128,10 @@ Consumer submits DELETE /api/v1/requests/{uuid}
 **Scenario 2 — Cancel after dispatch, provider not yet started (DISPATCHED):**
 
 ```
-Consumer submits DELETE /api/v1/requests/{uuid}
+Consumer submits cancellation
   │
   ▼ Entity state: DISPATCHED (provider received payload but has not started)
-  │   DCM sends cancellation payload to provider cancel endpoint
+  │   Realization sends cancellation payload to provider cancel endpoint
   │   Provider acknowledges: "not started, cancellation clean"
   │   Entity enters CANCELLED state (terminal)
   │   Recovery Policy: not triggered (clean cancel)
@@ -161,13 +143,13 @@ Consumer submits DELETE /api/v1/requests/{uuid}
 **Scenario 3 — Cancel while provider is executing (PROVISIONING):**
 
 ```
-Consumer submits DELETE /api/v1/requests/{uuid}
+Consumer submits cancellation
   │
   ▼ Entity state: PROVISIONING
-  │   DCM checks provider.supports_cancellation
+  │   Realization checks provider.supports_cancellation
   │
   ├── Provider supports cancellation:
-  │   DCM sends cancellation payload
+  │   Realization sends cancellation payload
   │   Provider attempts rollback
   │   ├── Rollback clean: entity → CANCELLED (terminal)
   │   ├── Rollback partial: trigger CANCELLATION_FAILED recovery policy
@@ -175,7 +157,7 @@ Consumer submits DELETE /api/v1/requests/{uuid}
   │
   └── Provider does not support cancellation:
       Entity enters CANCEL_PENDING state
-      DCM waits for provider to complete
+      Realization waits for provider to complete
       On provider REALIZED response:
         Recovery Policy LATE_RESPONSE_RECEIVED fires
         (configured action: typically DISCARD_AND_REQUEUE for cancellation context)
@@ -183,9 +165,9 @@ Consumer submits DELETE /api/v1/requests/{uuid}
         Entity → FAILED (terminal) — no compensation needed
 ```
 
-### 3.2 Provider Cancellation Capability Declaration
+### 3.2 Provider Cancellation Capability Declaration (Wire Contract)
 
-Providers declare cancellation support in their registration:
+Providers declare cancellation support in their registration. Shape is normative:
 
 ```yaml
 provider_cancellation_capabilities:
@@ -200,7 +182,7 @@ provider_cancellation_capabilities:
   # false: cancellation is all-or-nothing (rare)
 ```
 
-### 3.3 Cancellation Payload
+### 3.3 Cancellation Payload (Wire Contract)
 
 ```json
 {
@@ -213,30 +195,27 @@ provider_cancellation_capabilities:
 }
 ```
 
-`best_effort: true` is always set — DCM never guarantees cancellation success. The provider makes a best-effort attempt; outcomes flow through the Recovery Policy model.
+`best_effort: true` is always set — a UDLM-conformant realization MUST NEVER guarantee cancellation success. The provider makes a best-effort attempt; outcomes flow through the Recovery Policy model.
 
 ---
 
 ## 4. Discovery Scheduling Model
 
-### 4.1 The Discovery Scheduler Component
+### 4.1 Discovery Scheduling Substrate
 
-The **Discovery Scheduler** is a DCM control plane component responsible for triggering discovery cycles. It maintains a priority queue of pending discovery requests and dispatches them to the appropriate Service Provider's discovery endpoint.
+The substrate requires that any UDLM-conformant realization provide discovery scheduling capable of triggering discovery cycles by three independent mechanisms (Sections 4.2-4.4). The implementation (a "Discovery Scheduler" control-plane component, etc.) is a realization choice; the existence of the three trigger types and the audit contract is the substrate.
 
-The Discovery Scheduler is distinct from drift detection. The Discovery Scheduler triggers discovery and writes Discovered State. Drift Detection reads Discovered State and compares it to Realized State. These are separate, independent components.
+Discovery scheduling is distinct from drift detection. Discovery scheduling triggers discovery and writes Discovered State. Drift Detection reads Discovered State and compares it to Realized State. These are separate concerns.
 
-### 4.2 Three Discovery Trigger Types
+### 4.2 Trigger Type 1 — Scheduled (cron-based)
 
-**Trigger Type 1 — Scheduled (cron-based):**
-
-Discovery schedules are declared in the Resource Type Specification and in provider registrations. The Discovery Scheduler runs these on the declared cadence.
+Discovery schedules are declared in the Resource Type Specification and in provider registrations. The realization runs these on the declared cadence.
 
 ```yaml
 resource_type_spec:
   fqn: Compute.VirtualMachine
   discovery_schedule:
     default_interval: PT15M      # discover VMs every 15 minutes
-    # Override by profile:
     profile_overrides:
       minimal: PT4H              # less frequent in home lab
       fsi: PT5M                  # more frequent in regulated environments
@@ -259,9 +238,9 @@ provider_registration:
     # full: all entities every time
 ```
 
-**Trigger Type 2 — Event-triggered:**
+### 4.3 Trigger Type 2 — Event-triggered (Closed Substrate Vocabulary)
 
-Specific DCM events automatically schedule an out-of-cycle discovery pass:
+Specific events automatically schedule an out-of-cycle discovery pass. The trigger taxonomy is a closed substrate vocabulary:
 
 ```yaml
 event_triggered_discovery:
@@ -297,7 +276,7 @@ event_triggered_discovery:
       reason: "Find orphaned resources after compensation failure"
 ```
 
-**Trigger Type 3 — On-demand:**
+### 4.4 Trigger Type 3 — On-demand (Wire Contract)
 
 Platform admins and SREs can trigger discovery manually:
 
@@ -316,24 +295,22 @@ POST /api/v1/admin/discovery:trigger
 ```
 
 On-demand discovery is also used by:
-- The CI/CD pipeline pre-validation step (confirm current state before assembly)
-- The brownfield ingestion pipeline (initial discovery of existing infrastructure)
-- The orphan detection pipeline (targeted search for potentially-orphaned resources)
+- Pre-validation steps (confirm current state before assembly)
+- Brownfield ingestion (initial discovery of existing infrastructure)
+- Orphan detection (targeted search for potentially-orphaned resources)
 
-### 4.3 Discovery Queue Management
+### 4.5 Discovery Priority Bands (Closed Substrate Vocabulary)
 
-The Discovery Scheduler manages a priority queue. Priority order:
+The substrate defines a closed priority vocabulary. Realizations MUST honor the relative ordering. Queue depth and drop policy are realization-configurable.
 
 1. **Critical** — COMPENSATION_FAILED orphan detection, sovereignty violation assessment
-2. **High** — on-demand from platform admin, event-triggered (provider.degraded)
-3. **Standard** — event-triggered (entity.realized, drift.resolved)
+2. **High** — on-demand from platform admin, event-triggered (`provider.degraded`)
+3. **Standard** — event-triggered (`entity.realized`, `drift.resolved`)
 4. **Background** — scheduled discovery passes
 
-Queue depth is bounded per profile. When the queue is full, new Background-priority items are dropped (with a log entry). Standard and above are never dropped — they wait.
+### 4.6 Discovery Audit Record (Wire Contract)
 
-### 4.4 Discovery Audit
-
-Every discovery cycle produces an audit record:
+Every discovery cycle produces an audit record. Shape is normative:
 
 ```yaml
 audit_record:
@@ -341,7 +318,7 @@ audit_record:
   actor:
     type: system
     system_actor:
-      component: discovery_scheduler
+      component: <realization-named component>
       trigger: scheduled | event_triggered | on_demand
       trigger_event_uuid: <uuid|null>
   entity_uuid: <uuid|null>          # null for batch discovery
@@ -357,7 +334,7 @@ audit_record:
 
 ### 5.1 Recovery Policy as a Policy Type
 
-Recovery Policies are a formal DCM policy type alongside GateKeeper, Validation, and Transformation. They use the same authoring model, the same GitOps store, the same shadow mode validation, the same activation workflow, and the same audit trail.
+Recovery Policies are a formal UDLM policy type alongside GateKeeper, Validation, and Transformation. They use the same authoring model, the same artifact store, the same shadow mode validation, the same activation workflow, and the same audit trail.
 
 ```yaml
 recovery_policy:
@@ -366,7 +343,7 @@ recovery_policy:
     handle: "system/recovery/discard-on-timeout"
     version: "1.0.0"
     status: active
-    owned_by: { display_name: "DCM Core Team" }
+    owned_by: { display_name: "Platform Team" }
 
   policy_type: recovery
   trigger: DISPATCH_TIMEOUT         # the trigger condition this policy handles
@@ -392,22 +369,22 @@ recovery_policy:
   on_deadline_exceeded: null
 ```
 
-### 5.2 Trigger Vocabulary (Closed)
+### 5.2 Trigger Vocabulary (Closed Substrate)
 
 | Trigger | Description |
 |---------|-------------|
 | `ASSEMBLY_TIMEOUT` | Assembly pipeline exceeded configured timeout |
 | `DISPATCH_TIMEOUT` | Provider did not respond within dispatch_timeout |
 | `RESERVE_QUERY_ALL_EXHAUSTED` | All placement candidates timed out or rejected |
-| `LATE_RESPONSE_RECEIVED` | Provider responded after DCM declared timeout |
-| `CANCELLATION_SENT` | DCM sent cancellation to provider |
+| `LATE_RESPONSE_RECEIVED` | Provider responded after timeout was declared |
+| `CANCELLATION_SENT` | Cancellation sent to provider |
 | `CANCELLATION_CONFIRMED` | Provider confirmed clean cancellation |
 | `CANCELLATION_FAILED` | Provider could not cancel; partial state possible |
-| `PARTIAL_REALIZATION` | Compound service partially realized |
+| `PARTIAL_REALIZATION` | Composite service partially realized |
 | `COMPENSATION_IN_PROGRESS` | Rollback of partial components underway |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible |
 
-### 5.3 Action Vocabulary (Closed)
+### 5.3 Action Vocabulary (Closed Substrate)
 
 | Action | Description |
 |--------|-------------|
@@ -418,9 +395,11 @@ recovery_policy:
 | `COMPENSATE_AND_FAIL` | Execute compensation rollback for composite service; entity FAILED when complete |
 | `NOTIFY_AND_WAIT` | Fire notification to configured audience; wait for human decision up to deadline |
 | `ESCALATE` | Notify platform admin immediately; no automatic action |
-| `RETRY` | Retry the failed operation with configured backoff |
+| `RETRY` | Retry the failed operation with configured backoff (see [retry-semantics](../contracts/retry-semantics.md)) |
 
-### 5.4 The Four Built-in Recovery Profile Groups
+### 5.4 The Four Built-in Recovery Profile Groups (Substrate Defaults)
+
+The substrate defines four named recovery posture groups. Any conformant realization MUST recognize these names and SHOULD ship them as defaults. Specific durations and thresholds within each are realization-configurable.
 
 #### recovery-automated-reconciliation
 
@@ -442,23 +421,18 @@ recovery_policy_group:
 
     - trigger: DISPATCH_TIMEOUT
       action: DRIFT_RECONCILE
-      # Discovery finds what actually exists; drift response policy handles it
 
     - trigger: LATE_RESPONSE_RECEIVED
       action: ACCEPT_LATE_REALIZATION
-      # Provider did the work; accept it
 
     - trigger: CANCELLATION_FAILED
       action: DRIFT_RECONCILE
-      # Cannot confirm cleanup; discovery finds orphans
 
     - trigger: PARTIAL_REALIZATION
       action: DRIFT_RECONCILE
-      # Discover what's there; drift policy handles component gaps
 
     - trigger: COMPENSATION_FAILED
       action: ESCALATE
-      # Human needed when cleanup itself fails
 ```
 
 #### recovery-discard-and-requeue
@@ -479,24 +453,18 @@ recovery_policy_group:
 
     - trigger: DISPATCH_TIMEOUT
       action: DISCARD_AND_REQUEUE
-      # Best-effort cleanup; new request cycle immediately
 
     - trigger: LATE_RESPONSE_RECEIVED
       action: DISCARD_AND_REQUEUE
-      # Provider completed after DCM moved on; discard that work
-      # (requeue already happened on timeout; this prevents duplicate resources)
 
     - trigger: CANCELLATION_FAILED
       action: DISCARD_NO_REQUEUE
-      # Cannot clean up; FAILED; human reviews orphans before requeue
 
     - trigger: PARTIAL_REALIZATION
       action: COMPENSATE_AND_FAIL
-      # Roll back everything; start fresh
 
     - trigger: COMPENSATION_FAILED
       action: ESCALATE
-      # Cannot even roll back; human needed
 ```
 
 #### recovery-notify-and-wait
@@ -542,7 +510,6 @@ recovery_policy_group:
 
     - trigger: COMPENSATION_FAILED
       action: ESCALATE
-      # Always escalate compensation failures — no deadline
 ```
 
 #### recovery-aggressive-retry
@@ -593,7 +560,7 @@ recovery_policy_group:
       action: ESCALATE
 ```
 
-### 5.5 Profile Binding
+### 5.5 Profile Binding (Substrate Defaults)
 
 Recovery profile groups bind to deployment profiles as defaults, with override at Tenant and resource-type levels:
 
@@ -615,12 +582,11 @@ tenant_config:
 resource_type_recovery_override:
   resource_type: Compute.VirtualMachine
   recovery_profile: recovery-aggressive-retry
-  # VMs use aggressive retry; other types use Tenant/profile default
 ```
 
-### 5.6 NOTIFY_AND_WAIT Consumer Interface
+### 5.6 NOTIFY_AND_WAIT Consumer Interface (Wire Contract)
 
-When a recovery policy fires `NOTIFY_AND_WAIT`, a notification is sent to the entity owner with a time-bounded decision interface:
+When a recovery policy fires `NOTIFY_AND_WAIT`, a notification is sent to the entity owner with a time-bounded decision interface. The wire shape is normative:
 
 ```
 GET /api/v1/resources/{entity_uuid}/recovery-decisions
@@ -654,11 +620,9 @@ POST /api/v1/resources/{entity_uuid}/recovery-decisions/{recovery_decision_uuid}
 }
 ```
 
-Platform admins may also use the Admin API to resolve pending recovery decisions for any entity regardless of Tenant.
-
 ### 5.7 Recovery Policy Evaluation Precedence
 
-The Policy Engine evaluates recovery policies in domain precedence order, same as all other policies:
+The substrate defines the precedence order for recovery policy resolution:
 
 ```
 1. Resource-type-level override (most specific)
@@ -718,9 +682,9 @@ composite_service_spec:
       on_exhaustion: notify_owner
 ```
 
-### 6.2 Compensation Execution Order
+### 6.2 Compensation Execution Order (Substrate Contract)
 
-Compensation always runs in reverse dependency order — last-provisioned is first-decommissioned:
+Compensation MUST always run in reverse dependency order — last-provisioned is first-decommissioned:
 
 ```
 Successful so far: vm ✓, ip ✓
@@ -728,12 +692,12 @@ Failed: dns ✗ (atomic)
 Compensation triggered:
   Step 1: decommission vm (compensation_order: 3 → runs first in reverse)
   Step 2: release ip allocation (compensation_order: 1 → runs second in reverse)
-  Compound entity → FAILED (terminal for this request cycle)
+  Composite entity → FAILED (terminal for this request cycle)
 ```
 
 ### 6.3 Compensation Failure
 
-If a compensation step fails (the VM decommission itself fails):
+If a compensation step fails:
 
 ```
 Compensation of vm FAILED
@@ -742,20 +706,20 @@ Compensation of vm FAILED
     default: ESCALATE to platform admin
   Orphan detection triggered immediately:
     Scoped to provider + entity characteristics
-    Finds the VM that couldn't be decommissioned
+    Finds the entity that couldn't be decommissioned
     Creates ORPHAN_CANDIDATE record
   Platform admin reviews:
     Manually decommission at provider
-    OR adopt into DCM lifecycle as a new entity
+    OR adopt into lifecycle as a new entity
 ```
 
 ---
 
-## 7. Orphan Detection Pipeline
+## 7. Orphan Detection Pipeline (Substrate Contract)
 
-When cleanup cannot be guaranteed, DCM runs an orphan detection pass to find resources that may have been provisioned but have no corresponding Realized State record.
+When cleanup cannot be guaranteed, an orphan detection pass MUST run to find resources that may have been provisioned but have no corresponding Realized State record. Any UDLM-conformant realization MUST implement orphan detection.
 
-### 7.1 Orphan Detection Triggers
+### 7.1 Orphan Detection Triggers (Closed Substrate Vocabulary)
 
 - Dispatch timeout with cancellation sent
 - Cancellation failed
@@ -763,7 +727,7 @@ When cleanup cannot be guaranteed, DCM runs an orphan detection pass to find res
 - DISCARD_NO_REQUEUE action taken
 - Manual platform admin trigger
 
-### 7.2 Orphan Detection Query
+### 7.2 Orphan Detection Query (Wire Contract)
 
 ```yaml
 orphan_detection_query:
@@ -778,10 +742,10 @@ orphan_detection_query:
       size_class: <cpu/memory range>
       tags: <tags from request>
   exclude:
-    known_realized_state_uuids: [<uuid>, ...]   # entities DCM knows about
+    known_realized_state_uuids: [<uuid>, ...]   # entities the realization knows about
 ```
 
-### 7.3 Orphan Candidate Lifecycle
+### 7.3 Orphan Candidate Lifecycle (Wire Contract)
 
 ```yaml
 orphan_candidate:
@@ -793,28 +757,28 @@ orphan_candidate:
   characteristics: { ... }
   status: <under_review | confirmed_orphan | adopted | false_positive>
   resolution:
-    action: <manual_decommission | adopt_into_dcm | mark_false_positive>
+    action: <manual_decommission | adopt_into_substrate | mark_false_positive>
     resolved_by: <actor_uuid>
     resolved_at: <ISO 8601>
 ```
 
-Orphan candidates are surfaced in the Platform Admin dashboard and generate a NOTIFICATION (audience: Platform Admin) with urgency: high.
+Orphan candidates MUST be surfaced to platform admin and generate a NOTIFICATION (audience: Platform Admin) with urgency: high.
 
 ---
 
-## 8. New Lifecycle States
+## 8. Recovery Lifecycle States (Substrate Vocabulary)
 
-Five new states are added to the Infrastructure Resource Entity lifecycle:
+Five additional lifecycle states are part of the substrate vocabulary. Any conformant realization MUST recognize and propagate these:
 
 | State | Meaning | Recovery Policy Trigger |
 |-------|---------|------------------------|
 | `TIMEOUT_PENDING` | Dispatch timeout fired; cancellation sent; awaiting outcome | `DISPATCH_TIMEOUT` |
 | `LATE_REALIZATION_PENDING` | Provider responded after timeout; NOTIFY_AND_WAIT active | `LATE_RESPONSE_RECEIVED` |
 | `INDETERMINATE_REALIZATION` | State is ambiguous; drift detection resolving | — (drift detection runs) |
-| `COMPENSATION_IN_PROGRESS` | Compound service rollback underway | — |
+| `COMPENSATION_IN_PROGRESS` | Composite service rollback underway | — |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | `COMPENSATION_FAILED` |
 
-Updated state machine (additions to doc 02 and doc 06):
+Updated state machine:
 
 ```
 Normal flow:
@@ -839,21 +803,21 @@ COMPENSATION_FAILED → [human resolves] → FAILED (after manual cleanup)
 
 ---
 
-## 9. System Policies
+## 9. UDLM System Policies
 
 | Policy | Rule |
 |--------|------|
 | `OPS-010` | Assembly timeout, dispatch timeout, and reserve-query timeout are independently configurable. All are profile-governed with resource-type overrides permitted for types with legitimately long provisioning times. |
-| `OPS-011` | Cancellation is always best-effort. DCM never guarantees cancellation success. All cancellation outcomes flow through the Recovery Policy model. |
+| `OPS-011` | Cancellation is always best-effort. A conformant realization MUST NEVER guarantee cancellation success. All cancellation outcomes flow through the Recovery Policy model. |
 | `OPS-012` | Provider cancellation capability is declared at registration. Providers that do not support cancellation use the CANCEL_PENDING → LATE_RESPONSE_RECEIVED path when a cancel is requested during PROVISIONING. |
 | `OPS-013` | Discovery is triggered by three independent mechanisms: scheduled (cron), event-triggered, and on-demand. All three write to the Discovered Store independently. |
-| `OPS-014` | Recovery Policies are a formal DCM policy type. They use the same authoring, activation, shadow mode, and audit model as GateKeeper, Validation, and Transformation policies. |
-| `OPS-015` | Four built-in recovery profile groups are provided: recovery-automated-reconciliation, recovery-discard-and-requeue, recovery-notify-and-wait, recovery-aggressive-retry. |
+| `OPS-014` | Recovery Policies are a formal UDLM policy type. They use the same authoring, activation, shadow mode, and audit model as GateKeeper, Validation, and Transformation policies. |
+| `OPS-015` | Four built-in recovery profile groups are provided: `recovery-automated-reconciliation`, `recovery-discard-and-requeue`, `recovery-notify-and-wait`, `recovery-aggressive-retry`. |
 | `OPS-016` | Recovery profile defaults are bound to deployment profiles. Organizations may override at Tenant or resource-type level. Resource-type override wins over Tenant override wins over profile default. |
-| `OPS-017` | Compound service compensation runs in reverse dependency order. Compensation failure triggers COMPENSATION_FAILED state and immediate orphan detection. |
+| `OPS-017` | Composite service compensation runs in reverse dependency order. Compensation failure triggers `COMPENSATION_FAILED` state and immediate orphan detection. |
 | `OPS-018` | Orphan detection triggers on any path where cleanup cannot be guaranteed. Orphan candidates are surfaced to platform admin with urgency: high. |
-| `OPS-019` | NOTIFY_AND_WAIT recovery actions carry a deadline. If the deadline passes without human resolution, the configured on_deadline_exceeded action fires automatically. |
+| `OPS-019` | `NOTIFY_AND_WAIT` recovery actions carry a deadline. If the deadline passes without human resolution, the configured `on_deadline_exceeded` action fires automatically. |
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*UDLM substrate document. Realization-specific timeout enforcement mechanisms, cancellation execution code, orphan detection implementation, discovery job scheduling internals, recovery policy evaluation runtime, and compensation execution live in the consuming realization's documentation.*
