@@ -1,63 +1,61 @@
-# DCM Data Model — Unified Governance Matrix
+# UDLM — Unified Governance Matrix
 
-
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Reference
+**Document Status:** ✅ Stable — UDLM substrate contract
+**Document Type:** Substrate Reference
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: POLICY**
 >
-> The Policy abstraction — Governance Matrix Rule output schema for boundary control
+> The Policy abstraction — Governance Matrix Rule output schema for boundary control.
 
-
-**Related Documents:** [Federated Contribution Model](28-federated-contribution-model.md) | [Accreditation and Authorization Matrix](26-accreditation-and-authorization-matrix.md) | [DCM Federation](22-dcm-federation.md) | [Policy Profiles](14-policy-profiles.md) | [Layering and Versioning](03-layering-and-versioning.md) | [Control Plane Components](25-control-plane-components.md)
+**Related Documents:** [Federated Contribution Model](federated-contribution-model.md) | [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) | [Layering and Versioning](../foundations/layering-and-versioning.md)
 
 ---
 
-> **Federated Contribution:** The Governance Matrix enforces contributor permission boundaries at artifact submission time. See the [Federated Contribution Model](28-federated-contribution-model.md) for the complete contributor permission table and the hard DENY rules applied to out-of-scope contributions.
+> **Federated Contribution:** The Governance Matrix enforces contributor permission boundaries at artifact submission time. See the [Federated Contribution Model](federated-contribution-model.md) for the complete contributor permission table and the hard DENY rules applied to out-of-scope contributions.
 
 ## 1. Purpose
 
-The Unified Governance Matrix is the **single, declarative, multi-dimensional control surface** that governs every cross-boundary interaction in DCM. It answers one question at every interaction point:
+The Unified Governance Matrix is the **single, declarative, multi-dimensional control surface** that governs every cross-boundary interaction in a UDLM-conformant realization. It answers one question at every interaction point:
 
 > **Given this subject, this data, this target, and this context — is this interaction permitted, and under what conditions?**
 
-Previous DCM documents established several overlapping control mechanisms: the Data/Capability Authorization Matrix (doc 26), sovereignty constraints in federation tunnels (doc 22), BBQ-001 sovereignty checks (doc 14), and profile-governed data boundaries. The Governance Matrix unifies all of these into a single model with a single evaluation algorithm and a single enforcement point.
+The Governance Matrix unifies what could otherwise be several overlapping control mechanisms (data/capability authorization matrix, sovereignty constraints in federation tunnels, profile-governed data boundaries) into a single substrate model with a single evaluation pattern and a single enforcement contract.
 
-The accreditation model and data classification model from doc 26 are inputs to the evaluation algorithm defined here. The accreditation model (Sections 2-3 of doc 26) and the zero trust interaction model (Section 5 of doc 26) remain current — the Governance Matrix consumes them as inputs.
+The accreditation model and data classification model from [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) are inputs to this evaluation.
 
-**Key properties of the Governance Matrix:**
+**Key substrate properties of the Governance Matrix:**
 
-- **Fine-grained to broad** — rules can target a single field path on a specific entity, or broadly govern all data of a given classification. Both are first-class citizens of the same model.
-- **Profile-bound defaults** — every deployment profile ships with sensible default rules that are immediately operative. Operators configure overrides rather than building from scratch.
+- **Single enforcement point** — every interaction boundary evaluates the same matrix. Parallel enforcement paths are forbidden by the substrate.
+- **Fine-grained to broad** — rules can target a single field path on a specific entity, or broadly govern all data of a given classification. Both are first-class.
+- **Profile-bound defaults** — every deployment profile ships with sensible default rules that are immediately operative.
 - **Hard and soft enforcement** — hard rules cannot be relaxed by any downstream rule. Soft rules establish defaults that can be tightened but never relaxed.
-- **Single evaluation algorithm** — every interaction boundary runs the same algorithm against the same rule set. No parallel enforcement paths.
 - **Audited always** — every evaluation produces an audit record regardless of outcome.
 
 ---
 
-
 ## 1b. Governance Matrix and the Scoring Model
 
-The Governance Matrix is **always boolean**. This is not a design limitation — it is an explicit architectural decision.
+The Governance Matrix is **always boolean**. This is not a design limitation — it is an explicit substrate decision.
 
 Governance Matrix decisions (ALLOW, DENY, ALLOW_WITH_CONDITIONS, STRIP_FIELD, REDACT, AUDIT_ONLY) govern whether data may cross a boundary. These are regulatory and legal facts — PHI either crosses a compliant boundary or it doesn't. "Mostly compliant" is not a legal defense. No Governance Matrix Rule may declare `scoring_weight` or `enforcement_class`.
 
-**The Governance Matrix fires before the Scoring Model evaluates.** If a Governance Matrix Rule produces DENY, the request is halted and no risk score is calculated. The score pipeline only runs for requests that have already passed all Governance Matrix checks.
+**The Governance Matrix MUST fire before any scoring evaluation.** If a Governance Matrix Rule produces DENY, the request is halted and no risk score is calculated. Scoring only runs for requests that have already passed all Governance Matrix checks.
 
-This ensures that scoring cannot be used to route around data sovereignty or regulatory boundaries. See [Scoring Model](29-scoring-model.md) Section 8 for the full pipeline sequence and SMX-004.
+This substrate constraint ensures that scoring cannot be used to route around data sovereignty or regulatory boundaries.
 
+---
 
-## 2. The Four Matrix Axes
+## 2. The Four Matrix Axes (Substrate Contract)
 
-Every governance matrix rule is expressed as a match across four axes. A rule fires when all declared axis conditions are satisfied.
+Every governance matrix rule is expressed as a match across four axes. A rule fires when all declared axis conditions are satisfied. The axes and their fields below are normative — the names and value vocabularies are part of the wire contract.
 
 ### 2.1 Axis 1 — Subject (Who)
 
@@ -66,20 +64,20 @@ The subject is the entity initiating or involved in the interaction.
 ```yaml
 subject:
   type: <subject_type>
-  # Subject types:
+  # Subject types (closed substrate vocabulary):
   # actor                — human or service account making a request
   # service_provider     — Service Provider sending/receiving data
-  # dcm_peer             — federated DCM instance
-  # external_policy_evaluation      — External Policy Evaluator receiving payload data for evaluation
-  # (prescribed infrastructure)     — data store receiving/returning state data
-  # service_provider — notification service receiving notification envelopes
+  # peer_realization     — federated peer realization
+  # external_policy_evaluation — External Policy Evaluator receiving payload data
+  # data_store           — data store receiving/returning state data
+  # notification_service — notification service receiving notification envelopes
   # information_provider — Information Provider returning external data
-  # system               — DCM internal component (Request Orchestrator, etc.)
+  # system               — internal control-plane component
 
   identity:
     provider_uuid: <uuid>              # specific provider instance
-    dcm_peer_uuid: <uuid>              # specific federated DCM instance
-    trust_posture: <verified|vouched|provisional>  # for dcm_peer subjects
+    peer_uuid: <uuid>                  # specific federated peer
+    trust_posture: <verified|vouched|provisional>  # for peer subjects
     accreditation_level: <type>        # accreditation type the subject holds
     actor_role: <role>                 # for actor subjects
 
@@ -119,23 +117,24 @@ data:
   # Capability being exercised
   capability:
     match: <capability> | in: [<list>] | any
-    # Capabilities: read | write | store | replicate | export | notify |
-    #               execute | discover | query | federate
+    # Capabilities (closed substrate vocabulary):
+    #   read | write | store | replicate | export | notify |
+    #   execute | discover | query | federate
 ```
 
 ### 2.3 Axis 3 — Target (Where)
 
-The target is where the data is going — provider, peer DCM, storage, notification endpoint.
+The target is where the data is going — provider, peer realization, storage, notification endpoint.
 
 ```yaml
 target:
   type: <target_type>
-  # service_provider | dcm_peer | (prescribed infrastructure) | service_provider |
+  # service_provider | peer_realization | data_store | notification_service |
   # information_provider | external_policy_evaluation | external_endpoint
 
   # Identity
-  provider_uuid: <uuid>                  # specific provider
-  dcm_peer_uuid: <uuid>                  # specific peer
+  provider_uuid: <uuid>
+  peer_uuid: <uuid>
 
   # Sovereignty
   sovereignty_zone:
@@ -189,13 +188,13 @@ context:
 
 ---
 
-## 3. Rule Structure
+## 3. Rule Structure (Wire Contract)
 
 ### 3.1 The Governance Matrix Rule
 
 ```yaml
 governance_matrix_rule:
-  # Artifact metadata (standard DCM artifact)
+  # Artifact metadata (standard substrate artifact)
   artifact_metadata:
     uuid: <uuid>
     handle: "system/matrix/phi-federation-boundary"
@@ -254,7 +253,7 @@ governance_matrix_rule:
   review_required_before: "2027-01-01"                     # when rule should be reviewed
 ```
 
-### 3.2 Decision Vocabulary
+### 3.2 Decision Vocabulary (Closed Substrate)
 
 | Decision | Meaning | Field behavior |
 |----------|---------|----------------|
@@ -265,7 +264,7 @@ governance_matrix_rule:
 | `REDACT` | Specific field values replaced with `<REDACTED>`; field presence is preserved | Named fields redacted |
 | `AUDIT_ONLY` | Interaction proceeds but is flagged in the audit trail; no blocking | All fields pass |
 
-### 3.3 Hard vs Soft Enforcement
+### 3.3 Hard vs Soft Enforcement (Substrate Distinction)
 
 **Hard enforcement (`enforcement: hard`):**
 - The rule decision cannot be relaxed by any more-specific or higher-domain rule
@@ -281,69 +280,25 @@ governance_matrix_rule:
 
 ---
 
-## 4. Evaluation Algorithm
+## 4. Evaluation Contract (Substrate Required)
 
-The governance matrix evaluates all matching rules and produces a single terminal decision.
+A conformant realization MUST evaluate matching rules and produce a single terminal decision according to the following substrate-required precedence:
 
-```
-Interaction attempt:
-  subject: { type: dcm_peer, trust_posture: verified, jurisdiction: [DE] }
-  data: { classification: phi, field_paths: [patient_id, diagnosis_code] }
-  target: { type: dcm_peer, accreditation_held: [], jurisdiction: [US] }
-  context: { federated: true, zero_trust_posture: full, tls_mutual: required }
+1. **Collect** all active governance matrix rules whose `match` axes are satisfied by the interaction.
+2. **Evaluate hard constraints first.** Any hard DENY that matches produces an immediate terminal DENY; no further evaluation is required.
+3. **Evaluate soft constraints by domain precedence.** Sort matching soft rules: `entity > resource_type > tenant > platform > system`. At each precedence level, the most restrictive decision wins (`DENY > STRIP_FIELD > REDACT > ALLOW_WITH_CONDITIONS > AUDIT_ONLY > ALLOW`).
+4. **Evaluate conditions for `ALLOW_WITH_CONDITIONS`.** If any declared condition fails, the decision MUST be downgraded to DENY.
+5. **Apply field permissions.** For surviving ALLOW / ALLOW_WITH_CONDITIONS decisions: enforce the rule's `field_permissions` (allowlist, blocklist, or passthrough). A stripped REQUIRED field MUST escalate to DENY_REQUEST.
+6. **Produce an audit record.** Record interaction_uuid, all matching rules, terminal decision, fields stripped/redacted, and the rule that governed the decision. Notification fires for decisions listed in the rule's `notification_on`.
+7. **Enforce the decision.** ALLOW / ALLOW_WITH_CONDITIONS: interaction proceeds with permitted fields. DENY: interaction blocked with 403 and `governance_matrix_rule_uuid`. STRIP_FIELD / REDACT: interaction proceeds with modified payload. AUDIT_ONLY: interaction proceeds with flagged audit record.
 
-Step 1: Collect matching rules
-  Load all active governance matrix rules across all tiers
-  Evaluate match conditions for each rule against the four axes
-  Result: set of matching rules with their decisions and enforcement levels
-
-Step 2: Evaluate hard constraints first
-  For each hard DENY rule that matches:
-    → DENY immediately; record rule_uuid; no further evaluation
-  For each hard ALLOW rule that matches:
-    → Record as a hard allow candidate; still evaluate conditions
-  If hard DENY exists: terminal decision = DENY
-
-Step 3: Evaluate soft constraints by domain precedence
-  Sort matching soft rules: entity > resource_type > tenant > platform > system
-  For each precedence level, most restrictive decision wins:
-    DENY > STRIP_FIELD > REDACT > ALLOW_WITH_CONDITIONS > AUDIT_ONLY > ALLOW
-  If DENY at any level: terminal decision = DENY
-
-Step 4: Evaluate conditions for ALLOW_WITH_CONDITIONS
-  For each ALLOW_WITH_CONDITIONS rule that survived Steps 2-3:
-    Evaluate all declared conditions
-    If any condition fails: downgrade decision to DENY
-    If all conditions pass: decision remains ALLOW_WITH_CONDITIONS
-
-Step 5: Apply field permissions
-  If terminal decision is ALLOW or ALLOW_WITH_CONDITIONS:
-    Apply field_permissions from the governing rule:
-      allowlist mode: strip all fields not in the allowed list
-      blocklist mode: strip all fields in the blocked list
-      passthrough mode: all fields pass
-    For each stripped field:
-      If field is required: escalate to DENY_REQUEST
-      If field is optional: STRIP_FIELD (proceed without it)
-
-Step 6: Produce audit record
-  Record: interaction_uuid, all matching rules, terminal decision,
-          fields stripped or redacted, rule that governed the decision
-  Notification: if terminal decision is in rule's notification_on list
-
-Step 7: Enforce decision
-  ALLOW / ALLOW_WITH_CONDITIONS: interaction proceeds with permitted fields
-  DENY: interaction blocked; 403 response with governance_matrix_rule_uuid
-  STRIP_FIELD: interaction proceeds with stripped payload
-  REDACT: interaction proceeds with redacted field values
-  AUDIT_ONLY: interaction proceeds; flagged audit record written
-```
+The specific algorithm by which a realization performs collection, sorting, and caching is a realization choice; the precedence and decision-monotonicity above are the substrate contract.
 
 ---
 
-## 5. Sovereignty Zones
+## 5. Sovereignty Zones (Substrate Artifact Contract)
 
-Sovereignty zones are registered DCM artifacts that define geopolitical and regulatory boundaries. They are a first-class input to the governance matrix — rules reference zones, not raw country codes.
+Sovereignty zones are first-class artifacts that define geopolitical and regulatory boundaries. They are an input to the governance matrix — rules reference zones, not raw country codes. The artifact shape is normative:
 
 ```yaml
 sovereignty_zone:
@@ -368,20 +323,21 @@ sovereignty_zone:
     - zone_id: eu-north-sovereign
       agreement_basis: "EU adequacy decision"
       permitted_classifications: [public, internal, confidential]
-      # restricted, phi, sovereign: NOT included
 
   # What accreditation providers must hold to operate in this zone
   required_provider_accreditation: gdpr_adequacy | third_party
   required_provider_accreditation_minimum_type: third_party
 ```
 
+Zone instances and their inter-zone agreements are realization/organization data — but the artifact contract above is normative.
+
 ---
 
-## 6. Field-Level Controls — Complete Model
+## 6. Field-Level Controls — Substrate Model
 
-### 6.1 Field Path Syntax
+### 6.1 Field Path Syntax (Substrate-Normative)
 
-Field paths use dot-notation to address specific fields within a DCM payload:
+Field paths use dot-notation to address specific fields within a payload:
 
 ```
 fields.<field_name>                      # top-level field
@@ -399,7 +355,7 @@ provenance.<field_name>                  # provenance fields (rarely restricted)
 # Block ALL phi fields from crossing to non-HIPAA peers
 match:
   data.classification: phi
-  target.type: dcm_peer
+  target.type: peer_realization
   target.accreditation_held.not_includes: hipaa
 decision: DENY
 enforcement: hard
@@ -424,7 +380,7 @@ field_permissions:
 # Allow federated phi-accredited peers to receive limited PHI fields only
 match:
   data.classification: phi
-  target.type: dcm_peer
+  target.type: peer_realization
   target.accreditation_held.includes: hipaa
   target.trust_posture: verified
 decision: ALLOW_WITH_CONDITIONS
@@ -458,7 +414,7 @@ enforcement: hard
 reason: "Provider A has unresolved data handling concerns — PHI explicitly prohibited"
 ```
 
-### 6.3 Field-Level Redaction vs Stripping
+### 6.3 Field-Level Redaction vs Stripping (Substrate Semantics)
 
 | Operation | Effect on payload | Use case |
 |-----------|------------------|----------|
@@ -468,354 +424,7 @@ reason: "Provider A has unresolved data handling concerns — PHI explicitly pro
 
 ---
 
-## 7. Profile-Bound Default Matrix Rules
-
-Every deployment profile activates a set of default governance matrix rules. These are soft rules (tightenable by Tenant/resource-type overrides) unless marked hard.
-
-### 7.1 minimal Profile Defaults
-
-```yaml
-profile_matrix_defaults:
-  profile: minimal
-  rules:
-    - handle: "system/matrix/minimal-sovereign-hard"
-      enforcement: hard
-      match:
-        data.classification: [sovereign, classified]
-        target.type: [dcm_peer, service_provider, service_provider]
-      decision: DENY
-      reason: "Sovereign and classified data never crosses any boundary — any profile"
-
-    - handle: "system/matrix/minimal-passthrough"
-      enforcement: soft
-      match:
-        data.classification: [public, internal]
-        target.type: any
-      decision: ALLOW
-      field_permissions:
-        mode: passthrough
-```
-
-### 7.2 dev Profile Defaults
-
-```yaml
-profile_matrix_defaults:
-  profile: dev
-  inherits: minimal
-  additional_rules:
-    - handle: "system/matrix/dev-confidential-allow"
-      enforcement: soft
-      match:
-        data.classification: confidential
-        target.type: [service_provider, dcm_peer]
-        target.trust_posture: [verified, vouched, provisional]
-      decision: ALLOW_WITH_CONDITIONS
-      conditions:
-        - field: context.tls_mutual
-          operator: equals
-          value: required
-      field_permissions:
-        mode: passthrough
-      # Dev allows confidential to flow broadly; standard+ tightens this
-```
-
-### 7.3 standard Profile Defaults
-
-```yaml
-profile_matrix_defaults:
-  profile: standard
-  inherits: minimal
-  additional_rules:
-    - handle: "system/matrix/standard-restricted-accreditation"
-      enforcement: soft
-      match:
-        data.classification: restricted
-        target.type: [service_provider, dcm_peer]
-      decision: ALLOW_WITH_CONDITIONS
-      conditions:
-        - field: target.accreditation_held
-          operator: minimum_type
-          value: third_party
-        - field: context.tls_mutual
-          operator: equals
-          value: required
-      field_permissions:
-        mode: passthrough
-
-    - handle: "system/matrix/standard-phi-deny-default"
-      enforcement: soft
-      match:
-        data.classification: phi
-        target.type: [service_provider, dcm_peer]
-      decision: DENY
-      # Tenants with HIPAA compliance domain active override this with their own rules
-```
-
-### 7.4 prod Profile Defaults
-
-```yaml
-profile_matrix_defaults:
-  profile: prod
-  inherits: standard
-  additional_rules:
-    - handle: "system/matrix/prod-federation-verified-only"
-      enforcement: soft
-      match:
-        data.classification: [confidential, restricted]
-        target.type: dcm_peer
-        target.trust_posture: [vouched, provisional]
-      decision: DENY
-      # prod: only verified peers receive confidential+ data
-
-    - handle: "system/matrix/prod-notification-restricted"
-      enforcement: soft
-      match:
-        data.classification: restricted
-        target.type: service_provider
-      decision: STRIP_FIELD
-      field_permissions:
-        mode: blocklist
-        paths: ["fields.*"]      # strip all payload fields from notifications
-        # Notification envelope metadata (entity_uuid, event_type) passes through
-        # Actual field values do not appear in notification payloads for restricted data
-```
-
-### 7.5 fsi Profile Defaults
-
-```yaml
-profile_matrix_defaults:
-  profile: fsi
-  inherits: prod
-  additional_rules:
-    - handle: "system/matrix/fsi-cross-jurisdiction-deny"
-      enforcement: hard
-      match:
-        data.classification: [restricted, phi, pci, sovereign]
-        target.type: [service_provider, dcm_peer]
-        context.cross_jurisdiction: true
-      decision: DENY
-      reason: "FSI profile: regulated data does not cross jurisdictional boundaries"
-
-    - handle: "system/matrix/fsi-phi-baa-required"
-      enforcement: hard
-      match:
-        data.classification: phi
-        target.type: [service_provider, dcm_peer]
-      decision: ALLOW_WITH_CONDITIONS
-      conditions:
-        - field: target.accreditation_held
-          operator: includes
-          value: hipaa_baa
-        - field: target.trust_posture
-          operator: minimum
-          value: verified
-        - field: context.zero_trust_posture
-          operator: minimum
-          value: full
-      field_permissions:
-        mode: passthrough          # HIPAA-accredited verified peers get full PHI scope
-        # Tenant-level rules can further restrict to specific field paths
-
-    - handle: "system/matrix/fsi-pci-qsa-required"
-      enforcement: hard
-      match:
-        data.classification: pci
-        target.type: [service_provider, dcm_peer]
-      decision: ALLOW_WITH_CONDITIONS
-      conditions:
-        - field: target.accreditation_held
-          operator: includes
-          value: pci_dss_qsa
-        - field: context.zero_trust_posture
-          operator: minimum
-          value: full
-```
-
-### 7.6 sovereign Profile Defaults
-
-```yaml
-profile_matrix_defaults:
-  profile: sovereign
-  inherits: fsi
-  additional_rules:
-    - handle: "system/matrix/sovereign-no-federation-sensitive"
-      enforcement: hard
-      match:
-        data.classification: [restricted, phi, pci, sovereign, classified]
-        target.type: dcm_peer
-      decision: DENY
-      reason: "Sovereign profile: sensitive data never crosses DCM federation boundaries"
-
-    - handle: "system/matrix/sovereign-internal-only-federation"
-      enforcement: hard
-      match:
-        data.classification: [public, internal]
-        target.type: dcm_peer
-        context.zero_trust_posture:
-          not_minimum: hardware_attested
-      decision: DENY
-      reason: "Sovereign profile: federation requires hardware attestation"
-
-    - handle: "system/matrix/sovereign-provider-sovereign-zone-only"
-      enforcement: hard
-      match:
-        data.classification: [restricted, phi, pci, sovereign, classified]
-        target.type: service_provider
-        target.sovereignty_zone.not_in: [<deployment_sovereignty_zone>]
-      decision: DENY
-      reason: "Sovereign profile: sensitive data only to providers in declared sovereignty zone"
-```
-
----
-
-## 8. Compliance Domain Matrix Rules
-
-When a compliance domain is active, its matrix rules are automatically added to the active rule set.
-
-### 8.1 HIPAA Compliance Domain Matrix
-
-```yaml
-compliance_domain_matrix:
-  domain: hipaa
-  rules:
-    - handle: "system/matrix/hipaa-phi-minimum-necessary"
-      enforcement: hard
-      match:
-        data.classification: phi
-        target.type: any
-      decision: ALLOW_WITH_CONDITIONS
-      conditions:
-        - principle: minimum_necessary    # only fields required for the specific purpose
-      field_permissions:
-        mode: blocklist                   # default: all fields except explicitly blocked
-        paths: []                         # Tenant adds specific field blocks
-        on_blocked_field: STRIP_FIELD
-
-    - handle: "system/matrix/hipaa-phi-no-export"
-      enforcement: hard
-      match:
-        data.classification: phi
-        data.capability: export
-      decision: DENY
-      reason: "HIPAA: PHI export to external systems requires explicit BAA and regulatory review"
-
-    - handle: "system/matrix/hipaa-audit-all-phi"
-      enforcement: hard
-      match:
-        data.classification: phi
-        target.type: any
-      decision: AUDIT_ONLY           # added to all PHI interactions — does not block
-      audit_on: [ALLOW, DENY, STRIP_FIELD]
-      # Every PHI interaction produces an audit record — HIPAA requirement
-```
-
-### 8.2 GDPR Compliance Domain Matrix
-
-```yaml
-compliance_domain_matrix:
-  domain: gdpr
-  rules:
-    - handle: "system/matrix/gdpr-eu-residency"
-      enforcement: hard
-      match:
-        data.classification: [restricted, phi]
-        target.sovereignty_zone.not_in: <eu_zones>
-        context.compliance_domains.includes: gdpr
-      decision: DENY
-      reason: "GDPR Article 44: personal data transfer outside EU requires adequacy decision"
-
-    - handle: "system/matrix/gdpr-right-to-erasure-fields"
-      enforcement: hard
-      match:
-        data.field_paths.includes: ["fields.personal_identifier_*", "fields.contact_*"]
-        data.capability: [store, replicate]
-        target.accreditation_held.not_includes: gdpr_adequacy
-      decision: STRIP_FIELD
-      field_permissions:
-        mode: blocklist
-        paths: ["fields.personal_identifier_*", "fields.contact_*"]
-```
-
----
-
-## 9. Tenant and Resource-Type Override Rules
-
-Tenants and resource-type specifications declare additional rules that compose with system and profile rules per the standard precedence model.
-
-### 9.1 Tenant Override Rule
-
-```yaml
-# Tenant payments-team: additional restriction on PHI fields
-governance_matrix_rule:
-  artifact_metadata:
-    tier: tenant
-    handle: "tenant/payments/phi-field-restriction"
-  
-  match:
-    subject.tenant.uuid: payments-tenant-uuid
-    data.classification: phi
-    target.type: dcm_peer
-    target.accreditation_held.includes: hipaa
-  
-  decision: ALLOW_WITH_CONDITIONS
-  conditions:
-    - field: target.trust_posture
-      operator: equals
-      value: verified                    # only verified (not vouched)
-  
-  field_permissions:
-    mode: allowlist                      # tighter than the fsi default (passthrough)
-    paths:
-      - "fields.resource_type"
-      - "fields.lifecycle_state"
-      # PHI-containing fields not listed → automatically stripped
-    on_blocked_field: STRIP_FIELD
-```
-
-### 9.2 Resource-Type Override Rule
-
-```yaml
-# For Patient Record resources: maximum restriction regardless of Tenant settings
-governance_matrix_rule:
-  artifact_metadata:
-    tier: resource_type
-    handle: "resource-type/patient-record/no-federation"
-  
-  match:
-    data.resource_type: Healthcare.PatientRecord
-    target.type: dcm_peer
-  
-  decision: DENY
-  enforcement: hard
-  reason: "Patient Record entities are never federated — local only"
-```
-
----
-
-## 10. Governance Matrix in the Registration Flow
-
-When a provider attempts to register with DCM, the governance matrix is evaluated before the registration is accepted. This answers: "Is a provider of this type, with these accreditations, in this sovereignty zone, permitted to register in this DCM deployment?"
-
-```
-Provider submits registration
-  │
-  ▼ Governance matrix evaluation:
-  │   subject: { type: <provider_type>, accreditation_held: [...], sovereignty_zone: <zone> }
-  │   data: { capability: register }
-  │   target: { type: dcm_instance, sovereignty_zone: <local_zone> }
-  │   context: { profile: <active_posture>, compliance_domains: [...] }
-  │
-  ├── DENY: registration rejected immediately
-  │   Provider type not permitted in this profile
-  │   Provider in excluded jurisdiction
-  │   Required accreditation not held
-  │
-  └── ALLOW / ALLOW_WITH_CONDITIONS: registration proceeds to validation pipeline
-```
-
----
-
-## 11. System Policies
+## 7. UDLM System Policies
 
 | Policy | Rule |
 |--------|------|
@@ -824,7 +433,7 @@ Provider submits registration
 | `GMX-003` | Soft rules establish defaults that can only be tightened by downstream rules. Soft DENY cannot be relaxed to ALLOW by a more-specific rule. |
 | `GMX-004` | Sovereign and classified data classifications carry hard DENY rules for all federation and external provider interactions in all profiles including minimal. This is the one rule that cannot be changed by any configuration. |
 | `GMX-005` | Every governance matrix evaluation produces an audit record regardless of outcome. |
-| `GMX-006` | Field-level stripping (STRIP_FIELD) is always audited with the field path and the rule_uuid that governed the stripping. |
+| `GMX-006` | Field-level stripping (STRIP_FIELD) is always audited with the field path and the `rule_uuid` that governed the stripping. |
 | `GMX-007` | Profile default matrix rules are soft unless explicitly marked hard. Tenant and resource-type rules can tighten profile defaults but cannot relax hard rules. |
 | `GMX-008` | Compliance domain matrix rules are automatically added to the active rule set when the compliance domain is active. They compose with profile rules — they do not replace them. |
 | `GMX-009` | The Governance Matrix is evaluated before provider dispatch, before federation tunnel data transmission, before notification delivery, and before any cross-boundary capability invocation. |
@@ -832,4 +441,4 @@ Provider submits registration
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*UDLM substrate document. Realization-specific evaluation algorithm internals, hard/soft enforcement execution mechanics, sovereignty zone management runtime, profile-governed policy bundles and the registration-time evaluation pipeline, and policy caching/invalidation live in the consuming realization's documentation.*

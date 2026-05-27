@@ -1,44 +1,41 @@
-# DCM Data Model — Accreditation, Data Authorization Matrix, and Zero Trust
+# UDLM — Accreditation, Data Authorization Matrix, and Zero Trust
 
-
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Reference
+**Document Status:** ✅ Stable — UDLM substrate contract
+**Document Type:** Substrate Reference
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA + POLICY**
 >
-> Data: Accreditation artifacts. Policy: Zero Trust posture as policy concern type
+> Data: Accreditation artifacts. Policy: Zero Trust posture as policy concern type.
 
-
-**Related Documents:** [Policy Profiles](14-policy-profiles.md) | [Resource/Service Entities](06-resource-service-entities.md) | [DCM Federation](22-dcm-federation.md) | [Layering and Versioning](03-layering-and-versioning.md) | [Operational Models](24-operational-models.md)
+**Related Documents:** [Resource/Service Entities](../entities/resource-service-entities.md) | [Layering and Versioning](../foundations/layering-and-versioning.md) | [Operational Models](../lifecycle/operational-models.md) | [Standards Catalog](../reference/standards-catalog.md)
 
 ---
 
-> **Authentication Assurance Levels:** See [Standards and Compliance Catalog](40-standards-catalog.md) Section 7 for the NIST SP 800-63B AAL mapping per profile.
+> **Authentication Assurance Levels:** See [Standards Catalog](../reference/standards-catalog.md) for the NIST SP 800-63B AAL mapping per profile.
 
 ## 1. Purpose
 
-This document defines three interconnected models that together govern how DCM handles trust, data handling obligations, and compliance verification across all interaction boundaries:
+This document defines three interconnected substrate models that together govern how a UDLM-conformant realization handles trust, data handling obligations, and compliance verification across all interaction boundaries:
 
-1. **Accreditation Model** — how DCM records, verifies, and enforces third-party compliance certifications for providers, policy engines, and DCM deployments themselves
-2. **Data/Capability Authorization Matrix** — what data and capabilities are permitted across any DCM boundary given a component's accreditation level and the data's classification
-3. **Zero Trust Interaction Model** — the authentication, authorization, and verification requirements for every interaction in DCM, regardless of network position
+1. **Accreditation Model** — how the substrate records, verifies, and enforces third-party compliance certifications for providers, policy engines, and peer realizations themselves
+2. **Data/Capability Authorization Matrix** — what data and capabilities are permitted across any interaction boundary given a component's accreditation level and the data's classification
+3. **Zero Trust Interaction Model** — the authentication, authorization, and verification requirements for every interaction, regardless of network position
 
-These three models compose: Zero Trust verifies identity and authorization on every call. Accreditation verifies compliance certification status. The Authorization Matrix declares what is permitted given that certification status. Together they ensure that no interaction in DCM is implicitly trusted — every boundary crossing is verified against all three models.
+These three models compose: Zero Trust verifies identity and authorization on every call. Accreditation verifies compliance certification status. The Authorization Matrix declares what is permitted given that certification status. Together they ensure that no interaction is implicitly trusted — every boundary crossing is verified against all three models.
 
 ---
 
-
 ## 1b. Accreditation and the Scoring Model
 
-DCM distinguishes two distinct accreditation functions:
+The substrate distinguishes two distinct accreditation functions:
 
 **Required Accreditation (boolean gate):** Whether a provider holds a specific accreditation required for a particular request. PHI data requires an active BAA. This is a Governance Matrix enforcement — always boolean, never scored. A provider without the required accreditation is ineligible for that request regardless of any other score.
 
@@ -46,16 +43,15 @@ DCM distinguishes two distinct accreditation functions:
 
 Accreditation richness score contributes to:
 1. Placement tie-breaking (a richer portfolio is preferred)
-2. Request risk score Signal 5 (inversely — higher richness reduces provider risk contribution)
+2. Request risk scoring (inversely — higher richness reduces provider risk contribution)
 
-See [Scoring Model](29-scoring-model.md) Section 4.5 for the richness score weights and normalization.
-
+---
 
 ## 2. Data Classification
 
-Data classification is a **first-class field-level metadata property** in the DCM data model. Every field in every payload carries a `data_classification` value. This classification is the primary axis of the authorization matrix and is the key input to sovereignty and compliance enforcement.
+Data classification is a **first-class field-level metadata property** in the UDLM data model. Every field in every payload carries a `data_classification` value. This classification is the primary axis of the authorization matrix and is the key input to sovereignty and compliance enforcement.
 
-### 2.1 Classification Levels
+### 2.1 Classification Levels (Closed Substrate Vocabulary)
 
 | Level | Description | Examples |
 |-------|-------------|---------|
@@ -70,7 +66,7 @@ Data classification is a **first-class field-level metadata property** in the DC
 
 ### 2.2 Classification as Field Metadata
 
-Every field in a DCM payload carries data classification as part of its field metadata:
+Every field in a payload carries data classification as part of its field metadata:
 
 ```yaml
 field_definition:
@@ -85,12 +81,12 @@ field_definition:
 
 **Classification is declared in three places:**
 - **Resource Type Specification** — default classification per field for all instances of that type
-- **Data Layer** — classification applied across a domain (e.g., an org layer that marks all cost_center fields as `confidential`)
+- **Data Layer** — classification applied across a domain (e.g., an org layer that marks all `cost_center` fields as `confidential`)
 - **Field-level override** — explicit classification on a specific field instance (highest precedence, immutable once set for `phi`, `sovereign`, `classified`)
 
 ### 2.3 Classification Immutability
 
-Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by any layer or policy — their classification is immutable once set. A GateKeeper policy attempting to downgrade a PHI field is rejected with a classification violation audit record.
+Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by any layer or policy — their classification is immutable once set. A GateKeeper policy attempting to downgrade a PHI field MUST be rejected with a classification violation audit record.
 
 ---
 
@@ -98,23 +94,23 @@ Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by
 
 ### 3.1 What Accreditation Is
 
-An **Accreditation** is a formal, versioned, time-bounded attestation that a DCM component — a Service Provider, a External Policy Evaluator, a data store, a notification service, or a DCM deployment itself — satisfies the requirements of a specific compliance framework. Accreditations are issued by an **Accreditor** and registered with DCM as first-class artifacts.
+An **Accreditation** is a formal, versioned, time-bounded attestation that a substrate-managed component — a Service Provider, an External Policy Evaluator, a data store, a notification service, or a peer realization itself — satisfies the requirements of a specific compliance framework. Accreditations are issued by an **Accreditor** and registered as first-class artifacts.
 
 Accreditation answers: **"Is this component certified to handle this type of data?"**
 
-### 3.2 Accreditation Types and Trust Levels
+### 3.2 Accreditation Types and Trust Levels (Closed Substrate Vocabulary)
 
 | Type | Issued By | Trust Level | Examples |
 |------|-----------|-------------|---------|
 | `self_declared` | Component itself | Lowest | Dev/homelab; provider asserts own compliance |
-| `first_party` | DCM organization's own audit team | Low-Medium | Internal compliance review |
+| `first_party` | Realization's own audit team | Low-Medium | Internal compliance review |
 | `third_party` | Independent certifying body | High | ISO 27001, SOC 2 Type II |
 | `qsa_assessment` | Qualified Security Assessor | High | PCI-DSS QSA report |
 | `baa` | Legal BAA with covered entity | High | HIPAA Business Associate Agreement |
 | `regulatory_certification` | Government regulatory body | Highest | FedRAMP P-ATO, DoD Provisional Authorization |
 | `sovereign_authorization` | National sovereignty authority | Highest | National cloud authorization |
 
-### 3.3 Accreditation Record Structure
+### 3.3 Accreditation Record Structure (Wire Contract)
 
 ```yaml
 accreditation:
@@ -127,8 +123,8 @@ accreditation:
     owned_by: { display_name: "Compliance Team" }
 
   subject_uuid: <provider-uuid>          # what is being accredited
-  subject_type: service_provider | external_policy_evaluation | (prescribed infrastructure) |
-                service_provider | dcm_deployment
+  subject_type: service_provider | external_policy_evaluation |
+                credential_provider | peer_realization
 
   accreditation_type: <type from 3.2>
   framework: fedramp_high | fedramp_moderate | hipaa | pci_dss_v4 |
@@ -145,7 +141,7 @@ accreditation:
   issued_at: <ISO 8601>
   expires_at: <ISO 8601|null>            # null = perpetual until revoked
   renewal_warning_before: P90D
-  last_verified_at: <ISO 8601>            # when DCM last confirmed still active
+  last_verified_at: <ISO 8601>            # when the realization last confirmed still active
 
   # What the accreditation covers
   scope:
@@ -164,27 +160,20 @@ accreditation:
   revocation_reason: <string|null>
   revoked_at: <ISO 8601|null>
 
-  # Automated verification (see doc 47 — Accreditation Monitor)
+  # Automated verification
   verification:
     tier: external_registry | document_currency | contract_webhook | expiry_only
     stale_after: P7D                # max gap between verifications before stale_action fires
-    stale_action: warn | suspend | escalate   # profile-governed default: warn/suspend/escalate
+    stale_action: warn | suspend | escalate
     verification_failure_count: 0
-    # tier-specific fields: see doc 47 Section 3 for full schema
 ```
-
-> **Accreditation Monitor:** The `last_verified_at` field is maintained by the
-> Accreditation Monitor (doc 47), which continuously verifies accreditation status
-> against external registries, document currency checks, or contract system webhooks
-> depending on the `verification.tier`. See doc 47 for the complete monitoring
-> specification and framework-by-framework automation coverage.
 
 ### 3.4 Accreditation Lifecycle
 
 ```
-Accreditation submitted (via API or GitOps PR)
+Accreditation submitted
   │
-  ▼ DCM validates structure and accreditor registration
+  ▼ Validate structure and accreditor registration
   │
   ▼ status: proposed
   │   Shadow mode: compliance policies use this accreditation in shadow evaluation
@@ -201,7 +190,7 @@ Accreditation submitted (via API or GitOps PR)
   │     status → expired
   │     Providers relying on this accreditation flagged: ACCREDITATION_GAP
   │
-  ▼ External status change detected by Accreditation Monitor:
+  ▼ External status change detected:
   │   status → pending_review
   │   Platform Admin notified (urgency: high)
   │   Exception: external status = Revoked → immediate revocation (no review)
@@ -213,9 +202,9 @@ Accreditation submitted (via API or GitOps PR)
       notification.accreditation_revoked → Platform Admin (urgency: critical)
 ```
 
-### 3.5 Accreditation Gap
+### 3.5 Accreditation Gap (Closed Vocabulary)
 
-When a required accreditation is missing, expired, or revoked, DCM enters an **Accreditation Gap** state for the affected provider:
+When a required accreditation is missing, expired, or revoked, the substrate enters an **Accreditation Gap** state for the affected provider:
 
 ```yaml
 accreditation_gap_record:
@@ -231,30 +220,29 @@ accreditation_gap_record:
   # Default: NOTIFY_AND_WAIT for fsi/sovereign; ESCALATE for standard/prod
 ```
 
-### 3.6 DCM Deployment Accreditation
+### 3.6 Peer Realization Accreditation
 
-DCM deployments themselves can carry accreditations — a FedRAMP-authorized DCM deployment, for example. This enables cross-organization trust: a consuming organization's DCM can verify the providing organization's DCM deployment holds the required accreditation before federating with it.
+Peer realizations themselves can carry accreditations — a FedRAMP-authorized realization deployment, for example. This enables cross-organization trust: a consuming organization's realization can verify the providing organization's realization holds the required accreditation before federating with it.
 
 ```yaml
 deployment_accreditation:
-  subject_type: dcm_deployment
-  subject_uuid: <dcm-instance-uuid>
+  subject_type: peer_realization
+  subject_uuid: <peer-instance-uuid>
   framework: fedramp_high
-  # The DCM deployment itself is accredited, not just the providers it manages
+  # The peer realization itself is accredited, not just the providers it manages
 ```
 
 ---
 
-
-> **Scope:** This document covers the accreditation model (Sections 2-3) and zero trust interaction model (Section 5). Data and capability boundary enforcement is specified in the [Unified Governance Matrix](27-governance-matrix.md) (doc 27), which consumes the accreditation and classification models defined here as inputs.
+> **Scope:** This document covers the accreditation model (Sections 2-3) and zero trust interaction model (Section 5). Data and capability boundary enforcement is specified in the [Unified Governance Matrix](governance-matrix.md), which consumes the accreditation and classification models defined here as inputs.
 
 ## 4. Data/Capability Authorization Matrix
 
 ### 4.1 Purpose
 
-The Data/Capability Authorization Matrix declares what data fields and provider capabilities are permitted across any DCM interaction boundary given the data's classification and the receiving component's accreditation level. It is the enforcement model that sits between compliance domain policies and the actual provider interaction.
+The Data/Capability Authorization Matrix declares what data fields and provider capabilities are permitted across any substrate-managed interaction boundary given the data's classification and the receiving component's accreditation level. It is the enforcement model that sits between compliance domain policies and the actual provider interaction.
 
-### 4.2 Matrix as a Policy Artifact
+### 4.2 Matrix as a Policy Artifact (Wire Contract)
 
 The authorization matrix is a **Policy Group artifact** with `concern_type: data_authorization_boundary`. It is activated as part of the compliance domain group — enabling the HIPAA compliance domain automatically activates the HIPAA boundary matrix. Organizations extend or restrict matrices via their own policy groups at the Tenant level.
 
@@ -265,11 +253,11 @@ data_authorization_matrix:
     handle: "system/matrix/hipaa-provider-boundary"
     version: "1.0.0"
     status: active
-  
+
   concern_type: data_authorization_boundary
   applicable_compliance_domains: [hipaa]
 
-  # OUTBOUND: what DCM may send to a provider
+  # OUTBOUND: what the realization may send to a provider
   outbound_data_permissions:
     - data_classification: phi
       required_accreditation_type: baa
@@ -313,15 +301,12 @@ data_authorization_matrix:
     - capability: PROVIDER_UPDATE_NOTIFICATION
       data_classification: phi
       required_accreditation_type: baa
-      # Provider may only notify DCM of changes to PHI-containing resources
-      # if it holds a valid BAA
       on_missing_accreditation: DENY_CAPABILITY
 
-  # INBOUND: what the provider may return to DCM
+  # INBOUND: what the provider may return to the realization
   inbound_data_permissions:
     - data_classification: phi
       provider_must_strip_before_return: false
-      # DCM receives PHI in Realized State but access-controls it
       consumer_visibility_requires_accreditation: baa
       stored_in_partition: realized_store_phi
       # PHI partition has additional encryption and access control
@@ -329,7 +314,7 @@ data_authorization_matrix:
 
 ### 4.3 Federation Boundary Matrix
 
-A dedicated matrix governs what crosses DCM-to-DCM federation boundaries:
+A dedicated matrix governs what crosses peer-to-peer federation boundaries:
 
 ```yaml
 federation_boundary_matrix:
@@ -342,7 +327,7 @@ federation_boundary_matrix:
     - data_classification: sovereign
       on_missing_accreditation: DENY_REQUEST
       # Sovereign data NEVER crosses a federation boundary
-      # This is a hard system constraint, not a configurable policy
+      # This is a hard substrate constraint, not a configurable policy
       hard_constraint: true
 
     - data_classification: classified
@@ -355,7 +340,7 @@ federation_boundary_matrix:
 
     - data_classification: restricted
       required_accreditation_type: third_party
-      additional_requirement: remote_dcm_holds_equivalent_accreditation
+      additional_requirement: remote_peer_holds_equivalent_accreditation
       on_missing_accreditation: STRIP_FIELD
 
     - data_classification: [public, internal]
@@ -363,12 +348,12 @@ federation_boundary_matrix:
       on_missing_accreditation: ALLOW
 ```
 
-### 4.4 Matrix Enforcement Pipeline
+### 4.4 Matrix Evaluation Contract (Substrate-Required)
 
-The authorization matrix check is a distinct pipeline step executed at every interaction boundary:
+The authorization matrix check MUST be a distinct evaluation step executed at every interaction boundary by any conformant realization:
 
 ```
-Outbound interaction assembled (DCM → Provider OR DCM → DCM)
+Outbound interaction assembled (peer → Provider OR peer → peer)
   │
   ▼ Data Classification Inventory:
   │   For every field in the payload:
@@ -399,19 +384,17 @@ Outbound interaction assembled (DCM → Provider OR DCM → DCM)
 
 ---
 
-> **Internal component authentication:** See [Internal Component Authentication](36-internal-component-auth.md) for the complete internal auth model including component identity, Internal CA, bootstrap tokens, and ICOM-001–ICOM-009 policies.
-
 ## 5. Zero Trust Interaction Model
 
 ### 5.1 Principle
 
-**Network position grants zero trust.** A component inside the DCM control plane has no more implicit trust than one outside it. Every interaction — internal or external, synchronous or asynchronous — is authenticated, authorized, and verified as if the caller were an untrusted external party.
+**Network position grants zero trust.** A component inside the substrate's control plane has no more implicit trust than one outside it. Every interaction — internal or external, synchronous or asynchronous — is authenticated, authorized, and verified as if the caller were an untrusted external party.
 
-Zero trust in DCM is not a network topology — it is a **per-interaction verification discipline** applied at every call, every event, every tunnel message.
+Zero trust in UDLM is not a network topology — it is a **per-interaction verification discipline** applied at every call, every event, every tunnel message.
 
-### 5.2 The Five-Check Boundary Model
+### 5.2 The Five-Check Boundary Model (Substrate Contract)
 
-Every DCM interaction boundary applies five checks in sequence. All five must pass:
+Every interaction boundary MUST apply the following five checks in sequence. All five MUST pass:
 
 ```
 Interaction attempt
@@ -443,7 +426,6 @@ Interaction attempt
   ▼ Check 5: Sovereignty Check
   │   Is the target endpoint within the sovereignty boundary?
   │   Does the interaction violate any sovereignty constraints?
-  │   BBQ-001 evaluation for external evaluation endpoints
   │   → FAIL: SOVEREIGNTY_VIOLATION; platform admin notified
   │
   ▼ All checks pass → interaction proceeds
@@ -459,11 +441,11 @@ Interaction attempt
 Zero trust requires that credentials are scoped to the minimum necessary operation and expire quickly:
 
 ```yaml
-dcm_interaction_credential:
+interaction_credential:
   credential_uuid: <uuid>
   issued_to: <component-uuid>
   issued_at: <ISO 8601>
-  expires_at: <ISO 8601>             # short-lived; typically PT15M to PT1H
+  expires_at: <ISO 8601>             # short-lived; typically minutes to hour
   operation_scope:
     operation_type: dispatch | discovery | cancel | query | notify
     entity_uuid: <uuid>               # scoped to specific entity
@@ -472,7 +454,7 @@ dcm_interaction_credential:
   bound_to_ip: <IP|null>              # optional IP binding for fsi/sovereign
 ```
 
-**Credential lifetimes by profile:**
+**Credential lifetime profile guidance (substrate defaults):**
 
 | Profile | Max credential lifetime | Renewal model |
 |---------|------------------------|---------------|
@@ -485,12 +467,12 @@ dcm_interaction_credential:
 
 ### 5.4 Zero Trust Posture as a Policy Group Concern Type
 
-`zero_trust_posture` is the sixth Policy Group concern type. Four posture levels:
+`zero_trust_posture` is the sixth Policy Group concern type. Four posture levels (closed substrate vocabulary):
 
 | Posture | Description | Profile Default |
 |---------|-------------|----------------|
 | `none` | No zero trust enforcement; perimeter model acceptable | minimal |
-| `boundary` | Zero trust at external boundaries (consumer→DCM, DCM→provider); internal components trust service mesh | dev, standard |
+| `boundary` | Zero trust at external boundaries (consumer→peer, peer→provider); internal components trust service mesh | dev, standard |
 | `full` | Zero trust everywhere including internal component communication; every call authenticated and authorized | prod, fsi |
 | `hardware_attested` | Full zero trust plus hardware attestation (TPM/HSM); component identity backed by hardware | sovereign |
 
@@ -513,17 +495,17 @@ zero_trust_policy_group:
 
 ### 6.1 Federation Tunnel as a Zero Trust Boundary
 
-A federation tunnel between DCM instances is a **mutually authenticated, encrypted, scoped channel** where both sides verify each other on every interaction. It is not a VPN — it does not establish perimeter trust. Every message crossing the tunnel is authenticated, authorized, and subject to the five-check model.
+A federation tunnel between peer realizations is a **mutually authenticated, encrypted, scoped channel** where both sides verify each other on every interaction. It is not a VPN — it does not establish perimeter trust. Every message crossing the tunnel is authenticated, authorized, and subject to the five-check model.
 
-**"Zero trust to any outside DCM/provider"** is implemented by: the remote DCM instance has no implicit access to local resources. Every cross-instance operation requires a scoped federation credential. The tunnel establishes secure transport — it does not establish trust.
+**"Zero trust to any outside peer/provider"** is implemented by: the remote peer has no implicit access to local resources. Every cross-instance operation requires a scoped federation credential. The tunnel establishes secure transport — it does not establish trust.
 
-### 6.2 Federation Tunnel Structure
+### 6.2 Federation Tunnel Structure (Wire Contract)
 
 ```yaml
 federation_tunnel:
   uuid: <uuid>
-  local_dcm_uuid: <uuid>
-  remote_dcm_uuid: <uuid>
+  local_peer_uuid: <uuid>
+  remote_peer_uuid: <uuid>
   tunnel_type: peer | parent_child | hub_spoke
   trust_model: zero_trust               # always; non-negotiable
 
@@ -543,7 +525,7 @@ federation_tunnel:
     remote_verification_key_ref: <key-uuid>
     replay_protection: true               # nonce + timestamp window PT5M
 
-  # What the remote DCM may request from this DCM (inbound)
+  # What the remote peer may request from this peer (inbound)
   inbound_authorization:
     - operation: catalog_query
       permitted_resource_types: [Compute.VirtualMachine, Network.VLAN]
@@ -553,7 +535,7 @@ federation_tunnel:
       max_allocations_per_request: 10
       requires_cross_tenant_authorization: true
 
-  # What this DCM may request from the remote (outbound)
+  # What this peer may request from the remote (outbound)
   outbound_authorization:
     - operation: placement_query
       permitted_resource_types: [Compute.VirtualMachine]
@@ -581,8 +563,8 @@ Federation credentials are scoped to the specific operations declared in the tun
 ```yaml
 federation_credential:
   credential_uuid: <uuid>
-  issued_by_dcm_uuid: <local-uuid>
-  issued_to_dcm_uuid: <remote-uuid>
+  issued_by_peer_uuid: <local-uuid>
+  issued_to_peer_uuid: <remote-uuid>
   expires_at: <ISO 8601>             # PT15M for fsi/sovereign
   operation_scope: catalog_query
   scoped_resource_types: [Compute.VirtualMachine]
@@ -592,25 +574,25 @@ federation_credential:
 
 ### 6.4 Zero Trust in Hub-Spoke Federation
 
-In hub-spoke federation, the Hub DCM coordinates Regional DCMs. Zero trust means:
-- The Hub DCM does not have root-level access to Regional DCMs — it has explicitly scoped federation credentials
-- A Regional DCM cannot impersonate the Hub DCM to another Regional DCM
-- Cross-Regional-DCM operations route through the Hub with the Hub's authorization, not the originating Regional DCM's authorization
-- The Hub DCM's accreditation is visible to Regional DCMs — Regional DCMs can verify the Hub before accepting federation messages
+In hub-spoke federation, a Hub peer coordinates Regional peers. Zero trust means:
+- The Hub peer does not have root-level access to Regional peers — it has explicitly scoped federation credentials
+- A Regional peer cannot impersonate the Hub to another Regional peer
+- Cross-Regional operations route through the Hub with the Hub's authorization, not the originating Regional's authorization
+- The Hub's accreditation is visible to Regional peers — Regionals can verify the Hub before accepting federation messages
 
 ```
-RegionalDCM-A → HubDCM:  authenticated; scoped to allocation_request
-HubDCM → RegionalDCM-B:  authenticated; scoped to realization_request
-                          Hub presents its own credential to RegionalDCM-B
-                          Not RegionalDCM-A's credential
-RegionalDCM-B verifies:  Hub certificate; Hub accreditation; data classification boundary
+RegionalPeer-A → HubPeer:  authenticated; scoped to allocation_request
+HubPeer → RegionalPeer-B:  authenticated; scoped to realization_request
+                            Hub presents its own credential to RegionalPeer-B
+                            Not RegionalPeer-A's credential
+RegionalPeer-B verifies:    Hub certificate; Hub accreditation; data classification boundary
 ```
 
 ---
 
-## 7. Profile-Governed Zero Trust Enforcement
+## 7. Profile-Governed Zero Trust Posture (Substrate Defaults)
 
-Zero trust enforcement levels are bound to deployment profiles. The profile determines which zero trust posture group is active:
+Zero trust posture defaults are bound to deployment profiles. The profile determines which zero trust posture group is active:
 
 | Profile | Zero Trust Posture | Data Boundary | Federation |
 |---------|-------------------|---------------|-----------|
@@ -621,26 +603,26 @@ Zero trust enforcement levels are bound to deployment profiles. The profile dete
 | `fsi` | full | up to restricted (with regulatory cert) | Restricted to same jurisdiction |
 | `sovereign` | hardware_attested | sovereign stays sovereign (no crossing) | Zero crossing of sovereign data |
 
-The `sovereign` profile enforces the hardest constraint: **sovereign-classified data never crosses any boundary** — not to providers, not to federation tunnels, not to notification services with external endpoints. The enforcement is at the Data/Capability Matrix level as a `hard_constraint: true` rule that cannot be overridden by any policy.
+The `sovereign` profile enforces the hardest constraint: **sovereign-classified data MUST NEVER cross any boundary** — not to providers, not to federation tunnels, not to notification services with external endpoints. The enforcement is at the Data/Capability Matrix level as a `hard_constraint: true` rule that cannot be overridden by any policy.
 
 ---
 
-## 8. System Policies
+## 8. UDLM System Policies
 
 | Policy | Rule |
 |--------|------|
 | `ZT-001` | Network position grants zero trust. Every interaction is subject to the five-check model regardless of the caller's network location. |
-| `ZT-002` | All DCM interaction credentials are scoped, short-lived, and non-transferable. Credential lifetime is profile-governed. |
-| `ZT-003` | Data classified as `sovereign` or `classified` never crosses any DCM interaction boundary (provider dispatch, federation tunnel, notification delivery). This is a hard constraint enforced by the Data/Capability Matrix, not a configurable policy. |
+| `ZT-002` | All substrate-managed interaction credentials are scoped, short-lived, and non-transferable. Credential lifetime is profile-governed. |
+| `ZT-003` | Data classified as `sovereign` or `classified` never crosses any interaction boundary (provider dispatch, federation tunnel, notification delivery). This is a hard constraint enforced by the Data/Capability Matrix, not a configurable policy. |
 | `ZT-004` | Federation tunnels use mutual TLS with certificate pinning and per-message signing. A tunnel establishes secure transport, not implicit trust. |
 | `ZT-005` | Every interaction boundary check produces an audit record regardless of outcome. A denied interaction is audited as rigorously as a permitted one. |
-| `ACC-001` | Accreditations are first-class DCM artifacts. They follow the standard lifecycle (developing → proposed → active → deprecated → retired) and are subject to GitOps governance. |
+| `ACC-001` | Accreditations are first-class artifacts. They follow the standard lifecycle (developing → proposed → active → deprecated → retired) and are subject to substrate governance. |
 | `ACC-002` | Accreditation gaps (missing, expired, or revoked accreditations required for active interactions) are always high or critical severity. The Recovery Policy governs the response. |
 | `ACC-003` | PHI, sovereign, and classified field classifications are immutable once set. No policy may downgrade these classifications. |
 | `ACC-004` | The Data/Capability Authorization Matrix is enforced at every outbound interaction boundary before dispatch. Fields failing the matrix check are stripped (STRIP_FIELD) or the request is blocked (DENY_REQUEST) per the matrix declaration. |
-| `ACC-005` | DCM deployments themselves carry accreditations. A federation peer DCM can verify the remote DCM deployment's accreditation before accepting federation messages. |
+| `ACC-005` | Peer realizations themselves carry accreditations. A federation peer can verify the remote peer deployment's accreditation before accepting federation messages. |
 | `ACC-006` | `zero_trust_posture` is the sixth Policy Group concern type. Profile defaults are: minimal=none, dev/standard=boundary, prod/fsi=full, sovereign=hardware_attested. |
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*UDLM substrate document. Realization-specific accreditation governance enforcement, authorization evaluation runtime, zero trust boundary implementation, federation tunnel establishment and maintenance, and profile-governed accreditation enforcement live in the consuming realization's documentation.*
