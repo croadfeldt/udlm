@@ -1,4 +1,4 @@
-# DCM Data Model — Composite Service Composition Model
+# UDLM — Composite Service Composition Model
 
 **Document Type:** Architecture Reference — Composite Service Specification
 **Status:** Active

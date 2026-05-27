@@ -104,7 +104,7 @@ Provider callbacks include timestamps. The contract requires:
 
 ## 6. Total ordering and audit chain
 
-The audit chain ([`universal-audit.md`](universal-audit.md)) requires total
+The audit chain ([`universal-audit.md`](../observability/universal-audit.md)) requires total
 ordering of events. Timestamps alone are insufficient when two events have
 identical millisecond stamps. The contract:
 
@@ -158,6 +158,6 @@ A conformant realization MUST:
 
 - [`identifier-scheme.md`](identifier-scheme.md) — UUIDv7 carries embedded time
 - [`event-catalog.md`](event-catalog.md) — events carry authoritative timestamps
-- [`universal-audit.md`](universal-audit.md) — audit chain total ordering
+- [`universal-audit.md`](../observability/universal-audit.md) — audit chain total ordering
 - [`error-model.md`](error-model.md) — timestamp-related error codes
-- [`scheduled-requests.md`](scheduled-requests.md) — `not_before` and recurring schedules
+- [`scheduled-requests.md`](../lifecycle/scheduled-requests.md) — `not_before` and recurring schedules

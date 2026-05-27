@@ -1,8 +1,8 @@
-# DCM Data Model — Test Framework Specification
+# UDLM — Test Framework Specification
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Specification — Automated test framework contract for data model and architecture validation
-**Related Documents:** [Foundations](00-foundations.md) | [Entity Types](01-entity-types.md) | [Four States](02-four-states.md) | [Policy Contract](B-policy-contract.md) | [Provider Contract](A-provider-contract.md) | [Infrastructure Requirements](51-infrastructure-optimization.md)
+**Related Documents:** [Foundations](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Policy Contract](../contracts/policy-contract.md) | [Provider Contract](../contracts/provider-contract.md) | [Infrastructure Requirements](../design-principles/infrastructure-optimization.md)
 
 > **Purpose:** This document defines the contract for an automated, self-reflecting test framework
 > that validates the DCM data model and architecture by generating random end-to-end use cases,
@@ -324,7 +324,7 @@ enhancement_proposal:
   discovered_by: "test-run-2026-04-04-uuid"
   scenario: "Description of the edge case"
   gap: "What the architecture doesn't define"
-  affected_documents: ["B-policy-contract.md", "16-universal-audit.md"]
+  affected_documents: ["contracts/policy-contract.md", "observability/universal-audit.md"]
   proposed_resolution: "Description of proposed fix"
   invariant_to_add: "New rule ID and assertion"
 ```

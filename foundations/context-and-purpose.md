@@ -1,17 +1,17 @@
-# DCM Data Model — Context and Purpose
+# UDLM — Context and Purpose
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Entity Types](01-entity-types.md) | [Ownership, Sharing, and Allocation](04b-ownership-sharing-allocation.md) | [Four States](02-four-states.md) | [Layering and Versioning](03-layering-and-versioning.md) | [Examples](04-examples.md)
+**Related Documents:** [Entity Types](entity-types.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) | [Four States](four-states.md) | [Layering and Versioning](layering-and-versioning.md) | [Examples](examples.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >
@@ -246,7 +246,7 @@ All DCM artifacts follow a five-status lifecycle:
 
 **Proposed shadow execution:** Policy artifacts in `proposed` status execute in shadow mode against real traffic — output is captured and reported but never applied. Enables safe validation before activation.
 
-See [Data Layers and Assembly — Section 4b](03-layering-and-versioning.md) for the complete artifact metadata structure and all field definitions.
+See [Data Layers and Assembly — Section 4b](layering-and-versioning.md) for the complete artifact metadata structure and all field definitions.
 
 ---
 
