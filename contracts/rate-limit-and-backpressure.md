@@ -212,4 +212,4 @@ A conformant consumer MUST:
 - [`retry-semantics.md`](retry-semantics.md) — exponential backoff coordination
 - [`capability-discovery.md`](capability-discovery.md) — rate-limit declaration surface
 - [`provider-contract.md`](provider-contract.md) — provider capacity declaration
-- [`information-providers.md`](10-information-providers.md) — query rate limits for information providers
+- [`information-providers.md`](information-providers.md) — query rate limits for information providers

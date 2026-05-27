@@ -3,11 +3,11 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Foundation
-**Related Documents:** [Foundational Abstractions](00-foundations.md) | [Policy Contract](B-policy-contract.md) | [Registration Specification](../specifications/dcm-registration-spec.md) | [Governance Matrix](27-governance-matrix.md) | [Accreditation](26-accreditation-and-authorization-matrix.md)
+**Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Policy Contract](policy-contract.md) | [Governance Matrix](../governance/governance-matrix.md) | [Accreditation](../governance/accreditation-and-authorization-matrix.md)
 
 ---
 
-> > **Design Priority:** Provider types implement all four design priorities simultaneously. Security properties (mTLS, scoped credentials, sovereignty declarations, accreditation) are present in all provider registrations. The capability extension model (Priority 3) enables new provider types without changing the base contract. See [Design Priorities](00-design-priorities.md).
+> > **Design Priority:** Provider types implement all four design priorities simultaneously. Security properties (mTLS, scoped credentials, sovereignty declarations, accreditation) are present in all provider registrations. The capability extension model (Priority 3) enables new provider types without changing the base contract. See [Design Priorities](../design-principles/design-priorities.md).
 
 ## 1. The Unified Provider Contract
 
@@ -36,7 +36,7 @@ Every Provider in DCM — regardless of type — implements a single base contra
 
 ## 2. Base Contract — Registration
 
-All providers register through the same pipeline. See [Registration Specification](../specifications/dcm-registration-spec.md) for the complete flow.
+All providers register through the same pipeline (registration specification is implementation-specific; see DCM repo for the complete flow).
 
 ```yaml
 provider_base_registration:
@@ -234,7 +234,7 @@ information_provider_capabilities:
 
 **What it does:** Delivers a composite payload — multiple constituent resource types with declared dependencies and delivery requirements — as a single catalog item. The registering Service Provider declares a Composite Service definition (constituent resource types, dependencies, and delivery requirements) so DCM can place, sequence, and govern the constituents. For its own resource types (`provided_by: self`), the registering provider executes as a standard Service Provider — one constituent payload in, one realized state out. All orchestration, placement, sequencing, failure handling, and compensation are performed by DCM using the declared dependency graph.
 
-> **Full specification:** See [Composite Service Composition Model](30-composite-service-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (CMP-001–CMP-008).
+> **Full specification:** See [Composite Service Composition Model](../entities/composite-service-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (CMP-001–CMP-008).
 
 **Capability declaration extension (summary — full schema in doc 30):**
 ```yaml
@@ -370,7 +370,7 @@ provider_type_registry_entry:
   capability_extension_schema_ref: <uuid>
 ```
 
-Profile-governed approval methods override provider type defaults. See [Registration Specification](../specifications/dcm-registration-spec.md) Section 3 for the complete approval method resolution model.
+Profile-governed approval methods override provider type defaults. The complete approval method resolution model is implementation-specific (see DCM repo).
 
 ---
 

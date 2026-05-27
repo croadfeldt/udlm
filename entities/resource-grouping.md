@@ -1,19 +1,19 @@
-# DCM Data Model — Resource Grouping
+# UDLM — Resource Grouping
 
 
 
-> **Related:** See [Universal Group Model](15-universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to `group_class` values in that model.
+> **Related:** See [Universal Group Model](../observability/universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to `group_class` values in that model.
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Service Dependencies](07-service-dependencies.md)
+**Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >

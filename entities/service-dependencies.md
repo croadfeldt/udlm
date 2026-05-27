@@ -1,17 +1,17 @@
-# DCM Data Model — Service Dependencies
+# UDLM — Service Dependencies
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Entity Relationships](09-entity-relationships.md) | [Resource Type Hierarchy](05-resource-type-hierarchy.md) | [Resource/Service Entities](06-resource-service-entities.md)
+**Related Documents:** [Entity Relationships](entity-relationships.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >
@@ -19,7 +19,7 @@
 
 
 
-> **Scope:** This document covers dependency declaration, rehydration ordering, and failure handling. The underlying data structure is the Entity Relationship Graph defined in [Entity Relationships](09-entity-relationships.md).
+> **Scope:** This document covers dependency declaration, rehydration ordering, and failure handling. The underlying data structure is the Entity Relationship Graph defined in [Entity Relationships](entity-relationships.md).
 
 ---
 
@@ -496,7 +496,7 @@ composite_service_registration:
 
 ### 8.1 Overview
 
-Compound services (delivered by composite service definitions) must declare compensation behavior for each component. This declaration is part of the service definition — not discovered at runtime. See [Operational Models](24-operational-models.md) Section 6 for the full compensation execution model.
+Compound services (delivered by composite service definitions) must declare compensation behavior for each component. This declaration is part of the service definition — not discovered at runtime. See [Operational Models](../lifecycle/operational-models.md) Section 6 for the full compensation execution model.
 
 ### 8.2 Compensation Fields on Service Components
 

@@ -3,7 +3,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Foundation — Read This First
-**Related Documents:** [Data Model Context](00-context-and-purpose.md) | [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+**Related Documents:** [Data Model Context](context-and-purpose.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 
 ---
 
@@ -63,7 +63,7 @@ This is the complete DCM operational model. Everything else is a typed specializ
 - **Provenance** — every field in every Data artifact carries lineage metadata describing its origin and all modifications
 - **Data classification** — every field carries a classification (public → classified) governing what may cross interaction boundaries
 - **Immutability if versioned** — once a version is published, it cannot be modified; changes produce new versions
-- **Contributor identity** — every Data artifact records who contributed it (platform admin, consumer/tenant, service provider, or peer DCM) and what review it received before activation. DCM defaults to a federated contribution model — all authorized actor types can create Data within the bounds their role permits. See [Federated Contribution Model](28-federated-contribution-model.md).
+- **Contributor identity** — every Data artifact records who contributed it (platform admin, consumer/tenant, service provider, or peer DCM) and what review it received before activation. DCM defaults to a federated contribution model — all authorized actor types can create Data within the bounds their role permits. See [Federated Contribution Model](../governance/federated-contribution-model.md).
 
 **The complete Data taxonomy:**
 
@@ -112,7 +112,7 @@ Discovered State ─────────────────────
 
 **How Data is composed — the layering model:**
 
-Data fields are assembled from multiple contributing layers in a deterministic precedence order. See [Data Model Context](00-context-and-purpose.md) and [Layering and Versioning](03-layering-and-versioning.md) for the complete assembly algorithm.
+Data fields are assembled from multiple contributing layers in a deterministic precedence order. See [Data Model Context](context-and-purpose.md) and [Layering and Versioning](layering-and-versioning.md) for the complete assembly algorithm.
 
 ---
 
@@ -146,7 +146,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 | **Peer DCM** | Another DCM instance (federation) | DCM ↔ DCM via federation tunnel |
 | **ITSM integration** | Bidirectional integration with ITSM systems (ServiceNow, Jira, Remedy, etc.); creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
 
-**The unified Provider base contract** is defined in [A-provider-contract.md](A-provider-contract.md). All twelve Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
+**The unified Provider base contract** is defined in [provider-contract.md](../contracts/provider-contract.md). All twelve Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
 
 **Peer DCM as Provider:** A federated DCM instance is a typed Provider. The federation tunnel is the Provider's communication channel. Federation routing is policy-governed provider selection. There is no separate "federation abstraction" — federation is the Provider abstraction applied across DCM instances.
 
@@ -178,7 +178,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 | **Lifecycle Policy** | Relationship events | `action` on the related entity (save, destroy, notify, cascade) |
 | **ITSM Action** | DCM events (state transitions, drift, realization) | `itsm_action` — create/update/close ITSM records; non-blocking by default |
 
-**The unified Policy base contract** is defined in [B-policy-contract.md](B-policy-contract.md). All eight Policy types implement this base contract. What varies is the output schema.
+**The unified Policy base contract** is defined in [policy-contract.md](../contracts/policy-contract.md). All eight Policy types implement this base contract. What varies is the output schema.
 
 **Policies as orchestration — two levels that compose:**
 
@@ -219,7 +219,7 @@ The Request Orchestrator and Policy Engine are the runtime that connects the thr
 
 **Control plane components as runtime specializations (nine total):**
 
-The components in [Control Plane Components](25-control-plane-components.md) are specialized runtime implementations, not separate abstractions:
+The control plane components are specialized runtime implementations, not separate abstractions (implementation-specific; see DCM repo):
 
 | Component | Abstraction it implements |
 |-----------|--------------------------|
@@ -270,7 +270,7 @@ These three abstractions serve DCM's core ethos:
 
 ## Design Priority Order
 
-> **Full specification:** See [Design Priorities](00-design-priorities.md) for the complete priority framework, decision framework, profile scaling table, and DPO-001–006 system policies.
+> **Full specification:** See [Design Priorities](../design-principles/design-priorities.md) for the complete priority framework, decision framework, profile scaling table, and DPO-001–006 system policies.
 
 
 Every design decision in DCM is evaluated against this priority order. When priorities conflict, higher priorities win. When there is no conflict, all four apply simultaneously.

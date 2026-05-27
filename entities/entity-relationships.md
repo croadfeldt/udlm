@@ -1,17 +1,17 @@
-# DCM Data Model — Entity Relationships
+# UDLM — Entity Relationships
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Resource Type Hierarchy](05-resource-type-hierarchy.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Service Dependencies](07-service-dependencies.md) | [Resource Grouping](08-resource-grouping.md) | [Information Providers](10-information-providers.md)
+**Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md) | [Resource Grouping](resource-grouping.md) | [Information Providers](../contracts/information-providers.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA + POLICY**
 >
@@ -850,7 +850,7 @@ The relationship graph exists across all four states:
 | `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
 | `REL-013` | `❌ Invalid` relationship type × nature combinations (per the matrix in Section 6a) must be rejected by the Policy Engine at request time |
 | `REL-014` | An allocated resource claim requires a matching `available` allocation record on the parent entity |
-| `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` (see [Ownership, Sharing, and Allocation](04b-ownership-sharing-allocation.md))) is deferred until `active_relationship_count` reaches `minimum_relationship_count` |
+| `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` (see [Ownership, Sharing, and Allocation](../foundations/ownership-sharing-allocation.md))) is deferred until `active_relationship_count` reaches `minimum_relationship_count` |
 | `REL-016` | Informational relationships do not contribute to `active_relationship_count` on shared resource entities |
 | `REL-017` | A Resource Type Specification with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
 | `REL-018` | When a lifecycle event produces multiple action recommendations on a shared resource, the most conservative action wins per the hierarchy: `retain > notify > suspend > detach > cascade > destroy` (save_overrides_destroy) |

@@ -3,7 +3,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Foundation
-**Related Documents:** [Foundational Abstractions](00-foundations.md) | [Provider Contract](A-provider-contract.md) | [Policy Profiles](14-policy-profiles.md) | [Governance Matrix](27-governance-matrix.md) | [OPA Integration](../specifications/dcm-opa-integration-spec.md)
+**Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Provider Contract](provider-contract.md) | [Governance Matrix](../governance/governance-matrix.md)
 
 ---
 
@@ -910,7 +910,7 @@ itsm_action_output:
   on_failure: log_and_continue | alert_and_continue | alert_only
 ```
 
-> **See [ITSM Integration](42-itsm-integration.md)** for full ITSM integration registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
+> **ITSM Integration** (implementation-specific; see DCM repo) covers full ITSM integration registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
 
 **Key constraints:**
 - ITSM Action policies are side-effect only — they do not produce allow/deny decisions

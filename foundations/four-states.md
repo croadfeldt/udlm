@@ -1,17 +1,17 @@
-# DCM Data Model — The Four States
+# UDLM — The Four States
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Entity Relationships](09-entity-relationships.md) | [data stores](11-storage-providers.md) | [Audit, Provenance, and Observability](12-audit-provenance-observability.md)
+**Related Documents:** [Context and Purpose](context-and-purpose.md) | [Entity Relationships](../entities/entity-relationships.md) | [data stores](../contracts/storage-providers.md) | [Audit, Provenance, and Observability](../observability/audit-provenance-observability.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >
@@ -34,7 +34,7 @@ The four states answer four distinct questions:
 | **Realized State** | What did the provider actually build? | `realized_entities` — versioned snapshots, `is_current` flag |
 | **Discovered State** | What does DCM observe actually existing right now? | `discovered_records` — ephemeral, refreshed per discovery run |
 
-> **Infrastructure note (doc 51):** All four data domains are stored in a single PostgreSQL-compatible database. The logical distinctions (immutability rules, versioning model, query patterns) are preserved via table design, `REVOKE UPDATE/DELETE`, and RLS. Git, Kafka, and Redis are optional deployment enhancements, not architectural requirements. See [51-infrastructure-optimization.md](51-infrastructure-optimization.md).
+> **Infrastructure note:** All four data domains are stored in a single PostgreSQL-compatible database. The logical distinctions (immutability rules, versioning model, query patterns) are preserved via table design, `REVOKE UPDATE/DELETE`, and RLS. Git, Kafka, and Redis are optional deployment enhancements, not architectural requirements. See [infrastructure-optimization.md](../design-principles/infrastructure-optimization.md).
 
 ---
 
@@ -121,7 +121,7 @@ The **Discovered State** is what DCM observes actually existing through active d
 
 ### 2.5 Recovery States
 
-Five additional states apply to Infrastructure Resource Entities when the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization. These states are governed by Recovery Policies (see [Operational Models](24-operational-models.md) Section 5).
+Five additional states apply to Infrastructure Resource Entities when the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization. These states are governed by Recovery Policies (see [Operational Models](../lifecycle/operational-models.md) Section 5).
 
 | State | Meaning | Entry Trigger |
 |-------|---------|--------------|
@@ -131,7 +131,7 @@ Five additional states apply to Infrastructure Resource Entities when the normal
 | `COMPENSATION_IN_PROGRESS` | Compound service rollback underway | `PARTIAL_REALIZATION` trigger |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | Compensation step failure |
 
-See [Operational Models](24-operational-models.md) for the complete recovery state machine and Recovery Policy model.
+See [Operational Models](../lifecycle/operational-models.md) for the complete recovery state machine and Recovery Policy model.
 
 
 ---
@@ -155,7 +155,7 @@ Given an entity UUID, DCM can reconstruct the complete history of that entity ac
 
 ## 4. Physical Representation — Data Domain Model
 
-All four states are stored in DCM's PostgreSQL-compatible database as distinct data domains. Each domain has specific immutability rules, access patterns, and enforcement mechanisms — but they share a single infrastructure dependency. See [Infrastructure Requirements](51-infrastructure-optimization.md) for the prescribed infrastructure model and [Data Store Contracts](#41-data-store-contracts) below for the enforcement rules.
+All four states are stored in DCM's PostgreSQL-compatible database as distinct data domains. Each domain has specific immutability rules, access patterns, and enforcement mechanisms — but they share a single infrastructure dependency. See [Infrastructure Requirements](../design-principles/infrastructure-optimization.md) for the prescribed infrastructure model and [Data Store Contracts](#41-data-store-contracts) below for the enforcement rules.
 
 Git is available as an optional ingress adapter — consumers who prefer PR-based workflows can submit intent via Git. But Git is an ingress path, not a state store. DCM's state lives in PostgreSQL.
 

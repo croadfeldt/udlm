@@ -1,8 +1,8 @@
-# DCM Data Model — Subscription Lifecycle Management
+# UDLM — Subscription Lifecycle Management
 
 **Document Status:** 📋 Draft — Ready for Review
 **Document Type:** Architecture Specification — Subscription as First-Class Data
-**Related Documents:** [Foundational Abstractions](00-foundations.md) | [Entity Types](01-entity-types.md) | [Four States](02-four-states.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md) | [Scheduled Requests](37-scheduled-requests.md) | [Event Catalog](33-event-catalog.md) | [Scoring Model](29-scoring-model.md)
+**Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md) | [Scheduled Requests](scheduled-requests.md) | [Event Catalog](../contracts/event-catalog.md)
 
 ---
 
@@ -23,7 +23,7 @@ A subscription manages the lifecycle of the **binding** — what the consumer is
 
 ## 2. Subscription as Data
 
-A Subscription follows every universal Data property defined in [00-foundations.md](00-foundations.md):
+A Subscription follows every universal Data property defined in [foundations.md](../foundations/foundations.md):
 
 - **UUID** — stable across full lifecycle
 - **Type** — `dcm.subscription` (registered in the Resource Type Registry)
@@ -243,7 +243,7 @@ Every state transition fires a subscription lifecycle event (see Section 7) and 
 
 ## 5. Provider-Originated Changes Through Subscriptions
 
-This is the critical integration point. When a provider has updates to deliver under a subscription — a software patch, a version upgrade, a configuration change, a capacity adjustment — those changes flow through DCM as **provider-originated updates**, following the standard flow documented in [A-provider-contract.md](A-provider-contract.md).
+This is the critical integration point. When a provider has updates to deliver under a subscription — a software patch, a version upgrade, a configuration change, a capacity adjustment — those changes flow through DCM as **provider-originated updates**, following the standard flow documented in [provider-contract.md](../contracts/provider-contract.md).
 
 ### 5.1 The Standard Provider-Originated Update Flow
 

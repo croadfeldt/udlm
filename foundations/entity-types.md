@@ -1,4 +1,4 @@
-# DCM Data Model — Entity Types
+# UDLM — Entity Types
 
 
 **Document Status:** ✅ Complete
@@ -8,16 +8,16 @@
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >
 > The Data abstraction — typed entity extensions (Infrastructure Resource, Composite, Process)
 
 
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Four States](02-four-states.md) | [Resource Type Hierarchy](05-resource-type-hierarchy.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Ownership, Sharing, and Allocation](04b-ownership-sharing-allocation.md)
+**Related Documents:** [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
 
 ---
 
@@ -277,7 +277,7 @@ process_resource_entity:
 
 A **Shared Resource Entity** is an Infrastructure Resource Entity where multiple consumers hold stakes — references, attachments, or dependencies — without any consumer owning an allocation of the resource. The resource has a single owner (typically a platform or network operations Tenant). Consumers reference it through relationships.
 
-See [Ownership, Sharing, and Allocation](04b-ownership-sharing-allocation.md) for the complete model.
+See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for the complete model.
 
 **Examples:** VLAN, NetworkSegment, SharedStorageCluster, DNS Zone, NTP Server, Certificate Authority.
 
@@ -289,7 +289,7 @@ Decommission is deferred while any active stakeholder relationships exist. The `
 
 An **Allocatable Pool Resource** is an Infrastructure Resource Entity that serves as a pool from which consumers receive owned allocations. The pool itself is owned by a platform Tenant. Each allocation request produces a new, independently owned Infrastructure Resource Entity carved from the pool.
 
-See [Ownership, Sharing, and Allocation](04b-ownership-sharing-allocation.md) for the complete model.
+See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for the complete model.
 
 **Examples:** IPAddressPool (allocates IPAddress entities), SubnetPool (allocates Subnet entities), VLANPool (allocates VLAN entities), StoragePool (allocates StorageVolume entities).
 

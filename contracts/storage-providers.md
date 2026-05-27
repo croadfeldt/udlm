@@ -1,17 +1,17 @@
-# DCM Data Model — Storage Providers
+# UDLM — Storage Providers
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Four States](02-four-states.md) | [Audit, Provenance, and Observability](12-audit-provenance-observability.md) | [Information Providers](10-information-providers.md)
+**Related Documents:** [Four States](../foundations/four-states.md) | [Audit, Provenance, and Observability](../observability/audit-provenance-observability.md) | [Information Providers](information-providers.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md)
 >
 > **This document maps to: PROVIDER**
 >
@@ -21,7 +21,7 @@
 
 ---
 
-> **Operational guidance:** GitOps store-at-scale and migration are covered in [Operational Reference](41-operational-reference.md) Sections 1 and 2.
+> **Operational guidance:** GitOps store-at-scale and migration are covered in the Operational Reference (implementation-specific; see DCM repo).
 
 ## 1. Purpose
 
@@ -33,7 +33,7 @@ This is consistent with DCM's governing framework philosophy: DCM does not presc
 
 ## 2. Storage Provider Sub-Types
 
-Storage Providers are one of eleven DCM provider types (see [Unified Provider Contract](A-provider-contract.md)). Within the Storage Provider type, four storage sub-types are defined, each optimized for different access patterns and consistency requirements:
+Storage Providers are one of eleven DCM provider types (see [Unified Provider Contract](provider-contract.md)). Within the Storage Provider type, four storage sub-types are defined, each optimized for different access patterns and consistency requirements:
 
 | Provider Type | Purpose | Data Direction | DCM Owns Result? |
 |--------------|---------|---------------|-----------------|
