@@ -1,43 +1,45 @@
-# DCM Data Model — Capability Discovery and Unified Provider Model
+# UDLM — Capability Discovery and Unified Provider Model
 
-**Document Status:** ✅ Active  
-**Document Type:** Architecture Reference — Provider Model and Service Discovery  
-**Related Documents:** [Provider Contract](A-provider-contract.md) | [Control Plane Components](25-control-plane-components.md) | [Event Catalog](33-event-catalog.md) | [Webhooks and Messaging](18-webhooks-messaging.md) | [API Versioning](34-api-versioning-strategy.md)
+**Document Status:** ✅ Stable — UDLM substrate contract
+**Document Type:** Substrate Reference — Provider Model and Service Discovery
+**Related Documents:** [Provider Contract](provider-contract.md) | [Event Catalog](event-catalog.md) | [Schema Sharing](schema-sharing.md)
 
-> **Design principle:** DCM must be discoverable. External systems should be able to ask DCM "what can you do?" and get a machine-readable answer. Providers should be able to declare what they offer AND what they need. Integration should emerge from capability matching, not manual configuration.
+> **Design principle:** A UDLM-conformant realization MUST be discoverable. External systems should be able to ask the realization "what can you do?" and get a machine-readable answer. Providers should be able to declare what they offer AND what they need. Integration should emerge from capability matching, not manual configuration.
 
 ---
 
-## 1. The Problem with Typed Providers
+## 1. The Problem with Typed Providers (Modeling Contract)
 
-DCM's original provider model defined rigid types (service_provider, information_provider, auth_provider, peer_dcm, process_provider). Each type had a fixed contract. A provider was exactly one type.
+An earlier model defined rigid provider types (service_provider, information_provider, auth_provider, peer, process_provider). Each type had a fixed contract. A provider was exactly one type.
 
-This creates three problems:
+This creates three problems the substrate must address:
 
 **Problem 1 — Artificial constraints.** An IPAM system like InfoBlox both serves data (IP availability queries) AND provisions resources (IP allocation). Under the typed model, it must register twice as two different providers. In reality, it's one system with two capabilities.
 
-**Problem 2 — No discovery.** A FinOps tool wants to integrate with DCM. It needs cost data. Today, someone reads the docs, finds the right events, and manually wires the integration. There's no way for the FinOps tool to ask DCM "what cost-related capabilities do you expose?"
+**Problem 2 — No discovery.** A FinOps tool wants to integrate with the realization. It needs cost data. Without discovery, someone reads the docs, finds the right events, and manually wires the integration. There's no way for the FinOps tool to ask the realization "what cost-related capabilities do you expose?"
 
-**Problem 3 — One-directional registration.** Providers register with DCM (provider → DCM). Nothing discovers DCM. External systems cannot query DCM's capabilities, subscribe to relevant data streams, or negotiate integration automatically.
+**Problem 3 — One-directional registration.** Providers register with the realization (provider → realization). Nothing discovers the realization. External systems cannot query the realization's capabilities, subscribe to relevant data streams, or negotiate integration automatically.
 
-## 2. Unified Provider Model
+---
 
-### 2.1 One Provider Type with Capability Declarations
+## 2. Unified Provider Model (Substrate Registration Contract)
 
-A provider is an external system that DCM interacts with through a defined contract. All providers share the same base contract:
+### 2.1 One Base Provider Contract with Capability Declarations
+
+A provider is an external system that the realization interacts with through a defined contract. All providers share the same base contract:
 
 - Registration (identity, health endpoint, sovereignty, accreditation)
 - Health check (liveness, readiness)
 - Authentication (zero trust, scoped credentials)
 - Audit (provenance emission, sovereignty compliance)
 
-What varies is the **capabilities** the provider declares. Capabilities replace types:
+What varies is the **capabilities** the provider declares. Capabilities replace fixed types. The registration shape is normative:
 
 ```yaml
 provider:
   name: "InfoBlox IPAM"
   version: "3.2.0"
-  
+
   capabilities:
     realize_resources:
       resource_types:
@@ -47,7 +49,7 @@ provider:
       naturalization_format: infoblox_wapi_v2
       supports_discovery: true
       supports_capacity_query: true
-      
+
     serve_data:
       data_domains:
         - ip_availability
@@ -55,7 +57,7 @@ provider:
       authority_level: authoritative
       query_interface: rest
       confidence_model: { default: 95, staleness_decay: true }
-      
+
   sovereignty:
     zones: [eu-west-1, eu-west-2]
     federation_eligibility: selective
@@ -63,49 +65,49 @@ provider:
 
 This single registration replaces what previously required two separate registrations (one as information_provider, one as service_provider).
 
-### 2.2 Capability Types
+### 2.2 Capability Types (Closed Substrate Vocabulary)
 
-| Capability | What it means | Replaces |
+| Capability | What it means | Legacy type label |
 |-----------|--------------|----------|
 | `realize_resources` | Provider provisions, updates, and decommissions infrastructure resources | service_provider |
 | `serve_data` | Provider responds to queries with authoritative external data | information_provider |
 | `authenticate` | Provider authenticates identities and returns tokens/roles/groups | auth_provider |
-| `federate` | Provider is another DCM instance — mTLS mandatory, dual audit, sovereignty pre-check | peer_dcm |
+| `federate` | Provider is another UDLM-conformant peer — mTLS mandatory, dual audit, sovereignty pre-check | peer_realization |
 | `execute_workflows` | Provider runs ephemeral workflows without producing persistent resources | process_provider |
 
-A provider can declare **multiple capabilities**. The capability declaration includes everything DCM needs to interact with the provider for that capability — resource types, data domains, auth methods, etc.
+A provider MAY declare **multiple capabilities**. The capability declaration MUST include everything the realization needs to interact with the provider for that capability — resource types, data domains, auth methods, etc.
 
-### 2.3 Backward Compatibility
+### 2.3 Type-Label Compatibility
 
-The old type names become convenience labels — shorthand for common capability profiles:
+The legacy type names become convenience labels — shorthand for common capability profiles:
 
-| Old type | Equivalent capability profile |
+| Legacy type | Equivalent capability profile |
 |----------|------------------------------|
 | service_provider | `capabilities: [realize_resources]` |
 | information_provider | `capabilities: [serve_data]` |
 | auth_provider | `capabilities: [authenticate]` |
-| peer_dcm | `capabilities: [federate]` |
+| peer_realization | `capabilities: [federate]` |
 | process_provider | `capabilities: [execute_workflows]` |
 
-Existing provider registrations continue to work. The `provider_type` field becomes a resolved label derived from the declared capabilities.
+The `provider_type` field becomes a resolved label derived from the declared capabilities. Substrate consumers MAY rely on the capability set; the type label is informational.
 
 ---
 
-## 3. Capability Discovery — DCM Side
+## 3. Capability Declaration Format and Semantics (Wire Contract)
 
 ### 3.1 The Capability Advertisement Endpoint
 
-DCM exposes a machine-readable endpoint that describes what it can do:
+A UDLM-conformant realization MUST expose a machine-readable endpoint that describes what it can do:
 
 ```
 GET /api/v1/capabilities
 ```
 
-Response:
+The response shape is normative:
 
 ```json
 {
-  "dcm_instance": "dcm-emea-prod-1",
+  "realization_instance": "<instance-handle>",
   "version": "1.0.0",
   "capabilities": {
     "lifecycle_management": {
@@ -172,9 +174,9 @@ Response:
 }
 ```
 
-### 3.2 Capability Query
+### 3.2 Capability Query (Substrate Required)
 
-External systems can query for specific capabilities:
+External systems MUST be able to query for specific capabilities:
 
 ```
 GET /api/v1/capabilities?domain=cost
@@ -183,25 +185,25 @@ GET /api/v1/capabilities?data_stream=true
 GET /api/v1/capabilities?operation=create&resource_type=Compute.VirtualMachine
 ```
 
-The response includes only matching capabilities with their API endpoints and subscription mechanisms.
+The response MUST include only matching capabilities with their API endpoints and subscription mechanisms.
 
-### 3.3 The Integration Flow
+### 3.3 The Integration Flow (Substrate Pattern)
 
-A FinOps tool integrating with DCM:
+A consuming system integrating with a UDLM-conformant realization:
 
 ```
-1. FinOps tool queries:  GET /api/v1/capabilities?domain=cost
-   
-2. DCM responds with:
+1. Consumer queries:  GET /api/v1/capabilities?domain=cost
+
+2. Realization responds with:
    - cost.estimated event stream (subscribe via webhook)
-   - cost.attributed event stream (subscribe via webhook)  
+   - cost.attributed event stream (subscribe via webhook)
    - cost estimation API (GET /api/v1/requests/{uuid}/cost-estimate)
    - payload schemas for each
 
-3. FinOps tool subscribes: POST /api/v1/webhooks
+3. Consumer subscribes: POST /api/v1/webhooks
    {
      "event_types": ["cost.estimated", "cost.attributed", "entity.realized"],
-     "callback_url": "https://finops.example.com/dcm/events",
+     "callback_url": "https://consumer.example.com/events",
      "auth": { "type": "hmac_sha256", "secret_ref": "..." }
    }
 
@@ -210,24 +212,22 @@ A FinOps tool integrating with DCM:
 
 ---
 
-## 4. Capability Discovery — Provider Side
+## 4. Provider Capability Advertisement (Wire Contract)
 
-### 4.1 Provider Capability Advertisement
-
-When a provider registers, it declares what it offers AND what it needs from DCM:
+When a provider registers, it MAY declare what it offers AND what it needs from the realization:
 
 ```yaml
 provider:
   name: "Acme FinOps Platform"
-  
+
   capabilities:
     serve_data:
       data_domains:
         - cost_optimization_recommendations
         - budget_forecasts
       query_interface: rest
-      
-  needs_from_dcm:
+
+  needs_from_realization:
     - domain: cost
       description: "Cost estimation and attribution data"
     - domain: entity_lifecycle
@@ -236,12 +236,11 @@ provider:
       description: "Placement scoring rationale for cost analysis"
 ```
 
-### 4.2 Automatic Pipeline Establishment
+### 4.1 Matched-Capabilities Response (Wire Contract)
 
-When a provider registers with `needs_from_dcm`, DCM matches the declared needs against its capability advertisement and automatically offers subscription endpoints:
+When a provider registers with `needs_from_realization`, the realization MUST match the declared needs against its capability advertisement and offer subscription endpoints in the registration response:
 
 ```json
-// Registration response includes:
 {
   "matched_capabilities": {
     "cost": {
@@ -265,62 +264,44 @@ When a provider registers with `needs_from_dcm`, DCM matches the declared needs 
 }
 ```
 
-The provider then activates the subscriptions it wants. DCM never auto-subscribes — the provider explicitly opts in. But DCM tells the provider exactly what's available and how to get it.
+Substrate invariants:
+- The provider then activates the subscriptions it wants. The realization MUST NEVER auto-subscribe — the provider explicitly opts in.
+- The realization MUST advertise exactly what's available and how to obtain it.
 
-### 4.3 Bidirectional Discovery
+### 4.2 Bidirectional Discovery Pattern
 
 The pattern works in both directions:
 
 ```
-Provider → DCM: "Here's what I can do" (capabilities)
-Provider → DCM: "Here's what I need from you" (needs_from_dcm)
-DCM → Provider: "Here's what I have that matches your needs" (matched_capabilities)
-DCM → Provider: "Here's what I need from you" (dispatch payloads via the provider contract)
+Provider → Realization: "Here's what I can do" (capabilities)
+Provider → Realization: "Here's what I need from you" (needs_from_realization)
+Realization → Provider: "Here's what I have that matches your needs" (matched_capabilities)
+Realization → Provider: "Here's what I need from you" (dispatch payloads via the provider contract)
 ```
-
-This replaces the current one-directional model where providers register with DCM but DCM doesn't advertise anything back.
 
 ---
 
-## 5. How Capability Discovery Interacts with DCM
+## 5. Capability Discovery — Substrate Invariants
 
-### 5.1 With the Service Catalog
+The substrate requires the following invariants on capability discovery interactions:
 
-The capability advertisement endpoint exposes what resource types DCM manages, but NOT the service catalog itself (which is tenant-scoped and RBAC-filtered). The capability endpoint is infrastructure-level: "DCM manages VMs, networks, databases." The catalog is consumer-level: "Here are the specific offerings you can request."
-
-### 5.2 With Policy
-
-Capability discovery does not bypass policy. A provider that discovers DCM's cost stream and subscribes to it still has its webhook authenticated, its data filtered by tenant scope, and its subscription audited.
-
-### 5.3 With Audit
-
-Every capability query, subscription establishment, and data stream delivery is audited. The audit trail shows: who queried capabilities, what they subscribed to, and what data was delivered.
-
-### 5.4 With Federation
-
-A peer_dcm provider (another DCM instance) uses capability discovery to understand what the remote instance can do before establishing a federation tunnel. This replaces the static federation scope declaration with a dynamic capability negotiation.
+- **Catalog separation:** The capability advertisement endpoint exposes resource types the realization manages, but NOT the tenant-scoped, RBAC-filtered service catalog itself.
+- **Policy enforcement:** Capability discovery MUST NOT bypass policy. A provider that discovers a data stream and subscribes to it still has its webhook authenticated, its data filtered by tenant scope, and its subscription audited.
+- **Audit:** Every capability query, subscription establishment, and data stream delivery MUST be audited. The audit trail shows: who queried capabilities, what they subscribed to, and what data was delivered.
+- **Federation use:** A peer realization (`federate` capability) MAY use capability discovery to understand what a remote instance can do before establishing a federation tunnel. This replaces static federation scope declarations with dynamic capability negotiation.
 
 ---
 
-## 6. System Policies
+## 6. UDLM System Policies
 
-| ID | Policy | Description |
-|----|--------|-------------|
-| DISC-001 | Capability advertisement is read-only and requires authentication | No anonymous capability queries |
-| DISC-002 | Webhook subscriptions are tenant-scoped | A provider's subscription only receives events for entities in its authorized scope |
-| DISC-003 | Capability query is rate-limited | Prevents enumeration attacks |
-| DISC-004 | needs_from_dcm matching is advisory, not automatic | DCM suggests matches; provider activates subscriptions explicitly |
-| DISC-005 | Capability schema versions follow API versioning strategy | Capability response format is versioned and backward-compatible |
+| ID | Policy |
+|----|--------|
+| `DISC-001` | Capability advertisement is read-only and requires authentication. No anonymous capability queries. |
+| `DISC-002` | Webhook subscriptions MUST be tenant-scoped. A provider's subscription only receives events for entities in its authorized scope. |
+| `DISC-003` | Capability query MUST be rate-limited. Prevents enumeration attacks. |
+| `DISC-004` | `needs_from_realization` matching is advisory, not automatic. The realization suggests matches; the provider activates subscriptions explicitly. |
+| `DISC-005` | Capability schema versions follow the substrate's API versioning strategy. Capability response format is versioned and backward-compatible. |
 
 ---
 
-## 7. Migration from Typed to Unified Model
-
-Existing provider registrations continue to work. The `provider_type` field is retained as a resolved label derived from capabilities:
-
-```
-provider_type = "service_provider"  →  capabilities: [realize_resources]
-provider_type = "information_provider"  →  capabilities: [serve_data]
-```
-
-New registrations can use either form. The control plane normalizes to the capability model internally. Over time, the type field becomes optional — capabilities are authoritative.
+*UDLM substrate document. Realization-specific provider registry implementation with capabilities, capability matching algorithms for dispatch decisions, type-based backward compatibility shims, and capability validation / conflict resolution mechanics live in the consuming realization's documentation.*

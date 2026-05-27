@@ -1,43 +1,39 @@
-# DCM Data Model — Worked Examples
+# UDLM — Worked Examples
 
-
-**Document Status:** ✅ Complete
+**Document Status:** ✅ Stable — UDLM substrate illustration
 **Document Type:** Reference Examples
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA + PROVIDER + POLICY**
 >
-> Worked examples showing all three abstractions in operation
+> Worked examples showing all three abstractions in operation.
 
-
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Four States](02-four-states.md) | [Entity Types](01-entity-types.md) | [Ownership, Sharing, and Allocation](04b-ownership-sharing-allocation.md) | [Layering and Versioning](03-layering-and-versioning.md)
+**Related Documents:** [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Entity Types](entity-types.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) | [Layering and Versioning](layering-and-versioning.md)
 
 ---
 
 ## 1. Purpose
 
-This document provides end-to-end worked examples that make the DCM data model concrete. Each example traces the complete lifecycle of a resource through DCM — from consumer intent through the four states, showing exactly what data exists at each stage.
+This document provides end-to-end worked examples that make the UDLM data model concrete. Each example traces the complete lifecycle of a resource through the substrate — from consumer intent through the four states, showing exactly what data exists at each stage.
 
-These examples also resolve outstanding implementation details deferred from other documents, specifically the Git repository structure for the Intent and Requested stores.
+These examples describe substrate-level behavior. Specific orchestration scenarios, runtime mechanics, and realization-specific composite flows live in the consuming realization's documentation (for example, DCM's `orchestration-scenarios.md`).
 
 ---
 
-## 2. Git Repository Structure (Optional Ingress Adapter)
+## 2. Optional Git-Backed Ingress Layout (Illustrative)
 
-> **Note:** Git is an optional ingress adapter, not a required state store. All four data domains (Intent, Requested, Realized, Discovered) are stored in DCM's PostgreSQL database. These Git layouts apply only when teams choose to use Git/PR-based workflows for submitting intent. See [51-infrastructure-optimization.md](51-infrastructure-optimization.md) for the prescribed infrastructure model.
+> **Note:** Git is one possible ingress adapter, not a required state store. UDLM does not mandate Git for any of the four data domains (Intent, Requested, Realized, Discovered); a conformant realization MAY use Git as an ingress surface or as a working store, or it MAY not. The layouts below are illustrative — they show one way to organize handle-based directories when Git ingress is enabled.
 
-This resolves the deferred Q54 item from the Four States document (Section 4.1).
+The Intent store can use a handle-based directory structure within Git when Git ingress is enabled. Tenant isolation is enforced at the directory level. Provider selection is recorded in the assembled payload, not in the directory structure — so the directory structure is independent of which provider was selected.
 
-The Intent store uses a handle-based directory structure within Git when Git ingress is enabled. Tenant isolation is enforced at the directory level. Provider selection (the Q54 concern) is recorded in the assembled payload, not in the directory structure — so the directory structure is independent of which provider was selected.
-
-### 2.1 Intent Store Layout
+### 2.1 Intent Store Layout (Illustrative)
 
 ```
 intent-store/
@@ -64,11 +60,11 @@ intent-store/
                 └── .metadata.yaml
 ```
 
-**Branch naming:** `intent/{tenant-uuid}/{entity-uuid}` for new requests. `intent/{tenant-uuid}/{entity-uuid}/v{n}` for revisions.
+**Branch naming (illustrative):** `intent/{tenant-uuid}/{entity-uuid}` for new requests. `intent/{tenant-uuid}/{entity-uuid}/v{n}` for revisions.
 
-**Merge to main:** Triggers the CD pipeline — Request Payload Processor begins assembly.
+**Merge to main (illustrative):** Triggers downstream assembly — the realization's Request Payload Processor begins assembly.
 
-### 2.2 Requested Store Layout
+### 2.2 Requested Store Layout (Illustrative)
 
 ```
 requested-store/
@@ -92,9 +88,9 @@ requested-store/
                 └── placement.yaml
 ```
 
-### 2.3 Layer and Policy Store Layout
+### 2.3 Layer and Policy Store Layout (Illustrative)
 
-**Core layers** are the organization's authoritative declarations — they define what the organization intends, not what providers report. For example, `datacenter-layer.yaml` declares the properties of datacenter `dc-us-east-1` (location, sovereignty zone, available VLANs). Providers are validated against these declarations. The Discovery Service detects drift when provider-reported state diverges from declared layers. Layers are not synced *from* providers — providers are measured *against* them.
+**Core layers** are the organization's authoritative declarations — they define what the organization intends, not what providers report. For example, `datacenter-layer.yaml` declares the properties of datacenter `dc-us-east-1` (location, sovereignty zone, available VLANs). Providers are validated against these declarations. A Discovery Service detects drift when provider-reported state diverges from declared layers. Layers are not synced *from* providers — providers are measured *against* them.
 
 ```
 layers/
@@ -135,7 +131,7 @@ The developer submits the following intent via the Consumer API:
 ```yaml
 # intent-store/a1b2c3d4-tenant/Compute/VirtualMachine/f5e6d7c8-entity/intent.yaml
 
-apiVersion: dcm.io/v1
+apiVersion: udlm.io/v1
 kind: ResourceIntent
 metadata:
   entity_uuid: f5e6d7c8-e9f0-a1b2-c3d4-e5f6a7b8c9d0
@@ -156,19 +152,19 @@ spec:
   # No provider specified — consumer does not choose the provider
 ```
 
-**CI pipeline runs immediately:**
+**Pre-assembly checks (substrate vocabulary):**
 - Policy pre-validation: no GateKeeper violations detected (4 CPU is within AppTeam's quota)
 - Cost estimation: ~$0.32/hour based on current provider rates
 - Dependency check: no dependencies declared — clean
 - Sovereignty check: AppTeam's Tenant has `data_residency: EU-WEST` — placement must honor this
 - Authorization check: actor b2c3d4e5 has `request:compute:vm` permission in AppTeam Tenant
-- Auto-approve evaluation: meets all auto-approve criteria → PR auto-merged
+- Auto-approve evaluation: meets all auto-approve criteria → intent transitions toward Requested
 
 ### 3.2 Assembly Produces Requested State
 
-After intent merge, the Request Payload Processor runs the nine-step assembly:
+After intent is accepted, the Request Payload Processor performs assembly:
 
-**Step 3 — Layer Resolution and Merge:**
+**Layer Resolution and Merge:**
 
 ```yaml
 # Layer chain assembled (in precedence order, highest to lowest):
@@ -216,7 +212,7 @@ backup_policy:
   provenance.origin.source_uuid: eu-west-compliance-layer-uuid
 ```
 
-**Step 5-7 — Policy Evaluation:**
+**Policy Evaluation:**
 
 ```yaml
 # GateKeeper policy: vm-size-limits evaluates
@@ -239,7 +235,7 @@ monitoring_endpoint:
 # Result: APPROVED (rhel is in AppTeam's approved images list)
 ```
 
-**Step 6 — Placement Engine selects provider:**
+**Placement selects provider (substrate vocabulary):**
 - Sovereignty pre-filter: eligible providers must satisfy `data_residency: EU-WEST`
 - Reserve query to 3 eligible OpenStack instances
 - EU-WEST-Prod-1 responds: capacity available, confidence 94
@@ -252,7 +248,7 @@ monitoring_endpoint:
 ```yaml
 # requested-store/a1b2c3d4-tenant/Compute/VirtualMachine/f5e6d7c8-entity/requested.yaml
 
-apiVersion: dcm.io/v1
+apiVersion: udlm.io/v1
 kind: RequestedState
 metadata:
   entity_uuid: f5e6d7c8-e9f0-a1b2-c3d4-e5f6a7b8c9d0
@@ -292,7 +288,7 @@ entity_uuid: f5e6d7c8-e9f0-a1b2-c3d4-e5f6a7b8c9d0
 realized_at: 2026-03-15T09:03:12Z
 provider_uuid: eu-west-prod-1-provider-uuid
 
-# DCM unified fields
+# UDLM unified fields
 cpu_count: { value: 4, provenance: { ...plus provider attribution } }
 memory_gb: { value: 8, provenance: {...} }
 storage_gb: { value: 100, provenance: {...} }
@@ -343,7 +339,7 @@ spec:
   purpose: vm_interface
   attachment_ref: f5e6d7c8-entity-uuid     # the VM this IP will be assigned to
 
-# Assembly runs — placement engine finds eligible IPAddressPool
+# Assembly runs — placement finds eligible IPAddressPool
 # Pool: NetworkOps/Network/IPAddressPool/10.1.0.0-16 (owned by NetworkOps Tenant)
 # Available capacity: 65420 addresses
 
@@ -403,7 +399,7 @@ relationship:
 
 ## 6. Example 4 — Brownfield Ingestion
 
-A VM discovered by the provider that DCM did not provision is brought under DCM lifecycle management.
+A VM discovered by the provider that the realization did not provision is brought under UDLM lifecycle management.
 
 ```yaml
 # Step 1: INGEST — discovery finds unknown VM
@@ -412,7 +408,7 @@ discovered_entity:
   resource_type: Compute.VirtualMachine
   lifecycle_state: OPERATIONAL          # it's running
   discovered_at: 2026-03-15T06:00:00Z
-  discovery_confidence: low             # no DCM provenance
+  discovery_confidence: low             # no UDLM provenance
   transitional_tenant: __transitional__ # held in transitional Tenant during ingestion
 
 # Step 2: ENRICH — CMDB Information Provider enriches the entity
@@ -437,7 +433,7 @@ promotion:
   promoted_at: 2026-03-15T11:30:00Z
 ```
 
-After promotion, the entity is a full DCM-managed entity. Drift detection is active. The operator can now request updates (targeted delta) or decommission through DCM.
+After promotion, the entity is a full lifecycle-managed entity. Drift detection is active. The operator can now request updates (targeted delta) or decommission through the substrate.
 
 ---
 
@@ -459,7 +455,7 @@ drift_record:
       realized_value: 8
       discovered_value: 16
   drift_severity: significant      # memory doubling is significant
-  unsanctioned: true               # no DCM Requested State explains this change
+  unsanctioned: true               # no Requested State explains this change
 ```
 
 **Policy Engine evaluates the drift record:**
@@ -485,148 +481,4 @@ The consumer reviews and chooses UPDATE_DEFINITION — the memory was legitimate
 
 ---
 
-## 8. Example 6 — Three-Tier Application (Composite Service with Binding Fields)
-
-This example shows how a composite service request flows through the dependency graph, with runtime values from one resource injected into dependent resources via `binding_fields`.
-
-### 8.1 Consumer Request
-
-A consumer requests a "Web Application — Standard" from the catalog. This is a single catalog item backed by a composite resource type that composes three resources:
-
-```yaml
-# Consumer submits via API
-POST /api/v1/requests
-{
-  "catalog_item_uuid": "webapp-standard-uuid",
-  "fields": {
-    "app_name": "pet-clinic",
-    "environment": "staging",
-    "db_engine": "postgresql",
-    "db_storage_gb": 50,
-    "web_replicas": 2
-  }
-}
-```
-
-### 8.2 Resource Type Spec — WebApp.ThreeTier
-
-The composite resource type spec declares three constituent resources and the binding fields that connect them:
-
-```yaml
-resource_type: WebApp.ThreeTier
-entity_type: composite_resource
-constituents:
-  - name: database
-    resource_type: Database.PostgreSQL
-    required: true
-    fields_from_parent:
-      - source: "db_engine"
-        target: "engine"
-      - source: "db_storage_gb"
-        target: "storage_gb"
-      - source: "environment"
-        target: "environment"
-
-  - name: backend
-    resource_type: Compute.VirtualMachine
-    required: true
-    depends_on: [database]
-    binding_fields:
-      - source: "database.ip_address"      # ← from realized Database
-        target: "backend.config.db_host"   # ← injected into Backend payload
-      - source: "database.port"
-        target: "backend.config.db_port"
-      - source: "database.credentials_ref"
-        target: "backend.config.db_credentials_ref"
-    fields_from_parent:
-      - source: "app_name"
-        target: "hostname_prefix"
-      - source: "environment"
-        target: "environment"
-
-  - name: frontend
-    resource_type: Compute.VirtualMachine
-    required: true
-    depends_on: [backend]
-    binding_fields:
-      - source: "backend.ip_address"       # ← from realized Backend
-        target: "frontend.config.api_host" # ← injected into Frontend payload
-      - source: "backend.port"
-        target: "frontend.config.api_port"
-    fields_from_parent:
-      - source: "app_name"
-        target: "hostname_prefix"
-      - source: "web_replicas"
-        target: "replicas"
-      - source: "environment"
-        target: "environment"
-
-lifecycle_policy:
-  on_constituent_failure: rollback_all    # If any constituent fails, decommission all
-```
-
-### 8.3 Pipeline Execution
-
-```
-1. Intent captured — consumer's request stored in intent_records
-
-2. Request Processor assembles the composite payload
-   → Resolves WebApp.ThreeTier resource type spec
-   → Identifies 3 constituent resources with dependency graph:
-     Database (no deps) → Backend (depends on Database) → Frontend (depends on Backend)
-
-3. Policy Engine evaluates the composite request
-   → GateKeeper: staging environment authorized for this tenant
-   → Validation: db_storage_gb within tier limits
-   → Transformation: injects monitoring agent config into all 3 constituents
-
-4. Placement Engine selects providers for each constituent
-   → Database → dcm-provider-database (scored highest for PostgreSQL in staging zone)
-   → Backend → dcm-provider-vm (KubeVirt provider)
-   → Frontend → dcm-provider-vm (same provider, same zone)
-
-5. Request Orchestrator dispatches in dependency order:
-
-   Step 5a: Dispatch Database to dcm-provider-database
-   → Provider realizes PostgreSQL instance
-   → Callbacks: ip_address: 10.0.1.50, port: 5432, credentials_ref: vault:secret/pet-clinic-db
-
-   Step 5b: Request Processor resolves binding_fields for Backend
-   → Injects: config.db_host = 10.0.1.50 (from Database.ip_address)
-   → Injects: config.db_port = 5432 (from Database.port)
-   → Injects: config.db_credentials_ref = vault:secret/pet-clinic-db
-   → Dispatch Backend to dcm-provider-vm
-   → Provider realizes VM with application config containing DB connection
-   → Callbacks: ip_address: 10.0.2.30, port: 8080
-
-   Step 5c: Request Processor resolves binding_fields for Frontend
-   → Injects: config.api_host = 10.0.2.30 (from Backend.ip_address)
-   → Injects: config.api_port = 8080 (from Backend.port)
-   → Dispatch Frontend to dcm-provider-vm
-   → Provider realizes 2 VM replicas with backend endpoint configured
-   → Callbacks: ip_addresses: [10.0.3.10, 10.0.3.11], port: 443
-
-6. All constituents realized — composite entity status: OPERATIONAL
-   → Audit records written for all 4 entities (composite + 3 constituents)
-   → Consumer sees single "pet-clinic" application in their resource list
-```
-
-### 8.4 What the Consumer Sees
-
-The consumer requested one catalog item and sees one composite resource. The three constituent resources are visible as children:
-
-```
-pet-clinic (WebApp.ThreeTier) — OPERATIONAL
-├── pet-clinic-db (Database.PostgreSQL) — OPERATIONAL
-│   ip_address: 10.0.1.50
-├── pet-clinic-backend (Compute.VirtualMachine) — OPERATIONAL
-│   ip_address: 10.0.2.30, config.db_host: 10.0.1.50
-└── pet-clinic-frontend (Compute.VirtualMachine × 2) — OPERATIONAL
-    ip_addresses: [10.0.3.10, 10.0.3.11], config.api_host: 10.0.2.30
-```
-
-If the database is decommissioned, the `lifecycle_policy: rollback_all` cascades to backend and frontend. If the consumer requests a tier upgrade, DCM coordinates the upgrade across all three constituents using the Composite Service's dependency graph, maintaining the binding field connections throughout.
-
----
-
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*UDLM substrate document. Realization-specific orchestration scenarios (e.g., composite three-tier application flows, retry-driven recovery scenarios, scoring-driven placement walkthroughs) live in the consuming realization's `orchestration-scenarios` documentation.*
