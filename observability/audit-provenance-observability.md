@@ -1,17 +1,17 @@
-# DCM Data Model — Audit, Provenance, and Observability
+# UDLM — Audit, Provenance, and Observability
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Four States](02-four-states.md) | [data stores](11-storage-providers.md) | [Context and Purpose](00-context-and-purpose.md)
+**Related Documents:** [Four States](../foundations/four-states.md) | [data stores](../contracts/storage-providers.md) | [Context and Purpose](../foundations/context-and-purpose.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >
@@ -45,7 +45,7 @@ Audit queries provenance to answer its questions. Observability does not use pro
 
 ### 2.2 Provenance Structure
 
-See [Context and Purpose — Section 4.4](00-context-and-purpose.md) for the complete field-level provenance structure. The key elements:
+See [Context and Purpose — Section 4.4](../foundations/context-and-purpose.md) for the complete field-level provenance structure. The key elements:
 
 ```yaml
 field_name:

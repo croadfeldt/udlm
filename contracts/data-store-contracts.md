@@ -1,14 +1,14 @@
-# DCM Data Model — Data Store Contracts
+# UDLM — Data Store Contracts
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Specification — Enforcement rules for the four data domains
-**Related Documents:** [Four States](02-four-states.md) | [Universal Audit](16-universal-audit.md) | [Infrastructure Requirements](51-infrastructure-optimization.md)
+**Related Documents:** [Four States](../foundations/four-states.md) | [Universal Audit](../observability/universal-audit.md) | [Infrastructure Requirements](../design-principles/infrastructure-optimization.md)
 
 > **Foundation Document Reference**
 >
 > This document specifies the enforcement contracts for DCM's four data domains.
 > All four domains are stored in a single PostgreSQL-compatible database.
-> See [51-infrastructure-optimization.md](51-infrastructure-optimization.md) for the
+> See [infrastructure-optimization.md](../design-principles/infrastructure-optimization.md) for the
 > infrastructure requirements and deployment profiles.
 >
 > **This document maps to: DATA**

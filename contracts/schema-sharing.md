@@ -259,7 +259,7 @@ A conformant realization MUST:
 - [`time-and-clock.md`](time-and-clock.md) — `published_at` timestamps
 - [`error-model.md`](error-model.md) — `schema.*` error codes
 - [`event-catalog.md`](event-catalog.md) — `schema_bundle.updated` federation event
-- [`layering-and-versioning.md`](layering-and-versioning.md) — semver conventions
+- [`layering-and-versioning.md`](../foundations/layering-and-versioning.md) — semver conventions
 - [`capability-discovery.md`](capability-discovery.md) — broader capability declaration mechanism
 - [`provider-contract.md`](provider-contract.md) — provider schemas in the bundle
 - [`policy-contract.md`](policy-contract.md) — policy schemas in the bundle

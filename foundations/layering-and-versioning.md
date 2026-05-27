@@ -1,17 +1,17 @@
-# DCM Data Model — Data Layers and the Assembly Process
+# UDLM — Data Layers and the Assembly Process
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](00-context-and-purpose.md) | [Entity Types](01-entity-types.md) | [Four States](02-four-states.md) | [Resource Type Hierarchy](05-resource-type-hierarchy.md)
+**Related Documents:** [Context and Purpose](context-and-purpose.md) | [Entity Types](entity-types.md) | [Four States](four-states.md) | [Resource Type Hierarchy](../entities/resource-type-hierarchy.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA**
 >
@@ -263,7 +263,7 @@ For Model A: entity record alone is sufficient
 
 ### 2a. Layer Contributors
 
-Every layer type has a declared contributor type. The contributor determines what review is required before the layer becomes active in assembly. See [Federated Contribution Model](28-federated-contribution-model.md) Section 3 for the full contributor permission table.
+Every layer type has a declared contributor type. The contributor determines what review is required before the layer becomes active in assembly. See [Federated Contribution Model](../governance/federated-contribution-model.md) Section 3 for the full contributor permission table.
 
 | Layer Type | Contributor | Domain | Review |
 |-----------|-------------|--------|--------|
@@ -327,7 +327,7 @@ DCM defines six layer types. Each has a distinct purpose, scope, ownership model
 > **Location Topology:** Location layers are one application of the Reference Data
 > Layer pattern (Section 3.7). The standard schema for each location level —
 > Country, Region, Zone, Site, Data Center, Hall, Cage, and Rack — is specified
-> in [Location Topology Layer Model](48-location-topology-layers.md), including
+> in [Location Topology Layer Model](../topology/location-topology-layers.md), including
 > field definitions, priority bands, authority model, and hierarchy assembly.
 
 ---
@@ -595,7 +595,7 @@ as part of their catalog item registration. They add provider-specific fields to
 assembled payload for their offering only. They cannot override platform or tenant layers.
 They carry the same portability implications as inline `provider_specific_extensions` in
 the catalog item declaration — any request using them is non-portable and must be
-explicitly marked. See [Resource Type Hierarchy](05-resource-type-hierarchy.md) Section 6.2
+explicitly marked. See [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) Section 6.2
 for the catalog item `provider_extension_layer_handles` declaration. A `tenant` layer cannot override a `platform` layer. This is enforced at ingestion — the conflict detection pipeline checks domain authority before allowing a merge.
 
 **Domain mirrors policy authority:** Just as system-domain policies have highest authority in the Policy Engine, system-domain layers have highest authority in the assembly process. The same mental model applies to both.

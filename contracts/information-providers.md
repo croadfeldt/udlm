@@ -1,17 +1,17 @@
-# DCM Data Model — Information Providers
+# UDLM — Information Providers
 
 
 
 **Document Status:** ✅ Complete  
-**Related Documents:** [Resource Type Hierarchy](05-resource-type-hierarchy.md) | [Resource/Service Entities](06-resource-service-entities.md) | [Entity Relationships](09-entity-relationships.md)
+**Related Documents:** [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Entity Relationships](../entities/entity-relationships.md)
 
 > **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the DCM architecture.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [00-foundations.md](00-foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
-> See also: [Provider Contract](A-provider-contract.md) | [Policy Contract](B-policy-contract.md)
+> See also: [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md)
 >
 > **This document maps to: PROVIDER**
 >
@@ -43,7 +43,7 @@ Information Providers solve this by giving DCM a standard, stable, governed inte
 
 ## 3. Information Provider in the Provider Ecosystem
 
-DCM defines eleven provider types, all implementing the unified Provider base contract. This document focuses on the Information Provider type. For the complete provider type list see [A-provider-contract.md](A-provider-contract.md).
+DCM defines eleven provider types, all implementing the unified Provider base contract. This document focuses on the Information Provider type. For the complete provider type list see [provider-contract.md](provider-contract.md).
 
 | Provider Type | Purpose | Data Direction | DCM Owns Result? |
 |--------------|---------|---------------|-----------------|

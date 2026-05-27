@@ -86,7 +86,7 @@ udlm-conformance boundary; new namespaces require a udlm spec change.
 | `provider.*` | Provider interaction errors |
 | `schema.*` | Schema sharing, version, or compatibility errors |
 | `timeout.*` | Operation deadline exceeded |
-| `conformance.*` | udlm conformance, feature availability, version compatibility (see [`CONFORMANCE.md`](CONFORMANCE.md)) |
+| `conformance.*` | udlm conformance, feature availability, version compatibility (see [`CONFORMANCE.md`](../CONFORMANCE.md)) |
 
 ### 3.2 Required codes (minimum conformance set)
 
@@ -173,7 +173,7 @@ written for the error. The audit record MUST contain:
 - Timestamp per [`time-and-clock.md`](time-and-clock.md).
 
 This enables forensic lookup: from any error a consumer received, the operator
-can find the full audit context. See [`universal-audit.md`](universal-audit.md).
+can find the full audit context. See [`universal-audit.md`](../observability/universal-audit.md).
 
 ---
 
@@ -221,5 +221,5 @@ A conformant realization MUST:
 - [`time-and-clock.md`](time-and-clock.md) — timestamp format
 - [`retry-semantics.md`](retry-semantics.md) — how `retryable` and `retry_after_seconds` drive retry behavior
 - [`rate-limit-and-backpressure.md`](rate-limit-and-backpressure.md) — `rate_limit.*` codes
-- [`universal-audit.md`](universal-audit.md) — audit record requirements
+- [`universal-audit.md`](../observability/universal-audit.md) — audit record requirements
 - [`schema-sharing.md`](schema-sharing.md) — how extension codes are declared

@@ -111,7 +111,7 @@ Once retries exhaust:
 - The request transitions to `FAILED`.
 - The `error_code` from the last attempt is recorded.
 - Compensation MAY be invoked per the recovery policy (see
-  [`operational-models.md`](operational-models.md)).
+  [`operational-models.md`](../lifecycle/operational-models.md)).
 
 ---
 
@@ -170,6 +170,6 @@ A conformant realization MUST:
 - [`error-model.md`](error-model.md) — the `retryable` flag and `retry_after_seconds`
 - [`rate-limit-and-backpressure.md`](rate-limit-and-backpressure.md) — rate-limit-driven retries
 - [`event-catalog.md`](event-catalog.md) — Idempotency-Key in event envelopes
-- [`operational-models.md`](operational-models.md) — recovery policies after exhaustion
+- [`operational-models.md`](../lifecycle/operational-models.md) — recovery policies after exhaustion
 - [`provider-contract.md`](provider-contract.md) — provider-side retry expectations
-- [`universal-audit.md`](universal-audit.md) — retry attempts in audit chain
+- [`universal-audit.md`](../observability/universal-audit.md) — retry attempts in audit chain
