@@ -170,10 +170,13 @@ DCM defines five provider types. Each shares the base contract (Section 1–6) a
 
 **Additional endpoints:**
 ```
-POST {dispatch_endpoint}         # receive and execute dispatch payload
-POST {cancel_endpoint}           # receive cancellation request (if supported)
-POST {discover_endpoint}         # receive discovery request; return discovered state
-GET  {capabilities_endpoint}     # return available options (networks, images, storage classes)
+POST {dispatch_endpoint}                      # receive and execute dispatch payload
+POST {cancel_endpoint}                        # receive cancellation request (if supported)
+POST {discover_endpoint}                      # receive discovery request; return discovered state
+POST {dependency_introspection_endpoint}      # receive entity_uuid; return observed dependency
+                                              # edges for that entity (see entities/
+                                              # service-dependencies.md §3a)
+GET  {capabilities_endpoint}                  # return available options (networks, images, storage classes)
 ```
 
 **Capability declaration extension:**
@@ -189,6 +192,19 @@ service_provider_capabilities:
   discovery:
     supports_discovery: true
     discovery_method: api_query | passive_event | hybrid
+  dependency_introspection:
+    supported: true | false
+    # If supported: provider returns the observed dependency edges for any
+    # entity it hosts when the substrate calls {dependency_introspection_endpoint}.
+    # Observation is post-realization and observational only — it is NOT
+    # consulted for orchestration. See entities/service-dependencies.md §3a
+    # and policies OBS-001..OBS-005 for the contract.
+    methods:
+      - api_query             # actively query the underlying platform
+      - passive_event         # surface dependencies that emit lifecycle events
+      - inferred_from_config  # derived from provider-held configuration
+    response_sla: PT30S       # MUST be ≤ discovery endpoint SLA (OBS-004)
+    max_edges_per_response: 500
   naturalization:
     target_format: openstack_nova | vmware_vsphere | custom
   cost_metadata:
@@ -196,7 +212,7 @@ service_provider_capabilities:
     currency: USD
 ```
 
-**Data direction:** DCM sends assembled Requested State → Provider naturalizes → executes → denaturalizes → returns Realized State.
+**Data direction:** DCM sends assembled Requested State → Provider naturalizes → executes → denaturalizes → returns Realized State. Separately, on demand, DCM sends `{entity_uuid}` to `{dependency_introspection_endpoint}` → Provider returns observed dependency edges → DCM records them in the Entity Relationship Graph under `edge_nature: observed`.
 
 ---
 
@@ -383,6 +399,7 @@ Profile-governed approval methods override provider type defaults. The complete 
 | `PRV-003` | Provider capability declarations are verified at registration. Capabilities not declared at registration cannot be invoked after activation. |
 | `PRV-004` | Peer DCM instances are treated as typed providers. Federation is the Provider abstraction applied across DCM instances — not a separate abstraction. |
 | `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability extension. No changes to DCM core are required. |
+| `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
 
 ---
 
