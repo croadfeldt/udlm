@@ -72,7 +72,7 @@ links:
 | `approval.*` | 4 | Approval pipeline |
 | `tier_registry.*` | 4 | Authority tier registry changes |
 | `audit.*` | 3 | Audit chain integrity |
-| `dependency.*` | 2 | Entity dependency events |
+| `dependency.*` | 2 | Entity dependency events (drift events catalogued in §14) |
 | `stakeholder.*` | 1 | Stakeholder notifications |
 | `allocation.*` | 2 | Resource allocation events |
 | `ingestion.*` | 3 | Brownfield ingestion lifecycle |
@@ -566,6 +566,7 @@ payload:
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
 | `dependency.state_changed` | medium | A dependency entity changed state; dependents may be affected |
+| `dependency.drift_detected` | warning (declared edge missing in observed) / info (others) | Observed dependency set returned by a Service Provider's introspection endpoint differs from the declared dependency graph for the same entity. See [Service Dependencies](../entities/service-dependencies.md) §3a.4. |
 | `stakeholder.resource_decommissioning` | medium | Resource this actor has a stake in is being decommissioned |
 | `allocation.pool_capacity_low` | high | Allocation pool approaching capacity limit |
 | `allocation.released` | info | Allocation returned to pool |
@@ -580,6 +581,28 @@ payload:
   new_state: <string>
   dependent_entity_uuids: [<uuid>]
   impact_assessment: degraded | blocked | unaffected
+```
+
+#### `dependency.drift_detected`
+```yaml
+payload:
+  entity_uuid: <uuid>                # entity whose graph was compared
+  reported_by_provider_uuid: <uuid>
+  observed_at: <ISO 8601>
+  drift_cases:                       # one entry per differing edge
+    - case: declared_missing_in_observed | observed_missing_in_declared | type_mismatch
+      edge_ref:
+        from_entity_uuid: <uuid>
+        to_entity_ref: <object>      # entity_uuid or external_handle
+      declared:
+        present: <bool>
+        dependency_type: <string|null>
+      observed:
+        present: <bool>
+        dependency_type: <string|null>
+        observation_method: <string|null>
+        confidence: <string|null>
+  recommended_action: review | reintrospect | none
 ```
 
 #### `stakeholder.resource_decommissioning`

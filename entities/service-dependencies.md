@@ -41,6 +41,8 @@ Dependencies must be declared in the data model — not discovered at runtime by
 
 **Idempotency and Consistency** — if dependencies are declared in the service definition, the same request always produces the same dependency graph. Provider-driven dependency discovery at runtime breaks idempotency — different provider implementations could produce different dependency graphs for the same logical request.
 
+> **Scope of this prohibition:** This section forbids provider-driven discovery as **orchestration input** — i.e., as input that decides what to provision. It does NOT forbid providers from reporting what a *realized* resource actually depends on, after the fact, for drift detection, blast-radius analysis, and federation reconciliation. That post-realization observation channel is defined in §3a and is recorded as a distinct edge nature in the Entity Relationship Graph so the two cannot be conflated.
+
 ---
 
 ## 3. Hybrid Dependency Declaration Model
@@ -97,6 +99,79 @@ provider_specific_dependencies:
     description: Nutanix VMs require a Nutanix Storage Container
     portability_warning: This dependency locks this request to Nutanix providers
 ```
+
+---
+
+## 3a. Observed Dependencies (Provider-Reported)
+
+Declared dependencies (§3) tell the substrate what *should* be true for a request to be fulfillable. Observed dependencies tell the substrate what *is* true for a realized resource right now, as reported by the provider hosting it. The two are distinct concerns with distinct rules.
+
+### 3a.1 Definition
+
+An **observed dependency** is an edge in the Entity Relationship Graph where:
+- The dependent endpoint is a realized resource entity hosted by a Service Provider.
+- The depended-upon endpoint is another entity (UDLM-known, or external by handle).
+- The edge was contributed by the hosting Service Provider in response to a substrate query, not by a catalog/spec declaration.
+
+Observed dependencies are recorded with provenance:
+
+```yaml
+observed_dependency_edge:
+  edge_uuid: <uuid>
+  edge_nature: observed                   # distinct from "declared"
+  from_entity_uuid: <uuid>                # the realized resource
+  to_entity_ref:
+    entity_uuid: <uuid>                   # optional — present if the dependency
+                                          # is itself a UDLM-known entity
+    external_handle: "<provider-native handle>"   # required if not UDLM-known
+  dependency_type: hard | soft            # provider's classification
+  observation:
+    reported_by_provider_uuid: <uuid>
+    observed_at: <ISO 8601 timestamp>
+    observation_method: api_query | passive_event | inferred_from_config
+    confidence: high | medium | low
+  ttl: <duration>                         # how long this observation remains
+                                          # current before a re-query is required
+```
+
+### 3a.2 Provider Obligation
+
+A Service Provider that declares `dependency_introspection.supported: true` in its capability extension (see [Provider Contract](../contracts/provider-contract.md) §7.1) MUST return the current observed dependency set for any entity it hosts when the substrate calls the dependency-introspection endpoint. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities and surfaces this as audit-relevant.
+
+The substrate MAY call the endpoint on a schedule (drift watch), on a triggering event (pre-deregister, pre-federation-handoff, post-restoration), or on operator demand.
+
+### 3a.3 Why Observed Dependencies Do Not Break Idempotency
+
+Observed dependencies are **observational, not orchestrational**:
+- They are not consulted by the Policy Engine for placement or cost decisions.
+- They are not consulted by the Request Payload Processor during assembly.
+- They are not consulted by rehydration to decide what to recreate.
+- They flow only into post-realization workflows: drift detection, blast-radius analysis, deregister-safety checks, and federation reconciliation.
+
+Two different Service Providers hosting equivalent realizations of the same Request MAY legitimately report different observed dependency sets — that asymmetry is a useful signal, not a bug. The Request's idempotency is preserved by §3 because the *declared* graph (used as orchestration input) is identical in both cases.
+
+### 3a.4 Drift Signal
+
+The substrate compares observed dependencies against the declared graph attached to the Request's assembly provenance (placement.yaml; see §11b). The diff is the drift signal:
+
+| Case | Meaning | Default substrate action |
+|------|---------|--------------------------|
+| Declared edge present, observed edge missing | Provider lost or never wired the dependency, or cannot introspect it | `dependency.drift_detected` event (warning); audit record |
+| Declared edge absent, observed edge present | Resource has acquired an out-of-band dependency the catalog did not anticipate | `dependency.drift_detected` event (info); operator review |
+| Both present, dependency_type disagrees | Provider classifies the strength differently than the spec | `dependency.drift_detected` event (info) |
+| Both present, agree | No drift | No event |
+
+The substrate stores both edge natures side-by-side; the realization decides whether drift triggers automated remediation, opens a review, or merely accrues to audit.
+
+### 3a.5 UDLM System Policies
+
+| Policy | Rule |
+|--------|------|
+| `OBS-001` | Observed-dependency edges MUST be recorded with `edge_nature: observed`. They MUST NOT overwrite or be silently merged with declared edges. The Entity Relationship Graph supports the two natures as peers. |
+| `OBS-002` | Observed-dependency edges MUST carry `reported_by_provider_uuid`, `observed_at`, and `observation_method`. Edges missing any of these fields MUST be rejected at ingestion. |
+| `OBS-003` | Observed dependencies MUST NOT be consulted by orchestration paths (placement, cost analysis, payload assembly, rehydration). Use is restricted to drift detection, blast-radius queries, deregister-safety checks, and federation reconciliation. |
+| `OBS-004` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint within the same SLA as their discovery endpoint. Providers that fail to introspect within SLA MUST be marked as `dependency_introspection_degraded` for the affected entities (no provider-level degradation). |
+| `OBS-005` | Observation TTL is profile-governed (default: PT24H for standard/prod; PT4H for fsi/sovereign). Observations older than TTL MUST be treated as stale by drift queries and trigger re-introspection on next scheduled poll. |
 
 ---
 
