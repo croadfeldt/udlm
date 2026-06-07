@@ -166,13 +166,23 @@ Every provider contract includes observability as a base obligation — metrics,
 logs, and telemetry for the resources a provider hosts are part of the
 contract, not an optional extension.
 
-**Division of responsibility:** DCM is **not the arbiter of the telemetry data
-itself** — it does not need to store, own, or adjudicate metric/log content.
-DCM's obligation is to **manage the collection**: for every appropriate
-resource it must be able to discover what telemetry a provider can emit,
-configure where that telemetry is delivered, verify collection is active, and
-record those facts in the audit trail. The data flows to the deployment's
-observability platform; DCM governs that the flow exists.
+**Division of responsibility:** DCM does **not need to be the arbiter of the
+telemetry data itself** — it is not required to store, own, or adjudicate
+metric/log content. DCM's obligation is to **manage the collection**: for
+every appropriate resource it must be able to discover what telemetry a
+provider can emit, configure where that telemetry is delivered, verify
+collection is active, and record those facts in the audit trail. By default
+the data flows to the deployment's observability platform; DCM governs that
+the flow exists.
+
+**DCM MAY be the arbiter.** Where no external observability platform exists —
+or a packaged ("canned") solution is desired — DCM CAN serve as the
+authoritative telemetry/monitoring platform itself, fulfilling the collection
+obligation *and* the storage/query/alerting role through a deployable
+observability component (**dcm-observability**). Both postures satisfy this
+contract; the choice is a deployment decision, not an architectural fork.
+The reference implementation of this component is being developed with the
+`roadfeldt-observability` stack as its test bed.
 
 **Registration declaration:** providers declare their telemetry surface at
 registration alongside other capabilities:
@@ -459,7 +469,7 @@ Profile-governed approval methods override provider type defaults. The complete 
 | `PRV-004` | Peer DCM instances are treated as typed providers. Federation is the Provider abstraction applied across DCM instances — not a separate abstraction. |
 | `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability extension. No changes to DCM core are required. |
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
-| `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM is not the arbiter of telemetry data, but it MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
+| `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 
 ---
 
