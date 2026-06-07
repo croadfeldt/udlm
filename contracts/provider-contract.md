@@ -160,9 +160,63 @@ POST {dcm_lifecycle_endpoint}
 ---
 
 
-## 7. Capability Extensions — Provider Types
+## 7. Base Contract — Observability, Logs & Telemetry
 
-DCM defines five provider types. Each shares the base contract (Section 1–6) and adds a typed capability extension declaring what the provider can do.
+Every provider contract includes observability as a base obligation — metrics,
+logs, and telemetry for the resources a provider hosts are part of the
+contract, not an optional extension.
+
+**Division of responsibility:** DCM is **not the arbiter of the telemetry data
+itself** — it does not need to store, own, or adjudicate metric/log content.
+DCM's obligation is to **manage the collection**: for every appropriate
+resource it must be able to discover what telemetry a provider can emit,
+configure where that telemetry is delivered, verify collection is active, and
+record those facts in the audit trail. The data flows to the deployment's
+observability platform; DCM governs that the flow exists.
+
+**Registration declaration:** providers declare their telemetry surface at
+registration alongside other capabilities:
+
+```yaml
+telemetry:
+  metrics:
+    supported: true
+    exposition: [prometheus, openmetrics]   # standard formats only
+    endpoint: <metrics_endpoint>
+  logs:
+    supported: true
+    transport: [syslog, otlp, http_push]
+    endpoint: <log_sink_config_endpoint>     # where DCM configures delivery
+  events:
+    supported: true                          # lifecycle events (Section 6) are
+                                             # the minimum; richer streams declared here
+  per_resource_scoping: true                 # telemetry attributable to entity UUIDs
+```
+
+**Obligations:**
+- Telemetry MUST be attributable to the entities it describes (entity UUID /
+  handle labels) so collection can be scoped per resource, per tenant, and
+  per policy.
+- Collection configuration changes (enable, disable, redirect) are mutations —
+  they are policy-evaluated and audit-recorded like any other change.
+- Providers that cannot emit telemetry for a resource class declare that at
+  registration; the substrate records `telemetry_unavailable` for affected
+  entities (mirror of the dependency-introspection pattern).
+
+**Integration mechanism:** TBD — the leading candidate is UDLM-modeled export
+(telemetry entities + the [event catalog](event-catalog.md) with discoverable
+schemas per [schema-sharing](schema-sharing.md)), making the telemetry surface
+consumable by any external tool with no per-tool adapters. See the validation
+use case `dav/use-cases/observability/udlm-universal-telemetry-export.yaml`
+(DCM repo) and the Universal Audit Model for the audit-record component of
+this surface.
+
+---
+
+
+## 8. Capability Extensions — Provider Types
+
+DCM defines five provider types. Each shares the base contract (Section 1–7) and adds a typed capability extension declaring what the provider can do.
 
 ### 7.1 Service Provider
 
@@ -373,7 +427,7 @@ process_provider_capabilities:
 
 ---
 
-## 8. Provider Type Registry
+## 9. Provider Type Registry
 
 The Provider Type Registry is the authoritative list of provider types that a DCM deployment accepts registrations for. It follows the three-tier registry model (Core / Verified Community / Organization).
 
@@ -390,7 +444,7 @@ Profile-governed approval methods override provider type defaults. The complete 
 
 ---
 
-## 9. Related Policies
+## 10. Related Policies
 
 | Policy | Rule |
 |--------|------|
@@ -400,6 +454,7 @@ Profile-governed approval methods override provider type defaults. The complete 
 | `PRV-004` | Peer DCM instances are treated as typed providers. Federation is the Provider abstraction applied across DCM instances — not a separate abstraction. |
 | `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability extension. No changes to DCM core are required. |
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
+| `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM is not the arbiter of telemetry data, but it MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 
 ---
 
