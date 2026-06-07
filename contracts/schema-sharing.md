@@ -176,7 +176,7 @@ To avoid round-trips on every interaction:
 
 - Peers MAY cache remote schema bundles.
 - Cached bundles MUST be revalidated when the source peer publishes a new
-  bundle version (via federation event `schema_bundle.updated`, see
+  bundle version (via federation event `schema.bundle_updated`, see
   [`event-catalog.md`](event-catalog.md)).
 - The bundle endpoint MUST honor HTTP caching headers (ETag, If-None-Match)
   for HTTP transports.
@@ -258,7 +258,7 @@ A conformant realization MUST:
 - [`identifier-scheme.md`](identifier-scheme.md) — UUIDs and references in bundles
 - [`time-and-clock.md`](time-and-clock.md) — `published_at` timestamps
 - [`error-model.md`](error-model.md) — `schema.*` error codes
-- [`event-catalog.md`](event-catalog.md) — `schema_bundle.updated` federation event
+- [`event-catalog.md`](event-catalog.md) — `schema.bundle_updated` federation event
 - [`layering-and-versioning.md`](../foundations/layering-and-versioning.md) — semver conventions
 - [`capability-discovery.md`](capability-discovery.md) — broader capability declaration mechanism
 - [`provider-contract.md`](provider-contract.md) — provider schemas in the bundle
