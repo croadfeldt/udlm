@@ -109,7 +109,7 @@ The **Discovered State** is what DCM observes actually existing through active d
 
 **Characteristics:**
 - Append-only snapshot stream — each discovery cycle produces a new snapshot
-- Stored in an pipeline_events table (ephemeral) — recent history retained, older snapshots archived or discarded
+- Stored in a discovered_records table (ephemeral) — recent history retained, older snapshots archived or discarded
 - High-frequency and machine-generated — not appropriate for human review
 - Used exclusively for drift detection — comparing against Realized State
 - May contain resources DCM did not provision — brownfield resources discovered for ingestion
