@@ -196,7 +196,12 @@ telemetry:
 **Obligations:**
 - Telemetry MUST be attributable to the entities it describes (entity UUID /
   handle labels) so collection can be scoped per resource, per tenant, and
-  per policy.
+  per policy. Because entities carry their group memberships and ownership in
+  their own definitions ([Universal Group Model](../observability/universal-groups.md)),
+  this attribution is sufficient to scope dashboards, reporting, alerting —
+  and the *management* of those artifacts — to the appropriate business /
+  operational groups (DCMGroup) with **no side-channel scoping configuration**
+  (capability OBS-008).
 - Collection configuration changes (enable, disable, redirect) are mutations —
   they are policy-evaluated and audit-recorded like any other change.
 - Providers that cannot emit telemetry for a resource class declare that at
