@@ -17,7 +17,13 @@
 > The Data abstraction — typed entity extensions (Infrastructure Resource, Composite, Process)
 
 
-**Related Documents:** [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
+**Related Documents:** [Entity-Type Families](entity-type-families.md) | [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
+
+> **Note (2026-06-08):** the three primary entity types below are now grouped as the
+> **Resource family** — see [Entity-Type Families](entity-type-families.md). A family is a
+> *logical grouping* of entity-type definitions, **not** a usage boundary; definitions are
+> universal and free to use across realizations. The **Knowledge family** (Capability,
+> TaxonomyTerm, …), anchored by DAV, is in [../entities/knowledge-family.md](../entities/knowledge-family.md).
 
 ---
 
