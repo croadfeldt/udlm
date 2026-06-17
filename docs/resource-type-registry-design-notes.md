@@ -70,6 +70,34 @@ enhance** those pillars — see `design-principles/cross-cutting-requirements.md
 - Avoid: version-in-identity (GVK), `$dynamicRef`, version-in-name, coupling the model to a runtime,
   collapsing intent↔reality with silent drift correction, redundant proxy entities.
 
+## 6a. Domain assignment — applying the Data ⇄ Policy boundary
+
+Per the core tenets (`design-principles/core-tenets.md`), every capability splits along the domain
+boundary: **UDLM carries the declarative record (the noun); DCM applies the act (the verb).** Nothing
+is dropped — each is assigned to the domain that owns it.
+
+| Capability | **Data domain — UDLM carries** | **Policy domain — DCM applies** |
+|---|---|---|
+| Four states | the 4 immutable state records + legal-shape | the act of transitioning / realization |
+| Versioning (R1) | `$id`, `conformsTo`, `version`, compat rules as data | resolving a version constraint; conversion |
+| E1 Constraint Profile | the narrowed contract (a data artifact) | applying profile defaults at Intent→Requested |
+| E2 Typed outputs | the output schema + realized values | publishing (provider) + binding resolution |
+| E3 Conditional constraints | **declarative only** (`if/then`, `dependentSchemas`, `enum`) | complex cross-field logic → policy evaluation |
+| E4 Provenance | the per-field provenance record | the merge/overlay act + conflict resolution |
+| E5 Version pinning | the recorded pin (a reference) | drift comparison against the pin |
+| R3 Immutability | the `createOnly` marker | **enforcing** it (reject the change) |
+| R4 Field ownership | the `managedFields` record | SSA conflict detection/resolution |
+| R5 Relationships | typed edges + `targetField` refs | DAG construction, ordering, traversal, compensation |
+| R6 Tombstones/bundling | `supersededBy` + Compound Document | — |
+| Binding | the edge + typed reference | resolution at dispatch; **any transform** |
+| Sovereignty | immutable zone/classification fields, closure bundle | Governance Matrix evaluation, placement filtering |
+| Audit | the immutable records, provenance, hash-chain leaves | producing entries, Merkle proofs |
+| Transformation / expressions | — (none; not carried) | **all of it** |
+
+The test: a noun (a record, a contract, an edge, a marker, a pin) → Data/UDLM. A verb (assemble,
+evaluate, decide, enforce, transform, resolve) → Policy/DCM. **CEL and any embedded expression fall
+entirely on the Policy side and are not carried in the portable data.**
+
 ## 7. Open questions / not yet done — see §"left out" in the PR description.
 
 ## 8. Resources pulled in

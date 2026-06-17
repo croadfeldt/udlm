@@ -55,10 +55,10 @@ Each hard constraint cites the UDLM contract it derives from.
     (`contracts/identifier-scheme.md`, `contracts/schema-sharing.md`).
 20. **Data, not logic** — a spec carries values + declarative constraints; *executable* rules are
     Policy, *static* values are Layers (`foundations/layering-and-versioning.md` §1a).
-21. **Hermetic expressions** — any embedded expression (e.g. CEL for conditional/transition rules)
-    MUST be pure: sandboxed, deterministic, bounded-cost, **no I/O or network**. A non-hermetic
-    expression breaks air-gap and is an exfiltration path across a sovereignty boundary
-    (`design-principles/cross-cutting-requirements.md` G2).
+21. **No embedded expressions** — a spec carries *declarative* constraints only (JSON Schema
+    `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
+    expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
+    the contract layer stays deterministic + reproducible (`design-principles/core-tenets.md` T2/T3).
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
