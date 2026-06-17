@@ -67,8 +67,10 @@ Each hard constraint cites the UDLM contract it derives from.
 - **Profiles narrow, never widen** the base contract (E1).
 - **Field-level provenance** — every assembled field records the layer/policy that set it (E4).
 - **Reproducible** — spec + inputs deterministically yields the same Requested/effective state.
-- **One concept per field**; cross-field/conditional constraints declared (E3 / CEL-in-schema, the
-  K8s `x-kubernetes-validations` pattern), never expressed as prose or imperative code.
+- **One concept per field**; cross-field/conditional constraints expressed **declaratively** in JSON
+  Schema (`if`/`then`, `dependentSchemas`, `enum`), never an embedded expression language. Cross-entity
+  data flow is a declarative typed binding (`targetField` → output); any real transformation/computation
+  is **Policy**, applied by DCM — never in the spec (T2/T4).
 
 ---
 _E1–E5 reference the enhancement opportunities surfaced from dcm-project/enhancements#55
