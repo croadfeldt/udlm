@@ -84,10 +84,12 @@ boundaries.
   *executable* rules are Policy, *static* values are Layers. Conversion, validation, defaulting, and
   cascade are expressed as evaluable data, **never as a required running controller** (the dominant
   Kubernetes anti-pattern). The model outlives the engine that realizes it.
-- **G2 — Hermetic expressions.** Where an expression layer encodes conditional or four-state
-  transition rules (CEL: "Realized requires a prior Requested"), it **MUST be pure** — sandboxed,
-  deterministic, bounded-cost, **no I/O or network**. A non-hermetic expression breaks air-gap and
-  becomes an exfiltration path *across* a sovereignty boundary, violating P4.
+- **G2 — No embedded expressions; the contract layer is deterministic.** The portable data model
+  carries **no embedded expression language** — determinism and reproducibility are *structural*, not
+  policed (a single impure expression would break tamper-evident audit `AUD-002` and sovereignty P4).
+  Definition and validation use only *declarative* constructs (JSON Schema `if/then` ·
+  `dependentSchemas` · `enum` · bounds + markers like `createOnly`); **transformation/enrichment is
+  Policy, applied by DCM** and recorded in the audit log (`core-tenets.md` T2/T3).
 - **G3 — Contract, not parallel implementation.** UDLM defines the *data contract* for provenance,
   dependencies, and policy inputs; **DCM operationalizes it** (the Merkle audit log, the DAG engine,
   the Governance Matrix). One model — never a competing UDLM-side implementation.
