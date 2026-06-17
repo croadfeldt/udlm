@@ -1,13 +1,15 @@
-# Example — DCM manages a LikeC4-described service
+# LikeC4 ↔ UDLM
 
-A worked example of the LikeC4 ↔ UDLM ↔ DCM loop: **design the architecture in LikeC4 → it maps to a
-UDLM Composite Service → DCM realizes each component via a separate provider → the live diagram
-re-projects from Realized state.** This validates the idea: **a LikeC4 system *is* a Composite Service**
-(`entities/composite-service-model.md`), and its components break out into separate back-end providers.
+How **LikeC4** — an architecture-as-code / C4 visualization tool, here a **customer-derived** item —
+relates to UDLM: what translates, what doesn't, and a worked example. This stands on its own; it is **not**
+coupled to any other integration or partner.
 
 A LikeC4 model and a UDLM Composite Service are **two serializations of the same composite graph** — LikeC4
-is the human/visual one (design-time); the Composite Service is the operational/data one (runtime), and
-only it carries the graph through realization, governance, and audit.
+is the human/visual one (design-time); the Composite Service is the operational/data one (runtime), and only
+it carries the graph through realization, governance, and audit. So **a LikeC4 system *is* a Composite
+Service** (`entities/composite-service-model.md`): design in LikeC4 → it maps to a UDLM Composite Service →
+DCM realizes each component via a separate provider → the live diagram re-projects from Realized state.
+Sections: the worked example (§1–4), translation gaps (§5), and what UDLM does / doesn't represent (§6).
 
 ## 1. The architecture, in LikeC4 (design-time, Data)
 
