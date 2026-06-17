@@ -6,10 +6,15 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "conformsTo", "uuid", "resourceType", "version", "family",
+    "$id", "conformsTo", "uuid", "resourceType", "version", "family",
     "entityType", "portability", "status", "metadata", "spec", "outputs"
   ],
   "properties": {
+    "$id": {
+      "type": "string",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conformsTo`: https://udlm.dev/registry/udlm/<spec>/<ResourceType>/<version>. Relationships reference a target by its `$id` (never bare name). A new MAJOR mints a new `$id`."
+    },
     "conformsTo": {
       "type": "string",
       "pattern": "^udlm/[0-9]+\\.[0-9]+$",
@@ -79,6 +84,11 @@
         "required": { "type": "array", "items": { "type": "string" } }
       }
     },
+    "immutable": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Dot-paths into `spec` that are createOnly — set at Intent, never changed post-realization; a change forces replace → supersession. Use for sovereignty-determining fields (zone / classification). Declarative noun; DCM enforces it (R3 / cross-cutting P4)."
+    },
     "outputs": {
       "type": "object",
       "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced.",
@@ -103,6 +113,7 @@
         "properties": {
           "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
           "target": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$" },
+          "targetField": { "type": "string", "description": "An `outputs` key on the target this edge binds to (e.g. a database's `connectionString`). The binding is a typed reference resolved at dispatch — data movement, not transformation (T4)." },
           "cardinality": { "enum": ["0..1", "1..1", "0..n", "1..n"], "default": "0..n" },
           "description": { "type": "string" }
         }
