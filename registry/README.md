@@ -11,11 +11,14 @@ items and constraint profiles project over them.
 registry/
   resource-type-spec.schema.json   # the meta-schema every entry MUST validate against
   VERSIONING.md                    # the two-axis versioning + compatibility policy
-  resource-types/                  # one file per resource type, JSON or YAML
+  realized-entity.schema.json      # the INSTANCE meta-schema (four states + provenance + ownership)
+  resource-types/                  # TYPE definitions — one file per resource type, JSON or YAML
     compute.virtual-machine.json
+    compute.cluster.json
     data.database.json
     network.ip-address.json
     compute.container.yaml          # ← YAML; semantically identical, same meta-schema
+  instances/                       # INSTANCE records (realized entities) — e.g. orders-db.json
   tools/
     validate.py                    # valid-by-construction: every entry vs the meta-schema
     compat-check.py                # classify a version delta + enforce the declared bump
