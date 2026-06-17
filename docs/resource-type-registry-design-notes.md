@@ -56,8 +56,10 @@ substrate rather than each project re-modeling it.
 Six refinements (R1–R6) were adopted and analysed against DCM's hard requirements (`AUD-001/002` audit,
 provider-contract §7 observability, `RDG-001` dependency-graph, Governance-Matrix sovereignty). **All
 enhance** those pillars — see `design-principles/cross-cutting-requirements.md`. Two controls:
-- **Guardrail G2 (hermetic expressions):** CEL/embedded expressions MUST be pure (no I/O) or they break
-  air-gap and become an exfiltration path across a sovereignty boundary.
+- **Guardrail G2 (no embedded expressions):** the portable data carries no expression language. Bindings
+  are declarative typed references (`targetField` → output; Data, in the spec); all
+  transformation/enrichment (incl. CEL) is **Policy**, applied by DCM. Determinism + reproducibility are
+  therefore *structural* (the precondition for tamper-evident audit + sovereignty), not policed.
 - **Discipline G3 (contract, not parallel implementation):** UDLM defines the provenance/dependency/policy
   *data contract*; DCM operationalizes it (Merkle audit, DAG engine, Governance Matrix). One model.
 
@@ -67,6 +69,10 @@ enhance** those pillars — see `design-principles/cross-cutting-requirements.md
 - Two-axis versioning (modeled on NIST OSCAL's `version` + `oscal-version`); SPEC axis is major.minor only
   (CloudEvents); semver semantics machine-enforced by compat-check.
 - `spec`/`outputs` = desired/observed seam (K8s/Crossplane/OSAC), but four-state, strongly typed.
+- **Bindings vs expressions (settled):** cross-entity bindings are *declarative typed references*
+  (`targetField` → output) carried in the spec; **expressions/transformation (incl. CEL) are not in the
+  data model — they are Policy, applied by DCM.** Conditional constraints (E3) use JSON Schema native
+  (`if`/`then`, `dependentSchemas`), not an expression language. (core-tenets T2/T4/G2 — not to be re-litigated.)
 - Avoid: version-in-identity (GVK), `$dynamicRef`, version-in-name, coupling the model to a runtime,
   collapsing intent↔reality with silent drift correction, redundant proxy entities.
 
