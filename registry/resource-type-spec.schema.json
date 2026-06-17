@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/resource-type-spec.schema.json",
+  "title": "UDLM Resource Type Specification",
+  "description": "Meta-schema that every Resource Type Specification in the UDLM Resource Type Registry MUST validate against. JSON Schema 2020-12 is the normative wire format for entity-type definitions (contracts/schema-sharing.md). A Resource Type Specification is the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, typed realized outputs, and allowed relationship types (entities/resource-type-hierarchy.md). This meta-schema is itself part of the UDLM spec and is versioned on the SPEC axis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conformsTo", "uuid", "resourceType", "version", "family",
+    "entityType", "portability", "status", "metadata", "spec", "outputs"
+  ],
+  "properties": {
+    "conformsTo": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$",
+      "description": "SPEC-axis binding: the UDLM spec major.minor this type is written against (its apiVersion). Peers conformant to the same MAJOR are wire-compatible (CONFORMANCE.md §9)."
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "RFC 4122 UUIDv4 identity of this type specification (contracts/identifier-scheme.md). Immutable for the life of the type."
+    },
+    "resourceType": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$",
+      "description": "Namespaced Category.Type classification, vendor-neutral. Examples: Compute.VirtualMachine, Network.IPAddress, Process.AnsiblePlaybook."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "ENTITY-axis version: this type's own Major.Minor.Revision (see registry/VERSIONING.md). Immutable once published; any change produces a new version."
+    },
+    "family": {
+      "enum": ["Resource", "Knowledge"],
+      "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary."
+    },
+    "entityType": {
+      "enum": ["Infrastructure Resource", "Composite", "Process"],
+      "description": "One of UDLM's three primary entity types (foundations/entity-types.md). Determines the lifecycle state machine, ownership model, and decommission behavior."
+    },
+    "portability": {
+      "enum": ["portable", "partial", "provider-specific"],
+      "description": "Portability classification (entities/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared."
+    },
+    "status": {
+      "enum": ["active", "deprecated", "retired"],
+      "description": "Lifecycle status of this version (foundations/layering-and-versioning.md universal deprecation model)."
+    },
+    "deprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "reason", "migration_guidance"],
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "reason": { "type": "string" },
+        "replacement_uuid": { "type": "string", "format": "uuid" },
+        "migration_guidance": { "type": "string" }
+      },
+      "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migration_guidance."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["displayName", "description", "maintainer", "origination_timestamp"],
+      "properties": {
+        "displayName": { "type": "string" },
+        "description": { "type": "string" },
+        "maintainer": { "type": "string" },
+        "origination_timestamp": { "type": "string", "format": "date" }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": ["type", "properties"],
+      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them.",
+      "properties": {
+        "type": { "const": "object" },
+        "properties": { "type": "object" },
+        "required": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type"],
+        "properties": {
+          "type": { "enum": ["string", "integer", "number", "boolean", "object", "array"] },
+          "description": { "type": "string" },
+          "sensitive": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "description": "Allowed relationship types from this resource to others (entities/entity-relationships.md, service-dependencies.md).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "target"],
+        "properties": {
+          "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
+          "target": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$" },
+          "cardinality": { "enum": ["0..1", "1..1", "0..n", "1..n"], "default": "0..n" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Lifecycle rules. Defaults to UDLM's four-state model Intent → Requested → Realized → Discovered (foundations/four-states.md). Override only to declare type-specific decommission behavior.",
+      "properties": {
+        "states": { "type": "array", "items": { "enum": ["Intent", "Requested", "Realized", "Discovered"] } },
+        "decommission": { "type": "string" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["deprecated", "retired"] } } },
+      "then": { "required": ["deprecation"] }
+    }
+  ]
+}

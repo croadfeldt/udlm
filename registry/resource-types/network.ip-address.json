@@ -1,0 +1,28 @@
+{
+  "conformsTo": "udlm/1.0",
+  "uuid": "616fd540-4908-4e96-a149-c9494be0c76e",
+  "resourceType": "Network.IPAddress",
+  "version": "1.0.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "IP Address",
+    "description": "An allocated IP address, dynamic or static, that other resources may consume.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-17"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["family"],
+    "properties": {
+      "family": { "type": "string", "enum": ["ipv4", "ipv6"], "description": "Address family." },
+      "allocation": { "type": "string", "enum": ["dynamic", "static"], "default": "dynamic" }
+    }
+  },
+  "outputs": {
+    "address": { "type": "string", "description": "The allocated address once Realized." }
+  },
+  "relationships": []
+}
