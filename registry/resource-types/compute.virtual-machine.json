@@ -1,4 +1,5 @@
 {
+  "$id": "https://udlm.dev/registry/udlm/1.0/Compute.VirtualMachine/1.0.0",
   "conformsTo": "udlm/1.0",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resourceType": "Compute.VirtualMachine",
@@ -56,7 +57,8 @@
     "hostname": { "type": "string", "description": "Resolvable hostname." },
     "instanceId": { "type": "string", "description": "Provider-assigned instance identifier." }
   },
+  "immutable": ["guestOS.type"],
   "relationships": [
-    { "kind": "depends_on", "target": "Network.IPAddress", "cardinality": "0..n", "description": "May consume one or more pre-allocated addresses." }
+    { "kind": "depends_on", "target": "Network.IPAddress", "targetField": "address", "cardinality": "0..n", "description": "May consume one or more pre-allocated addresses." }
   ]
 }
