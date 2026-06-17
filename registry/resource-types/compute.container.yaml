@@ -1,5 +1,6 @@
 # UDLM Resource Type Specification — authored in YAML (semantically identical to a JSON
 # document; validated against the same registry/resource-type-spec.schema.json).
+$id: https://udlm.dev/registry/udlm/1.0/Compute.Container/1.0.0
 conformsTo: udlm/1.0
 uuid: ba999aa2-7b4d-468f-9f70-20216cd2e3b1
 resourceType: Compute.Container
@@ -61,5 +62,6 @@ outputs:
 relationships:
   - kind: depends_on
     target: Data.Database
+    targetField: connectionString
     cardinality: 0..n
     description: May bind to a database's connection outputs.
