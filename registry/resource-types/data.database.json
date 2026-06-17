@@ -1,0 +1,43 @@
+{
+  "conformsTo": "udlm/1.0",
+  "uuid": "9c3488aa-00cb-40fa-b02d-fbf2c47acce9",
+  "resourceType": "Data.Database",
+  "version": "1.0.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Database",
+    "description": "A managed relational database instance. Publishes connection outputs other resources bind to.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-17"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["engine", "version"],
+    "properties": {
+      "engine": { "type": "string", "enum": ["postgres", "mysql"], "description": "Database engine." },
+      "version": { "type": "string", "description": "Engine version, e.g. 16. Allowed values are engine-dependent (see registry conditional-constraints, E3)." },
+      "resources": {
+        "type": "object",
+        "properties": {
+          "cpu": { "type": "number", "minimum": 0.25 },
+          "memory": { "type": "string", "pattern": "^[0-9]+(MB|GB)$" },
+          "storage": { "type": "string", "pattern": "^[0-9]+(GB|TB)$" }
+        }
+      },
+      "metadata": {
+        "type": "object",
+        "properties": { "name": { "type": "string" } }
+      }
+    }
+  },
+  "outputs": {
+    "connectionString": { "type": "string", "description": "Full connection string once Realized.", "sensitive": true },
+    "host": { "type": "string", "description": "Database host." },
+    "port": { "type": "integer", "description": "Listening port." },
+    "username": { "type": "string", "description": "Provisioned application username." }
+  },
+  "relationships": []
+}

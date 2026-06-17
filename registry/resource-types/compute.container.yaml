@@ -1,0 +1,65 @@
+# UDLM Resource Type Specification — authored in YAML (semantically identical to a JSON
+# document; validated against the same registry/resource-type-spec.schema.json).
+conformsTo: udlm/1.0
+uuid: ba999aa2-7b4d-468f-9f70-20216cd2e3b1
+resourceType: Compute.Container
+version: 1.0.0
+family: Resource
+entityType: Infrastructure Resource
+portability: portable
+status: active
+metadata:
+  displayName: Container
+  description: A container workload with an image, resource requests, environment, and exposed ports.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-06-17"
+spec:
+  type: object
+  required: [image]
+  properties:
+    image:
+      type: object
+      required: [reference]
+      properties:
+        reference:
+          type: string
+          description: Container image reference, e.g. registry.example.com/orders-api:1.0
+    resources:
+      type: object
+      properties:
+        cpu: { type: number, minimum: 0.1 }
+        memory: { type: string, pattern: "^[0-9]+(MB|GB)$" }
+    process:
+      type: object
+      properties:
+        env:
+          type: array
+          items:
+            type: object
+            required: [name]
+            properties:
+              name: { type: string }
+              value: { type: string }
+    network:
+      type: object
+      properties:
+        ports:
+          type: array
+          items:
+            type: object
+            required: [container_port]
+            properties:
+              container_port: { type: integer, minimum: 1, maximum: 65535 }
+              visibility: { type: string, enum: [internal, external], default: internal }
+outputs:
+  endpoint:
+    type: string
+    description: Reachable endpoint once Realized.
+  internalDNS:
+    type: string
+    description: In-cluster DNS name.
+relationships:
+  - kind: depends_on
+    target: Data.Database
+    cardinality: 0..n
+    description: May bind to a database's connection outputs.
