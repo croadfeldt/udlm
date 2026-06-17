@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/1.0/realized-entity.schema.json",
+  "title": "UDLM Realized Entity (instance)",
+  "description": "The operational record of one entity (or Composite Entity) as it flows through the four states. This is the data substrate DCM reads and writes — UDLM carries the records, DCM applies the policy that produces them (core-tenets G3). It complements the Resource Type Specification (which defines the TYPE); this defines an INSTANCE. Field values inside the state snapshots are typed by the entity's Resource Type Spec, not re-validated here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["uuid", "conformsTo", "resourceType", "typeVersion", "lifecycleState", "states"],
+  "properties": {
+    "uuid": {
+      "type": "string", "format": "uuid",
+      "description": "Stable RFC 4122 identity of this entity. A Composite Entity has exactly one UUID across all four states (entities/composite-service-model.md)."
+    },
+    "conformsTo": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
+    "resourceType": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$" },
+    "typeVersion": {
+      "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Pins the Resource Type Specification version this instance was realized against (E5). Drift and validation are measured against this exact contract."
+    },
+    "typeRef": {
+      "type": "string", "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The `$id` of the pinned Resource Type Spec."
+    },
+    "lifecycleState": {
+      "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"],
+      "description": "The entity's current state in the four-state model (foundations/four-states.md)."
+    },
+    "generation": { "type": "integer", "minimum": 0, "description": "Increments on each desired-state (Intent/Requested) change." },
+    "observedGeneration": { "type": "integer", "minimum": 0, "description": "The `generation` the Realized state reflects. observedGeneration < generation ⇒ realization pending (the K8s drift signal)." },
+
+    "states": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An immutable snapshot per state. Intent is captured before processing; Requested is the assembled, policy-validated, provider-ready payload; Realized is the provider-confirmed snapshot (system of record); Discovered is the actively-introspected state used for drift.",
+      "properties": {
+        "intent":     { "$ref": "#/$defs/stateSnapshot" },
+        "requested":  { "$ref": "#/$defs/stateSnapshot" },
+        "realized":   { "$ref": "#/$defs/realizedSnapshot" },
+        "discovered": { "$ref": "#/$defs/realizedSnapshot" }
+      }
+    },
+
+    "provenance": {
+      "type": "object",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; DCM writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "timestamp"],
+          "properties": {
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "id"],
+              "properties": {
+                "kind": { "enum": ["layer", "policy", "actor", "provider"] },
+                "id": { "type": "string" },
+                "version": { "type": "string" }
+              }
+            },
+            "actor": { "type": "string", "description": "The authenticated identity on whose behalf the change was made." },
+            "timestamp": { "type": "string", "format": "date-time" },
+            "previousValue": { "description": "Value before this change (any JSON type), for the audit diff." }
+          }
+        }
+      }
+    },
+
+    "ownership": {
+      "type": "object",
+      "description": "FIELD OWNERSHIP (R4 / server-side apply): keyed by dot-path, the manager that owns each field. Enables offline conflict detection when multiple vendor-agnostic providers write one record (no central apiserver needed). Distinct from provenance: ownership = who is authoritative now; provenance = the full history.",
+      "additionalProperties": { "type": "string" }
+    },
+
+    "dependencies": {
+      "type": "array",
+      "description": "Resolved instance-level edges (the realized form of the type's relationships). A binding records the value pulled from the target's realized output — data movement, not transformation (T4).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "targetUuid"],
+        "properties": {
+          "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
+          "targetUuid": { "type": "string", "format": "uuid" },
+          "targetField": { "type": "string" },
+          "boundField": { "type": "string", "description": "The field on this entity the bound value populated." },
+          "resolvedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+
+    "constituents": {
+      "type": "array",
+      "description": "For a Composite Entity: the constituents and their per-component realized state (entities/composite-service-model.md).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["componentId", "resourceType", "lifecycleState"],
+        "properties": {
+          "componentId": { "type": "string" },
+          "resourceType": { "type": "string" },
+          "instanceUuid": { "type": "string", "format": "uuid" },
+          "providedBy": { "enum": ["self", "external"] },
+          "lifecycleState": { "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"] }
+        }
+      }
+    },
+
+    "drift": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The diff between Discovered and Requested. A non-empty `fields` means observed reality diverged from intent.",
+      "properties": {
+        "detected": { "type": "boolean" },
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string" },
+              "requested": {},
+              "discovered": {}
+            }
+          }
+        }
+      }
+    },
+
+    "sovereignty": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The sovereign placement of the realized entity. These are realized from `immutable`/createOnly type fields — they cannot change without replace + Governance-Matrix re-evaluation (cross-cutting P4).",
+      "properties": {
+        "zone": { "type": "string" },
+        "classification": { "type": "string" }
+      }
+    },
+
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Realized-state health (OSAC-/K8s-style). Reported by the provider; not part of the four-state axis.",
+      "properties": {
+        "state": { "type": "string" },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "status"],
+            "properties": {
+              "type": { "type": "string" },
+              "status": { "enum": ["True", "False", "Unknown"] },
+              "reason": { "type": "string" },
+              "message": { "type": "string" },
+              "lastTransitionTime": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    },
+
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Linkage to the tamper-evident audit log (AUD-001/002). UDLM carries the reference (the Merkle head + leaf count); DCM produces and proves the chain (G3).",
+      "properties": {
+        "logHead": { "type": "string", "description": "Hash of the latest audit leaf for this entity (RFC 9162 Merkle)." },
+        "leafCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+
+  "$defs": {
+    "stateSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fields", "at"],
+      "properties": {
+        "fields": { "type": "object", "description": "Spec field values at this state (typed by the Resource Type Spec)." },
+        "at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "realizedSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fields", "outputs", "at"],
+      "properties": {
+        "fields": { "type": "object" },
+        "outputs": { "type": "object", "description": "Typed realized outputs (E2) published by the provider." },
+        "at": { "type": "string", "format": "date-time" },
+        "provider": { "type": "string", "description": "The provider that produced this realized state." }
+      }
+    }
+  }
+}
