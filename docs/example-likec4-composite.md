@@ -99,6 +99,54 @@ That is the "break the primitives into separate providers on the back end."
 Project the Composite Entity's **Realized** state back into a LikeC4 model → an always-accurate diagram of
 what is *actually running* (drift highlighted), instead of a hand-drawn approximation that rots.
 
+## 5. Translation gaps + how to close them
+
+The two serializations agree on the *provisioning* graph; each side then has layer-specific richness that
+does not round-trip — by design, not by defect.
+
+**LikeC4 → Composite Service (lossy without annotation):**
+- **Relationship meaning** — LikeC4 arrows are uniform descriptive edges; UDLM edges are *typed*
+  (`depends_on` / `references` / `contained_by`). The translator must classify each (a `depends_on`
+  provisioning order vs. an async `references` runtime call). LikeC4 doesn't carry that distinction.
+- **Hierarchy / levels** — C4 nesting (System › Container › Component) + zoom levels → flat constituents
+  (+ `contained_by`); the zoom concept has no substrate analog.
+- **External systems / actors** — not provisioned → `references` or dropped.
+- **`technology` → `resource_type`** — a mapping decision, not a fact ("nginx" could be a container or an LB).
+
+**Composite Service → LikeC4 (lossy):** lifecycle / state / drift, `provided_by` /
+`required_for_delivery` / field-level `bindings`, contract richness (schemas, typed outputs, `immutable`,
+sovereignty), and cardinality (`×3`) have no native LikeC4 representation.
+
+**Closing it — declarative annotations (stay on the Data side).** Annotate the `.c4` so the provisioning
+subset is deterministic and lossless — no logic, just hints:
+```likec4
+db = container 'Orders DB' {
+  technology 'PostgreSQL'
+  metadata { udlm.resourceType 'Data.Database' }
+}
+api -> db 'reads/writes' {
+  metadata { udlm.edge 'depends_on' }   // vs 'references' for async/runtime-only
+}
+```
+
+## 6. What LikeC4 has that UDLM does not model (by design)
+
+UDLM **can** represent LikeC4's *structural* model: elements → entities (mostly **Knowledge-family** —
+architecture *descriptions*; the provisionable subset *also* maps to **Resource-family** types for
+realization), relationships → typed edges, nesting → `contained_by`, tags / technology / description →
+attributes. So a LikeC4 model spans both families: descriptive architecture (Knowledge) with a realizable
+projection (Resource).
+
+UDLM **does not** model — and shouldn't, per the presentation-agnostic tenet:
+- **Presentation / rendering:** layout geometry, edge routing, colors, icons, shapes, themes.
+- **Viewer behavior:** interactive zoom across C4 levels, navigation.
+- **Views & dynamic views:** a *view* is a projection (a filtered rendering); a *dynamic view* is a
+  narrative (an ordered scenario walk). UDLM holds the graph; views/narratives are **consumer
+  projections** (DAV / viewer territory), not substrate.
+
+So LikeC4's *architecture data* is representable in UDLM; its *presentation + views* sit on top as a
+projection layer — the same place DAV's lenses live. Correct boundary, not a deficiency.
+
 ## The boundary, in one line
 
 | Step | Domain |
