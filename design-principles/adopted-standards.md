@@ -28,6 +28,28 @@ Absorbing adjacent-domain data duplicates an external system's record and its li
 Information-Provider contract's explicit warning against "copy the data in"
 (`../contracts/information-providers.md` §2).
 
+## 1a. Two tiers of adopted standard — route by kind
+
+Not every adopted standard needs the same machinery. Before integrating, classify the standard — it
+tells you exactly what to build and what to skip:
+
+| Tier | What it standardizes | Examples | Implement | Do **not** build |
+|---|---|---|---|---|
+| **Tier 1 — value / codelist** | the allowed *values of a single field* | ISO 4217 (currency), ISO 8601 / RFC 3339 (time), RFC 4122 (UUID), ISO 3166 (country), IANA tz | a **referenced field constraint** ("conforms to ISO 4217") — reference it, never copy/enumerate it | no support matrix, no version negotiation, no translation, no effective-version provenance |
+| **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | the **full apparatus**: an `adopts[]` reference + identity join, a provider `adoptedStandardSupport` matrix, DCM negotiation/translation (ADS-001…010), effective-version provenance | — |
+
+**Rule of thumb:** *does the standard version in a way that changes its shape?* **No → Tier 1** (a near-constant
+vocabulary — pin nothing, negotiate nothing). **Yes → Tier 2** (the whole reason the ADS machinery exists).
+
+Tier 2 standards routinely **contain** Tier 1 ones — FOCUS's `BillingCurrency` column *is* an ISO 4217
+code — so adopting the record pulls its field-level codelists along for free; you don't adopt them
+separately.
+
+**Why this matters (integration cost):** mis-routing is expensive in both directions. Applying the ADS
+machinery to a codelist is wasted surface area and config; treating a schema standard as a codelist
+(a plain string) silently breaks the moment its version moves or a provider supports a different one.
+Routing by tier is the integrator's first decision and the cheapest one to get right.
+
 ## 2. What adoption carries (Data) vs delegates (Policy)
 
 | Concern | Owner |
