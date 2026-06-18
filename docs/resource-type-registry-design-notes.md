@@ -85,7 +85,10 @@ where the boundary is, and the three reasons it was wrong are the contribution:
 ### The resolution — cost is *adopted*, not absorbed
 
 "Adopt" = **reference an external standard/provider by conformance and binding, rather than re-model it
-in the data substrate.** Three distinct dispositions, and cost takes the third:
+in the data substrate.** This is now a first-class design principle — **core tenet T5** + the full
+disposition in `../design-principles/adopted-standards.md` (the absorb/embed/adopt test, the adoption
+constructs, and the version-negotiation contract); cost is its worked example. Three distinct
+dispositions, and cost takes the third:
 
 - **Absorb** — define the schema inside UDLM (a Resource type). ✗ rejected (reasons above).
 - **Embed** — bake cost fields into every realized entity. ✗ never proposed; same T1 violation, worse.
