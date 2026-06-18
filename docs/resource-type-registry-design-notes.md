@@ -89,6 +89,46 @@ targets are `references` edges to the compute types (E2/T4) with the resource id
 instance. `cost = metering × rate` appears only as prose in `computedCost`'s description — never as an
 embedded expression (G2).
 
+### Portability finding (the keystone) — and how to service vendor-specific intent universally
+
+A first cut of the cost type marked itself `portable` while carrying **provider-shaped vocabulary**:
+dcm#60's CostSpec uses free-text `metric` names (`cpu_core_usage_per_hour`, `node_cost_per_month`) and
+a `cost_type` {Infrastructure, Supplementary} taxonomy — both Koku/OpenShift-specific. A meter authored
+against them is serviceable by *one* vendor, which violates the core requirement (a Resource Type must
+be **vendor-neutral — no provider-specific data**, `entities/resource-type-hierarchy.md` §"Resource
+Types must be vendor-neutral"; provider detail lives in the **Provider Catalog Item**, not the type).
+
+The fix is the general principle, and it answers "can we keep the vendor's *intent* in universal
+language?" — **yes: carry the concept the vendor term encodes, not the term; the provider naturalizes
+its native vocabulary to the universal one** (`contracts/provider-contract.md` naturalize → realize →
+denaturalize). Three layered mechanisms, in order of preference:
+
+1. **Name the concept, not the vendor term** — replace native metric strings with an **abstract
+   dimension** enum (`compute_time`, `memory_time`, `storage_capacity`, …) aligned to an existing open
+   standard (**FOCUS**, the FinOps Open Cost & Usage Specification — so the universal vocabulary is
+   *adopted*, not invented; Koku, cloud billing exports, and Kubecost already emit FOCUS). The provider
+   maps dimension → its native metric in its Catalog Item. The vendor *intent* survives verbatim:
+   `cost_type` {Infrastructure, Supplementary} encodes a direct-vs-allocated distinction, captured
+   universally as `category` {`direct`, `overhead`} — the provider naturalizes its taxonomy onto it.
+   One meter, every compliant provider, no loss of meaning.
+2. **Govern the universal vocabulary as a Knowledge taxonomy** — when the vocabulary itself must grow
+   (new dimensions/categories), model the terms as `Knowledge.TaxonomyTerm` entities and have rates
+   *reference* a term. Adding a dimension becomes a **curation act** (governed, versioned) rather than a
+   schema change or a vendor fork. (This is why the Knowledge family and the Resource family share one
+   registry — the cost type's vocabulary is itself curatable Knowledge.)
+3. **Declared, portability-breaking extension point** — only for genuinely vendor-unique intent with no
+   universal equivalent: the spec declares a typed, namespaced slot a provider's Catalog Item *may*
+   fill, explicitly marked portability-breaking (`resource-type-hierarchy.md` §"extension points"). The
+   portable core stays serviceable by everyone; the extension is additive, visible, and **never
+   required** to realize the type.
+
+Discipline: the portable type must be fully serviceable by *every* compliant provider on its own;
+extensions are additive and flagged, never load-bearing. The shipped `Observability.CostMeter` carries
+**zero** provider vocabulary (mechanism 1 + the FOCUS alignment); mechanisms 2–3 are the scaling path.
+**Feedback for dcm#60:** lift `metric` to FOCUS-aligned abstract dimensions and `cost_type` to a
+`direct`/`overhead` category, pushing the native-metric mapping into the cost-SP's Catalog Item —
+otherwise the `cost` type is serviceable only by Koku, not "any provider."
+
 ## 5. Cross-cutting refinements (from the standards survey) + DCM-pillar impact
 
 Six refinements (R1–R6) were adopted and analysed against DCM's hard requirements (`AUD-001/002` audit,
