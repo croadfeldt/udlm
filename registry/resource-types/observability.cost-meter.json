@@ -10,9 +10,10 @@
   "status": "active",
   "metadata": {
     "displayName": "Cost Meter",
-    "description": "Metering and cost tracking attached to compute resources managed by other providers. Unlike infrastructure types it provisions VISIBILITY (metering, overhead distribution, financial tracking), not infrastructure — a long-running observational Process realized by a cost provider (e.g. Red Hat Lightspeed Cost Management / Project Koku). UDLM-correct translation of the `cost` serviceType in dcm-project/enhancements#60: this type carries the cost MODEL (the rate table — declarative data); the provider COMPUTES the cost (metering x rate, overhead distribution — Policy), publishing the result as typed Realized outputs. The metered target is a typed relationship resolved on the instance, not an id baked into the type spec.",
+    "description": "Metering and cost tracking attached to compute resources managed by other providers. It provisions VISIBILITY (metering, overhead distribution, financial tracking), not infrastructure — a long-running observational Process. VENDOR-NEUTRAL by requirement: rates are expressed over ABSTRACT cost dimensions (compute_time, memory_time, ...), never a provider's native metric names; any compliant cost provider maps each abstract dimension to its own native metric in its Provider Catalog Item — NOT in this type. UDLM-correct translation of the `cost` serviceType in dcm-project/enhancements#60: this type carries the cost MODEL (the rate table over portable dimensions — declarative data); the provider naturalizes those dimensions, COMPUTES the cost (metering x rate, overhead distribution — Policy), and denaturalizes the result into the typed Realized outputs. The metered target is a typed relationship resolved on the instance, not an id baked into the type spec.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "origination_timestamp": "2026-06-17",
+    "portability_notes": "Fully portable: every field is vendor-neutral. Provider-specific cost vocabulary (native metric names, provider cost-type taxonomies) is deliberately NOT carried here — it belongs to the Provider Catalog Item (the E1 offering layer), which maps each abstract `dimension` to its native metric. Rationale + the dcm#60 comparison: docs/resource-type-registry-design-notes.md §4a."
   },
   "spec": {
     "type": "object",
@@ -21,29 +22,39 @@
       "target": {
         "type": "object",
         "required": ["resourceType"],
-        "description": "What kind of resource this meter tracks. The SPECIFIC resource(s) are bound on the instance via the `references` relationship (the realized edge carries the target uuid) — the type carries only the declarative type selector, never an instance id (T-data: noun, not a baked-in reference).",
+        "description": "What kind of resource this meter tracks. The SPECIFIC resource(s) are bound on the instance via the `references` relationship (the realized edge carries the target uuid) — the type carries only the declarative type selector, never an instance id.",
         "properties": {
           "resourceType": {
             "type": "string",
             "enum": ["Compute.Cluster", "Compute.Container", "Compute.VirtualMachine"],
-            "description": "Resource Type name of the metered target (dcm#60 `target.resource_type`; default there was `cluster`)."
+            "description": "Resource Type name of the metered target (dcm#60 `target.resource_type`)."
           }
         }
       },
       "costModel": {
         "type": "object",
-        "description": "Rate configuration. ABSENT = basic metering only (tier 1 — usage data flows, no cost). PRESENT without `rates` = distribution only (tier 2 — overhead categorized). PRESENT with `rates` = full cost (tier 3). The tier is derived purely from what is present in the spec (E3, presence-conditional) — no expression language; the actual `cost = metering x rate` is the provider's act (Policy), not carried here.",
+        "description": "Rate configuration. ABSENT = basic metering only (tier 1 — usage flows, no cost). PRESENT without `rates` = distribution only (tier 2 — overhead categorized). PRESENT with `rates` = full cost (tier 3). Tier is derived purely from what is present (E3, presence-conditional) — no expression language; `cost = metering x rate` is the provider's act (Policy), not carried here.",
         "properties": {
           "rates": {
             "type": "array",
-            "description": "Tiered rate definitions. Each rate is declarative data; applying it to usage is Policy.",
+            "description": "Rate definitions over ABSTRACT, vendor-neutral cost dimensions. Each rate is declarative data; mapping a dimension to a provider's native metric, and applying the rate to observed usage, is the provider's job (Policy / its Catalog Item).",
             "items": {
               "type": "object",
-              "required": ["metric", "value"],
+              "required": ["dimension", "value", "per"],
               "properties": {
-                "metric": { "type": "string", "description": "Rate metric, e.g. cpu_core_usage_per_hour, node_cost_per_month." },
-                "cost_type": { "type": "string", "enum": ["Infrastructure", "Supplementary"], "default": "Infrastructure" },
-                "value": { "type": "number", "minimum": 0, "description": "Rate value (>= 0)." }
+                "dimension": {
+                  "type": "string",
+                  "enum": ["compute_time", "memory_time", "storage_capacity", "network_egress", "node_lifetime", "request_count"],
+                  "description": "Portable cost dimension (aligned to FOCUS, the FinOps Open Cost & Usage Specification). The provider naturalizes this to its own native metric in its Catalog Item — that mapping is provider-specific and lives there, not here."
+                },
+                "value": { "type": "number", "minimum": 0, "description": "Rate value per unit of the dimension, in `currency` (>= 0)." },
+                "per": { "type": "string", "enum": ["hour", "day", "month"], "description": "Billing period the rate value is expressed against." },
+                "category": {
+                  "type": "string",
+                  "enum": ["direct", "overhead"],
+                  "default": "direct",
+                  "description": "Universal cost-attribution intent: `direct` = directly attributable to the metered resource; `overhead` = shared/allocated cost. Captures the INTENT behind any provider cost-type taxonomy in vendor-neutral terms; the provider naturalizes its native categories to these two concepts."
+                }
               }
             }
           },
@@ -56,16 +67,15 @@
           },
           "distribution": {
             "type": "string",
-            "enum": ["cpu", "memory"],
+            "enum": ["cpu", "memory", "even"],
             "default": "cpu",
-            "description": "Method for distributing shared overhead across metered resources."
+            "description": "Portable allocation basis for distributing shared overhead across metered resources."
           }
         }
       },
       "currency": {
         "type": "string",
-        "default": "USD",
-        "description": "ISO 4217 currency code for rate values and computed cost."
+        "description": "ISO 4217 currency code for rate values and computed cost. Defaults to USD when omitted; required once `rates` are present (E3)."
       }
     },
     "allOf": [
@@ -77,10 +87,10 @@
   },
   "immutable": ["target.resourceType"],
   "outputs": {
-    "meteredUsage": { "type": "object", "description": "Raw usage metrics observed for the target over the period (tier 1+). The provider's realized observation." },
-    "computedCost": { "type": "number", "description": "Cost for the period = metering x rate (+ markup), present only at tier 3. The output of the provider's computation; the formula itself is Policy and is NOT carried in the spec (G2)." },
-    "costBreakdown": { "type": "object", "description": "Overhead distribution result by the configured method (tier 2+)." },
-    "currency": { "type": "string", "description": "Currency of `computedCost` (echoes the realized spec value)." },
+    "computedCost": { "type": "number", "description": "Cost for the period = metering x rate (+ markup), present only at tier 3. Output of the provider's computation; the formula itself is Policy and is NOT carried in the spec (G2)." },
+    "currency": { "type": "string", "description": "ISO 4217 currency of `computedCost` (echoes the realized spec value)." },
+    "meteredUsage": { "type": "array", "description": "Per-dimension observed usage (tier 1+): items of { dimension, quantity, unit } over the portable dimension vocabulary — typed + vendor-neutral, not a provider-shaped blob." },
+    "costBreakdown": { "type": "array", "description": "Per-dimension cost after distribution (tier 2+): items of { dimension, amount }. Vendor-neutral binding surface." },
     "periodStart": { "type": "string", "description": "Start of the metered period (RFC 3339)." },
     "periodEnd": { "type": "string", "description": "End of the metered period (RFC 3339)." }
   },
