@@ -27,7 +27,9 @@ udlm/
 │                            federated contribution, credentials, authority tiers
 ├── observability/           Audit, provenance, observability contracts
 ├── topology/                Layered-topology contract
-├── design-principles/       Substrate design principles
+├── design-principles/       Substrate design principles (core tenets, adopted standards)
+├── registry/                Resource Type Registry — the meta-schema, type/instance
+│                            definitions, provider support matrices, validation tooling
 ├── reference/               Normative external standards cited
 ├── docs/                    Narrative perspectives (consumer handbook)
 └── tests/                   Test framework specification
@@ -51,9 +53,16 @@ See [`CONFORMANCE.md`](CONFORMANCE.md) for full details.
 
 ## Versioning
 
-UDLM follows semver. Two realizations conformant to the same major version
-are wire-compatible. Cross-major-version interop requires a peer to support
-multiple major versions concurrently. See [`CONFORMANCE.md`](CONFORMANCE.md) §9.
+**UDLM is currently `udlm/0.1` — a pre-1.0 (`0.x`) release.** The surface is still being
+defined, so per semver anything may change and the contract is **not yet stable**; current
+work *expands* the v0.x surface rather than refining a released spec. `1.0` is the earned
+milestone — cut when the surface is complete, the conformance suite passes, and the project
+commits to backward compatibility. See [`registry/VERSIONING.md`](registry/VERSIONING.md) for
+the two version axes (SPEC vs ENTITY) and the full positioning.
+
+Post-1.0, UDLM follows semver: two realizations conformant to the same major version are
+wire-compatible, and cross-major interop requires a peer to support multiple majors
+concurrently. See [`CONFORMANCE.md`](CONFORMANCE.md) §9.
 
 ## Provenance
 
