@@ -43,13 +43,43 @@ substrate rather than each project re-modeling it.
 
 - **E1 Constraint Profile / Offering** — the curated, defaulted, *narrowed* projection over a type's
   wire contract (per-field editable/default/tightened-validation). The missing middle between Type and
-  Intent. (= PR #55 `fields[]` = OSAC `FieldDefinition`.)
+  Intent. (= PR #55 `fields[]` = OSAC `FieldDefinition` = PR #60 `cost_model` per-tier narrowing; §4a.)
 - **E2 Typed realized-state outputs** — named, typed outputs published on Realized; the contract-checked
   binding surface (PR #55 flagged this as follow-up). Implemented as `outputs` in the meta-schema.
-- **E3 Conditional/dependent field constraints** — value of B depends on value of A.
+  (PR #60's metered/computed cost figures are the clearest E2 case — see §4a.)
+- **E3 Conditional/dependent field constraints** — value of B depends on value of A. (PR #60's
+  three-tier "present-in-spec" model is a presence-conditional instance — §4a.)
 - **E4 Layered-overlay provenance** — type-default ⊕ offering-default ⊕ user-value, recording which
   layer set each field.
 - **E5 Instance↔version pinning** — drift measured against the exact offering/type version realized.
+
+## 4a. Third witness — dcm-project/enhancements#60 ("cost service type", pgarciaq)
+
+PR #60 adds a fifth DCM `serviceType`, `cost` (backed by Red Hat Lightspeed Cost Management /
+Project Koku, consumed by the cost-SP enhancement #57). Unlike the four compute types it provisions
+**visibility** (metering, overhead distribution, financial tracking) over *other* resources, not
+infrastructure. We evaluated it for UDLM fit (evaluation only — not commented on the PR). It maps
+cleanly and is a **third independent re-derivation of E1/E2/E3** (after #55 and OSAC) — it validates
+the model rather than stressing it, and is the cleanest illustration yet of the Data ⇄ Policy boundary.
+
+| PR #60 element | UDLM home | Refinement |
+|---|---|---|
+| `cost` type itself | **Resource family / `Process` entityType**, `provisioning` archetype — a long-running observational process realized by a provider (Koku). Not Knowledge. | — |
+| `target{resource_id, resource_type}` | a **typed relationship** (`references`/`binds_to`, cardinality `0..n`) to compute targets — cross-cutting "applies to other resources" = relationship-not-transformation. | T4 / R5 |
+| `cost_model` · `rates` · `markup` · `distribution` · `currency` | **declarative `spec` data** (enums/defaults/numbers; no expression language). Narrowable per offering. | **E1** |
+| three-tier model ("maps to what is *present* in the spec": basic = `cost_model` absent; distribution = present, `rates` absent; full = `rates` present) | **conditional-by-presence** via JSON Schema native (`dependentSchemas` / `if`-`then`) — no DSL. | **E3** |
+| metered usage + computed cost figures (`cost = metering × rate`, overhead distribution) | **typed Realized-state `outputs`** the provider publishes; the *computation itself* is **Policy** (the provider's realization act), not carried in the data. | **E2** + T2 |
+
+**Why it's the cleanest boundary witness:** UDLM carries the **rate table** (a noun — declarative
+config in `spec`); the provider **computes the cost** (a verb — `metering × rate`, distribution by
+cpu/memory). The PR keeps the tier mapping as a prose table, not a formula, so it already sits on the
+correct side of guardrail **G2** — if anyone later embeds `cost = metering × rate` as an expression /
+CEL in the spec, that is exactly the line G2 draws (transformation is Policy, applied by DCM).
+
+**Divergences (shared with #55, all resolve in UDLM's favor, none blocking):** flat short
+`serviceType` enum vs UDLM namespaced `Category.Type` (`cost` → e.g. `Observability.CostMeter`);
+`resource_id` (an *instance* id) sits in the type schema, where UDLM keeps it on the INSTANCE (the
+realized edge) with the TYPE only declaring the relationship.
 
 ## 5. Cross-cutting refinements (from the standards survey) + DCM-pillar impact
 
