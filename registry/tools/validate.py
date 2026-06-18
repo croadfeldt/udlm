@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Valid-by-construction gate. Validates:
-  - registry/resource-types/*  against  resource-type-spec.schema.json   (TYPE definitions)
-  - registry/instances/*       against  realized-entity.schema.json      (INSTANCE records)
+  - registry/resource-types/*  against  resource-type-spec.schema.json        (TYPE definitions)
+  - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
+  - registry/providers/*       against  provider-adopted-standards.schema.json (provider support matrices)
 Loads JSON and YAML natively. Exit non-zero if anything is invalid. Wire into CI."""
 import json
 import sys
@@ -19,6 +20,7 @@ except ImportError:
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.schema.json").read_text()))
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
+PROVIDER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "provider-adopted-standards.schema.json").read_text()))
 
 
 def load(path: pathlib.Path):
@@ -61,6 +63,10 @@ def main() -> int:
     failures += validate_dir(
         "instances", INSTANCE_VALIDATOR,
         lambda d: f"{d['resourceType']} instance {d['uuid'][:8]} [{d['lifecycleState']}]")
+    print("== providers (adopted-standard support) ==")
+    failures += validate_dir(
+        "providers", PROVIDER_VALIDATOR,
+        lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adoptedStandardSupport'])}")
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0
 

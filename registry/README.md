@@ -20,8 +20,10 @@ registry/
     compute.container.yaml          # ← YAML; semantically identical, same meta-schema
     capability.json                 # ← Knowledge family (single-segment name; curation lifecycle)
   instances/                       # INSTANCE records (realized entities) — e.g. orders-db.json
+  provider-adopted-standards.schema.json  # provider support-matrix (T5: which external-standard versions a provider serves)
+  providers/                       # provider support matrices — e.g. cost-sp.json (FOCUS/OpenCost)
   tools/
-    validate.py                    # valid-by-construction: every entry vs the meta-schema
+    validate.py                    # valid-by-construction: types + instances + provider matrices
     compat-check.py                # classify a version delta + enforce the declared bump
 ```
 

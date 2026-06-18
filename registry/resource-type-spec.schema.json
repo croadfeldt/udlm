@@ -131,6 +131,11 @@
         "states": { "type": "array", "items": { "enum": ["Intent", "Requested", "Realized", "Discovered"] } },
         "decommission": { "type": "string" }
       }
+    },
+    "adopts": {
+      "type": "array",
+      "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
+      "items": { "$ref": "#/$defs/adoptedStandardRef" }
     }
   },
   "allOf": [
@@ -146,5 +151,34 @@
       "if": { "properties": { "family": { "const": "Knowledge" } } },
       "then": { "properties": { "entityType": { "enum": ["Capability", "TaxonomyTerm", "Alias", "Antipattern", "UseCase"] } } }
     }
-  ]
+  ],
+  "$defs": {
+    "standardVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A reference over an external standard's OWN versioning scheme — a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (DCM), not the data model (T2/T5)."
+    },
+    "adoptedStandardRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["standard", "version", "identityJoin"],
+      "description": "A reference to an external standard this entity adopts (T5). Carries identity join + version pointer only — never the standard's schema.",
+      "properties": {
+        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, OSCAL, SCIM, OpenTelemetry." },
+        "version": { "$ref": "#/$defs/standardVersion" },
+        "role": { "type": "string", "description": "What the adopted data is for (e.g. 'cost-and-usage data for this resource')." },
+        "identityJoin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["localField", "standardColumn"],
+          "description": "The anchor only UDLM can provide: a local identity field bound to a column in the standard's records (e.g. uuid -> FOCUS ResourceId).",
+          "properties": {
+            "localField": { "type": "string", "description": "Field on this entity used as the join key (e.g. uuid)." },
+            "standardColumn": { "type": "string", "description": "Column/attribute in the standard's records that the local field joins to (e.g. ResourceId)." }
+          }
+        },
+        "source": { "type": "string", "description": "Canonical URL of the standard (e.g. https://focus.finops.org/)." }
+      }
+    }
+  }
 }
