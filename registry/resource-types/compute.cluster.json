@@ -51,5 +51,21 @@
   "relationships": [
     { "kind": "depends_on", "target": "Network.VirtualNetwork", "cardinality": "0..1", "description": "Realized onto a virtual network." },
     { "kind": "contained_by", "target": "Platform.Hub", "cardinality": "0..1", "description": "Provisioned and managed by a hub (ACM / Hosted Control Planes)." }
+  ],
+  "adopts": [
+    {
+      "standard": "FOCUS",
+      "version": ">=1.3 <2.0",
+      "role": "cost-and-usage data for this cluster",
+      "identityJoin": { "localField": "uuid", "standardColumn": "ResourceId" },
+      "source": "https://focus.finops.org/"
+    },
+    {
+      "standard": "OpenCost",
+      "version": "1.x",
+      "role": "Kubernetes cost allocation (CPU/memory/idle)",
+      "identityJoin": { "localField": "uuid", "standardColumn": "cluster" },
+      "source": "https://opencost.io/"
+    }
   ]
 }

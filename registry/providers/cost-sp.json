@@ -1,0 +1,11 @@
+{
+  "provider": {
+    "name": "cost-management-sp",
+    "uuid": "b6d948d4-47ab-42e2-b278-f038582c4c51",
+    "kind": "information"
+  },
+  "adoptedStandardSupport": [
+    { "standard": "FOCUS",    "supports": ">=1.2 <2.0", "preferred": "1.4", "direction": "emit" },
+    { "standard": "OpenCost", "supports": "1.x",         "preferred": "1.x", "direction": "emit" }
+  ]
+}

@@ -173,10 +173,31 @@
         "logHead": { "type": "string", "description": "Hash of the latest audit leaf for this entity (RFC 9162 Merkle)." },
         "leafCount": { "type": "integer", "minimum": 0 }
       }
+    },
+
+    "adoptedStandards": {
+      "type": "array",
+      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of DCM's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether DCM translated between versions (ADS-003/004/008). UDLM carries this record; DCM (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join.",
+      "items": { "$ref": "#/$defs/adoptedStandardBinding" }
     }
   },
 
   "$defs": {
+    "adoptedStandardBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["standard", "effectiveVersion"],
+      "properties": {
+        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost." },
+        "requestedVersion": { "type": "string", "description": "The version pin/range the consumer or type required." },
+        "providerVersion": { "type": "string", "description": "The version the bound provider emits/consumes (from its support matrix)." },
+        "effectiveVersion": { "type": "string", "description": "The version actually used after negotiation (the system-of-record fact)." },
+        "translated": { "type": "boolean", "default": false, "description": "True when DCM translated between providerVersion and effectiveVersion (ADS-004) — a Policy act, lowering confidence for derived values." },
+        "translationRef": { "type": "string", "description": "Reference to the deterministic migration used (preferably the standard's own published migration)." },
+        "providerUuid": { "type": "string", "format": "uuid", "description": "The provider / Information Provider that served the adopted data (lookup-only; not owned here — ADS-007)." },
+        "resolvedAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "stateSnapshot": {
       "type": "object",
       "additionalProperties": false,

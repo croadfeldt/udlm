@@ -40,5 +40,14 @@
     "port": { "type": "integer", "description": "Listening port." },
     "username": { "type": "string", "description": "Provisioned application username." }
   },
-  "relationships": []
+  "relationships": [],
+  "adopts": [
+    {
+      "standard": "FOCUS",
+      "version": ">=1.3 <2.0",
+      "role": "cost-and-usage data for this database",
+      "identityJoin": { "localField": "uuid", "standardColumn": "ResourceId" },
+      "source": "https://focus.finops.org/"
+    }
+  ]
 }
