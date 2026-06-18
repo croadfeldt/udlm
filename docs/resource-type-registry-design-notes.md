@@ -81,6 +81,14 @@ CEL in the spec, that is exactly the line G2 draws (transformation is Policy, ap
 `resource_id` (an *instance* id) sits in the type schema, where UDLM keeps it on the INSTANCE (the
 realized edge) with the TYPE only declaring the relationship.
 
+**Worked translation:** `registry/resource-types/observability.cost-meter.json` is the end-to-end
+proof — a `Resource`/`Process` type (first use of the `Process` entityType) where the rate table is
+declarative `spec` data, the three tiers are a real JSON-Schema presence-conditional (E3; tier-3
+rejects a missing `currency`), the metered/computed figures are typed `outputs` (E2), and the metered
+targets are `references` edges to the compute types (E2/T4) with the resource id resolved on the
+instance. `cost = metering × rate` appears only as prose in `computedCost`'s description — never as an
+embedded expression (G2).
+
 ## 5. Cross-cutting refinements (from the standards survey) + DCM-pillar impact
 
 Six refinements (R1–R6) were adopted and analysed against DCM's hard requirements (`AUD-001/002` audit,

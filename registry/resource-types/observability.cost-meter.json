@@ -1,0 +1,92 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/1.0/Observability.CostMeter/1.0.0",
+  "conformsTo": "udlm/1.0",
+  "uuid": "877f96ca-41a0-4210-ab64-803e4cce59df",
+  "resourceType": "Observability.CostMeter",
+  "version": "1.0.0",
+  "family": "Resource",
+  "entityType": "Process",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Cost Meter",
+    "description": "Metering and cost tracking attached to compute resources managed by other providers. Unlike infrastructure types it provisions VISIBILITY (metering, overhead distribution, financial tracking), not infrastructure — a long-running observational Process realized by a cost provider (e.g. Red Hat Lightspeed Cost Management / Project Koku). UDLM-correct translation of the `cost` serviceType in dcm-project/enhancements#60: this type carries the cost MODEL (the rate table — declarative data); the provider COMPUTES the cost (metering x rate, overhead distribution — Policy), publishing the result as typed Realized outputs. The metered target is a typed relationship resolved on the instance, not an id baked into the type spec.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-17"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["target"],
+    "properties": {
+      "target": {
+        "type": "object",
+        "required": ["resourceType"],
+        "description": "What kind of resource this meter tracks. The SPECIFIC resource(s) are bound on the instance via the `references` relationship (the realized edge carries the target uuid) — the type carries only the declarative type selector, never an instance id (T-data: noun, not a baked-in reference).",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": ["Compute.Cluster", "Compute.Container", "Compute.VirtualMachine"],
+            "description": "Resource Type name of the metered target (dcm#60 `target.resource_type`; default there was `cluster`)."
+          }
+        }
+      },
+      "costModel": {
+        "type": "object",
+        "description": "Rate configuration. ABSENT = basic metering only (tier 1 — usage data flows, no cost). PRESENT without `rates` = distribution only (tier 2 — overhead categorized). PRESENT with `rates` = full cost (tier 3). The tier is derived purely from what is present in the spec (E3, presence-conditional) — no expression language; the actual `cost = metering x rate` is the provider's act (Policy), not carried here.",
+        "properties": {
+          "rates": {
+            "type": "array",
+            "description": "Tiered rate definitions. Each rate is declarative data; applying it to usage is Policy.",
+            "items": {
+              "type": "object",
+              "required": ["metric", "value"],
+              "properties": {
+                "metric": { "type": "string", "description": "Rate metric, e.g. cpu_core_usage_per_hour, node_cost_per_month." },
+                "cost_type": { "type": "string", "enum": ["Infrastructure", "Supplementary"], "default": "Infrastructure" },
+                "value": { "type": "number", "minimum": 0, "description": "Rate value (>= 0)." }
+              }
+            }
+          },
+          "markup": {
+            "type": "object",
+            "properties": {
+              "value": { "type": "number", "default": 0, "description": "Markup percentage." },
+              "unit": { "type": "string", "enum": ["percent"], "default": "percent" }
+            }
+          },
+          "distribution": {
+            "type": "string",
+            "enum": ["cpu", "memory"],
+            "default": "cpu",
+            "description": "Method for distributing shared overhead across metered resources."
+          }
+        }
+      },
+      "currency": {
+        "type": "string",
+        "default": "USD",
+        "description": "ISO 4217 currency code for rate values and computed cost."
+      }
+    },
+    "allOf": [
+      {
+        "if": { "required": ["costModel"], "properties": { "costModel": { "required": ["rates"] } } },
+        "then": { "required": ["currency"] }
+      }
+    ]
+  },
+  "immutable": ["target.resourceType"],
+  "outputs": {
+    "meteredUsage": { "type": "object", "description": "Raw usage metrics observed for the target over the period (tier 1+). The provider's realized observation." },
+    "computedCost": { "type": "number", "description": "Cost for the period = metering x rate (+ markup), present only at tier 3. The output of the provider's computation; the formula itself is Policy and is NOT carried in the spec (G2)." },
+    "costBreakdown": { "type": "object", "description": "Overhead distribution result by the configured method (tier 2+)." },
+    "currency": { "type": "string", "description": "Currency of `computedCost` (echoes the realized spec value)." },
+    "periodStart": { "type": "string", "description": "Start of the metered period (RFC 3339)." },
+    "periodEnd": { "type": "string", "description": "End of the metered period (RFC 3339)." }
+  },
+  "relationships": [
+    { "kind": "references", "target": "Compute.Cluster", "cardinality": "0..n", "description": "Meters a cluster. Cross-cutting reference (applies-to), not a lifecycle dependency — the target's lifecycle is independent (T4). At least one target across all reference edges is required at instance time (enforced by Policy)." },
+    { "kind": "references", "target": "Compute.Container", "cardinality": "0..n", "description": "Meters a container workload." },
+    { "kind": "references", "target": "Compute.VirtualMachine", "cardinality": "0..n", "description": "Meters a virtual machine." }
+  ]
+}
