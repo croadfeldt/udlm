@@ -43,91 +43,99 @@ substrate rather than each project re-modeling it.
 
 - **E1 Constraint Profile / Offering** — the curated, defaulted, *narrowed* projection over a type's
   wire contract (per-field editable/default/tightened-validation). The missing middle between Type and
-  Intent. (= PR #55 `fields[]` = OSAC `FieldDefinition` = PR #60 `cost_model` per-tier narrowing; §4a.)
+  Intent. (= PR #55 `fields[]` = OSAC `FieldDefinition`.)
 - **E2 Typed realized-state outputs** — named, typed outputs published on Realized; the contract-checked
   binding surface (PR #55 flagged this as follow-up). Implemented as `outputs` in the meta-schema.
-  (PR #60's metered/computed cost figures are the clearest E2 case — see §4a.)
-- **E3 Conditional/dependent field constraints** — value of B depends on value of A. (PR #60's
-  three-tier "present-in-spec" model is a presence-conditional instance — §4a.)
+- **E3 Conditional/dependent field constraints** — value of B depends on value of A.
 - **E4 Layered-overlay provenance** — type-default ⊕ offering-default ⊕ user-value, recording which
   layer set each field.
 - **E5 Instance↔version pinning** — drift measured against the exact offering/type version realized.
 
-## 4a. Third witness — dcm-project/enhancements#60 ("cost service type", pgarciaq)
+## 4a. Cost — and the absorb-vs-adopt boundary (dcm#60 / #57)
 
-PR #60 adds a fifth DCM `serviceType`, `cost` (backed by Red Hat Lightspeed Cost Management /
-Project Koku, consumed by the cost-SP enhancement #57). Unlike the four compute types it provisions
-**visibility** (metering, overhead distribution, financial tracking) over *other* resources, not
-infrastructure. We evaluated it for UDLM fit (evaluation only — not commented on the PR). It maps
-cleanly and is a **third independent re-derivation of E1/E2/E3** (after #55 and OSAC) — it validates
-the model rather than stressing it, and is the cleanest illustration yet of the Data ⇄ Policy boundary.
+PR #60 adds a fifth DCM `serviceType`, `cost`; PR #57 is the **Cost Management Service Provider**
+(cost-SP) that consumes it, backed by Red Hat Lightspeed Cost Management / Project Koku. We evaluated
+cost for UDLM fit (evaluation only — not commented on the PRs). The investigation went down a wrong
+path and back up, and the wrong path is the most useful part of the finding, so it is recorded here.
 
-| PR #60 element | UDLM home | Refinement |
-|---|---|---|
-| `cost` type itself | **Resource family / `Process` entityType**, `provisioning` archetype — a long-running observational process realized by a provider (Koku). Not Knowledge. | — |
-| `target{resource_id, resource_type}` | a **typed relationship** (`references`/`binds_to`, cardinality `0..n`) to compute targets — cross-cutting "applies to other resources" = relationship-not-transformation. | T4 / R5 |
-| `cost_model` · `rates` · `markup` · `distribution` · `currency` | **declarative `spec` data** (enums/defaults/numbers; no expression language). Narrowable per offering. | **E1** |
-| three-tier model ("maps to what is *present* in the spec": basic = `cost_model` absent; distribution = present, `rates` absent; full = `rates` present) | **conditional-by-presence** via JSON Schema native (`dependentSchemas` / `if`-`then`) — no DSL. | **E3** |
-| metered usage + computed cost figures (`cost = metering × rate`, overhead distribution) | **typed Realized-state `outputs`** the provider publishes; the *computation itself* is **Policy** (the provider's realization act), not carried in the data. | **E2** + T2 |
+### What was tried, and why it was retired
 
-**Why it's the cleanest boundary witness:** UDLM carries the **rate table** (a noun — declarative
-config in `spec`); the provider **computes the cost** (a verb — `metering × rate`, distribution by
-cpu/memory). The PR keeps the tier mapping as a prose table, not a formula, so it already sits on the
-correct side of guardrail **G2** — if anyone later embeds `cost = metering × rate` as an expression /
-CEL in the spec, that is exactly the line G2 draws (transformation is Policy, applied by DCM).
+A first attempt modeled cost as a UDLM Resource type — `Observability.CostMeter`
+(`registry/resource-types/observability.cost-meter.json`, a `Resource`/`Process` type with a rate
+table in `spec`, an E3 presence-conditional for the three tiers, FOCUS-aligned dimensions, and typed
+`outputs`). **It has been retired (removed from the registry).** It was the experiment that *proved*
+where the boundary is, and the three reasons it was wrong are the contribution:
 
-**Divergences (shared with #55, all resolve in UDLM's favor, none blocking):** flat short
-`serviceType` enum vs UDLM namespaced `Category.Type` (`cost` → e.g. `Observability.CostMeter`);
-`resource_id` (an *instance* id) sits in the type schema, where UDLM keeps it on the INSTANCE (the
-realized edge) with the TYPE only declaring the relationship.
+1. **It absorbed data UDLM should not own.** `contracts/information-providers.md` §2 is explicit:
+   contextual data like **cost attribution** "lives in authoritative external systems (finance
+   systems…) that DCM does not and should not own," and it names the two anti-patterns — **copy the
+   data in** (duplication, staleness, ownership conflict) vs ignore it. Re-modeling a cost schema in
+   the registry *is* "copy the data in." It violates **T1** (the data model is the lifecycle custodian,
+   not the owner of every domain's data).
+2. **It reinvented an existing standard.** There is already a vendor-neutral cost data model —
+   **FOCUS** (FinOps Open Cost & Usage Specification, FinOps Foundation; current **v1.4**, ratified
+   2026-06-04) for cost/usage records, and **OpenCost** (CNCF) for Kubernetes cost allocation. A UDLM
+   cost type would re-express FOCUS columns badly. Don't rebuild the wheel; **reference** it.
+3. **#60 doesn't ask for it.** #60 lives in `service-type-definitions.md` — it *defines a service type
+   for consumption* (the provider-facing contract a Service Provider implements), the same pattern as
+   vm/container/database/cluster. It does **not** embed cost into the universal data model. The
+   "absorb" instinct was ours, not the PR's; modeling a competing UDLM type would duplicate a
+   correctly-placed DCM contract (**G3** — contract, not parallel implementation).
 
-**Worked translation:** `registry/resource-types/observability.cost-meter.json` is the end-to-end
-proof — a `Resource`/`Process` type (first use of the `Process` entityType) where the rate table is
-declarative `spec` data, the three tiers are a real JSON-Schema presence-conditional (E3; tier-3
-rejects a missing `currency`), the metered/computed figures are typed `outputs` (E2), and the metered
-targets are `references` edges to the compute types (E2/T4) with the resource id resolved on the
-instance. `cost = metering × rate` appears only as prose in `computedCost`'s description — never as an
-embedded expression (G2).
+### The resolution — cost is *adopted*, not absorbed
 
-### Portability finding (the keystone) — and how to service vendor-specific intent universally
+"Adopt" = **reference an external standard/provider by conformance and binding, rather than re-model it
+in the data substrate.** Three distinct dispositions, and cost takes the third:
 
-A first cut of the cost type marked itself `portable` while carrying **provider-shaped vocabulary**:
-dcm#60's CostSpec uses free-text `metric` names (`cpu_core_usage_per_hour`, `node_cost_per_month`) and
-a `cost_type` {Infrastructure, Supplementary} taxonomy — both Koku/OpenShift-specific. A meter authored
-against them is serviceable by *one* vendor, which violates the core requirement (a Resource Type must
-be **vendor-neutral — no provider-specific data**, `entities/resource-type-hierarchy.md` §"Resource
-Types must be vendor-neutral"; provider detail lives in the **Provider Catalog Item**, not the type).
+- **Absorb** — define the schema inside UDLM (a Resource type). ✗ rejected (reasons above).
+- **Embed** — bake cost fields into every realized entity. ✗ never proposed; same T1 violation, worse.
+- **Adopt / reference** — UDLM owns only the **identity** (the join key) and the **binding**; the data
+  conforms to **FOCUS/OpenCost** and is served by a provider. ✓
 
-The fix is the general principle, and it answers "can we keep the vendor's *intent* in universal
-language?" — **yes: carry the concept the vendor term encodes, not the term; the provider naturalizes
-its native vocabulary to the universal one** (`contracts/provider-contract.md` naturalize → realize →
-denaturalize). Three layered mechanisms, in order of preference:
+Concretely, #57 is already structurally a UDLM-shaped **cost-recovery provider** — a hybrid that maps
+onto seams the substrate already has:
 
-1. **Name the concept, not the vendor term** — replace native metric strings with an **abstract
-   dimension** enum (`compute_time`, `memory_time`, `storage_capacity`, …) aligned to an existing open
-   standard (**FOCUS**, the FinOps Open Cost & Usage Specification — so the universal vocabulary is
-   *adopted*, not invented; Koku, cloud billing exports, and Kubecost already emit FOCUS). The provider
-   maps dimension → its native metric in its Catalog Item. The vendor *intent* survives verbatim:
-   `cost_type` {Infrastructure, Supplementary} encodes a direct-vs-allocated distinction, captured
-   universally as `category` {`direct`, `overhead`} — the provider naturalizes its taxonomy onto it.
-   One meter, every compliant provider, no loss of meaning.
-2. **Govern the universal vocabulary as a Knowledge taxonomy** — when the vocabulary itself must grow
-   (new dimensions/categories), model the terms as `Knowledge.TaxonomyTerm` entities and have rates
-   *reference* a term. Adding a dimension becomes a **curation act** (governed, versioned) rather than a
-   schema change or a vendor fork. (This is why the Knowledge family and the Resource family share one
-   registry — the cost type's vocabulary is itself curatable Knowledge.)
-3. **Declared, portability-breaking extension point** — only for genuinely vendor-unique intent with no
-   universal equivalent: the spec declares a typed, namespaced slot a provider's Catalog Item *may*
-   fill, explicitly marked portability-breaking (`resource-type-hierarchy.md` §"extension points"). The
-   portable core stays serviceable by everyone; the extension is additive, visible, and **never
-   required** to realize the type.
+| What the cost-SP (#57) does | The seam it already *is* |
+|---|---|
+| Provisions Koku sources + cost models when infra is provisioned | **Service Provider** (the provisioning act) |
+| "Read-only query API… exposes metering and cost data from Koku" | **Information Provider** (`contracts/information-providers.md`) — serves data DCM references but does not own |
+| "Rego policies enforce rate ranges, markup, budgets" | **Policy** (rate *enforcement* is OPA/Rego — exactly T2/G2) |
+| The CostSpec rate table | **Data** (the declarative rate noun) |
 
-Discipline: the portable type must be fully serviceable by *every* compliant provider on its own;
-extensions are additive and flagged, never load-bearing. The shipped `Observability.CostMeter` carries
-**zero** provider vocabulary (mechanism 1 + the FOCUS alignment); mechanisms 2–3 are the scaling path.
-**Feedback for dcm#60:** lift `metric` to FOCUS-aligned abstract dimensions and `cost_type` to a
-`direct`/`overhead` category, pushing the native-metric mapping into the cost-SP's Catalog Item —
-otherwise the `cost` type is serviceable only by Koku, not "any provider."
+So UDLM's role for cost is small and bounded: **(a)** resource identity / handle = the join key
+(FOCUS `ResourceId`); **(b)** an Information-Provider **binding** declaring "this resource has cost
+data from source X, conforming to FOCUS, joined on identity"; **(c)** the confidence / authority /
+provenance wrapper the IP contract (`contracts/information-providers-advanced.md`) already gives every
+referenced field. The cost **model** is adopted (FOCUS + OpenCost); the **computation** is the
+provider's; the **enforcement** is Policy. Nothing enters the registry.
+
+### Keeping vendor intent in universal language (still applies — at the data, not a type)
+
+The earlier finding survives, repositioned to the consumable cost *data* rather than a UDLM type:
+**carry the concept a vendor term encodes, not the term; the provider naturalizes its native
+vocabulary to the universal one** (`contracts/provider-contract.md` naturalize → realize →
+denaturalize). The three mechanisms, in order:
+
+1. **Name the concept via an adopted standard** — express usage over FOCUS dimensions / `ConsumedUnit`,
+   not native metric strings; map the direct-vs-allocated intent (Koku's Infrastructure/Supplementary)
+   to FOCUS 1.3 **allocation columns** + OpenCost's workload/idle split. The provider maps its native
+   metrics → FOCUS in its own layer.
+2. **Govern any gap vocabulary as a Knowledge taxonomy** — terms FOCUS/OpenCost don't yet cover become
+   `Knowledge.TaxonomyTerm` entities (a curation act, governed + versioned), never a vendor fork.
+3. **Declared, portability-breaking extension** — last resort for genuinely vendor-unique intent;
+   additive, flagged, never required.
+
+### Feedback for #60 / #57 (evaluation only)
+
+Right layer (a consumable service type, not a data-model change) — but it defines a **bespoke** cost
+vocabulary (Koku's 40+ dimensions, Infrastructure/Supplementary, its own rate model), so the
+*consumable cost data* is Koku-shaped and a second cost provider couldn't serve the same contract. The
+portability fix is **not** "move it into UDLM" — it is **"have the consumable cost data conform to
+FOCUS (+ OpenCost for k8s allocation)."** Rate-card *authoring* can stay a thin provider offering
+(rate cards are finance-policy by nature); the cost data tenants query should be FOCUS, so cost
+recovery is provider-agnostic. Net: **UDLM absorbs nothing** — cost is an adopted standard
+(FOCUS/OpenCost) served by an adopted provider pattern (cost-recovery SP + Information Provider), bound
+to UDLM resources by identity.
 
 ## 5. Cross-cutting refinements (from the standards survey) + DCM-pillar impact
 
