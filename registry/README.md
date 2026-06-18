@@ -18,7 +18,6 @@ registry/
     data.database.json
     network.ip-address.json
     compute.container.yaml          # ← YAML; semantically identical, same meta-schema
-    observability.cost-meter.json   #   Process entityType — metering/cost over other resources (dcm#60)
     capability.json                 # ← Knowledge family (single-segment name; curation lifecycle)
   instances/                       # INSTANCE records (realized entities) — e.g. orders-db.json
   tools/
