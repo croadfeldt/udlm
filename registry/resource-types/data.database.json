@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/Data.Database/1.0.0",
-  "conformsTo": "udlm/1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.1.0",
+  "conformsTo": "udlm/0.1",
   "uuid": "9c3488aa-00cb-40fa-b02d-fbf2c47acce9",
   "resourceType": "Data.Database",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "family": "Resource",
   "entityType": "Infrastructure Resource",
   "portability": "portable",

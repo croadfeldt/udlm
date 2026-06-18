@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/Capability/1.0.0",
-  "conformsTo": "udlm/1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.1.0",
+  "conformsTo": "udlm/0.1",
   "uuid": "6f097f82-9ed7-4be5-ae20-eca1b8e30051",
   "resourceType": "Capability",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "family": "Knowledge",
   "entityType": "Capability",
   "lifecycleArchetype": "curation",

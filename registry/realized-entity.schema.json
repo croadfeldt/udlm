@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/1.0/realized-entity.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/0.1/realized-entity.schema.json",
   "title": "UDLM Realized Entity (instance)",
   "description": "The operational record of one entity (or Composite Entity) as it flows through the four states. This is the data substrate DCM reads and writes — UDLM carries the records, DCM applies the policy that produces them (core-tenets G3). It complements the Resource Type Specification (which defines the TYPE); this defines an INSTANCE. Field values inside the state snapshots are typed by the entity's Resource Type Spec, not re-validated here.",
   "type": "object",

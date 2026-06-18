@@ -32,7 +32,7 @@ registry/
   **Intent/Requested** contract a consumer fills; its typed `outputs` are the **Realized/Discovered**
   values a provider publishes. This is the same desired-vs-observed split Kubernetes enforces with
   `spec`/`status` — here it falls straight out of UDLM's four states.
-- **`conformsTo` + `version` = two version axes.** `conformsTo: udlm/1.0` binds the entry to a SPEC
+- **`conformsTo` + `version` = two version axes.** `conformsTo: udlm/0.1` binds the entry to a SPEC
   version (its `apiVersion`); `version` is the entry's own `MAJOR.MINOR.REVISION`. See `VERSIONING.md`.
 - **Relationships are first-class** (`depends_on`, `binds_to`, …) — the substrate the composite model
   (`../entities/composite-service-model.md`) builds its dependency DAG from.
