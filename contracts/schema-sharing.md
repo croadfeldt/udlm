@@ -68,7 +68,7 @@ that catalogs all its declared types and extensions.
   "realization": {
     "name": "DCM",
     "vendor": "croadfeldt",
-    "udlm_version": "1.0.0"
+    "udlm_version": "0.1.0"
   },
   "published_at": "2026-05-26T14:32:18.456Z",
   "manifest": {

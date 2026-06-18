@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/1.0/provider-adopted-standards.schema.json",
+  "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
   "title": "UDLM Provider — Adopted Standard Support",
   "description": "The provider-capability fragment by which a provider DECLARES which versions of each adopted external standard it can emit and/or consume (adopted-standards.md §3.2; DCM ADS-001). This is DATA — DCM negotiates the consumer's required version against this matrix (ADS-003), and the schema deliberately does NOT interpret ranges (resolution is Policy, T2). A full provider registration includes this fragment; this schema validates the fragment.",
   "type": "object",

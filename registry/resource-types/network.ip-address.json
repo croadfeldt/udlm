@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/Network.IPAddress/1.0.0",
-  "conformsTo": "udlm/1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.1.0",
+  "conformsTo": "udlm/0.1",
   "uuid": "616fd540-4908-4e96-a149-c9494be0c76e",
   "resourceType": "Network.IPAddress",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "family": "Resource",
   "entityType": "Infrastructure Resource",
   "portability": "portable",

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/Compute.VirtualMachine/1.0.0",
-  "conformsTo": "udlm/1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.1.0",
+  "conformsTo": "udlm/0.1",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resourceType": "Compute.VirtualMachine",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "family": "Resource",
   "entityType": "Infrastructure Resource",
   "portability": "portable",

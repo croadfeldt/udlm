@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/1.0/Compute.Cluster/1.0.0",
-  "conformsTo": "udlm/1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.1.0",
+  "conformsTo": "udlm/0.1",
   "uuid": "aa9b102d-ce5f-4921-82ba-ada25f44c6ea",
   "resourceType": "Compute.Cluster",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "family": "Resource",
   "entityType": "Infrastructure Resource",
   "portability": "portable",

@@ -15,6 +15,20 @@ That tells the registry which meta-schema version validates it. Downstream, **co
 profiles / catalog items (E1)** and **realized instances (E5)** pin the *entity* version they
 were built from, so drift is measured against the exact contract that produced them.
 
+## Spec status — pre-1.0 (`udlm/0.1`)
+
+**The UDLM spec is currently `0.1` — a `0.x`, pre-stable release.** The surface is still being
+*defined* (registry meta-schema, realized-entity, adopted-standards, the entity-type families), so
+per semver §4 anything MAY change and the contract is **not yet considered stable**. Treat the
+current work as *expansion of the v0.x surface*, not refinement of a released spec.
+
+**What `1.0` will mean (the earned milestone, not the starting line):** UDLM cuts `1.0` when the
+surface is complete, the conformance suite (`CONFORMANCE.md`) passes, and the project is ready to
+**commit to backward compatibility** — i.e. when a breaking change would genuinely warrant a `2.0`.
+Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guarantee below is a
+*post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
+settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
+
 ## Entity semver — what bumps what
 
 | Change | Bump |
