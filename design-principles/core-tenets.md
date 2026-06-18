@@ -52,6 +52,20 @@ the data model (the edge + typed `outputs`); any *transform* of a bound value is
 data inclusion is safe: every cross-entity flow — including one that crosses a sovereignty boundary — is
 an explicit, governable edge, not an opaque expression.
 
+## T5 — Adopt external standards by reference, not absorption
+When a credible external standard already models a domain's data — **FOCUS** for cost/usage, **OpenCost**
+for Kubernetes allocation, **OSCAL** for compliance, **SCIM** for identity — UDLM **adopts** it: it
+carries the *identity* (the join key), a *version-pinned conformance reference*, and the *binding*, but
+**never re-expresses the standard's schema** in the portable model. *Absorbing* (a parallel UDLM type)
+or *embedding* (baking the fields into every entity) duplicates an external system's data and its
+lifecycle — a **T1** breach and the "copy the data in" anti-pattern (`../contracts/information-providers.md`
+§2). The disposition is decided by a test: **absorb only when no credible external standard exists AND
+the data's lifecycle is genuinely UDLM's to custody; otherwise adopt.** Providers declare which standard
+*versions* they support and consumers declare the version they require (both **data**); **negotiating,
+enforcing, and translating between versions is Policy** (T2), and the negotiated effective version is
+recorded as provenance. The full disposition, constructs, and the version-negotiation contract are in
+`adopted-standards.md`.
+
 ---
 
 **Consequence — what a UDLM spec contains and doesn't.**
