@@ -38,23 +38,6 @@ The four states answer four distinct questions:
 
 ---
 
-## 1a. The lifecycle is four acts; each act writes a store
-
-The four-state model has two complementary views — the **stages** (what the lifecycle *does*) and the **stores** (where the data *lands*). They are the same four beats seen two ways: the stages are **acts** (verbs); the stores are the **states** the data is persisted in (nouns). This is the lifecycle the *L* in UD**L**M names.
-
-| Stage — the act | What the act does | Store — the state it writes | What the store holds |
-|---|---|---|---|
-| **intent** | state what you want the outcome to be | **Intent** | the consumer's raw declaration — what they want, not what will be built |
-| **request** | send the policy-derived outcome request to a provider | **Requested** | the assembled, policy-validated, provider-ready payload |
-| **realize** | turn the request into the outcome | **Realized** | the provider-confirmed record of what was actually built |
-| **discover** | document what currently exists | **Discovered** | the observed ground truth, gathered by active discovery |
-
-The **gap between any two stores is meaningful**: Intent vs Requested reveals *what policy changed*; Requested vs Realized reveals *what the provider did*; Realized vs Discovered reveals *drift*; Intent vs Discovered reveals *whether the original need is still being met*. Maintaining all four stores — and the gaps between them — is what "closing the information loop" means in practice. Section 2 defines each store in detail.
-
-![The four-state lifecycle — stages (acts) writing into stores (states), with the meaningful gap between each pair](figures/four-state-lifecycle.svg)
-
----
-
 ## 2. State Definitions
 
 ### 2.1 Intent State
