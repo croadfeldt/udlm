@@ -20,8 +20,10 @@ policy that produces them (`core-tenets.md` G3). Validate instances with `tools/
 | `audit` (Merkle `logHead` + `leafCount`) | **audit linkage** (`AUD-001/002`) |
 | `typeVersion` / `typeRef` | **version pinning (E5)** — drift/validation measured against the exact contract realized |
 
-That set is what makes v1.1 **feature-complete for DCM capabilities**: lifecycle, audit, observability,
-dependency graph, sovereignty, field ownership, drift, and version pinning all have a home in the data.
+That set is what the **v1.0 surface** must carry to be **complete for DCM capabilities**: lifecycle,
+audit, observability, dependency graph, sovereignty, field ownership, drift, and version pinning all
+have a home in the data. (UDLM v1.0 is still being defined — this realized-entity schema is part of
+*expanding* that initial surface, not a post-1.0 refinement.)
 
 ## The boundary (where each piece is produced)
 The instance record is **Data** — UDLM's. Everything that *populates* it is **Policy/DCM**: assembly
