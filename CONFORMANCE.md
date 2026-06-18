@@ -104,7 +104,7 @@ GET /.well-known/udlm/conformance
     "vendor": "croadfeldt",
     "version": "1.4.2"
   },
-  "udlm_version": "1.0.0",
+  "udlm_version": "0.1.0",
   "level": "full",
   "exclusions": [],
   "extensions_published": true,
