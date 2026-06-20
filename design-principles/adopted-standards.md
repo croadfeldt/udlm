@@ -50,6 +50,38 @@ machinery to a codelist is wasted surface area and config; treating a schema sta
 (a plain string) silently breaks the moment its version moves or a provider supports a different one.
 Routing by tier is the integrator's first decision and the cheapest one to get right.
 
+## 1b. The adoption decision procedure (and the net-negative test)
+
+The disposition test (§1) answers *absorb / embed / adopt* for a single standard. This is the procedure that
+governs **every** proposal to add a definition, type, or mechanism — its aim is to keep the model small: **a good
+adoption should be net-negative on bespoke surface area** (it retires homegrown things, not just adds).
+
+Run these in order:
+
+1. **Gate — non-duplication.** Don't add anything to the substrate unless it has **clear usefulness that does not
+   duplicate existing functionality.** Strip the candidate to its genuinely new slice; **reuse the universal
+   contracts** (audit, field-level provenance, versioning, identifiers, events) rather than re-describing them.
+2. **Clean fit? → adopt; don't repeat.** If a wide/established standard cleanly fits, **adopt it** — do not build a
+   parallel bespoke form alongside it.
+3. **Clean replacement? → adopt *and retire the bespoke*.** If the standard cleanly subsumes an existing homegrown
+   definition (or a pattern we built more than once), **consolidate onto the one standard form** and remove the
+   duplicate. This is where surface area goes *down*.
+4. **No clean fit? → adopt the principles + format, and supersede.** Extend the standard rather than inventing from
+   zero; take its vocabulary/shape and go beyond it where the domain requires. **Don't force** a poor fit.
+5. **Ground in producers & consumers.** A definition earns its fields only if real producers write them and real
+   consumers read them; that same flow defines the validation the realization must do. No field without a
+   produce/consume path.
+
+> **In one line:** *use wide standards where they cleanly fit, otherwise roll our own; don't force, adopt if
+> clean, don't repeat; if it doesn't fit cleanly, adopt the principles and format to supersede while adopting.*
+
+**Worked example (DecisionRecord / ADR).** The decision-record need → adopt the **ADR / MADR** standard (don't coin
+a new term); it is *complementary* to UDLM audit/provenance/versioning (reuse, step 1); it cleanly *consolidates*
+two homegrown forms a realization built twice — DAV's self-improvement `improvement_proposals` and its architecture
+resolutions — into **one target-parameterized Resolution/Decision Record** (step 3, net-negative); **SARIF** does not
+cleanly fit architecture findings → adopt its principles only (step 4); the Knowledge-family `Antipattern` is related
+but not the same → don't force. Defined as a Knowledge entity type in `../entities/knowledge-family.md` §4.5.
+
 ## 2. What adoption carries (Data) vs delegates (Policy)
 
 | Concern | Owner |
