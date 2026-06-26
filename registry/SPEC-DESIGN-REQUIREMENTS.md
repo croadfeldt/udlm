@@ -68,9 +68,11 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
     standard (the *adopt* disposition, `design-principles/adopted-standards.md`) MUST record the
-    source: the standard's name, version/edition, and canonical URL, in the `adopts[]` reference
-    (`registry/provider-adopted-standards.schema.json`) or a field-level `x-standard` pointer. A
-    definition that borrows elements with no recorded source is invalid.
+    source: the standard's name, version/edition, and canonical URL, in the type's `adopts[]` reference
+    (the `adoptedStandardRef` in `registry/resource-type-spec.schema.json`) or a field-level
+    `x-standard` pointer. (A provider separately declares which standard *versions* it can emit/consume
+    via `registry/provider-adopted-standards.schema.json` — a different concern.) A definition that
+    borrows elements with no recorded source is invalid.
 23. **License compatibility** — before adopting, the source's license MUST be checked against the
     UDLM project license (Apache-2.0) and the verdict recorded with the source. **Referencing** a
     standard's *vocabulary* (field/element names — facts, not copyrightable) is always permitted,
