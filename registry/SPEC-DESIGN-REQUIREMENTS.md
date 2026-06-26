@@ -42,7 +42,12 @@ Each hard constraint cites the UDLM contract it derives from.
 15. The spec is the contract **any** provider of the type MUST satisfy; providers
     naturalize → realize → denaturalize (`contracts/provider-contract.md`).
 16. **Any deviation from full portability MUST be explicitly declared** via `portability`. **[enforced: enum]**
-17. No provider-specific fields in the universal spec — those ride declared extension points.
+17. **No provider-specific (vendor-exclusive) data in the universal spec** — those ride declared
+    extension points (`portability` + `provider_hints` / the provider surface). **This binds adoption
+    too:** a type MUST NOT pull a standard's *vendor-exclusive* elements into its portable spec. A
+    standard that is itself vendor-exclusive is adopted only at the provider/extension surface
+    (`portability: provider-specific`), never in the base contract — the portable spec stays the
+    neutral subset every provider can satisfy.
 
 ### Relationships
 18. Relationships are **first-class and typed** (`depends_on`/`binds_to`/`references`/`contained_by`),
@@ -59,6 +64,73 @@ Each hard constraint cites the UDLM contract it derives from.
     `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
     expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
     the contract layer stays deterministic + reproducible (`design-principles/core-tenets.md` T2/T3).
+
+### Adopted standards — provenance & licensing
+22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
+    standard (the *adopt* disposition, `design-principles/adopted-standards.md`) MUST record the
+    source: the standard's name, version/edition, and canonical URL, in the `adopts[]` reference
+    (`registry/provider-adopted-standards.schema.json`) or a field-level `x-standard` pointer. A
+    definition that borrows elements with no recorded source is invalid.
+23. **License compatibility** — before adopting, the source's license MUST be checked against the
+    UDLM project license (Apache-2.0) and the verdict recorded with the source. **Referencing** a
+    standard's *vocabulary* (field/element names — facts, not copyrightable) is always permitted,
+    whatever the source license. **Copying** a source's schema text, enum bodies, or normative prose
+    into the UDLM tree (an *absorb*) is permitted ONLY from an Apache-2.0-compatible license;
+    copyleft / file-scoped sources (GPL, LGPL, MPL) MAY be **referenced by name** but their text or
+    files MUST NOT be vendored into UDLM (`governance/registry-governance.md`, IP hygiene). This is
+    why the disposition default is *adopt-by-reference*: it is both schema-rev-decoupled **and**
+    license-clean.
+
+### Cross-type consistency
+24. **Shared concepts use shared shapes** — a concept that recurs across types (compute resources
+    cpu/memory, storage capacity, network CIDR / IP family, identity references, quantities,
+    timestamps, status conditions) MUST reuse the registry's **canonical common-element definitions**
+    (`registry/common-elements.md`), not be re-expressed per type. New or revised types are checked
+    against the common-element catalog; an unjustified divergence is a review finding.
+25. **Consistent naming & units** — field names are `camelCase`; physical quantities carry an explicit
+    unit via the canonical `Quantity` pattern (never a bare number whose unit is implied by the field
+    name); timestamps are RFC 3339; enums use the canonical token set. New types are swept against the
+    existing registry for naming/unit drift before publication.
+
+### Component granularity (entity vs data element)
+26. **A physical component (DIMM, disk, NIC, GPU, CPU) is representable BOTH ways, and the parent
+    always carries the rollup.** The containing resource (e.g. `Compute.BareMetalInstance`) MUST carry
+    the **aggregate as a data element** (`memory.size`, `cpu.count`) — the base contract never depends
+    on components being modeled. A component MAY *also* be a **first-class entity** (`Hardware.*`,
+    `contained_by` the parent) for independent tracking (serial, slot, firmware, RMA, lifecycle),
+    governed by **`composition_visibility`** (`opaque|transparent|selective`,
+    `entities/service-dependencies.md` §11d): `opaque` → rollup only; `transparent`/`selective` →
+    components are entities too. When components are modeled, the parent rollup is the **reconciled
+    aggregate** of the contained components; a mismatch is **drift** (surfaced, not silently merged).
+    Component entities are additive (MINOR) — never required for the portable contract.
+
+27. **Instances of the same type MUST be individually distinguishable.** When a parent holds multiple
+    components of one type — two identical 32 GB DIMMs, eight same-model drives — each instance MUST
+    carry enough identity to tell them apart, even when type, size, and use are identical. Use the
+    canonical `Identity` element (`registry/common-elements.md`): **`location`** (physical position
+    within the parent — DIMM slot `P1-DIMMA1`, drive bay `Bay 7`, PCIe slot — unique within the parent,
+    stable across reboots) and **`serialNumber`**/**`wwn`** (globally unique hardware identity, survives
+    a move to another parent). A semantic **`role`/`usage`** field distinguishes same-model components
+    by *purpose* (a drive as `boot` vs `ceph-osd`; memory as `system` vs `persistent`). The entity's own
+    UUID is its UDLM identity; `location`/`serialNumber`/`role` are the **discriminators** that bind that
+    UUID to one physical instance and make "same type, different unit" and "same use, different serial"
+    both expressible. The same rule applies inline (the rollup's `modules[]`/`disks[]` arrays MUST key
+    each element by `location` or `serialNumber`, never by array position alone). Grounded in Redfish
+    (`Memory.SerialNumber`+`DeviceLocator`, `Drive.SerialNumber`+`WWN`+`PhysicalLocation`) and Metal3
+    (`storage[].{name,serialNumber,wwn}`, `nics[].mac`).
+
+### Lifecycle entry — raw & unallocated resources
+28. **A type MUST support a "raw" existence: Discovered state populated, no Intent.** A resource that
+    physically exists but has not been allocated — a freshly racked server, a brownfield import, a spare
+    drive on the shelf — MUST be representable for **inventory and tracking** with only its Discovered
+    state populated and **no Intent/allocation** (`foundations/four-states.md` §2.4). Such a resource
+    carries an **availability** lifecycle state (canonical `lifecycleState`, e.g.
+    `available|allocated|retired`; adopts Metal3 `provisioning.state: available`) marking it
+    unallocated. It is later **adopted** — an Intent is attached (allocation / brownfield ingestion),
+    entering the managed lifecycle — and adoption MUST **preserve the entity UUID** (four-states §3),
+    so all inventory history accrues to the same entity. "Ingest raw, append changes later" is therefore
+    the discovered-first lifecycle entry, the peer of intent-first (declare → realize). A type whose
+    schema *requires* Intent fields to instantiate violates this rule.
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
