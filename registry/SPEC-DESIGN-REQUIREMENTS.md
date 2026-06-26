@@ -60,6 +60,22 @@ Each hard constraint cites the UDLM contract it derives from.
     expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
     the contract layer stays deterministic + reproducible (`design-principles/core-tenets.md` T2/T3).
 
+### Adopted standards — provenance & licensing
+22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
+    standard (the *adopt* disposition, `design-principles/adopted-standards.md`) MUST record the
+    source: the standard's name, version/edition, and canonical URL, in the `adopts[]` reference
+    (`registry/provider-adopted-standards.schema.json`) or a field-level `x-standard` pointer. A
+    definition that borrows elements with no recorded source is invalid.
+23. **License compatibility** — before adopting, the source's license MUST be checked against the
+    UDLM project license (Apache-2.0) and the verdict recorded with the source. **Referencing** a
+    standard's *vocabulary* (field/element names — facts, not copyrightable) is always permitted,
+    whatever the source license. **Copying** a source's schema text, enum bodies, or normative prose
+    into the UDLM tree (an *absorb*) is permitted ONLY from an Apache-2.0-compatible license;
+    copyleft / file-scoped sources (GPL, LGPL, MPL) MAY be **referenced by name** but their text or
+    files MUST NOT be vendored into UDLM (`governance/registry-governance.md`, IP hygiene). This is
+    why the disposition default is *adopt-by-reference*: it is both schema-rev-decoupled **and**
+    license-clean.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
