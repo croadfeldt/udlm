@@ -67,6 +67,24 @@ conversion model: one canonical version per major, declared conversions between 
   satisfying the constraint.
 - `deprecated` versions resolve only to consumers that pin them; `retired` versions do not resolve.
 
+## Pre-1.0 surface-change log
+
+While the spec is `0.x` the surface is still being **defined**, so changes are *expansion of the v0.x
+surface*, not refinement of a released contract (see "Spec status" above).
+
+**Pre-1.0 we do NOT follow the full versioning rules above.** Those rules (immutable-once-published,
+MAJOR for breaking changes + deprecation window) are the *post-1.0* discipline that protects consumers
+pinned to a released contract — which don't exist yet. While `0.x`:
+
+- Versions still **advance** (we bump the REVISION) so a reader can tell a definition changed, **but a
+  `0.x` REVISION/MINOR MAY carry backward-incompatible (breaking) changes** that post-1.0 would require
+  a MAJOR + deprecation. No deprecation ceremony is performed pre-1.0.
+- Every such change is **logged here** so the breakage is explicit, not silent.
+
+| Date | Version | Change | Breaking? | Migration |
+|---|---|---|---|---|
+| 2026-06-26 | `Data.Database` & `Compute.Cluster` → **0.1.1**; meta-schema (SPEC `udlm/0.1`) edited in place | `adoptedStandardRef` (`resource-type-spec.schema.json`) now requires `source`, `license`, `licenseCompatibility`; `identityJoin` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | **Yes — backward-incompatible.** An `adopts[]` entry without the license verdict no longer validates (would be a MAJOR post-1.0; carried in a `0.1.1` REVISION by the pre-1.0 exception above). **Wire/instance format is unaffected** — `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` backfilled. |
+
 ## Serialization — JSON **and** YAML, natively
 
 The normative *model* is JSON Schema 2020-12; the *serialization* is not privileged. A registry

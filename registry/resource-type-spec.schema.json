@@ -161,23 +161,28 @@
     "adoptedStandardRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["standard", "version", "identityJoin"],
-      "description": "A reference to an external standard this entity adopts (T5). Carries identity join + version pointer only — never the standard's schema.",
+      "required": ["standard", "version", "source", "license", "licenseCompatibility"],
+      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identityJoin` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `licenseCompatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
       "properties": {
-        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, OSCAL, SCIM, OpenTelemetry." },
+        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, Redfish, Metal3, OSCAL, SCIM, OpenTelemetry." },
         "version": { "$ref": "#/$defs/standardVersion" },
-        "role": { "type": "string", "description": "What the adopted data is for (e.g. 'cost-and-usage data for this resource')." },
+        "role": { "type": "string", "description": "What the adopted data/vocabulary is for (e.g. 'cost-and-usage data for this resource')." },
         "identityJoin": {
           "type": "object",
           "additionalProperties": false,
           "required": ["localField", "standardColumn"],
-          "description": "The anchor only UDLM can provide: a local identity field bound to a column in the standard's records (e.g. uuid -> FOCUS ResourceId).",
+          "description": "OPTIONAL. The anchor only UDLM can provide for a DATA-join adoption: a local identity field bound to a column in the standard's records (e.g. uuid -> FOCUS ResourceId). Omit for reference-vocabulary adoptions that borrow field names without joining to the standard's records.",
           "properties": {
             "localField": { "type": "string", "description": "Field on this entity used as the join key (e.g. uuid)." },
             "standardColumn": { "type": "string", "description": "Column/attribute in the standard's records that the local field joins to (e.g. ResourceId)." }
           }
         },
-        "source": { "type": "string", "description": "Canonical URL of the standard (e.g. https://focus.finops.org/)." }
+        "source": { "type": "string", "description": "Canonical URL of the standard (e.g. https://focus.finops.org/). REQUIRED provenance (SPEC-DESIGN-REQUIREMENTS §22)." },
+        "license": { "type": "string", "description": "The source's license identifier (SPDX where possible, e.g. CC-BY-4.0, Apache-2.0, GPL-3.0). REQUIRED (SPEC-DESIGN-REQUIREMENTS §23)." },
+        "licenseCompatibility": {
+          "enum": ["compatible-reference", "compatible-vendor", "reference-only"],
+          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23): `compatible-reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible-vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference-only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
+        }
       }
     }
   }
