@@ -115,6 +115,39 @@ recommended alternative).
 - **Relationships:** `related_to` → TaxonomyTerm / Capability.
 - **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
 
+### 4.5 DecisionRecord (a Decision Record / ADR — adopted, not invented)
+A `DecisionRecord` is the established **Decision Record (DR)** concept — of which an **ADR (Architecture Decision
+Record) is the architecture-scoped kind** — expressed as a first-class UDLM entity. We **adopt the ADR/DR format
+and lifecycle by reference** (per the "adopt, don't absorb" tenet, [core-tenets.md](../design-principles/core-tenets.md))
+and add only what a loose markdown ADR lacks: **structure, anchoring, provenance, and (where applicable)
+validation**. It records *why* a decision was made — the rationale resolving a Finding (or class) about a
+Capability / dependency / spec element — so any realization carries decision provenance natively (pairs with
+[Universal Audit](../observability/universal-audit.md) + field-level provenance). **An ADR = a DecisionRecord whose
+anchor is architecture;** process/enablement decisions are DecisionRecords too.
+- **Fields:** title (handle, e.g. `ADR-017`-style within an owning scope), **`rationale` / body (the prose ADR
+  narrative — kept first-class; the structure is an *envelope* around it, never a replacement)**, question/finding
+  refs, options_considered, decision, action (`answer | clarify | change-spec | defer | wontfix`),
+  validation_evidence *(optional — see Note)*, supersedes, provenance (proposed_by: human + model/prompt version).
+- **Relationships:** `decides` → Finding(s) *(future member; M:N — one record closes a class)*;
+  `about` → Capability / TaxonomyTerm / spec element (the anchor it justifies); `produces` → a change/proposal
+  *(realization-specific)*; `supersedes` → DecisionRecord.
+- **States (curation = ADR status):** `PROPOSED` (drafted) → `UNDER_REVIEW` → `CANONICAL` (accepted / the
+  authoritative WHY) → re-`OBSERVED` if its premises drift; `DEPRECATED`/superseded when a later record replaces
+  it (ADR's "never edit, supersede" rule *is* UDLM immutability + `supersedes`).
+- **Note (validation is a gate *where applicable*, not universal):** when the decision is testable, it reaches
+  `CANONICAL` **only with passing use-case validation** (evaluated against UCs — submitted + generated-with-
+  variance — on the same engine that finds gaps) — the WHY is *earned, not asserted*. Non-validatable decisions
+  (e.g. a naming choice) may be `CANONICAL` without it, preserving compatibility with ordinary ADRs.
+  Realization: `dav/docs/findings-resolution-design.md`; answers the "`depends_on` says *what* but not *why*"
+  feedback by making the WHY a first-class, queryable record.
+
+> **Fit with the UDLM model (coherence).** The ADR/DR sits cleanly on the substrate: it is `Data` (Knowledge),
+> never a Provider/Policy (it may be *about* one); ADR's "supersede, don't edit" **is** UDLM immutability +
+> versioning + `supersedes`; ADR status **is** the curation lifecycle; the `Discovered`/`OBSERVED` state adds
+> *decision-drift* (do the premises still hold?) — a gain, not a clash. One semantic caveat: the four-state names
+> carry provisioning connotation ("Requested" ≈ dispatched-to-a-provider), which the Knowledge family reinterprets
+> as `UNDER_REVIEW` for curated artifacts. No structural incompatibility.
+
 ## 5. Relationship graph (summary)
 
 ```
@@ -127,6 +160,12 @@ recommended alternative).
 ```
 
 ## 6. Future members
-`UseCase`, `Gap`, `Assessment`, `Finding` extend this family as DAV's UDLM-conformance
+`UseCase`, `Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as DAV's UDLM-conformance
 expands beyond the capability catalog (the pilot). Each follows the curation archetype and
 the universal contracts; all remain universal definitions, free to use by any realization.
+
+> **`Finding` / `Resolution`** arrive with the **Findings & Resolutions** realization
+> (`dav/docs/findings-resolution-design.md`): a `Finding` is an externally-surfaced observation about the
+> architecture (a review comment, a gap, an assessment finding); a `Resolution`/**`DecisionRecord`** (§4.5, defined
+> now) is its validation-backed, capability-anchored answer — the **WHY**. Together they make this family the
+> substrate's system of record for *why the model is the way it is*.
