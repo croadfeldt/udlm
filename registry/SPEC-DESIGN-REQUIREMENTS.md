@@ -42,7 +42,12 @@ Each hard constraint cites the UDLM contract it derives from.
 15. The spec is the contract **any** provider of the type MUST satisfy; providers
     naturalize → realize → denaturalize (`contracts/provider-contract.md`).
 16. **Any deviation from full portability MUST be explicitly declared** via `portability`. **[enforced: enum]**
-17. No provider-specific fields in the universal spec — those ride declared extension points.
+17. **No provider-specific (vendor-exclusive) data in the universal spec** — those ride declared
+    extension points (`portability` + `provider_hints` / the provider surface). **This binds adoption
+    too:** a type MUST NOT pull a standard's *vendor-exclusive* elements into its portable spec. A
+    standard that is itself vendor-exclusive is adopted only at the provider/extension surface
+    (`portability: provider-specific`), never in the base contract — the portable spec stays the
+    neutral subset every provider can satisfy.
 
 ### Relationships
 18. Relationships are **first-class and typed** (`depends_on`/`binds_to`/`references`/`contained_by`),
@@ -75,6 +80,29 @@ Each hard constraint cites the UDLM contract it derives from.
     files MUST NOT be vendored into UDLM (`governance/registry-governance.md`, IP hygiene). This is
     why the disposition default is *adopt-by-reference*: it is both schema-rev-decoupled **and**
     license-clean.
+
+### Cross-type consistency
+24. **Shared concepts use shared shapes** — a concept that recurs across types (compute resources
+    cpu/memory, storage capacity, network CIDR / IP family, identity references, quantities,
+    timestamps, status conditions) MUST reuse the registry's **canonical common-element definitions**
+    (`registry/common-elements.md`), not be re-expressed per type. New or revised types are checked
+    against the common-element catalog; an unjustified divergence is a review finding.
+25. **Consistent naming & units** — field names are `camelCase`; physical quantities carry an explicit
+    unit via the canonical `Quantity` pattern (never a bare number whose unit is implied by the field
+    name); timestamps are RFC 3339; enums use the canonical token set. New types are swept against the
+    existing registry for naming/unit drift before publication.
+
+### Component granularity (entity vs data element)
+26. **A physical component (DIMM, disk, NIC, GPU, CPU) is representable BOTH ways, and the parent
+    always carries the rollup.** The containing resource (e.g. `Compute.BareMetalInstance`) MUST carry
+    the **aggregate as a data element** (`memory.size`, `cpu.count`) — the base contract never depends
+    on components being modeled. A component MAY *also* be a **first-class entity** (`Hardware.*`,
+    `contained_by` the parent) for independent tracking (serial, slot, firmware, RMA, lifecycle),
+    governed by **`composition_visibility`** (`opaque|transparent|selective`,
+    `entities/service-dependencies.md` §11d): `opaque` → rollup only; `transparent`/`selective` →
+    components are entities too. When components are modeled, the parent rollup is the **reconciled
+    aggregate** of the contained components; a mismatch is **drift** (surfaced, not silently merged).
+    Component entities are additive (MINOR) — never required for the portable contract.
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
