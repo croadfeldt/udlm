@@ -79,7 +79,9 @@ Three declarative records. All are nouns — no logic.
       "version": ">=1.3 <2.0",
       "role": "cost-and-usage data for this resource",
       "identityJoin": { "localField": "uuid", "standardColumn": "ResourceId" },
-      "source": "https://focus.finops.org/"
+      "source": "https://focus.finops.org/",
+      "license": "CC-BY-4.0",
+      "licenseCompatibility": "compatible-reference"
     }
   ]
 }
@@ -87,6 +89,15 @@ Three declarative records. All are nouns — no logic.
 `version` is a pinned value or a range over the standard's own scheme (FOCUS/OpenCost use
 `MAJOR.MINOR`). `identityJoin` is the anchor only UDLM can provide. The standard's columns are **not**
 restated here.
+
+**`source`, `license`, and `licenseCompatibility` are mandatory** (SPEC-DESIGN-REQUIREMENTS §22–23): the
+provenance (name + version + canonical URL) and a recorded license-compatibility verdict against the
+UDLM license (Apache-2.0). `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor,
+reference-only}` — `reference-only` flags a copyleft/file-scoped source (GPL/LGPL/MPL) whose **names may
+be referenced but whose text/files MUST NOT be vendored** into UDLM. Because adoption only references
+the standard's vocabulary (field names = facts) and never restates its columns, the default verdict is
+`compatible-reference` regardless of the source license — adopt-by-reference is license-clean by
+construction; the check exists to catch the cases where someone is tempted to *copy* (absorb) instead.
 
 ### 3.2 Provider support matrix (a provider capability declaration)
 ```json
