@@ -1,0 +1,57 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "0aa66fc7-f17c-4a34-b053-824c16570022",
+  "resourceType": "Observability.LogShipper",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Log Shipper",
+    "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (an Ansible role today via ansible-runner, an AAP job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization in the homelab: the roadfeldt-ansible `alloy` role (journald -> Loki). See DCM architecture/integrations/automation-outcome-providers.md.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-18"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["target", "sink"],
+    "properties": {
+      "target": {
+        "type": "object",
+        "required": ["host"],
+        "description": "Whose logs. The host the shipper runs on / collects from. (In a fuller model this becomes a typed relationship to a host resource; for now it is a declarative identifier.)",
+        "properties": {
+          "host": { "type": "string", "description": "Host identifier (FQDN or inventory name)." }
+        }
+      },
+      "sink": {
+        "type": "object",
+        "required": ["url"],
+        "description": "Where the logs go — the central log store endpoint. Vendor-neutral (a Loki/OTLP push URL); the store itself is another entity.",
+        "properties": {
+          "url": { "type": "string", "description": "Log-store push endpoint (e.g. a Loki push URL)." }
+        }
+      },
+      "source": {
+        "type": "string",
+        "enum": ["journal", "files"],
+        "default": "journal",
+        "description": "Which logs to ship: the systemd journal (default) or on-disk files. An outcome property — not a method detail."
+      },
+      "labels": {
+        "type": "object",
+        "additionalProperties": { "type": "string" },
+        "description": "Extra stream labels to attach beyond the inherent host/unit identity (e.g. environment, role). Optional."
+      }
+    }
+  },
+  "immutable": ["target.host"],
+  "outputs": {
+    "status": { "type": "string", "description": "Realized health of the shipper (e.g. running / degraded), as reported by discovery." },
+    "shippingTo": { "type": "string", "description": "The sink URL the shipper is actually delivering to (echo of realized config)." },
+    "lastShippedAt": { "type": "string", "description": "Timestamp of the most recent successful delivery (RFC 3339) — drives drift / staleness detection." }
+  },
+  "relationships": []
+}
