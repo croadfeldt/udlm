@@ -67,6 +67,23 @@ conversion model: one canonical version per major, declared conversions between 
   satisfying the constraint.
 - `deprecated` versions resolve only to consumers that pin them; `retired` versions do not resolve.
 
+## Pre-1.0 surface-change log
+
+While the spec is `0.x` the surface is still being **defined**, so changes are *expansion of the v0.x
+surface*, not refinement of a released contract (see "Spec status" above). Two consequences:
+
+- **No version ceremony pre-1.0.** A change that *would* be breaking after 1.0 does **not** trigger an
+  entity bump or a SPEC-minor bump while `0.x` is in-development — there are no consumers pinned to a
+  released contract to protect, so in-repo `0.1.x` definitions are **edited in place**. The
+  immutable-once-published / any-change-bumps rule above is the *post-stability* discipline; it starts
+  binding when a version is actually released (at the latest, `1.0`).
+- **But changes are still logged here**, so a reader can see what shifted as the surface settled —
+  especially anything that would invalidate an externally-authored document.
+
+| Date | Change | Would-break post-1.0? | What to do |
+|---|---|---|---|
+| 2026-06-26 | `adoptedStandardRef` (`resource-type-spec.schema.json`) now requires `source`, `license`, `licenseCompatibility`; `identityJoin` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | Yes — an `adopts[]` entry without the license verdict no longer validates. **Wire/instance format is unaffected**: `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` were edited in place at `0.1.0` (no bump — still defining the surface). |
+
 ## Serialization — JSON **and** YAML, natively
 
 The normative *model* is JSON Schema 2020-12; the *serialization* is not privileged. A registry
