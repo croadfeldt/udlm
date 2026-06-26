@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/resource-type-spec.schema.json",
+  "title": "UDLM Resource Type Specification",
+  "description": "Meta-schema that every Resource Type Specification in the UDLM Resource Type Registry MUST validate against. JSON Schema 2020-12 is the normative wire format for entity-type definitions (contracts/schema-sharing.md). A Resource Type Specification is the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, typed realized outputs, and allowed relationship types (entities/resource-type-hierarchy.md). This meta-schema is itself part of the UDLM spec and is versioned on the SPEC axis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$id", "conformsTo", "uuid", "resourceType", "version", "family",
+    "entityType", "portability", "status", "metadata", "spec", "outputs"
+  ],
+  "properties": {
+    "$id": {
+      "type": "string",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conformsTo`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VirtualMachine) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
+    },
+    "conformsTo": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$",
+      "description": "SPEC-axis binding: the UDLM spec major.minor this type is written against (its apiVersion). Peers conformant to the same MAJOR are wire-compatible (CONFORMANCE.md §9)."
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "RFC 4122 UUIDv4 identity of this type specification (contracts/identifier-scheme.md). Immutable for the life of the type."
+    },
+    "resourceType": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+      "description": "Type name, unique within its `family`. Resource family: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Knowledge family: single-segment (Capability, TaxonomyTerm) — disambiguated by `family` (entities/knowledge-family.md)."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "ENTITY-axis version: this type's own Major.Minor.Revision (see registry/VERSIONING.md). Immutable once published; any change produces a new version."
+    },
+    "family": {
+      "enum": ["Resource", "Knowledge"],
+      "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary."
+    },
+    "entityType": {
+      "type": "string",
+      "description": "The entity type within its family. Resource: Infrastructure Resource | Composite | Process. Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Constrained by `family` (see allOf). (foundations/entity-types.md, entities/knowledge-family.md.)"
+    },
+    "lifecycleArchetype": {
+      "enum": ["provisioning", "curation"],
+      "description": "How this type interprets the universal four states: `provisioning` (Resource — Intent→Requested→Realized→Discovered via a provider) or `curation` (Knowledge — proposed→under-review→canonical→deprecated). Optional; inferred from `family` if absent."
+    },
+    "portability": {
+      "enum": ["portable", "partial", "provider-specific"],
+      "description": "Portability classification (entities/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared."
+    },
+    "status": {
+      "enum": ["active", "deprecated", "retired"],
+      "description": "Lifecycle status of this version (foundations/layering-and-versioning.md universal deprecation model)."
+    },
+    "deprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "reason", "migration_guidance"],
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "reason": { "type": "string" },
+        "replacement_uuid": { "type": "string", "format": "uuid" },
+        "migration_guidance": { "type": "string" }
+      },
+      "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migration_guidance."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["displayName", "description", "maintainer", "origination_timestamp"],
+      "properties": {
+        "displayName": { "type": "string" },
+        "description": { "type": "string" },
+        "maintainer": { "type": "string" },
+        "origination_timestamp": { "type": "string", "format": "date" }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": ["type", "properties"],
+      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them.",
+      "properties": {
+        "type": { "const": "object" },
+        "properties": { "type": "object" },
+        "required": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "immutable": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Dot-paths into `spec` that are createOnly — set at Intent, never changed post-realization; a change forces replace → supersession. Use for sovereignty-determining fields (zone / classification). Declarative noun; DCM enforces it (R3 / cross-cutting P4)."
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type"],
+        "properties": {
+          "type": { "enum": ["string", "integer", "number", "boolean", "object", "array"] },
+          "description": { "type": "string" },
+          "sensitive": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "description": "Allowed relationship types from this resource to others (entities/entity-relationships.md, service-dependencies.md).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "target"],
+        "properties": {
+          "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
+          "target": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" },
+          "targetField": { "type": "string", "description": "An `outputs` key on the target this edge binds to (e.g. a database's `connectionString`). The binding is a typed reference resolved at dispatch — data movement, not transformation (T4)." },
+          "cardinality": { "enum": ["0..1", "1..1", "0..n", "1..n"], "default": "0..n" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Lifecycle rules. Defaults to UDLM's four-state model Intent → Requested → Realized → Discovered (foundations/four-states.md). Override only to declare type-specific decommission behavior.",
+      "properties": {
+        "states": { "type": "array", "items": { "enum": ["Intent", "Requested", "Realized", "Discovered"] } },
+        "decommission": { "type": "string" }
+      }
+    },
+    "adopts": {
+      "type": "array",
+      "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
+      "items": { "$ref": "#/$defs/adoptedStandardRef" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["deprecated", "retired"] } } },
+      "then": { "required": ["deprecation"] }
+    },
+    {
+      "if": { "properties": { "family": { "const": "Resource" } } },
+      "then": { "properties": { "entityType": { "enum": ["Infrastructure Resource", "Composite", "Process"] } } }
+    },
+    {
+      "if": { "properties": { "family": { "const": "Knowledge" } } },
+      "then": { "properties": { "entityType": { "enum": ["Capability", "TaxonomyTerm", "Alias", "Antipattern", "UseCase"] } } }
+    }
+  ],
+  "$defs": {
+    "standardVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A reference over an external standard's OWN versioning scheme — a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (DCM), not the data model (T2/T5)."
+    },
+    "adoptedStandardRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["standard", "version", "identityJoin"],
+      "description": "A reference to an external standard this entity adopts (T5). Carries identity join + version pointer only — never the standard's schema.",
+      "properties": {
+        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, OSCAL, SCIM, OpenTelemetry." },
+        "version": { "$ref": "#/$defs/standardVersion" },
+        "role": { "type": "string", "description": "What the adopted data is for (e.g. 'cost-and-usage data for this resource')." },
+        "identityJoin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["localField", "standardColumn"],
+          "description": "The anchor only UDLM can provide: a local identity field bound to a column in the standard's records (e.g. uuid -> FOCUS ResourceId).",
+          "properties": {
+            "localField": { "type": "string", "description": "Field on this entity used as the join key (e.g. uuid)." },
+            "standardColumn": { "type": "string", "description": "Column/attribute in the standard's records that the local field joins to (e.g. ResourceId)." }
+          }
+        },
+        "source": { "type": "string", "description": "Canonical URL of the standard (e.g. https://focus.finops.org/)." }
+      }
+    }
+  }
+}
