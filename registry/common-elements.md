@@ -114,3 +114,46 @@ asset-track every DIMM/GPU as a lifecycle entity tomorrow, **without changing th
 `ComputerSystem.MemorySummary.TotalSystemMemoryGiB` (rollup) **and** `/Memory/<id>` per-DIMM resources;
 Metal3 exposes `status.hardware.ramMebibytes` (rollup) + `nics[]`/`storage[]` arrays. The `Hardware.*`
 family is a registry addition tracked alongside the other new types.
+
+### 5a. Identity — distinguishing instances of the same type (SPEC-DESIGN-REQUIREMENTS §27)
+
+Two identical 32 GB DIMMs, eight same-model drives — all the same type, size, often the same use. To
+keep them individually addressable, every component (whether a `Hardware.*` entity or an inline
+`modules[]`/`disks[]` element) carries the canonical **`Identity`** block:
+
+```yaml
+Identity:
+  location:      "P1-DIMMA1"        # physical position WITHIN the parent — unique there, stable across
+                                    # reboots (DIMM slot, drive bay "Bay 7", PCIe slot). Primary key.
+  serialNumber:  "S3F2NX0M..."      # globally unique hardware serial — survives a move to another parent
+  wwn:           "0x5000c500..."    # storage-device World-Wide Name (drives); alt global key to serial
+  assetTag:      "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag
+  model:         "M393A4K40DB3-CWE" # type identity (part number) — equal across identical units
+  role:          "system"           # OPTIONAL semantic usage — distinguishes same-model by PURPOSE
+                                    # (drive: boot|data|ceph-osd|cache; memory: system|persistent)
+```
+
+**Discriminator precedence:** `location` (always unique within a parent) → `serialNumber`/`wwn`
+(globally unique, identity-follows-the-part) → `role`/`usage` (semantic). The component **entity's own
+UUID** is its UDLM identity; the `Identity` block is what **binds that UUID to one physical instance** and
+survives reseat (same serial, new slot) or repurpose (same serial, new role). This makes both "**same
+type, different unit**" (two 32 GB DIMMs → distinct `location`/`serialNumber`) and "**same use,
+different serial**" (two `ceph-osd` drives → same `role`, distinct `serialNumber`/`wwn`) first-class.
+Adopts Redfish (`Memory.SerialNumber`+`DeviceLocator`, `Drive.SerialNumber`+`WWN`+`PhysicalLocation`)
+and Metal3 (`storage[].{name,serialNumber,wwn,model}`, `nics[].mac`) — vocabulary by reference.
+
+## 6. `lifecycleState` — allocation / availability (SPEC-DESIGN-REQUIREMENTS §28)
+
+A resource that exists physically but is not yet allocated (a racked-but-unassigned server, a spare
+drive, a brownfield import) is **raw** — tracked with Discovered state and **no Intent**. The canonical
+`lifecycleState` marks where it sits:
+
+```yaml
+lifecycleState: available   # available | allocated | retired   (extensible per type)
+```
+
+`available` = inventoried, unallocated, tracked. `allocated` = an Intent has been **adopted** onto it
+(it entered the managed lifecycle, UUID preserved). `retired` = decommissioned but retained for history.
+Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its canonical
+inspected-but-unprovisioned state). See `foundations/four-states.md` §2.4 (raw / discovered-first entry)
+and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).

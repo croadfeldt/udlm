@@ -104,6 +104,34 @@ Each hard constraint cites the UDLM contract it derives from.
     aggregate** of the contained components; a mismatch is **drift** (surfaced, not silently merged).
     Component entities are additive (MINOR) — never required for the portable contract.
 
+27. **Instances of the same type MUST be individually distinguishable.** When a parent holds multiple
+    components of one type — two identical 32 GB DIMMs, eight same-model drives — each instance MUST
+    carry enough identity to tell them apart, even when type, size, and use are identical. Use the
+    canonical `Identity` element (`registry/common-elements.md`): **`location`** (physical position
+    within the parent — DIMM slot `P1-DIMMA1`, drive bay `Bay 7`, PCIe slot — unique within the parent,
+    stable across reboots) and **`serialNumber`**/**`wwn`** (globally unique hardware identity, survives
+    a move to another parent). A semantic **`role`/`usage`** field distinguishes same-model components
+    by *purpose* (a drive as `boot` vs `ceph-osd`; memory as `system` vs `persistent`). The entity's own
+    UUID is its UDLM identity; `location`/`serialNumber`/`role` are the **discriminators** that bind that
+    UUID to one physical instance and make "same type, different unit" and "same use, different serial"
+    both expressible. The same rule applies inline (the rollup's `modules[]`/`disks[]` arrays MUST key
+    each element by `location` or `serialNumber`, never by array position alone). Grounded in Redfish
+    (`Memory.SerialNumber`+`DeviceLocator`, `Drive.SerialNumber`+`WWN`+`PhysicalLocation`) and Metal3
+    (`storage[].{name,serialNumber,wwn}`, `nics[].mac`).
+
+### Lifecycle entry — raw & unallocated resources
+28. **A type MUST support a "raw" existence: Discovered state populated, no Intent.** A resource that
+    physically exists but has not been allocated — a freshly racked server, a brownfield import, a spare
+    drive on the shelf — MUST be representable for **inventory and tracking** with only its Discovered
+    state populated and **no Intent/allocation** (`foundations/four-states.md` §2.4). Such a resource
+    carries an **availability** lifecycle state (canonical `lifecycleState`, e.g.
+    `available|allocated|retired`; adopts Metal3 `provisioning.state: available`) marking it
+    unallocated. It is later **adopted** — an Intent is attached (allocation / brownfield ingestion),
+    entering the managed lifecycle — and adoption MUST **preserve the entity UUID** (four-states §3),
+    so all inventory history accrues to the same entity. "Ingest raw, append changes later" is therefore
+    the discovered-first lifecycle entry, the peer of intent-first (declare → realize). A type whose
+    schema *requires* Intent fields to instantiate violates this rule.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
