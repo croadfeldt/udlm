@@ -70,19 +70,20 @@ conversion model: one canonical version per major, declared conversions between 
 ## Pre-1.0 surface-change log
 
 While the spec is `0.x` the surface is still being **defined**, so changes are *expansion of the v0.x
-surface*, not refinement of a released contract (see "Spec status" above). Two consequences:
+surface*, not refinement of a released contract (see "Spec status" above).
 
-- **No version ceremony pre-1.0.** A change that *would* be breaking after 1.0 does **not** trigger an
-  entity bump or a SPEC-minor bump while `0.x` is in-development — there are no consumers pinned to a
-  released contract to protect, so in-repo `0.1.x` definitions are **edited in place**. The
-  immutable-once-published / any-change-bumps rule above is the *post-stability* discipline; it starts
-  binding when a version is actually released (at the latest, `1.0`).
-- **But changes are still logged here**, so a reader can see what shifted as the surface settled —
-  especially anything that would invalidate an externally-authored document.
+**Pre-1.0 we do NOT follow the full versioning rules above.** Those rules (immutable-once-published,
+MAJOR for breaking changes + deprecation window) are the *post-1.0* discipline that protects consumers
+pinned to a released contract — which don't exist yet. While `0.x`:
 
-| Date | Change | Would-break post-1.0? | What to do |
-|---|---|---|---|
-| 2026-06-26 | `adoptedStandardRef` (`resource-type-spec.schema.json`) now requires `source`, `license`, `licenseCompatibility`; `identityJoin` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | Yes — an `adopts[]` entry without the license verdict no longer validates. **Wire/instance format is unaffected**: `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` were edited in place at `0.1.0` (no bump — still defining the surface). |
+- Versions still **advance** (we bump the REVISION) so a reader can tell a definition changed, **but a
+  `0.x` REVISION/MINOR MAY carry backward-incompatible (breaking) changes** that post-1.0 would require
+  a MAJOR + deprecation. No deprecation ceremony is performed pre-1.0.
+- Every such change is **logged here** so the breakage is explicit, not silent.
+
+| Date | Version | Change | Breaking? | Migration |
+|---|---|---|---|---|
+| 2026-06-26 | `Data.Database` & `Compute.Cluster` → **0.1.1**; meta-schema (SPEC `udlm/0.1`) edited in place | `adoptedStandardRef` (`resource-type-spec.schema.json`) now requires `source`, `license`, `licenseCompatibility`; `identityJoin` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | **Yes — backward-incompatible.** An `adopts[]` entry without the license verdict no longer validates (would be a MAJOR post-1.0; carried in a `0.1.1` REVISION by the pre-1.0 exception above). **Wire/instance format is unaffected** — `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` backfilled. |
 
 ## Serialization — JSON **and** YAML, natively
 
