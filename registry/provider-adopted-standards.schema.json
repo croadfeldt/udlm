@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
+  "title": "UDLM Provider — Adopted Standard Support",
+  "description": "The provider-capability fragment by which a provider DECLARES which versions of each adopted external standard it can emit and/or consume (adopted-standards.md §3.2; DCM ADS-001). This is DATA — DCM negotiates the consumer's required version against this matrix (ADS-003), and the schema deliberately does NOT interpret ranges (resolution is Policy, T2). A full provider registration includes this fragment; this schema validates the fragment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["provider", "adoptedStandardSupport"],
+  "properties": {
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "uuid": { "type": "string", "format": "uuid" },
+        "kind": { "enum": ["service", "information", "composite"], "description": "Provider type (provider-contract.md). A provider may emit adopted-standard data in its Information-Provider role even when it also provisions (service)." }
+      }
+    },
+    "adoptedStandardSupport": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per adopted standard this provider supports.",
+      "items": { "$ref": "#/$defs/standardSupport" }
+    }
+  },
+  "$defs": {
+    "standardSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["standard", "supports", "direction"],
+      "properties": {
+        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, OSCAL, SCIM." },
+        "supports": { "type": "string", "minLength": 1, "description": "The version range/pins the provider can serve — a pin (\"1.4\"), wildcard (\"1.x\"), or range (\">=1.2 <2.0\"). RANGE RESOLUTION is Policy (DCM ADS-003), not the schema." },
+        "preferred": { "type": "string", "description": "The concrete version the provider prefers within `supports` (DCM binds here when it falls inside the negotiated overlap)." },
+        "direction": { "enum": ["emit", "consume", "both"], "description": "Whether the provider produces the standard's data, consumes it, or both." }
+      }
+    }
+  }
+}

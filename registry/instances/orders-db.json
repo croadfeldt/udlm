@@ -1,0 +1,69 @@
+{
+  "uuid": "7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21",
+  "conformsTo": "udlm/0.1",
+  "resourceType": "Data.Database",
+  "typeVersion": "0.1.0",
+  "typeRef": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.1.0",
+  "lifecycleState": "Realized",
+  "generation": 1,
+  "observedGeneration": 1,
+
+  "states": {
+    "intent": {
+      "fields": { "engine": "postgres" },
+      "at": "2026-06-17T15:00:00Z"
+    },
+    "requested": {
+      "fields": { "engine": "postgres", "version": "16", "resources": { "cpu": 1, "memory": "512MB" } },
+      "at": "2026-06-17T15:00:02Z"
+    },
+    "realized": {
+      "fields": { "engine": "postgres", "version": "16", "resources": { "cpu": 1, "memory": "512MB" } },
+      "outputs": { "host": "orders-db.fsi.internal", "port": 5432, "connectionString": "***", "username": "orders_app" },
+      "at": "2026-06-17T15:01:30Z",
+      "provider": "rh-database-provider"
+    }
+  },
+
+  "provenance": {
+    "engine":        [ { "source": { "kind": "actor", "id": "chris" }, "actor": "chris@example.com", "timestamp": "2026-06-17T15:00:00Z" } ],
+    "version":       [ { "source": { "kind": "layer", "id": "db-defaults", "version": "2.1.0" }, "timestamp": "2026-06-17T15:00:02Z" } ],
+    "resources.cpu": [ { "source": { "kind": "policy", "id": "sizing-policy", "version": "1.4.0" }, "timestamp": "2026-06-17T15:00:02Z", "previousValue": null } ]
+  },
+
+  "ownership": {
+    "engine": "actor:chris",
+    "version": "layer:db-defaults",
+    "resources.cpu": "policy:sizing-policy",
+    "host": "provider:rh-database-provider",
+    "port": "provider:rh-database-provider",
+    "connectionString": "provider:rh-database-provider"
+  },
+
+  "dependencies": [],
+
+  "drift": { "detected": false, "checkedAt": "2026-06-17T15:30:00Z", "fields": [] },
+
+  "sovereignty": { "zone": "fsi-eu-west", "classification": "restricted" },
+
+  "status": {
+    "state": "Running",
+    "conditions": [
+      { "type": "Ready", "status": "True", "reason": "Provisioned", "lastTransitionTime": "2026-06-17T15:01:30Z" }
+    ]
+  },
+
+  "audit": { "logHead": "sha256:9c1f…a2b3", "leafCount": 4 },
+
+  "adoptedStandards": [
+    {
+      "standard": "FOCUS",
+      "requestedVersion": ">=1.3 <2.0",
+      "providerVersion": "1.4",
+      "effectiveVersion": "1.4",
+      "translated": false,
+      "providerUuid": "b6d948d4-47ab-42e2-b278-f038582c4c51",
+      "resolvedAt": "2026-06-17T15:01:35Z"
+    }
+  ]
+}

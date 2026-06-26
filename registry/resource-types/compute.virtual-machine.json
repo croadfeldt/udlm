@@ -1,0 +1,64 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
+  "resourceType": "Compute.VirtualMachine",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Virtual Machine",
+    "description": "A virtual compute instance with CPU, memory, a guest OS, and optional attached disks and network interfaces.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-17"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["vcpu", "memory", "guestOS"],
+    "properties": {
+      "vcpu": {
+        "type": "object",
+        "required": ["count"],
+        "properties": {
+          "count": { "type": "integer", "minimum": 1, "description": "Number of virtual CPUs." }
+        }
+      },
+      "memory": {
+        "type": "object",
+        "required": ["size"],
+        "properties": {
+          "size": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB)$", "description": "Memory allocation, e.g. 16GB." }
+        }
+      },
+      "guestOS": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string", "description": "Guest OS image identifier, e.g. rhel-9." }
+        }
+      },
+      "disks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["size"],
+          "properties": {
+            "size": { "type": "string", "pattern": "^[0-9]+(GB|TB)$" },
+            "storageClass": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "outputs": {
+    "ipAddress": { "type": "string", "description": "Primary IP address assigned once Realized." },
+    "hostname": { "type": "string", "description": "Resolvable hostname." },
+    "instanceId": { "type": "string", "description": "Provider-assigned instance identifier." }
+  },
+  "immutable": ["guestOS.type"],
+  "relationships": [
+    { "kind": "depends_on", "target": "Network.IPAddress", "targetField": "address", "cardinality": "0..n", "description": "May consume one or more pre-allocated addresses." }
+  ]
+}
