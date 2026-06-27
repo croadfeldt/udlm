@@ -67,6 +67,34 @@ Each hard constraint cites the UDLM contract it derives from.
     `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
     expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
     the contract layer stays deterministic + reproducible (`design-principles/core-tenets.md` T2/T3).
+    **Computation is relocated, not banned.** When a computed binding *is* needed (e.g. a CEL
+    expression combining declared outputs), it is a **Transformation Policy evaluated by DCM's policy
+    engine** — never embedded in the portable data. It is safe *iff*: (a) the evaluator is
+    **pure/deterministic** (sandboxed CEL — no I/O, clock, or randomness), so it is reproducible from
+    the immutable record; (b) its inputs are **declared typed bindings** (governable edges); and (c) the
+    **policy engine records the evaluation** (`expression@version` + resolved inputs + output), so the
+    computed field's provenance points to the policy and every input edge. The policy-evaluation seam is
+    already the audit/provenance capture point (DCM ADR-006/010) — computation stays expressive while the
+    portable data stays declarative and the result stays auditable + provenanced.
+    Two further controls bound it: **(d) per-field opt-in** — a field is a valid CEL target only if its
+    definition declares **`cel_permitted: true`** (default **false**; a declarative field marker alongside
+    `createOnly`/`immutable`/`sensitive`). Producers of types/layers/catalog items decide which fields
+    accept computed bindings — computation is opt-in (the *simple-common-case* principle); the policy
+    engine rejects a CEL op targeting a non-permitted field. **(e) Uncovered-computed-field notification**
+    — if a CEL op sets a field that **no policy reads or constrains**, the result is *ungoverned*
+    ("unbounded"): the engine emits an **`uncovered_computed_field`** observation (recorded, pairs with
+    provenance) and the **DCM operational profile** sets the action (notify → warn → block; sovereign/
+    critical → block). Together: producers gate *which* fields may be computed; the platform flags *when*
+    a computed field is ungoverned.
+    **Field markers are contract data — policy governs and gates them, but never rewrites them.** A
+    field's markers (`cel_permitted`, `immutable`, `sensitive`, …) are part of the contract: their
+    *effective* value is the base definition **narrowed** by declarative layers (constraint profiles / org
+    layers — E1 *narrow-never-widen*, recorded with provenance), so it is reproducible (T1/T3). A policy
+    MUST NOT flip a flag in place; it MAY (i) **authorize/govern** who narrows it, and (ii) add a runtime
+    **gate on the operation** (e.g. incident-mode → deny all CEL; a tenant → no computed fields), recorded
+    as a decision. **Direction:** *tightening* (e.g. `cel_permitted` true→false) is allowed via a narrowing
+    layer or a runtime gate; *loosening* (false→true — permitting what a producer disallowed) requires a
+    deliberate contract/version change, never a policy or overlay (preserves producer control).
 
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
@@ -149,6 +177,17 @@ Each hard constraint cites the UDLM contract it derives from.
     the discovered-first lifecycle entry, the peer of intent-first (declare → realize). A type whose
     schema *requires* Intent fields to instantiate violates this rule.
 
+### Decision decomposition — the three abstractions
+29. **Every type and every decision is decomposed across the three foundational abstractions —
+    `Data · Policy · Provider`** (DCM ADR-002; the UDLM Data⇄Policy boundary, `design-principles/core-tenets.md`).
+    A capability is only fully scoped when each is named: **Data** = what UDLM models/holds (types,
+    common-elements, served overlays); **Policy** = what DCM decides/computes/governs (the rules,
+    matching, gating); **Provider** = what a provider *declares as possible* and the *mechanism it
+    executes* (unmodeled). A DecisionRecord/ADR MUST carry a **Data · Policy · Provider** section (or
+    explicitly state "n/a, because…" for any that genuinely doesn't apply). This prevents modeling a
+    requirement as data with no policy to consume it, or a mechanism with no provider to declare it. It
+    is foundational across UDLM, DCM, and (where applicable) DAV.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
@@ -160,6 +199,26 @@ Each hard constraint cites the UDLM contract it derives from.
   Schema (`if`/`then`, `dependentSchemas`, `enum`), never an embedded expression language. Cross-entity
   data flow is a declarative typed binding (`target_field` → output); any real transformation/computation
   is **Policy**, applied by DCM — never in the spec (T2/T4).
+- **Right altitude — model the contract, not the implementation or product surface.** A type/taxonomy
+  captures the *concept and contract* (what a resource is, what it guarantees), never product/UI/impl
+  detail (specific screens, feature lists, internal mechanics). Such detail belongs in specs/product
+  docs and is referenced, not inlined. (Surfaced repeatedly in downstream review — e.g. enumerated UI
+  surfaces, "document every field of this object," over-modeled internals.) Sibling of *minimal core*.
+- **Simple common case; complexity is opt-in.** The common operation MUST be simple to declare — a
+  consumer should not author elaborate structure for the ordinary path. Advanced/edge capability is
+  *additive and optional*, never a tax on the default. (If "no admin would write this YAML," the altitude
+  or the default is wrong.)
+- **Cross-cutting mechanisms are consumer-neutral.** A shared mechanism (events, the four-state
+  lifecycle, provenance, audit) serves *any* subscriber/consumer and is **never coupled to one engine or
+  component** — e.g. lifecycle events route to all subscribers, not only the policy engine. (Pairs with
+  whole-system reuse.)
+- **Don't redefine a solved standard (active review gate, T5).** Before defining or redefining vocabulary
+  or a concept — versioning, auth/identity, DR objectives (RTO/RPO), health probes, etc. — check for a
+  credible external standard and **adopt it by reference or justify why not** (§22–23). Re-expressing a
+  solved standard as bespoke vocabulary is a review finding, not a default.
+- **Claims match the schema (reinforces §4).** A validation/typing *claim* MUST be backed by an actual
+  typed schema — no open/untyped maps where the contract asserts "all fields validated." An untyped
+  escape hatch that contradicts a stated guarantee is a defect.
 
 ## Candidate / deferred data points
 
