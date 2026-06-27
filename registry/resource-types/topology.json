@@ -42,7 +42,7 @@
           "properties": {
             "id": {
               "type": "string",
-              "description": "Stable id, unique within this topology (e.g. `ups-a`, `rack-1`, `stark`). Stable across reboots."
+              "description": "Stable id, unique within this topology (e.g. `ups-a`, `rack-1`, `host-01`). Stable across reboots."
             },
             "kind": {
               "type": "string",
