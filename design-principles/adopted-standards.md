@@ -36,7 +36,7 @@ tells you exactly what to build and what to skip:
 | Tier | What it standardizes | Examples | Implement | Do **not** build |
 |---|---|---|---|---|
 | **Tier 1 — value / codelist** | the allowed *values of a single field* | ISO 4217 (currency), ISO 8601 / RFC 3339 (time), RFC 4122 (UUID), ISO 3166 (country), IANA tz | a **referenced field constraint** ("conforms to ISO 4217") — reference it, never copy/enumerate it | no support matrix, no version negotiation, no translation, no effective-version provenance |
-| **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | the **full apparatus**: an `adopts[]` reference + identity join, a provider `adoptedStandardSupport` matrix, DCM negotiation/translation (ADS-001…010), effective-version provenance | — |
+| **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | the **full apparatus**: an `adopts[]` reference + identity join, a provider `adopted_standard_support` matrix, DCM negotiation/translation (ADS-001…010), effective-version provenance | — |
 
 **Rule of thumb:** *does the standard version in a way that changes its shape?* **No → Tier 1** (a near-constant
 vocabulary — pin nothing, negotiate nothing). **Yes → Tier 2** (the whole reason the ADS machinery exists).
@@ -110,7 +110,7 @@ Three declarative records. All are nouns — no logic.
       "standard": "FOCUS",
       "version": ">=1.3 <2.0",
       "role": "cost-and-usage data for this resource",
-      "identityJoin": { "localField": "uuid", "standardColumn": "ResourceId" },
+      "identity_join": { "local_field": "uuid", "standard_column": "ResourceId" },
       "source": "https://focus.finops.org/",
       "license": "CC-BY-4.0",
       "licenseCompatibility": "compatible-reference"
@@ -119,7 +119,7 @@ Three declarative records. All are nouns — no logic.
 }
 ```
 `version` is a pinned value or a range over the standard's own scheme (FOCUS/OpenCost use
-`MAJOR.MINOR`). `identityJoin` is the anchor only UDLM can provide. The standard's columns are **not**
+`MAJOR.MINOR`). `identity_join` is the anchor only UDLM can provide. The standard's columns are **not**
 restated here.
 
 **`source`, `license`, and `licenseCompatibility` are mandatory** (SPEC-DESIGN-REQUIREMENTS §22–23): the
@@ -134,7 +134,7 @@ construction; the check exists to catch the cases where someone is tempted to *c
 ### 3.2 Provider support matrix (a provider capability declaration)
 ```json
 {
-  "adoptedStandardSupport": [
+  "adopted_standard_support": [
     { "standard": "FOCUS",    "supports": ">=1.2 <2.0", "preferred": "1.4", "direction": "emit" },
     { "standard": "OpenCost", "supports": "1.x",         "preferred": "1.x", "direction": "emit" }
   ]
@@ -183,7 +183,7 @@ the requirement range + the provider matrix are the implementor's inputs; Policy
 ## 6. Where it plugs in (contract surfaces)
 
 - **Meta-schema** — a Resource Type / binding MAY carry an `adopts[]` reference (§3.1).
-- **Provider contract** — the capability declaration gains `adoptedStandardSupport[]` (§3.2).
+- **Provider contract** — the capability declaration gains `adopted_standard_support[]` (§3.2).
 - **Policy contract** — version negotiation/translation is a Policy responsibility (§4).
 - **Realized-entity** — the negotiated effective version (+ translation) is provenance (E4).
 

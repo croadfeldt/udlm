@@ -52,7 +52,7 @@ before acknowledging; circular dependencies are rejected (422); rehydration runs
 order, compensation in reverse.
 
 - **Edges are first-class, typed, and version-pinned.** Reference a target by versioned `$id` +
-  `targetField` (a specific realized output), never by bare name or provider-specific ref.
+  `target_field` (a specific realized output), never by bare name or provider-specific ref.
 - **M:N, cross-scope.** Support real topologies — including edges that cross tenant/sovereignty
   scope, so they are visible and governable rather than hidden.
 - **Integrity propagation.** Maturity/stability propagates across edges — a stable entity may not

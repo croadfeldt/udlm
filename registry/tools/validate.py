@@ -58,15 +58,15 @@ def main() -> int:
     print("== resource types ==")
     failures += validate_dir(
         "resource-types", TYPE_VALIDATOR,
-        lambda d: f"{d['resourceType']} v{d['version']} (conformsTo {d['conformsTo']})")
+        lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})")
     print("== instances ==")
     failures += validate_dir(
         "instances", INSTANCE_VALIDATOR,
-        lambda d: f"{d['resourceType']} instance {d['uuid'][:8]} [{d['lifecycleState']}]")
+        lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]")
     print("== providers (adopted-standard support) ==")
     failures += validate_dir(
         "providers", PROVIDER_VALIDATOR,
-        lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adoptedStandardSupport'])}")
+        lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adopted_standard_support'])}")
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0
 
