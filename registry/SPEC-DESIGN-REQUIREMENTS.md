@@ -86,6 +86,15 @@ Each hard constraint cites the UDLM contract it derives from.
     provenance) and the **DCM operational profile** sets the action (notify → warn → block; sovereign/
     critical → block). Together: producers gate *which* fields may be computed; the platform flags *when*
     a computed field is ungoverned.
+    **Field markers are contract data — policy governs and gates them, but never rewrites them.** A
+    field's markers (`cel_permitted`, `immutable`, `sensitive`, …) are part of the contract: their
+    *effective* value is the base definition **narrowed** by declarative layers (constraint profiles / org
+    layers — E1 *narrow-never-widen*, recorded with provenance), so it is reproducible (T1/T3). A policy
+    MUST NOT flip a flag in place; it MAY (i) **authorize/govern** who narrows it, and (ii) add a runtime
+    **gate on the operation** (e.g. incident-mode → deny all CEL; a tenant → no computed fields), recorded
+    as a decision. **Direction:** *tightening* (e.g. `cel_permitted` true→false) is allowed via a narrowing
+    layer or a runtime gate; *loosening* (false→true — permitting what a producer disallowed) requires a
+    deliberate contract/version change, never a policy or overlay (preserves producer control).
 
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
