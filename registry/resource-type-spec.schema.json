@@ -28,7 +28,7 @@
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Type name, unique within its `family`. Resource family: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Knowledge family: single-segment (Capability, TaxonomyTerm) — disambiguated by `family` (entities/knowledge-family.md)."
+      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, entities/knowledge-family.md)."
     },
     "version": {
       "type": "string",
