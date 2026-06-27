@@ -136,6 +136,21 @@
       "type": "array",
       "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
       "items": { "$ref": "#/$defs/adoptedStandardRef" }
+    },
+    "aliases": {
+      "type": "array",
+      "description": "Alternative names this type is known by (AKA / cross-walk for compatibility), for names NOT already covered by an `adopts[].standardName`. Use for vendor/colloquial names that do not correspond to a formally-adopted standard (e.g. AWS 'Dedicated Host', OpenStack 'Ironic node'). Names from standards this type formally adopts belong on `adopts[].standardName` instead.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "description": "The alternative name / AKA." },
+          "standard": { "type": "string", "description": "OPTIONAL: the standard/vendor/ecosystem this name comes from, e.g. AWS, OpenStack." },
+          "standardVersion": { "$ref": "#/$defs/standardVersion" },
+          "note": { "type": "string", "description": "OPTIONAL: clarification, e.g. 'consumer/allocation view'." }
+        }
+      }
     }
   },
   "allOf": [
@@ -166,6 +181,7 @@
       "properties": {
         "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, Redfish, Metal3, OSCAL, SCIM, OpenTelemetry." },
         "version": { "$ref": "#/$defs/standardVersion" },
+        "standardName": { "type": "string", "description": "OPTIONAL cross-walk: the name THIS standard uses for this type/concept (e.g. Redfish 'ComputerSystem', Metal3 'BareMetalHost'). Together with `standard` + `version` this is the {alternative name, spec, spec version} translation for compatibility — a consumer using the standard's vocabulary can resolve its term to this UDLM type." },
         "role": { "type": "string", "description": "What the adopted data/vocabulary is for (e.g. 'cost-and-usage data for this resource')." },
         "identityJoin": {
           "type": "object",

@@ -50,7 +50,7 @@
     "macAddress": { "type": "string", "description": "Realized MAC address (also a discriminator in identity)." }
   },
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalInstance", "cardinality": "0..1", "description": "The host the physical NIC is installed in." },
+    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical NIC is installed in." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For virtual / passthrough / partition, the guest the interface is presented to." },
     { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "parentDevice — the physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from. REQUIRED when deviceClass is passthrough or partition (common-elements §7)." }
   ],
@@ -58,6 +58,7 @@
     {
       "standard": "Redfish",
       "version": "2024.4",
+      "standardName": "NetworkAdapter",
       "role": "network-interface component vocabulary (NetworkAdapter/NetworkPort/NetworkDeviceFunction: MAC, speed, MTU)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
