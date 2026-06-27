@@ -38,7 +38,7 @@ settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at 
 | Docs, descriptions, metadata, non-semantic edits | **REVISION** |
 
 A **MAJOR** bump is a breaking change: the prior version moves to `deprecated`, and the new
-version's `deprecation`-linked predecessor MUST carry `migration_guidance`. Consumers pinned to
+version's `deprecation`-linked predecessor MUST carry `migrationGuidance`. Consumers pinned to
 the old major keep working until it is `retired`.
 
 ## Deprecation lifecycle (universal model, foundations/layering-and-versioning.md)
@@ -47,7 +47,7 @@ the old major keep working until it is `retired`.
 active ──► deprecated ──► retired
 ```
 - `deprecated` versions still resolve and still serve pinned consumers; they carry
-  `deprecation.{date, reason, replacement_uuid, migration_guidance}`.
+  `deprecation.{date, reason, replacementUuid, migrationGuidance}`.
 - **Deprecation window (K8s-informed):** a `deprecated` major is supported for a published
   minimum window before `retired`, so consumers have a real migration runway. Don't retire under
   anyone still pinned without that window.
@@ -84,6 +84,7 @@ pinned to a released contract — which don't exist yet. While `0.x`:
 | Date | Version | Change | Breaking? | Migration |
 |---|---|---|---|---|
 | 2026-06-26 | `Data.Database` & `Compute.Cluster` → **0.1.1**; meta-schema (SPEC `udlm/0.1`) edited in place | `adoptedStandardRef` (`resource-type-spec.schema.json`) now requires `source`, `license`, `licenseCompatibility`; `identityJoin` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | **Yes — backward-incompatible.** An `adopts[]` entry without the license verdict no longer validates (would be a MAJOR post-1.0; carried in a `0.1.1` REVISION by the pre-1.0 exception above). **Wire/instance format is unaffected** — `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` backfilled. |
+| 2026-06-27 | meta-schema (`udlm/0.1`) edited in place; all 19 types touched | **camelCase consolidation** — renamed the last snake_case meta-schema keys: `origination_timestamp`→`originationTimestamp` (in every type's `metadata`), and `deprecation.migration_guidance`→`migrationGuidance`, `deprecation.replacement_uuid`→`replacementUuid`. Adopts the camelCase data-model casing convention (`registry/naming-conventions.md` §4). | **Yes — backward-incompatible** (required key renamed). A type still using `origination_timestamp` no longer validates. **Wire/instance format aligns to camelCase** going forward. | Rename `origination_timestamp`→`originationTimestamp` (and the two `deprecation.*` keys) in any externally-authored type. All in-repo types updated. |
 
 ## Serialization — JSON **and** YAML, natively
 

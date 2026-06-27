@@ -12,7 +12,7 @@
     "displayName": "DHCP Scope",
     "description": "A DHCP address scope — a subnet's dynamic pool(s), options, and reservations. Grounded in RFC 2131 (DHCPv4) / RFC 8415 (DHCPv6) and the ISC Kea subnet model. ISC Kea is MPL-2.0, so its vocabulary is referenced by name only, never vendored.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",

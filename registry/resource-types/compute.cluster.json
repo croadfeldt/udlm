@@ -12,7 +12,7 @@
     "displayName": "Cluster",
     "description": "A managed Kubernetes/OpenShift cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via RHACM + Hosted Control Planes) realizes. Targets Network.VirtualNetwork and Platform.Hub are forthcoming OSAC-derived types.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "originationTimestamp": "2026-06-17"
   },
   "spec": {
     "type": "object",

@@ -12,7 +12,7 @@
     "displayName": "Network Interface",
     "description": "A network interface component. deviceClass covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, or a partition derived from a physical NIC — SR-IOV VF, or a VLAN/macvlan sub-interface — with parentDevice referencing the physical NIC. Mirrors Redfish NetworkAdapter / NetworkPort / NetworkDeviceFunction.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",

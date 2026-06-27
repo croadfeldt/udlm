@@ -12,7 +12,7 @@
     "displayName": "Processor",
     "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Hardware.Processor entities. deviceClass distinguishes a physical socket from a virtual CPU presented to a guest.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
