@@ -53,7 +53,7 @@
   "relationships": [
     { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host this drive is installed in; parent carries the reconciled storage rollup (§26)." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For deviceClass=virtual/passthrough, the guest the disk is presented to." },
-    { "kind": "binds_to", "target": "Storage.Cluster", "targetField": "rbdStorageClass", "cardinality": "0..1", "description": "For a virtual disk, the backing storage resource it is provisioned from." },
+    { "kind": "binds_to", "target": "Storage.Cluster", "targetField": "blockStorageClass", "cardinality": "0..1", "description": "For a virtual disk, the backing storage resource (block storage class) it is provisioned from." },
     { "kind": "references", "target": "Hardware.StorageDevice", "cardinality": "0..1", "description": "parentDevice — the physical disk a passthrough/partition (e.g. NVMe namespace) is derived from (common-elements §7)." }
   ],
   "adopts": [
