@@ -1,19 +1,19 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "6f097f82-9ed7-4be5-ae20-eca1b8e30051",
-  "resourceType": "Capability",
+  "resource_type": "Capability",
   "version": "0.1.0",
   "family": "Knowledge",
-  "entityType": "Capability",
-  "lifecycleArchetype": "curation",
+  "entity_type": "Capability",
+  "lifecycle_archetype": "curation",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "Capability",
+    "display_name": "Capability",
     "description": "A discrete platform capability — the unit of architectural capability tracked, normalized, and gap-analysed by DAV. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), not provisioning, and it is never realized by a provider. The family tag disambiguates the collision-prone bare word 'Capability' from any Resource type.",
     "maintainer": "dav",
-    "originationTimestamp": "2026-06-15"
+    "origination_timestamp": "2026-06-15"
   },
   "spec": {
     "type": "object",
@@ -36,7 +36,7 @@
         "type": "string",
         "description": "Capability domain (e.g. one of the DCM capability domains) this capability belongs to."
       },
-      "curationState": {
+      "curation_state": {
         "enum": ["proposed", "under-review", "canonical", "deprecated"],
         "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states (provenance-first; promotion to canonical is a curation act, applied by Policy, not by a provider)."
       }
@@ -44,7 +44,7 @@
   },
   "immutable": [],
   "outputs": {
-    "normalizedHandle": {
+    "normalized_handle": {
       "type": "string",
       "description": "The canonical handle a Capability resolves to once curated to `canonical`. Other Knowledge entities (aliases, use cases) bind to this via typed references rather than free-text capability names."
     }
@@ -53,7 +53,7 @@
     {
       "kind": "references",
       "target": "TaxonomyTerm",
-      "targetField": "termHandle",
+      "target_field": "termHandle",
       "cardinality": "0..n",
       "description": "normalized_to — this capability is mapped to one or more canonical taxonomy terms (e.g. the DCM capability taxonomy). A declarative typed reference; the mapping act is Policy."
     },

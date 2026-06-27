@@ -1,40 +1,40 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "8a9285ba-e17d-486b-aa81-37c7f94b16f9",
-  "resourceType": "Hardware.GraphicsProcessor",
+  "resource_type": "Hardware.GraphicsProcessor",
   "version": "0.1.0",
   "family": "Resource",
-  "entityType": "Infrastructure Resource",
+  "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "Graphics Processor",
-    "description": "A GPU / accelerator component. deviceClass covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parentDevice references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice.",
+    "display_name": "Graphics Processor",
+    "description": "A GPU / accelerator component. device_class covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parent_device references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice.",
     "maintainer": "udlm-registry",
-    "originationTimestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
     "required": [],
     "properties": {
-      "deviceClass": {
+      "device_class": {
         "type": "string",
         "enum": ["physical", "virtual", "passthrough", "partition"],
         "default": "physical",
-        "description": "Device realization (common-elements.md §7). passthrough = whole GPU to a guest; partition = vGPU/MIG slice (set parentDevice + partitionMechanism)."
+        "description": "Device realization (common-elements.md §7). passthrough = whole GPU to a guest; partition = vGPU/MIG slice (set parent_device + partition_mechanism)."
       },
-      "partitionMechanism": {
+      "partition_mechanism": {
         "type": "string",
-        "description": "Only when deviceClass=partition: e.g. mediated (NVIDIA vGPU / Linux mdev), mig, sr-iov."
+        "description": "Only when device_class=partition: e.g. mediated (NVIDIA vGPU / Linux mdev), mig, sr-iov."
       },
       "identity": {
         "type": "object",
         "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
           "location": { "type": "string", "description": "PCIe slot / BDF within the parent (Redfish PhysicalLocation). Primary discriminator; for a partition, the vGPU/MIG instance id." },
-          "serialNumber": { "type": "string", "description": "GPU serial (absent for virtual/partition)." },
-          "assetTag": { "type": "string" },
+          "serial_number": { "type": "string", "description": "GPU serial (absent for virtual/partition)." },
+          "asset_tag": { "type": "string" },
           "model": { "type": "string", "description": "GPU model, e.g. AMD Radeon Pro W7900 (Redfish Model)." },
           "manufacturer": { "type": "string" },
           "role": { "type": "string", "description": "Semantic usage, e.g. compute | display | inference." }
@@ -53,17 +53,17 @@
   "relationships": [
     { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical GPU is installed in." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For passthrough / partition (vGPU), the guest the device is presented to." },
-    { "kind": "references", "target": "Hardware.GraphicsProcessor", "cardinality": "0..1", "description": "parentDevice — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when deviceClass is passthrough or partition (common-elements §7)." }
+    { "kind": "references", "target": "Hardware.GraphicsProcessor", "cardinality": "0..1", "description": "parent_device — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when device_class is passthrough or partition (common-elements §7)." }
   ],
   "adopts": [
     {
       "standard": "Redfish",
       "version": "2024.4",
-      "standardName": "Processor",
+      "standard_name": "Processor",
       "role": "GPU/accelerator component vocabulary (Processor ProcessorType=GPU / PCIeDevice)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     }
   ]
 }

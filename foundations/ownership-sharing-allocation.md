@@ -40,7 +40,7 @@ Getting this model right is foundational. It governs decommission safety (can th
 > point** (see `registry/SPEC-DESIGN-REQUIREMENTS.md` → *Candidate / deferred data points*), not a
 > validated field on a Resource Type Spec today — the patterns are currently expressed through
 > relationships (pools, stakes) and the realized-entity `ownership`. If adopted it will be
-> `ownershipModel` (camelCase, hyphenated enum values). Treat the examples as illustrative.
+> `ownership_model` (camelCase, hyphenated enum values). Treat the examples as illustrative.
 
 ### 2.1 Whole Allocation (Consumer Owns the Entity)
 

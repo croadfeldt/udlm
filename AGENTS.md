@@ -43,10 +43,10 @@ lifecycle/        Operational models, recovery state machine
     (`memory.size`); a component MAY *also* be a first-class `Hardware.*` entity `contained_by` it,
     toggled by `composition_visibility`. Rollup = reconciled aggregate; mismatch = drift.
   - **Same-type instances must be distinguishable** (§27): every component carries the canonical
-    `Identity` (`location` → `serialNumber`/`wwn` → `role`) so two identical DIMMs / two same-use
+    `Identity` (`location` → `serial_number`/`wwn` → `role`) so two identical DIMMs / two same-use
     drives are individually addressable.
   - **Raw resources are first-class** (§28): a type MUST be instantiable with Discovered state and **no
-    Intent** (racked-but-unallocated, brownfield), carrying `lifecycleState: available`, later
+    Intent** (racked-but-unallocated, brownfield), carrying `lifecycle_state: available`, later
     **adopted** (Intent attached, UUID preserved).
 - **Adding a type:** follow `registry/naming-conventions.md` (Tier-1 `Category.Type` vendor-neutral,
   name-to-a-standard-first) and the registry process (`governance/registry-governance.md` §3,
@@ -73,11 +73,11 @@ Knowledge entity (stacked on #1) · **#3** adopted-standard provenance/license r
 **Recently added to the spec (this thread):**
 - Provenance + license rules for adopted standards (SPEC-DESIGN §22–23; `design-principles/adopted-standards.md`).
 - Cross-type consistency rules + `registry/common-elements.md` (canonical Quantity / ComputeResources /
-  cidr / ipFamily / Reference / Condition + the sweep finding: the 4 existing types express cpu/memory
+  cidr / ip_family / Reference / Condition + the sweep finding: the 4 existing types express cpu/memory
   three ways → normalize additively, converge at next MAJOR).
 - Component granularity §26 + `common-elements.md` §5 (entity vs data element, both ways; `Hardware.*` family).
 - Instance identity §27 + `common-elements.md` §5a (`Identity` discriminators).
-- Raw/unallocated resources §28 + `four-states.md` §2.4 + `common-elements.md` §6 (`lifecycleState`).
+- Raw/unallocated resources §28 + `four-states.md` §2.4 + `common-elements.md` §6 (`lifecycle_state`).
 
 **Pending:** author the `Hardware.*` component types (MemoryModule, StorageDevice, NetworkInterface,
 GraphicsProcessor, Processor) and the 8 infra types (BareMetalInstance, CephCluster, Gateway,

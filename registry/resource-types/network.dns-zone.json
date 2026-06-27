@@ -1,25 +1,25 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "68db84ec-3f4f-4810-b083-0cb30b42d368",
-  "resourceType": "Network.DNSZone",
+  "resource_type": "Network.DNSZone",
   "version": "0.1.0",
   "family": "Resource",
-  "entityType": "Infrastructure Resource",
+  "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "DNS Zone",
+    "display_name": "DNS Zone",
     "description": "An authoritative DNS zone. Grounded in RFC 1034/1035 (the DNS zone + resource-record model); external-dns DNSEndpoint is the Kubernetes-native cross-walk. The serving software (BIND, FreeIPA-integrated DNS, etc.) is the provider.",
     "maintainer": "udlm-registry",
-    "originationTimestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
-    "required": ["zoneName"],
+    "required": ["zone_name"],
     "properties": {
-      "zoneName": { "type": "string", "description": "Fully-qualified zone name, e.g. example.com (RFC 1035 domain name)." },
-      "zoneType": { "type": "string", "enum": ["primary", "secondary", "forward", "stub"], "default": "primary", "description": "Authoritative role for this zone." },
+      "zone_name": { "type": "string", "description": "Fully-qualified zone name, e.g. example.com (RFC 1035 domain name)." },
+      "zone_type": { "type": "string", "enum": ["primary", "secondary", "forward", "stub"], "default": "primary", "description": "Authoritative role for this zone." },
       "records": {
         "type": "array",
         "description": "Resource records (RFC 1035). Optional — a zone may be summarized without enumerating records.",
@@ -46,20 +46,20 @@
     {
       "standard": "RFC-1035",
       "version": "1035",
-      "standardName": "Zone",
+      "standard_name": "Zone",
       "role": "DNS zone + resource-record vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc1035",
       "license": "IETF-Trust",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     },
     {
       "standard": "external-dns",
       "version": "0.x",
-      "standardName": "DNSEndpoint",
+      "standard_name": "DNSEndpoint",
       "role": "Kubernetes-native zone/record cross-walk",
       "source": "https://github.com/kubernetes-sigs/external-dns",
       "license": "Apache-2.0",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     }
   ],
   "aliases": [

@@ -1,25 +1,25 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "bb2b301f-b5d9-4d5e-b9bf-7d9a4bb6c1ff",
-  "resourceType": "Network.DHCPScope",
+  "resource_type": "Network.DHCPScope",
   "version": "0.1.0",
   "family": "Resource",
-  "entityType": "Infrastructure Resource",
+  "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "DHCP Scope",
+    "display_name": "DHCP Scope",
     "description": "A DHCP address scope — a subnet's dynamic pool(s), options, and reservations. Grounded in RFC 2131 (DHCPv4) / RFC 8415 (DHCPv6) and the ISC Kea subnet model. ISC Kea is MPL-2.0, so its vocabulary is referenced by name only, never vendored.",
     "maintainer": "udlm-registry",
-    "originationTimestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
     "required": ["subnet"],
     "properties": {
       "subnet": { "type": "string", "description": "Scope subnet in CIDR (common-elements: cidr), e.g. 10.0.90.0/24." },
-      "ipFamily": { "type": "string", "enum": ["ipv4", "ipv6"], "default": "ipv4", "description": "Address family (common-elements: ipFamily)." },
+      "ip_family": { "type": "string", "enum": ["ipv4", "ipv6"], "default": "ipv4", "description": "Address family (common-elements: ip_family)." },
       "pools": {
         "type": "array",
         "description": "Dynamic allocation ranges within the subnet (Kea subnet pools).",
@@ -37,19 +37,19 @@
         "description": "Common DHCP options (RFC 2132).",
         "properties": {
           "router": { "type": "string", "description": "Default gateway (option 3)." },
-          "dnsServers": { "type": "array", "items": { "type": "string" }, "description": "DNS servers (option 6)." },
-          "domainName": { "type": "string", "description": "Domain name (option 15)." }
+          "dns_servers": { "type": "array", "items": { "type": "string" }, "description": "DNS servers (option 6)." },
+          "domain_name": { "type": "string", "description": "Domain name (option 15)." }
         }
       },
-      "leaseTime": { "type": "integer", "minimum": 1, "description": "Default lease time in seconds." },
+      "lease_time": { "type": "integer", "minimum": 1, "description": "Default lease time in seconds." },
       "reservations": {
         "type": "array",
         "description": "Static host reservations (MAC -> address).",
         "items": {
           "type": "object",
-          "required": ["macAddress", "address"],
+          "required": ["mac_address", "address"],
           "properties": {
-            "macAddress": { "type": "string", "description": "Client hardware address." },
+            "mac_address": { "type": "string", "description": "Client hardware address." },
             "address": { "type": "string", "description": "Reserved IP." },
             "hostname": { "type": "string" }
           }
@@ -66,20 +66,20 @@
     {
       "standard": "RFC-2131",
       "version": "2131",
-      "standardName": "subnet",
+      "standard_name": "subnet",
       "role": "DHCPv4 scope / pool / lease vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc2131",
       "license": "IETF-Trust",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     },
     {
       "standard": "ISC-Kea",
       "version": "2.x",
-      "standardName": "subnet4",
+      "standard_name": "subnet4",
       "role": "concrete subnet/pool/reservation model (reference-only: Kea is MPL-2.0)",
       "source": "https://kea.readthedocs.io/",
       "license": "MPL-2.0",
-      "licenseCompatibility": "reference-only"
+      "license_compatibility": "reference-only"
     }
   ],
   "aliases": [

@@ -69,7 +69,7 @@ power/facility — so for those the adoption target is the **industry standard**
 
 UDLM has the hooks to encode this without new machinery:
 - **`registry/provider-adopted-standards.schema.json`** — the type/provider declares the standard it
-  conforms to (the Tier-2 `adopts[]` + `adoptedStandardSupport` apparatus from adopted-standards §1a).
+  conforms to (the Tier-2 `adopts[]` + `adopted_standard_support` apparatus from adopted-standards §1a).
 - **`spec` field annotations** — a field carries an `x-standard` pointer (e.g.
   `x-standard: "metal3:BareMetalHost.status.hardware.cpu"`) so validation + provenance resolve to the
   canonical element. Tier-1 codelists are referenced as field constraints, never enumerated.
