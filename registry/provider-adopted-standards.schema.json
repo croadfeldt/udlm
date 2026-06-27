@@ -5,7 +5,7 @@
   "description": "The provider-capability fragment by which a provider DECLARES which versions of each adopted external standard it can emit and/or consume (adopted-standards.md §3.2; DCM ADS-001). This is DATA — DCM negotiates the consumer's required version against this matrix (ADS-003), and the schema deliberately does NOT interpret ranges (resolution is Policy, T2). A full provider registration includes this fragment; this schema validates the fragment.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["provider", "adoptedStandardSupport"],
+  "required": ["provider", "adopted_standard_support"],
   "properties": {
     "provider": {
       "type": "object",
@@ -17,15 +17,15 @@
         "kind": { "enum": ["service", "information", "composite"], "description": "Provider type (provider-contract.md). A provider may emit adopted-standard data in its Information-Provider role even when it also provisions (service)." }
       }
     },
-    "adoptedStandardSupport": {
+    "adopted_standard_support": {
       "type": "array",
       "minItems": 1,
       "description": "One entry per adopted standard this provider supports.",
-      "items": { "$ref": "#/$defs/standardSupport" }
+      "items": { "$ref": "#/$defs/standard_support" }
     }
   },
   "$defs": {
-    "standardSupport": {
+    "standard_support": {
       "type": "object",
       "additionalProperties": false,
       "required": ["standard", "supports", "direction"],

@@ -249,7 +249,7 @@ auth_provider:
       attributes:
         username: sAMAccountName
         email: userPrincipalName
-        display_name: displayName
+        display_name: display_name
         sid: objectSid            # AD Security Identifier — for audit
 
     group_search:

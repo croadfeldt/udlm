@@ -13,7 +13,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 
 - **Shape:** `Category.Type`, both segments **PascalCase** (`Compute.VirtualMachine`,
   `Network.IPAddress`). Knowledge-family types are single-segment (`Capability`). Enforced by the
-  `resourceType` / `$id` patterns in the meta-schema.
+  `resource_type` / `$id` patterns in the meta-schema.
 - **Tiered namespace** (`governance/registry-governance.md` §2):
   | Tier | Namespace form | Example | Vendor names? |
   |---|---|---|---|
@@ -41,10 +41,10 @@ specification") but is a registry-precedent decision — do it only when **both*
 
 New categories established by this work, each anchored to **DMTF Redfish** (datacenter hardware/DCIM):
 - **`Hardware`** — the **device/component layer** below the device boundary (DIMM, disk, NIC, CPU, GPU),
-  the first-class side of the §26 component model. **Not physical-only**: a `deviceClass` discriminator
+  the first-class side of the §26 component model. **Not physical-only**: a `device_class` discriminator
   (`physical | virtual | passthrough | partition`, common-elements §7) lets the same types model a real
   DIMM, a guest's virtual disk, a passed-through GPU, or a vGPU/SR-IOV/VLAN **slice of a physical parent**
-  (via a `parentDevice` reference). Anchored to Redfish `Memory`/`Processor`/`Drive`/`NetworkAdapter`
+  (via a `parent_device` reference). Anchored to Redfish `Memory`/`Processor`/`Drive`/`NetworkAdapter`
   (+ `NetworkDeviceFunction`/`PCIeFunction` for the derived cases). Distinct from `Compute` (the whole
   machine/instance).
 - **`Facility`** — physical-datacenter resources (power, later rack/cooling). Anchored to Redfish DCIM
@@ -79,12 +79,12 @@ So `Compute.BareMetalHost` is the **asset**; "instance" and "allocation" are exi
 
 To translate to/from other ecosystems, a type carries its alternative names with provenance — the
 `{alternative name, spec, spec version}` shape:
-- **Names from a standard the type formally adopts** → set **`standardName`** on that `adopts[]` entry
+- **Names from a standard the type formally adopts** → set **`standard_name`** on that `adopts[]` entry
   (it already carries `standard` + `version` + `source` + `license`). E.g. `Compute.BareMetalHost`
-  adopts Redfish (`standardName: ComputerSystem`, v2024.4) and Metal3 (`standardName: BareMetalHost`).
-  This *is* the {name, spec, specVersion} cross-walk, co-located with provenance — no duplication.
+  adopts Redfish (`standard_name: ComputerSystem`, v2024.4) and Metal3 (`standard_name: BareMetalHost`).
+  This *is* the {name, standard, standard_version} cross-walk, co-located with provenance — no duplication.
 - **Names NOT tied to an adopted standard** (vendor/colloquial AKAs) → the top-level **`aliases[]`**
-  (`{name, standard?, standardVersion?, note?}`), e.g. AWS "Dedicated Host", OpenStack "Ironic node".
+  (`{name, standard?, standard_version?, note?}`), e.g. AWS "Dedicated Host", OpenStack "Ironic node".
 
 (The Knowledge-family **`Alias`** entity is a different tool — *taxonomy-term* normalization
 "avoid → use instead", `entities/knowledge-family.md` §4.3 — not type cross-walks.)
@@ -93,35 +93,49 @@ To translate to/from other ecosystems, a type carries its alternative names with
 
 This section governs the **casing of the data model itself** (the keys in a resource definition). The
 *runtime* concerns — how the API / event bus serialize it, Go/Python mapping, CloudEvents envelope,
-broker routing — cross the UDLM↔DCM boundary and are a **DCM** concern: see DCM **ADR-018 (Wire
-serialization & event conventions)**.
+broker routing — are a **DCM** concern: see DCM **ADR-018 (Wire serialization & event conventions)**.
+DCM follows the same casing for the reason below, so there is no translation seam.
 
-**Decision: `camelCase` keys on the wire.** UDLM definitions are an **API- and event-bus-driven data
-model consumed by code** (Go + Python), not hand-edited sysadmin config — the profile where camelCase is
-the industry fit: frontend/JS-TS native, the default serialization of Go `encoding/json` and Python
-Pydantic, and aligned with the CNCF **CloudEvents** standard.
+**Decision: `snake_case` keys.** UDLM is a **canonical data model meant to be consumed natively** by
+every component (the "consume UDLM natively or it isn't universal" rule). Native consumption means the
+model **is** the wire form — there is no separate "API casing" to translate to. DCM's API is the consumer
+with a hard external constraint: it conforms to **AEP** (`aep.dev`, the dcm-project engineering team's
+adopted API-design standard, enforced by the `aep-dev/aep-openapi-linter`), and AEP's prescribed fields
+are snake_case (`page_size`, `*_time`). Native-universal consumption **+** AEP-bound API therefore jointly
+force one casing — **snake_case** — across UDLM and DCM. (camelCase would re-introduce the very
+translation layer native consumption exists to eliminate; it was tried and reverted — VERSIONING.md
+surface-change log.) snake_case is also native to UDLM's actual stack: Python (DAV/providers), SQL stores,
+protobuf/gRPC, and AEP itself; fully supported via tags in Go; only K8s/CRDs prefer camelCase, reached by
+an **export adapter** at that domain boundary (not native consumption).
 
-- **Field & output keys → `camelCase`** (`memorySize`, `blockStorageClass`, `resourceId`). Reuse the
-  canonical `common-elements.md` shapes (Quantity, ComputeResources, Identity, lifecycleState,
-  cidr/ipFamily, Reference, Condition) — SPEC-DESIGN §24.
-- **Don't use `PascalCase` keys** (legacy CloudFormation only) or **`kebab-case` keys** (forces
-  `data['a-b']` bracket access instead of `data.aB` dot-access in most languages).
+- **Field & output keys → `snake_case`** (`memory_size`, `block_storage_class`, `resource_id`). Reuse the
+  canonical `common-elements.md` shapes (Quantity, ComputeResources, Identity, lifecycle_state,
+  cidr/ip_family, Reference, Condition) — SPEC-DESIGN §24.
+- **Don't use `camelCase` or `PascalCase` keys** (would diverge from the canonical/AEP casing) or
+  **`kebab-case` keys** (forces `data['a-b']` bracket access).
 - **Enum values → lowercase, hyphenated for multi-word** (`compatible-reference`, `whole-allocation`).
-  These are string *values*, never dot-accessed keys, so the kebab caveat does not apply.
+  These are string *values*, never keys, and AEP governs field *names* not *values*.
 - **Quantities** carry an explicit unit via the `Quantity` pattern; timestamps are RFC 3339.
-- **Outputs** are `camelCase` typed keys naming the capability, not the implementation
-  (`blockStorageClass`, `connectionString`) — the cross-entity binding surface (E2).
+- **Outputs** are `snake_case` typed keys naming the capability, not the implementation
+  (`block_storage_class`, `connection_string`) — the cross-entity binding surface (E2).
+- **Initialisms** are lowercased within a snake key (`pod_cidr`, `api_url`, `internal_dns`, `vlan_id`),
+  never split into letters. (The PascalCase *Type segment* keeps uppercase initialisms — §1 — that is the
+  type **name**, not a field key.)
 
 **Event-type identifiers** (UDLM event-catalog names, e.g. `resource.discovered`, `entity.realized`) use
-lowercase **dot notation** so brokers can wildcard-route — distinct from payload property keys
-(camelCase). The routing mechanics live in DCM (ADR-018).
+lowercase **dot notation** so brokers can wildcard-route — distinct from payload property keys. The
+routing mechanics live in DCM (ADR-018).
 
 ### Carve-outs — keep foreign / idiomatic casing
-- **Adopted-standard field names keep the source's casing.** We reference Redfish `SerialNumber`
-  (PascalCase), FOCUS `ResourceId` as-is — recasing foreign vocabulary would violate adopt-by-reference
-  (SPEC-DESIGN §22–23). `adopts[].standardName` carries the source spelling.
-- **SQL / store identifiers stay `snake_case`** (`discovered_records`, `intent_records`) — SQL idiom,
-  not wire keys.
+- **Adopted vocabulary is referenced, not minted as a live key.** The live field name is always the
+  native (snake_case) form (`serial_number`); the adopted standard's source name — any casing — is
+  recorded as a **metadata value**, not a key: `adopts[].standard_name` (`"SerialNumber"`, Redfish),
+  a field-level `x-standard` pointer, or `aliases[]`. Foreign casing (camelCase/PascalCase) may appear
+  **only** as a metadata value, an enum/string value, or inside an explicitly-opaque extension/raw blob
+  (e.g. `provider_hints`, `x-…`, discovered-raw) — **never** as a typed resource key. This keeps the
+  AEP-bound wire uniformly snake_case (SPEC-DESIGN §22–23, §23a).
+- **SQL / store identifiers stay `snake_case`** (`discovered_records`, `intent_records`) — same casing as
+  the model, so the projection is identity.
 
 ## 5. File names
 

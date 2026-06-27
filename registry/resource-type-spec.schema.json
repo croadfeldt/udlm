@@ -6,16 +6,16 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "$id", "conformsTo", "uuid", "resourceType", "version", "family",
-    "entityType", "portability", "status", "metadata", "spec", "outputs"
+    "$id", "conforms_to", "uuid", "resource_type", "version", "family",
+    "entity_type", "portability", "status", "metadata", "spec", "outputs"
   ],
   "properties": {
     "$id": {
       "type": "string",
       "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conformsTo`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VirtualMachine) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
+      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conforms_to`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VirtualMachine) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
     },
-    "conformsTo": {
+    "conforms_to": {
       "type": "string",
       "pattern": "^udlm/[0-9]+\\.[0-9]+$",
       "description": "SPEC-axis binding: the UDLM spec major.minor this type is written against (its apiVersion). Peers conformant to the same MAJOR are wire-compatible (CONFORMANCE.md §9)."
@@ -25,7 +25,7 @@
       "format": "uuid",
       "description": "RFC 4122 UUIDv4 identity of this type specification (contracts/identifier-scheme.md). Immutable for the life of the type."
     },
-    "resourceType": {
+    "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
       "description": "Type name, unique within its `family`. Resource family: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Knowledge family: single-segment (Capability, TaxonomyTerm) — disambiguated by `family` (entities/knowledge-family.md)."
@@ -39,11 +39,11 @@
       "enum": ["Resource", "Knowledge"],
       "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary."
     },
-    "entityType": {
+    "entity_type": {
       "type": "string",
       "description": "The entity type within its family. Resource: Infrastructure Resource | Composite | Process. Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Constrained by `family` (see allOf). (foundations/entity-types.md, entities/knowledge-family.md.)"
     },
-    "lifecycleArchetype": {
+    "lifecycle_archetype": {
       "enum": ["provisioning", "curation"],
       "description": "How this type interprets the universal four states: `provisioning` (Resource — Intent→Requested→Realized→Discovered via a provider) or `curation` (Knowledge — proposed→under-review→canonical→deprecated). Optional; inferred from `family` if absent."
     },
@@ -58,24 +58,24 @@
     "deprecation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["date", "reason", "migrationGuidance"],
+      "required": ["date", "reason", "migration_guidance"],
       "properties": {
         "date": { "type": "string", "format": "date" },
         "reason": { "type": "string" },
-        "replacementUuid": { "type": "string", "format": "uuid" },
-        "migrationGuidance": { "type": "string" }
+        "replacement_uuid": { "type": "string", "format": "uuid" },
+        "migration_guidance": { "type": "string" }
       },
-      "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migrationGuidance."
+      "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migration_guidance."
     },
     "metadata": {
       "type": "object",
       "additionalProperties": true,
-      "required": ["displayName", "description", "maintainer", "originationTimestamp"],
+      "required": ["display_name", "description", "maintainer", "origination_timestamp"],
       "properties": {
-        "displayName": { "type": "string" },
+        "display_name": { "type": "string" },
         "description": { "type": "string" },
         "maintainer": { "type": "string" },
-        "originationTimestamp": { "type": "string", "format": "date" }
+        "origination_timestamp": { "type": "string", "format": "date" }
       }
     },
     "spec": {
@@ -117,7 +117,7 @@
         "properties": {
           "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
           "target": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" },
-          "targetField": { "type": "string", "description": "An `outputs` key on the target this edge binds to (e.g. a database's `connectionString`). The binding is a typed reference resolved at dispatch — data movement, not transformation (T4)." },
+          "target_field": { "type": "string", "description": "An `outputs` key on the target this edge binds to (e.g. a database's `connection_string`). The binding is a typed reference resolved at dispatch — data movement, not transformation (T4)." },
           "cardinality": { "enum": ["0..1", "1..1", "0..n", "1..n"], "default": "0..n" },
           "description": { "type": "string" }
         }
@@ -135,11 +135,11 @@
     "adopts": {
       "type": "array",
       "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
-      "items": { "$ref": "#/$defs/adoptedStandardRef" }
+      "items": { "$ref": "#/$defs/adopted_standard_ref" }
     },
     "aliases": {
       "type": "array",
-      "description": "Alternative names this type is known by (AKA / cross-walk for compatibility), for names NOT already covered by an `adopts[].standardName`. Use for vendor/colloquial names that do not correspond to a formally-adopted standard (e.g. AWS 'Dedicated Host', OpenStack 'Ironic node'). Names from standards this type formally adopts belong on `adopts[].standardName` instead.",
+      "description": "Alternative names this type is known by (AKA / cross-walk for compatibility), for names NOT already covered by an `adopts[].standard_name`. Use for vendor/colloquial names that do not correspond to a formally-adopted standard (e.g. AWS 'Dedicated Host', OpenStack 'Ironic node'). Names from standards this type formally adopts belong on `adopts[].standard_name` instead.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -147,7 +147,7 @@
         "properties": {
           "name": { "type": "string", "description": "The alternative name / AKA." },
           "standard": { "type": "string", "description": "OPTIONAL: the standard/vendor/ecosystem this name comes from, e.g. AWS, OpenStack." },
-          "standardVersion": { "$ref": "#/$defs/standardVersion" },
+          "standard_version": { "$ref": "#/$defs/standard_version" },
           "note": { "type": "string", "description": "OPTIONAL: clarification, e.g. 'consumer/allocation view'." }
         }
       }
@@ -160,42 +160,42 @@
     },
     {
       "if": { "properties": { "family": { "const": "Resource" } } },
-      "then": { "properties": { "entityType": { "enum": ["Infrastructure Resource", "Composite", "Process"] } } }
+      "then": { "properties": { "entity_type": { "enum": ["Infrastructure Resource", "Composite", "Process"] } } }
     },
     {
       "if": { "properties": { "family": { "const": "Knowledge" } } },
-      "then": { "properties": { "entityType": { "enum": ["Capability", "TaxonomyTerm", "Alias", "Antipattern", "UseCase"] } } }
+      "then": { "properties": { "entity_type": { "enum": ["Capability", "TaxonomyTerm", "Alias", "Antipattern", "UseCase"] } } }
     }
   ],
   "$defs": {
-    "standardVersion": {
+    "standard_version": {
       "type": "string",
       "minLength": 1,
       "description": "A reference over an external standard's OWN versioning scheme — a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (DCM), not the data model (T2/T5)."
     },
-    "adoptedStandardRef": {
+    "adopted_standard_ref": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["standard", "version", "source", "license", "licenseCompatibility"],
-      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identityJoin` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `licenseCompatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
+      "required": ["standard", "version", "source", "license", "license_compatibility"],
+      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `licenseCompatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
       "properties": {
         "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, Redfish, Metal3, OSCAL, SCIM, OpenTelemetry." },
-        "version": { "$ref": "#/$defs/standardVersion" },
-        "standardName": { "type": "string", "description": "OPTIONAL cross-walk: the name THIS standard uses for this type/concept (e.g. Redfish 'ComputerSystem', Metal3 'BareMetalHost'). Together with `standard` + `version` this is the {alternative name, spec, spec version} translation for compatibility — a consumer using the standard's vocabulary can resolve its term to this UDLM type." },
+        "version": { "$ref": "#/$defs/standard_version" },
+        "standard_name": { "type": "string", "description": "OPTIONAL cross-walk: the name THIS standard uses for this type/concept (e.g. Redfish 'ComputerSystem', Metal3 'BareMetalHost'). Together with `standard` + `version` this is the {alternative name, spec, spec version} translation for compatibility — a consumer using the standard's vocabulary can resolve its term to this UDLM type." },
         "role": { "type": "string", "description": "What the adopted data/vocabulary is for (e.g. 'cost-and-usage data for this resource')." },
-        "identityJoin": {
+        "identity_join": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["localField", "standardColumn"],
+          "required": ["local_field", "standard_column"],
           "description": "OPTIONAL. The anchor only UDLM can provide for a DATA-join adoption: a local identity field bound to a column in the standard's records (e.g. uuid -> FOCUS ResourceId). Omit for reference-vocabulary adoptions that borrow field names without joining to the standard's records.",
           "properties": {
-            "localField": { "type": "string", "description": "Field on this entity used as the join key (e.g. uuid)." },
-            "standardColumn": { "type": "string", "description": "Column/attribute in the standard's records that the local field joins to (e.g. ResourceId)." }
+            "local_field": { "type": "string", "description": "Field on this entity used as the join key (e.g. uuid)." },
+            "standard_column": { "type": "string", "description": "Column/attribute in the standard's records that the local field joins to (e.g. ResourceId)." }
           }
         },
         "source": { "type": "string", "description": "Canonical URL of the standard (e.g. https://focus.finops.org/). REQUIRED provenance (SPEC-DESIGN-REQUIREMENTS §22)." },
         "license": { "type": "string", "description": "The source's license identifier (SPDX where possible, e.g. CC-BY-4.0, Apache-2.0, GPL-3.0). REQUIRED (SPEC-DESIGN-REQUIREMENTS §23)." },
-        "licenseCompatibility": {
+        "license_compatibility": {
           "enum": ["compatible-reference", "compatible-vendor", "reference-only"],
           "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23): `compatible-reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible-vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference-only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
         }

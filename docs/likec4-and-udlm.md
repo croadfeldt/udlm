@@ -63,7 +63,7 @@ compositeService:
       depends_on: [db]                # from  api -> db
       required_for_delivery: required
       bindings:                       # typed references over the edge (core-tenets T4)
-        - { field: process.env.DATABASE_URL, from: db.connectionString }
+        - { field: process.env.DATABASE_URL, from: db.connection_string }
     - component_id: web
       resource_type: Compute.Container
       provided_by: external
@@ -86,7 +86,7 @@ applied*:
 1. **Requested** — assembles the payload (layers ⊕ policy), runs the Governance Matrix + sovereignty
    filter (e.g. place all three in an `fsi`/`sovereign` zone), validates the graph is a DAG (`RDG-001`).
 2. **Dispatch per DAG level**, each to a **separate provider**:
-   `db` (DB provider) → publishes `connectionString` → `api` (container provider) binds it, publishes
+   `db` (DB provider) → publishes `connection_string` → `api` (container provider) binds it, publishes
    `endpoint` → `web` (container provider) binds it, publishes a public URL.
 3. **Realized** — aggregates constituents' realized state into the Composite Entity.
 4. **Discovered** — per-constituent + composite drift.
@@ -124,7 +124,7 @@ subset is deterministic and lossless — no logic, just hints:
 ```likec4
 db = container 'Orders DB' {
   technology 'PostgreSQL'
-  metadata { udlm.resourceType 'Data.Database' }
+  metadata { udlm.resource_type 'Data.Database' }
 }
 api -> db 'reads/writes' {
   metadata { udlm.edge 'depends_on' }   // vs 'references' for async/runtime-only

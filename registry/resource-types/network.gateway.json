@@ -1,18 +1,18 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "541766ad-94b8-40db-8886-c42fd85e8bd1",
-  "resourceType": "Network.Gateway",
+  "resource_type": "Network.Gateway",
   "version": "0.1.0",
   "family": "Resource",
-  "entityType": "Infrastructure Resource",
+  "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "Network Gateway",
+    "display_name": "Network Gateway",
     "description": "A network edge gateway — routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
     "maintainer": "udlm-registry",
-    "originationTimestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
@@ -30,16 +30,16 @@
           "type": "object",
           "properties": {
             "cidr": { "type": "string", "description": "Segment CIDR (common-elements: cidr)." },
-            "vlanId": { "type": "integer", "minimum": 1, "maximum": 4094, "description": "802.1Q VLAN id, if tagged." },
+            "vlan_id": { "type": "integer", "minimum": 1, "maximum": 4094, "description": "802.1Q VLAN id, if tagged." },
             "role": { "type": "string", "description": "Segment role, e.g. wan | lan | dmz | mgmt." }
           }
         }
       },
-      "ipFamily": { "type": "string", "enum": ["ipv4", "ipv6", "dual"], "description": "Address families routed (common-elements: ipFamily)." }
+      "ip_family": { "type": "string", "enum": ["ipv4", "ipv6", "dual"], "description": "Address families routed (common-elements: ip_family)." }
     }
   },
   "outputs": {
-    "externalAddress": { "type": "string", "description": "Public/WAN address the gateway presents (NAT egress / ingress) once Realized." }
+    "external_address": { "type": "string", "description": "Public/WAN address the gateway presents (NAT egress / ingress) once Realized." }
   },
   "relationships": [
     { "kind": "references", "target": "Network.DHCPScope", "cardinality": "0..n", "description": "Segments the gateway routes may have DHCP scopes served elsewhere." }
@@ -48,11 +48,11 @@
     {
       "standard": "Kubernetes-Gateway-API",
       "version": "1.x",
-      "standardName": "Gateway",
+      "standard_name": "Gateway",
       "role": "the portable 'gateway' (network entry/exit point) concept",
       "source": "https://gateway-api.sigs.k8s.io/",
       "license": "Apache-2.0",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     }
   ],
   "aliases": [

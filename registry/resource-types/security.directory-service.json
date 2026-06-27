@@ -1,18 +1,18 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "c96eeddc-ff58-4159-8d28-675addc80a9a",
-  "resourceType": "Security.DirectoryService",
+  "resource_type": "Security.DirectoryService",
   "version": "0.1.0",
   "family": "Resource",
-  "entityType": "Infrastructure Resource",
+  "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "Directory Service",
+    "display_name": "Directory Service",
     "description": "An identity directory server providing LDAP and (optionally) Kerberos. Grounded in RFC 4511/4512 (LDAP protocol + information model) and RFC 4120 (Kerberos). This is the directory SERVER (a Security resource); the identity DATA it holds (Person/Group/ServiceAccount) is the Identity information category. A suite like FreeIPA realizes this PLUS Network.DNSZone and (future) Security.CertificateAuthority.",
     "maintainer": "udlm-registry",
-    "originationTimestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
@@ -24,14 +24,14 @@
         "description": "Directory access protocols served (RFC 4511 LDAP; RFC 4120 Kerberos)."
       },
       "realm": { "type": "string", "description": "Kerberos realm / identity realm, e.g. ROADFELDT.COM." },
-      "baseDn": { "type": "string", "description": "LDAP base DN, e.g. dc=roadfeldt,dc=com (RFC 4512 naming)." },
-      "replicationRole": { "type": "string", "enum": ["primary", "replica", "standalone"], "default": "standalone", "description": "Topology role within the directory cluster." }
+      "base_dn": { "type": "string", "description": "LDAP base DN, e.g. dc=roadfeldt,dc=com (RFC 4512 naming)." },
+      "replication_role": { "type": "string", "enum": ["primary", "replica", "standalone"], "default": "standalone", "description": "Topology role within the directory cluster." }
     }
   },
   "outputs": {
-    "ldapEndpoint": { "type": "string", "description": "LDAP(S) URL, e.g. ldaps://idm.roadfeldt.com:636." },
-    "kdcEndpoint": { "type": "string", "description": "Kerberos KDC endpoint, when Kerberos is served." },
-    "baseDn": { "type": "string", "description": "Realized base DN consumers bind under." }
+    "ldap_endpoint": { "type": "string", "description": "LDAP(S) URL, e.g. ldaps://idm.roadfeldt.com:636." },
+    "kdc_endpoint": { "type": "string", "description": "Kerberos KDC endpoint, when Kerberos is served." },
+    "base_dn": { "type": "string", "description": "Realized base DN consumers bind under." }
   },
   "relationships": [
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "The VM the directory server runs on." },
@@ -42,20 +42,20 @@
     {
       "standard": "RFC-4511",
       "version": "4511",
-      "standardName": "Directory",
+      "standard_name": "Directory",
       "role": "LDAP protocol + directory information model vocabulary (RFC 4511/4512)",
       "source": "https://www.rfc-editor.org/rfc/rfc4511",
       "license": "IETF-Trust",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     },
     {
       "standard": "RFC-4120",
       "version": "4120",
-      "standardName": "KDC",
+      "standard_name": "KDC",
       "role": "Kerberos realm / KDC vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc4120",
       "license": "IETF-Trust",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     }
   ],
   "aliases": [
