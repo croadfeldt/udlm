@@ -14,16 +14,18 @@
 
 Generalize the provider declaration into a **provider capability declaration** — the provider-authored record of what it can satisfy. It carries the existing `adopted_standard_support` plus three new capability blocks. It is a **provider declaration (data)**, not a resource type; matching/negotiation against consumer requirements is **Policy** (the Placement Engine + operational policies).
 
-### 1. `topology_capability` — what topology the provider offers (compat with ADR-001)
+### 1. `topology_capability` — the topologies a provider can *fulfill* (compat with ADR-001)
+**A provider does not author a `Topology` instance — it declares the topologies it can *fulfill*, as a capability.** (The concrete `Topology` instance — the actual domains — is realized/discovered, a separate artifact from this declaration; ADR-001.) Matched against a workload's abstract topology constraints.
 ```json
 "topology_capability": {
   "kinds_supported": ["region","zone","host","power-domain"],   // separation it can GUARANTEE
   "native_mapping":  { "zone": "aws-az", "host": "hypervisor" },// native → abstract kind (naturalization)
   "jurisdictions":   ["us","eu"],                                // residency/sovereignty coverage
-  "max_separation":  "zone"                                      // strongest anti-affinity it can promise
+  "max_separation":  "zone",                                     // strongest anti-affinity it can promise
+  "reference_topologies": ["ha-3zone","single-zone"]             // optional: named topology archetypes it can fulfill
 }
 ```
-This is the provider-declared side of ADR-001's "providers declare how their native topology fills the abstract kinds." A provider with no failure-domain concept declares `kinds_supported: []` → fails the capability filter for any spread constraint (correct).
+This is the provider-declared side of ADR-001's "providers declare how their native topology fills the abstract kinds." A provider with no failure-domain concept declares `kinds_supported: []` → fails the capability filter for any spread constraint (correct). `reference_topologies` lets a provider advertise fulfillment of **named topology archetypes** (a future reference-topology catalog); the primitive capabilities (kinds / separation / jurisdictions) are the floor matching always uses.
 
 ### 2. `mobility` — data portability / migration capability (from ADR-003 §3)
 ```json

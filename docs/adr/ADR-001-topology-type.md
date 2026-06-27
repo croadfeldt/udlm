@@ -30,7 +30,7 @@ Abstract constraints are the **portability-preserving** way to express spread/co
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the `Topology` type — kinds + concrete domains + labels — and each resource's locality reference.
 - **Policy (DCM):** Placement Policy (ADR-019) resolves abstract constraints against it; sovereignty resolves over jurisdiction labels.
-- **Provider:** declares `topology_capability` (ADR-004), naturalizes abstract kinds to its native topology, and contributes the concrete domains.
+- **Provider:** declares a **`topology_capability`** (ADR-004) — *the topologies it can fulfill*, **not** a `Topology` instance — and naturalizes abstract kinds to its native topology. The concrete `Topology` (the actual domains) is realized/discovered, a separate artifact from the capability declaration.
 
 ## Options considered
 
