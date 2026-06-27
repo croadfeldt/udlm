@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `design-principles/core-tenets.md` **T6** (validated outcomes), T2/T5; ADR-001 (`Topology`), ADR-002 (capacity/utilization); the cost served pattern; **DCM ADR (migration policy + gating)**
+**Related:** `design-principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`), ADR-002 (capacity/utilization); the cost served pattern; **DCM ADR (migration policy + gating)**
 **Tracking:** placement-data family — "how is data migration handled, and how do we pre-validate it?"
 
 ## Context
