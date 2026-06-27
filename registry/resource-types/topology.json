@@ -1,0 +1,76 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "b7e4c1a2-9d3f-4a6b-8c5e-1f2a3b4c5d6e",
+  "resource_type": "Topology",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Topology",
+    "description": "A declared graph of failure/locality domains (region, zone, rack, host, power, network) that abstract placement, residency, fault-domain gating, and ordering resolve against. A cross-cutting, single-segment type (not domain-owned) so resources across any domain reference it. Failure domains are addressable data WITHIN this type (SPEC-DESIGN-REQUIREMENTS §26/§27), keyed by a stable id, not a separate type. Each domain carries an abstract `kind` (what a constraint targets) and a concrete `id` (what a resource actually landed in); portable intent references kinds, never concrete ids.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-27"
+  },
+  "adopts": [
+    {
+      "standard": "Kubernetes well-known topology labels",
+      "version": "1.30",
+      "source": "https://kubernetes.io/docs/reference/labels-annotations-taints/",
+      "license": "CC-BY-4.0",
+      "license_compatibility": "compatible-reference",
+      "standard_name": "topology.kubernetes.io"
+    }
+  ],
+  "spec": {
+    "type": "object",
+    "required": ["scope", "domains"],
+    "properties": {
+      "scope": {
+        "type": "string",
+        "enum": ["global", "region", "facility", "logical"],
+        "description": "Breadth this topology describes. `facility` is a scope, not the root — a topology MAY span facilities."
+      },
+      "domains": {
+        "type": "array",
+        "description": "Failure/locality domains as addressable data within the topology (SPEC-DESIGN-REQUIREMENTS §26/§27). Each keyed by a stable `id`; placement/locality references point at `id`. The `parent` links form an acyclic hierarchy.",
+        "items": {
+          "type": "object",
+          "required": ["id", "kind"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Stable id, unique within this topology (e.g. `ups-a`, `rack-1`, `stark`). Stable across reboots."
+            },
+            "kind": {
+              "type": "string",
+              "enum": ["region", "availability-zone", "zone", "rack", "host", "power-domain", "network-segment"],
+              "description": "Abstract domain level a placement/residency constraint targets (the portable dimension)."
+            },
+            "parent": {
+              "type": "string",
+              "description": "`id` of the containing domain; forms the hierarchy and MUST be acyclic."
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "description": "Domain attributes, e.g. `jurisdiction: EU`, `residency: eu-west`. Sovereignty/residency resolves against these."
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false
+  },
+  "immutable": [],
+  "outputs": {
+    "domain_status": {
+      "type": "array",
+      "description": "Observed (Discovered) per-domain state — array of { id (→ spec.domains[].id), availability: active|draining|unavailable, member_count }. `draining` gates maintenance; `unavailable` drops the domain from placement candidates."
+    }
+  },
+  "relationships": []
+}
