@@ -10,3 +10,4 @@ own ADRs in `architecture/adr/` (the control-plane side); UDLM ADRs here cross-r
 | [001](ADR-001-topology-type.md) | `Topology` — cross-cutting failure/locality-domain type (failure domains = data within it; abstract `kind` / concrete `id`) | Proposed |
 | [002](ADR-002-capacity-utilization-served-overlay.md) | Capacity/Utilization — served observational overlay (cost pattern), **not** a UDLM type | Proposed |
 | [003](ADR-003-data-mobility-and-process-validation.md) | Data mobility (requirements=data, methods=provider, mechanism=provider, permission=Policy) + process-validation lifecycle (rehearsal/simulation, freshness; T6) | Proposed |
+| [004](ADR-004-provider-capability-declaration.md) | Provider capability declaration — `topology_capability` + `mobility` + `operational_capability`; what placement & operational/SRE policies match against | Proposed |
