@@ -171,6 +171,26 @@ Each hard constraint cites the UDLM contract it derives from.
   Schema (`if`/`then`, `dependentSchemas`, `enum`), never an embedded expression language. Cross-entity
   data flow is a declarative typed binding (`target_field` → output); any real transformation/computation
   is **Policy**, applied by DCM — never in the spec (T2/T4).
+- **Right altitude — model the contract, not the implementation or product surface.** A type/taxonomy
+  captures the *concept and contract* (what a resource is, what it guarantees), never product/UI/impl
+  detail (specific screens, feature lists, internal mechanics). Such detail belongs in specs/product
+  docs and is referenced, not inlined. (Surfaced repeatedly in downstream review — e.g. enumerated UI
+  surfaces, "document every field of this object," over-modeled internals.) Sibling of *minimal core*.
+- **Simple common case; complexity is opt-in.** The common operation MUST be simple to declare — a
+  consumer should not author elaborate structure for the ordinary path. Advanced/edge capability is
+  *additive and optional*, never a tax on the default. (If "no admin would write this YAML," the altitude
+  or the default is wrong.)
+- **Cross-cutting mechanisms are consumer-neutral.** A shared mechanism (events, the four-state
+  lifecycle, provenance, audit) serves *any* subscriber/consumer and is **never coupled to one engine or
+  component** — e.g. lifecycle events route to all subscribers, not only the policy engine. (Pairs with
+  whole-system reuse.)
+- **Don't redefine a solved standard (active review gate, T5).** Before defining or redefining vocabulary
+  or a concept — versioning, auth/identity, DR objectives (RTO/RPO), health probes, etc. — check for a
+  credible external standard and **adopt it by reference or justify why not** (§22–23). Re-expressing a
+  solved standard as bespoke vocabulary is a review finding, not a default.
+- **Claims match the schema (reinforces §4).** A validation/typing *claim* MUST be backed by an actual
+  typed schema — no open/untyped maps where the contract asserts "all fields validated." An untyped
+  escape hatch that contradicts a stated guarantee is a defect.
 
 ## Candidate / deferred data points
 

@@ -64,7 +64,10 @@ the data's lifecycle is genuinely UDLM's to custody; otherwise adopt.** Provider
 *versions* they support and consumers declare the version they require (both **data**); **negotiating,
 enforcing, and translating between versions is Policy** (T2), and the negotiated effective version is
 recorded as provenance. The full disposition, constructs, and the version-negotiation contract are in
-`adopted-standards.md`.
+`adopted-standards.md`. **This is an active review gate, not advice:** redefining a concept a credible
+standard already solves — API versioning, auth/identity, DR objectives (RTO/RPO), health probes — is a
+**review finding**; the default is "adopt by reference or justify why not" (`SPEC-DESIGN-REQUIREMENTS`
+Design principles).
 
 ## T6 — Validated outcomes, not tested incidents
 A declared resilience outcome (survive DR / move / rehydrate within an RTO/RPO) is only real if it is
