@@ -12,7 +12,7 @@
     "displayName": "Graphics Processor",
     "description": "A GPU / accelerator component. deviceClass covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parentDevice references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",

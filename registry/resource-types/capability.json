@@ -13,7 +13,7 @@
     "displayName": "Capability",
     "description": "A discrete platform capability — the unit of architectural capability tracked, normalized, and gap-analysed by DAV. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), not provisioning, and it is never realized by a provider. The family tag disambiguates the collision-prone bare word 'Capability' from any Resource type.",
     "maintainer": "dav",
-    "origination_timestamp": "2026-06-15"
+    "originationTimestamp": "2026-06-15"
   },
   "spec": {
     "type": "object",

@@ -12,7 +12,7 @@
     "displayName": "Directory Service",
     "description": "An identity directory server providing LDAP and (optionally) Kerberos. Grounded in RFC 4511/4512 (LDAP protocol + information model) and RFC 4120 (Kerberos). This is the directory SERVER (a Security resource); the identity DATA it holds (Person/Group/ServiceAccount) is the Identity information category. A suite like FreeIPA realizes this PLUS Network.DNSZone and (future) Security.CertificateAuthority.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",

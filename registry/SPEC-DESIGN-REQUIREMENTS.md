@@ -30,7 +30,7 @@ Each hard constraint cites the UDLM contract it derives from.
 8. **`version: MAJOR.MINOR.REVISION`** — ENTITY axis; immutable once published; any change publishes a
    new version (`foundations/layering-and-versioning.md`). **[enforced: pattern]**
 9. **Semver semantics**: additive → MINOR, breaking → MAJOR, docs → REVISION. **[enforced: compat-check]**
-10. A **MAJOR** bump deprecates the predecessor and MUST carry `migration_guidance`; a deprecation
+10. A **MAJOR** bump deprecates the predecessor and MUST carry `migrationGuidance`; a deprecation
     window precedes retirement (universal deprecation model + K8s deprecation policy).
 11. **Version-pinned references** — profiles (E1) and realized instances (E5) pin the exact version used.
 

@@ -12,7 +12,7 @@
     "displayName": "Memory Module",
     "description": "A memory module (DIMM) component. The first-class entity form of the §26 component model — a parent (e.g. Compute.BareMetalHost) carries the memory rollup and MAY also contain Hardware.MemoryModule entities. deviceClass distinguishes a physical DIMM from virtual guest memory.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",

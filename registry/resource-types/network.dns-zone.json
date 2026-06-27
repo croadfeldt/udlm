@@ -12,7 +12,7 @@
     "displayName": "DNS Zone",
     "description": "An authoritative DNS zone. Grounded in RFC 1034/1035 (the DNS zone + resource-record model); external-dns DNSEndpoint is the Kubernetes-native cross-walk. The serving software (BIND, FreeIPA-integrated DNS, etc.) is the provider.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
