@@ -97,6 +97,13 @@ The submitter becomes the **Resource Type Authority** for the submitted specific
 > activates without their approval. Authority can be transferred via a formal transfer.
 > This is the same `owned_by` governance model applied to all UDLM artifacts.
 
+> **`developing` / `proposed` here are review-WORKFLOW stages, not the spec's `status` field.** They
+> describe an artifact's journey *into* the registry (draft → under review → accepted). The meta-schema
+> `status` enum (`active | deprecated | retired`, `registry/resource-type-spec.schema.json`) is the
+> separate *published-lifecycle* axis, and maturity is the *version* (`0.x` → `1.0`) — see VERSIONING.md
+> "Lifecycle vs. maturity". A spec only enters the validated registry once accepted, at which point it
+> is `status: active`. Don't conflate the workflow stage with `status`.
+
 ```
 1. Author creates Resource Type Specification draft
    ├── Standard artifact format (uuid, handle, version, status: developing)
