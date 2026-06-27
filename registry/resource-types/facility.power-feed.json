@@ -1,0 +1,65 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "30542efe-3bed-4a70-944d-3869a4c45a96",
+  "resourceType": "Facility.PowerFeed",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Power Feed",
+    "description": "A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-26"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["feedType"],
+    "properties": {
+      "feedType": { "type": "string", "enum": ["utility", "ups", "pdu", "generator"], "description": "Kind of power source." },
+      "capacity": {
+        "type": "object",
+        "description": "Rated capacity (Redfish Circuit/PowerDistribution ratings).",
+        "properties": {
+          "watts": { "type": "integer", "minimum": 1, "description": "Rated real power, W (VA for UPS where applicable)." },
+          "voltage": { "type": "integer", "minimum": 1, "description": "Nominal voltage, V." },
+          "phases": { "type": "integer", "enum": [1, 3], "description": "Single- or three-phase." }
+        }
+      },
+      "redundancy": { "type": "string", "enum": ["none", "n+1", "2n"], "default": "none", "description": "Feed redundancy level." }
+    }
+  },
+  "outputs": {
+    "status": { "type": "string", "description": "Observed feed status — online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger." },
+    "batteryCharge": { "type": "integer", "description": "Battery charge percent for a UPS feed (NUT battery.charge)." },
+    "runtimeSeconds": { "type": "integer", "description": "Estimated runtime remaining on battery, seconds (NUT battery.runtime)." }
+  },
+  "relationships": [],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standardName": "Circuit",
+      "role": "power-distribution / circuit rating vocabulary (Redfish DCIM PowerDistribution/Circuit)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "licenseCompatibility": "compatible-reference"
+    },
+    {
+      "standard": "NUT",
+      "version": "2.8",
+      "standardName": "ups.status",
+      "role": "UPS telemetry variable namespace (status, battery.charge, battery.runtime) — reference-only: NUT is GPL",
+      "source": "https://networkupstools.org/docs/developer-guide.chunked/apas01.html",
+      "license": "GPL-2.0-or-later",
+      "licenseCompatibility": "reference-only"
+    }
+  ],
+  "aliases": [
+    { "name": "UPS", "note": "when feedType=ups" },
+    { "name": "PDU", "note": "when feedType=pdu" },
+    { "name": "Outlet", "standard": "Redfish", "note": "Redfish DCIM Outlet, for a per-outlet feed" }
+  ]
+}
