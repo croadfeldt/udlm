@@ -62,6 +62,34 @@ type. Example: FreeIPA → `Security.DirectoryService` (LDAP+Kerberos, RFC 4511/
 `Network.DnsZone` **+** (future) `Security.CertificateAuthority`. This keeps each type portable and
 reusable and avoids a `FreeIPA.Everything` corner.
 
+## 3a. Asset vs. allocation vs. instance — don't mint redundant types
+
+Before adding a type, check whether the concept is already expressed by an existing mechanism:
+- **An instance of a type** is a **realized entity** (`registry/realized-entity.schema.json`,
+  `registry/instances/`) — `host-b` is an instance of `Compute.BareMetalHost`. Don't create a type to
+  mean "an instance of X."
+- **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
+  (`foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
+  not a new type. "Allocate a host to a tenant" = whole-allocation of `Compute.BareMetalHost`, not a
+  separate `BareMetalInstance` type.
+- **A new type** is warranted only for a genuinely distinct *kind of thing* with its own contract.
+
+So `Compute.BareMetalHost` is the **asset**; "instance" and "allocation" are existing mechanisms over it.
+
+## 3b. Alternative names (AKA / cross-walk for compatibility)
+
+To translate to/from other ecosystems, a type carries its alternative names with provenance — the
+`{alternative name, spec, spec version}` shape:
+- **Names from a standard the type formally adopts** → set **`standardName`** on that `adopts[]` entry
+  (it already carries `standard` + `version` + `source` + `license`). E.g. `Compute.BareMetalHost`
+  adopts Redfish (`standardName: ComputerSystem`, v2024.4) and Metal3 (`standardName: BareMetalHost`).
+  This *is* the {name, spec, specVersion} cross-walk, co-located with provenance — no duplication.
+- **Names NOT tied to an adopted standard** (vendor/colloquial AKAs) → the top-level **`aliases[]`**
+  (`{name, standard?, standardVersion?, note?}`), e.g. AWS "Dedicated Host", OpenStack "Ironic node".
+
+(The Knowledge-family **`Alias`** entity is a different tool — *taxonomy-term* normalization
+"avoid → use instead", `entities/knowledge-family.md` §4.3 — not type cross-walks.)
+
 ## 4. Field, output, and enum names (inside `spec`/`outputs`)
 
 - **Fields:** `camelCase` (`memorySize`, `vcpu`, `nodePools`) — SPEC-DESIGN §25. Reuse the canonical
@@ -99,7 +127,7 @@ The new types, their category/tier, and the standard each adopts by reference. A
 | `Hardware.GraphicsProcessor` | Hardware ✚ | Redfish `Processor` (ProcessorType=GPU) / `PCIeDevice` | GPU; extensible into PCIeDevice |
 | `Hardware.StorageDevice` | Hardware ✚ | Redfish `Drive` (+ SNIA Swordfish) | disk/SSD: wwn, serial, bay |
 | `Hardware.NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
-| `Compute.BareMetalInstance` | Compute | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | rollup of Hardware.* (§26); `lifecycleState` (§28) |
+| `Compute.BareMetalHost` | Compute | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of Hardware.* (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
 | `Storage.Cluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
 | `Network.Gateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
 | `Network.DnsZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
