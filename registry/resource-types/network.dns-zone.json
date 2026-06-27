@@ -1,0 +1,69 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "68db84ec-3f4f-4810-b083-0cb30b42d368",
+  "resourceType": "Network.DNSZone",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "DNS Zone",
+    "description": "An authoritative DNS zone. Grounded in RFC 1034/1035 (the DNS zone + resource-record model); external-dns DNSEndpoint is the Kubernetes-native cross-walk. The serving software (BIND, FreeIPA-integrated DNS, etc.) is the provider.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-26"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["zoneName"],
+    "properties": {
+      "zoneName": { "type": "string", "description": "Fully-qualified zone name, e.g. roadfeldt.com (RFC 1035 domain name)." },
+      "zoneType": { "type": "string", "enum": ["primary", "secondary", "forward", "stub"], "default": "primary", "description": "Authoritative role for this zone." },
+      "records": {
+        "type": "array",
+        "description": "Resource records (RFC 1035). Optional — a zone may be summarized without enumerating records.",
+        "items": {
+          "type": "object",
+          "required": ["name", "type"],
+          "properties": {
+            "name": { "type": "string", "description": "Owner name (relative or FQDN)." },
+            "type": { "type": "string", "description": "RR type, e.g. A, AAAA, CNAME, MX, TXT, SRV, PTR, NS (RFC 1035 + RFC 3596 AAAA)." },
+            "ttl": { "type": "integer", "minimum": 0, "description": "Time-to-live in seconds." },
+            "data": { "type": "string", "description": "RDATA value." }
+          }
+        }
+      }
+    }
+  },
+  "outputs": {
+    "nameservers": { "type": "array", "description": "Authoritative nameservers for the zone (NS records) once Realized." }
+  },
+  "relationships": [
+    { "kind": "references", "target": "Security.DirectoryService", "cardinality": "0..1", "description": "When DNS is integrated with the directory (e.g. FreeIPA serves this zone)." }
+  ],
+  "adopts": [
+    {
+      "standard": "RFC-1035",
+      "version": "1035",
+      "standardName": "Zone",
+      "role": "DNS zone + resource-record vocabulary",
+      "source": "https://www.rfc-editor.org/rfc/rfc1035",
+      "license": "IETF-Trust",
+      "licenseCompatibility": "compatible-reference"
+    },
+    {
+      "standard": "external-dns",
+      "version": "0.x",
+      "standardName": "DNSEndpoint",
+      "role": "Kubernetes-native zone/record cross-walk",
+      "source": "https://github.com/kubernetes-sigs/external-dns",
+      "license": "Apache-2.0",
+      "licenseCompatibility": "compatible-reference"
+    }
+  ],
+  "aliases": [
+    { "name": "Hosted Zone", "standard": "AWS", "note": "Route 53 hosted zone" },
+    { "name": "Managed Zone", "standard": "GCP", "note": "Cloud DNS managed zone" }
+  ]
+}
