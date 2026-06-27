@@ -12,7 +12,7 @@
     "displayName": "Database",
     "description": "A managed relational database instance. Publishes connection outputs other resources bind to.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "originationTimestamp": "2026-06-17"
   },
   "spec": {
     "type": "object",

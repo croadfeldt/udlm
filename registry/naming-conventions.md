@@ -89,19 +89,39 @@ To translate to/from other ecosystems, a type carries its alternative names with
 (The Knowledge-family **`Alias`** entity is a different tool — *taxonomy-term* normalization
 "avoid → use instead", `entities/knowledge-family.md` §4.3 — not type cross-walks.)
 
-## 4. Field, output, and enum names (inside `spec`/`outputs`)
+## 4. Field, output, and enum names — casing (data model)
 
-- **Fields:** `camelCase` (`memorySize`, `vcpu`, `nodePools`) — SPEC-DESIGN §25. Reuse the canonical
-  shapes in `common-elements.md` (Quantity, ComputeResources, Identity, lifecycleState, cidr/ipFamily,
-  Reference, Condition) instead of re-coining per type — SPEC-DESIGN §24.
+This section governs the **casing of the data model itself** (the keys in a resource definition). The
+*runtime* concerns — how the API / event bus serialize it, Go/Python mapping, CloudEvents envelope,
+broker routing — cross the UDLM↔DCM boundary and are a **DCM** concern: see DCM **ADR-018 (Wire
+serialization & event conventions)**.
+
+**Decision: `camelCase` keys on the wire.** UDLM definitions are an **API- and event-bus-driven data
+model consumed by code** (Go + Python), not hand-edited sysadmin config — the profile where camelCase is
+the industry fit: frontend/JS-TS native, the default serialization of Go `encoding/json` and Python
+Pydantic, and aligned with the CNCF **CloudEvents** standard.
+
+- **Field & output keys → `camelCase`** (`memorySize`, `blockStorageClass`, `resourceId`). Reuse the
+  canonical `common-elements.md` shapes (Quantity, ComputeResources, Identity, lifecycleState,
+  cidr/ipFamily, Reference, Condition) — SPEC-DESIGN §24.
+- **Don't use `PascalCase` keys** (legacy CloudFormation only) or **`kebab-case` keys** (forces
+  `data['a-b']` bracket access instead of `data.aB` dot-access in most languages).
+- **Enum values → lowercase, hyphenated for multi-word** (`compatible-reference`, `whole-allocation`).
+  These are string *values*, never dot-accessed keys, so the kebab caveat does not apply.
 - **Quantities** carry an explicit unit via the `Quantity` pattern; timestamps are RFC 3339.
-- **Enums:** lowercase, hyphenated for multi-word (`compatible-reference`, `available`) — unless an
-  adopted standard dictates its own casing, in which case mirror the standard and record it in
-  `adopts[]`.
-- **Outputs:** `camelCase` typed keys naming the capability, not the implementation
-  (`blockStorageClass`, `connectionString`) — consumers bind to these (E2).
-- **Adopted vocabulary:** when a field mirrors a standard's element, keep the standard's field name
-  where practical and record provenance + license in `adopts[]` (SPEC-DESIGN §22–23).
+- **Outputs** are `camelCase` typed keys naming the capability, not the implementation
+  (`blockStorageClass`, `connectionString`) — the cross-entity binding surface (E2).
+
+**Event-type identifiers** (UDLM event-catalog names, e.g. `resource.discovered`, `entity.realized`) use
+lowercase **dot notation** so brokers can wildcard-route — distinct from payload property keys
+(camelCase). The routing mechanics live in DCM (ADR-018).
+
+### Carve-outs — keep foreign / idiomatic casing
+- **Adopted-standard field names keep the source's casing.** We reference Redfish `SerialNumber`
+  (PascalCase), FOCUS `ResourceId` as-is — recasing foreign vocabulary would violate adopt-by-reference
+  (SPEC-DESIGN §22–23). `adopts[].standardName` carries the source spelling.
+- **SQL / store identifiers stay `snake_case`** (`discovered_records`, `intent_records`) — SQL idiom,
+  not wire keys.
 
 ## 5. File names
 
