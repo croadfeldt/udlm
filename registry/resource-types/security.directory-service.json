@@ -24,12 +24,12 @@
         "description": "Directory access protocols served (RFC 4511 LDAP; RFC 4120 Kerberos)."
       },
       "realm": { "type": "string", "description": "Kerberos realm / identity realm, e.g. ROADFELDT.COM." },
-      "base_dn": { "type": "string", "description": "LDAP base DN, e.g. dc=roadfeldt,dc=com (RFC 4512 naming)." },
+      "base_dn": { "type": "string", "description": "LDAP base DN, e.g. dc=example,dc=com (RFC 4512 naming)." },
       "replication_role": { "type": "string", "enum": ["primary", "replica", "standalone"], "default": "standalone", "description": "Topology role within the directory cluster." }
     }
   },
   "outputs": {
-    "ldap_endpoint": { "type": "string", "description": "LDAP(S) URL, e.g. ldaps://idm.roadfeldt.com:636." },
+    "ldap_endpoint": { "type": "string", "description": "LDAP(S) URL, e.g. ldaps://idm.example.com:636." },
     "kdc_endpoint": { "type": "string", "description": "Kerberos KDC endpoint, when Kerberos is served." },
     "base_dn": { "type": "string", "description": "Realized base DN consumers bind under." }
   },

@@ -18,7 +18,7 @@
     "type": "object",
     "required": ["zone_name"],
     "properties": {
-      "zone_name": { "type": "string", "description": "Fully-qualified zone name, e.g. roadfeldt.com (RFC 1035 domain name)." },
+      "zone_name": { "type": "string", "description": "Fully-qualified zone name, e.g. example.com (RFC 1035 domain name)." },
       "zone_type": { "type": "string", "enum": ["primary", "secondary", "forward", "stub"], "default": "primary", "description": "Authoritative role for this zone." },
       "records": {
         "type": "array",

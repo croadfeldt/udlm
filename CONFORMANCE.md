@@ -10,7 +10,7 @@
 > realization of the same major udlm version — its data can be read, its
 > events can be parsed, its contracts can be honored by peers without
 > per-realization adapters. This document is the conformance surface that
-> DAV and any independent verifier tests against.
+> an independent verifier tests against.
 
 ---
 
@@ -101,7 +101,7 @@ GET /.well-known/udlm/conformance
 {
   "realization": {
     "name": "DCM",
-    "vendor": "croadfeldt",
+    "vendor": "example-org",
     "version": "1.4.2"
   },
   "udlm_version": "0.1.0",
@@ -120,7 +120,7 @@ GET /.well-known/udlm/conformance
   "conformance_test_suite_version": "1.0.0",
   "self_certified_at": "2026-05-26T14:32:18.456Z",
   "independent_verification": {
-    "verifier": "DAV",
+    "verifier": "example-verifier",
     "verifier_version": "0.9.45",
     "verification_uuid": "f3b64dda-...",
     "verified_at": "2026-05-26T16:00:00.000Z",
@@ -144,7 +144,7 @@ GET /.well-known/udlm/conformance
 | `auth_mechanism_for_schema_endpoints` | yes | How peers authenticate to fetch schemas |
 | `conformance_test_suite_version` | yes | Which version of the test suite (see §8) was run |
 | `self_certified_at` | yes | RFC 3339 UTC; when self-certification was performed |
-| `independent_verification` | optional | Present if an independent verifier (e.g., DAV) has validated |
+| `independent_verification` | optional | Present if an independent verifier has validated |
 
 ---
 
@@ -320,7 +320,7 @@ suite version is recorded in the conformance declaration
 (`conformance_test_suite_version`).
 
 A realization MAY undergo **independent verification** by a third-party
-verifier (e.g., DAV). Independent verification:
+verifier. Independent verification:
 
 - Runs the same test suite from outside the realization's trust boundary.
 - Produces a verification report linked from the conformance declaration.
