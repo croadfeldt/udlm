@@ -2,7 +2,8 @@
 
 **Document Status:** Draft (introduced 2026-06-08)
 **Document Type:** Entity Reference
-**Family:** Knowledge (architecture / capability knowledge) — anchored by **DAV**
+**Family:** Knowledge (architecture / capability knowledge) — first exercised by the **DAV**
+realization (a non-normative example; UDLM depends on no realization — see `GLOSSARY.md`)
 
 > The three foundational abstractions are in [foundations.md](../foundations/foundations.md);
 > the family concept in [Entity-Type Families](../foundations/entity-type-families.md).

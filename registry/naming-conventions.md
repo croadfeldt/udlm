@@ -104,7 +104,7 @@ adopted API-design standard, enforced by the `aep-dev/aep-openapi-linter`), and 
 are snake_case (`page_size`, `*_time`). Native-universal consumption **+** AEP-bound API therefore jointly
 force one casing — **snake_case** — across UDLM and DCM. (camelCase would re-introduce the very
 translation layer native consumption exists to eliminate; it was tried and reverted — VERSIONING.md
-surface-change log.) snake_case is also native to UDLM's actual stack: Python (DAV/providers), SQL stores,
+surface-change log.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
 protobuf/gRPC, and AEP itself; fully supported via tags in Go; only K8s/CRDs prefer camelCase, reached by
 an **export adapter** at that domain boundary (not native consumption).
 
