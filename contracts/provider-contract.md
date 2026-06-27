@@ -181,8 +181,8 @@ authoritative telemetry/monitoring platform itself, fulfilling the collection
 obligation *and* the storage/query/alerting role through a deployable
 observability component (**dcm-observability**). Both postures satisfy this
 contract; the choice is a deployment decision, not an architectural fork.
-The reference implementation of this component is being developed with the
-`roadfeldt-observability` stack as its test bed.
+The reference implementation of this component is being developed with an
+observability stack as its test bed.
 
 **Registration declaration:** providers declare their telemetry surface at
 registration alongside other capabilities:
