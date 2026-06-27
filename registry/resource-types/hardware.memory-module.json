@@ -1,0 +1,63 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.MemoryModule/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "a511d9fa-e7a6-4475-801d-178f00429996",
+  "resourceType": "Hardware.MemoryModule",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Memory Module",
+    "description": "A memory module (DIMM) component. The first-class entity form of the §26 component model — a parent (e.g. Compute.BareMetalInstance) carries the memory rollup and MAY also contain Hardware.MemoryModule entities. deviceClass distinguishes a physical DIMM from virtual guest memory.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-26"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["capacity"],
+    "properties": {
+      "deviceClass": {
+        "type": "string",
+        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "default": "physical",
+        "description": "Device realization (common-elements.md §7). physical = a real DIMM; virtual = guest memory."
+      },
+      "partitionMechanism": {
+        "type": "string",
+        "description": "Only when deviceClass=partition: the slicing mechanism. Rare for memory."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27, common-elements.md §5a).",
+        "properties": {
+          "location": { "type": "string", "description": "DIMM slot within the parent, e.g. P1-DIMMA1 (Redfish DeviceLocator). Primary discriminator." },
+          "serialNumber": { "type": "string", "description": "Module serial (Redfish SerialNumber)." },
+          "assetTag": { "type": "string" },
+          "model": { "type": "string", "description": "Part number / model (Redfish PartNumber)." },
+          "manufacturer": { "type": "string" },
+          "role": { "type": "string", "description": "Semantic usage, e.g. system | persistent." }
+        }
+      },
+      "capacity": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$", "description": "Module capacity, e.g. 32GB (Redfish CapacityMiB)." },
+      "memoryType": { "type": "string", "description": "Technology, e.g. DDR4, DDR5, NVDIMM (Redfish MemoryDeviceType)." },
+      "speedMTs": { "type": "integer", "minimum": 1, "description": "Operating speed in MT/s (Redfish OperatingSpeedMhz)." }
+    }
+  },
+  "outputs": {},
+  "relationships": [
+    { "kind": "contained_by", "target": "Compute.BareMetalInstance", "cardinality": "0..1", "description": "The host this module is installed in; the parent carries the reconciled memory rollup (§26)." },
+    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For deviceClass=virtual, the guest the memory is presented to." }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "role": "memory component vocabulary (capacity, type, speed, locator, serial)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "licenseCompatibility": "compatible-reference"
+    }
+  ]
+}
