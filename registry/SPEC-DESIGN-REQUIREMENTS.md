@@ -67,6 +67,15 @@ Each hard constraint cites the UDLM contract it derives from.
     `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
     expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
     the contract layer stays deterministic + reproducible (`design-principles/core-tenets.md` T2/T3).
+    **Computation is relocated, not banned.** When a computed binding *is* needed (e.g. a CEL
+    expression combining declared outputs), it is a **Transformation Policy evaluated by DCM's policy
+    engine** — never embedded in the portable data. It is safe *iff*: (a) the evaluator is
+    **pure/deterministic** (sandboxed CEL — no I/O, clock, or randomness), so it is reproducible from
+    the immutable record; (b) its inputs are **declared typed bindings** (governable edges); and (c) the
+    **policy engine records the evaluation** (`expression@version` + resolved inputs + output), so the
+    computed field's provenance points to the policy and every input edge. The policy-evaluation seam is
+    already the audit/provenance capture point (DCM ADR-006/010) — computation stays expressive while the
+    portable data stays declarative and the result stays auditable + provenanced.
 
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
