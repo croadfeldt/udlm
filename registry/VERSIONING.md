@@ -29,6 +29,25 @@ Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guar
 *post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
 settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
 
+## Lifecycle vs. maturity — two independent axes
+
+A definition has two orthogonal signals; don't conflate them into one field:
+
+- **Lifecycle = `status`** (`active | deprecated | retired`) — where a *published* version sits in its
+  life. This is the meta-schema field.
+- **Maturity / stability = the version itself** — `0.x` is pre-stable (experimental/incubating), `1.0`
+  is the earned-stable milestone. This is exactly the **Kubernetes** model (maturity rides the version —
+  `v1alpha1` / `v1beta1` / `v1` — while deprecation is tracked separately), not a second status enum.
+  So "how baked is this?" is read from the version, and a thing can be `active` **and** still `0.x`
+  (active-but-not-yet-stable) without overloading `status`.
+- **Review stage** (`developing` / `proposed` / accepted) is a **third** thing — the governance
+  *workflow* an artifact moves through on its way into the registry (`governance/registry-governance.md`
+  §3). It is **not** a `status` value: a definition only appears in the validated registry once accepted
+  (`status: active`). Don't put review states in `status`.
+
+An explicit per-type `stability` field (for when one type is battle-tested while the spec is still
+`0.x`) is a deferred candidate — see SPEC-DESIGN-REQUIREMENTS *Candidate / deferred data points*.
+
 ## Entity semver — what bumps what
 
 | Change | Bump |
