@@ -1,0 +1,104 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
+  "resourceType": "Compute.BareMetalHost",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Bare Metal Host",
+    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycleState: available, §28), carries the reconciled Hardware.* component rollup (§26), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-26"
+  },
+  "spec": {
+    "type": "object",
+    "required": [],
+    "properties": {
+      "lifecycleState": {
+        "type": "string",
+        "enum": ["available", "allocated", "retired"],
+        "default": "available",
+        "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated raw asset; allocated = adopted into the managed lifecycle. Adopts Metal3 BareMetalHost.status.provisioning.state."
+      },
+      "compositionVisibility": {
+        "type": "string",
+        "enum": ["opaque", "transparent", "selective"],
+        "default": "opaque",
+        "description": "Whether the Hardware.* components are modeled as first-class entities (§26, entities/service-dependencies.md §11d). opaque = rollup only."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Chassis/system identity (SPEC-DESIGN-REQUIREMENTS §27).",
+        "properties": {
+          "serialNumber": { "type": "string", "description": "System serial (Redfish ComputerSystem.SerialNumber)." },
+          "assetTag": { "type": "string", "description": "Org asset tag (Redfish AssetTag)." },
+          "manufacturer": { "type": "string", "description": "Redfish Manufacturer." },
+          "model": { "type": "string", "description": "Redfish Model." },
+          "sku": { "type": "string", "description": "Redfish SKU." }
+        }
+      },
+      "cpu": {
+        "type": "object",
+        "description": "Reconciled CPU rollup (§26) — aggregate of contained Hardware.Processor when modeled. Adopts Redfish ProcessorSummary.",
+        "properties": {
+          "sockets": { "type": "integer", "minimum": 1, "description": "Populated sockets (Redfish ProcessorSummary.Count)." },
+          "cores": { "type": "integer", "minimum": 1, "description": "Total physical cores (Redfish ProcessorSummary.CoreCount)." },
+          "threads": { "type": "integer", "minimum": 1, "description": "Total logical processors (Redfish ProcessorSummary.LogicalProcessorCount)." }
+        }
+      },
+      "memory": {
+        "type": "object",
+        "description": "Reconciled memory rollup (§26) — aggregate of contained Hardware.MemoryModule. Adopts Redfish MemorySummary.",
+        "properties": {
+          "size": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$", "description": "Total system memory, e.g. 64GB (Redfish MemorySummary.TotalSystemMemoryGiB)." }
+        }
+      },
+      "storage": {
+        "type": "object",
+        "description": "Reconciled local-storage rollup (§26) — aggregate of contained Hardware.StorageDevice.",
+        "properties": {
+          "capacity": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$", "description": "Total raw local capacity." }
+        }
+      },
+      "architecture": { "type": "string", "description": "System ISA, e.g. x86-64, aarch64." },
+      "biosVersion": { "type": "string", "description": "Firmware/BIOS version (Redfish BiosVersion)." }
+    }
+  },
+  "outputs": {
+    "powerState": { "type": "string", "description": "Observed power state — On | Off | PoweringOn | PoweringOff (Redfish ComputerSystem.PowerState). Drives shutdown/startup ordering for the dependency graph." },
+    "managementAddress": { "type": "string", "description": "Reachable management endpoint (BMC/Redfish or host management IP) once Realized." }
+  },
+  "immutable": ["identity.serialNumber"],
+  "relationships": [
+    { "kind": "depends_on", "target": "Facility.PowerFeed", "cardinality": "1..n", "description": "Power source(s) the host draws from; the host stops before the feed in a reverse-topo shutdown." }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standardName": "ComputerSystem",
+      "role": "physical system inventory + power vocabulary (identity, processor/memory summary, PowerState)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "licenseCompatibility": "compatible-reference"
+    },
+    {
+      "standard": "Metal3",
+      "version": "1.x",
+      "standardName": "BareMetalHost",
+      "role": "bare-metal provisioning lifecycle + available/provisioned state",
+      "source": "https://book.metal3.io/",
+      "license": "Apache-2.0",
+      "licenseCompatibility": "compatible-reference"
+    }
+  ],
+  "aliases": [
+    { "name": "Dedicated Host", "standard": "AWS", "note": "the physical-host asset; tenant instances run on it" },
+    { "name": "Ironic node", "standard": "OpenStack", "note": "the managed bare-metal node" },
+    { "name": "Bare Metal Server", "note": "common colloquial name" }
+  ]
+}

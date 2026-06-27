@@ -48,9 +48,12 @@ lifecycle/        Operational models, recovery state machine
   - **Raw resources are first-class** (§28): a type MUST be instantiable with Discovered state and **no
     Intent** (racked-but-unallocated, brownfield), carrying `lifecycleState: available`, later
     **adopted** (Intent attached, UUID preserved).
-- **Adding a type:** define it in `registry/` validating against `resource-type-spec.schema.json`; fill
-  `adopts[]` with source+license; reuse common-elements; never inline vendor-exclusive fields. The
-  standard each type adopts is tabulated in `registry/resource-type-data-sources.md`.
+- **Adding a type:** follow `registry/naming-conventions.md` (Tier-1 `Category.Type` vendor-neutral,
+  name-to-a-standard-first) and the registry process (`governance/registry-governance.md` §3,
+  `CONTRIBUTING.md`): define it in `registry/` validating against `resource-type-spec.schema.json`; fill
+  `adopts[]` with source+license; reuse common-elements; ship ≥1 worked example; never inline
+  vendor-exclusive fields. The standard each type adopts is tabulated in
+  `registry/resource-type-data-sources.md`.
 
 ## Isolation (where things live)
 
