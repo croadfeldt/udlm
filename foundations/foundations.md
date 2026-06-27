@@ -71,7 +71,7 @@ This is the complete DCM operational model. Everything else is a typed specializ
 |-----------|-------------|---------|
 | **Resource Entity** | A realized infrastructure resource; the primary managed thing | Realized Store |
 | **Process Entity** | An ephemeral execution (job, playbook, pipeline) | Realized Store |
-| **Composite Entity** | A composition of Resource Entities produced by a Composite Service request (see doc 30) | Realized Store |
+| **Composite Entity** | A composition of Resource Entities produced by a Composite Service request (see [`composite-service-model.md`](../entities/composite-service-model.md)) | Realized Store |
 | **Intent State** | Consumer's raw declaration before processing | Intent Store (GitOps) |
 | **Requested State** | Fully assembled, policy-validated provider payload | Requested Store |
 | **Discovered State** | What actually exists per discovery observation | Discovered Store |
@@ -136,7 +136,6 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 | **Service Provider** | Realizes infrastructure resources | DCM → Provider → DCM |
 | **Information Provider** | Serves authoritative external data | DCM queries → Provider responds |
 | **data store** | Persists DCM state | DCM reads/writes ↔ Provider |
-
 | **External Policy Evaluator** | Evaluates policies externally | DCM sends payload → Provider decides |
 | **credential management service** | Manages secrets and credentials | DCM requests → Provider issues |
 | **Auth Provider** | Authenticates identities | DCM verifies → Provider confirms |
@@ -190,7 +189,7 @@ GateKeeper, Transformation, Recovery, and Governance Matrix Policies fire when t
 
 Both levels are evaluated by the same Policy Engine and triggered through the same Request Orchestrator event bus. They compose naturally: a named workflow provides the sequence skeleton; dynamic policies provide conditional behavior within it.
 
-**The Governance Matrix as Policy:** The Governance Matrix rules (doc 27) are typed Policies with the `boundary_control` output schema. They fire at every cross-boundary interaction. They follow the same match conditions, enforcement levels, and lifecycle as all other Policies. The governance matrix is not a separate system — it is the Policy abstraction applied at interaction boundaries.
+**The Governance Matrix as Policy:** The Governance Matrix rules (see [`governance-matrix.md`](../governance/governance-matrix.md)) are typed Policies with the `boundary_control` output schema. They fire at every cross-boundary interaction. They follow the same match conditions, enforcement levels, and lifecycle as all other Policies. The governance matrix is not a separate system — it is the Policy abstraction applied at interaction boundaries.
 
 ---
 

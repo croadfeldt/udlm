@@ -360,8 +360,8 @@ The following questions remain unresolved and require decisions before the data 
 | 4 | What mechanism maintains consistency across distributed caches? | Data integrity | ✅ Resolved — hash-based heartbeat divergence detection + push invalidation; PT2H staleness alert; signed bundles for Sovereign DCM (CACHE-004) |
 | 5 | Should the data model allow embedded target-technology-specific data bundles? | Portability | ✅ Resolved — native_passthrough field sanctioned; always audit-logged; opaque mode blocked in fsi/sovereign (DATA-001) |
 | 6 | How are the four states represented physically? | Physical model | ✅ Resolved — Intent/Requested in Git; Realized in Event Stream; Discovered in Discovered Store (STO-005) |
-| 7 | What is the performance impact of field-level provenance at scale? What optimization strategies are acceptable? | Scalability, storage cost | ✅ Resolved — three configurable provenance models: full_inline, deduplicated (Model B recommended), tiered; profile-appropriate Policy Groups; see docs 03 and 06 (OPS-001) |
-| 8 | Should provenance metadata be stored inline with field data or in a linked provenance document? | Data model structure, query performance | ✅ Resolved — three-level structure: implicit chain ref, inline delta, linked history document; all reconstructable from stored facts; see doc 03 (OPS-002) |
+| 7 | What is the performance impact of field-level provenance at scale? What optimization strategies are acceptable? | Scalability, storage cost | ✅ Resolved — three configurable provenance models: full_inline, deduplicated (Model B recommended), tiered; profile-appropriate Policy Groups; see [`layering-and-versioning.md`](layering-and-versioning.md) (OPS-001) |
+| 8 | Should provenance metadata be stored inline with field data or in a linked provenance document? | Data model structure, query performance | ✅ Resolved — three-level structure: implicit chain ref, inline delta, linked history document; all reconstructable from stored facts; see [`layering-and-versioning.md`](layering-and-versioning.md) (OPS-002) |
 
 ---
 
