@@ -58,24 +58,24 @@
     "deprecation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["date", "reason", "migration_guidance"],
+      "required": ["date", "reason", "migrationGuidance"],
       "properties": {
         "date": { "type": "string", "format": "date" },
         "reason": { "type": "string" },
-        "replacement_uuid": { "type": "string", "format": "uuid" },
-        "migration_guidance": { "type": "string" }
+        "replacementUuid": { "type": "string", "format": "uuid" },
+        "migrationGuidance": { "type": "string" }
       },
-      "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migration_guidance."
+      "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migrationGuidance."
     },
     "metadata": {
       "type": "object",
       "additionalProperties": true,
-      "required": ["displayName", "description", "maintainer", "origination_timestamp"],
+      "required": ["displayName", "description", "maintainer", "originationTimestamp"],
       "properties": {
         "displayName": { "type": "string" },
         "description": { "type": "string" },
         "maintainer": { "type": "string" },
-        "origination_timestamp": { "type": "string", "format": "date" }
+        "originationTimestamp": { "type": "string", "format": "date" }
       }
     },
     "spec": {

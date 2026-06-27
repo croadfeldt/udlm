@@ -12,7 +12,7 @@
     "displayName": "Storage Device",
     "description": "A storage device (disk / SSD / NVMe) component. deviceClass distinguishes a physical drive (wwn/serial/bay) from a virtual disk presented to a guest (which binds_to its backing Storage resource). Mirrors Redfish Drive (+ SNIA Swordfish at the system level).",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",

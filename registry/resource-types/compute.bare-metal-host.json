@@ -12,7 +12,7 @@
     "displayName": "Bare Metal Host",
     "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycleState: available, §28), carries the reconciled Hardware.* component rollup (§26), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
