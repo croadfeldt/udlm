@@ -157,3 +157,35 @@ lifecycleState: available   # available | allocated | retired   (extensible per 
 Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its canonical
 inspected-but-unprovisioned state). See `foundations/four-states.md` §2.4 (raw / discovered-first entry)
 and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
+
+## 7. `deviceClass` — device realization (Hardware.* types)
+
+A `Hardware.*` component is the **device/component layer** and may be physical, virtualized, passed
+through to a guest, or a slice carved from a physical parent. The canonical `deviceClass` discriminator
+(with `partitionMechanism` and a `parentDevice` reference) keeps all of these expressible in the **same**
+five `Hardware.*` types, so the device tree (physical → slices → guest assignment) is traversable.
+
+```yaml
+deviceClass: physical          # physical | virtual | passthrough | partition   (default physical)
+partitionMechanism: sr-iov     # OPTIONAL; only when deviceClass=partition: sr-iov | mediated | mig |
+                               # vlan | macvlan | …  (the slicing mechanism; extensible)
+# parentDevice: expressed as a relationship (kind: references) to the parent Hardware.* entity —
+# REQUIRED when deviceClass ∈ {passthrough, partition}.
+```
+
+| deviceClass | meaning | example | `parentDevice` |
+|---|---|---|---|
+| `physical` | a whole dedicated device | a real DIMM / GPU / NIC PF / disk | — |
+| `virtual` | fully synthetic, no hardware parent | virtio disk, emulated NIC, veth pair | — |
+| `passthrough` | a whole physical device assigned to a guest | VFIO whole-GPU / whole-NIC | the physical device |
+| `partition` | a slice of a physical parent | **SR-IOV VF, vGPU/MIG, VLAN/macvlan sub-interface** | the physical parent |
+
+So a **vGPU** = `Hardware.GraphicsProcessor` `deviceClass: partition`, `partitionMechanism: mediated`
+(or `mig`), `parentDevice` → the physical `Hardware.GraphicsProcessor`; an **SR-IOV VF / vETH** =
+`Hardware.NetworkInterface` `deviceClass: partition`, `partitionMechanism: sr-iov` (or `vlan`/`macvlan`),
+`parentDevice` → the physical NIC. The `parentDevice` edge is a self-referential `references` relationship
+(`Hardware.X → Hardware.X`); the §27 `Identity` block still distinguishes instances (a VF/vGPU keyed by
+`location`/index even with no hardware serial). Grounded in SR-IOV, the Linux mdev/vGPU + NVIDIA MIG
+frameworks, and 802.1Q; mirrors Redfish `NetworkAdapter`→`NetworkDeviceFunction` /
+`PCIeDevice`→`PCIeFunction`. `deviceClass` is a UDLM-defined cross-cutting classifier (no single standard
+owns it).
