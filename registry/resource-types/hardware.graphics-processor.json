@@ -51,7 +51,7 @@
   },
   "outputs": {},
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalInstance", "cardinality": "0..1", "description": "The host the physical GPU is installed in." },
+    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical GPU is installed in." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For passthrough / partition (vGPU), the guest the device is presented to." },
     { "kind": "references", "target": "Hardware.GraphicsProcessor", "cardinality": "0..1", "description": "parentDevice — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when deviceClass is passthrough or partition (common-elements §7)." }
   ],
@@ -59,6 +59,7 @@
     {
       "standard": "Redfish",
       "version": "2024.4",
+      "standardName": "Processor",
       "role": "GPU/accelerator component vocabulary (Processor ProcessorType=GPU / PCIeDevice)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",

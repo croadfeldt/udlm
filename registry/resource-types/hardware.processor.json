@@ -48,13 +48,14 @@
   },
   "outputs": {},
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalInstance", "cardinality": "0..1", "description": "The host this processor is installed in; parent carries the reconciled cpu rollup (§26)." },
+    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host this processor is installed in; parent carries the reconciled cpu rollup (§26)." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For deviceClass=virtual, the guest the vCPU is presented to." }
   ],
   "adopts": [
     {
       "standard": "Redfish",
       "version": "2024.4",
+      "standardName": "Processor",
       "role": "processor component vocabulary (cores, threads, architecture, speed, socket)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
