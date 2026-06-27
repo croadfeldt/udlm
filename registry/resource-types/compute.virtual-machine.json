@@ -12,7 +12,7 @@
     "displayName": "Virtual Machine",
     "description": "A virtual compute instance with CPU, memory, a guest OS, and optional attached disks and network interfaces.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "originationTimestamp": "2026-06-17"
   },
   "spec": {
     "type": "object",

@@ -12,7 +12,7 @@
     "displayName": "IP Address",
     "description": "An allocated IP address, dynamic or static, that other resources may consume.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "originationTimestamp": "2026-06-17"
   },
   "spec": {
     "type": "object",

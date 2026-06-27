@@ -12,7 +12,7 @@
     "displayName": "Storage Cluster",
     "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference realization.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
