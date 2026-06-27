@@ -25,9 +25,8 @@ mirror the concept; only coin a UDLM name where no standard fits.
   the type name. (This is why `Storage.CephCluster` is wrong and `Storage.Cluster` is right.)
 - **Singular nouns** for the thing itself (`MemoryModule`, not `MemoryModules`). Plurality lives in
   cardinality/relationships, not the name.
-- **Acronyms:** keep well-known initialisms uppercase in the Type segment per established precedent
-  (`Network.IPAddress`, `Network.DnsZone` — DNS as `Dns` follows the existing `IPAddress` PascalCase
-  treatment of multi-letter tokens; prefer the form that reads as one PascalCase token).
+- **Acronyms:** keep well-known initialisms **uppercase** in the Type segment, per the existing
+  `Network.IPAddress` precedent — `Network.DNSZone`, `Network.DHCPScope` (not `DnsZone`/`DhcpScope`).
 
 ## 2. Categories
 
@@ -59,7 +58,7 @@ ServiceAccount) is the Information data — don't conflate them.
 
 A product that bundles several capabilities is modeled as **realizing multiple types**, not one bespoke
 type. Example: FreeIPA → `Security.DirectoryService` (LDAP+Kerberos, RFC 4511/4512/4120) **+**
-`Network.DnsZone` **+** (future) `Security.CertificateAuthority`. This keeps each type portable and
+`Network.DNSZone` **+** (future) `Security.CertificateAuthority`. This keeps each type portable and
 reusable and avoids a `FreeIPA.Everything` corner.
 
 ## 3a. Asset vs. allocation vs. instance — don't mint redundant types
@@ -100,7 +99,7 @@ To translate to/from other ecosystems, a type carries its alternative names with
   adopted standard dictates its own casing, in which case mirror the standard and record it in
   `adopts[]`.
 - **Outputs:** `camelCase` typed keys naming the capability, not the implementation
-  (`rbdStorageClass`, `connectionString`) — consumers bind to these (E2).
+  (`blockStorageClass`, `connectionString`) — consumers bind to these (E2).
 - **Adopted vocabulary:** when a field mirrors a standard's element, keep the standard's field name
   where practical and record provenance + license in `adopts[]` (SPEC-DESIGN §22–23).
 
@@ -130,9 +129,9 @@ The new types, their category/tier, and the standard each adopts by reference. A
 | `Compute.BareMetalHost` | Compute | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of Hardware.* (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
 | `Storage.Cluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
 | `Network.Gateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
-| `Network.DnsZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
-| `Network.DhcpScope` | Network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
-| `Security.DirectoryService` | Security | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DnsZone |
+| `Network.DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |
+| `Network.DHCPScope` | Network | RFC 2131 (+ 8415) / ISC Kea subnet | address scope/range + reservations |
+| `Security.DirectoryService` | Security | RFC 4511/4512 (LDAP) + RFC 4120 (Kerberos) | the directory server; FreeIPA realizes this + DNSZone |
 | `Facility.PowerFeed` | Facility ✚ | Redfish DCIM `Circuit`/`PowerDistribution` + NUT (UPS) | power source; graph root for the homelab |
 
 ✚ = introduces a new category (Hardware, Facility), anchored to Redfish per §2.
