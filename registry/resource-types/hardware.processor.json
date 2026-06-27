@@ -1,0 +1,65 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "29b39a5d-2745-40ea-8141-480bb3d2d70f",
+  "resourceType": "Hardware.Processor",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Processor",
+    "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Hardware.Processor entities. deviceClass distinguishes a physical socket from a virtual CPU presented to a guest.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-26"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["cores"],
+    "properties": {
+      "deviceClass": {
+        "type": "string",
+        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "default": "physical",
+        "description": "Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU."
+      },
+      "partitionMechanism": {
+        "type": "string",
+        "description": "Only when deviceClass=partition: e.g. cpu-pinning / cpu-set carved from a parent."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "properties": {
+          "location": { "type": "string", "description": "Socket designation within the parent, e.g. CPU1 (Redfish Socket). Primary discriminator." },
+          "serialNumber": { "type": "string" },
+          "assetTag": { "type": "string" },
+          "model": { "type": "string", "description": "Processor model, e.g. AMD EPYC 7443P (Redfish Model)." },
+          "manufacturer": { "type": "string" },
+          "role": { "type": "string" }
+        }
+      },
+      "cores": { "type": "integer", "minimum": 1, "description": "Physical core count (Redfish TotalCores)." },
+      "threads": { "type": "integer", "minimum": 1, "description": "Hardware thread count (Redfish TotalThreads)." },
+      "architecture": { "type": "string", "description": "ISA, e.g. x86-64, aarch64 (Redfish ProcessorArchitecture)." },
+      "maxSpeedMHz": { "type": "integer", "minimum": 1, "description": "Max clock in MHz (Redfish MaxSpeedMHz)." }
+    }
+  },
+  "outputs": {},
+  "relationships": [
+    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host this processor is installed in; parent carries the reconciled cpu rollup (§26)." },
+    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For deviceClass=virtual, the guest the vCPU is presented to." }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standardName": "Processor",
+      "role": "processor component vocabulary (cores, threads, architecture, speed, socket)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "licenseCompatibility": "compatible-reference"
+    }
+  ]
+}
