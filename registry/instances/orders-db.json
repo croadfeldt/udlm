@@ -26,13 +26,13 @@
   },
 
   "provenance": {
-    "engine":        [ { "source": { "kind": "actor", "id": "chris" }, "actor": "chris@example.com", "timestamp": "2026-06-17T15:00:00Z" } ],
+    "engine":        [ { "source": { "kind": "actor", "id": "alice" }, "actor": "alice@example.com", "timestamp": "2026-06-17T15:00:00Z" } ],
     "version":       [ { "source": { "kind": "layer", "id": "db-defaults", "version": "2.1.0" }, "timestamp": "2026-06-17T15:00:02Z" } ],
     "resources.cpu": [ { "source": { "kind": "policy", "id": "sizing-policy", "version": "1.4.0" }, "timestamp": "2026-06-17T15:00:02Z", "previous_value": null } ]
   },
 
   "ownership": {
-    "engine": "actor:chris",
+    "engine": "actor:alice",
     "version": "layer:db-defaults",
     "resources.cpu": "policy:sizing-policy",
     "host": "provider:rh-database-provider",

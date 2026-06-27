@@ -31,10 +31,12 @@ discovery and coherence. It is **not** a boundary on who may use them.
 ## 2. Definition — Entity-Type Family
 
 > **Entity-Type Family**
-> A **logical grouping** of UDLM entity-type definitions, named for the domain or
-> realization in whose context they were first defined (e.g. the **Resource** family,
-> anchored by DCM; the **Knowledge** family, anchored by DAV). A family organizes
-> definitions; **it is not a usage boundary, a scope, a permission, or an ownership.**
+> A **logical grouping** of UDLM entity-type definitions, named for the domain in whose
+> context they were first defined (e.g. the **Resource** family, first exercised by the DCM
+> realization; the **Knowledge** family, first exercised by the DAV realization). A family
+> organizes definitions; **it is not a usage boundary, a scope, a permission, or an
+> ownership.** The named realizations are **non-normative examples** (`GLOSSARY.md`) —
+> a family is defined by UDLM and depends on no realization.
 
 The governing principle:
 
@@ -88,7 +90,7 @@ peer" concrete and non-fragmenting.
 
 Families name the domain a set of definitions was organized under; usage is open to all.
 
-| Family | Domain (organizing context) | Anchored by | Entity-type definitions | Lifecycle archetype |
+| Family | Domain (organizing context) | Example realization (non-normative) | Entity-type definitions | Lifecycle archetype |
 |--------|------------------------------|-------------|-------------------------|---------------------|
 | **Resource** | Infrastructure resources (provisioned, operated) | DCM | Infrastructure Resource, Composite, Process (+ sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
 | **Knowledge** | Architecture / capability knowledge (curated) | DAV | Capability, TaxonomyTerm, Alias, Antipattern (+ future UseCase, Gap, Assessment, Finding) — [Knowledge Family](../entities/knowledge-family.md) | Curation: PROPOSED → UNDER_REVIEW → CANONICAL (+ OBSERVED, DEPRECATED) |
