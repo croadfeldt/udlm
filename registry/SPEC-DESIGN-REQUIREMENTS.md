@@ -149,6 +149,17 @@ Each hard constraint cites the UDLM contract it derives from.
   data flow is a declarative typed binding (`targetField` → output); any real transformation/computation
   is **Policy**, applied by DCM — never in the spec (T2/T4).
 
+## Candidate / deferred data points
+
+Fields that were considered but are deliberately **not** in the meta-schema yet — recorded so the
+rationale isn't lost or re-litigated. Default to **not** adding: a field earns inclusion only when there
+is a clear need/value **and** it is not cleanly derivable from what already exists (minimal-core, §
+Design principles; don't denormalize derivable facts).
+
+| Candidate | Where it would live | Status | Why deferred · inclusion trigger |
+|---|---|---|---|
+| `ownershipModel` (`whole-allocation` \| `allocation` \| `shareable`) | resource type spec | **Deferred** (2026-06-27) | Would be a policy anchor for decommission-safety / cost-attribution / placement (`foundations/ownership-sharing-allocation.md`). Deferred because: every current type is `whole-allocation` (no discrimination yet), the pattern is largely **derivable** from pool/stake relationships (denormalization → drift risk), and it may be **instance-level** for types realizable multiple ways (static vs pooled IP). **Add when** the first non-whole-allocation type is authored (a pool → `allocation`, or a declared-shareable resource), as the *authoritative declaration the relationships conform to* — not a derived copy. |
+
 ---
 _E1–E5 reference the enhancement opportunities surfaced from dcm-project/enhancements#55
 (constraint profiles, typed outputs, conditional constraints, layered-overlay provenance,
