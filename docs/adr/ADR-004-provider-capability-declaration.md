@@ -54,6 +54,11 @@ Fault-domain maintenance gating, rehearsal-based process validation (T6), and ro
 
 Capability declaration says what's **possible**; the `Topology` instance (ADR-001) is the **concrete** graph the provider contributes; placement uses the former to negotiate and the latter to place.
 
+## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
+- **Data (UDLM):** the provider capability declaration shape — `topology_capability` + `mobility` + `operational_capability`.
+- **Policy (DCM):** matching/scoring/gating consume it (ADR-019/020) — requirements ↔ capability negotiation.
+- **Provider:** **authors** the declaration and **executes** what it declares (naturalization, migration, rehearsal).
+
 ## Options considered
 - **Implicit/undeclared capability (discover at runtime only)** — rejected: placement and SRE policies need to match *before* committing; declaration enables negotiation + conformance.
 - **A new capability resource type** — rejected: this is a **provider declaration** (extends the existing one), not a managed resource — consistent with the adopted-standards declaration and DCM ADR-005.

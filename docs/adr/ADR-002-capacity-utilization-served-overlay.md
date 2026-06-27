@@ -27,6 +27,11 @@ Placement scoring needs capacity/utilization. But:
 
 It is **DATA** (Data⇄Policy): the DCM Placement Policy (ADR-019) consumes it; the engine computes; no embedded expressions.
 
+## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
+- **Data (UDLM):** total capacity (resource attribute) + the served utilization overlay; allocated is derived.
+- **Policy (DCM):** placement scoring + capacity/headroom gates consume it.
+- **Provider:** serves the utilization overlay (information / `serve_data` provider) and is the authority for *available*.
+
 ## Options considered
 
 - **Capacity as embedded resource metadata only** — rejected: a scalar field can't carry multiple authoritative sources, churns the resource system-of-record, and can't represent *available* (which DCM isn't authoritative for).

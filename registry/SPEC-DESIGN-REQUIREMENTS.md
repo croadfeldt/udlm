@@ -149,6 +149,17 @@ Each hard constraint cites the UDLM contract it derives from.
     the discovered-first lifecycle entry, the peer of intent-first (declare → realize). A type whose
     schema *requires* Intent fields to instantiate violates this rule.
 
+### Decision decomposition — the three abstractions
+29. **Every type and every decision is decomposed across the three foundational abstractions —
+    `Data · Policy · Provider`** (DCM ADR-002; the UDLM Data⇄Policy boundary, `design-principles/core-tenets.md`).
+    A capability is only fully scoped when each is named: **Data** = what UDLM models/holds (types,
+    common-elements, served overlays); **Policy** = what DCM decides/computes/governs (the rules,
+    matching, gating); **Provider** = what a provider *declares as possible* and the *mechanism it
+    executes* (unmodeled). A DecisionRecord/ADR MUST carry a **Data · Policy · Provider** section (or
+    explicitly state "n/a, because…" for any that genuinely doesn't apply). This prevents modeling a
+    requirement as data with no policy to consume it, or a mechanism with no provider to declare it. It
+    is foundational across UDLM, DCM, and (where applicable) DAV.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.

@@ -27,6 +27,11 @@ Introduce **`Topology`** — a UDLM data type that is the **abstract graph of fa
 
 Abstract constraints are the **portability-preserving** way to express spread/co-locate/residency; provider-native placement is what breaks it. See DCM ADR-019 for the worked example (shared-UPS power domain).
 
+## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
+- **Data (UDLM):** the `Topology` type — kinds + concrete domains + labels — and each resource's locality reference.
+- **Policy (DCM):** Placement Policy (ADR-019) resolves abstract constraints against it; sovereignty resolves over jurisdiction labels.
+- **Provider:** declares `topology_capability` (ADR-004), naturalizes abstract kinds to its native topology, and contributes the concrete domains.
+
 ## Options considered
 
 - **No `Topology`; constraints provider-native** — rejected (kills portability).

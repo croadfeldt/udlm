@@ -72,6 +72,11 @@ Consistent with ADR-002 and §-minimal-core: requirements/constraints are **comm
 - Each run updates `mobility_validation` (state + freshness + achieved RTO/RPO) and raises a **finding** on failure.
 - **Criticality → cadence**; **stale → gate** (Policy). A critical workload's resilience claim is a living, freshness-tracked property, not a one-time cert.
 
+## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
+- **Data (UDLM):** `data_mobility` + `process_validation` requirements + `mobility_validation` evidence.
+- **Policy (DCM):** migration permission/sequence + freshness gating + rehearsal scheduling (ADR-020).
+- **Provider:** declares `mobility` + `operational_capability` (ADR-004); **executes** the migration mechanism and the rehearsals (unmodeled "how").
+
 ## Options considered
 - **Consumer authors the methodology** — rejected (violates intent-as-outcome; "how" is the provider's concern).
 - **A `Migration`/`Mobility` first-class type** — rejected for the requirements/capability/evidence (common-element + provider-declaration + observed overlay, per ADR-002); only the live operation might later first-class.
