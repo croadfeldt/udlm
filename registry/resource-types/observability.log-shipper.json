@@ -10,7 +10,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Log Shipper",
-    "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (an Ansible role today via ansible-runner, an AAP job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization in the homelab: the estate-ansible `alloy` role (journald -> Loki). See DCM architecture/integrations/automation-outcome-providers.md.",
+    "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (an Ansible role today via ansible-runner, an AAP job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization: a provider's Ansible `alloy` role (journald -> Loki). See DCM architecture/integrations/automation-outcome-providers.md.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-18"
   },

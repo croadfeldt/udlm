@@ -67,7 +67,7 @@ that catalogs all its declared types and extensions.
   "bundle_version": "2.4.1",
   "realization": {
     "name": "DCM",
-    "vendor": "cexample",
+    "vendor": "example-org",
     "udlm_version": "0.1.0"
   },
   "published_at": "2026-05-26T14:32:18.456Z",

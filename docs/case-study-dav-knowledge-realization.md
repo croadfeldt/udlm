@@ -1,5 +1,8 @@
 # Case Study — DAV as a UDLM realization in a non-infrastructure domain
 
+> **Non-normative.** Illustrative case study. **UDLM does not depend on DAV** — DAV is one
+> *example* realization, cited to show UDLM holds outside infrastructure (see `GLOSSARY.md`).
+
 _An effectiveness analysis: does UDLM's "realization-neutral universal substrate" claim
 hold when a system in a domain UDLM was **not** designed around adopts it? Written
 2026-06-08 from the DAV capability-catalog modeling exercise. Companion:

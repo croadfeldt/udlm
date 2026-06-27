@@ -8,8 +8,11 @@ data that any other conformant system can read, interpret, and exchange.
 
 UDLM is the substrate layer. Above it sit **realizations** — operational
 platforms that consume UDLM and turn it into a running system. The reference
-realization is **DCM** (`github.com/cexample/dcm`), but UDLM is realization-
-neutral: any operational platform that honors the UDLM contracts is a peer.
+realization is **DCM** (`github.com/dcm-project/dcm`), but UDLM is realization-
+neutral: any operational platform that honors the UDLM interfaces is a peer.
+Named realizations (DCM for the Resource family, DAV for the Knowledge family)
+are **non-normative examples** — UDLM's definition, validation, and use depend
+on none of them. Term definitions: [`GLOSSARY.md`](GLOSSARY.md).
 
 ## Structure
 

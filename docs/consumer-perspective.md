@@ -371,4 +371,4 @@ Once you've absorbed this perspective, the substrate docs you'll reach for most:
 
 For the operator side (running a realization), see DCM's
 `architecture/operator-perspective.md` at
-[github.com/cexample/dcm](https://github.com/cexample/dcm).
+[github.com/dcm-project/dcm](https://github.com/dcm-project/dcm).
