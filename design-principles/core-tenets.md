@@ -69,7 +69,7 @@ standard already solves — API versioning, auth/identity, DR objectives (RTO/RP
 **review finding**; the default is "adopt by reference or justify why not" (`SPEC-DESIGN-REQUIREMENTS`
 Design principles).
 
-## T6 — Validated outcomes, not tested incidents
+## T6 — Pre-validated outcomes, not testing during incidents
 A declared resilience outcome (survive DR / move / rehydrate within an RTO/RPO) is only real if it is
 **continuously validated**, not asserted. So **process validation is a lifecycle, not an event**: the
 operational processes that satisfy an outcome (migration, failover, rehydration) are **rehearsed on a
