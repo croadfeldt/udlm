@@ -32,7 +32,7 @@ registry/
   **Intent/Requested** contract a consumer fills; its typed `outputs` are the **Realized/Discovered**
   values a provider publishes. This is the same desired-vs-observed split Kubernetes enforces with
   `spec`/`status` — here it falls straight out of UDLM's four states.
-- **`conformsTo` + `version` = two version axes.** `conformsTo: udlm/0.1` binds the entry to a SPEC
+- **`conforms_to` + `version` = two version axes.** `conforms_to: udlm/0.1` binds the entry to a SPEC
   version (its `apiVersion`); `version` is the entry's own `MAJOR.MINOR.REVISION`. See `VERSIONING.md`.
 - **Relationships are first-class** (`depends_on`, `binds_to`, …) — the substrate the composite model
   (`../entities/composite-service-model.md`) builds its dependency DAG from.
@@ -43,14 +43,14 @@ registry/
 The meta-schema covers **both entity-type families** (`foundations/entity-type-families.md`):
 **Resource** (provisioned by a provider — `Category.Type` names, four-state lifecycle archetype
 `provisioning`) and **Knowledge** (curated, never provider-realized — single-segment names like
-`Capability`, lifecycle archetype `curation`). `family` + `entityType` are family-conditional in the
+`Capability`, lifecycle archetype `curation`). `family` + `entity_type` are family-conditional in the
 meta-schema; the `resource-types/` directory holds both (the dir name predates the Knowledge family).
 `capability.json` is the worked Knowledge example (anchored by DAV, `entities/knowledge-family.md`).
 
 ## Adding a resource type
 1. Create `resource-types/<name>.{json,yaml}` — `<category>.<type>` (Resource) or `<type>` (Knowledge).
-2. Fill the required fields (`conformsTo`, `uuid` [new UUIDv4], `resourceType`, `version`, `family`,
-   `entityType`, `portability`, `status`, `metadata`, `spec`, `outputs`).
+2. Fill the required fields (`conforms_to`, `uuid` [new UUIDv4], `resource_type`, `version`, `family`,
+   `entity_type`, `portability`, `status`, `metadata`, `spec`, `outputs`).
 3. `python3 tools/validate.py` — must pass (valid-by-construction).
 4. For a change to an existing type, `python3 tools/compat-check.py <old> <new>` — the declared
    `version` bump must be ≥ the required bump.

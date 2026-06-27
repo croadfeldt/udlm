@@ -1,18 +1,18 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.1.0",
-  "conformsTo": "udlm/0.1",
+  "conforms_to": "udlm/0.1",
   "uuid": "21b5da18-94c1-44af-a09b-ecd1e1a38a65",
-  "resourceType": "Storage.Cluster",
+  "resource_type": "Storage.Cluster",
   "version": "0.1.0",
   "family": "Resource",
-  "entityType": "Composite",
+  "entity_type": "Composite",
   "portability": "portable",
   "status": "active",
   "metadata": {
-    "displayName": "Storage Cluster",
+    "display_name": "Storage Cluster",
     "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference realization.",
     "maintainer": "udlm-registry",
-    "originationTimestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
@@ -31,7 +31,7 @@
           "usable": { "type": "string", "pattern": "^[0-9]+(GB|TB|PB|GiB|TiB|PiB)$", "description": "Usable capacity after data-protection overhead." }
         }
       },
-      "dataProtection": {
+      "data_protection": {
         "type": "object",
         "description": "Redundancy scheme (Swordfish data-protection).",
         "properties": {
@@ -42,9 +42,9 @@
     }
   },
   "outputs": {
-    "blockStorageClass": { "type": "string", "description": "Block (e.g. RBD) storage-class consumers provision volumes from." },
-    "fileStorageClass": { "type": "string", "description": "Shared-file (e.g. CephFS) storage-class." },
-    "objectEndpoint": { "type": "string", "description": "S3-compatible object endpoint (e.g. RGW)." }
+    "block_storage_class": { "type": "string", "description": "Block (e.g. RBD) storage-class consumers provision volumes from." },
+    "file_storage_class": { "type": "string", "description": "Shared-file (e.g. CephFS) storage-class." },
+    "object_endpoint": { "type": "string", "description": "S3-compatible object endpoint (e.g. RGW)." }
   },
   "relationships": [
     { "kind": "depends_on", "target": "Compute.VirtualMachine", "cardinality": "0..n", "description": "Storage nodes/OSDs hosted on VMs (the cluster needs a quorum of these up)." },
@@ -54,20 +54,20 @@
     {
       "standard": "SNIA-Swordfish",
       "version": "1.2",
-      "standardName": "StorageSystem",
+      "standard_name": "StorageSystem",
       "role": "distributed storage system / capacity / data-protection vocabulary",
       "source": "https://www.snia.org/forums/smi/swordfish",
       "license": "SNIA",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     },
     {
       "standard": "Rook",
       "version": "1.x",
-      "standardName": "CephCluster",
+      "standard_name": "CephCluster",
       "role": "reference realization (Ceph) — cluster shape, protocols, storage classes",
       "source": "https://rook.io/",
       "license": "Apache-2.0",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     }
   ]
 }

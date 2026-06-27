@@ -5,38 +5,38 @@
   "description": "The operational record of one entity (or Composite Entity) as it flows through the four states. This is the data substrate DCM reads and writes — UDLM carries the records, DCM applies the policy that produces them (core-tenets G3). It complements the Resource Type Specification (which defines the TYPE); this defines an INSTANCE. Field values inside the state snapshots are typed by the entity's Resource Type Spec, not re-validated here.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["uuid", "conformsTo", "resourceType", "typeVersion", "lifecycleState", "states"],
+  "required": ["uuid", "conforms_to", "resource_type", "type_version", "lifecycle_state", "states"],
   "properties": {
     "uuid": {
       "type": "string", "format": "uuid",
       "description": "Stable RFC 4122 identity of this entity. A Composite Entity has exactly one UUID across all four states (entities/composite-service-model.md)."
     },
-    "conformsTo": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
-    "resourceType": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$" },
-    "typeVersion": {
+    "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
+    "resource_type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$" },
+    "type_version": {
       "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "Pins the Resource Type Specification version this instance was realized against (E5). Drift and validation are measured against this exact contract."
     },
-    "typeRef": {
+    "type_ref": {
       "type": "string", "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "The `$id` of the pinned Resource Type Spec."
     },
-    "lifecycleState": {
+    "lifecycle_state": {
       "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"],
       "description": "The entity's current state in the four-state model (foundations/four-states.md)."
     },
     "generation": { "type": "integer", "minimum": 0, "description": "Increments on each desired-state (Intent/Requested) change." },
-    "observedGeneration": { "type": "integer", "minimum": 0, "description": "The `generation` the Realized state reflects. observedGeneration < generation ⇒ realization pending (the K8s drift signal)." },
+    "observed_generation": { "type": "integer", "minimum": 0, "description": "The `generation` the Realized state reflects. observedGeneration < generation ⇒ realization pending (the K8s drift signal)." },
 
     "states": {
       "type": "object",
       "additionalProperties": false,
       "description": "An immutable snapshot per state. Intent is captured before processing; Requested is the assembled, policy-validated, provider-ready payload; Realized is the provider-confirmed snapshot (system of record); Discovered is the actively-introspected state used for drift.",
       "properties": {
-        "intent":     { "$ref": "#/$defs/stateSnapshot" },
-        "requested":  { "$ref": "#/$defs/stateSnapshot" },
-        "realized":   { "$ref": "#/$defs/realizedSnapshot" },
-        "discovered": { "$ref": "#/$defs/realizedSnapshot" }
+        "intent":     { "$ref": "#/$defs/state_snapshot" },
+        "requested":  { "$ref": "#/$defs/state_snapshot" },
+        "realized":   { "$ref": "#/$defs/realized_snapshot" },
+        "discovered": { "$ref": "#/$defs/realized_snapshot" }
       }
     },
 
@@ -62,7 +62,7 @@
             },
             "actor": { "type": "string", "description": "The authenticated identity on whose behalf the change was made." },
             "timestamp": { "type": "string", "format": "date-time" },
-            "previousValue": { "description": "Value before this change (any JSON type), for the audit diff." }
+            "previous_value": { "description": "Value before this change (any JSON type), for the audit diff." }
           }
         }
       }
@@ -80,13 +80,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["kind", "targetUuid"],
+        "required": ["kind", "target_uuid"],
         "properties": {
           "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
-          "targetUuid": { "type": "string", "format": "uuid" },
-          "targetField": { "type": "string" },
-          "boundField": { "type": "string", "description": "The field on this entity the bound value populated." },
-          "resolvedAt": { "type": "string", "format": "date-time" }
+          "target_uuid": { "type": "string", "format": "uuid" },
+          "target_field": { "type": "string" },
+          "bound_field": { "type": "string", "description": "The field on this entity the bound value populated." },
+          "resolved_at": { "type": "string", "format": "date-time" }
         }
       }
     },
@@ -97,13 +97,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["componentId", "resourceType", "lifecycleState"],
+        "required": ["component_id", "resource_type", "lifecycle_state"],
         "properties": {
-          "componentId": { "type": "string" },
-          "resourceType": { "type": "string" },
-          "instanceUuid": { "type": "string", "format": "uuid" },
-          "providedBy": { "enum": ["self", "external"] },
-          "lifecycleState": { "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"] }
+          "component_id": { "type": "string" },
+          "resource_type": { "type": "string" },
+          "instance_uuid": { "type": "string", "format": "uuid" },
+          "provided_by": { "enum": ["self", "external"] },
+          "lifecycle_state": { "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"] }
         }
       }
     },
@@ -114,7 +114,7 @@
       "description": "The diff between Discovered and Requested. A non-empty `fields` means observed reality diverged from intent.",
       "properties": {
         "detected": { "type": "boolean" },
-        "checkedAt": { "type": "string", "format": "date-time" },
+        "checked_at": { "type": "string", "format": "date-time" },
         "fields": {
           "type": "array",
           "items": {
@@ -158,7 +158,7 @@
               "status": { "enum": ["True", "False", "Unknown"] },
               "reason": { "type": "string" },
               "message": { "type": "string" },
-              "lastTransitionTime": { "type": "string", "format": "date-time" }
+              "last_transition_time": { "type": "string", "format": "date-time" }
             }
           }
         }
@@ -170,35 +170,35 @@
       "additionalProperties": false,
       "description": "Linkage to the tamper-evident audit log (AUD-001/002). UDLM carries the reference (the Merkle head + leaf count); DCM produces and proves the chain (G3).",
       "properties": {
-        "logHead": { "type": "string", "description": "Hash of the latest audit leaf for this entity (RFC 9162 Merkle)." },
-        "leafCount": { "type": "integer", "minimum": 0 }
+        "log_head": { "type": "string", "description": "Hash of the latest audit leaf for this entity (RFC 9162 Merkle)." },
+        "leaf_count": { "type": "integer", "minimum": 0 }
       }
     },
 
-    "adoptedStandards": {
+    "adopted_standards": {
       "type": "array",
       "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of DCM's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether DCM translated between versions (ADS-003/004/008). UDLM carries this record; DCM (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join.",
-      "items": { "$ref": "#/$defs/adoptedStandardBinding" }
+      "items": { "$ref": "#/$defs/adopted_standard_binding" }
     }
   },
 
   "$defs": {
-    "adoptedStandardBinding": {
+    "adopted_standard_binding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["standard", "effectiveVersion"],
+      "required": ["standard", "effective_version"],
       "properties": {
         "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost." },
-        "requestedVersion": { "type": "string", "description": "The version pin/range the consumer or type required." },
-        "providerVersion": { "type": "string", "description": "The version the bound provider emits/consumes (from its support matrix)." },
-        "effectiveVersion": { "type": "string", "description": "The version actually used after negotiation (the system-of-record fact)." },
+        "requested_version": { "type": "string", "description": "The version pin/range the consumer or type required." },
+        "provider_version": { "type": "string", "description": "The version the bound provider emits/consumes (from its support matrix)." },
+        "effective_version": { "type": "string", "description": "The version actually used after negotiation (the system-of-record fact)." },
         "translated": { "type": "boolean", "default": false, "description": "True when DCM translated between providerVersion and effectiveVersion (ADS-004) — a Policy act, lowering confidence for derived values." },
-        "translationRef": { "type": "string", "description": "Reference to the deterministic migration used (preferably the standard's own published migration)." },
-        "providerUuid": { "type": "string", "format": "uuid", "description": "The provider / Information Provider that served the adopted data (lookup-only; not owned here — ADS-007)." },
-        "resolvedAt": { "type": "string", "format": "date-time" }
+        "translation_ref": { "type": "string", "description": "Reference to the deterministic migration used (preferably the standard's own published migration)." },
+        "provider_uuid": { "type": "string", "format": "uuid", "description": "The provider / Information Provider that served the adopted data (lookup-only; not owned here — ADS-007)." },
+        "resolved_at": { "type": "string", "format": "date-time" }
       }
     },
-    "stateSnapshot": {
+    "state_snapshot": {
       "type": "object",
       "additionalProperties": false,
       "required": ["fields", "at"],
@@ -207,7 +207,7 @@
         "at": { "type": "string", "format": "date-time" }
       }
     },
-    "realizedSnapshot": {
+    "realized_snapshot": {
       "type": "object",
       "additionalProperties": false,
       "required": ["fields", "outputs", "at"],

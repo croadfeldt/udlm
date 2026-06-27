@@ -9,7 +9,7 @@ Rationale, sources, and decision trail behind `registry/` and
 proposed a Service-Catalog schema: `CatalogItem` blueprints of `resources[]` (each with a
 `serviceType`, `requiresResources` DAG ordering, and per-field `editable`/`default`/`validationSchema`),
 `CatalogItemInstance` orders, and a resolution step producing an effective resource graph for placement,
-with CEL (`${ordersDb.connectionString}`) cross-resource wiring.
+with CEL (`${ordersDb.connection_string}`) cross-resource wiring.
 
 ## 2. Key finding — three independent re-derivations of one model
 
@@ -31,7 +31,7 @@ substrate rather than each project re-modeling it.
 
 - **`registry/resource-type-spec.schema.json`** — meta-schema for a Resource Type Specification
   (instantiating `entities/resource-type-hierarchy.md`). JSON Schema 2020-12 (normative per
-  `contracts/schema-sharing.md`). Two version axes: `conformsTo` (SPEC) + `version` (ENTITY).
+  `contracts/schema-sharing.md`). Two version axes: `conforms_to` (SPEC) + `version` (ENTITY).
   `spec` = Intent/Requested wire contract; `outputs` = typed Realized state.
 - **`registry/resource-types/`** — Compute.VirtualMachine, Data.Database, Network.IPAddress (JSON),
   Compute.Container (YAML). JSON and YAML both native.
@@ -146,7 +146,7 @@ Six refinements (R1–R6) were adopted and analysed against DCM's hard requireme
 provider-contract §7 observability, `RDG-001` dependency-graph, Governance-Matrix sovereignty). **All
 enhance** those pillars — see `design-principles/cross-cutting-requirements.md`. Two controls:
 - **Guardrail G2 (no embedded expressions):** the portable data carries no expression language. Bindings
-  are declarative typed references (`targetField` → output; Data, in the spec); all
+  are declarative typed references (`target_field` → output; Data, in the spec); all
   transformation/enrichment (incl. CEL) is **Policy**, applied by DCM. Determinism + reproducibility are
   therefore *structural* (the precondition for tamper-evident audit + sovereignty), not policed.
 - **Discipline G3 (contract, not parallel implementation):** UDLM defines the provenance/dependency/policy
@@ -159,7 +159,7 @@ enhance** those pillars — see `design-principles/cross-cutting-requirements.md
   (CloudEvents); semver semantics machine-enforced by compat-check.
 - `spec`/`outputs` = desired/observed seam (K8s/Crossplane/OSAC), but four-state, strongly typed.
 - **Bindings vs expressions (settled):** cross-entity bindings are *declarative typed references*
-  (`targetField` → output) carried in the spec; **expressions/transformation (incl. CEL) are not in the
+  (`target_field` → output) carried in the spec; **expressions/transformation (incl. CEL) are not in the
   data model — they are Policy, applied by DCM.** Conditional constraints (E3) use JSON Schema native
   (`if`/`then`, `dependentSchemas`), not an expression language. (core-tenets T2/T4/G2 — not to be re-litigated.)
 - Avoid: version-in-identity (GVK), `$dynamicRef`, version-in-name, coupling the model to a runtime,
@@ -174,7 +174,7 @@ is dropped — each is assigned to the domain that owns it.
 | Capability | **Data domain — UDLM carries** | **Policy domain — DCM applies** |
 |---|---|---|
 | Four states | the 4 immutable state records + legal-shape | the act of transitioning / realization |
-| Versioning (R1) | `$id`, `conformsTo`, `version`, compat rules as data | resolving a version constraint; conversion |
+| Versioning (R1) | `$id`, `conforms_to`, `version`, compat rules as data | resolving a version constraint; conversion |
 | E1 Constraint Profile | the narrowed contract (a data artifact) | applying profile defaults at Intent→Requested |
 | E2 Typed outputs | the output schema + realized values | publishing (provider) + binding resolution |
 | E3 Conditional constraints | **declarative only** (`if/then`, `dependentSchemas`, `enum`) | complex cross-field logic → policy evaluation |
@@ -182,7 +182,7 @@ is dropped — each is assigned to the domain that owns it.
 | E5 Version pinning | the recorded pin (a reference) | drift comparison against the pin |
 | R3 Immutability | the `createOnly` marker | **enforcing** it (reject the change) |
 | R4 Field ownership | the `managedFields` record | SSA conflict detection/resolution |
-| R5 Relationships | typed edges + `targetField` refs | DAG construction, ordering, traversal, compensation |
+| R5 Relationships | typed edges + `target_field` refs | DAG construction, ordering, traversal, compensation |
 | R6 Tombstones/bundling | `supersededBy` + Compound Document | — |
 | Binding | the edge + typed reference | resolution at dispatch; **any transform** |
 | Sovereignty | immutable zone/classification fields, closure bundle | Governance Matrix evaluation, placement filtering |
@@ -208,7 +208,7 @@ entirely on the Policy side and are not carried in the portable data.**
 - Terraform provider schema — `Computed`=realized; ordered StateUpgraders.
 - AWS CloudFormation resource schema + Cloud Control API — `readOnly`/`createOnly` property classes; uniform CRUD-L.
 - Azure ARM/Bicep — per-type dated apiVersion; `apiProfile` bundles.
-- Google Config Connector — typed GVK+`targetField` refs; stability propagation.
+- Google Config Connector — typed GVK+`target_field` refs; stability propagation.
 - Open Service Broker + (retired) K8s Service Catalog — async 202→poll; cautionary bolt-on-catalog retirement.
 - Backstage software catalog — relations derived from declared, validated fields.
 - SCIM (RFC 7643/7644) — runtime schema discovery; URI-namespaced extensions; additive-only within major.

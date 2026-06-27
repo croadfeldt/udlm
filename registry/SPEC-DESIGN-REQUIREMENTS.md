@@ -25,12 +25,12 @@ Each hard constraint cites the UDLM contract it derives from.
    **[enforced: pattern]**
 
 ### Versioning — two axes
-7. **`conformsTo: udlm/<MAJOR.MINOR>`** — SPEC-axis binding (apiVersion); same MAJOR = wire-compatible
+7. **`conforms_to: udlm/<MAJOR.MINOR>`** — SPEC-axis binding (apiVersion); same MAJOR = wire-compatible
    (`CONFORMANCE.md` §9). **[enforced: pattern]**
 8. **`version: MAJOR.MINOR.REVISION`** — ENTITY axis; immutable once published; any change publishes a
    new version (`foundations/layering-and-versioning.md`). **[enforced: pattern]**
 9. **Semver semantics**: additive → MINOR, breaking → MAJOR, docs → REVISION. **[enforced: compat-check]**
-10. A **MAJOR** bump deprecates the predecessor and MUST carry `migrationGuidance`; a deprecation
+10. A **MAJOR** bump deprecates the predecessor and MUST carry `migration_guidance`; a deprecation
     window precedes retirement (universal deprecation model + K8s deprecation policy).
 11. **Version-pinned references** — profiles (E1) and realized instances (E5) pin the exact version used.
 
@@ -72,7 +72,7 @@ Each hard constraint cites the UDLM contract it derives from.
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
     standard (the *adopt* disposition, `design-principles/adopted-standards.md`) MUST record the
     source: the standard's name, version/edition, and canonical URL, in the type's `adopts[]` reference
-    (the `adoptedStandardRef` in `registry/resource-type-spec.schema.json`) or a field-level
+    (the `adopted_standard_ref` in `registry/resource-type-spec.schema.json`) or a field-level
     `x-standard` pointer. (A provider separately declares which standard *versions* it can emit/consume
     via `registry/provider-adopted-standards.schema.json` — a different concern.) A definition that
     borrows elements with no recorded source is invalid.
@@ -85,6 +85,17 @@ Each hard constraint cites the UDLM contract it derives from.
     files MUST NOT be vendored into UDLM (`governance/registry-governance.md`, IP hygiene). This is
     why the disposition default is *adopt-by-reference*: it is both schema-rev-decoupled **and**
     license-clean.
+23a. **Adopt-by-reference casing — foreign names never become live keys.** Adopting a standard's
+    vocabulary means *referencing* its names, not *minting* them as resource keys. The **live field name
+    is always the native (`snake_case`) form** (`serial_number`); the adopted source name — whatever its
+    casing (Redfish PascalCase `SerialNumber`, Metal3 camelCase `serialNumber`) — is recorded as a
+    **metadata value**, never a key: `adopts[].standard_name`, a field-level `x-standard` pointer, or
+    `aliases[]`. Foreign casing MAY appear ONLY as such a metadata value, as an enum/string *value*, or
+    inside an explicitly-opaque extension/raw blob (`provider_hints`, `x-…`, discovered-raw) — **never**
+    as a typed key in the resource body. This keeps the canonical wire (and the AEP-bound DCM API it
+    rides) uniformly `snake_case` even though the registry adopts many differently-cased standards
+    (`registry/naming-conventions.md` §4 carve-outs). A type that mints a foreign-cased live key violates
+    both §25 and this rule.
 
 ### Cross-type consistency
 24. **Shared concepts use shared shapes** — a concept that recurs across types (compute resources
@@ -92,10 +103,11 @@ Each hard constraint cites the UDLM contract it derives from.
     timestamps, status conditions) MUST reuse the registry's **canonical common-element definitions**
     (`registry/common-elements.md`), not be re-expressed per type. New or revised types are checked
     against the common-element catalog; an unjustified divergence is a review finding.
-25. **Consistent naming & units** — field names are `camelCase`; physical quantities carry an explicit
-    unit via the canonical `Quantity` pattern (never a bare number whose unit is implied by the field
-    name); timestamps are RFC 3339; enums use the canonical token set. New types are swept against the
-    existing registry for naming/unit drift before publication.
+25. **Consistent naming & units** — field names are `snake_case` (`registry/naming-conventions.md` §4:
+    canonical-data-model + AEP-conformance forces one casing; lowercased initialisms, e.g. `pod_cidr`);
+    physical quantities carry an explicit unit via the canonical `Quantity` pattern (never a bare number
+    whose unit is implied by the field name); timestamps are RFC 3339; enums use the canonical token set.
+    New types are swept against the existing registry for naming/unit drift before publication.
 
 ### Component granularity (entity vs data element)
 26. **A physical component (DIMM, disk, NIC, GPU, CPU) is representable BOTH ways, and the parent
@@ -114,22 +126,22 @@ Each hard constraint cites the UDLM contract it derives from.
     carry enough identity to tell them apart, even when type, size, and use are identical. Use the
     canonical `Identity` element (`registry/common-elements.md`): **`location`** (physical position
     within the parent — DIMM slot `P1-DIMMA1`, drive bay `Bay 7`, PCIe slot — unique within the parent,
-    stable across reboots) and **`serialNumber`**/**`wwn`** (globally unique hardware identity, survives
+    stable across reboots) and **`serial_number`**/**`wwn`** (globally unique hardware identity, survives
     a move to another parent). A semantic **`role`/`usage`** field distinguishes same-model components
     by *purpose* (a drive as `boot` vs `ceph-osd`; memory as `system` vs `persistent`). The entity's own
-    UUID is its UDLM identity; `location`/`serialNumber`/`role` are the **discriminators** that bind that
+    UUID is its UDLM identity; `location`/`serial_number`/`role` are the **discriminators** that bind that
     UUID to one physical instance and make "same type, different unit" and "same use, different serial"
     both expressible. The same rule applies inline (the rollup's `modules[]`/`disks[]` arrays MUST key
-    each element by `location` or `serialNumber`, never by array position alone). Grounded in Redfish
+    each element by `location` or `serial_number`, never by array position alone). Grounded in Redfish
     (`Memory.SerialNumber`+`DeviceLocator`, `Drive.SerialNumber`+`WWN`+`PhysicalLocation`) and Metal3
-    (`storage[].{name,serialNumber,wwn}`, `nics[].mac`).
+    (`storage[].{name,serial_number,wwn}`, `nics[].mac`).
 
 ### Lifecycle entry — raw & unallocated resources
 28. **A type MUST support a "raw" existence: Discovered state populated, no Intent.** A resource that
     physically exists but has not been allocated — a freshly racked server, a brownfield import, a spare
     drive on the shelf — MUST be representable for **inventory and tracking** with only its Discovered
     state populated and **no Intent/allocation** (`foundations/four-states.md` §2.4). Such a resource
-    carries an **availability** lifecycle state (canonical `lifecycleState`, e.g.
+    carries an **availability** lifecycle state (canonical `lifecycle_state`, e.g.
     `available|allocated|retired`; adopts Metal3 `provisioning.state: available`) marking it
     unallocated. It is later **adopted** — an Intent is attached (allocation / brownfield ingestion),
     entering the managed lifecycle — and adoption MUST **preserve the entity UUID** (four-states §3),
@@ -146,7 +158,7 @@ Each hard constraint cites the UDLM contract it derives from.
 - **Reproducible** — spec + inputs deterministically yields the same Requested/effective state.
 - **One concept per field**; cross-field/conditional constraints expressed **declaratively** in JSON
   Schema (`if`/`then`, `dependentSchemas`, `enum`), never an embedded expression language. Cross-entity
-  data flow is a declarative typed binding (`targetField` → output); any real transformation/computation
+  data flow is a declarative typed binding (`target_field` → output); any real transformation/computation
   is **Policy**, applied by DCM — never in the spec (T2/T4).
 
 ## Candidate / deferred data points
@@ -158,7 +170,7 @@ Design principles; don't denormalize derivable facts).
 
 | Candidate | Where it would live | Status | Why deferred · inclusion trigger |
 |---|---|---|---|
-| `ownershipModel` (`whole-allocation` \| `allocation` \| `shareable`) | resource type spec | **Deferred** (2026-06-27) | Would be a policy anchor for decommission-safety / cost-attribution / placement (`foundations/ownership-sharing-allocation.md`). Deferred because: every current type is `whole-allocation` (no discrimination yet), the pattern is largely **derivable** from pool/stake relationships (denormalization → drift risk), and it may be **instance-level** for types realizable multiple ways (static vs pooled IP). **Add when** the first non-whole-allocation type is authored (a pool → `allocation`, or a declared-shareable resource), as the *authoritative declaration the relationships conform to* — not a derived copy. |
+| `ownership_model` (`whole-allocation` \| `allocation` \| `shareable`) | resource type spec | **Deferred** (2026-06-27) | Would be a policy anchor for decommission-safety / cost-attribution / placement (`foundations/ownership-sharing-allocation.md`). Deferred because: every current type is `whole-allocation` (no discrimination yet), the pattern is largely **derivable** from pool/stake relationships (denormalization → drift risk), and it may be **instance-level** for types realizable multiple ways (static vs pooled IP). **Add when** the first non-whole-allocation type is authored (a pool → `allocation`, or a declared-shareable resource), as the *authoritative declaration the relationships conform to* — not a derived copy. |
 
 ---
 _E1–E5 reference the enhancement opportunities surfaced from dcm-project/enhancements#55
