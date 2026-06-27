@@ -1,0 +1,77 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.1.0",
+  "conformsTo": "udlm/0.1",
+  "uuid": "9b0d5c5f-8aaf-4505-bfd1-63cafdd1ffbe",
+  "resourceType": "Hardware.StorageDevice",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entityType": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "displayName": "Storage Device",
+    "description": "A storage device (disk / SSD / NVMe) component. deviceClass distinguishes a physical drive (wwn/serial/bay) from a virtual disk presented to a guest (which binds_to its backing Storage resource). Mirrors Redfish Drive (+ SNIA Swordfish at the system level).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-26"
+  },
+  "spec": {
+    "type": "object",
+    "required": ["capacity"],
+    "properties": {
+      "deviceClass": {
+        "type": "string",
+        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "default": "physical",
+        "description": "Device realization (common-elements.md §7). virtual = a guest virtual disk (binds_to its backing volume); passthrough = whole physical disk to a guest."
+      },
+      "partitionMechanism": {
+        "type": "string",
+        "description": "Only when deviceClass=partition: e.g. namespace (NVMe) / lun carved from a parent."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "properties": {
+          "location": { "type": "string", "description": "Drive bay / slot within the parent, e.g. Bay 7 (Redfish PhysicalLocation). Primary discriminator." },
+          "serialNumber": { "type": "string", "description": "Drive serial (Redfish SerialNumber)." },
+          "wwn": { "type": "string", "description": "World-Wide Name — globally unique block-device identity." },
+          "assetTag": { "type": "string" },
+          "model": { "type": "string", "description": "Drive model (Redfish Model)." },
+          "manufacturer": { "type": "string" },
+          "role": { "type": "string", "description": "Semantic usage, e.g. boot | data | ceph-osd | cache." }
+        }
+      },
+      "capacity": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$", "description": "Usable capacity, e.g. 1TB (Redfish CapacityBytes)." },
+      "mediaType": { "type": "string", "description": "Media, e.g. hdd, ssd, nvme (Redfish MediaType)." },
+      "protocol": { "type": "string", "description": "Bus/transport, e.g. sas, sata, nvme (Redfish Protocol)." },
+      "rotationSpeedRpm": { "type": "integer", "minimum": 0, "description": "Spindle speed for rotational media; 0 / omitted for SSD/NVMe." }
+    }
+  },
+  "outputs": {
+    "devicePath": { "type": "string", "description": "OS device path once Realized, e.g. /dev/disk/by-id/...." }
+  },
+  "relationships": [
+    { "kind": "contained_by", "target": "Compute.BareMetalInstance", "cardinality": "0..1", "description": "The host this drive is installed in; parent carries the reconciled storage rollup (§26)." },
+    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For deviceClass=virtual/passthrough, the guest the disk is presented to." },
+    { "kind": "binds_to", "target": "Storage.Cluster", "targetField": "rbdStorageClass", "cardinality": "0..1", "description": "For a virtual disk, the backing storage resource it is provisioned from." },
+    { "kind": "references", "target": "Hardware.StorageDevice", "cardinality": "0..1", "description": "parentDevice — the physical disk a passthrough/partition (e.g. NVMe namespace) is derived from (common-elements §7)." }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "role": "drive component vocabulary (capacity, media, protocol, wwn, serial, bay)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "licenseCompatibility": "compatible-reference"
+    },
+    {
+      "standard": "SNIA-Swordfish",
+      "version": "1.2",
+      "role": "storage-device modeling alignment at the system level",
+      "source": "https://www.snia.org/forums/smi/swordfish",
+      "license": "SNIA",
+      "licenseCompatibility": "compatible-reference"
+    }
+  ]
+}

@@ -41,9 +41,13 @@ specification") but is a registry-precedent decision — do it only when **both*
 2. the new category maps to a recognized industry model (so we adopt, not invent).
 
 New categories established by this work, each anchored to **DMTF Redfish** (datacenter hardware/DCIM):
-- **`Hardware`** — physical components below the device boundary (DIMM, disk, NIC, CPU, GPU), the
-  first-class side of the §26 component model. Anchored to Redfish `Memory`/`Processor`/`Drive`/
-  `NetworkAdapter`. Distinct from `Compute` (which is the whole machine/instance).
+- **`Hardware`** — the **device/component layer** below the device boundary (DIMM, disk, NIC, CPU, GPU),
+  the first-class side of the §26 component model. **Not physical-only**: a `deviceClass` discriminator
+  (`physical | virtual | passthrough | partition`, common-elements §7) lets the same types model a real
+  DIMM, a guest's virtual disk, a passed-through GPU, or a vGPU/SR-IOV/VLAN **slice of a physical parent**
+  (via a `parentDevice` reference). Anchored to Redfish `Memory`/`Processor`/`Drive`/`NetworkAdapter`
+  (+ `NetworkDeviceFunction`/`PCIeFunction` for the derived cases). Distinct from `Compute` (the whole
+  machine/instance).
 - **`Facility`** — physical-datacenter resources (power, later rack/cooling). Anchored to Redfish DCIM
   `PowerDistribution`/`Circuit`/`PowerDomain` (+ NUT for UPS telemetry).
 
