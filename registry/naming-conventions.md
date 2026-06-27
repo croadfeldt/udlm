@@ -65,7 +65,7 @@ reusable and avoids a `FreeIPA.Everything` corner.
 
 Before adding a type, check whether the concept is already expressed by an existing mechanism:
 - **An instance of a type** is a **realized entity** (`registry/realized-entity.schema.json`,
-  `registry/instances/`) — `stark` is an instance of `Compute.BareMetalHost`. Don't create a type to
+  `registry/instances/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
   (`foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
