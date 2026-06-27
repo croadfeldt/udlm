@@ -35,6 +35,13 @@ Getting this model right is foundational. It governs decommission safety (can th
 
 ## 2. The Three Ownership Patterns
 
+> **Note — `ownership_model` is a conceptual classifier, not (yet) a meta-schema field.** The
+> `ownership_model:` shown in the examples below expresses *intent*; it is a **deferred candidate data
+> point** (see `registry/SPEC-DESIGN-REQUIREMENTS.md` → *Candidate / deferred data points*), not a
+> validated field on a Resource Type Spec today — the patterns are currently expressed through
+> relationships (pools, stakes) and the realized-entity `ownership`. If adopted it will be
+> `ownershipModel` (camelCase, hyphenated enum values). Treat the examples as illustrative.
+
 ### 2.1 Whole Allocation (Consumer Owns the Entity)
 
 **What it means:** The consumer receives the entire resource entity. It belongs exclusively to them. They own it outright — it is in their Tenant, they control its lifecycle, they bear its costs.
