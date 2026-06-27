@@ -11,9 +11,15 @@ mirror the concept; only coin a UDLM name where no standard fits.
 
 ## 1. Type names — `Category.Type`
 
-- **Shape:** `Category.Type`, both segments **PascalCase** (`Compute.VirtualMachine`,
-  `Network.IPAddress`). Knowledge-family types are single-segment (`Capability`). Enforced by the
-  `resource_type` / `$id` patterns in the meta-schema.
+- **Shape — domain-owned vs cross-cutting:**
+  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Compute.VirtualMachine`,
+    `Network.IPAddress`).
+  - **Cross-cutting / foundational types (not owned by any single domain) → single-segment**
+    PascalCase (`Capability`, `Topology`). This covers Knowledge-family entities *and* cross-domain
+    Resource types like `Topology` that resources across many domains reference. The `family` field
+    disambiguates. (The single-segment form signals "domain-neutral," not "Knowledge-only"; the
+    meta-schema `resource_type` pattern already permits both forms.)
+  - Enforced by the `resource_type` / `$id` patterns in the meta-schema.
 - **Tiered namespace** (`governance/registry-governance.md` §2):
   | Tier | Namespace form | Example | Vendor names? |
   |---|---|---|---|
@@ -65,7 +71,7 @@ reusable and avoids a `FreeIPA.Everything` corner.
 
 Before adding a type, check whether the concept is already expressed by an existing mechanism:
 - **An instance of a type** is a **realized entity** (`registry/realized-entity.schema.json`,
-  `registry/instances/`) — `host-b` is an instance of `Compute.BareMetalHost`. Don't create a type to
+  `registry/instances/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
   (`foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —

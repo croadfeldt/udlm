@@ -64,7 +64,25 @@ the data's lifecycle is genuinely UDLM's to custody; otherwise adopt.** Provider
 *versions* they support and consumers declare the version they require (both **data**); **negotiating,
 enforcing, and translating between versions is Policy** (T2), and the negotiated effective version is
 recorded as provenance. The full disposition, constructs, and the version-negotiation contract are in
-`adopted-standards.md`.
+`adopted-standards.md`. **This is an active review gate, not advice:** redefining a concept a credible
+standard already solves — API versioning, auth/identity, DR objectives (RTO/RPO), health probes — is a
+**review finding**; the default is "adopt by reference or justify why not" (`SPEC-DESIGN-REQUIREMENTS`
+Design principles).
+
+## T6 — Pre-validated outcomes, not testing during incidents
+A declared resilience outcome (survive DR / move / rehydrate within an RTO/RPO) is only real if it is
+**continuously validated**, not asserted. So **process validation is a lifecycle, not an event**: the
+operational processes that satisfy an outcome (migration, failover, rehydration) are **rehearsed on a
+cadence** — `simulated` (synthetic, schema-conformant, non-sensitive data, sovereignty-safe) or
+`rehearsal` (real data to a reversible target) — each run producing **validation evidence** that backs
+the claim, with **freshness** (a claim un-rehearsed within its cadence goes *stale*) and a **finding** on
+failure. The consequence: **a real incident executes an already-validated path — it *validates the
+outcome*, it does not *test an unknown*.** The cadence is driven by the workload's declared *criticality*
+(data, consumer-set); whether to *gate* on stale validation (e.g. refuse to place a critical workload on
+an unproven path) is **Policy** (DCM). The requirements, criticality, and evidence are **data**; the
+rehearsal *mechanism* is the **provider**; the gating is **Policy**. (UDLM ADR-003.) This is the third
+validation layer — **valid spec** (CONFORMANCE) + **valid data** (valid-by-construction + provenance) +
+**valid process** (this) — over the same evidence/freshness machinery, never a parallel one.
 
 ---
 
