@@ -76,6 +76,16 @@ Each hard constraint cites the UDLM contract it derives from.
     computed field's provenance points to the policy and every input edge. The policy-evaluation seam is
     already the audit/provenance capture point (DCM ADR-006/010) — computation stays expressive while the
     portable data stays declarative and the result stays auditable + provenanced.
+    Two further controls bound it: **(d) per-field opt-in** — a field is a valid CEL target only if its
+    definition declares **`cel_permitted: true`** (default **false**; a declarative field marker alongside
+    `createOnly`/`immutable`/`sensitive`). Producers of types/layers/catalog items decide which fields
+    accept computed bindings — computation is opt-in (the *simple-common-case* principle); the policy
+    engine rejects a CEL op targeting a non-permitted field. **(e) Uncovered-computed-field notification**
+    — if a CEL op sets a field that **no policy reads or constrains**, the result is *ungoverned*
+    ("unbounded"): the engine emits an **`uncovered_computed_field`** observation (recorded, pairs with
+    provenance) and the **DCM operational profile** sets the action (notify → warn → block; sovereign/
+    critical → block). Together: producers gate *which* fields may be computed; the platform flags *when*
+    a computed field is ungoverned.
 
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
