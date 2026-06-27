@@ -12,7 +12,7 @@
     "displayName": "Network Gateway",
     "description": "A network edge gateway — routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "originationTimestamp": "2026-06-26"
   },
   "spec": {
     "type": "object",
