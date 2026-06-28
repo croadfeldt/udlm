@@ -19,34 +19,41 @@
 
 ## 1. Purpose
 
-UDLM defines a unified **Auth Provider** model. An Auth Provider is one of the substrate-defined provider types: an external (or built-in) system that answers two questions:
+UDLM defines a unified **auth capability**. Authentication/authorization is a **capability a provider declares**, not a separate provider kind (see [Provider Contract](../contracts/provider-contract.md) §8.4) — "Auth Provider" throughout this document means *a provider that declares the auth capability*. It answers two questions:
 
 1. **Authentication** — is this identity who they claim to be?
 2. **Authorization** — what is this identity permitted to do?
 
-Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is an Auth Provider implementation. The built-in Auth Provider is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. External Auth Providers are registered artifacts, versioned, lifecycle-managed, and audited.
+Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The realization **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (DCM `ADR-022`).
 
 **Authentication is always required — there is no anonymous access in any UDLM profile.** The difference between profiles is how much effort authentication setup requires, not whether it exists.
 
 ---
 
-## 2. Auth and Credential Provider Types
+## 2. Auth and Credentials as Capabilities
 
-Auth Providers and credential providers are two of the substrate-defined provider types (see [Provider Contract](../contracts/provider-contract.md)). The full provider ecosystem includes:
+Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds (see [Provider Contract](../contracts/provider-contract.md) §8, [Credentials](credentials.md) §1). The substrate distinguishes provider **kinds** (interaction shape) from **capabilities** (what a provider yields, declared via resource types + a capability block):
 
-| # | Type | Purpose |
-|---|------|---------|
-| 1 | **Service Provider** | Realizes resources |
-| 2 | **Information Provider** | Serves authoritative external data |
-| 3 | **Composite Service Definition** | Composes multiple providers |
-| 4 | **Data Store** | Persists realization state |
-| 5 | **External Policy Evaluator** | Evaluates policies externally |
-| 6 | **Credential Provider** | Manages secrets and credentials |
-| 7 | **Auth Provider** | Authenticates actor identities |
-| 8 | **Notification Service** | Delivers notifications |
-| 9 | **Event Routing Service** | Async event streaming |
-| 10 | **Resource Type Registry** | Serves the Resource Type Registry |
-| 11 | **Peer Realization** | Another UDLM-conformant peer (federation) |
+**Provider kinds** (interaction shape):
+
+| Kind | Purpose |
+|------|---------|
+| **Service / Resource Provider** | Realizes resources |
+| **Information Provider** | Serves authoritative external data |
+| **Process Provider** | Executes ephemeral workflows to completion |
+| **Peer Realization** | Another UDLM-conformant peer (federation) |
+
+**Capabilities** (declared on any provider; not registered as kinds):
+
+| Capability | Declared via | Yields |
+|------------|--------------|--------|
+| **Auth** | `auth_capability` | Authenticates actors, resolves roles/groups |
+| **Credential issuance** | `Credential.*` + `credential_capability` | Issues/holds secrets, certs, keys (broker model) |
+| **Notification** | `Notification.*` | Delivers notifications |
+| **ITSM** | `ITSM.*` | ITSM integration |
+| **Telemetry** | telemetry descriptor | Metrics/logs/events for hosted resources |
+
+A Composite Service is not a kind — it is a Service Provider registering a multi-resource definition. There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities a kind exercises.
 
 ---
 
