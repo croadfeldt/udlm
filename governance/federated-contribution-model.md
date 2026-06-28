@@ -44,7 +44,7 @@ The specific transport (GitOps PR, REST API, message bus) is a realization choic
 **Platform Admin:** All artifact types at all domain levels. No restrictions within the local deployment.
 
 **Consumer / Tenant:**
-- Tenant-domain policies (GateKeeper, Transformation, Recovery, Lifecycle, Orchestration Flow)
+- Tenant-domain policies (Gating Policy, Transformation, Recovery, Lifecycle, Orchestration Flow)
 - Resource groups and group memberships within their Tenant
 - Notification subscriptions for their Tenant
 - Webhook registrations for their Tenant
@@ -56,7 +56,7 @@ The specific transport (GitOps PR, REST API, message bus) is a realization choic
 - Resource Type Specifications for resource types they offer (Organization or Verified Community tier)
 - Provider Catalog Items for their registered resource types
 - Service Layers for their offered resource types
-- Provider-specific GateKeeper and Validation policies (provider domain)
+- Provider-specific Gating Policy and Validation policies (provider domain)
 - Cost metadata updates
 - Sovereignty declaration updates
 
@@ -87,7 +87,7 @@ Every UDLM data artifact type has a declared set of contributor permissions. The
 | Core Layer | ✅ | ❌ | ❌ | ❌ |
 | Service Layer | ✅ | ❌ | Their resource types only | ❌ |
 | Request Layer | ✅ | Their requests only | ❌ | ❌ |
-| GateKeeper Policy | All domains | Tenant domain only | Provider domain only | Via federation governance |
+| Gating Policy | All domains | Tenant domain only | Provider domain only | Via federation governance |
 | Transformation Policy | All domains | Tenant domain only | Provider domain only | Via federation governance |
 | Recovery Policy | All domains | Tenant domain only | Provider domain only | Via federation governance |
 | Orchestration Flow Policy | All domains | Tenant domain only | ❌ | ❌ |
@@ -174,7 +174,7 @@ Review requirements are profile-governed. The substrate defaults are:
 Consumers are not passive requesters. Tenant admins and designated Tenant members with `policy_author` role can define and maintain their own Tenant-domain policies directly.
 
 **What this enables:**
-- A Payments team defining their own cost ceiling GateKeeper: "Reject any VM request over $500/month"
+- A Payments team defining their own cost ceiling Gating Policy: "Reject any VM request over $500/month"
 - An Operations team defining their own expiry Transformation: "All dev VMs get a 30-day TTL injected"
 - A Security team defining their own governance matrix rule: "Our Tenant never sends confidential data to unaccredited providers"
 
@@ -189,8 +189,8 @@ Authorization: Bearer <token>
 X-Tenant: <tenant-uuid>
 
 {
-  "policy_type": "gatekeeper",
-  "handle": "tenant/payments/gatekeeper/cost-ceiling",
+  "policy_type": "gating",
+  "handle": "tenant/payments/gating/cost-ceiling",
   "domain": "tenant",
   "concern_type": "operational",
   "enforcement": "soft",
@@ -205,14 +205,14 @@ X-Tenant: <tenant-uuid>
     "reason": "Estimated monthly cost exceeds Tenant budget ceiling of $500"
   },
   "shadow_mode": true,           # start in shadow mode (proposed status)
-  "commit_message": "Add monthly cost ceiling GateKeeper for Payments Tenant"
+  "commit_message": "Add monthly cost ceiling Gating Policy for Payments Tenant"
 }
 
 Response 202 Accepted:
 {
   "contribution_uuid": "<uuid>",
   "artifact_type": "policy",
-  "policy_handle": "tenant/payments/gatekeeper/cost-ceiling",
+  "policy_handle": "tenant/payments/gating/cost-ceiling",
   "status": "proposed",
   "shadow_mode": true,
   "review_required": true,
@@ -398,7 +398,7 @@ Contributors deprecate their own artifacts. When a Service Provider deprecates a
 
 When a contributor's access is revoked (actor departs, provider deregisters, peer federation ends):
 - Active artifacts remain active — orphaned artifacts do not automatically deactivate
-- A platform admin is notified: "Artifact tenant/payments/gatekeeper/cost-ceiling has no active owner"
+- A platform admin is notified: "Artifact tenant/payments/gating/cost-ceiling has no active owner"
 - Platform admin assigns a new owner or explicitly retires the artifact
 - Auto-retire-on-orphan is configurable per profile (enabled in sovereign profile; disabled in standard)
 
@@ -411,7 +411,7 @@ Every artifact MUST include a `contributed_by` block in its artifact metadata. S
 ```yaml
 artifact_metadata:
   uuid: <uuid>
-  handle: "tenant/payments/gatekeeper/cost-ceiling"
+  handle: "tenant/payments/gating/cost-ceiling"
   version: "1.0.0"
   status: active
   contributed_by:

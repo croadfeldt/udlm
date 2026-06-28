@@ -119,7 +119,7 @@ policy_artifact:
 
 | Policy Type | Default `lifecycle_scope.operations` | Rationale |
 |-------------|-------------------------------------|-----------|
-| GateKeeper | `all` | Gatekeeping rules should always be checked |
+| Gating Policy | `all` | Gating rules should always be checked |
 | Validation | `[initial_provisioning, update, scale, rehydration]` | Structural validation on any data change |
 | Transformation | `[initial_provisioning, rehydration]` | Inject/enrich on new builds and rebuilds; skip on minor updates |
 | Recovery | `all` | Recovery posture always applicable |
@@ -133,8 +133,8 @@ These defaults can be overridden per policy. Profile-governed minimums prevent d
 | Profile | Minimum lifecycle scope |
 |---------|------------------------|
 | `minimal`, `dev` | No minimum — any scope permitted |
-| `standard`, `prod` | GateKeeper and Governance Matrix must be `all` |
-| `fsi`, `sovereign` | GateKeeper, Governance Matrix, and sovereignty-concern policies must be `all` — cannot be scoped to skip any lifecycle operation |
+| `standard`, `prod` | Gating Policy and Governance Matrix must be `all` |
+| `fsi`, `sovereign` | Gating Policy, Governance Matrix, and sovereignty-concern policies must be `all` — cannot be scoped to skip any lifecycle operation |
 
 ### 2.4 Specificity Spectrum
 
@@ -291,7 +291,7 @@ policy_artifact:
     created_via: pr | api | migration | system
 
   # Policy classification
-  policy_type: <type>                    # gatekeeper | validation | transformation |
+  policy_type: <type>                    # gating | validation | transformation |
                                          # recovery | orchestration_flow |
                                          # governance_matrix_rule | lifecycle
   concern_type: <concern>                # security | compliance | operational |
@@ -392,7 +392,7 @@ Each pass through the policy engine follows three phases:
 
 **Phase 2 — Constraint Resolution.** The Policy Engine examines collected constraints for conflicts. When constraints conflict, it checks if the conflicting policies declare resolution strategies via `on_conflict`. Auto-resolvable conflicts are resolved and recorded. Unresolvable conflicts are escalated (request paused for human decision).
 
-**Phase 3 — Application and Validation.** Transformations apply using the resolved constraint set. Placement uses the constrained parameters. GateKeepers re-validate the final assembled payload against the full constraint set. If validation fails, the failure is added as a new constraint and the system loops to the next pass.
+**Phase 3 — Application and Validation.** Transformations apply using the resolved constraint set. Placement uses the constrained parameters. Gating Policies re-validate the final assembled payload against the full constraint set. If validation fails, the failure is added as a new constraint and the system loops to the next pass.
 
 ```
 Pass 1:
@@ -406,7 +406,7 @@ Pass 1:
   Phase 3: Apply and validate
     → transformations inject config
     → placement distributes 3/3
-    → GateKeepers re-validate → PASS
+    → Gating Policies re-validate → PASS
   → Converged.
 
 Pass 1 (loop scenario):
@@ -433,7 +433,7 @@ Policies declare what constraints they emit via `emits_constraints` in their art
 ```yaml
 policy_artifact:
   handle: "sovereignty/eu-data-residency"
-  policy_type: gatekeeper
+  policy_type: gating
   match:
     conditions:
       - field: request.data_classification
@@ -537,8 +537,8 @@ constraint_type:
     additionalProperties: false
   semantic: "Restricts which zones a resource may be placed in"
   binding_levels: [hard, soft]
-  emittable_by: [gatekeeper, validation, governance_matrix_rule]
-  consumable_by: [transformation, gatekeeper, validation]
+  emittable_by: [gating, validation, governance_matrix_rule]
+  consumable_by: [transformation, gating, validation]
 ```
 
 ### 8.2 Built-In Constraint Types (Core Tier)
@@ -573,7 +573,7 @@ hint_type:
       reason: { type: string }
   semantic: "Advisory preference for lower-cost zones"
   emittable_by: [transformation, validation]
-  consumable_by: [gatekeeper, transformation]
+  consumable_by: [gating, transformation]
 ```
 
 ### 8.4 Validation at Policy Activation
@@ -650,7 +650,7 @@ policy_artifact:
   template: "dcm.sovereignty.zone-restriction"
   version: "1.0.0"
   domain: system
-  policy_type: gatekeeper
+  policy_type: gating
 
   parameters:
     classification_levels: [restricted, phi, pci]
@@ -712,13 +712,13 @@ When a policy artifact is created from a template:
 
 ---
 
-## 10. Output Schema — GateKeeper
+## 10. Output Schema — Gating Policy
 
 **Fires on:** Request payload at assembly time.
 **Produces:** An allow or deny decision for the request.
 
 ```yaml
-gatekeeper_output:
+gating_output:
   decision: allow | deny
   reason: "<human-readable — required for deny>"
   field_locks:                           # optional: lock specific fields as immutable
@@ -731,7 +731,7 @@ gatekeeper_output:
 **Policy Engine behavior:**
 - `allow` → request proceeds; field_locks applied to payload
 - `deny` → request blocked; `reason` included in consumer error response
-- Any active GateKeeper producing `deny` → request blocked (all must allow)
+- Any active Gating Policy producing `deny` → request blocked (all must allow)
 
 ---
 
@@ -807,7 +807,7 @@ recovery_output:
 Orchestration in DCM operates at two levels that compose through the same Policy Engine:
 
 - **Level 1 — Named Workflow Artifacts:** Orchestration Flow Policies with `ordered: true` declare an explicit, visible, auditable sequence of steps. Each step references a payload type from the closed vocabulary. This is what operators see and reason about. Adding a step = adding to a workflow Policy.
-- **Level 2 — Dynamic Policies:** GateKeeper, Transformation, Recovery, and Governance Matrix Policies fire when their conditions match, within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
+- **Level 2 — Dynamic Policies:** Gating Policy, Transformation, Recovery, and Governance Matrix Policies fire when their conditions match, within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
 
 The Request Orchestrator (event bus) routes all payload type events through the Policy Engine. Both named workflow steps and dynamic policies evaluate against the same events. The workflow provides the skeleton; dynamic policies fill in conditional behavior.
 
@@ -842,7 +842,7 @@ orchestration_flow_output:
 
 Custom steps extend this vocabulary by publishing new payload types.
 
-**Policy Engine behavior:** When `ordered: true`, steps execute in declared sequence. When `ordered: false`, the Policy Engine executes steps in parallel where no data dependencies exist. Orchestration Flow policies compose with standard GateKeeper and Transformation policies — both types evaluate in the same pipeline.
+**Policy Engine behavior:** When `ordered: true`, steps execute in declared sequence. When `ordered: false`, the Policy Engine executes steps in parallel where no data dependencies exist. Orchestration Flow policies compose with standard Gating Policy and Transformation policies — both types evaluate in the same pipeline.
 
 ---
 
@@ -1140,7 +1140,7 @@ policy_block_resolution:
   timeout_at: <ISO 8601>                     # how long the request stays in POLICY_BLOCKED before auto-cancel
 ```
 
-DCM builds the `compliant_values` guidance from the blocking policy's constraint output. If the sovereignty policy says `allowed_zones: [eu-west-1, eu-central-1]`, DCM includes those as the suggestion. If a GateKeeper says `max_cpu: 32` and the request asked for 64, DCM suggests values ≤ 32. For complex constraints (multi-policy interactions), DCM provides what it can determine and indicates when manual review is needed.
+DCM builds the `compliant_values` guidance from the blocking policy's constraint output. If the sovereignty policy says `allowed_zones: [eu-west-1, eu-central-1]`, DCM includes those as the suggestion. If a Gating Policy says `max_cpu: 32` and the request asked for 64, DCM suggests values ≤ 32. For complex constraints (multi-policy interactions), DCM provides what it can determine and indicates when manual review is needed.
 
 **Consumer actions via API:**
 
@@ -1308,9 +1308,9 @@ Policies compose through four mechanisms:
 
 **Domain precedence** (Section 4) — more-specific domains override less-specific:
 ```
-System policy (GateKeeper: cpu_count max 64)
-  └── Platform policy (GateKeeper: prod VMs require manager approval)
-        └── Tenant policy (GateKeeper: payments team max cpu_count 32)
+System policy (Gating Policy: cpu_count max 64)
+  └── Platform policy (Gating Policy: prod VMs require manager approval)
+        └── Tenant policy (Gating Policy: payments team max cpu_count 32)
               └── Resource-type policy (Transformation: inject monitoring)
 ```
 

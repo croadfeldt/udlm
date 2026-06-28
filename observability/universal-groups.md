@@ -473,12 +473,12 @@ Sovereignty interaction is group_class-specific:
 ```yaml
 # Policy restricting cross-sovereignty resource group membership
 policy:
-  type: gatekeeper
+  type: gating
   rule: >
     If group.group_class == resource_grouping
     AND member.classification_level IN [confidential, restricted]
     AND member.sovereignty_zone != group.primary_sovereignty_zone
-    THEN gatekeep: "Classified resources cannot join cross-sovereignty resource groups"
+    THEN gate: "Classified resources cannot join cross-sovereignty resource groups"
 ```
 
 ### 9.3 Tenant Decommission Lifecycle (Q37)

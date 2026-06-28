@@ -122,7 +122,7 @@ Every request flows through these stages in order:
 
 | Rule ID | Invariant | Test |
 |---------|-----------|------|
-| EVAL-001 | GateKeeper DENY blocks the request regardless of other policies | One ALLOW + one DENY → request blocked |
+| EVAL-001 | Gating Policy DENY blocks the request regardless of other policies | One ALLOW + one DENY → request blocked |
 | EVAL-002 | Domain precedence: more-specific domain wins at same concern | System allows, tenant denies → denied for that tenant |
 | EVAL-003 | Hard enforcement cannot be relaxed by downstream rules | System hard DENY → tenant ALLOW does not relax |
 | EVAL-004 | Multi-pass convergence: max 3 passes then fail | Create irreconcilable constraints → verify failure after 3 passes |
@@ -163,7 +163,7 @@ Every request flows through these stages in order:
 | Rule ID | Invariant | Test |
 |---------|-----------|------|
 | LSCOPE-001 | Policy with `lifecycle_scope: [initial_provisioning]` does not fire on update | Provision VM → update memory → verify policy fired on first, not second |
-| LSCOPE-002 | fsi/sovereign cannot downgrade GateKeeper lifecycle scope below `all` | Create GateKeeper with scope `[initial_provisioning]` in sovereign profile → rejected |
+| LSCOPE-002 | fsi/sovereign cannot downgrade Gating Policy lifecycle scope below `all` | Create Gating Policy with scope `[initial_provisioning]` in sovereign profile → rejected |
 | LSCOPE-003 | `changed_field_filter` is ignored for non-update operations | Initial provisioning with filter → filter ignored, policy fires |
 | LSCOPE-004 | Default lifecycle scopes apply when not explicitly declared | Transformation policy with no scope → fires on `initial_provisioning` and `rehydration`, not on `scale` |
 
@@ -387,7 +387,7 @@ dcm_architecture:
     - compliance_rescan
 
   policy:
-    types: [gatekeeper, validation, transformation, recovery, orchestration_flow, governance_matrix_rule, lifecycle, itsm_action]
+    types: [gating, validation, transformation, recovery, orchestration_flow, governance_matrix_rule, lifecycle, itsm_action]
     evaluation_modes: [internal, external]
     match_sources: [request_payload, operation_context, evaluation_context, entity_metadata]
     max_evaluation_passes: 3

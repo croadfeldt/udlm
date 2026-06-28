@@ -168,7 +168,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 
 | Policy Type | Fires on | Output |
 |-------------|---------|--------|
-| **GateKeeper** | Request payload | `allow` or `deny` with reason |
+| **Gating Policy** | Request payload | `allow` or `deny` with reason |
 | **Validation** | Request payload | `pass` or `fail` with field-level details |
 | **Transformation** | Request payload | `mutations[]` — field additions, changes, locks |
 | **Recovery** | Failure/timeout trigger condition | `action` + parameters (DRIFT_RECONCILE, DISCARD_AND_REQUEUE, etc.) |
@@ -185,7 +185,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 An Orchestration Flow Policy with `concern_type: orchestration_flow` and `ordered: true` is a named workflow. It declares steps in explicit sequence. Named workflows are first-class Data artifacts — versioned, GitOps-managed, profile-bound. Adding an explicit pipeline step = adding a step to a workflow Policy artifact.
 
 *Level 2 — Dynamic Policies (conditional, inline):*
-GateKeeper, Transformation, Recovery, and Governance Matrix Policies fire when their match conditions are satisfied — within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
+Gating Policy, Transformation, Recovery, and Governance Matrix Policies fire when their match conditions are satisfied — within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
 
 Both levels are evaluated by the same Policy Engine and triggered through the same Request Orchestrator event bus. They compose naturally: a named workflow provides the sequence skeleton; dynamic policies provide conditional behavior within it.
 
