@@ -132,7 +132,7 @@ audit_record:
     evaluation_detail:
       policy_uuid: <uuid>
       policy_version: <version>
-      outcome: <pass|fail|warn|gatekeep|implicit_approval>
+      outcome: <pass|fail|warn|gate|implicit_approval>
       placement_phase: <pre|loop|post>
       missing_fields: [<field paths if implicit_approval>]
 
@@ -455,7 +455,7 @@ audit_leaf:
   stage: intent_submitted | layer_applied | policy_evaluated | constraint_resolved |
          placement_scored | dispatched | provider_callback | ...
   source: "<handle>"                        # which layer, policy, or service
-  source_type: actor | layer_merge | policy_gatekeeper | policy_transformation |
+  source_type: actor | layer_merge | policy_gating | policy_transformation |
                policy_validation | constraint_resolution | placement | dispatch |
                provider_callback | system
   action: <closed vocabulary>               # from Section 4

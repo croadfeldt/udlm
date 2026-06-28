@@ -67,7 +67,7 @@ field_name:
         previous_value: <value before>
         modified_value: <value after>
         source_uuid: <uuid of modifying entity>
-        operation_type: <enrichment|transformation|gatekeeping|lock|grant|rehydration>
+        operation_type: <enrichment|transformation|gating|lock|grant|rehydration>
         actor_uuid: <uuid of actor that caused this modification>
         timestamp: <ISO 8601>
         reason: <human-readable>
@@ -98,7 +98,7 @@ Transformation Policy enriches to AES-256
   modification: {source_uuid: policy-uuid-001, operation: transformation,
                  reason: "Security standard requires AES-256 minimum"}
 
-GateKeeper Policy locks as immutable
+Gating Policy locks as immutable
   modification: {source_uuid: policy-uuid-002, operation: lock,
                  reason: "CISO mandate — encryption standard non-negotiable"}
 
@@ -386,7 +386,7 @@ audit_replication:
   live_sync:                        # Regional DCMs with Hub connectivity
     direction: regional_to_hub      # Regional pushes aggregated view to Hub
     filters:
-      include: [SECURITY, GATEKEEPER_TRIGGERED, SOVEREIGNTY_VIOLATION]
+      include: [SECURITY, GATING_TRIGGERED, SOVEREIGNTY_VIOLATION]
     sovereignty_check: required     # before any replication
 
   signed_bundle:                    # Sovereign DCMs
@@ -410,7 +410,7 @@ default_observability_dashboard:
   pre_built_dashboards:
     - dcm_overview              # request throughput, error rates, component health
     - resource_lifecycle        # entity state transitions, rehydration activity
-    - policy_evaluation         # GateKeeper triggers, shadow results, validation failures
+    - policy_evaluation         # Gating Policy triggers, shadow results, validation failures
     - provider_health           # provider availability, capacity confidence, trust scores
     - audit_integrity           # hash chain status, pending forwards, chain breaks
     - federation_status         # federation tunnel health, cross-DCM traffic

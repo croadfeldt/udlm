@@ -316,7 +316,7 @@ Cross-tenant authorizations are created by:
 |-------|-----------|------|
 | Granting Tenant Admin | Explicit manual grant via Admin API | Normal cross-tenant sharing setup |
 | Platform Admin | Emergency authorization | Operational incident; requires dual approval in fsi/sovereign |
-| Policy (pre-authorization) | GateKeeper policy auto-creates authorization | Pre-approved sharing patterns |
+| Policy (pre-authorization) | Gating policy auto-creates authorization | Pre-approved sharing patterns |
 
 ```yaml
 cross_tenant_authorization:
