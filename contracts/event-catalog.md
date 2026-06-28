@@ -103,7 +103,7 @@ links:
 | `request.dependencies_resolved` | info | Constituent dependencies resolved (composite service) |
 | `request.realized` | medium | Provider confirmed realization; Realized State written |
 | `request.failed` | high | Request failed at any stage |
-| `request.gatekeeper_rejected` | high | GateKeeper policy denied the request |
+| `request.gating_rejected` | high | Gating policy denied the request |
 | `request.cancelled` | low | Consumer cancelled; pipeline terminated |
 | `request.progress_updated` | info | Provider sent interim progress update; constituent_status updated |
 
@@ -126,7 +126,7 @@ payload:
   risk_score: <0-100>                # present after policies_evaluated
   routing_tier: auto | reviewed | verified | authorized | <custom>
   score_drivers:                     # top contributing signals
-    - signal: operational_gatekeeper
+    - signal: operational_gating
       contribution: 12
 ```
 
@@ -154,7 +154,7 @@ payload:
   composite_status: <string | null>  # for composite requests
 ```
 
-#### `request.gatekeeper_rejected`
+#### `request.gating_rejected`
 ```yaml
 payload:
   request_uuid: <uuid>
@@ -390,8 +390,8 @@ payload:
 payload:
   policy_uuid: <uuid>
   policy_handle: <string>
-  policy_type: gatekeeper | validation | transformation | recovery | orchestration_flow
-  enforcement_class: compliance | operational    # for gatekeeper
+  policy_type: gating | validation | transformation | recovery | orchestration_flow
+  enforcement_class: compliance | operational    # for gating
   shadow_period_days: <int>
   approved_by: <actor_uuid>
 ```
@@ -892,7 +892,7 @@ request.submitted          request.intent_captured      request.layers_assembled
 request.policies_evaluated request.requires_approval    request.approved
 request.placement_complete request.dispatched            request.compound_assembled
 request.dependencies_resolved  request.realized          request.failed
-request.gatekeeper_rejected    request.cancelled
+request.gating_rejected    request.cancelled
 
 entity.realized            entity.state_changed         entity.modified
 entity.ttl_warning         entity.ttl_expired           entity.suspended

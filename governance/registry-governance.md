@@ -56,7 +56,7 @@ The three-tier registry model applies to all UDLM artifact types, not just resou
 - `organization/provider` — authored by registered Service Providers; scoped to their resource types
 - `organization/tenant` — authored by Consumer/Tenant actors; scoped to their Tenant
 
-This means a tenant-authored GateKeeper policy is Organization/Tenant tier — it has lower inherent trust than a platform-authored policy at the same domain level, and may require additional review per the active profile. See [Federated Contribution Model](federated-contribution-model.md).
+This means a tenant-authored Gating policy is Organization/Tenant tier — it has lower inherent trust than a platform-authored policy at the same domain level, and may require additional review per the active profile. See [Federated Contribution Model](federated-contribution-model.md).
 
 ### 2.2 The Federated Registry Model
 
@@ -292,7 +292,7 @@ Organizations use standard policy priority to customize deprecation behavior:
 policy:
   domain: platform
   priority: 600.0.0
-  type: gatekeeper
+  type: gating
   rule: >
     If registry.deprecation.tier == tier_2
     THEN override: sunset_period = P12M

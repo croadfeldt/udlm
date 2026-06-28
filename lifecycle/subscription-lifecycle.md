@@ -234,7 +234,7 @@ ACTIVE ───────────── Ongoing — provider fulfills sub
 Every state transition fires a subscription lifecycle event (see Section 7) and triggers Policy Engine evaluation. Policies govern:
 
 - Whether auto-renewal is permitted for this tenant/tier/resource type
-- Whether tier upgrades require approval (GateKeeper)
+- Whether tier upgrades require approval (Gating Policy)
 - Whether downgrades trigger capacity validation (Validation)
 - What happens to managed entities on suspension (Lifecycle Policy)
 - Cost attribution changes on tier change (Transformation)
@@ -263,7 +263,7 @@ DCM validates: Is this entity managed by an active subscription?
     │         Is this update channel auto_apply for this subscription?
     │         │
     │         ├── Auto-apply enabled → Pre-authorized update flow
-    │         │   → Policy Engine evaluates (pre-authorization GateKeeper)
+    │         │   → Policy Engine evaluates (pre-authorization Gating Policy)
     │         │   → If within declared bounds → write Realized State snapshot
     │         │   → Audit record: source_type = subscription_update
     │         │   → Events: entity.modified, subscription.update_applied
@@ -291,7 +291,7 @@ update_channels:
     preview_period: "P7D"      # Consumer gets 7 days to review before deadline
 ```
 
-The GateKeeper policy that evaluates pre-authorization checks:
+The Gating policy that evaluates pre-authorization checks:
 
 1. Is the update from a registered provider with an active subscription?
 2. Is the update channel declared in the subscription's `update_channels`?
@@ -318,7 +318,7 @@ These obligations are enforced by the existing Provider Contract mechanisms — 
 
 ## 6. Subscription Request Pipeline
 
-A subscription request follows the standard DCM request pipeline with subscription-specific Transformation and GateKeeper policies:
+A subscription request follows the standard DCM request pipeline with subscription-specific Transformation and Gating policies:
 
 ### 6.1 Consumer Submits Subscription Request
 
@@ -369,7 +369,7 @@ Layer Assembly (Request Processor)
     ▼
 Policy Evaluation
     │  ── Validation: tier exists, entitlements valid, resource limits within tier
-    │  ── GateKeeper: tenant authorized for subscription model, budget approval
+    │  ── Gating Policy: tenant authorized for subscription model, budget approval
     │  ── Transformation: inject subscription_uuid, terms, renewal schedule
     │  ── Scoring: aggregate risk score for approval routing
     ▼
@@ -419,7 +419,7 @@ All subscription events use the standard DCM event envelope (doc 33) and are pub
 
 Subscriptions are governed by the same Policy Engine as all other DCM operations. No new policy types are needed — existing types apply:
 
-### 8.1 GateKeeper Policies
+### 8.1 Gating Policies
 
 - **Subscription authorization:** Which tenants/groups can use subscription consumption model
 - **Tier authorization:** Which tiers are available to which tenants (e.g., "premium" requires FSI profile)

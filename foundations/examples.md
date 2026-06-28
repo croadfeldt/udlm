@@ -109,12 +109,12 @@ layers/
 
 policies/
 ├── system/
-│   ├── gatekeeper/
+│   ├── gating/
 │   │   └── vm-size-limits.yaml
 │   └── transformation/
 │       └── inject-monitoring.yaml
 └── {tenant-uuid}/
-    └── gatekeeper/
+    └── gating/
         └── approved-os-images.yaml
 ```
 
@@ -153,7 +153,7 @@ spec:
 ```
 
 **Pre-assembly checks (substrate vocabulary):**
-- Policy pre-validation: no GateKeeper violations detected (4 CPU is within AppTeam's quota)
+- Policy pre-validation: no Gating Policy violations detected (4 CPU is within AppTeam's quota)
 - Cost estimation: ~$0.32/hour based on current provider rates
 - Dependency check: no dependencies declared — clean
 - Sovereignty check: AppTeam's Tenant has `data_residency: EU-WEST` — placement must honor this
@@ -215,7 +215,7 @@ backup_policy:
 **Policy Evaluation:**
 
 ```yaml
-# GateKeeper policy: vm-size-limits evaluates
+# Gating policy: vm-size-limits evaluates
 # Result: APPROVED (4 CPU within AppTeam's 16 CPU limit)
 
 # Transformation policy: inject-monitoring evaluates
@@ -231,7 +231,7 @@ monitoring_endpoint:
       operation_type: enrichment
       reason: "Standard monitoring endpoint for EU-WEST production resources"
 
-# GateKeeper policy: approved-os-images evaluates (AppTeam's tenant policy)
+# Gating policy: approved-os-images evaluates (AppTeam's tenant policy)
 # Result: APPROVED (rhel is in AppTeam's approved images list)
 ```
 

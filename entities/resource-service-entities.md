@@ -477,7 +477,7 @@ Categories of provider updates can be pre-authorized through policy, eliminating
 
 ```yaml
 policy:
-  type: gatekeeper
+  type: gating
   handle: "tenant/payments/allow-auto-scale"
   rules:
     - condition:
@@ -514,7 +514,7 @@ This pre-authorization pattern allows providers to implement auto-scaling, auto-
 |--------|------|
 | `RSE-010` | Realized State only changes via an authorized request that produces a corresponding Requested State record. Drift detection, discovery cycles, and lifecycle events do not write to the Realized Store. |
 | `RSE-011` | Provider Update Notifications are evaluated by the Policy Engine before any Realized State change. Rejected notifications do not update Realized State — the discrepancy becomes drift. |
-| `RSE-012` | Categories of provider updates may be pre-authorized via GateKeeper policy. Pre-authorized updates are processed automatically without per-change human approval. |
+| `RSE-012` | Categories of provider updates may be pre-authorized via Gating policy. Pre-authorized updates are processed automatically without per-change human approval. |
 | `RSE-013` | Provider Update Notifications that require consumer approval place the entity in PENDING_REVIEW state. The provider receives a "pending_approval" response and the change is queued until resolution. |
 
 ---
@@ -604,7 +604,7 @@ The following are **non-overridable UDLM substrate policies** that apply to all 
 
 **Lifecycle time constraints** declare when a resource should cease to exist or trigger a lifecycle action. They are a first-class field on any resource entity — governed, provenance-tracked, and subject to the standard override control model.
 
-Any source in the data model precedence chain can declare a time constraint: a consumer request, a Core Layer, a Service Layer, or a policy. The Policy Engine has full authority over constraints — a GateKeeper can lock a TTL immutable or set `immutable_ceiling: absolute` on an expiry date.
+Any source in the data model precedence chain can declare a time constraint: a consumer request, a Core Layer, a Service Layer, or a policy. The Policy Engine has full authority over constraints — a Gating Policy can lock a TTL immutable or set `immutable_ceiling: absolute` on an expiry date.
 
 ### 9a.2 Constraint Structure
 
@@ -644,7 +644,7 @@ Base Layer (lowest — e.g., no TTL by default)
   ↓  Service Layer (e.g., ephemeral compute: TTL 7 days)
   ↓  Request Layer (consumer declared)
   ↓  Transformation Policy (enrich from business context)
-  ↓  GateKeeper Policy (highest — may lock immutable)
+  ↓  Gating Policy (highest — may lock immutable)
 ```
 
 ### 9a.4 Expiry Enforcement Contract
@@ -656,7 +656,7 @@ The substrate requires that a conformant realization provide a Lifecycle Constra
 | Policy | Rule |
 |--------|------|
 | `LTC-001` | Lifecycle time constraints follow standard data model precedence. |
-| `LTC-002` | GateKeeper policies may lock lifecycle constraints as immutable. |
+| `LTC-002` | Gating policies may lock lifecycle constraints as immutable. |
 | `LTC-003` | Expiry enforcement is a substrate-required control plane function. |
 | `LTC-004` | When multiple time constraints exist, the earliest expiry wins. |
 | `LTC-005` | Failed expiry action execution triggers `PENDING_EXPIRY_ACTION` state and escalation. |
@@ -778,11 +778,11 @@ ownership_transfer_record:
 Policy-governed maximum when needed:
 ```yaml
 policy:
-  type: gatekeeper
+  type: gating
   rule: >
     If resource.ownership_transfer_count > 5
     AND resource_type == Compute.VirtualMachine
-    THEN gatekeep: "VM has exceeded 5 ownership transfers — manual review required"
+    THEN gate: "VM has exceeded 5 ownership transfers — manual review required"
 ```
 
 ---
