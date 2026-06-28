@@ -144,6 +144,20 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
   (e.g. a naming choice) may be `CANONICAL` without it, preserving compatibility with ordinary ADRs.
   Realization: `dav/docs/findings-resolution-design.md`; answers the "`depends_on` says *what* but not *why*"
   feedback by making the WHY a first-class, queryable record.
+- **Scope & scope-appropriate validation.** A record's anchor places it in one of three scopes (the
+  `Data · Policy · Provider` triad), and each reaches `CANONICAL` through *its own* mechanism — there is **no single
+  "validation runner"**; validation is the scope's existing machinery:
+  - **architecture-scoped** (an ADR; anchor = a foundational/architecture decision) → **use-case / conformance
+    validation**.
+  - **policy-scoped** (the *why* of a policy) → **Policy-Engine validation + Shadow Mode** (a `proposed` policy
+    evaluated against real traffic, never applied).
+  - **provider-scoped** (the *why* of a provider / capability adoption) → **attestation verification + conformance**.
+
+  This is **distinct from a *runtime* decision** (a policy firing, a placement / provider selection), which is
+  captured as **Audit + field-level provenance** ([Universal Audit](../observability/universal-audit.md)) — **not** a
+  DecisionRecord. A DecisionRecord is the deliberate *why* at **authoring time** (any scope); audit is *what
+  happened* at **runtime**. A consuming control plane (e.g. DCM) records its architecture decisions *as*
+  architecture-scoped DecisionRecords (its ADRs) per this definition rather than maintaining a parallel form.
 
 > **Fit with the UDLM model (coherence).** The ADR/DR sits cleanly on the substrate: it is `Data` (Knowledge),
 > never a Provider/Policy (it may be *about* one); ADR's "supersede, don't edit" **is** UDLM immutability +
