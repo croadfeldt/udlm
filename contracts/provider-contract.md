@@ -32,6 +32,10 @@ Every Provider in DCM — regardless of type — implements a single base contra
 
 **Adding a new provider type** = implement the base contract + define a capability extension. No changes to the core required.
 
+**Transport.** The contract is **HTTP/REST + JSON** (AEP-conformant). REST is the floor every provider can meet — it keeps the barrier to implementing a provider in any language low and matches the rest of the API surface. The contract is deliberately transport-shaped (operations + typed request/response schemas), so a **gRPC binding can be added post-1.0** if provider demand warrants it; it is not in v1. gRPC is a later projection of the same operations, not a parallel contract.
+
+**The boundary.** Throughout this document "the boundary" is the **trust boundary between DCM and an external provider** — the point where an assembled payload leaves DCM's control (outbound) or a provider result enters it (inbound). The Governance Matrix (§4) is evaluated at *every* crossing of this boundary because that is precisely where data leaves DCM's governance.
+
 ---
 
 ## 2. Base Contract — Registration
@@ -68,10 +72,33 @@ provider_base_registration:
 
   # Zero trust identity
   certificate:
-    pem: <provider-certificate>
-    ca_chain: <ca-chain>
-    rotation_interval: P90D
+    pem: <provider-certificate>          # provider's mTLS leaf cert (PEM)
+    ca_chain: <ca-chain>                 # issuing chain DCM pins for this provider
+    rotation_interval: P90D              # max age before DCM expects a rotated cert;
+                                         # a cert older than this is flagged at health check
+
+  # Trust posture — how much DCM trusts this provider's self-declarations (DCM ADR-022).
+  # Set by attestation verification at registration, not by the provider's own claim.
+  trust_posture: verified | vouched | provisional   # verified = attestation independently
+                                         # checked; vouched = attested by a trusted third
+                                         # party; provisional = self-asserted, capability-gated
+
+  # Declared network reachability — so onboarding a provider is a DECLARATION, not a
+  # manual firewall edit. DCM provisions the egress/ingress policy from this block; an
+  # operator never hand-edits per-provider firewall rules (resolves the per-provider
+  # firewall concern).
+  network_reachability:
+    egress:                              # destinations DCM must be allowed to reach
+      - host: "<provider-host>"
+        port: 443
+        protocol: https
+    ingress:                             # callbacks the provider makes back to DCM
+      - endpoint: lifecycle              # maps to the DCM lifecycle endpoint (§6)
+      - endpoint: telemetry              # telemetry delivery (§7)
+    provisioned_by: platform             # platform provisions policy from this declaration
 ```
+
+Field notes: `rotation_interval` is the maximum certificate age DCM tolerates before flagging; `trust_posture` is assigned by DCM's attestation verification (not accepted from the provider); `network_reachability` is consumed by the platform to provision connectivity so no per-provider manual firewall change is required.
 
 **Registration lifecycle states:**
 ```
@@ -126,6 +153,19 @@ Inbound interaction (Provider → DCM):
   4. Store in appropriate store per data_classification
 ```
 
+**Provider operations (closed vocabulary).** A provider exposes more than registration; credential scope (`scope.operations`, see [Credentials](../governance/credentials.md) §3) is checked against whichever operation is executing:
+
+| Operation | Direction | Endpoint(s) |
+|-----------|-----------|-------------|
+| `dispatch` | DCM → provider | `{dispatch_endpoint}` — realize/execute an assembled payload |
+| `discover` | DCM → provider | `{discover_endpoint}` — enumerate or query existing state |
+| `query` | DCM → provider | `{query_endpoint}`, `{capabilities_endpoint}` — read provider data/options |
+| `introspect` | DCM → provider | `{dependency_introspection_endpoint}` — observed dependency edges |
+| `lifecycle` | provider → DCM | `{dcm_lifecycle_endpoint}` — report a state change (§6) |
+| `telemetry` | provider → DCM | telemetry delivery (§7) |
+
+A credential issued for one operation cannot be used for another; a provider receiving an interaction whose scoped operation does not match the called endpoint MUST reject it (`403`).
+
 ---
 
 ## 5. Base Contract — Zero Trust
@@ -137,25 +177,31 @@ All provider interactions operate under the active zero trust posture. Minimum r
 - Every call authenticated; no implicit trust from network position or prior calls
 - Certificate rotation on declared interval
 
+**Why short-lived, scoped credentials** (not long-lived API keys): zero-standing-trust. Each dispatch presents a freshly issued credential scoped to that one operation and resource, so a leaked credential expires quickly and every use is attributable and audited. A long-lived shared key is standing liability — broad, slow to rotate, hard to attribute. Issuance and lifecycle of these credentials are specified in [Credentials](../governance/credentials.md) §4.2.
+
 Higher profiles add: certificate pinning, per-message signing, hardware attestation.
 
 ---
 
 ## 6. Base Contract — Provider Lifecycle Events
 
-Providers must report state changes via lifecycle events. This is a base contract obligation — not optional:
+Providers must report changes to the **lifecycle state of the realized resources they host** — drift from requested state, degradation, capacity events, or an unsanctioned out-of-band change — via lifecycle events. (This is why the base registration payload carries no `state` field: realized state is reported through this channel after realization, not declared at registration.) This is a base contract obligation — not optional:
 
 ```json
 POST {dcm_lifecycle_endpoint}
 {
   "event_uuid": "<uuid>",
-  "event_type": "<event_type>",
+  "event_type": "<event_type>",       // resource.drift_detected | resource.degraded |
+                                      // resource.capacity_changed | resource.unsanctioned_change |
+                                      // resource.decommissioned | provider.capability_changed
   "provider_uuid": "<uuid>",
   "affected_entity_uuids": ["<uuid>"],
   "event_timestamp": "<ISO 8601>",
   "severity": "INFO | WARNING | CRITICAL"
 }
 ```
+
+`event_type` draws from the substrate event vocabulary; the full schema for each type is in the [event catalog](event-catalog.md). DCM reconciles the reported state against the entity's requested state and drives drift/degradation handling from there.
 
 ---
 
@@ -184,8 +230,11 @@ contract; the choice is a deployment decision, not an architectural fork.
 The reference implementation of this component is being developed with an
 observability stack as its test bed.
 
-**Registration declaration:** providers declare their telemetry surface at
-registration alongside other capabilities:
+**Registration declaration (the telemetry descriptor):** providers declare
+their telemetry surface at registration alongside other capabilities. **DCM
+discovers what telemetry a provider can emit by reading this descriptor — it
+does not probe or guess.** The descriptor is the single source of truth for
+which signals exist, in what format, and where DCM configures delivery:
 
 ```yaml
 telemetry:
@@ -200,7 +249,11 @@ telemetry:
   events:
     supported: true                          # lifecycle events (Section 6) are
                                              # the minimum; richer streams declared here
-  per_resource_scoping: true                 # telemetry attributable to entity UUIDs
+  per_resource_scoping: true                 # signals carry entity UUID/handle labels so
+                                             # collection is attributable per resource
+  per_tenant_scoping: true                   # signals carry tenant scope (X-DCM-Tenant /
+                                             # tenant_uuid label) so collection + the
+                                             # dashboards/alerts built on it isolate per tenant
 ```
 
 **Obligations:**
@@ -229,19 +282,24 @@ this surface.
 ---
 
 
-## 8. Capability Extensions — Provider Types
+## 8. Capability Extensions — Provider Kinds and Capabilities
 
-DCM defines five provider types. Each shares the base contract (Section 1–7) and adds a typed capability extension declaring what the provider can do.
+Each provider shares the base contract (Section 1–7) and adds a typed capability extension declaring what it can do. Two things are distinguished here:
 
-### 7.1 Service Provider
+- **Provider kinds** — distinguished by *interaction shape* (what data flows in which direction, what operations exist): **Service/Resource Provider**, **Information Provider**, **Process Provider**, and **Peer DCM**. A Composite Service is *not* a kind — it is an ordinary Service Provider registering a multi-resource definition (§8.3).
+- **Provider capabilities** — *yields* a provider declares via resource types, independent of kind: **credential issuance** (`Credential.*`), **authentication** (the auth capability), **notification delivery** (`Notification.*`), **ITSM** (`ITSM.*`), and **telemetry** (§7). A capability is something a provider *yields*, not a separate kind of provider — any provider that declares the resource types and capability block exercises it. This is the reconciliation point with the Service/Resource taxonomy: name providers by what they *yield*, and treat credentials/auth/notifications as declared capabilities, not parallel provider kinds.
 
-**What it does:** Realizes infrastructure resources. Receives assembled payloads, provisions the resource, returns realized state. Service providers also cover credential management (Credential.* resource types via Vault or similar), notification delivery (Notification.* resource types), and ITSM integration (ITSM.* resource types) — these are service providers with specific resource type declarations, not separate provider types.
+### 8.1 Service / Resource Provider
+
+**What it does:** Realizes infrastructure resources. Receives assembled payloads, provisions the resource, returns realized state. The same kind also **yields** other capabilities by declaring their resource types: credential issuance (`Credential.*` — see [Credentials](../governance/credentials.md)), notification delivery (`Notification.*`), and ITSM integration (`ITSM.*`). These are **capabilities declared on a provider, not separate provider kinds** — a provider that declares `Credential.*` *is* a Credential Provider for those types.
 
 **Additional endpoints:**
 ```
 POST {dispatch_endpoint}                      # receive and execute dispatch payload
 POST {cancel_endpoint}                        # receive cancellation request (if supported)
-POST {discover_endpoint}                      # receive discovery request; return discovered state
+GET  {discover_endpoint}                      # parameterless full enumeration of discovered state
+POST {discover_endpoint}                      # filtered/scoped discovery — takes a query body
+                                              # (filters, scope, resource-type selectors)
 POST {dependency_introspection_endpoint}      # receive entity_uuid; return observed dependency
                                               # edges for that entity (see entities/
                                               # service-dependencies.md §3a)
@@ -285,7 +343,7 @@ service_provider_capabilities:
 
 ---
 
-### 7.2 Information Provider
+### 8.2 Information Provider
 
 **What it does:** Serves authoritative external data to enrich DCM's understanding of resources and business context.
 
@@ -313,7 +371,7 @@ information_provider_capabilities:
 
 ---
 
-### 7.3 Composite Service Definitions
+### 8.3 Composite Service Definitions
 
 > DCM treats composite payloads (multiple constituent resource types delivered as one catalog item) as Composite Services registered by ordinary Service Providers. There is no separate provider type for composition — a Service Provider that handles a multi-resource catalog item registers a Composite Service definition and fulfills the constituents it owns (those flagged `provided_by: self`). DCM handles expansion, placement of `external` constituents, dependency resolution, binding field injection, sequencing, and compensation. See doc 05 (Resource Type Hierarchy) and doc 30 (Composite Service Composition Model) for the full model.
 
@@ -354,20 +412,20 @@ composite_service_capabilities:
 
 ---
 
-### 7.4 Auth Provider
+### 8.4 Auth Capability
 
-**What it does:** Authenticates actor identities and resolves their roles and group memberships. Multiple auth providers can be registered — tenant routing determines which provider authenticates a given actor.
+**Authentication is a capability, not a provider kind** (parallel to credential issuance — see [Credentials](../governance/credentials.md) §1). A provider that authenticates actors declares the **auth capability**; DCM consumes it the same way it consumes any other yield. Multiple providers may declare it — tenant routing determines which authenticates a given actor. (DCM is itself a consumer of this capability for its own user auth; it does not have to *be* the authenticator — it brokers/consumes, see DCM `ADR-022`.)
 
-**Additional endpoints:**
+**Additional endpoints (a provider declaring the auth capability exposes):**
 ```
 POST {authenticate_endpoint}     # receive credentials; return auth token + claims
 POST {authorize_endpoint}        # receive token + operation; return allow/deny
 GET  {identity_endpoint}         # return actor claims for a token
 ```
 
-**Capability declaration extension:**
+**Capability declaration:**
 ```yaml
-auth_provider_capabilities:
+auth_capability:                 # declared on any provider; not a provider_type
   authentication_modes: [oidc, ldap, saml, mtls, hardware_token]
   mfa_methods: [totp, push_notification, hardware_token]
   rbac_model: flat | hierarchical | abac
@@ -379,11 +437,13 @@ auth_provider_capabilities:
   supports_session_revocation: true
 ```
 
-**Data direction:** Consumer sends credentials → Auth Provider validates → returns token + claims → DCM extracts actor identity.
+**Data direction:** Consumer sends credentials → the auth-capable provider validates → returns token + claims → DCM extracts actor identity.
+
+> **Credential capability.** Credential issuance is the sibling capability, declared via `Credential.*` + a `credential_capability` block (assurance + attestation level the realization selects against). Its full contract — issuance, rotation, revocation, declare-and-select, the broker model — lives in [Credentials](../governance/credentials.md). Like auth, it is a declared capability, not a provider kind; DCM brokers it and never holds the value (CPX-001).
 
 ---
 
-### 7.5 Peer DCM (Federation)
+### 8.5 Peer DCM (Federation)
 
 **What it does:** Another DCM instance participating in federation. Treated as a typed Provider with a federation tunnel as the communication channel.
 
@@ -408,7 +468,7 @@ peer_dcm_capabilities:
 
 ---
 
-### 7.6 Process Provider
+### 8.6 Process Provider
 
 **What it does:** Executes ephemeral workflows to completion. Unlike service providers that manage persistent resource lifecycle (create → operate → decommission), process providers execute a job and report a result. No persistent resource is created — the entity type is `process_resource` which reaches a terminal state on completion.
 
@@ -456,6 +516,8 @@ provider_type_registry_entry:
 ```
 
 Profile-governed approval methods override provider type defaults. The complete approval method resolution model is implementation-specific (see DCM repo).
+
+The registry lists the **provider kinds** (interaction shapes: `service_provider`/resource, `information_provider`, `process_provider`, `peer_dcm`). It does **not** list capabilities — auth, credential issuance, notification, ITSM, and telemetry are **yields declared on a provider** via its resource types and capability blocks, verified at registration (PRV-003), not separate registry entries. There is no `auth_provider` or `credential_provider` kind.
 
 ---
 
