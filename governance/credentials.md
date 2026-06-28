@@ -16,6 +16,22 @@
 
 ## 1. Credential Scope
 
+> **The realization brokers credentials; it does not hold or issue them.**
+> Credential **values** are produced and held by a registered Credential Provider and flow **directly** to the
+> authorized consumer (CPX-001) — the realization (DCM) never sees, stores, or relays a value. The realization's
+> role is to **select** a provider, **scope** the request, **gate** on attestation, and **audit** — the same
+> declare → select → attest pattern the Placement Engine uses for any resource. A request **declares** what it
+> needs (credential type, scope, assurance); each candidate provider **declares** what it can issue and to what
+> assurance level (its credential capability); the realization **selects** the provider that meets the profile's
+> trust floor. This is the credential expression of the DCM Trust Model (DCM `ADR-022`): DCM is a trust **broker**,
+> not a credential authority. See the DCM trust documents for the cross-plane model; this document specifies the
+> UDLM substrate contract — the data model, lifecycle, and provider interface — that the brokering rests on.
+>
+> **"Credential Provider" is a capability, not a separate provider kind.** Any provider that declares the
+> credential-issuing capability — `Credential.*` in `supported_resource_types` plus a `credential_capability`
+> block — *is* a Credential Provider for those types. There is no distinct `credential_provider` provider type to
+> register; see [Provider Contract](../contracts/provider-contract.md).
+
 UDLM distinguishes two scopes of credential management. Both share the same data model, lifecycle vocabulary, and substrate contracts.
 
 ### 1.1 Realization-Internal Credentials
@@ -28,22 +44,31 @@ The realization maintains its own operational secrets — provider authenticatio
 
 ### 1.2 Consumer-Facing Credentials
 
-When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a registered Credential Provider through the standard provider dispatch pipeline. A `service_provider` (or specialized `credential_provider`) that declares `Credential.*` in its `supported_resource_types` handles such requests.
+When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a provider that declares the **credential capability** — `Credential.*` in `supported_resource_types` plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the realization **selects against** (declare-and-select): it states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing — so the realization can pick a provider that satisfies the active profile's trust floor.
 
 ```yaml
 provider:
-  provider_type: service_provider
+  # No special provider_type — credential issuance is a declared capability, not a kind.
   supported_resource_types:
     - "Credential.Secret"
     - "Credential.Certificate"
     - "Credential.SSHKey"
     - "Credential.APIKey"
-  capability_extension:
+  credential_capability:
+    credential_types: [secret, x509_certificate, ssh_key, api_key]
+    max_assurance: aal3            # highest AAL this provider can satisfy (NIST 800-63B; §12.2)
+    attestation:                   # what the provider can attest about how values are protected
+      level: hardware_attested     # self_asserted | vendor_attested | independently_verified | accredited | hardware_attested
+      secret_engine: local_hsm     # vault | aws_secrets_manager | azure_key_vault | gcp_secret_manager | local_hsm
+      fips_140_level: 3
     hsm_support: true
     rotation_protocol: automatic
+    dynamic_secrets: true
     max_secret_size_bytes: 65536
     supported_algorithms: [rsa-2048, rsa-4096, ecdsa-p256, ecdsa-p384, ed25519]
 ```
+
+The realization **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see DCM `ADR-022`, attestation ladder).
 
 ---
 
@@ -120,7 +145,9 @@ credential_record:
 
 Credential values are never stored in the realization's data model, artifact stores, or Realized State Store. The realization stores only the credential metadata record. The credential value is held exclusively by the Credential Provider.
 
-Authorized consumers retrieve the credential value via `value_retrieval_endpoint` using `value_retrieval_auth`. This retrieval is itself authenticated — typically with a short-lived bearer token or mTLS — and is audited.
+**`scope.resource_types` is not a read-grant.** It records which resource *types* a credential is valid *for* (e.g. a credential usable when acting on `Compute.VirtualMachine`) — it does **not** mean every resource of that type can read the value. Reading a value is a separate, per-credential authenticated and authorized act (next paragraph): the requester must be the credential's `issued_to` actor/entity, satisfy `value_retrieval_auth`, and pass the Governance Matrix. Scope narrows what a credential *authorizes*; it never widens who can *retrieve* it.
+
+Authorized consumers retrieve the credential value via `value_retrieval_endpoint` — which resolves to the **registered Credential Provider that holds the value**, not a realization-core endpoint (the value flows producer → consumer directly; the realization is never on the value path, CPX-001). Retrieval uses `value_retrieval_auth`, is itself authenticated — typically a short-lived bearer token or mTLS — and is audited.
 
 ---
 
@@ -142,22 +169,28 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 ### 4.1 Issuance Flow Contract
 
-Resource-credential issuance flows through the standard provider dispatch pipeline:
+A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../entities/entity-relationships.md)): the dependent declares a `requires` edge to a `Credential.*` resource type, and Dependency Resolution issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
+
+> **Worked example (grounds the use case).** A consumer requests `Compute.VirtualMachine`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the realization — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the realization **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). DCM never issues a credential.
 
 ```
 Consumer requests resource (e.g., Compute.VirtualMachine)
   │
   ▼ Layer assembly + policy evaluation
-  │   Transformation policy may inject credential requirements:
-  │     fields.credential_requirements:
-  │       - credential_type: ssh_key
+  │   Dependency Resolution reads the type's `requires` edges, e.g.:
+  │     requires:
+  │       - resource_type: Credential.SSHKey   # ordinary dependency, not a special field
   │         issued_to: requesting_actor
   │         scope: [ssh_access]
   │
-  ▼ Placement selects Service Provider for the VM
+  ▼ Placement selects the Service Provider for the VM
   │
-  ▼ After VM realization: Credential Provider dispatched
-  │   Sub-request to Credential Provider:
+  ▼ After VM realization: credential sub-request placed against
+  │   providers declaring the Credential.SSHKey capability
+  │   Placement filters on credential_capability (type + assurance +
+  │   attestation level ≥ profile trust floor), then scores + selects
+  │
+  ▼ Selected Credential Provider receives the sub-request:
   │     entity_uuid: <vm_entity_uuid>
   │     credential_type: ssh_key
   │     issued_to.actor_uuid: <requesting_actor_uuid>
@@ -166,19 +199,19 @@ Consumer requests resource (e.g., Compute.VirtualMachine)
   │     expires_at: <now + profile_lifetime>
   │
   ▼ Credential Provider issues credential; returns credential_record
-  │   (value held by provider; metadata returned to the realization)
+  │   (value held by provider; only metadata returned to the realization)
   │
   ▼ The realization writes credential_record to Realized State
-  │   Links credential_uuid to entity_uuid
+  │   Links credential_uuid to entity_uuid (the dependency edge)
   │
   ▼ Consumer receives realized entity + credential_record metadata
-  │   Consumer calls value_retrieval_endpoint to get actual credential
+  │   Consumer calls value_retrieval_endpoint (the provider's) to get the value
   │   (step-up MFA may be required per profile)
 ```
 
 ### 4.2 Interaction Credential Issuance Flow
 
-Interaction credentials are issued automatically before each provider interaction:
+Interaction credentials carry the **same zero-standing-trust rationale** as every other dispatch in the system (see [Provider Contract](../contracts/provider-contract.md) §provider auth): each interaction presents a freshly issued, narrowly scoped, short-lived credential rather than a long-lived shared key, so a leaked credential expires fast and every use is attributable and audited. They are issued automatically before each provider interaction:
 
 ```
 The realization prepares to dispatch to a provider
@@ -203,7 +236,22 @@ The realization prepares to dispatch to a provider
 
 ### 4.3 Bootstrap Credential Issuance
 
-During bootstrap, before the Credential Provider is registered, the realization uses a bootstrap credential mechanism. After bootstrap, all credentials are issued through a registered Credential Provider.
+Credential issuance has a chicken-and-egg problem: the realization needs a credential to talk to the first Credential Provider, but a Credential Provider cannot have issued it yet. The substrate resolves this with a one-time **bootstrap credential** — a short-lived, single-purpose anchor (a kubeadm/SPIRE-style bootstrap token or a pre-placed mTLS identity; the anchor type is profile-governed) whose **only** authorized scope is registering and authenticating to the first Credential Provider. The handoff is explicit and one-way:
+
+```
+Bootstrap anchor present (out-of-band; single-purpose; short TTL)
+  │
+  ▼ Realization registers + authenticates to the first Credential Provider
+  │   using the bootstrap credential (its only permitted use)
+  │
+  ▼ Provider registered → realization requests its real interaction credential
+  │   from the now-registered Credential Provider
+  │
+  ▼ Bootstrap credential revoked/expired (no further use)
+  │   From here, ALL credentials flow through registered Credential Providers
+```
+
+After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the DCM Trust Model sense (DCM `ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
 
 ---
 
@@ -554,8 +602,16 @@ Response 200:
 
 ## 9. Credential Provider Registration (Wire Contract)
 
+This is the full `credential_capability` declaration a provider registers (the summary form appears in §1.2). It is a **capability block on an ordinary provider**, not a distinct provider kind — `max_assurance` and `attestation` are what the realization selects against (declare-and-select; §4.1).
+
 ```yaml
-credential_provider_capabilities:
+credential_capability:        # declared on any provider that issues Credential.* types
+  # Highest assurance + attestation this provider can satisfy (the select-against fields)
+  max_assurance: aal3         # NIST 800-63B AAL (§12.2)
+  attestation:
+    level: hardware_attested  # self_asserted | vendor_attested | independently_verified | accredited | hardware_attested
+    fips_140_level: 3
+
   # Credential types this provider can issue
   credential_types:
     - api_key
@@ -652,7 +708,7 @@ HSM backing is required for `sovereign` profile signing keys.
 UDLM does not mandate key escrow. For `sovereign` profile deployments where key escrow is required by regulation, the Credential Provider declares escrow capability in its registration:
 
 ```yaml
-credential_provider_capabilities:
+credential_capability:
   key_escrow:
     supported: false           # default; no escrow
     # If true:
@@ -894,8 +950,9 @@ UDLM's Credential Provider model natively supports external Certificate Authorit
 
 ```yaml
 credential_provider_registration:
-  provider_type: credential_provider
-  credential_types: [x509_certificate]
+  # credential issuance is a declared capability, not a provider_type
+  credential_capability:
+    credential_types: [x509_certificate]
 
   external_ca_config:
     ca_protocol: acme | est | scep | cmp | vault_pki | aws_acm_pca | azure_key_vault
