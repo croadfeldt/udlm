@@ -34,6 +34,8 @@ The layering model enables:
 - **Scale** — 36 layer definitions can govern 40,000 VMs without duplication
 - **Auditability** — every field in the merged payload knows which layer set it and why
 
+> **At a glance (TL;DR).** A request payload is **merged from ordered layers**, lowest-authority first: *standards/core* → *organizational context* → *service/catalog* → *consumer request*, with *policy layers* applied over the result. Higher layers override lower ones field-by-field, and **every field records which layer set it** (provenance). Layers carry **data** (the *what*); **policies** (next section) decide and transform (the *how/whether*) — not the same mechanism. If you read one thing: layers are how many small, reusable data definitions compose into one complete, provider-ready, fully-attributed payload without anyone hand-writing the whole thing. The rest of this document is the detailed contract for that merge — skim by heading and return for the specific layer or rule you need.
+
 ---
 
 ## 1a. Layers vs Policies — The Clear Distinction

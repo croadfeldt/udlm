@@ -104,7 +104,9 @@ Fit for purpose is not a fourth priority that can be traded against the first th
 
 ## Applying the Priorities — Decision Framework
 
-When facing a design decision where priorities seem to conflict, apply this sequence:
+The sequence below is **descriptive design rationale** — it records how the priority order resolves a conflict, so a reader can reconstruct *why* a decision went the way it did. It is not a runbook and not enforced by tooling: the concrete, testable thresholds a realization must meet live in [CONFORMANCE](../CONFORMANCE.md), and this document stays at the level of *principle*. Read the steps as "the priority order implies…", not as commands.
+
+When priorities seem to conflict, the resolution follows this order:
 
 ```
 1. Does this design decision compromise a non-negotiable security property?
