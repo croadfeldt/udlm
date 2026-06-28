@@ -118,7 +118,7 @@ The response shape is normative:
     },
     "policy_evaluation": {
       "description": "Policy-as-code evaluation on every request",
-      "policy_types": ["gatekeeper", "validation", "transformation", "recovery", "orchestration_flow", "governance_matrix"],
+      "policy_types": ["gating", "validation", "transformation", "recovery", "orchestration_flow", "governance_matrix"],
       "framework": "opa_rego",
       "api_endpoint": "/api/v1/admin/policies"
     },

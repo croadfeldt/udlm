@@ -85,7 +85,7 @@ At any point in the DCM pipeline, for any field in any data object, it must be p
   - What type of entity caused it? (policy, layer, component, provider)
   - When did each modification occur?
   - What was the value before each modification?
-  - Why was the modification made? (enrichment, validation, transformation, gatekeeping)
+  - Why was the modification made? (enrichment, validation, transformation, gating)
 - What is the complete chain of custody of this field from origin to current value?
 
 ### 4.2 Why Field-Level Lineage Matters
@@ -146,13 +146,13 @@ field_name:
         modified_value: <value after this modification>
         source_type: <policy|layer|component|provider>
         source_uuid: <uuid of modifying entity>
-        operation_type: <enrichment|transformation|validation|gatekeeping|override|lock|grant>
+        operation_type: <enrichment|transformation|validation|gating|override|lock|grant>
         actor: <actor type that performed this operation>
         timestamp: <ISO 8601 timestamp>
         reason: <human-readable description of why the change was made>
 ```
 
-**Note:** The `metadata` block is set exclusively by the Policy Engine. Data layers and the Request Payload Processor never set override control. `operation_type: lock` is used when a GateKeeper policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
+**Note:** The `metadata` block is set exclusively by the Policy Engine. Data layers and the Request Payload Processor never set override control. `operation_type: lock` is used when a Gating policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
 
 ### 4.5 Provenance Obligations
 
