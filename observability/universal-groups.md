@@ -473,7 +473,8 @@ Sovereignty interaction is group_class-specific:
 ```yaml
 # Policy restricting cross-sovereignty resource group membership
 policy:
-  type: gating
+  type: validation
+  enforcement_class: compliance
   rule: >
     If group.group_class == resource_grouping
     AND member.classification_level IN [confidential, restricted]

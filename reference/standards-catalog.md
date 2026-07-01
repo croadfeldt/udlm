@@ -169,7 +169,7 @@ UDLM is designed for CNCF ecosystem compatibility. The following CNCF projects a
 | Project | CNCF Status | UDLM Reference |
 |---------|------------|---------|
 | **Kubernetes** | Graduated | Deployment target; CRD-based realization integration; resource model inspiration |
-| **Open Policy Agent (OPA)** | Graduated | Policy engine backend option; Rego policies for UDLM Gating Policy and Validation policy types |
+| **Open Policy Agent (OPA)** | Graduated | Policy engine backend option; Rego policies for UDLM Validation policy types |
 | **Prometheus** | Graduated | Metrics exposition format; substrate scrape endpoint |
 | **OpenTelemetry** | Graduated | Distributed tracing; correlation ID propagation |
 | **Istio** | Graduated | Service mesh for internal mTLS; traffic policies |

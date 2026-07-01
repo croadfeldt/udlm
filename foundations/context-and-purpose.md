@@ -152,7 +152,7 @@ field_name:
         reason: <human-readable description of why the change was made>
 ```
 
-**Note:** The `metadata` block is set exclusively by the Policy Engine. Data layers and the Request Payload Processor never set override control. `operation_type: lock` is used when a Gating policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
+**Note:** The `metadata` block is set exclusively by the Policy Engine. Data layers and the Request Payload Processor never set override control. `operation_type: lock` is used when a compliance-class Validation Policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
 
 ### 4.5 Provenance Obligations
 

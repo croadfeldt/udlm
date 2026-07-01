@@ -273,8 +273,8 @@ Policy Engine — ALL governance policies applied
   │  Authorization policies: does this actor have permission to rehydrate?
   │  Transformation policies: current enrichment applied
   │  Validation policies: current constraints checked
-  │  Gating policies: current field locks applied
-  │  Gating policies: is this resource type still permitted?
+  │  Compliance-class Validation Policies: current field locks applied
+  │  Compliance-class Validation Policies: is this resource type still permitted?
   │
   │  Governance is NEVER skippable — not for any rehydration source,
   │  not for any actor, not for any urgency claim
@@ -332,7 +332,7 @@ rehydration_request:
     # pinned: apply policies as of a specific timestamp
     #   Use when: exact historical reproduction required
     #   (audit evidence, regulatory examination, environment reconstruction)
-    #   Requires elevated authorization — bypasses current Gating policies
+    #   Requires elevated authorization — bypasses current compliance-class Validation Policies
     #   Only SRE and Admin actors may use pinned policy version
 
     pinned_timestamp: <ISO 8601>
@@ -414,7 +414,7 @@ The placement flag model clarifies the Q54 question (selected_provider as policy
 
 **Policies set placement constraints — the placement component selects the provider.**
 
-A Gating policy may output: "must be in region EU-WEST, must support sovereignty capability PCI-DSS." The placement component reads these constraints and selects the specific provider within those constraints. The policy does not name the provider. The placement component names the provider.
+A compliance-class Validation Policy may output: "must be in region EU-WEST, must support sovereignty capability PCI-DSS." The placement component reads these constraints and selects the specific provider within those constraints. The policy does not name the provider. The placement component names the provider.
 
 This is consistent with the portability model — a policy that names a specific provider would be portability-breaking. Policies set constraints. Placement honors constraints and selects.
 

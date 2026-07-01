@@ -38,7 +38,7 @@ A Service Provider that registers a Composite Service operates as a standard Ser
 
 Every DCM design principle is preserved:
 - **Governance stays with DCM** — constituent provider selection goes through the Placement Engine, including sovereignty filtering, accreditation checking, and trust scoring
-- **Policy stays with DCM** — Gating Policy, Validation, and Transformation policies fire on the composite payload; the same policies govern each constituent sub-request
+- **Policy stays with DCM** — Validation and Transformation policies fire on the composite payload; the same policies govern each constituent sub-request
 - **Audit stays with DCM** — each constituent request is a standard DCM request with its own audit trail; the composite audit is assembled from constituent audit records
 - **Recovery stays with DCM** — the Recovery Policy handles constituent failures using the dependency graph; the Composite Service definition does not make recovery decisions
 
@@ -303,7 +303,7 @@ A Composite Service request flows through DCM's standard request pipeline with o
                 a provider. `self` constituents bind to the registering
                 provider.
 5. Policy       All standard policies fire against the composite payload:
-                Validation, Transformation, Gating Policy, Authorization. A
+                Validation, Transformation, Authorization. A
                 policy decision rejecting any constituent rejects the
                 composite.
 6. Dispatch     DCM walks the dependency graph in dependency-forward order.
