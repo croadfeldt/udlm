@@ -249,7 +249,7 @@ The relationship **nature** determines whether a cross-tenant relationship is pe
 
 ### 6b.2 Hard Tenancy Declaration
 
-Tenants declare their cross-tenant relationship policy. This is enforced by the Gating Policy Engine at request time:
+Tenants declare their cross-tenant relationship policy. This is enforced by the Validation Policy Engine at request time:
 
 ```yaml
 tenant:
@@ -460,7 +460,7 @@ This rule applies automatically and silently when the hierarchy resolves cleanly
 **Not all multi-recommendation scenarios are conflicts.** The hierarchy resolves most cases deterministically. A conflict worth surfacing occurs when:
 
 1. **Adjacent hierarchy levels** — two relationships recommend actions that are one step apart (e.g., `notify` vs `suspend`) — the hierarchy resolves it but the ambiguity is worth surfacing
-2. **An immutable lifecycle lock couldn't be honored** — a Gating Policy set `on_related_destroy: destroy` with `immutable_ceiling: absolute` but `retain` from another relationship won per REL-018
+2. **An immutable lifecycle lock couldn't be honored** — a compliance-class Validation Policy set `on_related_destroy: destroy` with `immutable_ceiling: absolute` but `retain` from another relationship won per REL-018
 3. **`notify` is the winning action** — inherently means human decision required; the notification should include the full conflict picture
 
 **Conflict severity:**
@@ -488,7 +488,7 @@ lifecycle_conflict_record:
     - relationship_uuid: <uuid>
       related_entity_uuid: <VM-B uuid>
       recommended_action: retain
-      source: gating_policy
+      source: validation_policy
       policy_uuid: <uuid>
     - relationship_uuid: <uuid>
       related_entity_uuid: <VM-C uuid>
@@ -887,8 +887,7 @@ Resource Type Specification default
   → Provider Catalog Item default
     → Consumer declaration at request time
       → Transformation Policy (may set override: constrained)
-        → Validation Policy (checks — no modification)
-          → Gating Policy (may set override: immutable)
+        → Validation Policy (checks — no modification; compliance-class may set override: immutable)
             → DCM System Policies REL-008, REL-009 (non-overridable)
 ```
 
@@ -909,7 +908,7 @@ lifecycle_policy:
     value: retain
     metadata:
       override: immutable
-      locked_by_policy_uuid: <uuid of Global Gating Policy>
+      locked_by_policy_uuid: <uuid of Global Validation Policy>
       locked_at_level: global
       basis_for_value: "Compliance mandate — storage must outlive VM for audit retention"
       immutable_ceiling: absolute

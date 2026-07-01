@@ -86,7 +86,7 @@ field_definition:
 
 ### 2.3 Classification Immutability
 
-Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by any layer or policy — their classification is immutable once set. A Gating policy attempting to downgrade a PHI field MUST be rejected with a classification violation audit record.
+Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by any layer or policy — their classification is immutable once set. A Validation policy attempting to downgrade a PHI field MUST be rejected with a classification violation audit record.
 
 ---
 

@@ -70,7 +70,7 @@ Submit request with schedule.dispatch: at
   │   schedule stored in Intent State
   │
   ▼ Policy evaluation at declaration time
-  │   Gating policies run immediately
+  │   Compliance-class Validation policies run immediately
   │   If rejected: request fails before entering queue
   │   If approved: request enters scheduled queue
   │
@@ -81,7 +81,7 @@ Submit request with schedule.dispatch: at
   │
   ▼ [at not_before time] → Policy re-evaluation at dispatch
   │   Transformation policies re-run (data may have changed)
-  │   Gating Policy re-evaluation with current data
+  │   Compliance-class Validation Policy re-evaluation with current data
   │   If still approved: proceed to LAYERS_ASSEMBLED → dispatch
   │   If rejected at dispatch time: FAILED with reason schedule_policy_rejection
   │
@@ -150,7 +150,7 @@ The realization MUST emit a `request.schedule_deadline_missed` event when a `not
 
 | Policy | Rule |
 |--------|------|
-| `SCH-001` | Scheduled requests undergo Gating policy evaluation at declaration time (to catch rejections early) and again at dispatch time (to validate against current state). Both evaluations must pass. |
+| `SCH-001` | Scheduled requests undergo compliance-class Validation policy evaluation at declaration time (to catch rejections early) and again at dispatch time (to validate against current state). Both evaluations must pass. |
 | `SCH-002` | The `not_before` field must be a future timestamp at submission time. The realization rejects scheduled requests with a past `not_before` (returns 422). |
 | `SCH-003` | Requests that fail dispatch-time policy re-evaluation enter FAILED state with `failure_reason: schedule_policy_rejection`. Consumers receive a `request.failed` event with the rejection detail. |
 | `SCH-004` | Scheduled requests are cancellable at any time before dispatch. Once the realization has accepted the dispatch handoff (status moves beyond SCHEDULED), cancellation follows the standard cancellation model. |

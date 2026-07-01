@@ -321,7 +321,7 @@ On detection of a compromise or security event, the realization MUST trigger eme
 - No transition window — old credential revoked immediately
 - New credential issued and delivered via the fastest available notification channel
 - Security event record written to Audit Store with full context
-- Compliance-class Gating Policy firing for this entity type audited against the event
+- Compliance-class Validation Policy firing for this entity type audited against the event
 - Platform admin notified regardless of profile
 
 Closed substrate vocabulary for emergency rotation triggers:
