@@ -83,7 +83,7 @@ Steps 5-9: POLICIES execute → payload evaluated and acted upon
   │  Policies read assembled payload
   │  Transformation: modify/inject derived fields
   │  Validation: verify correctness
-  │  Gating Policy: approve or reject
+  │  Validation Policy (compliance-class): approve or reject
   │
   ▼
 Provider-ready payload dispatched
@@ -426,7 +426,7 @@ type_scope:
 |-------------|----------|-------------------|
 | **Validation** | Checks data against rules. Does not modify data. Returns pass/fail. If fail, request is rejected. | No precedence — pass/fail only |
 | **Transformation** | Enriches or modifies data in the payload. Adds missing fields, applies standards, fills gaps. | Adds to or modifies the assembled payload — recorded in provenance |
-| **Gating Policy** | Highest authority. Can override any field regardless of what was declared in lower layers or the Request Layer. Can halt execution entirely. Used for sovereignty constraints, security mandates, and hard compliance rules. | Overrides everything — including consumer input |
+| **Validation Policy (compliance-class)** | Highest authority. Can override any field regardless of what was declared in lower layers or the Request Layer. Can halt execution entirely. Used for sovereignty constraints, security mandates, and hard compliance rules. | Overrides everything — including consumer input |
 
 **Characteristics:**
 - Policies operate only on the policy definition, core data, and the data in the request payload
@@ -1131,7 +1131,7 @@ When layers are merged to produce the assembled payload, fields from higher-prec
 5. Request Layer                 (consumer intent — overrides all data layers)
 6. Transformation Policies       (enrichment — adds or modifies fields)
 7. Validation Policies           (pass/fail — no field modification)
-8. Gating Policies           (highest authority — overrides everything)
+8. Validation Policies (compliance-class)  (highest authority — overrides everything)
 ```
 
 ### 5.1 Override Behavior
@@ -1139,7 +1139,7 @@ When layers are merged to produce the assembled payload, fields from higher-prec
 - A higher-precedence layer that declares a field **overrides** the value from all lower-precedence layers
 - A higher-precedence layer that does **not** declare a field leaves the lower-precedence value intact
 - Fields not declared at any layer level are absent from the payload — providers must declare all required fields as being covered by at least one layer in the chain
-- Gating policies can override **any** field including consumer-declared Request Layer values — this is the mechanism for enforcing sovereignty constraints, security mandates, and hard compliance rules
+- Compliance-class Validation Policies can override **any** field including consumer-declared Request Layer values — this is the mechanism for enforcing sovereignty constraints, security mandates, and hard compliance rules
 
 ### 5.2 Additive vs. Override Fields
 
@@ -1184,7 +1184,7 @@ Enforced by the Request Payload Processor as DCM System behavior. Not configurab
 
 **Category 2 — Business Rules (Policy Engine — configurable)**
 
-Enforced by the Policy Engine using the Validation/Transformation/Gating Policy mechanism. Override control metadata is set exclusively by the Policy Engine and carried in the payload as part of field-level provenance. Data layers and the Request Payload Processor never set override control.
+Enforced by the Policy Engine using the Validation Policy/Transformation mechanism. Override control metadata is set exclusively by the Policy Engine and carried in the payload as part of field-level provenance. Data layers and the Request Payload Processor never set override control.
 
 ---
 
@@ -1246,7 +1246,7 @@ display_name:
 |-------|---------|-------------|
 | `allow` | Default. Any actor may override. | Structural rules |
 | `constrained` | Any actor may override within `constraint_schema` | Policy Engine — Validation |
-| `immutable` | No actor may override at any level | Policy Engine — Gating Policy |
+| `immutable` | No actor may override at any level | Policy Engine — compliance-class Validation Policy |
 
 ---
 
@@ -1400,7 +1400,7 @@ Validation Policies
   │  Verify actor permissions against current override_matrix
   │  Pass/fail — no modification to override control
   ▼
-Gating Policies
+Compliance-class Validation Policies
   │  May set override: immutable on fields
   │  May override field values before locking
   │  May issue trusted_grants to specific actors
@@ -1416,7 +1416,7 @@ Requested State
 
 ### 5a.9 Override Control and Rehydration
 
-During rehydration, the Intent State is replayed through the **current** Policy Engine. Override control declared in current policies is applied fresh. A field that was `allow` in the original request may be `immutable` if a new Gating policy was added since. This is by design — rehydration applies current governance standards, not historical ones.
+During rehydration, the Intent State is replayed through the **current** Policy Engine. Override control declared in current policies is applied fresh. A field that was `allow` in the original request may be `immutable` if a new compliance-class Validation Policy was added since. This is by design — rehydration applies current governance standards, not historical ones.
 
 The original consumer intent is preserved unchanged in the Intent Store. The new realized state reflects current governance. Both are auditable and traceable.
 
@@ -1426,7 +1426,7 @@ The one exception is `pinned` policy version rehydration (Historical Exact or Hi
 
 ### 5a.11 Global Policy Self-Override — The Immutable Ceiling Model
 
-**Q51 resolved:** When a Global Gating policy sets `override: immutable` on a field, can a higher-priority Global policy still override it?
+**Q51 resolved:** When a Global compliance-class Validation Policy sets `override: immutable` on a field, can a higher-priority Global policy still override it?
 
 **The answer emerges from execution order.** Policies execute highest-priority-first (highest numeric value first within a tier). The first policy to set `override: immutable` on a field locks it. All subsequent policies — including other Global policies with lower priority values — find the field locked and cannot modify it. In normal request processing, **default `immutable` is effectively absolute** — not through a special rule, but through execution order.
 
@@ -1434,7 +1434,7 @@ The one exception is `pinned` policy version rehydration (Historical Exact or Hi
 
 ```yaml
 # Default immutable — protected by execution order during this request
-# The highest-priority Global Gating Policy to run first locks it
+# The highest-priority Global compliance-class Validation Policy to run first locks it
 # No subsequent policy in this execution can change it
 sovereignty_zone:
   value: eu-west
@@ -1531,11 +1531,11 @@ Layers are merged in precedence order (lowest to highest). For each field:
 The consumer's Request Layer is applied last in the data layer merge. Consumer-declared values override all data layer values. Each override is recorded in provenance.
 
 ### Step 5 — Pre-Placement Policy Processing
-Policies matching the `request.layers_assembled` payload type are evaluated against the merged payload before any provider is known. Gating Policy, Transformation, Validation, and Governance Matrix policies may all fire at this stage — evaluated by the Policy Engine in domain precedence order:
+Policies matching the `request.layers_assembled` payload type are evaluated against the merged payload before any provider is known. Validation Policy (including compliance-class), Transformation, and Governance Matrix policies may all fire at this stage — evaluated by the Policy Engine in domain precedence order:
 
 1. **Transformation Policies** — enrich and modify the payload. May set `override: constrained` on fields. Each transformation records the policy UUID, operation type, reason, and any override control declarations in provenance.
 2. **Validation Policies** — check the payload against rules. Pass/fail only — no field modification. Failures reject the request.
-3. **Gating Policies** — apply hard overrides and blocks. May set `override: immutable`. All overrides recorded in provenance.
+3. **Compliance-class Validation Policies** — apply hard overrides and blocks. May set `override: immutable`. All overrides recorded in provenance.
 
 Pre-placement policies produce **placement constraints** — declarative requirements a provider must satisfy (sovereignty zone, hardware class, conformance level, etc.). These constraints are carried forward as inputs to the Placement Engine.
 
@@ -1660,7 +1660,7 @@ Policies with `placement_phase: post` (or `both`) execute after the Placement En
 
 1. **Transformation Policies** — provider-aware enrichment. Inject zone-specific configuration, provider-specific defaults, topology-derived values that are only knowable after provider selection.
 2. **Validation Policies** — post-placement checks. Verify the selected provider meets requirements that couldn't be expressed as pre-placement constraints.
-3. **Gating Policies** — post-placement hard overrides. May inject mandatory fields triggered by the specific provider selected (e.g., additional data handling requirements for a provider in a specific jurisdiction).
+3. **Compliance-class Validation Policies** — post-placement hard overrides. May inject mandatory fields triggered by the specific provider selected (e.g., additional data handling requirements for a provider in a specific jurisdiction).
 
 **Policy `placement_phase` values:**
 ```yaml
@@ -1738,7 +1738,7 @@ Consumer Request
 │       ↓                                                  │
 │  Validation Policies      (pass / fail check)            │
 │       ↓                                                  │
-│  Gating Policies      (override / block)             │
+│  Compliance-class Validation  (override / block)     │
 │       ↓ outputs: placement constraints                   │
 └────────┬────────────────────────────────────────────────┘
          │  Policy-processed payload + placement constraints
@@ -1771,7 +1771,7 @@ Consumer Request
 │       ↓                                                  │
 │  Validation Policies      (post-placement checks)        │
 │       ↓                                                  │
-│  Gating Policies      (provider-triggered overrides) │
+│  Compliance-class Validation  (provider-triggered)   │
 └────────┬────────────────────────────────────────────────┘
          │  Complete, validated, placement-confirmed payload
          ▼
@@ -1914,11 +1914,12 @@ request:
 - If a validation policy requires a field that would have been injected by an excluded layer, the validation fails with a clear message identifying the excluded layer
 - Exclusion is different from override — exclusion removes the entire layer; override changes specific field values
 
-**Policy enforcement:** Gating policies may declare specific layers non-excludable:
+**Policy enforcement:** Compliance-class Validation Policies may declare specific layers non-excludable:
 
 ```yaml
 policy:
-  type: gating
+  type: validation
+  enforcement_class: compliance
   rule: >
     If request.layer_exclusions CONTAINS layer.concern_tags CONTAINS "security-baseline"
     THEN gate: "Security baseline layers cannot be excluded"
@@ -2034,7 +2035,7 @@ request:
 
 ### 13b.1 Override Preference Enforcement (Q50)
 
-Layer fields declare override intent using three values. The Request Payload Processor enforces this during assembly Step 3 (Layer Merge) — no separate Gating policy required.
+Layer fields declare override intent using three values. The Request Payload Processor enforces this during assembly Step 3 (Layer Merge) — no separate compliance-class Validation Policy required.
 
 ```yaml
 fields:
@@ -2063,7 +2064,7 @@ fields:
 
 **Authority rule:** `immutable` prevents overrides only from *lower-authority domains*. A `platform` domain field marked `immutable` cannot be changed by `tenant`, `service`, `provider`, or `request` layers — but a `system` domain layer above it can still override it. Higher authority always wins.
 
-**Gating Policy escalation:** A Gating policy at a higher authority level may additionally lock a field that a layer marked `allow` — this is the compliance escape hatch for mandates the layer author did not anticipate.
+**Compliance-class Validation Policy escalation:** A compliance-class Validation Policy at a higher authority level may additionally lock a field that a layer marked `allow` — this is the compliance escape hatch for mandates the layer author did not anticipate.
 
 **Enforcement point:** Step 3 (Layer Merge) — if a lower-priority layer or consumer request sets a field marked `immutable`, assembly halts with a clear error identifying the conflicting layer and the locking layer.
 
@@ -2114,7 +2115,7 @@ policy:
 
 | Policy | Rule |
 |--------|------|
-| `LAY-005` | Layer fields declare override intent as allow, constrained, or immutable. The Request Payload Processor enforces override declarations during assembly Step 3. immutable prevents overrides from lower-authority domains only — higher-domain layers may always override. Gating policies may additionally lock allow or constrained fields at runtime. |
+| `LAY-005` | Layer fields declare override intent as allow, constrained, or immutable. The Request Payload Processor enforces override declarations during assembly Step 3. immutable prevents overrides from lower-authority domains only — higher-domain layers may always override. Compliance-class Validation Policies may additionally lock allow or constrained fields at runtime. |
 | `LAY-006` | Constraint schemas on constrained fields are visible to consumers in the Service Catalog UI and Consumer API at a policy-governed disclosure level: full (constraint, bounds, reason, suggestions), summary (bounds only), or hidden (enforced but not displayed). Profile sets the default. Policy may override per field or resource type. |
 
 
@@ -2122,7 +2123,7 @@ policy:
 
 | Policy | Rule |
 |--------|------|
-| `LAY-001` | Consumers may declare `layer_exclusions` in their request. Each exclusion must carry a human-readable reason recorded in provenance. Gating policies may declare specific layers non-excludable. Excluded layers produce no fields in the assembled payload. |
+| `LAY-001` | Consumers may declare `layer_exclusions` in their request. Each exclusion must carry a human-readable reason recorded in provenance. Compliance-class Validation Policies may declare specific layers non-excludable. Excluded layers produce no fields in the assembled payload. |
 | `LAY-002` | Service Layers are independently versioned artifacts. Service Providers declare layer compatibility using semver constraints. Service Layer Cache entries carry the layer version and are invalidated when the registered version changes. |
 | `LAY-003` | Service Layers may declare `activation_condition` evaluated during Step 2 (Layer Resolution). Layers whose conditions evaluate false are excluded from the candidate set. Condition evaluation results are recorded in the assembly provenance. Conditions may reference request fields, tenant attributes, resource type fields, resolved core layer fields, and ingress fields. |
 | `LAY-004` | Each service dependency executes its own independent layer chain during assembly. Dependencies inherit the parent's resolved placement and identity fields as declared by the Resource Type Specification. Dependencies do not inherit parent consumer declarations, resource-type-specific layers, or provider-specific layers. Layer exclusions may be declared per-dependency. |
@@ -2135,22 +2136,22 @@ policy:
 |---|----------|--------|--------|
 | 1 | How are conflicting Service Layers at the same precedence level resolved? | Assembly determinism | ✅ Resolved — priority schema + conflict detection at ingestion |
 | 2 | Should Core Layers be ordered within their precedence level? | Merge determinism | ✅ Resolved — priority schema provides deterministic ordering |
-| 3 | Can a consumer explicitly exclude a layer from their request? | Consumer control vs. standardization | ✅ Resolved — layer_exclusions with mandatory reason; Gating Policy can lock layers as non-excludable (LAY-001) |
+| 3 | Can a consumer explicitly exclude a layer from their request? | Consumer control vs. standardization | ✅ Resolved — layer_exclusions with mandatory reason; compliance-class Validation Policy can lock layers as non-excludable (LAY-001) |
 | 4 | How are Service Layers registered and versioned relative to Service Provider registration? | Provider contract | ✅ Resolved — independently versioned; provider declares semver compatibility; cache invalidation on version change (LAY-002) |
 | 5 | Should assembly support conditional layer inclusion? | Assembly flexibility | ✅ Resolved — activation_condition on layers; evaluated in Step 2; references request, tenant, resource type, core layer, and ingress fields (LAY-003) |
 | 6 | How does the layer chain interact with service dependencies? | Dependency model | ✅ Resolved — each dependency has its own layer chain; inherits parent resolved placement context; no consumer declaration inheritance (LAY-004) |
-| 7 | Should `override_preference` be declarable in layer definitions as a hint to the Policy Engine? | Override control | ✅ Resolved — override: allow/constrained/immutable enforced by Request Payload Processor at Step 3; Gating Policy may additionally lock (LAY-005) |
-| 8 | When `override_preference: immutable` is set — can a higher-priority policy still override it? | Override control precedence | ✅ Resolved — immutable prevents lower-authority overrides only; higher-domain layers always win; Gating Policy can additionally lock (LAY-005) |
+| 7 | Should `override_preference` be declarable in layer definitions as a hint to the Policy Engine? | Override control | ✅ Resolved — override: allow/constrained/immutable enforced by Request Payload Processor at Step 3; compliance-class Validation Policy may additionally lock (LAY-005) |
+| 8 | When `override_preference: immutable` is set — can a higher-priority policy still override it? | Override control precedence | ✅ Resolved — immutable prevents lower-authority overrides only; higher-domain layers always win; compliance-class Validation Policy can additionally lock (LAY-005) |
 | 9 | Should the `constraint_schema` on a constrained field be visible to consumers in the Service Catalog UI? | Consumer experience | ✅ Resolved — full/summary/hidden disclosure levels; profile-governed defaults; API endpoint returns schema at declared visibility (LAY-006) |
 | 10 | Should the background validation job for detecting post-ingestion conflicts run on a schedule or be event-triggered? | Operational | ✅ Resolved — event-triggered primary (on layer ingestion/update) + weekly scheduled sweep safety net; async non-blocking; both produce same conflict record format (OPS-003) |
-| 11 | What is the minimum validation review period for a proposed policy before it can be activated? | Policy governance | ✅ Resolved — Gating Policy=14d, Validation=7d, Transformation=3d × profile multiplier (minimal=0×, dev=0.5×, standard=1×, prod=1.5×, fsi/sovereign=2×); DCM enforces; emergency bypass requires dual-approval audit (OPS-004) |
+| 11 | What is the minimum validation review period for a proposed policy before it can be activated? | Policy governance | ✅ Resolved — Validation Policy (compliance-class)=14d, Validation Policy (operational-class)=7d, Transformation=3d × profile multiplier (minimal=0×, dev=0.5×, standard=1×, prod=1.5×, fsi/sovereign=2×); DCM enforces; emergency bypass requires dual-approval audit (OPS-004) |
 
 ---
 
 ## 14. Related Concepts
 
 - **Request Payload Processor** — the control plane component that executes the assembly process; enforces structural layer rules
-- **Policy Engine** — executes Policy Layers (Validation, Transformation, Gating Policy) during the assembly process; the sole authority for setting field override control
+- **Policy Engine** — executes Policy Layers (Validation Policy, Transformation) during the assembly process; the sole authority for setting field override control
 - **Field Override Control** — the mechanism governing who can change what field, under what conditions, at what policy level
 - **Override Preference** — per-field metadata declaring `allow`, `constrained`, or `immutable` — the formalization of the original data model "override preference" subtag
 - **Service Layer Cache** — caches Service Layer data at Service Provider registration time for efficient retrieval during assembly

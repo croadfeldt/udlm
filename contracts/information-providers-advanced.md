@@ -179,24 +179,27 @@ Policies use bands, not raw scores. This avoids the brittleness of threshold val
 ```yaml
 # Policy using band — clear and maintainable
 policy:
-  type: gating
+  type: validation
+  enforcement_class: compliance
   rule: >
     If field.owner_business_unit.band IN [very_low, low]
-    THEN gate: "Business unit confidence insufficient — manual verification required"
+    THEN deny: "Business unit confidence insufficient — manual verification required"
 
 # Policy using individual descriptor dimensions — most precise
 policy:
-  type: gating
+  type: validation
+  enforcement_class: compliance
   rule: >
     If field.cost_center.corroboration == contested
-    THEN gate: "Cost center is contested between providers — resolve before provisioning"
+    THEN deny: "Cost center is contested between providers — resolve before provisioning"
 
 # Policy using score — for mathematical thresholds
 policy:
-  type: gating
+  type: validation
+  enforcement_class: compliance
   rule: >
     If field.cost_center.score < 60
-    THEN gate: "Cost center confidence below required threshold"
+    THEN deny: "Cost center confidence below required threshold"
 ```
 
 ### 2.7 Derivation Chain Summary
@@ -301,13 +304,14 @@ policy:
     AND field.owner_business_unit.authority_level != primary
     THEN inject: request_flags.requires_manual_business_unit_verification = true
 
-# Gating Policy: require high confidence for financial operations
+# Compliance-class Validation Policy: require high confidence for financial operations
 policy:
-  type: gating
+  type: validation
+  enforcement_class: compliance
   rule: >
     If resource_type == Compute.VirtualMachine
     AND field.cost_center.confidence_band IN [very_low, low]
-    THEN gate: "Cost center assignment confidence insufficient for VM provisioning"
+    THEN deny: "Cost center assignment confidence insufficient for VM provisioning"
 ```
 
 ---

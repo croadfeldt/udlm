@@ -103,7 +103,7 @@ links:
 | `request.dependencies_resolved` | info | Constituent dependencies resolved (composite service) |
 | `request.realized` | medium | Provider confirmed realization; Realized State written |
 | `request.failed` | high | Request failed at any stage |
-| `request.gating_rejected` | high | Gating policy denied the request |
+| `request.gating_rejected` | high | Compliance-class Validation Policy denied the request |
 | `request.cancelled` | low | Consumer cancelled; pipeline terminated |
 | `request.progress_updated` | info | Provider sent interim progress update; constituent_status updated |
 
@@ -390,8 +390,8 @@ payload:
 payload:
   policy_uuid: <uuid>
   policy_handle: <string>
-  policy_type: gating | validation | transformation | recovery | orchestration_flow
-  enforcement_class: compliance | operational    # for gating
+  policy_type: validation | transformation | recovery | orchestration_flow
+  enforcement_class: compliance | operational    # for validation
   shadow_period_days: <int>
   approved_by: <actor_uuid>
 ```

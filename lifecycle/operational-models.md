@@ -334,7 +334,7 @@ audit_record:
 
 ### 5.1 Recovery Policy as a Policy Type
 
-Recovery Policies are a formal UDLM policy type alongside Gating Policy, Validation, and Transformation. They use the same authoring model, the same artifact store, the same shadow mode validation, the same activation workflow, and the same audit trail.
+Recovery Policies are a formal UDLM policy type alongside Validation and Transformation. They use the same authoring model, the same artifact store, the same shadow mode validation, the same activation workflow, and the same audit trail.
 
 ```yaml
 recovery_policy:
@@ -811,7 +811,7 @@ COMPENSATION_FAILED → [human resolves] → FAILED (after manual cleanup)
 | `OPS-011` | Cancellation is always best-effort. A conformant realization MUST NEVER guarantee cancellation success. All cancellation outcomes flow through the Recovery Policy model. |
 | `OPS-012` | Provider cancellation capability is declared at registration. Providers that do not support cancellation use the CANCEL_PENDING → LATE_RESPONSE_RECEIVED path when a cancel is requested during PROVISIONING. |
 | `OPS-013` | Discovery is triggered by three independent mechanisms: scheduled (cron), event-triggered, and on-demand. All three write to the Discovered Store independently. |
-| `OPS-014` | Recovery Policies are a formal UDLM policy type. They use the same authoring, activation, shadow mode, and audit model as Gating Policy, Validation, and Transformation policies. |
+| `OPS-014` | Recovery Policies are a formal UDLM policy type. They use the same authoring, activation, shadow mode, and audit model as Validation and Transformation policies. |
 | `OPS-015` | Four built-in recovery profile groups are provided: `recovery-automated-reconciliation`, `recovery-discard-and-requeue`, `recovery-notify-and-wait`, `recovery-aggressive-retry`. |
 | `OPS-016` | Recovery profile defaults are bound to deployment profiles. Organizations may override at Tenant or resource-type level. Resource-type override wins over Tenant override wins over profile default. |
 | `OPS-017` | Composite service compensation runs in reverse dependency order. Compensation failure triggers `COMPENSATION_FAILED` state and immediate orphan detection. |

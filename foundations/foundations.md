@@ -29,7 +29,7 @@ DCM is built on three foundational abstractions. Every concept in the architectu
 │  component DCM       │   │  decides what happens, transforms    │
 │  calls or that       │   │  values, or enforces constraints.    │
 │  calls DCM.          │   │                                      │
-│  Twelve typed       │   │  Eight typed output schemas.       │
+│  Twelve typed       │   │  Seven typed output schemas.       │
 │  capability          │   │  One evaluation algorithm.           │
 │  extensions.         │   │  Same lifecycle for all.             │
 │  One base contract.  │   │                                      │
@@ -168,8 +168,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 
 | Policy Type | Fires on | Output |
 |-------------|---------|--------|
-| **Gating Policy** | Request payload | `allow` or `deny` with reason |
-| **Validation** | Request payload | `pass` or `fail` with field-level details |
+| **Validation Policy** | Request payload | `pass` or `fail` with field-level details; compliance-class: `allow` or `deny` with reason |
 | **Transformation** | Request payload | `mutations[]` — field additions, changes, locks |
 | **Recovery** | Failure/timeout trigger condition | `action` + parameters (DRIFT_RECONCILE, DISCARD_AND_REQUEUE, etc.) |
 | **Orchestration Flow** | Payload type events | `flow_directive` — sequence ordering for pipeline steps |
@@ -177,7 +176,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 | **Lifecycle Policy** | Relationship events | `action` on the related entity (save, destroy, notify, cascade) |
 | **ITSM Action** | DCM events (state transitions, drift, realization) | `itsm_action` — create/update/close ITSM records; non-blocking by default |
 
-**The unified Policy base contract** is defined in [policy-contract.md](../contracts/policy-contract.md). All eight Policy types implement this base contract. What varies is the output schema.
+**The unified Policy base contract** is defined in [policy-contract.md](../contracts/policy-contract.md). All seven Policy types implement this base contract. What varies is the output schema.
 
 **Policies as orchestration — two levels that compose:**
 
@@ -185,7 +184,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 An Orchestration Flow Policy with `concern_type: orchestration_flow` and `ordered: true` is a named workflow. It declares steps in explicit sequence. Named workflows are first-class Data artifacts — versioned, GitOps-managed, profile-bound. Adding an explicit pipeline step = adding a step to a workflow Policy artifact.
 
 *Level 2 — Dynamic Policies (conditional, inline):*
-Gating Policy, Transformation, Recovery, and Governance Matrix Policies fire when their match conditions are satisfied — within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
+Compliance-class Validation Policy, Transformation, Recovery, and Governance Matrix Policies fire when their match conditions are satisfied — within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
 
 Both levels are evaluated by the same Policy Engine and triggered through the same Request Orchestrator event bus. They compose naturally: a named workflow provides the sequence skeleton; dynamic policies provide conditional behavior within it.
 
