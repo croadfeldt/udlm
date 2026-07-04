@@ -52,7 +52,9 @@ An explicit per-type `stability` field (for when one type is battle-tested while
 
 | Change | Bump |
 |---|---|
-| Add an **optional** field; add an **output**; add a relationship; **widen** validation (looser enum/range) | **MINOR** |
+| Add an **optional** field; add an **output**; add a relationship; **loosen** a numeric/string range | **MINOR** |
+| Add an **enum value** to a field marked `x-extensible-enum: true` | **MINOR** |
+| Add an **enum value** to a closed (unmarked) enum — consumers that exhaustively switch on values break (Kubernetes api_changes rule) | **MAJOR** |
 | **Remove/rename** a field; make an existing field **required**; **narrow** validation (tighter enum/range); remove an output/relationship; change `entityType`/`portability`/lifecycle | **MAJOR** |
 | Docs, descriptions, metadata, non-semantic edits | **REVISION** |
 
@@ -113,3 +115,13 @@ document MAY be authored in **JSON or YAML** — they parse to the same document
 the same meta-schema (`compute.container.yaml` and `compute.virtual-machine.json` in this registry
 prove it). JSON is the canonical *wire/interchange* form (schema-sharing); YAML is offered for
 authoring ergonomics. Tooling (`tools/validate.py`, `tools/compat-check.py`) loads both.
+
+## Enum extensibility
+
+Adding an enum value looks additive but breaks consumers that exhaustively handle known values
+(adopted from the Kubernetes API-change rules, where even enum additions are classified
+backward-incompatible unless the field is documented as extensible). A type spec opts a field
+into open-world semantics by annotating it `x-extensible-enum: true` next to the `enum` —
+consumers of such fields MUST tolerate unknown values. Unmarked enums are closed: additions are
+MAJOR. *Grandfather note:* `Hardware.NetworkInterface.device_class` gained values at 0.2.0/0.3.0
+under the previous rule; it is now marked extensible (0.3.1) rather than retroactively re-versioned.
