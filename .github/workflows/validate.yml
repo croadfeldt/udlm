@@ -1,0 +1,17 @@
+# Registry validation — every type spec must validate against the meta-schema
+# (tests/validate_registry.py: JSON Schema 2020-12 + $id↔version/conforms_to cross-checks).
+name: validate
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  validate-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install jsonschema pyyaml
+      - run: python3 tests/validate_registry.py

@@ -201,3 +201,30 @@ SR-IOV, the Linux mdev/vGPU + NVIDIA MIG frameworks, IEEE 802.1AX (aggregation),
 and RFC 8343 interface stacking; mirrors Redfish `NetworkAdapter`→`NetworkDeviceFunction` /
 `PCIeDevice`→`PCIeFunction`. `device_class` is a UDLM-defined cross-cutting classifier (no single
 standard owns it).
+
+### 7a. `connected_to` — physical adjacency (the third traversal method)
+
+§7's `parent_device` (composition **down**, 1→N) and `lower_layer` (composition **up**, N→1) relate an
+interface to its foundational components *within* one device. **`connected_to`** is the cross-device
+edge: a physical interface's link to its **peer termination point** — host NIC ↔ switch port, switch ↔
+switch uplink. A self-referential `references` relationship (`Hardware.NetworkInterface →
+Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once from either end.
+
+```yaml
+# host side                              # switch side
+- id: cartman-eno2                       - id: sw-usw-ent24-7d8f-port14
+  type: Hardware.NetworkInterface          type: Hardware.NetworkInterface
+  contained_by: cartman                    contained_by: sw-usw-ent24-7d8f   # a Network.Switch
+  connected_to: sw-usw-ent24-7d8f-port14   attrs: { identity: { location: "Port 14" } }
+```
+
+Together the three make the estate graph traversable end-to-end from ANY resource:
+`IP → bridge → (lower_layer) bond → (lower_layer) NIC → (connected_to) switch port → (contained_by)
+switch → (depends_on) power feed` — and the reverse walk answers "what goes dark if this feed drops."
+
+**Discovery & drift:** grounded in **IEEE 802.1AB (LLDP)** — the Chassis ID + Port ID TLVs name the peer,
+so `connected_to` enters as **Discovered** state from an LLDP probe (`lldpcli show neighbors`); a mismatch
+between declared cabling and the observed neighbor is **drift** (OBS-001), never silently merged.
+**RFC 8345** (ietf-network-topology) models the same thing as a first-class *link* between two
+*termination-points*; UDLM keeps it as a reference for minimal surface area — promote to a link entity
+only if links ever need their own attributes (cable id, patch panel, medium).
