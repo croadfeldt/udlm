@@ -17,3 +17,4 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [002](ADR-002-capacity-utilization-served-overlay.md) | Capacity/Utilization — served observational overlay (cost pattern), **not** a UDLM type | Proposed |
 | [003](ADR-003-data-mobility-and-process-validation.md) | Data mobility (requirements=data, methods=provider, mechanism=provider, permission=Policy) + process-validation lifecycle (rehearsal/simulation, freshness; T6) | Proposed |
 | [004](ADR-004-provider-capability-declaration.md) | Provider capability declaration — `topology_capability` + `mobility` + `operational_capability`; what placement & operational/SRE policies match against | Proposed |
+| [005](ADR-005-mcp-server-type-and-dcm-mcp-surface.md) | MCP as a managed service — `AI.MCPServer` resource type + MCP-capable Provider; and DCM's control plane exposed *as* an MCP surface (`dcm-mcp`, agent proposes / policy disposes); an MCP tool = a `Capability` | Proposed |

@@ -1,0 +1,142 @@
+# UDLM Resource Type Specification — authored in YAML (semantically identical to a JSON
+# document; validated against the same registry/resource-type-spec.schema.json).
+#
+# An MCP (Model Context Protocol) server: a managed service that exposes a set of tools to AI
+# agents over a transport. The SERVER is the Resource (the thing); "serving tools" is the Service
+# (the act) — see the Service/Resource taxonomy. Realized onto any compute substrate (a container
+# platform or a rootless container host) by an MCP-capable Provider. See ADR-005.
+$id: https://udlm.dev/registry/udlm/0.1/AI.MCPServer/0.1.0
+conforms_to: udlm/0.1
+uuid: 85b2408b-9bf6-4c03-9000-55fe49c9fd8d
+resource_type: AI.MCPServer
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+portability: portable
+status: active
+metadata:
+  display_name: MCP Server
+  description: >-
+    A Model Context Protocol server that exposes a declared toolset to AI agents over a transport
+    (stdio / SSE / streamable-HTTP), with an auth mode and a placement onto a compute substrate.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-04"
+spec:
+  type: object
+  required: [image, transport]
+  properties:
+    image:
+      type: object
+      required: [reference]
+      properties:
+        reference:
+          type: string
+          description: Container image reference for the MCP server, e.g. quay.example.com/mcp/agent-mcp:1.0
+    transport:
+      type: string
+      enum: [stdio, sse, streamable-http]
+      description: MCP transport the server exposes. Networked transports (sse, streamable-http) require a port + endpoint.
+    backend:
+      type: string
+      description: >-
+        The system this server fronts / brokers tools for, e.g. an LLM endpoint, a SaaS API, or a
+        platform (jira, gdocs, openshift, qwen, custom). Descriptive; drives which tools appear.
+    toolset:
+      type: array
+      description: >-
+        The tools this server advertises. Each tool is a machine-invocable capability (an MCP tool =
+        a capability in the capability catalog; ADR-005). Declared intent; the realized set is in
+        outputs.tools_advertised.
+      items:
+        type: object
+        required: [name]
+        properties:
+          name: { type: string }
+          description: { type: string }
+          capability_ref:
+            type: string
+            description: Optional link to a capability-catalog entry this tool realizes.
+    auth:
+      type: object
+      required: [mode]
+      properties:
+        mode:
+          type: string
+          enum: [none, bearer, ldap, oauth2, mtls]
+          description: How agents authenticate to the server.
+        credential_ref:
+          type: string
+          description: >-
+            Reference to the credential/secret the server presents or validates (a required-key
+            entity; kept out-of-band — the model holds the reference, not the secret). See ADR on
+            required keys.
+    resources:
+      type: object
+      properties:
+        cpu: { type: number, minimum: 0.1 }
+        memory: { type: string, pattern: "^[0-9]+(MB|GB)$" }
+    process:
+      type: object
+      properties:
+        env:
+          type: array
+          items:
+            type: object
+            required: [name]
+            properties:
+              name: { type: string }
+              value: { type: string }
+    network:
+      type: object
+      properties:
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+          description: Listen port for networked transports (sse / streamable-http).
+        visibility:
+          type: string
+          enum: [internal, external]
+          default: internal
+        hostname:
+          type: string
+          description: Requested external hostname (e.g. agent.example.com) when visibility is external.
+    placement:
+      type: object
+      description: >-
+        Where the Provider should realize the server. UDLM stays substrate-agnostic; a Provider maps
+        this to its mechanism (a container-platform Deployment+Service+Route, or a rootless container
+        unit on a host). Consumer-side intent — matched against provider capability, not a mechanism.
+      properties:
+        substrate:
+          type: string
+          enum: [container-platform, container-host]
+          description: Class of substrate. container-platform = orchestrated (e.g. an OCP namespace); container-host = a single host running rootless containers.
+        target:
+          type: string
+          description: The specific placement target (a namespace, or a host + service account), when pinned.
+outputs:
+  endpoint:
+    type: string
+    description: Reachable endpoint URL once Realized (for networked transports).
+  health:
+    type: string
+    description: Realized health signal (e.g. ok / degraded / down) reported by the Provider.
+  tools_advertised:
+    type: array
+    description: The tool names the running server actually advertises once Realized (may differ from spec.toolset until converged).
+  replicas:
+    type: integer
+    description: Running instance count reported by the Provider.
+relationships:
+  - kind: depends_on
+    target: Security.DirectoryService
+    target_field: endpoint
+    cardinality: 0..1
+    description: When auth.mode is ldap, the server validates agents against a directory service.
+  - kind: contained_by
+    target: Compute.Cluster
+    cardinality: 0..1
+    description: >-
+      The compute substrate that realizes the server (a container platform). container-host
+      placements bind to a host resource instead; either way the Provider owns the mechanism.
