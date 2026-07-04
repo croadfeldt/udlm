@@ -71,7 +71,19 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 | 10 | meta-schema `relationships.target` is the unversioned type NAME — edges already version-decoupled ✅ (codify as an explicit rule) |
 | 7 | Tier-2 `Vendor.Type` namespace + `provider_hints` ≈ augmentation-in-new-module ✅ (make it the normative extension mechanism for #198) |
 
-## Gaps → proposed actions (decision list)
+## Gaps → actions — APPLIED 2026-07-04
+
+| # | Action | Landed at |
+|---|---|---|
+| 1 | Degrade-don't-break | `entities/service-dependencies.md` DEP-006 |
+| 2 | Tombstone/two-phase delete | DEP-007 + estate validator retire-first gate (estate-repo) |
+| 3 | Constrained reference topology | DEP-008 + estate validator TOPO-* checks (estate-repo) |
+| 4 | Enum discipline + extensible markers | `registry/VERSIONING.md` (enum rows + §Enum extensibility); `device_class` marked `x-extensible-enum` (0.3.1) |
+| 5 | `deprecated_in_version` | meta-schema `deprecation` object |
+| 6 | Augment-only extension model | `registry/naming-conventions.md` §Extension model (seeds #198) |
+| 7 | Reconciliation → DCM | division-of-responsibility note under DEP-006..008 |
+
+### Original decision list (as proposed)
 
 1. **Degrade-don't-break rule (adopt RFC 8345 §leafref semantics).** DCM runtime treats a
    dangling edge as *nonoperational + retained in intent*, never hard-fail, never silent.

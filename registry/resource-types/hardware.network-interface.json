@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -20,9 +20,17 @@
     "properties": {
       "device_class": {
         "type": "string",
-        "enum": ["physical", "virtual", "passthrough", "partition", "aggregate", "bridge"],
+        "enum": [
+          "physical",
+          "virtual",
+          "passthrough",
+          "partition",
+          "aggregate",
+          "bridge"
+        ],
         "default": "physical",
-        "description": "Device realization (common-elements.md §7). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N→1 inverse of partition's 1→N."
+        "description": "Device realization (common-elements.md §7). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N→1 inverse of partition's 1→N.",
+        "x-extensible-enum": true
       },
       "partition_mechanism": {
         "type": "string",
@@ -34,51 +42,147 @@
         "properties": {
           "mode": {
             "type": "string",
-            "enum": ["802.3ad", "active-backup", "balance-rr", "balance-xor", "broadcast", "balance-tlb", "balance-alb"],
+            "enum": [
+              "802.3ad",
+              "active-backup",
+              "balance-rr",
+              "balance-xor",
+              "broadcast",
+              "balance-tlb",
+              "balance-alb"
+            ],
             "description": "Bond mode. 802.3ad = dynamic LACP link aggregation (requires a matching switch LAG); active-backup = failover only. Linux-bonding vocabulary; 802.3ad names IEEE 802.1AX."
           },
-          "lacp_rate": { "type": "string", "enum": ["slow", "fast"], "description": "Only when mode=802.3ad: LACPDU transmit rate." },
-          "miimon": { "type": "integer", "minimum": 0, "description": "MII link-monitoring interval in milliseconds; 0 disables (Linux-bonding vocabulary, like the mode names)." },
-          "xmit_hash_policy": { "type": "string", "description": "Tx load-balancing hash, e.g. layer2 | layer2+3 | layer3+4 (modes 802.3ad / balance-xor)." },
-          "min_links": { "type": "integer", "minimum": 0, "description": "Minimum aggregated links for the bond to be considered up." }
+          "lacp_rate": {
+            "type": "string",
+            "enum": [
+              "slow",
+              "fast"
+            ],
+            "description": "Only when mode=802.3ad: LACPDU transmit rate."
+          },
+          "miimon": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "MII link-monitoring interval in milliseconds; 0 disables (Linux-bonding vocabulary, like the mode names)."
+          },
+          "xmit_hash_policy": {
+            "type": "string",
+            "description": "Tx load-balancing hash, e.g. layer2 | layer2+3 | layer3+4 (modes 802.3ad / balance-xor)."
+          },
+          "min_links": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Minimum aggregated links for the bond to be considered up."
+          }
         }
       },
       "bridge": {
         "type": "object",
         "description": "Only when device_class=bridge — software L2 bridge parameters (IEEE 802.1Q). The bridged ports are the lower_layer references.",
         "properties": {
-          "stp": { "type": "boolean", "description": "Spanning Tree Protocol enabled (802.1D/802.1Q)." },
-          "vlan_filtering": { "type": "boolean", "description": "802.1Q per-port VLAN filtering on the bridge (false = a plain trunk bridge that passes all tags transparently)." }
+          "stp": {
+            "type": "boolean",
+            "description": "Spanning Tree Protocol enabled (802.1D/802.1Q)."
+          },
+          "vlan_filtering": {
+            "type": "boolean",
+            "description": "802.1Q per-port VLAN filtering on the bridge (false = a plain trunk bridge that passes all tags transparently)."
+          }
         }
       },
       "identity": {
         "type": "object",
         "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
-          "location": { "type": "string", "description": "PCIe slot / BDF / port designation within the parent (Redfish PhysicalLocation). Primary discriminator; for a VF/sub-interface, its index/name." },
-          "mac_address": { "type": "string", "description": "MAC address (Redfish Ethernet MACAddress) — globally unique interface identity." },
-          "serial_number": { "type": "string" },
-          "asset_tag": { "type": "string" },
-          "model": { "type": "string", "description": "Adapter model (Redfish Model)." },
-          "manufacturer": { "type": "string" },
-          "role": { "type": "string", "description": "Semantic usage, e.g. mgmt | storage | tenant | trunk." }
+          "location": {
+            "type": "string",
+            "description": "PCIe slot / BDF / port designation within the parent (Redfish PhysicalLocation). Primary discriminator; for a VF/sub-interface, its index/name."
+          },
+          "mac_address": {
+            "type": "string",
+            "description": "MAC address (Redfish Ethernet MACAddress) — globally unique interface identity."
+          },
+          "serial_number": {
+            "type": "string"
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "description": "Adapter model (Redfish Model)."
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "Semantic usage, e.g. mgmt | storage | tenant | trunk."
+          }
         }
       },
-      "speed": { "type": "string", "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$", "description": "Link speed, e.g. 25Gbps (Redfish LinkSpeedMbps)." },
-      "mtu": { "type": "integer", "minimum": 68, "description": "MTU in bytes (Redfish MTUSize)." },
-      "vlan_id": { "type": "integer", "minimum": 1, "maximum": 4094, "description": "802.1Q VLAN id when device_class=partition with partition_mechanism=vlan." }
+      "speed": {
+        "type": "string",
+        "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$",
+        "description": "Link speed, e.g. 25Gbps (Redfish LinkSpeedMbps)."
+      },
+      "mtu": {
+        "type": "integer",
+        "minimum": 68,
+        "description": "MTU in bytes (Redfish MTUSize)."
+      },
+      "vlan_id": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4094,
+        "description": "802.1Q VLAN id when device_class=partition with partition_mechanism=vlan."
+      }
     }
   },
   "outputs": {
-    "mac_address": { "type": "string", "description": "Realized MAC address (also a discriminator in identity)." }
+    "mac_address": {
+      "type": "string",
+      "description": "Realized MAC address (also a discriminator in identity)."
+    }
   },
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical NIC is installed in." },
-    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For virtual / passthrough / partition, the guest the interface is presented to." },
-    { "kind": "contained_by", "target": "Network.Switch", "cardinality": "0..1", "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the §27 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances." },
-    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7)." },
-    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "1..n", "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7)." },
-    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "connected_to — the PEER termination point this physical interface is linked to (host NIC ↔ switch port; switch ↔ switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points — promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements §7a)." }
+    {
+      "kind": "contained_by",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..1",
+      "description": "The host the physical NIC is installed in."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..1",
+      "description": "For virtual / passthrough / partition, the guest the interface is presented to."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Network.Switch",
+      "cardinality": "0..1",
+      "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the §27 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances."
+    },
+    {
+      "kind": "references",
+      "target": "Hardware.NetworkInterface",
+      "cardinality": "0..1",
+      "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7)."
+    },
+    {
+      "kind": "references",
+      "target": "Hardware.NetworkInterface",
+      "cardinality": "1..n",
+      "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7)."
+    },
+    {
+      "kind": "references",
+      "target": "Hardware.NetworkInterface",
+      "cardinality": "0..1",
+      "description": "connected_to — the PEER termination point this physical interface is linked to (host NIC ↔ switch port; switch ↔ switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points — promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements §7a)."
+    }
   ],
   "adopts": [
     {
