@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Interface",
-    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.1.1 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if).",
+    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-26"
   },
@@ -38,6 +38,7 @@
             "description": "Bond mode. 802.3ad = dynamic LACP link aggregation (requires a matching switch LAG); active-backup = failover only. Linux-bonding vocabulary; 802.3ad names IEEE 802.1AX."
           },
           "lacp_rate": { "type": "string", "enum": ["slow", "fast"], "description": "Only when mode=802.3ad: LACPDU transmit rate." },
+          "miimon": { "type": "integer", "minimum": 0, "description": "MII link-monitoring interval in milliseconds; 0 disables (Linux-bonding vocabulary, like the mode names)." },
           "xmit_hash_policy": { "type": "string", "description": "Tx load-balancing hash, e.g. layer2 | layer2+3 | layer3+4 (modes 802.3ad / balance-xor)." },
           "min_links": { "type": "integer", "minimum": 0, "description": "Minimum aggregated links for the bond to be considered up." }
         }
