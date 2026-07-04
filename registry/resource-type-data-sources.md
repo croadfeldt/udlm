@@ -119,6 +119,8 @@ Because adoption references vocabulary (field names = facts) and never restates 
 | IETF RFC 8343 (ietf-interfaces) | IETF Trust (BSD-like reuse) | compatible-reference | `lower-layer-if`/`higher-layer-if` stacking terms — facts (Hardware.NetworkInterface aggregate/bridge) |
 | IEEE 802.1AX (Link Aggregation) | **IEEE (copyright)** | **reference-only** | bond/LACP *term names* only; don't copy IEEE standard text |
 | IEEE 802.1Q (Bridges & Bridged Networks) | **IEEE (copyright)** | **reference-only** | bridge/VLAN *term names* only; don't copy IEEE standard text |
+| IEEE 802.1AB (LLDP) | **IEEE (copyright)** | **reference-only** | Chassis ID / Port ID / System Name *TLV names* only — connected_to discovery + Network.Switch identity |
+| IETF RFC 8345 (ietf-network-topology) | IETF Trust (BSD-like reuse) | compatible-reference | node / termination-point / link vocabulary — facts (Network.Switch, connected_to) |
 
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.
