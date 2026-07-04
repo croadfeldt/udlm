@@ -1,0 +1,97 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "e9d945a5-c7b2-44f7-b1c4-48b0717d5a02",
+  "resource_type": "Network.Switch",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Network Switch",
+    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Compute.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connected_to` adjacency (LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics (UniFi, Catalyst, …) are the provider/extension, never the type.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-04"
+  },
+  "spec": {
+    "type": "object",
+    "required": [],
+    "properties": {
+      "lifecycle_state": {
+        "type": "string",
+        "enum": ["available", "allocated", "retired"],
+        "default": "available",
+        "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated; allocated = adopted into the managed lifecycle."
+      },
+      "composition_visibility": {
+        "type": "string",
+        "enum": ["opaque", "transparent", "selective"],
+        "default": "opaque",
+        "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connected_to link records)."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Chassis identity (SPEC-DESIGN-REQUIREMENTS §27).",
+        "properties": {
+          "chassis_id": { "type": "string", "description": "LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary discovered-identity key; stable across renames/re-IPs." },
+          "serial_number": { "type": "string", "description": "Vendor serial." },
+          "asset_tag": { "type": "string" },
+          "manufacturer": { "type": "string" },
+          "model": { "type": "string" },
+          "system_name": { "type": "string", "description": "Configured system name (LLDP System Name TLV) — mutable, secondary to chassis_id." }
+        }
+      },
+      "ports": {
+        "type": "object",
+        "description": "Reconciled port rollup (§26) — aggregate of contained Hardware.NetworkInterface when modeled.",
+        "properties": {
+          "count": { "type": "integer", "minimum": 1, "description": "Physical port count." },
+          "speed": { "type": "string", "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$", "description": "Predominant port speed, e.g. 1Gbps." }
+        }
+      },
+      "management_vlan": { "type": "integer", "minimum": 1, "maximum": 4094, "description": "802.1Q VLAN the management interface lives on, if tagged." }
+    }
+  },
+  "immutable": ["identity.chassis_id", "identity.serial_number"],
+  "outputs": {
+    "management_address": { "type": "string", "description": "Reachable management endpoint (IP/hostname) once Realized." },
+    "firmware_version": { "type": "string", "description": "Observed firmware/OS version (LLDP System Description carries it) — Discovered-state data; drift input for fleet-consistency checks." }
+  },
+  "relationships": [
+    { "kind": "depends_on", "target": "Facility.PowerFeed", "cardinality": "0..n", "description": "Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo shutdown (connectivity goes last)." }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standard_name": "Switch",
+      "role": "switch-as-asset vocabulary (chassis identity, ports collection)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "IEEE 802.1AB",
+      "version": "2016",
+      "standard_name": "LLDP",
+      "role": "discovered chassis identity (Chassis ID / System Name / System Description TLVs) — how a switch enters as a Discovered resource",
+      "source": "https://standards.ieee.org/ieee/802.1AB/",
+      "license": "IEEE",
+      "license_compatibility": "reference-only"
+    },
+    {
+      "standard": "RFC 8345",
+      "version": "8345",
+      "standard_name": "ietf-network (node)",
+      "role": "topology vocabulary — a switch is a node whose termination points (ports) anchor links",
+      "source": "https://www.rfc-editor.org/rfc/rfc8345",
+      "license": "IETF-Trust-TLP",
+      "license_compatibility": "compatible-reference"
+    }
+  ],
+  "aliases": [
+    { "name": "Ethernet Switch", "note": "common colloquial name" },
+    { "name": "Top-of-Rack (ToR) Switch", "note": "datacenter placement role" }
+  ]
+}
