@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Interface",
-    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if).",
+    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by Network.Switch), and a physical interface carries a connected_to adjacency to its LLDP-discovered peer termination point (host NIC ↔ switch port) — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-26"
   },
@@ -75,8 +75,10 @@
   "relationships": [
     { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical NIC is installed in." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For virtual / passthrough / partition, the guest the interface is presented to." },
+    { "kind": "contained_by", "target": "Network.Switch", "cardinality": "0..1", "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the §27 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances." },
     { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7)." },
-    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "1..n", "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7)." }
+    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "1..n", "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7)." },
+    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "connected_to — the PEER termination point this physical interface is linked to (host NIC ↔ switch port; switch ↔ switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points — promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements §7a)." }
   ],
   "adopts": [
     {
