@@ -161,31 +161,43 @@ and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
 ## 7. `device_class` — device realization (Hardware.* types)
 
 A `Hardware.*` component is the **device/component layer** and may be physical, virtualized, passed
-through to a guest, or a slice carved from a physical parent. The canonical `device_class` discriminator
-(with `partition_mechanism` and a `parent_device` reference) keeps all of these expressible in the **same**
-five `Hardware.*` types, so the device tree (physical → slices → guest assignment) is traversable.
+through to a guest, a slice carved from a physical parent, or a composite built from several interfaces.
+The canonical `device_class` discriminator (with `partition_mechanism`, `aggregation`/`bridge`, and a
+`parent_device` **or** `lower_layer` reference) keeps all of these expressible in the **same** five
+`Hardware.*` types, so the whole device tree — physical → slices, and physical → aggregate → bridge →
+sub-interface — is traversable.
 
 ```yaml
-device_class: physical          # physical | virtual | passthrough | partition   (default physical)
+device_class: physical          # physical | virtual | passthrough | partition | aggregate | bridge
 partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr-iov | mediated | mig |
                                # vlan | macvlan | …  (the slicing mechanism; extensible)
-# parent_device: expressed as a relationship (kind: references) to the parent Hardware.* entity —
-# REQUIRED when device_class ∈ {passthrough, partition}.
+# parent_device: a `references` relationship to the ONE parent Hardware.* entity (1→N) —
+#   REQUIRED when device_class ∈ {passthrough, partition}.
+# lower_layer:   a `references` relationship to the MANY member Hardware.* entities (N→1) —
+#   REQUIRED when device_class ∈ {aggregate, bridge}. RFC 8343 lower-layer-if.
 ```
 
-| device_class | meaning | example | `parent_device` |
+| device_class | meaning | example | member edge |
 |---|---|---|---|
 | `physical` | a whole dedicated device | a real DIMM / GPU / NIC PF / disk | — |
 | `virtual` | fully synthetic, no hardware parent | virtio disk, emulated NIC, veth pair | — |
-| `passthrough` | a whole physical device assigned to a guest | VFIO whole-GPU / whole-NIC | the physical device |
-| `partition` | a slice of a physical parent | **SR-IOV VF, vGPU/MIG, VLAN/macvlan sub-interface** | the physical parent |
+| `passthrough` | a whole physical device assigned to a guest | VFIO whole-GPU / whole-NIC | `parent_device` → the physical device |
+| `partition` | a **slice of one** physical parent (1→N) | **SR-IOV VF, vGPU/MIG, VLAN/macvlan sub-interface** | `parent_device` → the physical parent |
+| `aggregate` | a **composite of many** interfaces (N→1) | **bond / LACP LAG** (802.1AX) | `lower_layer` → the member NICs |
+| `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
 So a **vGPU** = `Hardware.GraphicsProcessor` `device_class: partition`, `partition_mechanism: mediated`
 (or `mig`), `parent_device` → the physical `Hardware.GraphicsProcessor`; an **SR-IOV VF / vETH** =
 `Hardware.NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
-`parent_device` → the physical NIC. The `parent_device` edge is a self-referential `references` relationship
-(`Hardware.X → Hardware.X`); the §27 `Identity` block still distinguishes instances (a VF/vGPU keyed by
-`location`/index even with no hardware serial). Grounded in SR-IOV, the Linux mdev/vGPU + NVIDIA MIG
-frameworks, and 802.1Q; mirrors Redfish `NetworkAdapter`→`NetworkDeviceFunction` /
-`PCIeDevice`→`PCIeFunction`. `device_class` is a UDLM-defined cross-cutting classifier (no single standard
-owns it).
+`parent_device` → the physical NIC. A **bond** = `Hardware.NetworkInterface` `device_class: aggregate`,
+`aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =
+`Hardware.NetworkInterface` `device_class: bridge`, `lower_layer` → the bond (or NICs) it bridges. The
+host L2 stack is thus one chain — `eno1`+`eno2` (physical) → `bond0` (aggregate) → `br0` (bridge) →
+tenant sub-interfaces (partition) — and `parent_device` (1→N) vs `lower_layer` (N→1) are the two
+**methods that relate a derived interface to its foundational components**. Both edges are
+self-referential `references` relationships (`Hardware.X → Hardware.X`); the §27 `Identity` block still
+distinguishes instances (a VF/vGPU keyed by `location`/index even with no hardware serial). Grounded in
+SR-IOV, the Linux mdev/vGPU + NVIDIA MIG frameworks, IEEE 802.1AX (aggregation), IEEE 802.1Q (bridging),
+and RFC 8343 interface stacking; mirrors Redfish `NetworkAdapter`→`NetworkDeviceFunction` /
+`PCIeDevice`→`PCIeFunction`. `device_class` is a UDLM-defined cross-cutting classifier (no single
+standard owns it).
