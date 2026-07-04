@@ -179,3 +179,22 @@ The new types, their category/tier, and the standard each adopts by reference. A
 Authoring follows the registry process (`governance/registry-governance.md` §3, `CONTRIBUTING.md`):
 each type validates against the meta-schema (`tools/validate.py`), ships ≥1 worked example, records
 `adopts[]` provenance + license, and starts at `status: developing` until promoted.
+
+## Extension model — augment, don't fork (seed for #198)
+
+Grounded in RFC 8345's augmentation discipline and its documented failure mode (≥92 modules
+augmenting the base with inconsistent patterns — the inconsistency itself broke multi-layer
+composability). Normative rules:
+
+1. **Never add vendor/org fields to a Tier-1 spec.** Vendor and organization specifics live at
+   the extension surface only: a Tier-2 `Vendor.Type` / Tier-3 `Org.Type` in its own namespace,
+   or `provider_hints` on the instance (SPEC-DESIGN §17/§24).
+2. **Extensions are additive against the base** — a Tier-2/3 type layers new properties and
+   non-topological references onto a Tier-1 concept; it does not redefine or remove base
+   semantics (the RFC 8345 "augmentations in a new module" pattern).
+3. **A recurring need is a base revision, not N vendor forks.** When the same extension appears
+   across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
+   IETF response to augmentation fragmentation), promoted through registry governance §3.
+4. **The formal `extends` mechanism** (how a Tier-2 spec machine-declares its Tier-1 base and
+   inherits its schema) is the open #198 design question — until it lands, rules 1–3 govern by
+   review. See docs/research/minimal-custom-surface-and-graph-resilience.md.
