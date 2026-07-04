@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Interface",
-    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, or a partition derived from a physical NIC — SR-IOV VF, or a VLAN/macvlan sub-interface — with parent_device referencing the physical NIC. Mirrors Redfish NetworkAdapter / NetworkPort / NetworkDeviceFunction.",
+    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.1.1 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-26"
   },
@@ -20,13 +20,35 @@
     "properties": {
       "device_class": {
         "type": "string",
-        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "enum": ["physical", "virtual", "passthrough", "partition", "aggregate", "bridge"],
         "default": "physical",
-        "description": "Device realization (common-elements.md §7). partition = SR-IOV VF or VLAN/macvlan sub-interface off a physical NIC (set parent_device + partition_mechanism); virtual = virtio/veth with no hardware parent."
+        "description": "Device realization (common-elements.md §7). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N→1 inverse of partition's 1→N."
       },
       "partition_mechanism": {
         "type": "string",
         "description": "Only when device_class=partition: e.g. sr-iov, vlan, macvlan, ipvlan."
+      },
+      "aggregation": {
+        "type": "object",
+        "description": "Only when device_class=aggregate — bond / link-aggregation parameters (IEEE 802.1AX). The member interfaces are the lower_layer references.",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["802.3ad", "active-backup", "balance-rr", "balance-xor", "broadcast", "balance-tlb", "balance-alb"],
+            "description": "Bond mode. 802.3ad = dynamic LACP link aggregation (requires a matching switch LAG); active-backup = failover only. Linux-bonding vocabulary; 802.3ad names IEEE 802.1AX."
+          },
+          "lacp_rate": { "type": "string", "enum": ["slow", "fast"], "description": "Only when mode=802.3ad: LACPDU transmit rate." },
+          "xmit_hash_policy": { "type": "string", "description": "Tx load-balancing hash, e.g. layer2 | layer2+3 | layer3+4 (modes 802.3ad / balance-xor)." },
+          "min_links": { "type": "integer", "minimum": 0, "description": "Minimum aggregated links for the bond to be considered up." }
+        }
+      },
+      "bridge": {
+        "type": "object",
+        "description": "Only when device_class=bridge — software L2 bridge parameters (IEEE 802.1Q). The bridged ports are the lower_layer references.",
+        "properties": {
+          "stp": { "type": "boolean", "description": "Spanning Tree Protocol enabled (802.1D/802.1Q)." },
+          "vlan_filtering": { "type": "boolean", "description": "802.1Q per-port VLAN filtering on the bridge (false = a plain trunk bridge that passes all tags transparently)." }
+        }
       },
       "identity": {
         "type": "object",
@@ -52,7 +74,8 @@
   "relationships": [
     { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical NIC is installed in." },
     { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For virtual / passthrough / partition, the guest the interface is presented to." },
-    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "parent_device — the physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from. REQUIRED when device_class is passthrough or partition (common-elements §7)." }
+    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7)." },
+    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "1..n", "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7)." }
   ],
   "adopts": [
     {
@@ -63,6 +86,33 @@
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
       "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "RFC 8343",
+      "version": "8343",
+      "standard_name": "ietf-interfaces (lower-layer-if / higher-layer-if)",
+      "role": "interface-stacking vocabulary — a composite interface (bond/bridge) references its member interfaces via lower_layer (RFC 8343 lower-layer-if)",
+      "source": "https://www.rfc-editor.org/rfc/rfc8343",
+      "license": "IETF-Trust-TLP",
+      "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "IEEE 802.1AX",
+      "version": "2020",
+      "standard_name": "Link Aggregation",
+      "role": "bond / LACP link-aggregation vocabulary (device_class=aggregate, aggregation.mode=802.3ad)",
+      "source": "https://standards.ieee.org/ieee/802.1AX/",
+      "license": "IEEE",
+      "license_compatibility": "reference-only"
+    },
+    {
+      "standard": "IEEE 802.1Q",
+      "version": "2022",
+      "standard_name": "Bridges and Bridged Networks",
+      "role": "software L2 bridge + VLAN vocabulary (device_class=bridge, bridge.vlan_filtering, vlan_id)",
+      "source": "https://standards.ieee.org/ieee/802.1Q/",
+      "license": "IEEE",
+      "license_compatibility": "reference-only"
     }
   ]
 }
