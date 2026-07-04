@@ -116,6 +116,9 @@ Because adoption references vocabulary (field names = facts) and never restates 
 | **NUT** variable namespace | **GPL-2.0+** | **reference-only** | variable *names* are facts; don't copy NUT docs/text |
 | Kubernetes Gateway API | Apache-2.0 | compatible-vendor | |
 | IETF LDAP RFC 4511/4512 | IETF Trust | compatible-reference | already cataloged |
+| IETF RFC 8343 (ietf-interfaces) | IETF Trust (BSD-like reuse) | compatible-reference | `lower-layer-if`/`higher-layer-if` stacking terms — facts (Hardware.NetworkInterface aggregate/bridge) |
+| IEEE 802.1AX (Link Aggregation) | **IEEE (copyright)** | **reference-only** | bond/LACP *term names* only; don't copy IEEE standard text |
+| IEEE 802.1Q (Bridges & Bridged Networks) | **IEEE (copyright)** | **reference-only** | bridge/VLAN *term names* only; don't copy IEEE standard text |
 
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.
