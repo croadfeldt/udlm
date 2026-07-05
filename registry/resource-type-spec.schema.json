@@ -210,8 +210,10 @@
               "depends_on",
               "references",
               "contained_by",
-              "binds_to"
-            ]
+              "binds_to",
+              "member_of"
+            ],
+            "description": "Relationship kind. depends_on/contained_by/binds_to are ORDERING edges (service-dependencies DEP rules); references is informational; member_of is Composite membership (declared member->composite; ordering-neutral by itself — the composite's lifecycle aggregates members per ENT-004, and any ordering is declared explicitly with depends_on). An authored composite-side `members:` list is the equivalent projection of member_of edges."
           },
           "target": {
             "type": "string",
