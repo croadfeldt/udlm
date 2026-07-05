@@ -90,7 +90,8 @@
       "properties": {
         "date": {
           "type": "string",
-          "format": "date"
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
         },
         "reason": {
           "type": "string"
@@ -131,7 +132,8 @@
         },
         "origination_timestamp": {
           "type": "string",
-          "format": "date"
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "When this type was originated — RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source. Backfilled 2026-07-05 from each file's first git commit instant (the auditable carrier)."
         }
       }
     },

@@ -12,7 +12,7 @@
     "display_name": "Network Interface",
     "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by Network.Switch), and a physical interface carries a connected_to adjacency to its LLDP-discovered peer termination point (host NIC ↔ switch port) — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-27T00:11:51Z"
   },
   "spec": {
     "type": "object",
