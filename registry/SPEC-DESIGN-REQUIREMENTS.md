@@ -188,6 +188,14 @@ Each hard constraint cites the UDLM contract it derives from.
     requirement as data with no policy to consume it, or a mechanism with no provider to declare it. It
     is foundational across UDLM, DCM, and (where applicable) DAV.
 
+30. **Universal identity is RFC 9562 UUID — v4 for identity, v7 for time-ordered artifacts,
+    everything else prohibited** (`contracts/identifier-scheme.md` §2.1, normative). Every entity,
+    type spec, instance, policy, provider, and request carries an immutable v4 uuid minted once at
+    creation (CSPRNG) and never reused (§5). Every cross-entity reference is
+    `{uuid: authoritative, handle: advisory}` — never name alone (foundations/context-and-purpose.md
+    §3). Validators MUST check version nibble + variant bits at ingest/authoring
+    (estate CI and `tests/validate_registry.py` do).
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
