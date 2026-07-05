@@ -13,7 +13,7 @@ metadata:
   display_name: Container
   description: A container workload with an image, resource requests, environment, and exposed ports.
   maintainer: udlm-registry
-  origination_timestamp: "2026-06-17"
+  origination_timestamp: "2026-06-17T18:31:11Z"
 spec:
   type: object
   required: [image]

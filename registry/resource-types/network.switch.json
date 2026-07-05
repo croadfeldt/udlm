@@ -12,7 +12,7 @@
     "display_name": "Network Switch",
     "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Compute.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connected_to` adjacency (LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics (UniFi, Catalyst, …) are the provider/extension, never the type.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-07-04"
+    "origination_timestamp": "2026-07-04T20:12:42Z"
   },
   "spec": {
     "type": "object",
@@ -20,13 +20,21 @@
     "properties": {
       "lifecycle_state": {
         "type": "string",
-        "enum": ["available", "allocated", "retired"],
+        "enum": [
+          "available",
+          "allocated",
+          "retired"
+        ],
         "default": "available",
         "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated; allocated = adopted into the managed lifecycle."
       },
       "composition_visibility": {
         "type": "string",
-        "enum": ["opaque", "transparent", "selective"],
+        "enum": [
+          "opaque",
+          "transparent",
+          "selective"
+        ],
         "default": "opaque",
         "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connected_to link records)."
       },
@@ -34,32 +42,74 @@
         "type": "object",
         "description": "Chassis identity (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
-          "chassis_id": { "type": "string", "description": "LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary discovered-identity key; stable across renames/re-IPs." },
-          "serial_number": { "type": "string", "description": "Vendor serial." },
-          "asset_tag": { "type": "string" },
-          "manufacturer": { "type": "string" },
-          "model": { "type": "string" },
-          "system_name": { "type": "string", "description": "Configured system name (LLDP System Name TLV) — mutable, secondary to chassis_id." }
+          "chassis_id": {
+            "type": "string",
+            "description": "LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary discovered-identity key; stable across renames/re-IPs."
+          },
+          "serial_number": {
+            "type": "string",
+            "description": "Vendor serial."
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "system_name": {
+            "type": "string",
+            "description": "Configured system name (LLDP System Name TLV) — mutable, secondary to chassis_id."
+          }
         }
       },
       "ports": {
         "type": "object",
         "description": "Reconciled port rollup (§26) — aggregate of contained Hardware.NetworkInterface when modeled.",
         "properties": {
-          "count": { "type": "integer", "minimum": 1, "description": "Physical port count." },
-          "speed": { "type": "string", "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$", "description": "Predominant port speed, e.g. 1Gbps." }
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Physical port count."
+          },
+          "speed": {
+            "type": "string",
+            "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$",
+            "description": "Predominant port speed, e.g. 1Gbps."
+          }
         }
       },
-      "management_vlan": { "type": "integer", "minimum": 1, "maximum": 4094, "description": "802.1Q VLAN the management interface lives on, if tagged." }
+      "management_vlan": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4094,
+        "description": "802.1Q VLAN the management interface lives on, if tagged."
+      }
     }
   },
-  "immutable": ["identity.chassis_id", "identity.serial_number"],
+  "immutable": [
+    "identity.chassis_id",
+    "identity.serial_number"
+  ],
   "outputs": {
-    "management_address": { "type": "string", "description": "Reachable management endpoint (IP/hostname) once Realized." },
-    "firmware_version": { "type": "string", "description": "Observed firmware/OS version (LLDP System Description carries it) — Discovered-state data; drift input for fleet-consistency checks." }
+    "management_address": {
+      "type": "string",
+      "description": "Reachable management endpoint (IP/hostname) once Realized."
+    },
+    "firmware_version": {
+      "type": "string",
+      "description": "Observed firmware/OS version (LLDP System Description carries it) — Discovered-state data; drift input for fleet-consistency checks."
+    }
   },
   "relationships": [
-    { "kind": "depends_on", "target": "Facility.PowerFeed", "cardinality": "0..n", "description": "Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo shutdown (connectivity goes last)." }
+    {
+      "kind": "depends_on",
+      "target": "Facility.PowerFeed",
+      "cardinality": "0..n",
+      "description": "Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo shutdown (connectivity goes last)."
+    }
   ],
   "adopts": [
     {
@@ -91,7 +141,13 @@
     }
   ],
   "aliases": [
-    { "name": "Ethernet Switch", "note": "common colloquial name" },
-    { "name": "Top-of-Rack (ToR) Switch", "note": "datacenter placement role" }
+    {
+      "name": "Ethernet Switch",
+      "note": "common colloquial name"
+    },
+    {
+      "name": "Top-of-Rack (ToR) Switch",
+      "note": "datacenter placement role"
+    }
   ]
 }

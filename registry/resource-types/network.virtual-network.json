@@ -12,7 +12,7 @@
     "display_name": "Virtual Network",
     "description": "A host- or cluster-scoped virtual network that workloads (VMs, pods) attach to — the attachment POINT between guest vNICs and the host L2 stack. Realized by e.g. a libvirt network (forward mode=bridge/nat/routed/isolated), a Kubernetes NetworkAttachmentDefinition (Multus/CNI), or an OVN logical switch — the vendor mechanism is the provider, never the type. Completes graph traversal guest → VirtualNetwork → (references) underlying bridge/uplink Hardware.NetworkInterface → bond → NIC → switch. Consumers declare attachment by binds_to on the consumer side (a VM binds_to its VirtualNetwork), which implies depends_on: the network exists before the guest starts; guests stop before it tears down.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-07-04"
+    "origination_timestamp": "2026-07-05T02:10:32Z"
   },
   "spec": {
     "type": "object",
@@ -20,28 +20,60 @@
     "properties": {
       "forward_mode": {
         "type": "string",
-        "enum": ["bridge", "nat", "routed", "isolated"],
+        "enum": [
+          "bridge",
+          "nat",
+          "routed",
+          "isolated"
+        ],
         "x-extensible-enum": true,
         "description": "How traffic leaves the virtual network (libvirt forward-mode vocabulary). bridge = transparent onto an underlying host bridge; nat/routed = via the host stack; isolated = no egress."
       },
-      "autostart": { "type": "boolean", "description": "Network is activated with the host." },
+      "autostart": {
+        "type": "boolean",
+        "description": "Network is activated with the host."
+      },
       "identity": {
         "type": "object",
         "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
-          "location": { "type": "string", "description": "The network's name on its host/cluster (e.g. 'host-bridge', 'default') — unique within the containing scope." },
-          "role": { "type": "string", "description": "Semantic usage, e.g. workload | mgmt | test." }
+          "location": {
+            "type": "string",
+            "description": "The network's name on its host/cluster (e.g. 'host-bridge', 'default') — unique within the containing scope."
+          },
+          "role": {
+            "type": "string",
+            "description": "Semantic usage, e.g. workload | mgmt | test."
+          }
         }
       }
     }
   },
   "outputs": {
-    "attachment_ready": { "type": "boolean", "description": "Network is active and attachable once Realized (libvirt net-list active analog)." }
+    "attachment_ready": {
+      "type": "boolean",
+      "description": "Network is active and attachable once Realized (libvirt net-list active analog)."
+    }
   },
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalInstance", "cardinality": "0..1", "description": "The host providing a host-scoped virtual network (libvirt case). Guests stop before the host regardless; this scopes the network's lifecycle to its host." },
-    { "kind": "contained_by", "target": "Compute.Cluster", "cardinality": "0..1", "description": "Cluster-scoped virtual networks (NetworkAttachmentDefinition / OVN logical networks)." },
-    { "kind": "references", "target": "Hardware.NetworkInterface", "cardinality": "0..1", "description": "underlying_device — the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements §7/§7a)." }
+    {
+      "kind": "contained_by",
+      "target": "Compute.BareMetalInstance",
+      "cardinality": "0..1",
+      "description": "The host providing a host-scoped virtual network (libvirt case). Guests stop before the host regardless; this scopes the network's lifecycle to its host."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.Cluster",
+      "cardinality": "0..1",
+      "description": "Cluster-scoped virtual networks (NetworkAttachmentDefinition / OVN logical networks)."
+    },
+    {
+      "kind": "references",
+      "target": "Hardware.NetworkInterface",
+      "cardinality": "0..1",
+      "description": "underlying_device — the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements §7/§7a)."
+    }
   ],
   "adopts": [
     {
@@ -64,8 +96,19 @@
     }
   ],
   "aliases": [
-    { "name": "NetworkAttachmentDefinition", "standard": "Kubernetes/Multus", "note": "cluster-scoped realization" },
-    { "name": "libvirt network", "note": "host-scoped realization" },
-    { "name": "OVN logical switch", "standard": "OVN", "note": "SDN realization" }
+    {
+      "name": "NetworkAttachmentDefinition",
+      "standard": "Kubernetes/Multus",
+      "note": "cluster-scoped realization"
+    },
+    {
+      "name": "libvirt network",
+      "note": "host-scoped realization"
+    },
+    {
+      "name": "OVN logical switch",
+      "standard": "OVN",
+      "note": "SDN realization"
+    }
   ]
 }

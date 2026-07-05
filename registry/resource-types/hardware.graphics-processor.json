@@ -12,7 +12,7 @@
     "display_name": "Graphics Processor",
     "description": "A GPU / accelerator component. device_class covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parent_device references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-27T00:11:51Z"
   },
   "spec": {
     "type": "object",
@@ -20,7 +20,12 @@
     "properties": {
       "device_class": {
         "type": "string",
-        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "enum": [
+          "physical",
+          "virtual",
+          "passthrough",
+          "partition"
+        ],
         "default": "physical",
         "description": "Device realization (common-elements.md §7). passthrough = whole GPU to a guest; partition = vGPU/MIG slice (set parent_device + partition_mechanism)."
       },
@@ -32,28 +37,66 @@
         "type": "object",
         "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
-          "location": { "type": "string", "description": "PCIe slot / BDF within the parent (Redfish PhysicalLocation). Primary discriminator; for a partition, the vGPU/MIG instance id." },
-          "serial_number": { "type": "string", "description": "GPU serial (absent for virtual/partition)." },
-          "asset_tag": { "type": "string" },
-          "model": { "type": "string", "description": "GPU model, e.g. AMD Radeon Pro W7900 (Redfish Model)." },
-          "manufacturer": { "type": "string" },
-          "role": { "type": "string", "description": "Semantic usage, e.g. compute | display | inference." }
+          "location": {
+            "type": "string",
+            "description": "PCIe slot / BDF within the parent (Redfish PhysicalLocation). Primary discriminator; for a partition, the vGPU/MIG instance id."
+          },
+          "serial_number": {
+            "type": "string",
+            "description": "GPU serial (absent for virtual/partition)."
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "description": "GPU model, e.g. AMD Radeon Pro W7900 (Redfish Model)."
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "Semantic usage, e.g. compute | display | inference."
+          }
         }
       },
       "memory": {
         "type": "object",
         "properties": {
-          "size": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$", "description": "Framebuffer / device memory, e.g. 48GB (for a vGPU, the profile's allocation)." }
+          "size": {
+            "type": "string",
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$",
+            "description": "Framebuffer / device memory, e.g. 48GB (for a vGPU, the profile's allocation)."
+          }
         }
       },
-      "architecture": { "type": "string", "description": "GPU architecture / generation, e.g. RDNA4, Hopper." }
+      "architecture": {
+        "type": "string",
+        "description": "GPU architecture / generation, e.g. RDNA4, Hopper."
+      }
     }
   },
   "outputs": {},
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host the physical GPU is installed in." },
-    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For passthrough / partition (vGPU), the guest the device is presented to." },
-    { "kind": "references", "target": "Hardware.GraphicsProcessor", "cardinality": "0..1", "description": "parent_device — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when device_class is passthrough or partition (common-elements §7)." }
+    {
+      "kind": "contained_by",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..1",
+      "description": "The host the physical GPU is installed in."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..1",
+      "description": "For passthrough / partition (vGPU), the guest the device is presented to."
+    },
+    {
+      "kind": "references",
+      "target": "Hardware.GraphicsProcessor",
+      "cardinality": "0..1",
+      "description": "parent_device — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when device_class is passthrough or partition (common-elements §7)."
+    }
   ],
   "adopts": [
     {

@@ -12,19 +12,40 @@
     "display_name": "IP Address",
     "description": "An allocated IP address, dynamic or static, that other resources may consume.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "origination_timestamp": "2026-06-17T18:31:11Z"
   },
   "spec": {
     "type": "object",
-    "required": ["family"],
+    "required": [
+      "family"
+    ],
     "properties": {
-      "family": { "type": "string", "enum": ["ipv4", "ipv6"], "description": "Address family." },
-      "allocation": { "type": "string", "enum": ["dynamic", "static"], "default": "dynamic" }
+      "family": {
+        "type": "string",
+        "enum": [
+          "ipv4",
+          "ipv6"
+        ],
+        "description": "Address family."
+      },
+      "allocation": {
+        "type": "string",
+        "enum": [
+          "dynamic",
+          "static"
+        ],
+        "default": "dynamic"
+      }
     }
   },
-  "immutable": ["family"],
+  "immutable": [
+    "family"
+  ],
   "outputs": {
-    "address": { "type": "string", "description": "The allocated address once Realized." }
+    "address": {
+      "type": "string",
+      "description": "The allocated address once Realized."
+    }
   },
   "relationships": []
 }
