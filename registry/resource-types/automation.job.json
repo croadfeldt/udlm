@@ -12,15 +12,25 @@
     "display_name": "Automation Job",
     "description": "A Process Resource Entity (resource-service-entities §6) — an automation job as a first-class node in the dependency graph: playbook, workflow, pipeline, or script. Its depends_on edges are PROCESS dependencies and carry the same weight as infrastructure dependencies: while the job is running, nothing it depends on may be taken down. This is what makes orchestrated lifecycle operations (a UPS-triggered graceful shutdown, a rolling upgrade) derivable from true data — the orchestrator host, the switch fabric the job traverses, and the name service it resolves through are the job's real dependencies, so 'orchestrator stops last' and 'connectivity outlives compute' fall out of the reverse-topological sort with no policy special-casing. Vendor engines (Ansible, Tekton, Argo) are providers, never the type. First registry type with entity_type Process; §6.4 obliges entities modified by this job to cite its uuid in their provenance.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-07-04"
+    "origination_timestamp": "2026-07-05T03:29:34Z"
   },
   "spec": {
     "type": "object",
-    "required": ["process_type", "max_execution_time"],
+    "required": [
+      "process_type",
+      "max_execution_time"
+    ],
     "properties": {
       "process_type": {
         "type": "string",
-        "enum": ["playbook", "workflow", "pipeline", "automation_job", "script", "other"],
+        "enum": [
+          "playbook",
+          "workflow",
+          "pipeline",
+          "automation_job",
+          "script",
+          "other"
+        ],
         "description": "Process class (resource-service-entities §6.3). 'other' is the escape hatch — the enum stays closed."
       },
       "max_execution_time": {
@@ -30,26 +40,57 @@
       },
       "on_max_exceeded": {
         "type": "string",
-        "enum": ["terminate", "notify", "escalate"],
+        "enum": [
+          "terminate",
+          "notify",
+          "escalate"
+        ],
         "x-extensible-enum": true,
         "description": "Action when max_execution_time is exceeded. Default is profile-governed (ENT-004)."
       },
       "trigger": {
         "type": "string",
-        "enum": ["manual", "event", "schedule"],
+        "enum": [
+          "manual",
+          "event",
+          "schedule"
+        ],
         "x-extensible-enum": true,
         "description": "What initiates the job (e.g. a NUT on-battery event, a cron schedule, an operator)."
       }
     }
   },
   "outputs": {
-    "last_result": { "type": "string", "description": "Terminal state of the most recent execution (COMPLETED|FAILED|CANCELLED, §6.2)." }
+    "last_result": {
+      "type": "string",
+      "description": "Terminal state of the most recent execution (COMPLETED|FAILED|CANCELLED, §6.2)."
+    }
   },
   "relationships": [
-    { "kind": "depends_on", "target": "Compute.BareMetalHost", "cardinality": "0..n", "description": "Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)." },
-    { "kind": "depends_on", "target": "Network.Switch", "cardinality": "0..n", "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on." },
-    { "kind": "depends_on", "target": "Network.AddressService", "cardinality": "0..n", "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)." },
-    { "kind": "references", "target": "Compute", "cardinality": "0..n", "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid)." }
+    {
+      "kind": "depends_on",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..n",
+      "description": "Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Network.Switch",
+      "cardinality": "0..n",
+      "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Network.AddressService",
+      "cardinality": "0..n",
+      "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)."
+    },
+    {
+      "kind": "references",
+      "target": "Compute",
+      "cardinality": "0..n",
+      "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid)."
+    }
   ],
   "adopts": [
     {

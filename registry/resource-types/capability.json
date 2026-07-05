@@ -13,12 +13,15 @@
     "display_name": "Capability",
     "description": "A discrete platform capability — the unit of architectural capability tracked, normalized, and gap-analysed by DAV. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), not provisioning, and it is never realized by a provider. The family tag disambiguates the collision-prone bare word 'Capability' from any Resource type.",
     "maintainer": "dav",
-    "origination_timestamp": "2026-06-15"
+    "origination_timestamp": "2026-06-18T00:58:56Z"
   },
   "spec": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["name", "description"],
+    "required": [
+      "name",
+      "description"
+    ],
     "properties": {
       "name": {
         "type": "string",
@@ -37,7 +40,12 @@
         "description": "Capability domain (e.g. one of the DCM capability domains) this capability belongs to."
       },
       "curation_state": {
-        "enum": ["proposed", "under-review", "canonical", "deprecated"],
+        "enum": [
+          "proposed",
+          "under-review",
+          "canonical",
+          "deprecated"
+        ],
         "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states (provenance-first; promotion to canonical is a curation act, applied by Policy, not by a provider)."
       }
     }

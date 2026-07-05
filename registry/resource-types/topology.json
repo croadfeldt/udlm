@@ -12,7 +12,7 @@
     "display_name": "Topology",
     "description": "A declared graph of failure/locality domains (region, zone, rack, host, power, network) that abstract placement, residency, fault-domain gating, and ordering resolve against. A cross-cutting, single-segment type (not domain-owned) so resources across any domain reference it. Failure domains are addressable data WITHIN this type (SPEC-DESIGN-REQUIREMENTS §26/§27), keyed by a stable id, not a separate type. Each domain carries an abstract `kind` (what a constraint targets) and a concrete `id` (what a resource actually landed in); portable intent references kinds, never concrete ids.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-27"
+    "origination_timestamp": "2026-06-27T20:29:19Z"
   },
   "adopts": [
     {
@@ -26,11 +26,19 @@
   ],
   "spec": {
     "type": "object",
-    "required": ["scope", "domains"],
+    "required": [
+      "scope",
+      "domains"
+    ],
     "properties": {
       "scope": {
         "type": "string",
-        "enum": ["global", "region", "facility", "logical"],
+        "enum": [
+          "global",
+          "region",
+          "facility",
+          "logical"
+        ],
         "description": "Breadth this topology describes. `facility` is a scope, not the root — a topology MAY span facilities."
       },
       "domains": {
@@ -38,7 +46,10 @@
         "description": "Failure/locality domains as addressable data within the topology (SPEC-DESIGN-REQUIREMENTS §26/§27). Each keyed by a stable `id`; placement/locality references point at `id`. The `parent` links form an acyclic hierarchy.",
         "items": {
           "type": "object",
-          "required": ["id", "kind"],
+          "required": [
+            "id",
+            "kind"
+          ],
           "properties": {
             "id": {
               "type": "string",
@@ -46,7 +57,15 @@
             },
             "kind": {
               "type": "string",
-              "enum": ["region", "availability-zone", "zone", "rack", "host", "power-domain", "network-segment"],
+              "enum": [
+                "region",
+                "availability-zone",
+                "zone",
+                "rack",
+                "host",
+                "power-domain",
+                "network-segment"
+              ],
               "description": "Abstract domain level a placement/residency constraint targets (the portable dimension)."
             },
             "parent": {
@@ -55,7 +74,9 @@
             },
             "labels": {
               "type": "object",
-              "additionalProperties": { "type": "string" },
+              "additionalProperties": {
+                "type": "string"
+              },
               "description": "Domain attributes, e.g. `jurisdiction: EU`, `residency: eu-west`. Sovereignty/residency resolves against these."
             }
           },
