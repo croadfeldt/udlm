@@ -1,0 +1,53 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "7c8fe45c-8a77-4ab2-9743-e779cd1c5401",
+  "resource_type": "Network.AddressService",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Address Service",
+    "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (they are two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (ISC Kea, FreeIPA DNS, dnsmasq, UniFi) are providers, never the type. Referenced by the estate dependency graph so shutdown/startup ordering can account for hosts that need leases/resolution. Was tabulated in resource-type-data-sources §4 since 2026-06 but never authored — this closes that gap.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-04"
+  },
+  "spec": {
+    "type": "object",
+    "required": [],
+    "properties": {
+      "services": {
+        "type": "array",
+        "items": { "type": "string", "enum": ["dhcp", "dns", "ipam"], "x-extensible-enum": true },
+        "description": "Which address capabilities this service instance provides."
+      },
+      "ha": { "type": "boolean", "description": "Served redundantly (e.g. Kea HA pair)." }
+    }
+  },
+  "outputs": {
+    "serving": { "type": "boolean", "description": "Leases/answers being served once Realized." }
+  },
+  "relationships": [],
+  "adopts": [
+    {
+      "standard": "ISC Kea",
+      "version": "2.x",
+      "standard_name": "Dhcp4",
+      "role": "DHCP service vocabulary (subnets/pools/reservations)",
+      "source": "https://kea.readthedocs.io/",
+      "license": "MPL-2.0",
+      "license_compatibility": "reference-only"
+    },
+    {
+      "standard": "IETF DNS",
+      "version": "RFC 1035",
+      "standard_name": "Domain Names",
+      "role": "name-resolution vocabulary",
+      "source": "https://www.rfc-editor.org/rfc/rfc1035",
+      "license": "IETF Trust",
+      "license_compatibility": "compatible-reference"
+    }
+  ]
+}
