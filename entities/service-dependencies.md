@@ -440,6 +440,9 @@ catalog_item:
 
 ---
 
+
+> **Instance-layer vocabulary:** at the realized-entity (instance) layer the tombstone state is `lifecycle_state: Decommissioned` — the schema's enum term. "Retired" in this rule's prose names the same phase; records and validators MUST use `Decommissioned`.
+
 ## 11a. Dependency Graph Versioning (Q30)
 
 Dependency graphs are versioned as properties of their parent catalog item — not as independent artifacts. When the dependency graph changes, the catalog item version increments following standard semver semantics:
