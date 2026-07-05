@@ -33,7 +33,7 @@
     "uuid": {
       "type": "string",
       "format": "uuid",
-      "description": "RFC 4122 UUIDv4 identity of this type specification (contracts/identifier-scheme.md). Immutable for the life of the type."
+      "description": "RFC 9562 UUIDv4 identity of this type specification (contracts/identifier-scheme.md §2.1 — the normative UUID standard: v4 identity / v7 time-ordered / others prohibited). Immutable for the life of the type."
     },
     "resource_type": {
       "type": "string",
