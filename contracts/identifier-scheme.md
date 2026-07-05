@@ -1,6 +1,6 @@
 # UDLM — Identifier Scheme Contract
 
-**Document Status:** 📋 Draft — Initial Specification
+**Document Status:** ✅ Complete — Normative (UUID standard ratified 2026-07-04)
 **Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
@@ -38,12 +38,31 @@ A conformant realization MUST distinguish three identifier types:
 | **Handle** | namespaced string | Tenant- or realm-scoped | Mutable (with audit) | No — must be rebound on import |
 | **Reference** | typed cross-doc pointer | Inherits target's scope | Tracks target | Yes if target is portable |
 
-### 2.1 UUID
+### 2.1 UUID — THE identifier standard (normative)
 
-- **Format**: RFC 4122 stringified, lowercase, hyphenated. Example: `f3b64dda-2c95-4a1b-8d3e-7a9c1b2e4f8d`.
-- **Version**: UUIDv4 REQUIRED for net-new artifacts. UUIDv7 PERMITTED where time-ordering is required (e.g., audit chain leaves) — declared in the field schema.
-- **Validation**: peers MUST reject malformed or non-conformant version UUIDs at ingest.
-- **Uniqueness**: globally unique across all realizations. Collision probability is assumed zero for v4; v7 collisions handled by the audit-chain ordering rule.
+UDLM/DCM standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes
+RFC 4122; all 4122-era formats remain valid under 9562, which additionally defines v6/v7/v8).
+Citations of "RFC 4122" elsewhere in this spec read as RFC 9562.
+
+- **Format**: RFC 9562 §4 canonical textual form — lowercase, hyphenated, no braces, no `urn:`
+  prefix. Example: `f3b64dda-2c95-4a1b-8d3e-7a9c1b2e4f8d`.
+- **Version policy (closed — not extensible):**
+
+  | Version | Status | Use | Why |
+  |---|---|---|---|
+  | **v4** | **REQUIRED** | entity/artifact IDENTITY (resources, types, policies, providers, requests) | unpredictable (CSPRNG), leaks nothing, collision-safe across independent realizations; the Kubernetes-uid pattern |
+  | **v7** | **REQUIRED** | TIME-ORDERED artifacts only (audit-chain leaves, event ids) — declared in the field schema | millisecond-ordered → index locality + total order for the audit chain |
+  | v1/v6 | PROHIBITED | — | embed MAC/timestamp (information leak); ordering need is served by v7 |
+  | v3/v5 | PROHIBITED | — | name-derived/deterministic: two realizations hashing the same name mint the SAME uuid — violates the identity-is-minted-once model and §5 no-reassignment |
+  | v8 | PROHIBITED | — | vendor-defined layout: not interoperable across peers |
+
+- **Generation**: v4 from a cryptographically secure RNG (the platform's standard source —
+  `uuidgen`, `uuid.uuid4()`, `crypto.randomUUID()`); v7 per RFC 9562 §5.7.
+- **Validation**: peers MUST reject at ingest any malformed UUID and any version outside
+  {v4, v7-where-declared} — checking BOTH the version nibble and the variant bits
+  (`^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`, version per field).
+- **Uniqueness**: globally unique across all realizations. Collision probability is assumed zero
+  for v4; v7 collisions handled by the audit-chain ordering rule.
 
 ### 2.2 Handle
 
@@ -156,6 +175,7 @@ A test suite for these rules is part of the conformance specification
 ## 8. Related contracts
 
 - [`time-and-clock.md`](time-and-clock.md) — timestamps embedded in identifiers (UUIDv7)
+- **RFC 9562** (https://www.rfc-editor.org/rfc/rfc9562) — the adopted UUID standard (IETF Trust, compatible-reference)
 - [`schema-sharing.md`](schema-sharing.md) — how peers exchange the type definitions identifiers point to
 - [`error-model.md`](error-model.md) — error codes raised on identifier violations
 - [`event-catalog.md`](event-catalog.md) — identifiers used in event envelopes
