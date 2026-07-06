@@ -390,6 +390,39 @@
           }
         }
       }
+    },
+    "correlation_ids": {
+      "type": "array",
+      "description": "Stable natural keys independent of any observer, for entity resolution across discovery sources (dcm ADR-017 Decision C): a new observation matching an existing entity by these keys MERGES into that entity's uuid — one real resource, one entity uuid, never a duplicate. Every discovery source MUST emit them.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scheme",
+          "value"
+        ],
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "smbios-uuid",
+              "machine-id",
+              "serial-number",
+              "libvirt-domain-uuid",
+              "mac",
+              "wwn",
+              "lldp-chassis-id",
+              "ceph-fsid",
+              "provider-id"
+            ],
+            "x-extensible-enum": true,
+            "description": "The kind of natural key. provider-id = the owning provider's own resource identifier (Avenue-1 discovery)."
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -460,6 +493,16 @@
         "time_source": {
           "type": "string",
           "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "declared",
+            "discovered-derived",
+            "backfilled"
+          ],
+          "x-extensible-enum": true,
+          "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
         }
       }
     },
@@ -492,6 +535,16 @@
         "time_source": {
           "type": "string",
           "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "declared",
+            "discovered-derived",
+            "backfilled"
+          ],
+          "x-extensible-enum": true,
+          "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
         }
       }
     }
