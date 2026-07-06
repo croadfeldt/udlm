@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e3d6a303-ea5b-44ce-bfc2-fea53b718732",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -58,7 +58,7 @@
   "relationships": [
     {
       "kind": "contained_by",
-      "target": "Compute.BareMetalInstance",
+      "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
       "description": "The host providing a host-scoped virtual network (libvirt case). Guests stop before the host regardless; this scopes the network's lifecycle to its host."
     },
@@ -72,7 +72,9 @@
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "underlying_device — the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements §7/§7a)."
+      "description": "supporting_node (RFC 8345; renamed from underlying_device when relation names were adopted from standards, common-elements §9) — the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements §7/§7a).",
+      "name": "supporting_node",
+      "adopted_from": "RFC 8345 supporting-node"
     }
   ],
   "adopts": [
@@ -93,6 +95,15 @@
       "source": "https://libvirt.org/formatnetwork.html",
       "license": "LGPL-2.1+ (libvirt docs)",
       "license_compatibility": "reference-only"
+    },
+    {
+      "standard": "RFC 8345",
+      "version": "8345",
+      "standard_name": "ietf-network (supporting-node)",
+      "role": "relation vocabulary — supporting_node overlay-to-underlay relation name (common-elements §9)",
+      "source": "https://www.rfc-editor.org/rfc/rfc8345",
+      "license": "IETF-Trust-TLP",
+      "license_compatibility": "compatible-reference"
     }
   ],
   "aliases": [

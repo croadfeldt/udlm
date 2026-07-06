@@ -234,6 +234,15 @@
           },
           "description": {
             "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Machine-readable relation identity — the type's declared relation vocabulary (common-elements §9). Instance edges cite it via dependencies[].relation and MUST use a declared name (REL-001). A relation refines its kind's semantics and never overrides them (REL-003) — graph consumers that ignore relation still act correctly on kind. REQUIRED when a type declares more than one relationship of the same kind whose instance edges would otherwise be ambiguous."
+          },
+          "adopted_from": {
+            "type": "string",
+            "description": "The external standard defining this relation name (e.g. 'RFC 8343 lower-layer-if', 'OASIS TOSCA ConnectsTo') — SHOULD correspond to an entry in the type's adopts[]. Relation names are adopted, not invented, wherever a standard names the concept (common-elements §9)."
           }
         }
       }
