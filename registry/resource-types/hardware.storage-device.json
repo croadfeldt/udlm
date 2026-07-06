@@ -12,15 +12,22 @@
     "display_name": "Storage Device",
     "description": "A storage device (disk / SSD / NVMe) component. device_class distinguishes a physical drive (wwn/serial/bay) from a virtual disk presented to a guest (which binds_to its backing Storage resource). Mirrors Redfish Drive (+ SNIA Swordfish at the system level).",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-27T00:11:51Z"
   },
   "spec": {
     "type": "object",
-    "required": ["capacity"],
+    "required": [
+      "capacity"
+    ],
     "properties": {
       "device_class": {
         "type": "string",
-        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "enum": [
+          "physical",
+          "virtual",
+          "passthrough",
+          "partition"
+        ],
         "default": "physical",
         "description": "Device realization (common-elements.md §7). virtual = a guest virtual disk (binds_to its backing volume); passthrough = whole physical disk to a guest."
       },
@@ -32,29 +39,86 @@
         "type": "object",
         "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
-          "location": { "type": "string", "description": "Drive bay / slot within the parent, e.g. Bay 7 (Redfish PhysicalLocation). Primary discriminator." },
-          "serial_number": { "type": "string", "description": "Drive serial (Redfish SerialNumber)." },
-          "wwn": { "type": "string", "description": "World-Wide Name — globally unique block-device identity." },
-          "asset_tag": { "type": "string" },
-          "model": { "type": "string", "description": "Drive model (Redfish Model)." },
-          "manufacturer": { "type": "string" },
-          "role": { "type": "string", "description": "Semantic usage, e.g. boot | data | ceph-osd | cache." }
+          "location": {
+            "type": "string",
+            "description": "Drive bay / slot within the parent, e.g. Bay 7 (Redfish PhysicalLocation). Primary discriminator."
+          },
+          "serial_number": {
+            "type": "string",
+            "description": "Drive serial (Redfish SerialNumber)."
+          },
+          "wwn": {
+            "type": "string",
+            "description": "World-Wide Name — globally unique block-device identity."
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "description": "Drive model (Redfish Model)."
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "Semantic usage, e.g. boot | data | ceph-osd | cache."
+          }
         }
       },
-      "capacity": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$", "description": "Usable capacity, e.g. 1TB (Redfish CapacityBytes)." },
-      "media_type": { "type": "string", "description": "Media, e.g. hdd, ssd, nvme (Redfish MediaType)." },
-      "protocol": { "type": "string", "description": "Bus/transport, e.g. sas, sata, nvme (Redfish Protocol)." },
-      "rotation_speed_rpm": { "type": "integer", "minimum": 0, "description": "Spindle speed for rotational media; 0 / omitted for SSD/NVMe." }
+      "capacity": {
+        "type": "string",
+        "pattern": "^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$",
+        "description": "Usable capacity, e.g. 1TB (Redfish CapacityBytes)."
+      },
+      "media_type": {
+        "type": "string",
+        "description": "Media, e.g. hdd, ssd, nvme (Redfish MediaType)."
+      },
+      "protocol": {
+        "type": "string",
+        "description": "Bus/transport, e.g. sas, sata, nvme (Redfish Protocol)."
+      },
+      "rotation_speed_rpm": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Spindle speed for rotational media; 0 / omitted for SSD/NVMe."
+      }
     }
   },
   "outputs": {
-    "device_path": { "type": "string", "description": "OS device path once Realized, e.g. /dev/disk/by-id/...." }
+    "device_path": {
+      "type": "string",
+      "description": "OS device path once Realized, e.g. /dev/disk/by-id/...."
+    }
   },
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host this drive is installed in; parent carries the reconciled storage rollup (§26)." },
-    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For device_class=virtual/passthrough, the guest the disk is presented to." },
-    { "kind": "binds_to", "target": "Storage.Cluster", "target_field": "block_storage_class", "cardinality": "0..1", "description": "For a virtual disk, the backing storage resource (block storage class) it is provisioned from." },
-    { "kind": "references", "target": "Hardware.StorageDevice", "cardinality": "0..1", "description": "parent_device — the physical disk a passthrough/partition (e.g. NVMe namespace) is derived from (common-elements §7)." }
+    {
+      "kind": "contained_by",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..1",
+      "description": "The host this drive is installed in; parent carries the reconciled storage rollup (§26)."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..1",
+      "description": "For device_class=virtual/passthrough, the guest the disk is presented to."
+    },
+    {
+      "kind": "binds_to",
+      "target": "Storage.Cluster",
+      "target_field": "block_storage_class",
+      "cardinality": "0..1",
+      "description": "For a virtual disk, the backing storage resource (block storage class) it is provisioned from."
+    },
+    {
+      "kind": "references",
+      "target": "Hardware.StorageDevice",
+      "cardinality": "0..1",
+      "description": "parent_device — the physical disk a passthrough/partition (e.g. NVMe namespace) is derived from (common-elements §7)."
+    }
   ],
   "adopts": [
     {

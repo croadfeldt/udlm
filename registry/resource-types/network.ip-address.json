@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "616fd540-4908-4e96-a149-c9494be0c76e",
   "resource_type": "Network.IPAddress",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -12,19 +12,60 @@
     "display_name": "IP Address",
     "description": "An allocated IP address, dynamic or static, that other resources may consume.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "origination_timestamp": "2026-06-17T18:31:11Z"
   },
   "spec": {
     "type": "object",
-    "required": ["family"],
+    "required": [
+      "family"
+    ],
     "properties": {
-      "family": { "type": "string", "enum": ["ipv4", "ipv6"], "description": "Address family." },
-      "allocation": { "type": "string", "enum": ["dynamic", "static"], "default": "dynamic" }
+      "family": {
+        "type": "string",
+        "enum": [
+          "ipv4",
+          "ipv6"
+        ],
+        "description": "Address family."
+      },
+      "allocation": {
+        "type": "string",
+        "enum": [
+          "dynamic",
+          "static"
+        ],
+        "default": "dynamic"
+      }
     }
   },
-  "immutable": ["family"],
+  "immutable": [
+    "family"
+  ],
   "outputs": {
-    "address": { "type": "string", "description": "The allocated address once Realized." }
+    "address": {
+      "type": "string",
+      "description": "The allocated address once Realized."
+    }
   },
-  "relationships": []
+  "relationships": [
+    {
+      "kind": "references",
+      "name": "attaches_to",
+      "adopted_from": "OASIS TOSCA AttachesTo",
+      "target": "Hardware.NetworkInterface",
+      "cardinality": "0..1",
+      "description": "attaches_to — the interface this address is configured on. Previously carried as an estate-invented 'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements §9)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "OASIS TOSCA",
+      "version": "2.0",
+      "standard_name": "AttachesTo",
+      "role": "relation vocabulary — attaches_to address-on-interface relation name (common-elements §9)",
+      "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
+      "license": "OASIS",
+      "license_compatibility": "compatible-reference"
+    }
+  ]
 }

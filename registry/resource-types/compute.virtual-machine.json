@@ -12,53 +12,98 @@
     "display_name": "Virtual Machine",
     "description": "A virtual compute instance with CPU, memory, a guest OS, and optional attached disks and network interfaces.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-17"
+    "origination_timestamp": "2026-06-17T18:31:11Z"
   },
   "spec": {
     "type": "object",
-    "required": ["vcpu", "memory", "guest_os"],
+    "required": [
+      "vcpu",
+      "memory",
+      "guest_os"
+    ],
     "properties": {
       "vcpu": {
         "type": "object",
-        "required": ["count"],
+        "required": [
+          "count"
+        ],
         "properties": {
-          "count": { "type": "integer", "minimum": 1, "description": "Number of virtual CPUs." }
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of virtual CPUs."
+          }
         }
       },
       "memory": {
         "type": "object",
-        "required": ["size"],
+        "required": [
+          "size"
+        ],
         "properties": {
-          "size": { "type": "string", "pattern": "^[0-9]+(MB|GB|TB)$", "description": "Memory allocation, e.g. 16GB." }
+          "size": {
+            "type": "string",
+            "pattern": "^[0-9]+(MB|GB|TB)$",
+            "description": "Memory allocation, e.g. 16GB."
+          }
         }
       },
       "guest_os": {
         "type": "object",
-        "required": ["type"],
+        "required": [
+          "type"
+        ],
         "properties": {
-          "type": { "type": "string", "description": "Guest OS image identifier, e.g. rhel-9." }
+          "type": {
+            "type": "string",
+            "description": "Guest OS image identifier, e.g. rhel-9."
+          }
         }
       },
       "disks": {
         "type": "array",
         "items": {
           "type": "object",
-          "required": ["size"],
+          "required": [
+            "size"
+          ],
           "properties": {
-            "size": { "type": "string", "pattern": "^[0-9]+(GB|TB)$" },
-            "storage_class": { "type": "string" }
+            "size": {
+              "type": "string",
+              "pattern": "^[0-9]+(GB|TB)$"
+            },
+            "storage_class": {
+              "type": "string"
+            }
           }
         }
       }
     }
   },
   "outputs": {
-    "ip_address": { "type": "string", "description": "Primary IP address assigned once Realized." },
-    "hostname": { "type": "string", "description": "Resolvable hostname." },
-    "instance_id": { "type": "string", "description": "Provider-assigned instance identifier." }
+    "ip_address": {
+      "type": "string",
+      "description": "Primary IP address assigned once Realized."
+    },
+    "hostname": {
+      "type": "string",
+      "description": "Resolvable hostname."
+    },
+    "instance_id": {
+      "type": "string",
+      "description": "Provider-assigned instance identifier."
+    }
   },
-  "immutable": ["guest_os.type"],
+  "immutable": [
+    "guest_os.type"
+  ],
   "relationships": [
-    { "kind": "depends_on", "target": "Network.IPAddress", "target_field": "address", "cardinality": "0..n", "description": "May consume one or more pre-allocated addresses." }
+    {
+      "kind": "depends_on",
+      "target": "Network.IPAddress",
+      "target_field": "address",
+      "cardinality": "0..n",
+      "description": "May consume one or more pre-allocated addresses."
+    }
   ]
 }

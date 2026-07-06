@@ -12,15 +12,22 @@
     "display_name": "Processor",
     "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Hardware.Processor entities. device_class distinguishes a physical socket from a virtual CPU presented to a guest.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-27T00:11:51Z"
   },
   "spec": {
     "type": "object",
-    "required": ["cores"],
+    "required": [
+      "cores"
+    ],
     "properties": {
       "device_class": {
         "type": "string",
-        "enum": ["physical", "virtual", "passthrough", "partition"],
+        "enum": [
+          "physical",
+          "virtual",
+          "passthrough",
+          "partition"
+        ],
         "default": "physical",
         "description": "Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU."
       },
@@ -32,24 +39,63 @@
         "type": "object",
         "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
-          "location": { "type": "string", "description": "Socket designation within the parent, e.g. CPU1 (Redfish Socket). Primary discriminator." },
-          "serial_number": { "type": "string" },
-          "asset_tag": { "type": "string" },
-          "model": { "type": "string", "description": "Processor model, e.g. AMD EPYC 7443P (Redfish Model)." },
-          "manufacturer": { "type": "string" },
-          "role": { "type": "string" }
+          "location": {
+            "type": "string",
+            "description": "Socket designation within the parent, e.g. CPU1 (Redfish Socket). Primary discriminator."
+          },
+          "serial_number": {
+            "type": "string"
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "description": "Processor model, e.g. AMD EPYC 7443P (Redfish Model)."
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
         }
       },
-      "cores": { "type": "integer", "minimum": 1, "description": "Physical core count (Redfish TotalCores)." },
-      "threads": { "type": "integer", "minimum": 1, "description": "Hardware thread count (Redfish TotalThreads)." },
-      "architecture": { "type": "string", "description": "ISA, e.g. x86-64, aarch64 (Redfish ProcessorArchitecture)." },
-      "max_speed_mhz": { "type": "integer", "minimum": 1, "description": "Max clock in MHz (Redfish MaxSpeedMHz)." }
+      "cores": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Physical core count (Redfish TotalCores)."
+      },
+      "threads": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Hardware thread count (Redfish TotalThreads)."
+      },
+      "architecture": {
+        "type": "string",
+        "description": "ISA, e.g. x86-64, aarch64 (Redfish ProcessorArchitecture)."
+      },
+      "max_speed_mhz": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Max clock in MHz (Redfish MaxSpeedMHz)."
+      }
     }
   },
   "outputs": {},
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The host this processor is installed in; parent carries the reconciled cpu rollup (§26)." },
-    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "For device_class=virtual, the guest the vCPU is presented to." }
+    {
+      "kind": "contained_by",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..1",
+      "description": "The host this processor is installed in; parent carries the reconciled cpu rollup (§26)."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..1",
+      "description": "For device_class=virtual, the guest the vCPU is presented to."
+    }
   ],
   "adopts": [
     {

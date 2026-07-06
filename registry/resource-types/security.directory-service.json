@@ -12,31 +12,79 @@
     "display_name": "Directory Service",
     "description": "An identity directory server providing LDAP and (optionally) Kerberos. Grounded in RFC 4511/4512 (LDAP protocol + information model) and RFC 4120 (Kerberos). This is the directory SERVER (a Security resource); the identity DATA it holds (Person/Group/ServiceAccount) is the Identity information category. A suite like FreeIPA realizes this PLUS Network.DNSZone and (future) Security.CertificateAuthority.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-27T00:38:59Z"
   },
   "spec": {
     "type": "object",
-    "required": ["protocols"],
+    "required": [
+      "protocols"
+    ],
     "properties": {
       "protocols": {
         "type": "array",
-        "items": { "type": "string", "enum": ["ldap", "ldaps", "kerberos"] },
+        "items": {
+          "type": "string",
+          "enum": [
+            "ldap",
+            "ldaps",
+            "kerberos"
+          ]
+        },
         "description": "Directory access protocols served (RFC 4511 LDAP; RFC 4120 Kerberos)."
       },
-      "realm": { "type": "string", "description": "Kerberos realm / identity realm, e.g. ROADFELDT.COM." },
-      "base_dn": { "type": "string", "description": "LDAP base DN, e.g. dc=example,dc=com (RFC 4512 naming)." },
-      "replication_role": { "type": "string", "enum": ["primary", "replica", "standalone"], "default": "standalone", "description": "Topology role within the directory cluster." }
+      "realm": {
+        "type": "string",
+        "description": "Kerberos realm / identity realm, e.g. ROADFELDT.COM."
+      },
+      "base_dn": {
+        "type": "string",
+        "description": "LDAP base DN, e.g. dc=example,dc=com (RFC 4512 naming)."
+      },
+      "replication_role": {
+        "type": "string",
+        "enum": [
+          "primary",
+          "replica",
+          "standalone"
+        ],
+        "default": "standalone",
+        "description": "Topology role within the directory cluster."
+      }
     }
   },
   "outputs": {
-    "ldap_endpoint": { "type": "string", "description": "LDAP(S) URL, e.g. ldaps://idm.example.com:636." },
-    "kdc_endpoint": { "type": "string", "description": "Kerberos KDC endpoint, when Kerberos is served." },
-    "base_dn": { "type": "string", "description": "Realized base DN consumers bind under." }
+    "ldap_endpoint": {
+      "type": "string",
+      "description": "LDAP(S) URL, e.g. ldaps://idm.example.com:636."
+    },
+    "kdc_endpoint": {
+      "type": "string",
+      "description": "Kerberos KDC endpoint, when Kerberos is served."
+    },
+    "base_dn": {
+      "type": "string",
+      "description": "Realized base DN consumers bind under."
+    }
   },
   "relationships": [
-    { "kind": "contained_by", "target": "Compute.VirtualMachine", "cardinality": "0..1", "description": "The VM the directory server runs on." },
-    { "kind": "contained_by", "target": "Compute.BareMetalHost", "cardinality": "0..1", "description": "The bare-metal host the directory server runs on." },
-    { "kind": "depends_on", "target": "Security.DirectoryService", "cardinality": "0..n", "description": "Replication peers (a replica depends_on its primary/peers)." }
+    {
+      "kind": "contained_by",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..1",
+      "description": "The VM the directory server runs on."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..1",
+      "description": "The bare-metal host the directory server runs on."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Security.DirectoryService",
+      "cardinality": "0..n",
+      "description": "Replication peers (a replica depends_on its primary/peers)."
+    }
   ],
   "adopts": [
     {
@@ -59,7 +107,14 @@
     }
   ],
   "aliases": [
-    { "name": "Identity Management", "note": "FreeIPA/IdM (the suite realizes this + DNSZone + CA)" },
-    { "name": "Active Directory Domain Services", "standard": "Microsoft", "note": "AD DS directory role" }
+    {
+      "name": "Identity Management",
+      "note": "FreeIPA/IdM (the suite realizes this + DNSZone + CA)"
+    },
+    {
+      "name": "Active Directory Domain Services",
+      "standard": "Microsoft",
+      "note": "AD DS directory role"
+    }
   ]
 }

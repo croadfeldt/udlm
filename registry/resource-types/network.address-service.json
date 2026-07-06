@@ -12,7 +12,7 @@
     "display_name": "Address Service",
     "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (they are two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (ISC Kea, FreeIPA DNS, dnsmasq, UniFi) are providers, never the type. Referenced by the estate dependency graph so shutdown/startup ordering can account for hosts that need leases/resolution. Was tabulated in resource-type-data-sources §4 since 2026-06 but never authored — this closes that gap.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-07-04"
+    "origination_timestamp": "2026-07-05T02:58:43Z"
   },
   "spec": {
     "type": "object",
@@ -20,14 +20,28 @@
     "properties": {
       "services": {
         "type": "array",
-        "items": { "type": "string", "enum": ["dhcp", "dns", "ipam"], "x-extensible-enum": true },
+        "items": {
+          "type": "string",
+          "enum": [
+            "dhcp",
+            "dns",
+            "ipam"
+          ],
+          "x-extensible-enum": true
+        },
         "description": "Which address capabilities this service instance provides."
       },
-      "ha": { "type": "boolean", "description": "Served redundantly (e.g. Kea HA pair)." }
+      "ha": {
+        "type": "boolean",
+        "description": "Served redundantly (e.g. Kea HA pair)."
+      }
     }
   },
   "outputs": {
-    "serving": { "type": "boolean", "description": "Leases/answers being served once Realized." }
+    "serving": {
+      "type": "boolean",
+      "description": "Leases/answers being served once Realized."
+    }
   },
   "relationships": [],
   "adopts": [

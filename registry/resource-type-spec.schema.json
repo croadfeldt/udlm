@@ -90,7 +90,8 @@
       "properties": {
         "date": {
           "type": "string",
-          "format": "date"
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
         },
         "reason": {
           "type": "string"
@@ -131,7 +132,8 @@
         },
         "origination_timestamp": {
           "type": "string",
-          "format": "date"
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "When this type was originated — RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source. Backfilled 2026-07-05 from each file's first git commit instant (the auditable carrier)."
         }
       }
     },
@@ -210,10 +212,8 @@
               "depends_on",
               "references",
               "contained_by",
-              "binds_to",
-              "member_of"
-            ],
-            "description": "Relationship kind. depends_on/contained_by/binds_to are ORDERING edges (service-dependencies DEP rules); references is informational; member_of is Composite membership (declared member->composite; ordering-neutral by itself — the composite's lifecycle aggregates members per ENT-004, and any ordering is declared explicitly with depends_on). An authored composite-side `members:` list is the equivalent projection of member_of edges."
+              "binds_to"
+            ]
           },
           "target": {
             "type": "string",
@@ -234,6 +234,15 @@
           },
           "description": {
             "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Machine-readable relation identity — the type's declared relation vocabulary (common-elements §9). Instance edges cite it via dependencies[].relation and MUST use a declared name (REL-001). A relation refines its kind's semantics and never overrides them (REL-003) — graph consumers that ignore relation still act correctly on kind. REQUIRED when a type declares more than one relationship of the same kind whose instance edges would otherwise be ambiguous."
+          },
+          "adopted_from": {
+            "type": "string",
+            "description": "The external standard defining this relation name (e.g. 'RFC 8343 lower-layer-if', 'OASIS TOSCA ConnectsTo') — SHOULD correspond to an entry in the type's adopts[]. Relation names are adopted, not invented, wherever a standard names the concept (common-elements §9)."
           }
         }
       }

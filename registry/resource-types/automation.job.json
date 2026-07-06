@@ -1,0 +1,115 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "f34ce0a0-d1a3-4693-9e05-11fb1a05600a",
+  "resource_type": "Automation.Job",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Process",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Automation Job",
+    "description": "A Process Resource Entity (resource-service-entities §6) — an automation job as a first-class node in the dependency graph: playbook, workflow, pipeline, or script. Its depends_on edges are PROCESS dependencies and carry the same weight as infrastructure dependencies: while the job is running, nothing it depends on may be taken down. This is what makes orchestrated lifecycle operations (a UPS-triggered graceful shutdown, a rolling upgrade) derivable from true data — the orchestrator host, the switch fabric the job traverses, and the name service it resolves through are the job's real dependencies, so 'orchestrator stops last' and 'connectivity outlives compute' fall out of the reverse-topological sort with no policy special-casing. Vendor engines (Ansible, Tekton, Argo) are providers, never the type. First registry type with entity_type Process; §6.4 obliges entities modified by this job to cite its uuid in their provenance.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-05T03:29:34Z"
+  },
+  "spec": {
+    "type": "object",
+    "required": [
+      "process_type",
+      "max_execution_time"
+    ],
+    "properties": {
+      "process_type": {
+        "type": "string",
+        "enum": [
+          "playbook",
+          "workflow",
+          "pipeline",
+          "automation_job",
+          "script",
+          "other"
+        ],
+        "description": "Process class (resource-service-entities §6.3). 'other' is the escape hatch — the enum stays closed."
+      },
+      "max_execution_time": {
+        "type": "string",
+        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$",
+        "description": "ISO 8601 duration (e.g. PT30M). MANDATORY per ENT-004; enforced by the substrate Lifecycle Constraint Enforcer."
+      },
+      "on_max_exceeded": {
+        "type": "string",
+        "enum": [
+          "terminate",
+          "notify",
+          "escalate"
+        ],
+        "x-extensible-enum": true,
+        "description": "Action when max_execution_time is exceeded. Default is profile-governed (ENT-004)."
+      },
+      "trigger": {
+        "type": "string",
+        "enum": [
+          "manual",
+          "event",
+          "schedule"
+        ],
+        "x-extensible-enum": true,
+        "description": "What initiates the job (e.g. a NUT on-battery event, a cron schedule, an operator)."
+      }
+    }
+  },
+  "outputs": {
+    "last_result": {
+      "type": "string",
+      "description": "Terminal state of the most recent execution (COMPLETED|FAILED|CANCELLED, §6.2)."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "depends_on",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..n",
+      "description": "Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Network.Switch",
+      "cardinality": "0..n",
+      "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Network.AddressService",
+      "cardinality": "0..n",
+      "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)."
+    },
+    {
+      "kind": "references",
+      "target": "Compute",
+      "cardinality": "0..n",
+      "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Kubernetes",
+      "version": "batch/v1",
+      "standard_name": "Job",
+      "role": "run-to-completion job vocabulary (activeDeadlineSeconds ≈ max_execution_time, terminal states)",
+      "source": "https://kubernetes.io/docs/concepts/workloads/controllers/job/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "Ansible",
+      "version": "2.x",
+      "standard_name": "Playbook",
+      "role": "playbook process_type vocabulary",
+      "source": "https://docs.ansible.com/ansible/latest/playbook_guide/",
+      "license": "GPL-3.0",
+      "license_compatibility": "reference-only"
+    }
+  ]
+}
