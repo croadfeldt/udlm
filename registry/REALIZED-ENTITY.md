@@ -31,3 +31,18 @@ writes `provenance`/`ownership` and the `requested` snapshot; the Provider write
 + `status`; discovery writes `discovered` + `drift`; DCM produces the `audit` Merkle chain. UDLM never
 computes these — it holds them (T1/T2). Field values inside the snapshots are typed by the entity's
 Resource Type Spec and are not re-validated here.
+
+## State population paths (greenfield vs greening)
+
+Two lifecycles populate the same record shape — what differs is *order* and *author*:
+
+| State | Greenfield (forward, ADR-003) | Brownfield greening (reverse, dcm ADR-017) |
+|---|---|---|
+| `intent` | 1st — consumer declares | 4th — synthesized (`origin: discovered-derived`/`backfilled`), provider-agnostic, for DR/rehydration |
+| `requested` | 2nd — DCM assembly (layers + policy) | 4th — backfilled with `origin: backfilled` |
+| `realized` | 3rd — **the Provider's receipt** | 3rd — written at **claim/adoption** from the owning provider's discovered statement; never hand-authored |
+| `discovered` | 4th — ongoing observation → drift | **1st** — attributed observation (`provider`, `at`, `time_source`); the record may live Discovered-only (unclaimed) until claimed |
+
+`lifecycle_state` follows the same line: a brownfield record is `Discovered` until a provider
+claims it — Realized is *earned*, not asserted. `correlation_ids` keep multi-source
+observations resolved to one entity uuid on both paths.
