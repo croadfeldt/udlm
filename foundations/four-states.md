@@ -118,7 +118,19 @@ The **Discovered State** is what DCM observes actually existing through active d
 
 **Content:** Raw discovered resource state in DCM Unified Data Model format, with discovery metadata (timestamp, discovery method, provider interrogated)
 
-**Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, carrying `lifecycle_state: available` (unallocated). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity. "Ingest raw, append changes later" is exactly this Discovered-only → adopt transition. See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
+**Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, carrying `lifecycle_state: available` (unallocated). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity. "Ingest raw, append changes later" is exactly this Discovered-only → adopt transition.
+
+**Discovered has a dual role (clarification per dcm ADR-017 Decision A, #222).** Discovered is
+(1) the **ephemeral per-cycle snapshot stream** consumed by drift detection (retention per
+RHY-008), *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what
+exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one
+domain, not two stores: the durable inventory record is the latest reconciled observation per
+entity; the snapshot stream is its history. The claim line is what separates the roles'
+consequences — **unclaimed = inventoried, not managed** (queryable, excluded from lifecycle
+operations); a provider claim/adoption moves the entity Discovered → Realized preserving its
+UUID, and a long-lived unclaimed resource is the recorded Antipattern (claim it or retire it).
+Multiple discovery sources correlate to ONE entity via `correlation_ids`
+(realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
 
 
 ### 2.5 Recovery States
