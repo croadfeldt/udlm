@@ -26,7 +26,7 @@ lifecycle/        Operational models, recovery state machine
 
 ## Operating rules (non-negotiable)
 
-- **Commits:** `--no-gpg-sign`, author `Maintainer example <maintainer@example.com>`, trailer
+- **Commits:** `--no-gpg-sign`, author = the repo owner's public git identity (match `git log -1 --format='%an <%ae>'`), trailer
   `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`. This repo is on **GitHub**
   (`cexample/udlm`) — use `gh`, not `glab`.
 - **PRs are subject-scoped** — one logical thing per PR (see open PRs below).
@@ -62,7 +62,7 @@ lifecycle/        Operational models, recovery state machine
 | **Spec + resource-type registry** (the *types*) | `udlm` (this repo, cexample/udlm) |
 | **DCM** control-plane / consumer code | `dcm` (cexample/dcm) |
 | **DAV** review console | `dav` (cexample/dav) |
-| **Homelab estate DATA** (instances, the dependency graph) | `estate-repo` (a private repo) |
+| **Estate DATA** (instances, the dependency graph) | a private estate-data repo (kept off GitHub — no personal infrastructure in the public specs) |
 
 ## Current state (2026-06-26)
 
