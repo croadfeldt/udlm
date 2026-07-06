@@ -196,6 +196,17 @@ Each hard constraint cites the UDLM contract it derives from.
     §3). Validators MUST check version nibble + variant bits at ingest/authoring
     (estate CI and `tests/validate_registry.py` do).
 
+31. **Every standards decision is registered — what, why, where, when, who**
+    (`registry/standards-adoption-register.md`, normative). Any standard a spec adopts, absorbs
+    a pattern from, retires, or deliberately REJECTS gets a DecisionRecord-shaped register
+    entry: the exact `adopts[].standard` strings it covers, the rationale *including
+    alternatives considered*, the git-derived adoption instant (common-elements §8 — no
+    fabricated precision), the decider, where it is used, and the license verdict. An
+    `adopts[]` entry whose standard string has no register entry fails CI (`ADOPT-001`,
+    `tests/validate_registry.py`). **[enforced]** Rejections are first-class: a standard
+    evaluated and not adopted is recorded with the same rigor, so the next reader doesn't
+    re-run the evaluation.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
