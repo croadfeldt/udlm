@@ -96,6 +96,15 @@ boundaries.
 - **G4 — Universal definitions.** Entity-type families *organize*; they do not *bound*. Definitions
   are free to use across realizations (`foundations/entity-type-families.md`).
 
+## Casing note — JSON-Schema-keyword-adjacent markers
+
+**Documented exception to the snake_case rule** (`registry/naming-conventions.md` §4): schema
+*markers* that live in the JSON-Schema keyword layer — `createOnly`, `supersededBy`,
+`$dynamicRef`, and their kin — keep their source casing, exactly as JSON Schema's own keywords
+(`allOf`, `additionalProperties`, …) do. They are vocabulary of the schema language, not native
+UDLM data-model keys; recasing them would detach them from the standards that define them.
+Native data-model keys (fields, relation names, meta-schema properties) remain snake_case.
+
 ## Enforcement
 Per-entity: valid-by-construction (meta-schema) + `compat-check` (versioning) gate the authoring
 rubric. Cross-cutting: partly tooling (e.g. forbid `$dynamicRef`; `createOnly` change ⇒ major;

@@ -8,8 +8,9 @@ authoritative standards list) · [registry/resource-type-spec.schema.json](resou
 
 ## 1. Purpose
 
-A new wave of infrastructure Resource Types (BareMetalInstance, CephCluster, Gateway, AddressService,
-DirectoryService, PowerFeed — plus VirtualMachine and Cluster) bumps against well-established external
+A new wave of infrastructure Resource Types (Compute.BareMetalHost, Storage.Cluster, Network.Gateway,
+Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Compute.VirtualMachine and
+Compute.Cluster) bumps against well-established external
 schemas. Per **T5 / the Adopt disposition**, UDLM should **reference industry-standard data elements
 for validation and vocabulary** rather than re-express them, and remain **extensible by vendor-specific
 elements** where a deployment needs them. This document records, per type, *which* standard supplies the
@@ -30,7 +31,7 @@ there UDLM **adopts** — references the standard's element names so validation 
 canonical definition, and a standard rev never forces a UDLM schema change.
 
 The clean split, worked on bare metal:
-- **Intent** (provision *this* host, image, role, power target) → **absorb** into the BareMetalInstance `spec`.
+- **Intent** (provision *this* host, image, role, power target) → **absorb** into the Compute.BareMetalHost `spec`.
 - **Discovered hardware** (cpu/ram/nics/disks/firmware) → **adopt** Metal3 `status.hardware` + Redfish
   `ComputerSystem` element names; do not re-express the hardware schema.
 
@@ -54,14 +55,15 @@ and take OSAC **VirtualMachine** (`ComputeInstance`) and **Cluster** (`ClusterSp
 | **Compute.VirtualMachine** | OSAC `ComputeInstance` (`cores`,`memory_gib`,`boot_disk`,`network_attachments[]`,`run_strategy`,`image`; status `state`+`conditions`+ips) — Tier 2 | the type itself | KubeVirt/libvirt specifics |
 | **Compute.Cluster** | OSAC `ClusterSpec` (`node_sets{host_type,size}`,`release_image`,`network{pod,service cidr}`; `api_url`/`console_url`) + heatmiser day-0 VIPs/CIDRs — Tier 2 | the type | — |
 | **Compute.BareMetalHost** (§4 row previously said BareMetalInstance — registry authored BareMetalHost; instance = realized entity of it) | **Metal3 `BareMetalHost`** (`bmc.address`,`bootMACAddress`,`online`,`image`,`rootDeviceHints`; `status.hardware.{cpu,ramMebibytes,nics[],storage[],firmware}`,`provisioning.state`) + **Redfish `ComputerSystem`** (`ProcessorSummary`,`MemorySummary`,`PowerState`,`Boot*`,`UUID`) + heatmiser discovery manifest — Tier 2 | provision intent (role, image, target) | iDRAC/H12SSL BMC |
-| **Storage.CephCluster** | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
+| **Storage.Cluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
 | **Network.Gateway** | **K8s Gateway API `Gateway`** (`gatewayClassName`,`listeners[]`,`addresses[]`) + OSAC `SecurityGroup` rule shape; NAT 5-tuple absorbed — Tier 2 | routing/NAT intent | pfSense/OPNsense |
 | **Network.AddressService** | **ISC Kea `Dhcp4`** (`subnet4[]`,`pools`,`reservations[]`,`option-data`) + **DNS RRs** (RFC 1035 `A/PTR/CNAME/NS/SOA`, RFC 3596 `AAAA`) — Tier 2; *DHCP+DNS = two projections of one allocation* | the address-service intent | — |
-| **Identity.DirectoryService** | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
+| **Security.DirectoryService** (authored under Security, not Identity) | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
 | **Facility.PowerFeed** | **NUT** variable namespace (`ups.status` OL/OB/LB, `battery.charge`,`battery.runtime`,`battery.runtime.low`,`input.voltage`,`ups.realpower`,`ups.load`) + **Redfish `PowerSubsystem`/`PowerSupply`** (`CapacityWatts`,`InputPowerWatts`,`LineInputStatus`) — Tier 2 | which hosts a feed protects (intent) | vendor-UPS SNMP |
 
-**Net coverage:** reusable definitions exist for 6 of 8 (VM, Cluster, BareMetal, Gateway, AddressService
-have OSAC/heatmiser sources; CephCluster/PowerFeed reference industry standards directly). dcm-project's
+**Net coverage:** reusable definitions exist for all 8 types in the table (VirtualMachine, Cluster,
+BareMetalHost, Gateway, and DirectoryService have OSAC/heatmiser sibling-project sources;
+Storage.Cluster, AddressService, and PowerFeed reference industry standards directly). dcm-project's
 service-type scope *explicitly excludes* bare metal, storage, networking, DHCP/DNS, identity, and
 power/facility — so for those the adoption target is the **industry standard**, not a sibling project.
 

@@ -14,6 +14,9 @@ Exit 0 = all types valid. Also enforces conventions the meta-schema itself can't
     registry/standards-adoption-register.md (SPEC-DESIGN hard constraint 31 — what/why/
     where/when/who for every standards decision; adoption without a registered decision
     does not merge)
+  - UUID-V4: every type spec `uuid` is an RFC 9562 v4 UUID — version nibble AND variant
+    bits checked (identifier-scheme.md §2.1 / SPEC-DESIGN hard constraint 30). This closes
+    the §30 honest-ledger gap: the check previously ran only in the estate validator.
 
 Requires: pip install jsonschema pyyaml
 """
@@ -65,6 +68,14 @@ def main() -> int:
             if m.group(2) != doc.get("version"):
                 failures += 1
                 print(f"FAIL {rel}: $id version segment {m.group(2)!r} != version {doc.get('version')!r}")
+
+        # UUID-V4 — version nibble + variant bits (identifier-scheme §2.1, constraint 30)
+        UUID_V4 = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+        u = doc.get("uuid", "")
+        if not UUID_V4.match(u):
+            failures += 1
+            print(f"FAIL [UUID-V4] {rel}: uuid {u!r} is not a canonical RFC 9562 v4 UUID "
+                  f"(lowercase hyphenated, version nibble 4, variant 8/9/a/b)")
 
         if not errs:
             print(f"ok   {rel}  ({doc.get('resource_type')} {doc.get('version')})")

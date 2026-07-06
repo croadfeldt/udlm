@@ -18,10 +18,10 @@ Every DCM event shares a common envelope. Event-specific fields are in the `payl
 
 ```yaml
 # DCM Event Envelope — all events
-event_uuid: <uuid>                  # idempotency key; stable across retries
+event_uuid: <uuid>                  # RFC 9562 v7 (time-ordered — identifier-scheme §2.1); idempotency key; stable across retries
 event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
-timestamp: <ISO 8601>               # from Commit Log — authoritative source of truth
+timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1)
 dcm_version: <semver>               # DCM instance version that generated the event
 dcm_instance_uuid: <uuid>           # identifies the DCM instance (federation context)
 
@@ -61,8 +61,8 @@ links:
 
 | Domain | Events | Description |
 |--------|--------|-------------|
-| `request.*` | 14 | Request pipeline lifecycle |
-| `entity.*` | 13 | Resource entity lifecycle |
+| `request.*` | 15 | Request pipeline lifecycle |
+| `entity.*` | 14 | Resource entity lifecycle (incl. `entity.state_transition`, appendix) |
 | `drift.*` | 4 | Drift detection and resolution |
 | `provider.*` | 5 | Provider registration and health |
 | `provider_update.*` | 5 | Provider-initiated update lifecycle |
@@ -77,13 +77,18 @@ links:
 | `allocation.*` | 2 | Resource allocation events |
 | `ingestion.*` | 3 | Brownfield ingestion lifecycle |
 | `governance.*` | 3 | Catalog and profile governance |
-| `security.*` | 2 | Security and sovereignty events |
+| `security.*` | 1 | Security events |
 | `sovereignty.*` | 2 | Sovereignty constraint events |
 | `federation.*` | 1 | Federation tunnel events |
 | `auth.*` | 1 | Authentication provider events |
 | `conformance.*` | 3 | UDLM conformance lifecycle (version deprecation, bundle updates, level changes) |
 | `schema.*` | 1 | Schema bundle updates |
-| **Total** | **87** | |
+| `process.*` | 1 | Process Resource execution events (§17a) |
+| `accreditation.*` | 7 | Accreditation verification lifecycle (§20) |
+| `itsm.*` | 3 | ITSM integration record lifecycle (§21) |
+| `group.*` | 3 | DCMGroup lifecycle (appendix) |
+| `authorization.*` | 1 | Cross-tenant authorization events (appendix) |
+| **Total** | **102** | across 27 domains |
 
 ---
 
@@ -138,7 +143,7 @@ payload:
   required_tier: reviewed | verified | authorized | <custom>
   required_tier_gravity: routine | elevated | critical
   risk_score: <0-100>
-  window_expires_at: <ISO 8601>
+  window_expires_at: <RFC 3339 UTC 'Z'>
   dcmgroup_uuid: <uuid | null>       # non-null for authorized tier
   quorum_required: <N | null>
 ```
@@ -178,7 +183,7 @@ payload:
 | `entity.suspended` | high | Entity entered SUSPENDED state |
 | `entity.resumed` | medium | Entity exited SUSPENDED state |
 | `entity.decommissioning` | medium | Decommission pipeline initiated |
-| `entity.decommissioned` | low | Entity fully decommissioned; resources released |
+| `entity.decommissioned` | low | Entity fully decommissioned; resources released. *Absorbs the former `entity.deleted` (merged 2026-07-06 — one terminal decommission event, not two).* |
 | `entity.decommission_deferred` | medium | Decommission blocked by active stakes |
 | `entity.ownership_transferred` | medium | Ownership moved to a different Tenant |
 | `entity.pending_review` | medium | Entity entered PENDING_REVIEW state |
@@ -208,7 +213,7 @@ payload:
 #### `entity.ttl_warning` / `entity.ttl_expired`
 ```yaml
 payload:
-  ttl_expires_at: <ISO 8601>
+  ttl_expires_at: <RFC 3339 UTC 'Z'>
   expiry_action: decommission | suspend | notify_only
   warning_window: <ISO 8601 duration>  # e.g. P7D
 ```
@@ -217,7 +222,7 @@ payload:
 ```yaml
 payload:
   initiated_by: <actor_uuid | null>
-  initiated_at: <ISO 8601>
+  initiated_at: <RFC 3339 UTC 'Z'>
   reason: <string | null>
   stakes_resolved: <bool>
   credential_revocation_status: complete | partial | pending
@@ -228,10 +233,10 @@ payload:
 payload:
   blocking_stakes:
     - stake_uuid: <uuid>
-      stake_type: required | management
+      stake_type: required | preferred | optional   # canonical stake vocabulary — defers to ownership-sharing-allocation (data-model-core §7)
       stakeholder_tenant_uuid: <uuid>
       stakeholder_entity_uuid: <uuid>
-  retry_after: <ISO 8601 | null>
+  retry_after: <RFC 3339 UTC 'Z' | null>
 ```
 
 #### `entity.ownership_transferred`
@@ -260,21 +265,21 @@ payload:
 ```yaml
 payload:
   drift_record_uuid: <uuid>
-  drift_severity: minor | moderate | significant | critical
+  drift_severity: minor | significant | critical      # canonical enum (data-model-core §7, D6)
   drifted_fields:
     - field: <string>                # field path e.g. "cpu_count"
       realized_value: <any>
       discovered_value: <any>
   discovery_run_uuid: <uuid>
-  discovered_at: <ISO 8601>
+  discovered_at: <RFC 3339 UTC 'Z'>
 ```
 
 #### `drift.severity_escalated`
 ```yaml
 payload:
   drift_record_uuid: <uuid>
-  previous_severity: minor | moderate | significant | critical
-  new_severity: minor | moderate | significant | critical
+  previous_severity: minor | significant | critical
+  new_severity: minor | significant | critical
   escalation_trigger: time_elapsed | field_count | field_sensitivity
 ```
 
@@ -284,7 +289,7 @@ payload:
   drift_record_uuid: <uuid>
   resolution: REVERT | UPDATE_DEFINITION | MANUAL
   resolved_by: <actor_uuid | null>
-  resolved_at: <ISO 8601>
+  resolved_at: <RFC 3339 UTC 'Z'>
 ```
 
 ---
@@ -318,7 +323,7 @@ payload:
   health_check_uuid: <uuid>
   failure_reason: <string>
   consecutive_failures: <int>
-  last_healthy_at: <ISO 8601>
+  last_healthy_at: <RFC 3339 UTC 'Z'>
   affected_resource_types: [<string>]
 ```
 
@@ -426,7 +431,7 @@ payload:
   credential_uuid: <uuid>           # old credential
   new_credential_uuid: <uuid>
   rotation_trigger: pre_expiry | scheduled | security_event | actor_request
-  transition_window_ends: <ISO 8601>
+  transition_window_ends: <RFC 3339 UTC 'Z'>
   retrieval_url: <url>              # where to retrieve new value
 ```
 
@@ -436,7 +441,7 @@ payload:
   credential_uuid: <uuid>
   revocation_trigger: actor_deprovisioned | entity_decommissioned | security_event | ...
   revocation_reason: <string>
-  effective_at: <ISO 8601>
+  effective_at: <RFC 3339 UTC 'Z'>
   entity_uuid: <uuid | null>
 ```
 
@@ -445,7 +450,7 @@ payload:
 payload:
   credential_uuid: <uuid>
   credential_type: <string>
-  issued_at: <ISO 8601>
+  issued_at: <RFC 3339 UTC 'Z'>
   threshold_elapsed: <ISO 8601 duration>
   retrieval_count: 0
 ```
@@ -533,7 +538,7 @@ payload:
   tier_name: <string>
   old_gravity: none | routine | elevated | critical
   new_gravity: none | routine | elevated | critical
-  acceptance_required_by: <ISO 8601>
+  acceptance_required_by: <RFC 3339 UTC 'Z'>
 ```
 
 ---
@@ -588,7 +593,7 @@ payload:
 payload:
   entity_uuid: <uuid>                # entity whose graph was compared
   reported_by_provider_uuid: <uuid>
-  observed_at: <ISO 8601>
+  observed_at: <RFC 3339 UTC 'Z'>
   drift_cases:                       # one entry per differing edge
     - case: declared_missing_in_observed | observed_missing_in_declared | type_mismatch
       edge_ref:
@@ -609,8 +614,8 @@ payload:
 ```yaml
 payload:
   resource_entity_uuid: <uuid>
-  stake_type: required | management | informational
-  decommission_at: <ISO 8601 | null>
+  stake_type: required | preferred | optional   # canonical stake vocabulary — defers to ownership-sharing-allocation (data-model-core §7)
+  decommission_at: <RFC 3339 UTC 'Z' | null>
   action_required: <bool>            # true for required stakes
   action_url: <url | null>
 ```
@@ -655,7 +660,7 @@ payload:
   previous_profile: <string>
   new_profile: <string>
   changed_by: <actor_uuid>
-  effective_at: <ISO 8601>
+  effective_at: <RFC 3339 UTC 'Z'>
   affected_threshold_tiers: [<string>]
 ```
 
@@ -690,7 +695,7 @@ payload:
     version: <semver>
   deprecated_udlm_version: <semver>   # the major version being deprecated
   remaining_supported_versions: [<semver>, ...]
-  removal_at: <ISO 8601>       # earliest date support will be removed
+  removal_at: <RFC 3339 UTC 'Z'>       # earliest date support will be removed
   reason: <string>             # human-readable rationale
   migration_guide_url: <string>
 ```
@@ -706,7 +711,7 @@ payload:
   new_level: full | partial
   previous_exclusions: [<string>, ...]
   new_exclusions: [<string>, ...]
-  effective_at: <ISO 8601>
+  effective_at: <RFC 3339 UTC 'Z'>
   conformance_declaration_url: <string>
 ```
 
@@ -719,7 +724,7 @@ payload:
     version: <semver>
   udlm_version: <semver>
   conformance_test_suite_version: <semver>
-  self_certified_at: <ISO 8601>
+  self_certified_at: <RFC 3339 UTC 'Z'>
   independent_verification_uuid: <uuid> | null
   conformance_declaration_url: <string>
 ```
@@ -735,7 +740,7 @@ payload:
   new_bundle_version: <semver>
   changed_schemas: [{ category: <string>, id: <string>, version: <semver>, change_type: added | modified | removed }]
   schema_bundle_url: <string>
-  published_at: <ISO 8601>
+  published_at: <RFC 3339 UTC 'Z'>
 ```
 
 ---
@@ -757,7 +762,7 @@ payload:
 payload:
   provider_uuid: <uuid>
   entity_uuid: <uuid>
-  write_detected_at: <ISO 8601>
+  write_detected_at: <RFC 3339 UTC 'Z'>
   changed_fields: [<string>]
   discovery_run_uuid: <uuid>
 ```
@@ -770,6 +775,28 @@ payload:
   constraint_handle: <string>
   triggering_operation: <string>
   remediation_required: <bool>
+```
+
+---
+
+## 17a. Process Events (`process.*`)
+
+| Event Type | Urgency | Trigger |
+|-----------|---------|---------|
+| `process.timeout` | high | A Process Resource Entity exceeded its mandatory `max_execution_time`; execution_state moved to FAILED. This is the `PROCESS_TIMEOUT` event declared in [entity-types](../foundations/entity-types.md) §2.3 (ENT-004). |
+
+### 17a.1 Payload Schema
+
+#### `process.timeout`
+```yaml
+payload:
+  process_entity_uuid: <uuid>
+  process_type: playbook | workflow | pipeline | automation_job | script | other
+  max_execution_time: <ISO 8601 duration>    # e.g. PT30M
+  started_at: <RFC 3339 UTC 'Z'>
+  timed_out_at: <RFC 3339 UTC 'Z'>
+  on_max_exceeded: terminate | notify | escalate
+  affected_entity_uuids: [<uuid>]            # entities the run had modified before timeout
 ```
 
 ---
@@ -850,7 +877,7 @@ accreditation.status_changed:
   from_status: authorized | active | certified
   to_status: in_process | revoked | suspended | withdrawn
   external_source: fedramp_marketplace | cmmc_ab | iaf_certsearch | contract_webhook
-  detected_at: <ISO 8601>
+  detected_at: <RFC 3339 UTC 'Z'>
   action_taken: pending_review | immediate_revocation
   # immediate_revocation when to_status is 'revoked' or 'terminated'
 
@@ -859,7 +886,7 @@ accreditation.verification_stale:
   accreditation_uuid: <uuid>
   subject_uuid: <uuid>
   framework: <string>
-  last_checked_at: <ISO 8601>
+  last_checked_at: <RFC 3339 UTC 'Z'>
   stale_after: P7D
   stale_action_taken: warn | suspended | escalated
   consecutive_failures: <integer>
@@ -871,7 +898,7 @@ accreditation.contract_event:
   framework: hipaa | dod_il4 | <custom>
   contract_event_type: signed | amended | terminated | renewal_due | renewed
   contract_id: <string>
-  effective_date: <ISO 8601>
+  effective_date: <RFC 3339 UTC 'Z'>
   dcm_action_taken: activated | pending_review | revoked | none
 ```
 
@@ -890,15 +917,15 @@ accreditation.contract_event:
 ```
 request.submitted          request.intent_captured      request.layers_assembled
 request.policies_evaluated request.requires_approval    request.approved
-request.placement_complete request.dispatched            request.compound_assembled
+request.placement_complete request.dispatched           request.compound_assembled
 request.dependencies_resolved  request.realized          request.failed
-request.gating_rejected    request.cancelled
+request.gating_rejected    request.cancelled            request.progress_updated
 
 entity.realized            entity.state_changed         entity.modified
 entity.ttl_warning         entity.ttl_expired           entity.suspended
 entity.resumed             entity.decommissioning       entity.decommissioned
 entity.decommission_deferred   entity.ownership_transferred  entity.pending_review
-entity.expired
+entity.expired             entity.state_transition
 
 drift.detected             drift.severity_escalated     drift.resolved
 drift.escalated
@@ -926,7 +953,8 @@ tier_registry.degradation_detected  tier_registry.activated
 
 audit.chain_integrity_alert  audit.chain_break          audit.forward_failed
 
-dependency.state_changed   stakeholder.resource_decommissioning
+dependency.state_changed   dependency.drift_detected
+stakeholder.resource_decommissioning
 allocation.pool_capacity_low  allocation.released
 
 ingestion.transitional_created  ingestion.enriched      ingestion.promotion_approved
@@ -938,9 +966,24 @@ security.unsanctioned_provider_write
 sovereignty.violation      sovereignty.migration_required
 federation.tunnel_degraded
 auth.provider_failover
+
+conformance.version_deprecated  conformance.level_changed
+conformance.declaration_updated
+schema.bundle_updated
+
+process.timeout
+
+accreditation.verified     accreditation.status_changed accreditation.registry_mismatch
+accreditation.verification_stale  accreditation.document_expired
+accreditation.contract_event      accreditation.expiry_approaching
+
+itsm.record_created        itsm.record_updated          itsm.record_failed
+
+group.deleted              group.member_added           group.member_removed
+authorization.granted
 ```
 
-**Total: 85 event types across 21 domains**
+**Total: 102 event types across 27 domains**
 
 ---
 
@@ -948,9 +991,10 @@ auth.provider_failover
 
 ### Additional Event Types
 
+> `entity.deleted` was MERGED into `entity.decommissioned` (§4) — one terminal decommission event.
+
 | Event Type | Description | Key Fields | Consumers |
 |------------|-------------|-----------|----------|
-| `entity.deleted` | An entity has been fully decommissioned and removed from inventory | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `entity.state_transition` | An entity lifecycle state has changed (e.g., OPERATIONAL → SUSPENDED) | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `group.deleted` | A DCMGroup has been deleted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `group.member_added` | A member (actor or entity) has been added to a DCMGroup | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |

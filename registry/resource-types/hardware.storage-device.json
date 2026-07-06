@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9b0d5c5f-8aaf-4505-bfd1-63cafdd1ffbe",
   "resource_type": "Hardware.StorageDevice",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -98,12 +98,14 @@
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "host",
       "description": "The host this drive is installed in; parent carries the reconciled storage rollup (§26)."
     },
     {
       "kind": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
+      "name": "guest",
       "description": "For device_class=virtual/passthrough, the guest the disk is presented to."
     },
     {
@@ -117,6 +119,7 @@
       "kind": "references",
       "target": "Hardware.StorageDevice",
       "cardinality": "0..1",
+      "name": "parent_device",
       "description": "parent_device — the physical disk a passthrough/partition (e.g. NVMe namespace) is derived from (common-elements §7)."
     }
   ],
