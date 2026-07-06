@@ -228,7 +228,7 @@ MUST satisfy every item.
 
 ### Identifiers ([`identifier-scheme.md`](contracts/identifier-scheme.md))
 
-- [ ] UUIDs use RFC 9562 canonical form (lowercase hyphenated; RFC 4122 citations read as 9562)
+- [ ] UUIDs use RFC 9562 canonical form (lowercase hyphenated)
 - [ ] UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked)
 - [ ] Handles match `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` with namespace pattern
 - [ ] References include `ref_type` and `uuid`; `uuid` is authoritative, `handle` advisory — resolution never by name alone

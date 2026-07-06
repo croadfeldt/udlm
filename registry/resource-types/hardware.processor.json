@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "29b39a5d-2745-40ea-8141-480bb3d2d70f",
   "resource_type": "Hardware.Processor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -88,12 +88,14 @@
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "host",
       "description": "The host this processor is installed in; parent carries the reconciled cpu rollup (§26)."
     },
     {
       "kind": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
+      "name": "guest",
       "description": "For device_class=virtual, the guest the vCPU is presented to."
     }
   ],

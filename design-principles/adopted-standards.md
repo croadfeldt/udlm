@@ -35,7 +35,7 @@ tells you exactly what to build and what to skip:
 
 | Tier | What it standardizes | Examples | Implement | Do **not** build |
 |---|---|---|---|---|
-| **Tier 1 — value / codelist** | the allowed *values of a single field* | ISO 4217 (currency), ISO 8601 / RFC 3339 (time), RFC 4122 (UUID), ISO 3166 (country), IANA tz | a **referenced field constraint** ("conforms to ISO 4217") — reference it, never copy/enumerate it | no support matrix, no version negotiation, no translation, no effective-version provenance |
+| **Tier 1 — value / codelist** | the allowed *values of a single field* | ISO 4217 (currency), ISO 8601 / RFC 3339 (time), RFC 9562 (UUID), ISO 3166 (country), IANA tz | a **referenced field constraint** ("conforms to ISO 4217") — reference it, never copy/enumerate it | no support matrix, no version negotiation, no translation, no effective-version provenance |
 | **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | the **full apparatus**: an `adopts[]` reference + identity join, a provider `adopted_standard_support` matrix, DCM negotiation/translation (ADS-001…010), effective-version provenance | — |
 
 **Rule of thumb:** *does the standard version in a way that changes its shape?* **No → Tier 1** (a near-constant
@@ -113,7 +113,7 @@ Three declarative records. All are nouns — no logic.
       "identity_join": { "local_field": "uuid", "standard_column": "ResourceId" },
       "source": "https://focus.finops.org/",
       "license": "CC-BY-4.0",
-      "licenseCompatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference"
     }
   ]
 }
@@ -122,9 +122,9 @@ Three declarative records. All are nouns — no logic.
 `MAJOR.MINOR`). `identity_join` is the anchor only UDLM can provide. The standard's columns are **not**
 restated here.
 
-**`source`, `license`, and `licenseCompatibility` are mandatory** (SPEC-DESIGN-REQUIREMENTS §22–23): the
+**`source`, `license`, and `license_compatibility` are mandatory** (SPEC-DESIGN-REQUIREMENTS §22–23): the
 provenance (name + version + canonical URL) and a recorded license-compatibility verdict against the
-UDLM license (Apache-2.0). `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor,
+UDLM license (Apache-2.0). `license_compatibility` ∈ `{compatible-reference, compatible-vendor,
 reference-only}` — `reference-only` flags a copyleft/file-scoped source (GPL/LGPL/MPL) whose **names may
 be referenced but whose text/files MUST NOT be vendored** into UDLM. Because adoption only references
 the standard's vocabulary (field names = facts) and never restates its columns, the default verdict is

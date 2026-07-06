@@ -25,7 +25,8 @@
     },
     "resource_type": {
       "type": "string",
-      "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$"
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — exactly the same name grammar as the type schema (data-model-core \u00a72)."
     },
     "type_version": {
       "type": "string",
@@ -55,7 +56,7 @@
     "observed_generation": {
       "type": "integer",
       "minimum": 0,
-      "description": "The `generation` the Realized state reflects. observedGeneration < generation ⇒ realization pending (the K8s drift signal)."
+      "description": "The `generation` the Realized state reflects. observed_generation < generation ⇒ realization pending (the K8s drift signal)."
     },
     "states": {
       "type": "object",
@@ -453,7 +454,7 @@
         "translated": {
           "type": "boolean",
           "default": false,
-          "description": "True when DCM translated between providerVersion and effectiveVersion (ADS-004) — a Policy act, lowering confidence for derived values."
+          "description": "True when DCM translated between provider_version and effective_version (ADS-004) — a Policy act, lowering confidence for derived values."
         },
         "translation_ref": {
           "type": "string",
@@ -512,7 +513,8 @@
       "required": [
         "fields",
         "outputs",
-        "at"
+        "at",
+        "time_source"
       ],
       "properties": {
         "fields": {

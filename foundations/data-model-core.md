@@ -1,7 +1,7 @@
 # UDLM Data Model — Core (normative)
 
-**Document Status:** PROPOSED — rulings marked **[D1]**..**[D8]** await maintainer acceptance;
-on acceptance this document becomes the single normative statement of the UDLM data model.
+**Document Status:** Accepted 2026-07-06 (maintainer merge) — rulings **[D1]**..**[D8]** are
+normative; this document is the single normative statement of the UDLM data model.
 **Authority rule:** where any other UDLM document disagrees with this one, THIS document wins
 and the other document is defect-fixed to defer here (the 2026-07-06 consistency review found
 5 colliding rule-ID families, 4 drift-severity enums, and 3 relationship vocabularies —

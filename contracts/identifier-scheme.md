@@ -34,15 +34,15 @@ A conformant realization MUST distinguish three identifier types:
 
 | Type | Form | Scope | Mutability | Portable across peers |
 |---|---|---|---|---|
-| **UUID** | RFC 4122 stringified | Globally unique | Immutable | Yes |
+| **UUID** | RFC 9562 stringified | Globally unique | Immutable | Yes |
 | **Handle** | namespaced string | Tenant- or realm-scoped | Mutable (with audit) | No — must be rebound on import |
 | **Reference** | typed cross-doc pointer | Inherits target's scope | Tracks target | Yes if target is portable |
 
 ### 2.1 UUID — THE identifier standard (normative)
 
-UDLM/DCM standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes
-RFC 4122; all 4122-era formats remain valid under 9562, which additionally defines v6/v7/v8).
-Citations of "RFC 4122" elsewhere in this spec read as RFC 9562.
+UDLM/DCM standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes its
+2005 predecessor; all earlier-era formats remain valid under 9562, which additionally defines
+v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 
 - **Format**: RFC 9562 §4 canonical textual form — lowercase, hyphenated, no braces, no `urn:`
   prefix. Example: `f3b64dda-2c95-4a1b-8d3e-7a9c1b2e4f8d`.

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "c96eeddc-ff58-4159-8d28-675addc80a9a",
   "resource_type": "Security.DirectoryService",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -71,18 +71,21 @@
       "kind": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
+      "name": "vm_host",
       "description": "The VM the directory server runs on."
     },
     {
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "metal_host",
       "description": "The bare-metal host the directory server runs on."
     },
     {
       "kind": "depends_on",
       "target": "Security.DirectoryService",
       "cardinality": "0..n",
+      "name": "replication_peer",
       "description": "Replication peers (a replica depends_on its primary/peers)."
     }
   ],

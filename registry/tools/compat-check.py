@@ -90,7 +90,7 @@ def classify(old, new):
     reasons["major"] += [f"removed relationship {r}" for r in (rels(old) - rels(new))]
     reasons["minor"] += [f"added relationship {r}" for r in (rels(new) - rels(old))]
 
-    for key in ("entityType", "portability"):
+    for key in ("entity_type", "portability"):
         if old.get(key) != new.get(key):
             reasons["major"].append(f"changed {key}: {old.get(key)} -> {new.get(key)}")
 
@@ -117,7 +117,7 @@ def main() -> int:
     old, new = load(sys.argv[1]), load(sys.argv[2])
     required, reasons = classify(old, new)
     declared = declared_bump(old["version"], new["version"])
-    print(f"{old['resourceType']}: {old['version']} -> {new['version']}")
+    print(f"{old['resource_type']}: {old['version']} -> {new['version']}")
     print(f"  required bump: {required.upper()}   declared bump: {declared.upper()}")
     for level in ("major", "minor"):
         for r in reasons[level]:

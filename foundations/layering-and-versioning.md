@@ -1691,7 +1691,7 @@ policy:
 ```
 
 ### Step 8 — Requested State Storage
-The fully assembled, policy-processed, placement-confirmed payload is stored as the **Requested State** in the Request Store. The Requested State includes:
+The fully assembled, policy-processed, placement-confirmed payload is stored as the **Requested State** in the Requested Store. The Requested State includes:
 - All assembled resource fields with full provenance chain
 - Complete `placement` block: selected provider, hold UUID, all reserve query responses per iteration, all policy evaluations per iteration, placement constraints applied, alternatives considered
 - All `policy_gap_record` entries for implicit approvals
@@ -1776,7 +1776,7 @@ Consumer Request
          │  Complete, validated, placement-confirmed payload
          ▼
 ┌─────────────────┐
-│ REQUESTED STATE │  ← Stored in Request Store (Step 8)
+│ REQUESTED STATE │  ← Stored in Requested Store (Step 8)
 └────────┬────────┘    includes: placement block, hold records,
          │             policy gap records, enrichment_status
          ▼
@@ -1884,7 +1884,7 @@ This also means:
 |-------|-------------------|
 | Request Layer (as submitted) | Directly captured as **Intent State** — stored in Intent Store before any processing |
 | Assembled payload (post-merge, pre-policy) | Intermediate — not a named state, internal to assembly process |
-| Assembled payload (post-policy) | Becomes **Requested State** — stored in Request Store |
+| Assembled payload (post-policy) | Becomes **Requested State** — stored in Requested Store |
 | Provider execution result | Becomes **Realized State** — stored in Realized Store |
 | Discovery interrogation result | Becomes **Discovered State** — stored in Discovered Store |
 

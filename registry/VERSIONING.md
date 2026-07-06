@@ -10,7 +10,7 @@ evolve without breaking the registry, and lets a resource type evolve without a 
 | **SPEC** | the UDLM meta-model: this meta-schema, the contracts, four-state lifecycle, identifier scheme | `MAJOR.MINOR` semver | Peers conformant to the same **MAJOR** are wire-compatible (CONFORMANCE.md §9). Cross-major interop = support both majors concurrently. |
 | **ENTITY** | each Resource Type Specification | `MAJOR.MINOR.REVISION` | Immutable once published; any change publishes a new version. |
 
-**The binding:** every entity declares `conformsTo: udlm/<spec MAJOR.MINOR>` — its `apiVersion`.
+**The binding:** every entity declares `conforms_to: udlm/<spec MAJOR.MINOR>` — its `apiVersion`.
 That tells the registry which meta-schema version validates it. Downstream, **constraint
 profiles / catalog items (E1)** and **realized instances (E5)** pin the *entity* version they
 were built from, so drift is measured against the exact contract that produced them.
@@ -55,11 +55,11 @@ An explicit per-type `stability` field (for when one type is battle-tested while
 | Add an **optional** field; add an **output**; add a relationship; **loosen** a numeric/string range | **MINOR** |
 | Add an **enum value** to a field marked `x-extensible-enum: true` | **MINOR** |
 | Add an **enum value** to a closed (unmarked) enum — consumers that exhaustively switch on values break (Kubernetes api_changes rule) | **MAJOR** |
-| **Remove/rename** a field; make an existing field **required**; **narrow** validation (tighter enum/range); remove an output/relationship; change `entityType`/`portability`/lifecycle | **MAJOR** |
+| **Remove/rename** a field; make an existing field **required**; **narrow** validation (tighter enum/range); remove an output/relationship; change `entity_type`/`portability`/lifecycle | **MAJOR** |
 | Docs, descriptions, metadata, non-semantic edits | **REVISION** |
 
 A **MAJOR** bump is a breaking change: the prior version moves to `deprecated`, and the new
-version's `deprecation`-linked predecessor MUST carry `migrationGuidance`. Consumers pinned to
+version's `deprecation`-linked predecessor MUST carry `migration_guidance`. Consumers pinned to
 the old major keep working until it is `retired`.
 
 ## Deprecation lifecycle (universal model, foundations/layering-and-versioning.md)
@@ -68,7 +68,7 @@ the old major keep working until it is `retired`.
 active ──► deprecated ──► retired
 ```
 - `deprecated` versions still resolve and still serve pinned consumers; they carry
-  `deprecation.{date, reason, replacementUuid, migrationGuidance}`.
+  `deprecation.{date, reason, replacement_uuid, migration_guidance}`.
 - **Deprecation window (K8s-informed):** a `deprecated` major is supported for a published
   minimum window before `retired`, so consumers have a real migration runway. Don't retire under
   anyone still pinned without that window.
@@ -83,7 +83,7 @@ conversion model: one canonical version per major, declared conversions between 
 
 ## Registry resolution
 
-- Reference a type by `resourceType` + a version constraint: exact (`1.2.0`), minor-floating
+- Reference a type by `resource_type` + a version constraint: exact (`1.2.0`), minor-floating
   (`~1.2`), or major-floating (`^1`). Default resolution returns the latest **active** version
   satisfying the constraint.
 - `deprecated` versions resolve only to consumers that pin them; `retired` versions do not resolve.
@@ -104,7 +104,8 @@ pinned to a released contract — which don't exist yet. While `0.x`:
 
 | Date | Version | Change | Breaking? | Migration |
 |---|---|---|---|---|
-| 2026-06-26 | `Data.Database` & `Compute.Cluster` → **0.1.1**; meta-schema (SPEC `udlm/0.1`) edited in place | `adoptedStandardRef` (`resource-type-spec.schema.json`) now requires `source`, `license`, `licenseCompatibility`; `identityJoin` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | **Yes — backward-incompatible.** An `adopts[]` entry without the license verdict no longer validates (would be a MAJOR post-1.0; carried in a `0.1.1` REVISION by the pre-1.0 exception above). **Wire/instance format is unaffected** — `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `licenseCompatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` backfilled. |
+| 2026-07-06 | `realized-entity.schema.json` (SPEC `udlm/0.1`) edited in place; `Automation.Job` → **0.2.0**; 9 types MINOR-bumped | Wave-1 conformance-to-core sweep: **(a)** `time_source` now REQUIRED on realized/discovered snapshots (data-model-core §6 — no fabricated precision); **(b)** instance `resource_type` pattern loosened to allow single-segment names (matches the type schema); **(c)** `Automation.Job` `references` target retargeted `Compute`→`Compute.VirtualMachine` (bare category was not a registered type; edge is informational — affected entities may be any type) + named `depends_on` edges; **(d)** relationship `name`s added to the 9 multi-same-kind types (additive MINOR). | **(a) Yes** — an instance whose realized/discovered snapshot lacks `time_source` no longer validates (would be MAJOR post-1.0; carried in-place by the pre-1.0 exception). **(c) Yes** under the compat rules (relationship retarget). (b)/(d) non-breaking. | Add `time_source` (clock attribution) to realized/discovered snapshots — in-repo `instances/orders-db.json` backfilled. Instance edges citing the Automation.Job `references` edge keep working (informational; any-type note on the relationship). |
+| 2026-06-26 | `Data.Database` & `Compute.Cluster` → **0.1.1**; meta-schema (SPEC `udlm/0.1`) edited in place | `adopted_standard_ref` (`resource-type-spec.schema.json`) now requires `source`, `license`, `license_compatibility`; `identity_join` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | **Yes — backward-incompatible.** An `adopts[]` entry without the license verdict no longer validates (would be a MAJOR post-1.0; carried in a `0.1.1` REVISION by the pre-1.0 exception above). **Wire/instance format is unaffected** — `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `license_compatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` backfilled. |
 | 2026-06-27 | meta-schema (`udlm/0.1`) edited in place; all 19 types touched | **camelCase consolidation** — renamed the last snake_case meta-schema keys: `origination_timestamp`→`originationTimestamp` (in every type's `metadata`), and `deprecation.migration_guidance`→`migrationGuidance`, `deprecation.replacement_uuid`→`replacementUuid`. Adopts the camelCase data-model casing convention (`registry/naming-conventions.md` §4). | **Yes — backward-incompatible** (required key renamed). A type still using `origination_timestamp` no longer validates. **Wire/instance format aligns to camelCase** going forward. | Rename `origination_timestamp`→`originationTimestamp` (and the two `deprecation.*` keys) in any externally-authored type. All in-repo types updated. **⚠️ SUPERSEDED same-day by the snake_case reversal below — do not apply this row.** |
 | 2026-06-27 | meta-schema (`udlm/0.1`) edited in place; **every** type, schema, instance, and provider doc touched | **snake_case reversal (supersedes the camelCase row above).** All native data-model keys recased camelCase→`snake_case` (`resourceType`→`resource_type`, `conformsTo`→`conforms_to`, `deviceClass`→`device_class`, `lifecycleState`→`lifecycle_state`, `originationTimestamp`→`origination_timestamp`, `migrationGuidance`→`migration_guidance`, … 92 keys; initialisms lowercased, e.g. `podCIDR`→`pod_cidr`). JSON Schema keywords (`allOf`, `additionalProperties`, …) untouched; **adopted-standard names keep source casing as VALUES** (`standard_name: "SerialNumber"`). New rule §23a (adopt-by-reference casing). | **Yes — backward-incompatible** (every key renamed). | **Rationale:** UDLM is consumed natively (canonical data model), and the DCM API is AEP-bound (`aep.dev`, snake_case); native consumption + AEP jointly force one casing. The camelCase decision (driven by research that hadn't accounted for AEP) was reverted. Externally-authored types: recase native keys to `snake_case`, keep adopted source names as `standard_name`/`x-standard`/`aliases` values. All in-repo artifacts done; `tools/validate.py` green. See `naming-conventions.md` §4. |
 
@@ -124,4 +125,4 @@ backward-incompatible unless the field is documented as extensible). A type spec
 into open-world semantics by annotating it `x-extensible-enum: true` next to the `enum` —
 consumers of such fields MUST tolerate unknown values. Unmarked enums are closed: additions are
 MAJOR. *Grandfather note:* `Hardware.NetworkInterface.device_class` gained values at 0.2.0/0.3.0
-under the previous rule; it is now marked extensible (0.3.1) rather than retroactively re-versioned.
+under the previous rule; it is now marked extensible (0.4.0) rather than retroactively re-versioned.

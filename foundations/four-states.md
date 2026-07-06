@@ -125,7 +125,10 @@ The **Discovered State** is what DCM observes actually existing through active d
 RHY-008), *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what
 exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one
 domain, not two stores: the durable inventory record is the latest reconciled observation per
-entity; the snapshot stream is its history. The claim line is what separates the roles'
+entity; the snapshot stream is its history. **The durable-inventory role is EXEMPT from the
+RHY-008 retention ceilings** — retention windows apply to the snapshot stream only; the
+reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md)
+§3). The claim line is what separates the roles'
 consequences — **unclaimed = inventoried, not managed** (queryable, excluded from lifecycle
 operations); a provider claim/adoption moves the entity Discovered → Realized preserving its
 UUID, and a long-lived unclaimed resource is the recorded Antipattern (claim it or retire it).
@@ -186,7 +189,7 @@ Each data domain enforces its contract through PostgreSQL-native mechanisms:
 
 **Pipeline events** flow between control plane services via the `pipeline_events` table with PostgreSQL `LISTEN/NOTIFY` for real-time routing. For high-throughput deployments, Kafka can be added alongside as an optional enhancement.
 
-**Audit records** are stored in `audit_records` with a SHA-256 hash chain (each record's hash includes the previous record's hash), append-only enforcement (`REVOKE UPDATE, DELETE` + trigger-based immutability guard), and per-entity chain sequence numbers.
+**Audit records** are stored in `audit_records` as leaves of an **RFC 9162 (Certificate Transparency v2.0) Merkle tree** — per-leaf signatures, signed tree heads, O(log n) inclusion and consistency proofs (ruling D2; see [universal-audit](../observability/universal-audit.md) `AUD-006` for the normative model) — with append-only enforcement (`REVOKE UPDATE, DELETE` + trigger-based immutability guard) and per-entity chain sequence numbers.
 
 ### 4.2 Realized State Snapshot Model
 
@@ -472,9 +475,9 @@ Audit Store records drift event with full provenance
 ```
 
 
-### 6.3 Drift Severity Classification
+### 6.2 Drift Severity Classification
 
-Drift severity is determined by combining three independent tiers. The final severity is the highest tier that applies.
+Drift severity uses the canonical enum **`minor | significant | critical`** ([data-model-core](data-model-core.md) §7, ruling D6) — every drift-severity grading anywhere in the spec resolves to one of these three values. Severity is determined by combining three independent tiers. The final severity is the highest tier that applies.
 
 **Tier 1 — Field criticality (declared in Resource Type Specification):**
 
@@ -525,70 +528,9 @@ entity:
 
 **Resolution rule:** The Drift Detection component takes the highest severity from all three tiers. Provider injection can raise but not lower the Tier 1/2 result. Consumer injection can raise or lower (entity owner controls their own resource's sensitivity). Profile governs whether consumer lowering is permitted.
 
+**Multi-field drift:** when multiple fields drift simultaneously, the overall severity is the highest severity among all drifted fields. **Unsanctioned changes** (no corresponding Requested State record) are always elevated one severity level above the resolved result — a `significant` unsanctioned change becomes `critical`.
 
-
-### 6.3 Drift Severity Classification
-
-Drift severity is determined by two independent dimensions declared in the Resource Type Specification — field criticality and change magnitude. The combination produces a deterministic severity classification for any drift event.
-
-#### Field Criticality (declared per field in Resource Type Spec)
-
-```yaml
-resource_type_spec:
-  fqn: Compute.VirtualMachine
-  fields:
-    display_name:
-      drift_criticality: low          # cosmetic; never affects function
-    cpu_count:
-      drift_criticality: medium       # affects performance; not security
-    memory_gb:
-      drift_criticality: medium
-    security_group_ids:
-      drift_criticality: critical     # security boundary field; always critical
-    os_image:
-      drift_criticality: critical     # security posture; always critical
-    storage_gb:
-      drift_criticality: medium
-    network_interface_ids:
-      drift_criticality: high         # connectivity; significant operational impact
-```
-
-**Criticality levels:** `low | medium | high | critical`
-
-#### Change Magnitude (profile-governed thresholds)
-
-```yaml
-drift_magnitude_thresholds:
-  profile_defaults:
-    standard:
-      minor:       change_pct < 10%
-      significant: change_pct 10-50%
-      critical:    change_pct > 50% OR value_disappeared OR type_changed
-    prod:
-      minor:       change_pct < 5%
-      significant: change_pct 5-25%
-      critical:    change_pct > 25% OR value_disappeared OR type_changed
-```
-
-#### Severity Matrix
-
-| Field Criticality | Change Magnitude | Drift Severity |
-|------------------|-----------------|----------------|
-| low | any | minor |
-| medium | minor | minor |
-| medium | significant | significant |
-| medium | critical | significant |
-| high | minor | significant |
-| high | significant | significant |
-| high | critical | critical |
-| critical | any | critical |
-
-**Unsanctioned changes** (no corresponding Requested State record) are always elevated one severity level above what the matrix produces. A `significant` unsanctioned change becomes `critical`.
-
-**Multi-field drift:** when multiple fields drift simultaneously, the overall severity is the highest severity among all drifted fields.
-
-
-### 6.2 Unsanctioned Changes
+### 6.3 Unsanctioned Changes
 
 A specific category of drift — a change made directly to a resource without a corresponding DCM request. Detected by:
 - Kubernetes: CR spec change without DCM request annotation
@@ -752,7 +694,7 @@ Second rehydration attempt arrives for entity <uuid>
 
 ### 7a.4 Discovered State Retention (Q78)
 
-Discovered State is ephemeral operational data — not the authoritative source of truth (Realized State is). It is a snapshot used for drift detection. Three retention modes, all profile-governed:
+The Discovered State **snapshot stream** is ephemeral operational data — not the authoritative source of truth (Realized State is). It is a snapshot used for drift detection. The durable per-UUID inventory record (§2.4 dual role) is exempt from these windows. Three retention modes for the snapshot stream, all profile-governed:
 
 ```yaml
 discovered_state_retention:
@@ -793,13 +735,13 @@ Discovered State records are **NOT** stored in the Audit Store — they are too 
 | Policy | Rule |
 |--------|------|
 | `RHY-001` | Tenancy and sovereignty are always current on rehydration — they cannot be pinned to historical state. |
-| `RHY-002` | Sovereignty conflicts discovered during rehydration place the entity in PENDING_REVIEW state. |
-| `RHY-003` | Resource allocations are not automatically released on rehydration. |
-| `RHY-004` | Rehydration leases have TTL to prevent orphaned lease states. |
+| `RHY-010` | Tenancy or sovereignty conflicts discovered during rehydration place the entity in PENDING_REVIEW state (the pause behavior of `RHY-002`, §5.5 — same trigger set: tenancy/sovereignty). |
+| `RHY-011` | Resource allocations are not automatically released on rehydration (restates `RHY-003`, §5.5, for the full-set view). |
+| `RHY-012` | Rehydration leases have TTL to prevent orphaned lease states. |
 | `RHY-005` | Entity UUIDs are preserved on rehydration. The UUID represents stable logical identity across provider migrations. Provider-side identifiers change on rehydration and are recorded in rehydration_history. Rehydration is transactional — failure preserves pre-rehydration state without UUID change. |
 | `RHY-006` | Entities may declare min_auth_level for rehydration. Profile governs enforcement. Automated rehydration by DCM service accounts requires allow_delegated_rehydration: true OR platform admin manual authorization with full audit trail. |
 | `RHY-007` | Rehydration requests acquire an exclusive lease per entity before proceeding. Only one rehydration may be active per entity. Concurrent requests are queued (higher priority) or rejected (same/lower). Lease TTL prevents indefinite blocking. Expiry triggers drift detection for partial completion assessment. |
-| `RHY-008` | Discovered State retention is profile-governed: rolling_window, event_driven, or hybrid. Discovered State is never stored in the Audit Store. Drift events triggered by Discovered State are recorded in the Audit Store with discovery snapshot UUID reference. Maximum retention: P30D for standard/prod; P90D for fsi/sovereign. |
+| `RHY-008` | Discovered State **snapshot-stream** retention is profile-governed: rolling_window, event_driven, or hybrid. The retention ceilings apply to the snapshot stream ONLY — the durable per-UUID inventory record (§2.4 dual role) is EXEMPT and persists until claim or retirement. Discovered State is never stored in the Audit Store. Drift events triggered by Discovered State are recorded in the Audit Store with discovery snapshot UUID reference. Maximum snapshot-stream retention: P30D for standard/prod; P90D for fsi/sovereign. |
 
 ---
 
