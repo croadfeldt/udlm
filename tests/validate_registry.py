@@ -7,9 +7,13 @@ of manual. Run before merging any registry change:
 
     python3 tests/validate_registry.py
 
-Exit 0 = all types valid. Also enforces two conventions the meta-schema itself can't express:
+Exit 0 = all types valid. Also enforces conventions the meta-schema itself can't express:
   - $id version segment == the `version` field
   - $id spec segment  == `conforms_to`
+  - ADOPT-001: every adopts[].standard string is Covered by an entry in
+    registry/standards-adoption-register.md (SPEC-DESIGN hard constraint 31 — what/why/
+    where/when/who for every standards decision; adoption without a registered decision
+    does not merge)
 
 Requires: pip install jsonschema pyyaml
 """
@@ -18,6 +22,8 @@ import json
 import os
 import re
 import sys
+
+import yaml
 
 import jsonschema
 
@@ -62,6 +68,22 @@ def main() -> int:
 
         if not errs:
             print(f"ok   {rel}  ({doc.get('resource_type')} {doc.get('version')})")
+
+    # ADOPT-001 — every adopted standard has a register entry (constraint 31)
+    register = open(os.path.join(ROOT, "registry", "standards-adoption-register.md")).read()
+    covered = set()
+    for line in register.splitlines():
+        if "**Covers:**" in line:
+            covered.update(re.findall(r"`([^`]+)`", line.split("**Covers:**", 1)[1]))
+    for path in paths:
+        doc = yaml.safe_load(open(path)) if path.endswith(".yaml") else json.load(open(path))
+        for a in doc.get("adopts") or []:
+            std = a.get("standard")
+            if std and std not in covered:
+                failures += 1
+                print(f"FAIL [ADOPT-001] {os.path.relpath(path, ROOT)}: adopts {std!r} with no "
+                      f"entry in standards-adoption-register.md — register the decision "
+                      f"(what/why/where/when/who) in the same change")
 
     print(f"\n{len(paths)} type spec(s) checked, {failures} failure(s)")
     return 1 if failures else 0
