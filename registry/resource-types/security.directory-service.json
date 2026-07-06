@@ -34,7 +34,7 @@
       },
       "realm": {
         "type": "string",
-        "description": "Kerberos realm / identity realm, e.g. ROADFELDT.COM."
+        "description": "Kerberos realm / identity realm, e.g. EXAMPLE.COM."
       },
       "base_dn": {
         "type": "string",
