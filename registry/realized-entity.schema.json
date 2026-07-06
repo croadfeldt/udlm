@@ -459,7 +459,7 @@
         },
         "time_source": {
           "type": "string",
-          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host-e chrony, stratum 2, NIST') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
         }
       }
     },
@@ -491,7 +491,7 @@
         },
         "time_source": {
           "type": "string",
-          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host-e chrony, stratum 2, NIST') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host01 chrony, stratum 2, NTP-traceable') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
         }
       }
     }
