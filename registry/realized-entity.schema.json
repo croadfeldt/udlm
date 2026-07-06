@@ -5,41 +5,77 @@
   "description": "The operational record of one entity (or Composite Entity) as it flows through the four states. This is the data substrate DCM reads and writes — UDLM carries the records, DCM applies the policy that produces them (core-tenets G3). It complements the Resource Type Specification (which defines the TYPE); this defines an INSTANCE. Field values inside the state snapshots are typed by the entity's Resource Type Spec, not re-validated here.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["uuid", "conforms_to", "resource_type", "type_version", "lifecycle_state", "states"],
+  "required": [
+    "uuid",
+    "conforms_to",
+    "resource_type",
+    "type_version",
+    "lifecycle_state",
+    "states"
+  ],
   "properties": {
     "uuid": {
-      "type": "string", "format": "uuid",
-      "description": "Stable RFC 4122 identity of this entity. A Composite Entity has exactly one UUID across all four states (entities/composite-service-model.md)."
+      "type": "string",
+      "format": "uuid",
+      "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (entities/composite-service-model.md)."
     },
-    "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
-    "resource_type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$" },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "resource_type": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+$"
+    },
     "type_version": {
-      "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "Pins the Resource Type Specification version this instance was realized against (E5). Drift and validation are measured against this exact contract."
     },
     "type_ref": {
-      "type": "string", "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "type": "string",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "The `$id` of the pinned Resource Type Spec."
     },
     "lifecycle_state": {
-      "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"],
+      "enum": [
+        "Intent",
+        "Requested",
+        "Realized",
+        "Discovered",
+        "Decommissioned"
+      ],
       "description": "The entity's current state in the four-state model (foundations/four-states.md)."
     },
-    "generation": { "type": "integer", "minimum": 0, "description": "Increments on each desired-state (Intent/Requested) change." },
-    "observed_generation": { "type": "integer", "minimum": 0, "description": "The `generation` the Realized state reflects. observedGeneration < generation ⇒ realization pending (the K8s drift signal)." },
-
+    "generation": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Increments on each desired-state (Intent/Requested) change."
+    },
+    "observed_generation": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The `generation` the Realized state reflects. observedGeneration < generation ⇒ realization pending (the K8s drift signal)."
+    },
     "states": {
       "type": "object",
       "additionalProperties": false,
       "description": "An immutable snapshot per state. Intent is captured before processing; Requested is the assembled, policy-validated, provider-ready payload; Realized is the provider-confirmed snapshot (system of record); Discovered is the actively-introspected state used for drift.",
       "properties": {
-        "intent":     { "$ref": "#/$defs/state_snapshot" },
-        "requested":  { "$ref": "#/$defs/state_snapshot" },
-        "realized":   { "$ref": "#/$defs/realized_snapshot" },
-        "discovered": { "$ref": "#/$defs/realized_snapshot" }
+        "intent": {
+          "$ref": "#/$defs/state_snapshot"
+        },
+        "requested": {
+          "$ref": "#/$defs/state_snapshot"
+        },
+        "realized": {
+          "$ref": "#/$defs/realized_snapshot"
+        },
+        "discovered": {
+          "$ref": "#/$defs/realized_snapshot"
+        }
       }
     },
-
     "provenance": {
       "type": "object",
       "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; DCM writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model.",
@@ -48,81 +84,182 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["source", "timestamp"],
+          "required": [
+            "source",
+            "timestamp"
+          ],
           "properties": {
             "source": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["kind", "id"],
+              "required": [
+                "kind",
+                "id"
+              ],
               "properties": {
-                "kind": { "enum": ["layer", "policy", "actor", "provider"] },
-                "id": { "type": "string" },
-                "version": { "type": "string" }
+                "kind": {
+                  "enum": [
+                    "layer",
+                    "policy",
+                    "actor",
+                    "provider"
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                }
               }
             },
-            "actor": { "type": "string", "description": "The authenticated identity on whose behalf the change was made." },
-            "timestamp": { "type": "string", "format": "date-time" },
-            "previous_value": { "description": "Value before this change (any JSON type), for the audit diff." }
+            "actor": {
+              "type": "string",
+              "description": "The authenticated identity on whose behalf the change was made."
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+              "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+            },
+            "previous_value": {
+              "description": "Value before this change (any JSON type), for the audit diff."
+            }
           }
         }
       }
     },
-
     "ownership": {
       "type": "object",
       "description": "FIELD OWNERSHIP (R4 / server-side apply): keyed by dot-path, the manager that owns each field. Enables offline conflict detection when multiple vendor-agnostic providers write one record (no central apiserver needed). Distinct from provenance: ownership = who is authoritative now; provenance = the full history.",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
-
     "dependencies": {
       "type": "array",
       "description": "Resolved instance-level edges (the realized form of the type's relationships). A binding records the value pulled from the target's realized output — data movement, not transformation (T4).",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["kind", "target_uuid"],
+        "required": [
+          "kind",
+          "target_uuid"
+        ],
         "properties": {
-          "kind": { "enum": ["depends_on", "references", "contained_by", "binds_to"] },
-          "target_uuid": { "type": "string", "format": "uuid" },
-          "target_field": { "type": "string" },
-          "bound_field": { "type": "string", "description": "The field on this entity the bound value populated." },
-          "resolved_at": { "type": "string", "format": "date-time" }
+          "kind": {
+            "enum": [
+              "depends_on",
+              "references",
+              "contained_by",
+              "binds_to"
+            ]
+          },
+          "target_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_field": {
+            "type": "string"
+          },
+          "bound_field": {
+            "type": "string",
+            "description": "The field on this entity the bound value populated (binds_to data movement, T4). Never a relation label — relation semantics live in `relation`."
+          },
+          "resolved_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+            "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+          },
+          "target_handle": {
+            "type": "string",
+            "description": "ADVISORY handle of the target at reference time (identifier-scheme §3). target_uuid is authoritative; a handle mismatch on resolution is drift (REF-002), not failure."
+          },
+          "strength": {
+            "type": "string",
+            "enum": [
+              "hard",
+              "soft"
+            ],
+            "default": "hard",
+            "description": "depends_on only. hard = target unavailability blocks this entity; soft = degrade-don't-break (entities/service-dependencies.md DEP-006) — informs ordering but never blocks."
+          },
+          "relation": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The declared relation name from the pinned type's relationship vocabulary (relationships[].name) — REL-001: must be declared; REL-003: refines, never overrides, kind's ordering semantics, so graph consumers that read only kind+strength stay correct. NOT bound_field (which is strictly the data-binding field of a binds_to edge)."
+          }
         }
       }
     },
-
     "constituents": {
       "type": "array",
       "description": "For a Composite Entity: the constituents and their per-component realized state (entities/composite-service-model.md).",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["component_id", "resource_type", "lifecycle_state"],
+        "required": [
+          "component_id",
+          "resource_type",
+          "lifecycle_state"
+        ],
         "properties": {
-          "component_id": { "type": "string" },
-          "resource_type": { "type": "string" },
-          "instance_uuid": { "type": "string", "format": "uuid" },
-          "provided_by": { "enum": ["self", "external"] },
-          "lifecycle_state": { "enum": ["Intent", "Requested", "Realized", "Discovered", "Decommissioned"] }
+          "component_id": {
+            "type": "string"
+          },
+          "resource_type": {
+            "type": "string"
+          },
+          "instance_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "provided_by": {
+            "enum": [
+              "self",
+              "external"
+            ]
+          },
+          "lifecycle_state": {
+            "enum": [
+              "Intent",
+              "Requested",
+              "Realized",
+              "Discovered",
+              "Decommissioned"
+            ]
+          }
         }
       }
     },
-
     "drift": {
       "type": "object",
       "additionalProperties": false,
       "description": "The diff between Discovered and Requested. A non-empty `fields` means observed reality diverged from intent.",
       "properties": {
-        "detected": { "type": "boolean" },
-        "checked_at": { "type": "string", "format": "date-time" },
+        "detected": {
+          "type": "boolean"
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+        },
         "fields": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["path"],
+            "required": [
+              "path"
+            ],
             "properties": {
-              "path": { "type": "string" },
+              "path": {
+                "type": "string"
+              },
               "requested": {},
               "discovered": {}
             }
@@ -130,92 +267,232 @@
         }
       }
     },
-
     "sovereignty": {
       "type": "object",
       "additionalProperties": false,
       "description": "The sovereign placement of the realized entity. These are realized from `immutable`/createOnly type fields — they cannot change without replace + Governance-Matrix re-evaluation (cross-cutting P4).",
       "properties": {
-        "zone": { "type": "string" },
-        "classification": { "type": "string" }
+        "zone": {
+          "type": "string"
+        },
+        "classification": {
+          "type": "string"
+        }
       }
     },
-
     "status": {
       "type": "object",
       "additionalProperties": false,
       "description": "Realized-state health (OSAC-/K8s-style). Reported by the provider; not part of the four-state axis.",
       "properties": {
-        "state": { "type": "string" },
+        "state": {
+          "type": "string"
+        },
         "conditions": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["type", "status"],
+            "required": [
+              "type",
+              "status"
+            ],
             "properties": {
-              "type": { "type": "string" },
-              "status": { "enum": ["True", "False", "Unknown"] },
-              "reason": { "type": "string" },
-              "message": { "type": "string" },
-              "last_transition_time": { "type": "string", "format": "date-time" }
+              "type": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "True",
+                  "False",
+                  "Unknown"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "last_transition_time": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+              }
             }
           }
         }
       }
     },
-
     "audit": {
       "type": "object",
       "additionalProperties": false,
       "description": "Linkage to the tamper-evident audit log (AUD-001/002). UDLM carries the reference (the Merkle head + leaf count); DCM produces and proves the chain (G3).",
       "properties": {
-        "log_head": { "type": "string", "description": "Hash of the latest audit leaf for this entity (RFC 9162 Merkle)." },
-        "leaf_count": { "type": "integer", "minimum": 0 }
+        "log_head": {
+          "type": "string",
+          "description": "Hash of the latest audit leaf for this entity (RFC 9162 Merkle)."
+        },
+        "leaf_count": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
-
     "adopted_standards": {
       "type": "array",
       "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of DCM's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether DCM translated between versions (ADS-003/004/008). UDLM carries this record; DCM (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join.",
-      "items": { "$ref": "#/$defs/adopted_standard_binding" }
+      "items": {
+        "$ref": "#/$defs/adopted_standard_binding"
+      }
+    },
+    "handle": {
+      "type": "string",
+      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Human-facing context. Operational commentary lives in `notes` — it is data ABOUT the record, never used for resolution.",
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "array",
+          "description": "Auditable operational notes: each entry is attributed and timestamped — never an anonymous mutable blob.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
+            "properties": {
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "When recorded. RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+              },
+              "author": {
+                "type": "string",
+                "description": "Who/what recorded it (person, agent+session, or process uuid)."
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     }
   },
-
   "$defs": {
     "adopted_standard_binding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["standard", "effective_version"],
+      "required": [
+        "standard",
+        "effective_version"
+      ],
       "properties": {
-        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost." },
-        "requested_version": { "type": "string", "description": "The version pin/range the consumer or type required." },
-        "provider_version": { "type": "string", "description": "The version the bound provider emits/consumes (from its support matrix)." },
-        "effective_version": { "type": "string", "description": "The version actually used after negotiation (the system-of-record fact)." },
-        "translated": { "type": "boolean", "default": false, "description": "True when DCM translated between providerVersion and effectiveVersion (ADS-004) — a Policy act, lowering confidence for derived values." },
-        "translation_ref": { "type": "string", "description": "Reference to the deterministic migration used (preferably the standard's own published migration)." },
-        "provider_uuid": { "type": "string", "format": "uuid", "description": "The provider / Information Provider that served the adopted data (lookup-only; not owned here — ADS-007)." },
-        "resolved_at": { "type": "string", "format": "date-time" }
+        "standard": {
+          "type": "string",
+          "description": "External standard name, e.g. FOCUS, OpenCost."
+        },
+        "requested_version": {
+          "type": "string",
+          "description": "The version pin/range the consumer or type required."
+        },
+        "provider_version": {
+          "type": "string",
+          "description": "The version the bound provider emits/consumes (from its support matrix)."
+        },
+        "effective_version": {
+          "type": "string",
+          "description": "The version actually used after negotiation (the system-of-record fact)."
+        },
+        "translated": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when DCM translated between providerVersion and effectiveVersion (ADS-004) — a Policy act, lowering confidence for derived values."
+        },
+        "translation_ref": {
+          "type": "string",
+          "description": "Reference to the deterministic migration used (preferably the standard's own published migration)."
+        },
+        "provider_uuid": {
+          "type": "string",
+          "format": "uuid",
+          "description": "The provider / Information Provider that served the adopted data (lookup-only; not owned here — ADS-007)."
+        },
+        "resolved_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+        }
       }
     },
     "state_snapshot": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fields", "at"],
+      "required": [
+        "fields",
+        "at"
+      ],
       "properties": {
-        "fields": { "type": "object", "description": "Spec field values at this state (typed by the Resource Type Spec)." },
-        "at": { "type": "string", "format": "date-time" }
+        "fields": {
+          "type": "object",
+          "description": "Spec field values at this state (typed by the Resource Type Spec)."
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+        },
+        "time_source": {
+          "type": "string",
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host-e chrony, stratum 2, NIST') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        }
       }
     },
     "realized_snapshot": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["fields", "outputs", "at"],
+      "required": [
+        "fields",
+        "outputs",
+        "at"
+      ],
       "properties": {
-        "fields": { "type": "object" },
-        "outputs": { "type": "object", "description": "Typed realized outputs (E2) published by the provider." },
-        "at": { "type": "string", "format": "date-time" },
-        "provider": { "type": "string", "description": "The provider that produced this realized state." }
+        "fields": {
+          "type": "object"
+        },
+        "outputs": {
+          "type": "object",
+          "description": "Typed realized outputs (E2) published by the provider."
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+        },
+        "provider": {
+          "type": "string",
+          "description": "The provider that produced this realized state."
+        },
+        "time_source": {
+          "type": "string",
+          "description": "Attribution of the clock that produced `at`: host + sync discipline (e.g. 'host-e chrony, stratum 2, NIST') or the auditable carrier a backfilled instant came from (e.g. 'git commit <sha> committer clock, NTP-synced'). Fabricated precision is prohibited — a backfilled timestamp must name its carrier (common-elements.md §Timestamps)."
+        }
       }
     }
   }

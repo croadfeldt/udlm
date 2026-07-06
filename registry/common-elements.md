@@ -228,3 +228,84 @@ between declared cabling and the observed neighbor is **drift** (OBS-001), never
 **RFC 8345** (ietf-network-topology) models the same thing as a first-class *link* between two
 *termination-points*; UDLM keeps it as a reference for minimal surface area — promote to a link entity
 only if links ever need their own attributes (cable id, patch panel, medium).
+
+## 8. Timestamps, notes, and audit-grade recording (normative)
+
+Provenance is only actionable if its times and notes are. These rules apply to **every** time
+field and note in the registry (type specs) and in instance records (realized-entity), and are
+enforced by pattern in both schemas.
+
+### 8.1 Timestamps
+
+- **Format:** RFC 3339 (the internet profile of ISO 8601), **normalized to UTC** with the `Z`
+  designator, seconds precision minimum: `2026-07-05T21:18:04Z`. Local offsets, date-only
+  values, and zone-less times are non-conformant — the schemas reject them.
+- **Source of time (`time_source`):** a timestamp without clock attribution is a claim, not
+  evidence. State snapshots carry `time_source` naming the producing clock — host + sync
+  discipline (e.g. `host-e chrony, stratum 2, NIST an-ntp-upstream`) — or, for a backfilled
+  instant, the auditable carrier it came from (e.g. `git commit <sha> committer clock,
+  NTP-synced workstation`).
+- **No fabricated precision:** never widen a calendar-precision claim into an invented instant.
+  Backfill only from an auditable carrier (git commit instants, log lines, NTP-disciplined
+  capture at probe time) and say so in `time_source`.
+- **Alignment:** RFC 9562 v7 UUIDs (identifier-scheme §2.1, declared time-ordered fields only)
+  draw on the same clock discipline; a v7 field and its record's timestamps must not come from
+  different unsynchronized clocks.
+
+### 8.2 Notes are auditable records
+
+`metadata.notes` is **attributed, timestamped entries** (`{at, author, text}`), never an
+anonymous mutable blob. `author` is a person, an agent+session, or a process uuid (a Process
+Resource that writes a note cites itself — the §6.4 obligation applies to notes too). Editing
+history rides the store's carrier (git or the four-state store).
+
+### 8.3 Field-level provenance is profile-implemented, never profile-optional
+
+E4 field-level provenance and G3 (audit consumes the same record) hold in **every** profile —
+foundations.md: a `minimal` profile implements the architecture with minimal operational
+overhead; it does not disable it. What varies by profile is the **implementation**:
+
+| Profile | Conforming provenance implementation |
+|---|---|
+| `minimal` / `dev` | **Derivable-carrier provenance**: records live in a git-carried store; field-level provenance entries are *materialized on demand* from the carrier's history by tooling, with the documented mapping — `source: {kind: actor, id: <commit author>}`, `timestamp` = committer instant normalized to UTC, previous value from the parent revision. The carrier must be able to produce a conforming `provenance` object for any record at any time; CI verifies derivability. |
+| `standard` / `prod` | Materialized `provenance` written at assembly/realization time (DCM writes, UDLM carries). |
+| `fsi` / `sovereign` | Materialized provenance **plus** the tamper-evident audit chain linkage (`audit.log_head`, AUD-001/002). |
+
+A store that can neither carry nor derive field-level provenance for its records does not
+conform in any profile.
+
+## 9. Relation vocabulary — named, standards-adopted edge semantics (normative)
+
+Edges carry two tiers of meaning, and each tier has one authoritative field:
+
+- **`kind`** (universal, closed: `depends_on` | `contained_by` | `binds_to` | `references`) — the
+  **dependency-graph tier**. Generic enough to apply to every resource type, specific enough to
+  act on: ordering, traversal, DEP rules, and lifecycle projections consume ONLY kind + strength.
+  Aligned with OASIS TOSCA root relationship types (`DependsOn`, `HostedOn`, `BindsTo`) and with
+  ECMA-424 CycloneDX's minimal `dependsOn` graph.
+- **`name`** (type layer) / **`relation`** (instance layer) — the **domain tier**. Each Resource
+  Type declares its relationships with a machine-readable `name`; the type spec IS the relation
+  registry for its instances (the RFC 8288 registered-vocabulary pattern, applied per type).
+  Instance edges cite the declared name via `dependencies[].relation`.
+
+| Rule | Statement |
+|---|---|
+| `REL-001` | An instance edge's `relation` MUST be a relationship `name` declared by the entity's pinned Resource Type. Undeclared relation strings are invalid. |
+| `REL-002` | Relationship cardinalities declared by the type are enforceable on instances — a type-required relationship (cardinality `1..`) with no matching instance edge is a completeness failure. Conditional requirements (e.g. `lower_layer` required only for `device_class: aggregate\|bridge`) are enforced per the type's stated condition. |
+| `REL-003` | A relation **refines** its declared kind and MUST NOT alter the kind's ordering semantics (the TOSCA derivation rule). A consumer that does not understand a relation falls back to kind behavior — the dependency graph is always a strict projection of the data. |
+| `REL-004` | Relation names are **adopted, not invented**: where a standard names the concept, the relationship declares it in `adopted_from` (and the type's `adopts[]` carries the source + license verdict). Invented names are permitted only where no standard names the concept, and follow naming-conventions. |
+
+**Adopted relation names (current):** `lower_layer`, `parent_device` (RFC 8343
+`lower-layer-if`; parent_device is a declared 1→N refinement) · `connects_to` (OASIS TOSCA
+`ConnectsTo`) · `attaches_to` (OASIS TOSCA `AttachesTo`) · `supporting_node` (RFC 8345
+`supporting-node`).
+
+**Prior art considered (2026-07-05):** OASIS TOSCA relationship types + derivation; IETF YANG
+RFC 8343/8345; DMTF CIM associations / Redfish named `Links`; RFC 8288 / IANA link-relation
+registry (mechanism adopted, web-document vocabulary rejected as poor domain fit); CNCF
+Backstage catalog relations (paired vocabulary); ISO/IEC 5962 SPDX + ECMA-424 CycloneDX
+(standardized dependency/relationship vocabularies); Google Zanzibar / SpiceDB (per-type
+declared relations — the model behind Red Hat Project Kessel's relations-api); Kubernetes
+ownerReferences + Service Binding for Kubernetes (grounds `binds_to`/`bound_field`). Red Hat
+OSAC's fulfillment API references objects via named `*_ref` fields with no relation vocabulary
+— UDLM's model is a superset; mapping at the Provider boundary is name↔ref-field.
