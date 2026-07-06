@@ -12,23 +12,45 @@
     "display_name": "DHCP Scope",
     "description": "A DHCP address scope — a subnet's dynamic pool(s), options, and reservations. Grounded in RFC 2131 (DHCPv4) / RFC 8415 (DHCPv6) and the ISC Kea subnet model. ISC Kea is MPL-2.0, so its vocabulary is referenced by name only, never vendored.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-06-26"
+    "origination_timestamp": "2026-06-27T00:38:59Z"
   },
   "spec": {
     "type": "object",
-    "required": ["subnet"],
+    "required": [
+      "subnet"
+    ],
     "properties": {
-      "subnet": { "type": "string", "description": "Scope subnet in CIDR (common-elements: cidr), e.g. 10.0.90.0/24." },
-      "ip_family": { "type": "string", "enum": ["ipv4", "ipv6"], "default": "ipv4", "description": "Address family (common-elements: ip_family)." },
+      "subnet": {
+        "type": "string",
+        "description": "Scope subnet in CIDR (common-elements: cidr), e.g. 10.0.90.0/24."
+      },
+      "ip_family": {
+        "type": "string",
+        "enum": [
+          "ipv4",
+          "ipv6"
+        ],
+        "default": "ipv4",
+        "description": "Address family (common-elements: ip_family)."
+      },
       "pools": {
         "type": "array",
         "description": "Dynamic allocation ranges within the subnet (Kea subnet pools).",
         "items": {
           "type": "object",
-          "required": ["start", "end"],
+          "required": [
+            "start",
+            "end"
+          ],
           "properties": {
-            "start": { "type": "string", "description": "First address of the range." },
-            "end": { "type": "string", "description": "Last address of the range." }
+            "start": {
+              "type": "string",
+              "description": "First address of the range."
+            },
+            "end": {
+              "type": "string",
+              "description": "Last address of the range."
+            }
           }
         }
       },
@@ -36,22 +58,49 @@
         "type": "object",
         "description": "Common DHCP options (RFC 2132).",
         "properties": {
-          "router": { "type": "string", "description": "Default gateway (option 3)." },
-          "dns_servers": { "type": "array", "items": { "type": "string" }, "description": "DNS servers (option 6)." },
-          "domain_name": { "type": "string", "description": "Domain name (option 15)." }
+          "router": {
+            "type": "string",
+            "description": "Default gateway (option 3)."
+          },
+          "dns_servers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "DNS servers (option 6)."
+          },
+          "domain_name": {
+            "type": "string",
+            "description": "Domain name (option 15)."
+          }
         }
       },
-      "lease_time": { "type": "integer", "minimum": 1, "description": "Default lease time in seconds." },
+      "lease_time": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Default lease time in seconds."
+      },
       "reservations": {
         "type": "array",
         "description": "Static host reservations (MAC -> address).",
         "items": {
           "type": "object",
-          "required": ["mac_address", "address"],
+          "required": [
+            "mac_address",
+            "address"
+          ],
           "properties": {
-            "mac_address": { "type": "string", "description": "Client hardware address." },
-            "address": { "type": "string", "description": "Reserved IP." },
-            "hostname": { "type": "string" }
+            "mac_address": {
+              "type": "string",
+              "description": "Client hardware address."
+            },
+            "address": {
+              "type": "string",
+              "description": "Reserved IP."
+            },
+            "hostname": {
+              "type": "string"
+            }
           }
         }
       }
@@ -59,8 +108,18 @@
   },
   "outputs": {},
   "relationships": [
-    { "kind": "depends_on", "target": "Compute.BareMetalHost", "cardinality": "0..n", "description": "Host(s) running the DHCP server(s) serving this scope (e.g. an HA pair)." },
-    { "kind": "depends_on", "target": "Compute.VirtualMachine", "cardinality": "0..n", "description": "DHCP server(s) hosted on VMs." }
+    {
+      "kind": "depends_on",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..n",
+      "description": "Host(s) running the DHCP server(s) serving this scope (e.g. an HA pair)."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..n",
+      "description": "DHCP server(s) hosted on VMs."
+    }
   ],
   "adopts": [
     {
@@ -83,7 +142,14 @@
     }
   ],
   "aliases": [
-    { "name": "DHCP Pool", "note": "common term for the dynamic range" },
-    { "name": "Scope", "standard": "Microsoft", "note": "Windows DHCP 'scope'" }
+    {
+      "name": "DHCP Pool",
+      "note": "common term for the dynamic range"
+    },
+    {
+      "name": "Scope",
+      "standard": "Microsoft",
+      "note": "Windows DHCP 'scope'"
+    }
   ]
 }
