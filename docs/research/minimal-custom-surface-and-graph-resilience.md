@@ -76,8 +76,8 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 | # | Action | Landed at |
 |---|---|---|
 | 1 | Degrade-don't-break | `entities/service-dependencies.md` DEP-006 |
-| 2 | Tombstone/two-phase delete | DEP-007 + estate validator retire-first gate (estate-repo) |
-| 3 | Constrained reference topology | DEP-008 + estate validator TOPO-* checks (estate-repo) |
+| 2 | Tombstone/two-phase delete | DEP-007 + estate validator retire-first gate (estate repo) |
+| 3 | Constrained reference topology | DEP-008 + estate validator TOPO-* checks (estate repo) |
 | 4 | Enum discipline + extensible markers | `registry/VERSIONING.md` (enum rows + §Enum extensibility); `device_class` marked `x-extensible-enum` (0.3.1) |
 | 5 | `deprecated_in_version` | meta-schema `deprecation` object |
 | 6 | Augment-only extension model | `registry/naming-conventions.md` §Extension model (seeds #198) |

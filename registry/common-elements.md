@@ -80,7 +80,7 @@ consistently `snake_case` (`ip_address`/`api_url`/`console_url`/`connection_stri
 The infrastructure types in `resource-type-data-sources.md` MUST use these canonical elements:
 `BareMetalInstance` discovered inventory → `ComputeResources` + `Quantity` (RAM) + `StorageCapacity`
 (disks); `CephCluster` capacity → `Quantity`; `AddressService`/`Gateway` → `cidr`/`ip_family`; every
-type's status → `Condition[]`. Vendor-exclusive elements (iDRAC, vendor-UPS SNMP) stay out of the portable
+type's status → `Condition[]`. Vendor-exclusive elements (BMC-specific extensions, vendor SNMP MIBs) stay out of the portable
 spec (SPEC-DESIGN-REQUIREMENTS §17) and live only in the extension surface.
 
 ## 5. Component granularity — data element *and* entity (both)
@@ -212,10 +212,10 @@ Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once fr
 
 ```yaml
 # host side                              # switch side
-- id: host-a-eno2                       - id: sw-leaf01-port14
+- id: host01-eno2                        - id: sw-leaf01-port14
   type: Hardware.NetworkInterface          type: Hardware.NetworkInterface
-  contained_by: host-a                    contained_by: sw-leaf01   # a Network.Switch
-  connected_to: sw-leaf01-port14   attrs: { identity: { location: "Port 14" } }
+  contained_by: host01                     contained_by: sw-leaf01           # a Network.Switch
+  connected_to: sw-leaf01-port14           attrs: { identity: { location: "Port 14" } }
 ```
 
 Together the three make the estate graph traversable end-to-end from ANY resource:
@@ -242,7 +242,7 @@ enforced by pattern in both schemas.
   values, and zone-less times are non-conformant — the schemas reject them.
 - **Source of time (`time_source`):** a timestamp without clock attribution is a claim, not
   evidence. State snapshots carry `time_source` naming the producing clock — host + sync
-  discipline (e.g. `host-e chrony, stratum 2, NIST an-ntp-upstream`) — or, for a backfilled
+  discipline (e.g. `host01 chrony, stratum 2, NTP-traceable upstream`) — or, for a backfilled
   instant, the auditable carrier it came from (e.g. `git commit <sha> committer clock,
   NTP-synced workstation`).
 - **No fabricated precision:** never widen a calendar-precision claim into an invented instant.
