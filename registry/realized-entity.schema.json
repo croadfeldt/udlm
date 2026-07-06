@@ -165,7 +165,7 @@
           },
           "bound_field": {
             "type": "string",
-            "description": "The field on this entity the bound value populated."
+            "description": "The field on this entity the bound value populated (binds_to data movement, T4). Never a relation label — relation semantics live in `relation`."
           },
           "resolved_at": {
             "type": "string",
@@ -185,6 +185,11 @@
             ],
             "default": "hard",
             "description": "depends_on only. hard = target unavailability blocks this entity; soft = degrade-don't-break (entities/service-dependencies.md DEP-006) — informs ordering but never blocks."
+          },
+          "relation": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The declared relation name from the pinned type's relationship vocabulary (relationships[].name) — REL-001: must be declared; REL-003: refines, never overrides, kind's ordering semantics, so graph consumers that read only kind+strength stay correct. NOT bound_field (which is strictly the data-binding field of a binds_to edge)."
           }
         }
       }

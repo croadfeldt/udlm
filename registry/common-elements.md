@@ -273,3 +273,39 @@ overhead; it does not disable it. What varies by profile is the **implementation
 
 A store that can neither carry nor derive field-level provenance for its records does not
 conform in any profile.
+
+## 9. Relation vocabulary — named, standards-adopted edge semantics (normative)
+
+Edges carry two tiers of meaning, and each tier has one authoritative field:
+
+- **`kind`** (universal, closed: `depends_on` | `contained_by` | `binds_to` | `references`) — the
+  **dependency-graph tier**. Generic enough to apply to every resource type, specific enough to
+  act on: ordering, traversal, DEP rules, and lifecycle projections consume ONLY kind + strength.
+  Aligned with OASIS TOSCA root relationship types (`DependsOn`, `HostedOn`, `BindsTo`) and with
+  ECMA-424 CycloneDX's minimal `dependsOn` graph.
+- **`name`** (type layer) / **`relation`** (instance layer) — the **domain tier**. Each Resource
+  Type declares its relationships with a machine-readable `name`; the type spec IS the relation
+  registry for its instances (the RFC 8288 registered-vocabulary pattern, applied per type).
+  Instance edges cite the declared name via `dependencies[].relation`.
+
+| Rule | Statement |
+|---|---|
+| `REL-001` | An instance edge's `relation` MUST be a relationship `name` declared by the entity's pinned Resource Type. Undeclared relation strings are invalid. |
+| `REL-002` | Relationship cardinalities declared by the type are enforceable on instances — a type-required relationship (cardinality `1..`) with no matching instance edge is a completeness failure. Conditional requirements (e.g. `lower_layer` required only for `device_class: aggregate\|bridge`) are enforced per the type's stated condition. |
+| `REL-003` | A relation **refines** its declared kind and MUST NOT alter the kind's ordering semantics (the TOSCA derivation rule). A consumer that does not understand a relation falls back to kind behavior — the dependency graph is always a strict projection of the data. |
+| `REL-004` | Relation names are **adopted, not invented**: where a standard names the concept, the relationship declares it in `adopted_from` (and the type's `adopts[]` carries the source + license verdict). Invented names are permitted only where no standard names the concept, and follow naming-conventions. |
+
+**Adopted relation names (current):** `lower_layer`, `parent_device` (RFC 8343
+`lower-layer-if`; parent_device is a declared 1→N refinement) · `connects_to` (OASIS TOSCA
+`ConnectsTo`) · `attaches_to` (OASIS TOSCA `AttachesTo`) · `supporting_node` (RFC 8345
+`supporting-node`).
+
+**Prior art considered (2026-07-05):** OASIS TOSCA relationship types + derivation; IETF YANG
+RFC 8343/8345; DMTF CIM associations / Redfish named `Links`; RFC 8288 / IANA link-relation
+registry (mechanism adopted, web-document vocabulary rejected as poor domain fit); CNCF
+Backstage catalog relations (paired vocabulary); ISO/IEC 5962 SPDX + ECMA-424 CycloneDX
+(standardized dependency/relationship vocabularies); Google Zanzibar / SpiceDB (per-type
+declared relations — the model behind Red Hat Project Kessel's relations-api); Kubernetes
+ownerReferences + Service Binding for Kubernetes (grounds `binds_to`/`bound_field`). Red Hat
+OSAC's fulfillment API references objects via named `*_ref` fields with no relation vocabulary
+— UDLM's model is a superset; mapping at the Provider boundary is name↔ref-field.

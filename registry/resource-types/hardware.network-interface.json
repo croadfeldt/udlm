@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -169,19 +169,25 @@
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7)."
+      "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7).",
+      "name": "parent_device",
+      "adopted_from": "RFC 8343 lower-layer-if (declared refinement: the 1-to-N slice direction)"
     },
     {
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "1..n",
-      "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7)."
+      "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7).",
+      "name": "lower_layer",
+      "adopted_from": "RFC 8343 lower-layer-if"
     },
     {
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "connected_to — the PEER termination point this physical interface is linked to (host NIC ↔ switch port; switch ↔ switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points — promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements §7a)."
+      "description": "connects_to (renamed from connected_to when relation names were adopted from standards, common-elements §9) — the PEER termination point this physical interface is linked to (host NIC ↔ switch port; switch ↔ switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points — promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements §7a).",
+      "name": "connects_to",
+      "adopted_from": "OASIS TOSCA ConnectsTo"
     }
   ],
   "adopts": [
@@ -220,6 +226,15 @@
       "source": "https://standards.ieee.org/ieee/802.1Q/",
       "license": "IEEE",
       "license_compatibility": "reference-only"
+    },
+    {
+      "standard": "OASIS TOSCA",
+      "version": "2.0",
+      "standard_name": "ConnectsTo",
+      "role": "relation vocabulary — connects_to peer-adjacency relation name (common-elements §9)",
+      "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
+      "license": "OASIS",
+      "license_compatibility": "compatible-reference"
     }
   ]
 }
