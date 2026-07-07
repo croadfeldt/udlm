@@ -1,0 +1,24 @@
+uuid: 11700da9-e803-40da-99e7-5acc364feb10
+handle: example-nightly-backup-job
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Automation.Job
+type_version: 0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Automation.Job/0.2.0
+lifecycle_state: Realized
+states:
+  realized:
+    fields: {process_type: playbook, max_execution_time: PT1H, trigger: schedule}
+    outputs: {last_result: COMPLETED}
+    at: "2026-07-07T14:20:00Z"
+    time_source: example clock, NTP-synced
+process:
+  execution_state: COMPLETED
+  process_type: playbook
+  affected_entities:
+  - {entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21, effect_type: read, effect_description: "snapshotted the database"}
+  execution_record:
+    initiated_at: "2026-07-07T02:00:00Z"
+    completed_at: "2026-07-07T02:12:00Z"
+    max_execution_time: PT1H
+    on_max_exceeded: terminate

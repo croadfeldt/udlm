@@ -43,7 +43,7 @@ it governs.
   `record_type: catalog_item` + validate.py semantic checks; the application model — an
   application IS a Composite catalog item — and the DCM ADR-016 evidence;
   `entities/composite-service-model.md` §1.4/§2.5), (3) policy record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the referenceable typed binding surface, output-resolved by the validator]**, (4) layer record **[DONE — registry/layer.schema.json]**, (5) audit record +
-  Commit Log entry, (6) DecisionRecord **[DONE — registry/decision-record.schema.json; the WHY becomes a queryable, Data·Policy·Provider-decomposed record]**, (7) Process Resource. Until an artifact's schema
+  Commit Log entry, (6) DecisionRecord **[DONE — registry/decision-record.schema.json; the WHY becomes a queryable, Data·Policy·Provider-decomposed record]**, (7) Process Resource **[DONE — the `process` execution axis on realized-entity; execution_state separate from lifecycle_state per D7; validate.py enforces it on Process-family entities]**. **The D8 schema program is COMPLETE.** Until an artifact's schema
   exists, its prose definition is explicitly marked *pre-schema* and is not citable as
   "[enforced]".
 
