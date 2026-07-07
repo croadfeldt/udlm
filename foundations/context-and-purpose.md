@@ -7,7 +7,7 @@
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
@@ -23,38 +23,25 @@
 
 ## 1. Purpose
 
-The DCM Data Model is the foundational layer upon which the entire DCM framework operates. It is not a storage mechanism or a database schema — it is the **lingua franca of DCM**. Every component in the DCM architecture communicates through the data model in some form, whether reading, writing, validating, enriching, transforming, or comparing data.
+UDLM is the foundational data model upon which a conformant realization (e.g. DCM) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of a realization communicates: reading, writing, validating, enriching, transforming, or comparing data.
 
 The data model exists to solve a problem that is endemic to enterprise IT: **there is no single, trustworthy, consistent representation of infrastructure state**. Tools proliferate, CMDBs diverge, and the result is that no one knows with confidence what exists, what was requested, what was provisioned, or whether the current state matches the intended state.
 
-The DCM Data Model establishes a **unified, versioned, declarative single source of truth** for all infrastructure state across the full lifecycle of every resource DCM manages.
+UDLM establishes a **unified, versioned, declarative single source of truth** for all infrastructure state across the full lifecycle of every resource a realization manages.
 
 ---
 
-## 2. Role in the DCM Architecture
+## 2. The Data Model as Inter-Component Contract
 
-The data model is not owned by any single component — it is the contract between all components. Every major DCM capability acts on data in a specific and well-defined way:
+The data model is not owned by any single component — it is the **contract between all of them**. Every component of a realization acts on the data in some well-defined way (assembling a request payload, evaluating policy, provisioning via a provider, recording audit at each state transition, comparing states for drift, attributing cost, discovering current state, gating access, exposing a catalog), and even components that never talk directly are coupled through the shared data model. This is what lets each component be built, tested, and evolved independently.
 
-| Component | Relationship to Data |
-|-----------|---------------------|
-| Request Payload Processor | Assembles and enriches data into a complete request payload |
-| Policy Engine | Reads, validates, transforms, and gates data based on policy definitions |
-| Service Provider | Consumes data (via Naturalization) and returns data (via Denaturalization) |
-| Orchestration | Coordinates component interactions based on data state and dependencies |
-| Audit | Records data at every state transition for compliance evidence |
-| Drift Reconciliation | Compares versions of data across states to detect and remediate drift |
-| Cost Analysis | Derives cost information from data throughout the resource lifecycle |
-| Resource Discovery | Produces data representing the current discovered state of resources |
-| IDM / IAM | Gates access to data and operations based on identity and role |
-| Service Catalog | Exposes available services based on data definitions and RBAC policy |
-
-This means the data model is effectively the **API between all DCM components** — even components that do not communicate directly are coupled through the data model. A well-designed data model makes every component easier to build, test, and evolve independently.
+*How a specific realization's components consume the data model — the component roster and each one's read/write relationship to the data — is realization architecture, not part of the data model. See the DCM architecture documentation for that mapping.*
 
 ---
 
 ## 3. Universal Identity Requirement
 
-Every data object in DCM must have a **UUID (Universally Unique Identifier)**. This is not optional — it is a foundational requirement that applies to every entity in the data model without exception.
+Every data object in UDLM must have a **UUID (Universally Unique Identifier)**. This is not optional — it is a foundational requirement that applies to every entity in the data model without exception.
 
 UUIDs serve several critical functions:
 
@@ -70,11 +57,11 @@ This applies to all entities including but not limited to: resource definitions,
 
 ## 4. Field-Level Provenance and Data Lineage
 
-One of the most critical requirements of the DCM Data Model is the ability to trace the complete lineage of any piece of data at any stage of the pipeline. This is not a logging concern — it is a **structural requirement of the data model itself**.
+One of the most critical requirements of UDLM is the ability to trace the complete lineage of any piece of data at any stage of the pipeline. This is not a logging concern — it is a **structural requirement of the data model itself**.
 
 ### 4.1 The Requirement
 
-At any point in the DCM pipeline, for any field in any data object, it must be possible to answer:
+At any point in a realization's pipeline, for any field in any data object, it must be possible to answer:
 
 - What is the current value of this field?
 - Where did this value originate? (catalog item, base layer, intermediate layer, policy, consumer input, discovery)
@@ -95,9 +82,9 @@ Document-level versioning alone is insufficient for DCM's requirements. Consider
 1. Consumer selects a catalog item — catalog item UUID recorded
 2. Base resource definition layer applied — base layer UUID recorded, fields established
 3. Intermediate layers applied — each layer UUID recorded, field overrides recorded
-4. Policy Engine validates — policy UUID recorded, validation outcome recorded
-5. Policy Engine enriches — policy UUID recorded, enriched field values and their source recorded
-6. Policy Engine transforms — policy UUID recorded, transformation recorded with before/after values
+4. Policy evaluation validates — policy UUID recorded, validation outcome recorded
+5. Policy evaluation enriches — policy UUID recorded, enriched field values and their source recorded
+6. Policy evaluation transforms — policy UUID recorded, transformation recorded with before/after values
 7. Request payload submitted — complete provenance chain intact across all fields
 
 Without field-level provenance, it is impossible to determine after the fact whether a specific field value came from a consumer request, a data layer, a security policy, or a business rule. This ambiguity is unacceptable in a governed, auditable system.
@@ -152,26 +139,17 @@ field_name:
         reason: <human-readable description of why the change was made>
 ```
 
-**Note:** The `metadata` block is set exclusively by the Policy Engine. Data layers and the Request Payload Processor never set override control. `operation_type: lock` is used when a compliance-class Validation Policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
+**Note:** The `metadata` block is set exclusively by policy evaluation. Data layers and request assembly never set override control. `operation_type: lock` is used when a compliance-class Validation Policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
 
-### 4.5 Provenance Obligations
+### 4.5 The Provenance Obligation
 
-Every DCM component that reads and modifies data carries a provenance obligation:
+Provenance recording is a **data-model obligation, not optional**: any entity that creates or modifies a field value MUST record, alongside that value, the source UUID and source type that produced it, the timestamp, and — for modifications — the operation type and reason (§4.4). Any process that modifies data without recording this provenance violates the data model contract.
 
-| Component | Provenance Obligation |
-|-----------|----------------------|
-| Request Payload Processor | Record source UUID and type for every field assembled from layers and catalog items |
-| Policy Engine | Record policy UUID, operation type, and reason for every field it enriches, transforms, or validates |
-| Service Provider (Denaturalization) | Record provider UUID and timestamp for every field returned in the realized payload |
-| Resource Discovery | Record provider UUID, discovery timestamp, and interrogation method for every field in the discovered payload |
-| Data Layers | Each layer must declare its UUID so downstream provenance records can reference it |
-| Catalog Items | Each catalog item must declare its UUID so downstream provenance records can reference it |
-
-Provenance recording is **not optional** for any component that modifies data. A component that modifies data without recording provenance violates the data model contract.
+*Which specific realization components carry this obligation, and exactly what each records, is realization architecture — see the DCM architecture documentation.*
 
 ### 4.6 Relationship to Audit
 
-The Audit capability in DCM reads provenance data that is intrinsic to every data object. This means:
+A realization's audit capability reads provenance data that is intrinsic to every data object. This means:
 
 - Audit does not reconstruct history from logs — it reads lineage that was recorded at the point of change
 - Any data object can be audited at any time, in any state, by any authorized persona
@@ -182,7 +160,7 @@ The Audit capability in DCM reads provenance data that is intrinsic to every dat
 
 ## 5. Foundational Constraints
 
-The DCM Data Model is governed by three foundational constraints that apply universally and without exception:
+UDLM is governed by three foundational constraints that apply universally and without exception:
 
 ### 5.1 Declarative
 
@@ -218,7 +196,7 @@ This constraint is what makes the following capabilities trustworthy:
 
 ## 5a. Artifact Metadata Standard
 
-Every DCM artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a universal **Artifact Metadata** block. This is a structural requirement that applies to all artifacts without exception.
+Every UDLM artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a universal **Artifact Metadata** block. This is a structural requirement that applies to all artifacts without exception.
 
 ### The Purpose
 
@@ -252,99 +230,43 @@ See [Data Layers and Assembly — Section 4b](layering-and-versioning.md) for th
 
 ## 6. The Four States
 
-DCM tracks the lifecycle of every resource through four distinct states. Together, these four states provide complete visibility into the gap between what was wanted, what was asked for, what was built, and what actually exists.
+UDLM tracks the lifecycle of every resource through four distinct states, together giving complete visibility into the gap between what was wanted, what was asked for, what was built, and what actually exists:
 
-### 6.1 Intent State
-
-The **Intent State** represents what a consumer wants to happen. It is the declared desire, captured at the moment a consumer initiates a request, before any processing, validation, or enrichment has occurred.
-
-- **When it is created:** When a consumer submits a request via the Web UI or Consumer API
-- **Where it is stored:** Intent Store
-- **Key characteristic:** Captures the consumer's raw intent — what they asked for in their own terms
-- **Primary use:** Source for Intent Portability — replaying an intent through current policies to produce a new request for a different environment or provider
-
-### 6.2 Requested State
-
-The **Requested State** represents the fully processed, policy-validated, and enriched payload that has been submitted to a Service Provider for execution. It is the output of the Request Payload Processor after all policies have been applied and all data layers have been merged.
-
-- **When it is created:** When the Request Payload Processor completes processing and submits to the API Gateway
-- **Where it is stored:** Requested Store
-- **Key characteristic:** Represents a complete, validated, provider-ready declaration of desired state
-- **Primary use:** Record of what was formally requested; input to audit and drift processes
-
-### 6.3 Realized State
-
-The **Realized State** represents what was actually provisioned or executed by a Service Provider, returned to DCM in unified data model format via Denaturalization. It is the ground truth of what was built.
-
-- **When it is created:** When a Service Provider completes execution and returns the realized payload to the API Gateway
-- **Where it is stored:** Realized Store
-- **Key characteristic:** Must be a complete representation of the provisioned resource in DCM unified format — not a status code, but a full state description
-- **Primary use:** Baseline for drift detection; source of truth for audit and reporting; input to cost analysis
-
-### 6.4 Discovered State
-
-The **Discovered State** represents what actually exists in the environment as interrogated by a Service Provider during a discovery operation. It is an independent observation of reality, not derived from any previous DCM state.
-
-- **When it is created:** When a Service Provider completes a discovery cycle and returns the discovered payload to DCM
-- **Where it is stored:** Discovered Store
-- **Key characteristic:** Produced independently of the Realized State — it is what is actually there, regardless of what was supposed to be there
-- **Primary use:** Drift detection (compared against Realized State); brownfield ingestion (pathway to lifecycle ownership of unmanaged resources)
-
-### 6.5 State Relationships and Lifecycle Flow
-
-The four states relate to each other as follows:
+| State | Represents | Primary use |
+|-------|-----------|-------------|
+| **Intent** | What the consumer wants (raw declaration, before processing) | Intent portability — replay through current policies |
+| **Requested** | The assembled, policy-validated, provider-ready payload | Record of what was formally requested; input to audit/drift |
+| **Realized** | What a provider actually built (ground truth) | Baseline for drift; source of truth for audit; cost input |
+| **Discovered** | What is independently observed to exist right now | Drift detection; brownfield ingestion |
 
 ```
-Consumer Request
-      │
-      ▼
-┌─────────────┐
-│ INTENT      │  ◄── What the consumer wants
-│ STATE       │
-└──────┬──────┘
-       │  Policy Engine processes, enriches, validates
-       ▼
-┌─────────────┐
-│ REQUESTED   │  ◄── What was formally submitted to the provider
-│ STATE       │
-└──────┬──────┘
-       │  Service Provider executes
-       ▼
-┌─────────────┐
-│ REALIZED    │  ◄── What was actually built
-│ STATE       │
-└──────┬──────┘
-       │
-       │                    ┌─────────────┐
-       │  Compare ◄─────────│ DISCOVERED  │  ◄── What actually exists now
-       │                    │ STATE       │
-       ▼                    └─────────────┘
-  Drift Detection
+Intent  ──policy evaluation──▶  Requested  ──provider executes──▶  Realized
+                                                                      ▲
+                                                        Compare ──────┤
+                                                                      │
+                                                                 Discovered
+                                                          (what actually exists)
+                                                                      │
+                                                                      ▼
+                                                               Drift Detection
 ```
 
-**Key operations across states:**
-- **Drift Detection:** Discovered State vs. Realized State
-- **Request Validation:** Requested State vs. Policy definitions
-- **Intent Portability:** Intent State → re-process through current policies → new Requested State
-- **Brownfield Ingestion:** Discovered State → enrichment → Realized State (lifecycle ownership)
+The four states, their definitions, storage contracts, and the operations across them (drift detection, intent portability, brownfield ingestion, rehydration) are defined canonically in **[The Four States](four-states.md)**. This section is an at-a-glance summary — see that document for the authoritative model.
 
 ---
 
 ## 7. Data as the Provider Contract Boundary
 
-The data model defines the boundary between DCM and its Service Providers. DCM is explicitly **not concerned with how a provider accomplishes its work** — only with the data that crosses the boundary in both directions.
+The data model defines the boundary between a realization and its providers. The realization is explicitly **not concerned with how a provider accomplishes its work** — only with the data that crosses the boundary in both directions. This is a data-model property:
 
-This means:
 - Providers are interchangeable as long as they honor the data contract
-- New providers can be added without changing DCM's core data model
-- Provider implementation can evolve independently of DCM
+- New providers can be added without changing the core data model
+- Provider implementation can evolve independently of the realization
 - The contract is enforced at the data level — conformant data in, conformant data out
 
-The two mechanisms that enforce this boundary are:
-- **Naturalization** — the provider's responsibility to transform DCM unified data into its own tool-specific format for execution
-- **Denaturalization** — the provider's responsibility to transform its tool-specific result data back into DCM unified format for return to the control plane
+This separation of concerns is what makes a realization technology-agnostic while maintaining a consistent and trustworthy data model across all providers.
 
-This separation of concerns is what makes DCM technology-agnostic while maintaining a consistent and trustworthy data model across all providers.
+*The wire protocol that carries data across this boundary — how a provider transforms unified data into its own tool-specific format and back (naturalization / denaturalization) — is the provider INTERFACE. See [Provider Contract](../contracts/provider-contract.md) and the DCM architecture documentation.*
 
 ---
 
@@ -355,7 +277,7 @@ The following questions remain unresolved and require decisions before the data 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
 | 1 | Where should data caches live? | Cache architecture, latency, sovereignty | ✅ Resolved — caches at Regional DCM level; Info Provider caches co-located with source; Sovereign DCM uses local static from signed bundles (CACHE-001) |
-| 2 | Should cache synchronization be push, pull, or both? | Consistency model | ✅ Resolved — hybrid push-pull; pull on schedule; push for time-sensitive events via Message Bus (CACHE-002) |
+| 2 | Should cache synchronization be push, pull, or both? | Consistency model | ✅ Resolved — hybrid push-pull; pull on schedule; push for time-sensitive events via an event channel (CACHE-002) |
 | 3 | Which cache is authoritative when caches diverge? | Conflict resolution | ✅ Resolved — the authoritative State Store (whichever conforming store the deployment's D1 binding declares) always wins; caches are projections; divergence triggers rebuild from the authoritative store (CACHE-003) |
 | 4 | What mechanism maintains consistency across distributed caches? | Data integrity | ✅ Resolved — hash-based heartbeat divergence detection + push invalidation; PT2H staleness alert; signed bundles for Sovereign DCM (CACHE-004) |
 | 5 | Should the data model allow embedded target-technology-specific data bundles? | Portability | ✅ Resolved — native_passthrough field sanctioned; always audit-logged; opaque mode blocked in fsi/sovereign (DATA-001) |

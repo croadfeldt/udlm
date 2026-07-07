@@ -25,7 +25,7 @@
 
 An **Information Provider** is a registered DCM provider that serves as the authoritative source for a specific category of data that DCM needs to reference but does not own. It exposes external data to DCM through a standard interface, enabling DCM to look up, verify, and relate external records without caching or owning them.
 
-Information Providers are a first-class provider type in DCM alongside Service Providers and composite service definitions. They follow the same registration, health check, trust, and contract model as Service Providers — adapted where applicable to the lookup-only nature of information retrieval.
+In the unified provider model ([capability-discovery.md](capability-discovery.md)), an "Information Provider" is a provider that declares the **`serve_data`** capability — fixed provider *types* are superseded by capability declarations, and `serve_data` is the convenience label for the serve-authoritative-external-data capability profile. A provider MAY declare `serve_data` alongside others (e.g. an IPAM that both serves data and realizes resources). This document details the `serve_data` capability; it follows the same registration, health check, trust, and contract model as any provider — adapted where applicable to the lookup-only nature of information retrieval.
 
 ---
 
@@ -41,15 +41,15 @@ Information Providers solve this by giving DCM a standard, stable, governed inte
 
 ---
 
-## 3. Information Provider in the Provider Ecosystem
+## 3. The `serve_data` Capability in the Provider Ecosystem
 
-DCM defines eleven provider types, all implementing the unified Provider base contract. This document focuses on the Information Provider type. For the complete provider type list see [provider-contract.md](provider-contract.md).
+All providers implement one unified base contract and declare **capabilities** rather than belonging to a fixed type (the capability vocabulary — `realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows` — is defined in [capability-discovery.md](capability-discovery.md); legacy type names remain as convenience labels for common capability profiles). The `serve_data` capability contrasts with the others by data direction and ownership:
 
-| Provider Type | Purpose | Data Direction | DCM Owns Result? |
+| Capability (legacy label) | Purpose | Data Direction | Realization Owns Result? |
 |--------------|---------|---------------|-----------------|
-| **Service Provider** | Executes work, realizes resources | DCM → Provider → DCM | Yes — DCM owns the realized entity |
-| **Information Provider** | Serves authoritative external data | DCM → Provider (lookup only) | No — external system is authoritative |
-| **composite service definition** | Composes multiple providers | DCM → Meta → Child Providers → DCM | Yes — DCM owns the composite result |
+| **`realize_resources`** (Service Provider) | Executes work, realizes resources | realization → provider → realization | Yes — the realization owns the realized entity |
+| **`serve_data`** (Information Provider) | Serves authoritative external data | realization → provider (lookup only) | No — the external system is authoritative |
+| **composite service definition** | Composes multiple providers | realization → meta → child providers → realization | Yes — the realization owns the composite result |
 
 ---
 
