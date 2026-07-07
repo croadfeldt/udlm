@@ -620,6 +620,112 @@
           ],
           "x-extensible-enum": true,
           "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
+        },
+        "roles": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/data_role"
+          },
+          "description": "Field/section role OVERRIDES, keyed by a dot-path into `fields` (a leaf = field-level; a prefix = section-level). Default is `execution` (dispatched); list ONLY non-execution exceptions here (succinct usage). Precedence: field-level path > section-level prefix > default execution (contracts/data-roles.md cascade)."
+        },
+        "assembly": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Non-dispatched ASSEMBLY record (role: assembly; ADR-PROV-001). Control-plane only — MUST NOT be naturalized into the provider dispatch payload, and MUST NOT be copied into states.realized. Meaningful on the Requested snapshot: the record of what was offered but not applied, and which candidate layers were excluded.",
+          "properties": {
+            "unapplied": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "source",
+                  "disposition",
+                  "reason"
+                ],
+                "properties": {
+                  "field": {
+                    "type": "string",
+                    "description": "dot-path this contribution targeted."
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "id"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "layer",
+                          "policy",
+                          "actor",
+                          "provider"
+                        ]
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "uuid of the layer/policy/actor/provider that offered it."
+                      }
+                    }
+                  },
+                  "attempted_value": {
+                    "description": "The value this source offered but that was NOT applied (any type)."
+                  },
+                  "disposition": {
+                    "enum": [
+                      "overridden",
+                      "lower_precedence",
+                      "narrowed_out",
+                      "stripped_by_policy",
+                      "denied_by_policy",
+                      "blocked_by_immutable",
+                      "shadow_only"
+                    ],
+                    "description": "Why it did not land."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Human-readable justification."
+                  },
+                  "at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+                  }
+                }
+              },
+              "description": "Per-field 'road not taken' — contributions offered but not applied, each with source, attempted_value, disposition, and reason (the winning chain is in `provenance`)."
+            },
+            "excluded_layers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "layer_uuid",
+                  "reason"
+                ],
+                "properties": {
+                  "layer_uuid": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+                  },
+                  "reason": {
+                    "enum": [
+                      "activation_condition_false",
+                      "type_scope_mismatch",
+                      "domain_authority",
+                      "narrowed_out"
+                    ],
+                    "description": "LAY-003 / layering-and-versioning exclusion reasons."
+                  }
+                }
+              },
+              "description": "Candidate layers dropped at resolution (LAY-003) and why."
+            }
+          }
         }
       }
     },
@@ -663,8 +769,26 @@
           ],
           "x-extensible-enum": true,
           "description": "How this snapshot came to be: declared (the forward flow — consumer/provider wrote it), discovered-derived (synthesized from observation, dcm ADR-017 Decision B — provider-agnostic inferred Intent for DR/portability), backfilled (tertiary Requested/Intent synthesis during greening). Consumers weight trust accordingly; inferred state is never silently presented as human-declared."
+        },
+        "roles": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/data_role"
+          },
+          "description": "Field/section role OVERRIDES, keyed by a dot-path into `fields` (a leaf = field-level; a prefix = section-level). Default is `execution` (dispatched); list ONLY non-execution exceptions here (succinct usage). Precedence: field-level path > section-level prefix > default execution (contracts/data-roles.md cascade)."
         }
       }
+    },
+    "data_role": {
+      "enum": [
+        "execution",
+        "assembly",
+        "governance",
+        "audit",
+        "cost"
+      ],
+      "x-extensible-enum": true,
+      "description": "Data ROLE — the purpose axis (ADR-PROV-001; contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
     }
   }
 }
