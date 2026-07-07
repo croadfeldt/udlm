@@ -3,9 +3,14 @@
   - registry/resource-types/*  against  resource-type-spec.schema.json        (TYPE definitions)
   - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
                         or against  dcm-group.schema.json                     (DCMGroup records)
+                        or against  catalog-item.schema.json                  (Composite Service catalog items)
   - registry/providers/*       against  provider-adopted-standards.schema.json (provider support matrices)
-Instance dispatch: a document with a top-level `group_class` is a DCMGroup; one with
-`resource_type` is a realized entity (data-model-core §5 — Tenants ARE DCMGroups).
+Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
+schema); legacy discriminators remain — a document with a top-level `group_class` is a
+DCMGroup; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
+DCMGroups). Catalog items additionally get semantic checks JSON Schema cannot express
+(component_id uniqueness, sibling depends_on/binding resolution, cycle rejection,
+binding⊆depends_on ordering).
 Loads JSON and YAML natively. Exit non-zero if anything is invalid. Wire into CI."""
 import json
 import sys
@@ -25,6 +30,7 @@ TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.sch
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
 GROUP_VALIDATOR = Draft202012Validator(json.loads((ROOT / "dcm-group.schema.json").read_text()))
 PROVIDER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "provider-adopted-standards.schema.json").read_text()))
+CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
 
 
 def load(path: pathlib.Path):
@@ -37,7 +43,9 @@ def load(path: pathlib.Path):
 
 
 def validate_dir(subdir: str, pick) -> int:
-    """pick(doc) -> (validator, label_fn) — per-document dispatch."""
+    """pick(doc) -> (validator, label_fn[, checks_fn]) — per-document dispatch.
+    checks_fn(doc) -> [error strings] runs semantic checks JSON Schema cannot express;
+    any returned error makes the document invalid."""
     failures = 0
     base = ROOT / subdir
     if not base.exists():
@@ -46,21 +54,91 @@ def validate_dir(subdir: str, pick) -> int:
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         doc = load(path)
-        validator, label = pick(doc)
+        picked = pick(doc)
+        validator, label = picked[0], picked[1]
+        checks = picked[2] if len(picked) > 2 else None
         errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
-        if errors:
+        semantic = checks(doc) if checks and not errors else []
+        if errors or semantic:
             failures += 1
             print(f"FAIL {path.name}")
             for err in errors[:5]:
                 loc = "/".join(str(p) for p in err.path) or "(root)"
                 print(f"   - {loc}: {err.message}")
+            for msg in semantic:
+                print(f"   - {msg}")
         else:
             print(f"ok   {path.name}  — {label(doc)}")
     return failures
 
 
+def check_catalog_item(doc):
+    """Semantic checks for Composite Service catalog items — the cross-field constraints
+    JSON Schema cannot express (catalog-item.schema.json description; composite-service-model.md
+    §2.3/§10 registration rejection rules):
+      (a) component_id unique within the item
+      (b) every depends_on / bindings.from_component resolves to a sibling component_id
+      (c) the depends_on graph is acyclic (CMP-002 ordering derives from it)
+      (d) a binding's from_component appears in that constituent's depends_on
+          (data movement implies ordering)."""
+    errors = []
+    constituents = doc.get("constituents", [])
+
+    # (a) component_id uniqueness
+    ids = [c.get("component_id") for c in constituents]
+    seen = set()
+    for cid in ids:
+        if cid in seen:
+            errors.append(f"constituents: duplicate component_id '{cid}' — must be unique within the item")
+        seen.add(cid)
+    id_set = set(ids)
+
+    # (b) sibling resolution + (d) binding ⊆ depends_on
+    for c in constituents:
+        cid = c.get("component_id", "?")
+        deps = c.get("depends_on", [])
+        for dep in deps:
+            if dep not in id_set:
+                errors.append(f"constituent '{cid}': depends_on '{dep}' does not resolve to a sibling component_id")
+        for b in c.get("bindings", []):
+            src = b.get("from_component")
+            if src not in id_set:
+                errors.append(f"constituent '{cid}': binding from_component '{src}' does not resolve to a sibling component_id")
+            elif src not in deps:
+                errors.append(f"constituent '{cid}': binding from_component '{src}' missing from depends_on — data movement implies ordering")
+
+    # (c) cycle detection — DFS, 3-color
+    graph = {c.get("component_id"): [d for d in c.get("depends_on", []) if d in id_set]
+             for c in constituents}
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {cid: WHITE for cid in graph}
+
+    def dfs(node, path):
+        color[node] = GRAY
+        for dep in graph.get(node, []):
+            if color[dep] == GRAY:
+                cycle = path[path.index(dep):] + [dep] if dep in path else [node, dep]
+                errors.append("constituents: depends_on cycle " + " -> ".join(cycle))
+                return True
+            if color[dep] == WHITE and dfs(dep, path + [dep]):
+                return True
+        color[node] = BLACK
+        return False
+
+    for cid in graph:
+        if color[cid] == WHITE and dfs(cid, [cid]):
+            break  # one reported cycle is enough
+
+    return errors
+
+
 def pick_instance(doc):
-    """Dispatch: `group_class` ⇒ DCMGroup; `resource_type` ⇒ realized entity."""
+    """Dispatch: `record_type` first (catalog_item ⇒ catalog item, + semantic checks);
+    legacy keys — `group_class` ⇒ DCMGroup; `resource_type` ⇒ realized entity."""
+    if isinstance(doc, dict) and doc.get("record_type") == "catalog_item":
+        return (CATALOG_VALIDATOR,
+                lambda d: f"catalog item {d['name']} v{d['version']} {d['uuid'][:8]} ({len(d['constituents'])} constituents)",
+                check_catalog_item)
     if isinstance(doc, dict) and "group_class" in doc:
         return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
     return INSTANCE_VALIDATOR, lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]"
@@ -73,7 +151,7 @@ def main() -> int:
         "resource-types",
         lambda doc: (TYPE_VALIDATOR,
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
-    print("== instances (realized entities + DCMGroups) ==")
+    print("== instances (realized entities + DCMGroups + catalog items) ==")
     failures += validate_dir("instances", pick_instance)
     print("== providers (adopted-standard support) ==")
     failures += validate_dir(
