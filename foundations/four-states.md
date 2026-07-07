@@ -34,7 +34,7 @@ The four states answer four distinct questions:
 | **Realized State** | What did the provider actually build? | `realized_entities` — versioned snapshots, `is_current` flag |
 | **Discovered State** | What does DCM observe actually existing right now? | `discovered_records` — ephemeral, refreshed per discovery run |
 
-> **Infrastructure note:** All four data domains are stored in a single PostgreSQL-compatible database. The logical distinctions (immutability rules, versioning model, query patterns) are preserved via table design, `REVOKE UPDATE/DELETE`, and RLS. Git, Kafka, and Redis are optional deployment enhancements, not architectural requirements. See [infrastructure-optimization.md](../design-principles/infrastructure-optimization.md).
+> **Infrastructure note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). This document's PostgreSQL mechanics describe the **reference implementation** for the `standard`/`prod` profiles — a single PostgreSQL-compatible database preserving the logical distinctions via table design, `REVOKE UPDATE/DELETE`, and RLS. Other conforming bindings exist per profile and sovereignty/tenancy policy (git carrier at `minimal`; per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`). See [infrastructure-optimization.md](../design-principles/infrastructure-optimization.md) and [data-store-contracts](../contracts/data-store-contracts.md).
 
 ---
 
@@ -172,13 +172,13 @@ Given an entity UUID, DCM can reconstruct the complete history of that entity ac
 
 ## 4. Physical Representation — Data Domain Model
 
-All four states are stored in DCM's PostgreSQL-compatible database as distinct data domains. Each domain has specific immutability rules, access patterns, and enforcement mechanisms — but they share a single infrastructure dependency. See [Infrastructure Requirements](../design-principles/infrastructure-optimization.md) for the prescribed infrastructure model and [Data Store Contracts](#41-data-store-contracts) below for the enforcement rules.
+All four states are distinct data domains with specific immutability rules, access patterns, and enforcement mechanisms, bound to conforming stores per D1 (contract, not technology). The **reference implementation** (`standard`/`prod`) stores all four in one PostgreSQL-compatible database. See [Infrastructure Requirements](../design-principles/infrastructure-optimization.md) for the reference model and [Data Store Contracts](#41-data-store-contracts) below for the enforcement rules any binding must satisfy.
 
-Git is available as an optional ingress adapter — consumers who prefer PR-based workflows can submit intent via Git. But Git is an ingress path, not a state store. DCM's state lives in PostgreSQL.
+Git is an ingress adapter at `standard`/`prod` (PR-based intent submission) — and a full conforming State-Store carrier at the `minimal` profile (derivable provenance per common-elements §8.3). Which role git plays is a profile binding, not an architectural constant.
 
 ### 4.1 Data Store Contracts
 
-Each data domain enforces its contract through PostgreSQL-native mechanisms:
+Each data domain enforces its contract; the reference implementation uses PostgreSQL-native mechanisms (other bindings satisfy the same rows by equivalent means):
 
 | Domain | Table | Immutability | Enforcement |
 |--------|-------|-------------|-------------|
