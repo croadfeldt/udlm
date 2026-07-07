@@ -129,9 +129,24 @@ it governs.
   last three added so ADR-013 overrides and discovery/rehydration writes are recordable).
 - **[D2] Audit integrity is the RFC 9162 Merkle model** (AUD-006, ADR-010) — per-leaf
   signatures, signed tree heads. The "linear SHA-256 chain" wording elsewhere is a defect.
-- **[D1] The canonical physical substrate is a single PostgreSQL-compatible database** for all
-  four state domains (four-states §4); Git and event streams are ingress/carrier profiles,
-  not the system of record.
+- **[D1] Lifecycle data stores are defined by CONTRACT, not technology** (revised 2026-07-06,
+  maintainer ruling — sovereignty and tenancy make store choice a policy outcome). Four
+  normative store contracts, each with invariants any conforming store must satisfy:
+  **Commit Log** (synchronous, consensus-durable before success — AUD-001), **State Store**
+  (immutable snapshots, point-in-time by uuid, per-dot-path provenance, retention, tenancy
+  isolation, residency placement), **Audit Store** (append-only, RFC 9162 Merkle — an
+  app-level construction that works above any store — AUD-008 query dimensions, WORM-capable
+  retention for fsi), **Discovered stream** (rolling snapshots, RHY-008 windows). A deployment
+  BINDS each contract to a conforming store via profile + sovereignty/tenancy policy, and the
+  binding is declared and auditable (storage-provider records,
+  `contracts/data-store-contracts.md`). **PostgreSQL is the reference implementation**
+  satisfying all four contracts in one store at `standard`/`prod`; **git is a conforming
+  `minimal`-profile carrier** (derivable provenance); `fsi`/`sovereign` MAY — and where
+  isolation or residency policy requires, MUST — split stores per tenant/zone, use WORM audit
+  tiers, embedded stores for disconnected/day-0 sites, or accredited substitutes. Conformance
+  is measured against the contract, never the brand. Tenancy isolation is profile-keyed:
+  shared-schema RLS (`standard`) → schema/database-per-tenant (`fsi`) →
+  store-instance-per-tenant/zone (`sovereign`).
 
 *Governs:* `registry/common-elements.md` §8, `observability/universal-audit.md`,
 `observability/audit-provenance-observability.md`, `contracts/event-catalog.md` (envelope
