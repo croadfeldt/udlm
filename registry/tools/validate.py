@@ -32,6 +32,7 @@ GROUP_VALIDATOR = Draft202012Validator(json.loads((ROOT / "dcm-group.schema.json
 PROVIDER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "provider-adopted-standards.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
+LAYER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "layer.schema.json").read_text()))
 
 
 def _type_outputs_index():
@@ -171,6 +172,8 @@ def pick_instance(doc):
                 check_catalog_item)
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
+    if isinstance(doc, dict) and doc.get("record_type") == "layer":
+        return LAYER_VALIDATOR, lambda d: f"layer {d['name']} ({d['layer_type']}) {d['uuid'][:8]}"
     if isinstance(doc, dict) and "group_class" in doc:
         return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
     return INSTANCE_VALIDATOR, lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]"
