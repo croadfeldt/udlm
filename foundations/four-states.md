@@ -2,12 +2,12 @@
 
 
 
-**Document Status:** ✅ Complete  
+**Document Status:** ✅ Complete
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Entity Relationships](../entities/entity-relationships.md) | [data stores](../contracts/storage-providers.md) | [Audit, Provenance, and Observability](../observability/audit-provenance-observability.md)
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
@@ -23,18 +23,18 @@
 
 ## 1. Purpose
 
-The four states are the foundational model for how DCM tracks the complete lifecycle of any resource or service. Every entity in DCM exists in one or more of these states simultaneously. The states are not sequential stages — they are parallel, independently maintained records that together provide a complete, auditable picture of what was requested, what was approved, what was built, and what actually exists.
+The four states are the foundational model for how UDLM tracks the complete lifecycle of any resource or service. Every entity exists in one or more of these states simultaneously. The states are not sequential stages — they are parallel, independently maintained records that together provide a complete, auditable picture of what was requested, what was approved, what was built, and what actually exists.
 
 The four states answer four distinct questions:
 
 | State | Question Answered | Data Domain |
 |-------|------------------|-------------|
-| **Intent State** | What did the consumer ask for? | `intent_records` — append-only, immutable |
-| **Requested State** | What was approved and dispatched to the provider? | `requested_records` — append-only, immutable |
-| **Realized State** | What did the provider actually build? | `realized_entities` — versioned snapshots, `is_current` flag |
-| **Discovered State** | What does DCM observe actually existing right now? | `discovered_records` — ephemeral, refreshed per discovery run |
+| **Intent State** | What did the consumer ask for? | Commit Log (intent) — append-only, immutable |
+| **Requested State** | What was approved and dispatched to the provider? | State Store (requested) — append-only, immutable |
+| **Realized State** | What did the provider actually build? | State Store (realized) — versioned snapshots, `is_current` flag |
+| **Discovered State** | What is observed actually existing right now? | Discovered stream — ephemeral, refreshed per discovery run |
 
-> **Infrastructure note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). This document's PostgreSQL mechanics describe the **reference implementation** for the `standard`/`prod` profiles — a single PostgreSQL-compatible database preserving the logical distinctions via table design, `REVOKE UPDATE/DELETE`, and RLS. Other conforming bindings exist per profile and sovereignty/tenancy policy (git carrier at `minimal`; per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`). See [infrastructure-optimization.md](../design-principles/infrastructure-optimization.md) and [data-store-contracts](../contracts/data-store-contracts.md).
+> **Store note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). The four states bind to conforming stores per profile and sovereignty/tenancy policy — a single PostgreSQL-compatible database at `standard`/`prod` (the reference implementation), git as a conforming carrier at `minimal`, and per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`. The concrete storage mechanics are realization architecture (see the DCM architecture documentation).
 
 ---
 
@@ -46,43 +46,39 @@ The **Intent State** is the immutable record of a consumer's original declaratio
 
 **Characteristics:**
 - Immutable once created — the consumer's original intent is never modified
-- Stored in a profile-bound State Store per the [D1] contract (§1 note, §4) — append-only, versioned, tenant-isolated; git is the conforming carrier at `minimal` and the PR-based ingress at `standard`/`prod`
-- The CI/CD pipeline operates on the Intent State — policy pre-validation, cost estimation, sovereignty check, approval workflow
-- Fully versioned — every revision of an intent is traceable (git history when git is the carrier/ingress; store version history otherwise)
-- Supports human review and debate via the PR mechanism (git-ingress deployments)
+- Stored in a profile-bound Commit Log per the [D1] contract — append-only, versioned, tenant-isolated; git is the conforming carrier at `minimal` and the PR-based ingress at `standard`/`prod`
+- Fully versioned — every revision of an intent is traceable
 - The entity UUID is assigned at Intent State creation — it follows the entity through all subsequent states
 
 **When created:** Every request submission, every rehydration operation, every drift remediation authorization
 
-**Content:** The consumer's raw declaration in DCM Unified Data Model format — what they want, not what will be built
+**Content:** The consumer's raw declaration in UDLM format — what they want, not what will be built
 
 ### 2.2 Requested State
 
-The **Requested State** is the fully assembled, policy-processed, provider-ready payload. It is produced by the Request Payload Processor from the Intent State — after layer assembly, after all policy evaluation, after provider selection.
+The **Requested State** is the fully assembled, policy-processed, provider-ready payload. It is produced from the Intent State by request assembly — after layer assembly, after all policy evaluation, after provider selection.
 
 **Characteristics:**
 - Immutable once created — a new Requested State is created for each request cycle
-- Stored in a profile-bound State Store per the [D1] contract (§1 note, §4) — committed, versioned, triggering the CD pipeline (git carries this domain at the `minimal` profile)
-- The CD pipeline dispatches from the Requested State to the provider
+- Stored in a profile-bound State Store per the [D1] contract — committed, versioned
 - Contains the complete assembled payload with full field-level provenance
 - Contains the results of all policy evaluations — which policies ran, what they did, what they locked
 - Contains provider selection — which provider will realize this request
-- Is the authoritative record of what DCM instructed a provider to build
+- Is the authoritative record of what was instructed to be built
 
-**When created:** After Intent State approval (merge), after successful policy processing
+**When created:** After Intent State approval, after successful policy processing
 
-**Content:** The complete assembled payload in DCM Unified Data Model format, with full provenance chain, policy evaluation results, provider selection, and override control metadata
+**Content:** The complete assembled payload in UDLM format, with full provenance chain, policy evaluation results, provider selection, and override control metadata
 
 ### 2.3 Realized State
 
-The **Realized State** is the provider-confirmed record of what was actually built. It is produced by the provider after successful realization — the denaturalized result of the provider's execution, translated back to DCM Unified Data Model format.
+The **Realized State** is the provider-confirmed record of what was actually built. It is the denaturalized result of the provider's execution, translated back to UDLM format.
 
 **Characteristics:**
 - Write-once complete snapshots — each Realized State record is a full entity state, never modified after writing
 - Every Realized State record is traceable to exactly one Requested State record — no exceptions
-- Stored in a realized_entities table keyed by entity UUID
 - Contains provider-specific details not in the Requested State — assigned IPs, generated passwords, actual storage sizes, provider-internal IDs
-- Is the authoritative record of what actually exists from DCM's perspective
+- Is the authoritative record of what actually exists
 - Drift is detected by comparing the most recent Realized State snapshot against Discovered State
 - Carries a supersession chain — each snapshot knows which snapshot it superseded and which superseded it
 
@@ -94,58 +90,37 @@ The **Realized State** is the provider-confirmed record of what was actually bui
 | Consumer update request | `consumer_update` | Consumer patches an editable field |
 | Provider update notification | `provider_update` | Provider reports an authorized state change (auto-healing, maintenance) |
 
-**What does NOT write to the Realized Store:**
+**What does NOT write to the Realized store:**
 - Drift detection — drift only compares, never writes
-- Discovery cycles — discovery writes to Discovered Store only
-- Unsanctioned provider changes — these are drift events until DCM evaluates and explicitly approves them
+- Discovery cycles — discovery writes to the Discovered stream only
+- Unsanctioned provider changes — these are drift events until evaluated and explicitly approved
 
 **When created:** When a provider confirms realization of any authorized request (initial, consumer update, or approved provider update notification)
 
-**Content:** Complete entity state snapshot in DCM Unified Data Model format, with provider-added fields, full field-level provenance including provider attribution, and supersession chain references
+**Content:** Complete entity state snapshot in UDLM format, with provider-added fields, full field-level provenance including provider attribution, and supersession chain references
 
 ### 2.4 Discovered State
 
-The **Discovered State** is what DCM observes actually existing through active discovery — polling providers, querying Kubernetes APIs, interrogating infrastructure. It is the ground truth of what physically exists, independent of what DCM thinks exists.
+The **Discovered State** is what is observed actually existing through active discovery — polling providers, querying infrastructure APIs, interrogating resources. It is the ground truth of what physically exists, independent of what the model believes exists.
 
 **Characteristics:**
 - Append-only snapshot stream — each discovery cycle produces a new snapshot
-- Stored in a discovered_records table (ephemeral) — recent history retained, older snapshots archived or discarded
+- Ephemeral — recent history retained, older snapshots archived or discarded
 - High-frequency and machine-generated — not appropriate for human review
 - Used exclusively for drift detection — comparing against Realized State
-- May contain resources DCM did not provision — brownfield resources discovered for ingestion
+- May contain resources that were never provisioned — brownfield resources discovered for ingestion
 
 **When created:** On every discovery cycle, on demand for specific entities
 
-**Content:** Raw discovered resource state in DCM Unified Data Model format, with discovery metadata (timestamp, discovery method, provider interrogated)
+**Content:** Raw discovered resource state in UDLM format, with discovery metadata (timestamp, discovery method, provider interrogated)
 
-**Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, carrying `lifecycle_state: available` (unallocated). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity. "Ingest raw, append changes later" is exactly this Discovered-only → adopt transition.
+**Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, carrying `lifecycle_state: available` (unallocated). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity.
 
-**Discovered has a dual role (clarification per dcm ADR-017 Decision A, #222).** Discovered is
-(1) the **ephemeral per-cycle snapshot stream** consumed by drift detection (retention per
-RHY-008), *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what
-exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one
-domain, not two stores: the durable inventory record is the latest reconciled observation per
-entity; the snapshot stream is its history. **The durable-inventory role is EXEMPT from the
-RHY-008 retention ceilings** — retention windows apply to the snapshot stream only; the
-reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md)
-§3). The claim line is what separates the roles'
-consequences — **unclaimed = inventoried, not managed** (queryable, excluded from lifecycle
-operations); a provider claim/adoption moves the entity Discovered → Realized preserving its
-UUID, and a long-lived unclaimed resource is the recorded Antipattern (claim it or retire it).
-Multiple discovery sources correlate to ONE entity via `correlation_ids`
-(realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
-
+**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is the recorded Antipattern (claim it or retire it). Multiple discovery sources correlate to ONE entity via `correlation_ids` (realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
 
 ### 2.5 Recovery Conditions — a `status.conditions` overlay, NOT lifecycle states
 
-**Recovery and health are `status.conditions`, not lifecycle states**
-([data-model-core](data-model-core.md) §3): `lifecycle_state` never leaves its five canonical
-values (`Intent → Requested → Realized ↔ Discovered` + `Decommissioned`). When the normal
-provisioning lifecycle encounters timeouts, cancellation failures, or partial realization on an
-Infrastructure Resource Entity, the situation is expressed as a **condition type** on the
-entity's `status.conditions` (realized-entity.schema.json `status`) — an overlay on whatever
-lifecycle state the entity is in. Conditions are governed by Recovery Policies (see
-[Operational Models](../lifecycle/operational-models.md) Section 5).
+**Recovery and health are `status.conditions`, not lifecycle states** ([data-model-core](data-model-core.md) §3): `lifecycle_state` never leaves its five canonical values (`Intent → Requested → Realized ↔ Discovered` + `Decommissioned`). When the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization on an Infrastructure Resource Entity, the situation is expressed as a **condition type** on the entity's `status.conditions` (realized-entity.schema.json `status`) — an overlay on whatever lifecycle state the entity is in. Conditions are governed by Recovery Policies.
 
 | Condition type | Meaning | Entry Trigger |
 |----------------|---------|--------------|
@@ -155,10 +130,7 @@ lifecycle state the entity is in. Conditions are governed by Recovery Policies (
 | `COMPENSATION_IN_PROGRESS` | Compound service rollback underway | `PARTIAL_REALIZATION` trigger |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | Compensation step failure |
 
-See [Operational Models](../lifecycle/operational-models.md) for the complete recovery
-condition machine and Recovery Policy model. (Earlier revisions called these "five additional
-states" — that wording is superseded; they never extend the lifecycle enum.)
-
+The complete recovery-condition machine and Recovery Policy model — how a realization drives these conditions — is realization concern; see the DCM operational model. (Earlier revisions called these "five additional states" — superseded; they never extend the lifecycle enum.)
 
 ---
 
@@ -167,76 +139,31 @@ states" — that wording is superseded; they never extend the lifecycle enum.)
 Every entity has a single UUID assigned at Intent State creation. This UUID is the universal key linking the entity across all four states and all stores:
 
 ```
-Intent Store:    records keyed by entity_uuid (git carrier: file path + content declare it)
-Requested Store: records keyed by entity_uuid (git carrier: file path + content declare it)
-Realized Store:  event stream keyed by entity_uuid
-Discovered Store: snapshot stream keyed by entity_uuid (matched via provider labels)
-Audit Store:     all provenance events indexed by entity_uuid
-Search Index:    entity_uuid → record-locator mapping (git_path when git carries a domain)
+Commit Log (intent):     records keyed by entity_uuid
+State Store (requested):  records keyed by entity_uuid
+State Store (realized):   snapshot stream keyed by entity_uuid
+Discovered stream:        snapshot stream keyed by entity_uuid (matched via provider labels)
+Audit Store:              all provenance events indexed by entity_uuid
 ```
 
-Given an entity UUID, DCM can reconstruct the complete history of that entity across its entire lifecycle — from the consumer's original intent through every state transition to the current discovered state.
+Given an entity UUID, the complete history of that entity can be reconstructed across its entire lifecycle — from the consumer's original intent through every state transition to the current discovered state.
 
 ---
 
-## 4. Physical Representation — Data Domain Model
+## 4. The Data Domain Model
 
-All four states are distinct data domains with specific immutability rules, access patterns, and enforcement mechanisms, bound to conforming stores per D1 (contract, not technology). The **reference implementation** (`standard`/`prod`) stores all four in one PostgreSQL-compatible database. See [Infrastructure Requirements](../design-principles/infrastructure-optimization.md) for the reference model and [Data Store Contracts](#41-data-store-contracts) below for the enforcement rules any binding must satisfy.
+All four states are distinct data domains, each with specific immutability rules and access patterns. These immutability contracts are part of the data model; any conforming store binding MUST satisfy them (the concrete enforcement mechanism is realization architecture — see the DCM architecture documentation for the reference PostgreSQL implementation).
 
-Git is an ingress adapter at `standard`/`prod` (PR-based intent submission) — and a full conforming State-Store carrier at the `minimal` profile (derivable provenance per common-elements §8.3). Which role git plays is a profile binding, not an architectural constant.
+| Domain | Immutability contract |
+|--------|----------------------|
+| **Intent** | Append-only — a new intent creates a new record; previous intents are never modified. Tenant-isolated. |
+| **Requested** | Append-only — each policy evaluation produces a new version with full provenance. Tenant-isolated. |
+| **Realized** | Versioned snapshots — each state change creates a new record; exactly one is current per entity. Tenant-isolated. |
+| **Discovered** | Ephemeral snapshot stream — each discovery run produces fresh snapshots; grouped per discovery run. Tenant-isolated. |
 
-### 4.1 Data Store Contracts
+**Audit records** are stored as leaves of an **RFC 9162 (Certificate Transparency v2.0) Merkle tree** — per-leaf signatures, signed tree heads, O(log n) inclusion and consistency proofs (ruling D2; see [universal-audit](../observability/universal-audit.md) `AUD-006`) — append-only with per-entity chain sequence numbers. The Merkle audit model is the data-model audit contract; its storage binding is realization architecture.
 
-Each data domain enforces its contract; the reference implementation uses PostgreSQL-native mechanisms (other bindings satisfy the same rows by equivalent means):
-
-| Domain | Table | Immutability | Enforcement |
-|--------|-------|-------------|-------------|
-| **Intent** | `intent_records` | Append-only — new intent creates a new row, previous intents never modified | `REVOKE UPDATE, DELETE` on table; RLS per tenant |
-| **Requested** | `requested_records` | Append-only — each policy evaluation produces a new version with full provenance | `REVOKE UPDATE, DELETE` on table; RLS per tenant |
-| **Realized** | `realized_entities` | Versioned snapshots — each state change creates a new row with `is_current` flag | Append-on-change semantics; `is_current` enforces single latest; RLS per tenant |
-| **Discovered** | `discovered_records` | Ephemeral — each discovery run produces fresh snapshots; previous runs retained for trend analysis | Grouped by `discovery_run_uuid`; RLS per tenant |
-
-**Pipeline events** flow between control plane services via the `pipeline_events` table with PostgreSQL `LISTEN/NOTIFY` for real-time routing. For high-throughput deployments, Kafka can be added alongside as an optional enhancement.
-
-**Audit records** are stored in `audit_records` as leaves of an **RFC 9162 (Certificate Transparency v2.0) Merkle tree** — per-leaf signatures, signed tree heads, O(log n) inclusion and consistency proofs (ruling D2; see [universal-audit](../observability/universal-audit.md) `AUD-006` for the normative model) — with append-only enforcement (`REVOKE UPDATE, DELETE` + trigger-based immutability guard) and per-entity chain sequence numbers.
-
-### 4.2 Realized State Snapshot Model
-
-The Realized domain uses a **snapshot model** — each record is a complete entity state, not a delta. This makes rehydration a direct lookup rather than an event replay, and point-in-time queries ("what was the state on March 15?") are direct lookups.
-
-```yaml
-realized_state_snapshot:
-  realized_uuid: <uuid>                  # this snapshot's identity
-  entity_uuid: <uuid>                    # stable entity identity across versions
-  realized_at: <ISO 8601>
-
-  # Always traceable to a request — mandatory, not nullable
-  source_type: <initial_realization|consumer_update|provider_update>
-  request_uuid: <uuid>
-
-  # Versioning
-  version_major: <int>
-  version_minor: <int>
-  version_revision: <int>
-  is_current: <boolean>                  # only one current per entity_uuid
-
-  # Complete entity state at this point — all fields, all provenance
-  fields:
-    # [full entity state in DCM Unified Data Model format]
-
-  # Provider-added fields
-  provider_metadata:
-    provider_entity_id: <string>
-    provider_reported_at: <ISO 8601>
-```
-
-**Why snapshots instead of events:** Rehydration requires a complete entity state, not a replay of field-level events. The Realized domain is written only when an authorized change completes — it does not need high-frequency write throughput.
-
-### 4.3 Query and Caching
-
-For read-heavy workloads (catalog browsing, placement lookups, resource listing), PostgreSQL materialized views provide derived projections optimized for specific query patterns. These views are explicitly non-authoritative — the base tables always win if a view and a table disagree.
-
-For deployments requiring geographically distributed read performance, Redis can be added as an optional caching layer in front of materialized views.
+**The Realized snapshot model — snapshots, not deltas.** The Realized domain uses a **snapshot model**: each record is a complete entity state, not a delta. This makes rehydration a direct lookup rather than an event replay, and makes point-in-time queries ("what was the state on March 15?") direct lookups. The authoritative snapshot shape is [`realized-entity.schema.json`](../registry/realized-entity.schema.json) (`realized_uuid`, `entity_uuid`, `source_type` + `request_uuid` — mandatory, never nullable — versioning, `is_current`, complete `fields`, and `provider_metadata`).
 
 ---
 
@@ -244,377 +171,21 @@ For deployments requiring geographically distributed read performance, Redis can
 
 Rehydration is the process of using a previously stored state record as the starting point for a new request. It is not a shortcut around governance — **all relevant governance policies always apply regardless of rehydration source.** Rehydration is a new request that happens to start from a known prior state.
 
+*This section defines the data-model aspects of rehydration — the sources, the preserved identity, the record shapes, and the mode taxonomy. The rehydration RUNTIME — the governance pipeline, placement re-evaluation, exclusive leases, TTL/concurrency handling, and the tenancy-conflict pause mechanism — is realization concern; see the DCM operational model (`operations/rehydration.md`).*
+
 ### 5.1 Three Rehydration Sources
 
-**From Intent State:**
-- The consumer's original declaration is replayed
-- Full layer assembly runs — current layers applied
-- All governance policies run — current policies applied
-- Provider selection runs fresh
-- Most likely to produce a different result than the original — policies and layers may have changed
-- Use cases: upgrade resource to current standards, apply new sovereignty constraints, environment refresh
+| Source | What is loaded | Layer assembly | Typical use |
+|--------|----------------|----------------|-------------|
+| **From Intent** | The consumer's original declaration is replayed | Full assembly runs (current layers) | Upgrade to current standards, apply new sovereignty constraints, environment refresh |
+| **From Requested** | The previously assembled, policy-processed payload | Skipped (already applied) | Reproduce close to the approved specification |
+| **From Realized** | The provider-confirmed payload (provider-specific fields stripped) | Skipped | Exact reproduction for DR, environment cloning, replacing a failed resource |
 
-**From Requested State:**
-- The previously assembled, policy-processed payload is loaded
-- Layer assembly is skipped — layers were already applied
-- All governance policies run — current policies applied
-- Provider selection: configurable via flag (see Section 5.3)
-- Use cases: reproduce a resource as closely as possible to the approved specification
+All three run all current governance policies. Provider selection is configurable (see the four modes below).
 
-**From Realized State:**
-- The provider-confirmed realized payload is loaded
-- Provider-specific fields are stripped — DCM unified format only
-- Layer assembly is skipped
-- All governance policies run — current policies applied
-- Provider selection: configurable via flag
-- Use cases: exact reproduction for disaster recovery, environment cloning, replacing a failed resource
+### 5.2 Entity UUID Preservation
 
-### 5.2 The Common Governance Pipeline
-
-Regardless of rehydration source, all requests flow through the same governance pipeline:
-
-```
-Rehydration source selected and loaded
-  │
-  │  Source payload becomes the basis for a new Intent State record
-  │  New entity UUID assigned (or existing UUID preserved — policy decision)
-  │  Rehydration provenance recorded: source_store, source_record_uuid,
-  │  rehydration_reason, requested_by_uuid, rehydration_timestamp
-  ▼
-If source = Intent:
-  │  Full layer assembly runs (Steps 1-7)
-  │  Current layers applied
-  ▼
-If source = Requested or Realized:
-  │  Layer assembly skipped
-  │  Payload loaded as pre-assembled
-  │  If source = Realized: provider-specific fields stripped
-  ▼
-Placement evaluation
-  │  See Section 5.3 — configurable
-  ▼
-Policy Engine — ALL governance policies applied
-  │  Authorization policies: does this actor have permission to rehydrate?
-  │  Transformation policies: current enrichment applied
-  │  Validation policies: current constraints checked
-  │  Compliance-class Validation Policies: current field locks applied
-  │  Compliance-class Validation Policies: is this resource type still permitted?
-  │
-  │  Governance is NEVER skippable — not for any rehydration source,
-  │  not for any actor, not for any urgency claim
-  ▼
-New Requested State produced and stored
-  │  New record — never overwrites the source record
-  │  Source record remains immutable
-  │  Provenance chain links to source record
-  ▼
-Provider dispatch
-  │  Dispatched to selected provider
-  ▼
-New Realized State events produced
-  │  New event stream or continuation of existing stream
-  │  Provenance links to rehydration Requested State
-```
-
-### 5.3 Placement Flag — Provider-Portable Rehydration
-
-When rehydrating from Requested State or Realized State, provider selection is configurable via an explicit flag in the rehydration request:
-
-```yaml
-rehydration_request:
-  uuid: <uuid>
-  source_store: <intent|requested|realized>
-  source_record_uuid: <uuid of source record>
-
-  placement:
-    re_evaluate: false
-    # false (default): honor provider selection from source record
-    #   Use when: original provider is available and appropriate
-    #   Result: resource reproduced on same provider
-    #
-    # true: strip provider selection, run placement policies fresh
-    #   Use when: original provider unavailable, decommissioned,
-    #   at capacity, or no longer sovereign-compliant
-    #   Result: placement policies select provider from current landscape
-    #   Named concept: Provider-Portable Rehydration
-
-    placement_constraints:
-      # Optional — additional constraints for re-evaluation
-      # Only applicable when re_evaluate: true
-      exclude_provider_uuids: [<uuid>, ...]
-      require_region: <region>
-      require_sovereignty_capability: <capability>
-
-  governance:
-    apply_all_policies: true
-    # Always true — governance is never skippable
-    # Included explicitly for auditability — the rehydration record
-    # must declare that governance was applied
-
-    policy_version: current
-    # current (default): apply today's policies
-    # pinned: apply policies as of a specific timestamp
-    #   Use when: exact historical reproduction required
-    #   (audit evidence, regulatory examination, environment reconstruction)
-    #   Requires elevated authorization — bypasses current compliance-class Validation Policies
-    #   Only SRE and Admin actors may use pinned policy version
-
-    pinned_timestamp: <ISO 8601>
-    # Required when policy_version: pinned
-
-  rehydration_reason: <human-readable — recorded in provenance>
-  requested_by_uuid: <actor UUID — authorization checked>
-```
-
-### 5.4 The Four Rehydration Modes
-
-Two independent axes — placement and policy version — produce four distinct rehydration configurations:
-
-| Mode | re_evaluate | policy_version | Use Case |
-|------|-------------|----------------|----------|
-| **Faithful** | false | current | Same provider, current governance |
-| **Provider-Portable** | true | current | New provider, current governance |
-| **Historical Exact** | false | pinned | Same provider, historical governance (audit evidence) |
-| **Historical Portable** | true | pinned | New provider, historical governance |
-
-Historical modes require elevated authorization. All modes run governance — the difference is whether governance uses current or pinned policies.
-
-### 5.5 Rehydration Tenancy and Sovereignty Controls
-
-**Tenancy controls, sovereignty directives, and cross-tenant authorizations are always evaluated against current policies during rehydration — they cannot be pinned to historical versions.**
-
-The `policy_version: pinned` setting governs resource configuration policies only. It does not apply to:
-- Tenancy boundary enforcement
-- Sovereignty constraints
-- Cross-tenant authorization requirements
-
-```yaml
-rehydration:
-  policy_version: pinned         # governs resource configuration policies
-  # The following ALWAYS use current policies — cannot be pinned:
-  tenancy_controls: always_current
-  sovereignty_controls: always_current
-  cross_tenant_authorizations: always_current
-```
-
-**When rehydration conflicts with current tenancy controls:**
-
-If the current policy environment produces a tenancy or sovereignty constraint that conflicts with a cross-tenant allocation valid at original request time — for example, the consuming Tenant's authorization was revoked since the original request — the rehydration is **paused**, not failed or silently bypassed:
-
-```
-Rehydration detects cross-tenant authorization conflict
-  │
-  ▼
-Entity enters PENDING_REVIEW state
-  │  Allocation is not automatically released
-  │  Rehydration_tenancy_conflict_record created
-  ▼
-Notifications dispatched:
-  │  entity owner, owning Tenant admin,
-  │  consuming Tenant admin, platform admin
-  ▼
-Resolution options:
-  re_authorize  → issue new cross_tenant_authorization for this allocation
-  release       → release the allocation, entity decommissioned
-  escalate      → refer to platform admin for manual decision
-  │
-  └── A policy may declare automatic resolution:
-      "on rehydration conflict → re_authorize if consuming Tenant
-       still meets sovereignty requirements"
-```
-
-**System policies for rehydration tenancy:**
-
-| Policy | Rule |
-|--------|------|
-| `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use current policies during rehydration — cannot be pinned |
-| `RHY-002` | Rehydration that conflicts with current tenancy/sovereignty pauses and enters PENDING_REVIEW |
-| `RHY-003` | A paused rehydration allocation is not automatically released — requires explicit resolution |
-| `RHY-004` | A policy may declare automatic resolution behavior for rehydration tenancy conflicts |
-
-### 5.6 Partial Resolution of Q54 — Provider Selection
-
-The placement flag model clarifies the Q54 question (selected_provider as policy output vs placement component). The emerging answer:
-
-**Policies set placement constraints — the placement component selects the provider.**
-
-A compliance-class Validation Policy may output: "must be in region EU-WEST, must support sovereignty capability PCI-DSS." The placement component reads these constraints and selects the specific provider within those constraints. The policy does not name the provider. The placement component names the provider.
-
-This is consistent with the portability model — a policy that names a specific provider would be portability-breaking. Policies set constraints. Placement honors constraints and selects.
-
----
-
-## 6. Drift Detection
-
-Drift is the difference between what DCM believes exists (Realized State) and what actually exists (Discovered State).
-
-### 6.1 Drift Detection Flow
-
-```
-Discovery cycle completes
-  │  Provider interrogated → Discovered State snapshot written
-  ▼
-Drift Detection component
-  │  Loads latest Discovered State for entity UUID
-  │  Loads latest Realized State events for entity UUID
-  │  Field-by-field comparison
-  ▼
-No drift detected
-  │  Discovery timestamp updated
-  │  No action
-  ▼
-Drift detected
-  │  Drift record created with:
-  │    - entity_uuid
-  │    - drifted_fields: [{field_path, realized_value, discovered_value}]
-  │    - discovery_timestamp
-  │    - drift_severity: <minor|significant|critical>
-  ▼
-Policy Engine evaluates drift
-  │  Drift response policy determines action:
-  │    REVERT: submit a rehydration request from Realized State to restore
-  │    UPDATE_DEFINITION: promote discovered state to new Realized State
-  │    ALERT: notify personas, no automatic action
-  │    ESCALATE: trigger human review workflow
-  │
-  │  Response determined by drift severity, resource type,
-  │  resource ownership, and organizational policy
-  ▼
-Audit Store records drift event with full provenance
-```
-
-
-### 6.2 Drift Severity Classification
-
-Drift severity uses the canonical enum **`minor | significant | critical`** ([data-model-core](data-model-core.md) §7, ruling D6) — every drift-severity grading anywhere in the spec resolves to one of these three values. Severity is determined by combining three independent tiers. The final severity is the highest tier that applies.
-
-**Tier 1 — Field criticality (declared in Resource Type Specification):**
-
-```yaml
-resource_type_spec:
-  fields:
-    display_name:
-      drift_criticality: minor      # non-functional change
-    cpu_count:
-      drift_criticality: significant
-    memory_gb:
-      drift_criticality: significant
-    security_group_ids:
-      drift_criticality: critical   # security-relevant change
-    firewall_rules:
-      drift_criticality: critical
-```
-
-**Tier 2 — Profile/layer magnitude thresholds:**
-
-```yaml
-# system/drift/severity-thresholds layer (overridable at platform/tenant domain)
-drift_severity_thresholds:
-  significant_field_magnitude_upgrade:
-    percentage_change_threshold: 50    # >50% change upgrades significant → critical
-  minor_field_magnitude_upgrade:
-    item_count_threshold: 10           # 10+ changed items upgrades minor → significant
-```
-
-**Tier 3 — Provider and consumer injection:**
-
-Providers may suggest severity in update notifications (raise only):
-```yaml
-provider_drift_hint:
-  field: memory_gb
-  suggested_severity: critical
-  reason: "Memory decrease on running workload risks OOM"
-```
-
-Consumers may override sensitivity on specific entities (raise or lower):
-```yaml
-entity:
-  drift_sensitivity_overrides:
-    - field: cpu_count
-      override_criticality: critical
-      reason: "Production payments workload — any CPU change is critical"
-```
-
-**Resolution rule:** The Drift Detection component takes the highest severity from all three tiers. Provider injection can raise but not lower the Tier 1/2 result. Consumer injection can raise or lower (entity owner controls their own resource's sensitivity). Profile governs whether consumer lowering is permitted.
-
-**Multi-field drift:** when multiple fields drift simultaneously, the overall severity is the highest severity among all drifted fields. **Unsanctioned changes** (no corresponding Requested State record) are always elevated one severity level above the resolved result — a `significant` unsanctioned change becomes `critical`.
-
-### 6.3 Unsanctioned Changes
-
-A specific category of drift — a change made directly to a resource without a corresponding DCM request. Detected by:
-- Kubernetes: CR spec change without DCM request annotation
-- VMware/OpenStack: resource modification not traceable to a DCM Requested State record
-- General: any Discovered State field value that differs from Realized State without a Requested State record explaining the change
-
-Unsanctioned changes are always reported to the Policy Engine as `UNSANCTIONED_CHANGE` events. Policy determines the response.
-
----
-
-## 7. CI/CD Integration
-
-The git ingress (PR-based intent submission at `standard`/`prod`; full State-Store carrier at `minimal` — a profile binding per [D1], §4) is the natural integration point for CI/CD pipelines. DCM does not prescribe a specific CI/CD tool — the store contract requires hook support where git plays either role, and the CI/CD tool is a deployment choice.
-
-### 7.1 CI Pipeline (Intent State)
-
-Triggered on: branch creation or update (new or revised intent)
-
-```
-CI pipeline executes:
-  1. Policy pre-validation (dry run — no state changes)
-     → Reports: which policies would apply, what they would do
-  2. Cost estimation
-     → Reports: estimated cost for lifecycle of this resource
-  3. Dependency graph validation
-     → Reports: all required dependent resources, any conflicts
-  4. Sovereignty constraint check
-     → Reports: which sovereignty constraints apply, any violations
-  5. Authorization check
-     → Reports: does this actor have permission to request this resource type?
-  6. Auto-approve evaluation
-     → Reports: can this be merged automatically, or does it require human review?
-
-All results posted as PR comments on the Intent State branch
-Consumer and approvers can review and debate before merge
-```
-
-### 7.2 CD Pipeline (Requested State)
-
-Triggered on: Intent State merge (PR merged to main)
-
-```
-CD pipeline executes:
-  1. Request Payload Processor assembles full payload
-  2. Full policy evaluation (binding — not dry run)
-  3. Provider selection (or re-evaluation if placement flag set)
-  4. Requested State committed to its profile-bound store (git when git carries the domain)
-  5. Provider dispatch via API Gateway
-  6. Status monitoring — poll or receive callbacks until terminal state
-  7. Status written back to PR or status file
-  8. Consumer notification
-```
-
-### 7.3 The Third Rail — Direct API Ingress
-
-Not all requests come through the GitOps PR workflow. Some requests come through direct API submission — automated systems, CI/CD pipelines, Terraform providers, programmatic consumers. These bypass the human review workflow but not governance.
-
-Direct API ingress:
-- Creates an Intent State record (the submitted payload becomes the intent)
-- Runs the same CI validation pipeline but non-interactively
-- If auto-approve policy permits: proceeds directly to assembly and dispatch
-- If human review required: creates a PR for review before proceeding
-- Same governance pipeline regardless of ingress path
-
-The three ingress paths — PR workflow, direct API, and programmatic (Terraform/Ansible) — all converge on the same governance pipeline. The ingress path affects the review workflow; it never affects governance.
-
----
-
-## 7a. Four States Operational Gaps — Q75 through Q78
-
-### 7a.1 Entity UUID Preservation on Rehydration (Q75)
-
-Entity UUIDs are **preserved on rehydration**. The UUID represents the stable logical identity of the resource across provider migrations, sovereignty changes, and lifecycle events. All external references — CMDB records, cost attribution, audit trails, cross-tenant relationships, dependency declarations — reference the entity by UUID. Generating a new UUID on rehydration would silently break all of those references.
-
-What changes on rehydration is the **provider-side identifier** — the actual VM ID, container name, or resource handle at the provider. These are recorded in the rehydration history:
+Entity UUIDs are **preserved on rehydration**. The UUID represents the stable logical identity of the resource across provider migrations, sovereignty changes, and lifecycle events. All external references — CMDB records, cost attribution, audit trails, cross-tenant relationships, dependency declarations — reference the entity by UUID; regenerating it would silently break all of them. What changes on rehydration is the **provider-side identifier** (the actual VM ID, container name, or resource handle), recorded in the rehydration history:
 
 ```yaml
 entity:
@@ -633,150 +204,110 @@ entity:
       new_requested_state_ref: <uuid>
 ```
 
-**Rehydration is transactional:** If the target provider cannot accept the entity (capacity unavailable, sovereignty mismatch discovered mid-rehydration), the original entity remains in its current state with no UUID change and no partial state. Failure preserves the pre-rehydration state completely.
+Rehydration is **transactional**: if the target provider cannot accept the entity, the original entity remains in its current state with no UUID change and no partial state.
 
-### 7a.2 Pinned Authentication Level for Rehydration (Q76)
+Every rehydration also records its provenance on the new Intent State: `source_store`, `source_record_uuid`, `rehydration_reason`, `requested_by_uuid`, `rehydration_timestamp`.
 
-Entities may declare a minimum authentication level required to rehydrate them. This prevents escalation of privilege through the rehydration mechanism — a resource provisioned with hardware-token MFA authorization should not be re-instantiatable by a simple API key.
+### 5.3 Rehydration Constraints
+
+An entity MAY declare a minimum authentication level required to rehydrate it, preventing privilege escalation through the rehydration mechanism:
 
 ```yaml
 entity:
   rehydration_constraints:
     min_auth_level: hardware_token_mfa
-    # Ascending levels: api_key | ldap_password | oidc | oidc_mfa |
-    #                   hardware_token | hardware_token_mfa
+    # Ascending: api_key | ldap_password | oidc | oidc_mfa | hardware_token | hardware_token_mfa
     auth_level_source: <original_provisioning|policy_declared>
-    allow_delegated_rehydration: false
-    # true = DCM service accounts may rehydrate if explicitly authorized
+    allow_delegated_rehydration: false   # true = authorized service accounts may rehydrate
 ```
 
-**Profile-governed enforcement:**
+How strictly a realization enforces this is profile-governed (advisory at `standard`, rejecting at `prod`, dual-approval at `fsi`/`sovereign`) — an operational binding, not part of the data model.
 
-| Profile | Enforcement |
-|---------|------------|
-| `minimal` | Not enforced — any auth level may rehydrate |
-| `dev` | Not enforced |
-| `standard` | Advisory — warn if rehydrating actor has lower auth |
-| `prod` | Enforced — reject if rehydrating actor has lower auth |
-| `fsi` | Enforced — dual approval required if auth level mismatch |
-| `sovereign` | Enforced — dual approval always; logged in classified audit |
+### 5.4 The Four Rehydration Modes
 
-**Automated rehydration:** When DCM triggers rehydration automatically (sovereignty violation, provider decommission), the rehydration uses DCM's internal service account. This requires `allow_delegated_rehydration: true` OR a platform admin must manually authorize the operation. Authorization produces an audit record preserving accountability even when the action is automated.
+Two independent axes — placement and policy version — produce four distinct rehydration configurations:
 
-### 7a.3 Concurrent Rehydration Handling (Q77)
+| Mode | Provider re-evaluated | Policy version | Use Case |
+|------|-----------------------|----------------|----------|
+| **Faithful** | no | current | Same provider, current governance |
+| **Provider-Portable** | yes | current | New provider, current governance |
+| **Historical Exact** | no | pinned | Same provider, historical governance (audit evidence) |
+| **Historical Portable** | yes | pinned | New provider, historical governance |
 
-Rehydration requests acquire an **exclusive rehydration lease** per entity. Only one rehydration may be active per entity at any time.
+Historical (pinned) modes require elevated authorization. **Policies set placement constraints; the placement component selects the provider** — a policy that names a specific provider would be portability-breaking.
+
+### 5.5 Rehydration Tenancy and Sovereignty — always current
+
+**Tenancy controls, sovereignty directives, and cross-tenant authorizations are always evaluated against current policies during rehydration — they cannot be pinned to historical versions.** The `policy_version: pinned` setting governs resource configuration policies only.
 
 ```yaml
-rehydration_lease:
-  entity_uuid: <uuid>
-  lease_uuid: <uuid>
-  acquired_by: <actor-uuid>
-  acquired_at: <ISO 8601>
-  lease_ttl: PT2H                     # expires after 2 hours if not released
-  trigger: <manual|sovereignty_migration|provider_decommission|admin_request>
-  status: <active|completed|failed|expired>
+rehydration:
+  policy_version: pinned                 # governs resource configuration policies
+  tenancy_controls: always_current       # cannot be pinned
+  sovereignty_controls: always_current
+  cross_tenant_authorizations: always_current
 ```
-
-**Concurrent request handling:**
-
-```
-Second rehydration attempt arrives for entity <uuid>
-  │
-  ├── No active lease → acquire lease; proceed
-  │
-  └── Active lease exists:
-        Priority higher than active → escalate to platform admin; queue
-        Same or lower priority → reject:
-          "Rehydration in progress — lease held since <timestamp>; retry after PT2H"
-        REHYDRATION_BLOCKED audit event recorded
-```
-
-**Priority ordering:**
-1. Security/compliance emergency (sovereignty violation at fsi/sovereign)
-2. Manual platform admin rehydration
-3. Automated sovereignty migration
-4. Provider decommission migration
-5. Manual consumer rehydration request
-
-**Lease TTL expiry:** If rehydration hangs or crashes, the lease expires after TTL. DCM marks the rehydration `failed` in rehydration_history, releases the lease, and triggers drift detection to assess partial completion at the provider.
-
-### 7a.4 Discovered State Retention (Q78)
-
-The Discovered State **snapshot stream** is ephemeral operational data — not the authoritative source of truth (Realized State is). It is a snapshot used for drift detection. The durable per-UUID inventory record (§2.4 dual role) is exempt from these windows. Three retention modes for the snapshot stream, all profile-governed:
-
-```yaml
-discovered_state_retention:
-  mode: <rolling_window|event_driven|hybrid>   # hybrid recommended
-
-  rolling_window:
-    retention: P7D              # keep last 7 days; useful for trending
-
-  event_driven:
-    retain_until: drift_resolved  # keep until associated drift record resolved
-    # Ensures drift investigation has the discovery snapshot that triggered it
-
-  hybrid:                         # recommended — combines both
-    minimum_retention: P24H
-    retain_until: drift_resolved  # extend beyond minimum until drift resolved
-    maximum_retention: P30D       # hard ceiling regardless of drift status
-```
-
-**Profile-governed defaults:**
-
-| Profile | Mode | Min Retention | Max Retention |
-|---------|------|--------------|--------------|
-| `minimal` | `rolling_window` | — | P3D |
-| `dev` | `rolling_window` | — | P7D |
-| `standard` | `hybrid` | P24H | P30D |
-| `prod` | `hybrid` | P48H | P30D |
-| `fsi` | `hybrid` | P7D | P90D |
-| `sovereign` | `hybrid` | P7D | P90D |
-
-**Discovered State and the Audit Store:**
-
-Discovered State records are **NOT** stored in the Audit Store — they are too high-volume and too ephemeral for compliance-grade storage. However, drift events triggered by Discovered State ARE recorded in the Audit Store with a reference to the discovery snapshot UUID. After the Discovered State expires, the audit record still exists — it cannot link to the full snapshot, but the drift event itself is preserved.
-
----
-
-## 7b. Rehydration System Policies — Complete Set
 
 | Policy | Rule |
 |--------|------|
-| `RHY-001` | Tenancy and sovereignty are always current on rehydration — they cannot be pinned to historical state. |
-| `RHY-010` | Tenancy or sovereignty conflicts discovered during rehydration place the entity in PENDING_REVIEW state (the pause behavior of `RHY-002`, §5.5 — same trigger set: tenancy/sovereignty). |
-| `RHY-011` | Resource allocations are not automatically released on rehydration (restates `RHY-003`, §5.5, for the full-set view). |
-| `RHY-012` | Rehydration leases have TTL to prevent orphaned lease states. |
-| `RHY-005` | Entity UUIDs are preserved on rehydration. The UUID represents stable logical identity across provider migrations. Provider-side identifiers change on rehydration and are recorded in rehydration_history. Rehydration is transactional — failure preserves pre-rehydration state without UUID change. |
-| `RHY-006` | Entities may declare min_auth_level for rehydration. Profile governs enforcement. Automated rehydration by DCM service accounts requires allow_delegated_rehydration: true OR platform admin manual authorization with full audit trail. |
-| `RHY-007` | Rehydration requests acquire an exclusive lease per entity before proceeding. Only one rehydration may be active per entity. Concurrent requests are queued (higher priority) or rejected (same/lower). Lease TTL prevents indefinite blocking. Expiry triggers drift detection for partial completion assessment. |
-| `RHY-008` | Discovered State **snapshot-stream** retention is profile-governed: rolling_window, event_driven, or hybrid. The retention ceilings apply to the snapshot stream ONLY — the durable per-UUID inventory record (§2.4 dual role) is EXEMPT and persists until claim or retirement. Discovered State is never stored in the Audit Store. Drift events triggered by Discovered State are recorded in the Audit Store with discovery snapshot UUID reference. Maximum snapshot-stream retention: P30D for standard/prod; P90D for fsi/sovereign. |
+| `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use current policies during rehydration — cannot be pinned. |
+| `RHY-005` | Entity UUIDs are preserved on rehydration; provider-side identifiers change and are recorded in `rehydration_history`; rehydration is transactional. |
+
+*The remaining rehydration policies (`RHY-002/003/004/006/007/008/010/011/012`) govern the runtime — the PENDING_REVIEW pause, lease acquisition, TTL, concurrency priority, and snapshot-stream retention windows — and live with the DCM operational model.*
 
 ---
 
-## 8. Open Questions
+## 6. Drift Detection
+
+Drift is the difference between what the model believes exists (Realized State) and what actually exists (Discovered State). The drift-detection **runtime** — the comparison cycle, the drift-response actions (REVERT / UPDATE_DEFINITION / ALERT / ESCALATE), and their evaluation — is realization concern (see the DCM operational model). The **drift record shape and severity model** are data model:
+
+A drift record carries `entity_uuid`, `drifted_fields: [{field_path, realized_value, discovered_value}]`, `discovery_timestamp`, and `drift_severity`.
+
+### 6.1 Drift Severity Classification
+
+Drift severity uses the canonical enum **`minor | significant | critical`** ([data-model-core](data-model-core.md) §7, ruling D6) — every drift-severity grading anywhere in the spec resolves to one of these three values. Severity is the highest tier that applies across three independent tiers:
+
+**Tier 1 — Field criticality (declared in the Resource Type Specification):**
+
+```yaml
+resource_type_spec:
+  fields:
+    display_name:      { drift_criticality: minor }        # non-functional change
+    cpu_count:         { drift_criticality: significant }
+    memory_gb:         { drift_criticality: significant }
+    security_group_ids: { drift_criticality: critical }    # security-relevant change
+    firewall_rules:    { drift_criticality: critical }
+```
+
+**Tier 2 — Profile/layer magnitude thresholds:** a `drift_severity_thresholds` layer may upgrade severity by percentage-change or changed-item-count (e.g. >50% change upgrades `significant` → `critical`).
+
+**Tier 3 — Provider and consumer injection:** providers may *suggest* severity in update notifications (raise only); consumers may *override* sensitivity on specific entities (raise or lower, profile-permitting).
+
+**Resolution rule:** the highest severity across all three tiers wins. Provider injection can raise but not lower the Tier 1/2 result; consumer injection can raise or lower (entity owner controls their own resource's sensitivity). For **multi-field drift**, the overall severity is the highest among all drifted fields. **Unsanctioned changes** are always elevated one level above the resolved result.
+
+### 6.2 Unsanctioned Changes
+
+An **unsanctioned change** is a change made directly to a resource without a corresponding request — any Discovered State field value that differs from Realized State with no Requested State record explaining it. It is a data-model category (a discovered delta with no request provenance); how a realization detects and responds to it is operational.
+
+---
+
+## 7. Open Questions
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | Git repository structure for Intent and Requested stores | Store design | ✅ Resolved — handle-based directory structure; 4 repos; tenant isolation (STO-005) |
-| 2 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — UUID preserved; rehydration_history records provider-side ID changes; transactional (RHY-005) |
-| 3 | For pinned policy version rehydration — what is the minimum authorization level required? | Security | ✅ Resolved — min_auth_level on entity; profile-governed enforcement; delegated rehydration requires explicit authorization (RHY-006) |
-| 4 | How are concurrent rehydration requests for the same entity handled? | Concurrency | ✅ Resolved — exclusive rehydration lease; priority ordering; TTL expiry triggers drift detection (RHY-007) |
-| 5 | Should the Discovered Store retain full history or only a configurable window? | Retention | ✅ Resolved — hybrid mode recommended; profile-governed min/max; event-driven until drift resolved; max P30-90D (RHY-008) |
-| 6 | How does the Search Index handle Git store unavailability? | Reliability | ✅ Resolved — serve degraded (warn + direct to authoritative); rebuild on recovery (STO-002) |
+| 1 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — UUID preserved; `rehydration_history` records provider-side ID changes; transactional (RHY-005) |
+| 2 | Should the Discovered stream retain full history or only a configurable window? | Retention | ✅ Resolved — snapshot-stream retention is profile-governed (operational); the durable per-UUID inventory record is exempt and persists until claim/retirement (RHY-008) |
 
 ---
 
-## 9. Related Concepts
+## 8. Related Concepts
 
-- **data store** — the formal provider type for all DCM stores
+- **data store** — the formal provider type for all stores
 - **Entity UUID** — the universal linking key across all four states
-- **Rehydration** — using a prior state record as the starting point for a new request
+- **Rehydration** — using a prior state record as the starting point for a new request (data-model aspects here; runtime in the DCM operational model)
 - **Provider-Portable Rehydration** — rehydration with provider selection re-evaluated
 - **Drift Detection** — comparing Realized State against Discovered State
-- **Unsanctioned Change** — a resource modification not traceable to a DCM request
-- **CI/CD Integration** — GitOps stores as the natural CI/CD integration point
-- **Search Index** — queryable projection of GitOps stores, explicitly non-authoritative
+- **Unsanctioned Change** — a discovered resource modification with no corresponding request
 
 ---
 
