@@ -1,5 +1,7 @@
 # UDLM — Universal Audit Model
 
+> **Machine-validatable schemas:** `registry/audit-record.schema.json` (Stage-2), `registry/commit-log-entry.schema.json` (Stage-1), `registry/audit-leaf.schema.json` (RFC 9162 Merkle leaf + signed_tree_head). `registry/tools/validate.py` dispatches by `record_type`. data-model-core §2 [D8.5].
+
 
 **Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Audit, Provenance, and Observability](audit-provenance-observability.md) | [data stores](../contracts/storage-providers.md) | [Universal Groups](universal-groups.md)

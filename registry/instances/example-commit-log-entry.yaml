@@ -1,0 +1,14 @@
+record_type: commit_log_entry
+entry_uuid: fc0590d8-5dda-4de2-85a6-bba6a2154342
+sequence: 42
+timestamp: '2026-07-07T13:50:00.123456Z'
+entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
+entity_type: Data.Database
+action: MODIFY
+actor_uuid: a3e7e695-f371-44f3-a96e-61fd965b4ae6
+request_uuid: a72cc95c-bfee-447d-b47e-3d8b3e660881
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+change_fingerprint: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+status: forwarded
+forwarded_at: '2026-07-07T13:50:00Z'
+audit_record_uuid: 84039a9c-03c2-47d8-ae26-e2471eb0b90c
