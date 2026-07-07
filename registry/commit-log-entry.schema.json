@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/commit-log-entry.schema.json",
+  "title": "DCM Commit Log Entry (Stage-1)",
+  "description": "Machine-validatable Stage-1 Commit Log entry (universal-audit §7.2). Written synchronously to a consensus-durable store (Raft-class; etcd reference impl) BEFORE the operation returns success (AUD-001). Enriched into a full audit_record asynchronously (Stage-2). data-model-core §2 [D8.5]; the Commit Log is a store CONTRACT (D1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "entry_uuid",
+    "sequence",
+    "timestamp",
+    "entity_uuid",
+    "action",
+    "actor_uuid",
+    "tenant_uuid",
+    "change_fingerprint",
+    "status"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "commit_log_entry"
+    },
+    "entry_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonically increasing global ordering."
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "Authoritative audit timestamp, RFC 3339 UTC 'Z' (microsecond precision; §8.1)."
+    },
+    "entity_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "action": {
+      "enum": [
+        "ACTIVATE",
+        "AUTHORIZE",
+        "CONFIG_CHANGE",
+        "CREATE",
+        "DEACTIVATE",
+        "DELETE",
+        "DEPRECATE",
+        "DISCOVER",
+        "DRIFT_DETECT",
+        "DRIFT_RESOLVE",
+        "ENRICH",
+        "EVALUATE",
+        "EXPIRE",
+        "HOLD_CONFIRM",
+        "HOLD_PLACE",
+        "HOLD_RELEASE",
+        "INGEST",
+        "LOCK",
+        "LOGIN",
+        "LOGOUT",
+        "MEMBER_ADD",
+        "MEMBER_REMOVE",
+        "MEMBERSHIP_EXPIRE",
+        "MODIFY",
+        "PROMOTE",
+        "QUERY",
+        "REHYDRATE",
+        "RELATIONSHIP_CREATE",
+        "RELATIONSHIP_RELEASE",
+        "RETIRE",
+        "REVOKE",
+        "STATE_TRANSITION"
+      ]
+    },
+    "actor_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Immediate actor only."
+    },
+    "request_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "change_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of the change payload — lets Stage-2 verify the full record matches Stage-1."
+    },
+    "status": {
+      "enum": [
+        "pending_forward",
+        "forwarded",
+        "forward_failed"
+      ]
+    },
+    "forwarded_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "audit_record_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  }
+}

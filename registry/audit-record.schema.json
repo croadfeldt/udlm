@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/audit-record.schema.json",
+  "title": "DCM Audit Record (Stage-2, enriched)",
+  "description": "Machine-validatable enriched audit record (observability/universal-audit.md §3; DCM ADR-010). The tamper-evident system-of-what-happened. Append-only, immutable once written (AUD-002); RFC 9162 Merkle-linked (AUD-006). UDLM carries the record shape; DCM's Audit Service produces it. data-model-core §2 [D8.5].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "record_uuid",
+    "record_timestamp",
+    "actor",
+    "subject",
+    "action"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "audit_record"
+    },
+    "record_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "record_timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "When the change occurred, RFC 3339 UTC 'Z' (millisecond precision permitted; common-elements §8.1)."
+    },
+    "dcm_version": {
+      "type": "string"
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "immediate"
+      ],
+      "properties": {
+        "immediate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "human",
+                "service_account",
+                "system_component",
+                "policy",
+                "provider",
+                "scheduled_job"
+              ]
+            },
+            "uuid": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "display_name": {
+              "type": "string"
+            },
+            "session_uuid": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            }
+          }
+        },
+        "authorized_by": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "display_name": {
+              "type": "string"
+            },
+            "authorization_method": {
+              "enum": [
+                "direct_action",
+                "request_submission",
+                "policy_activation",
+                "system_policy",
+                "scheduled"
+              ]
+            }
+          }
+        },
+        "request_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "policy_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "policy_version": {
+          "type": "string"
+        },
+        "correlation_id": {
+          "type": "string"
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_uuid",
+        "entity_type"
+      ],
+      "properties": {
+        "entity_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "entity_type": {
+          "enum": [
+            "resource_entity",
+            "policy",
+            "layer",
+            "group",
+            "relationship",
+            "provider",
+            "configuration",
+            "authorization",
+            "ingestion_record",
+            "audit_record",
+            "catalog_item"
+          ]
+        },
+        "entity_handle": {
+          "type": "string"
+        },
+        "entity_version_before": {
+          "type": "string"
+        },
+        "entity_version_after": {
+          "type": "string"
+        },
+        "tenant_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        }
+      }
+    },
+    "action": {
+      "enum": [
+        "ACTIVATE",
+        "AUTHORIZE",
+        "CONFIG_CHANGE",
+        "CREATE",
+        "DEACTIVATE",
+        "DELETE",
+        "DEPRECATE",
+        "DISCOVER",
+        "DRIFT_DETECT",
+        "DRIFT_RESOLVE",
+        "ENRICH",
+        "EVALUATE",
+        "EXPIRE",
+        "HOLD_CONFIRM",
+        "HOLD_PLACE",
+        "HOLD_RELEASE",
+        "INGEST",
+        "LOCK",
+        "LOGIN",
+        "LOGOUT",
+        "MEMBER_ADD",
+        "MEMBER_REMOVE",
+        "MEMBERSHIP_EXPIRE",
+        "MODIFY",
+        "PROMOTE",
+        "QUERY",
+        "REHYDRATE",
+        "RELATIONSHIP_CREATE",
+        "RELATIONSHIP_RELEASE",
+        "RETIRE",
+        "REVOKE",
+        "STATE_TRANSITION"
+      ],
+      "description": "Closed vocabulary (universal-audit §4; free-text rejected, AUD-007)."
+    },
+    "action_detail": {
+      "type": "object",
+      "description": "Structured per-action detail (open — shape varies by action)."
+    },
+    "retention_status": {
+      "enum": [
+        "live",
+        "all_retired",
+        "policy_governed"
+      ],
+      "description": "AUD-003/004 lifecycle: live while any referenced entity is non-terminal; policy_governed retention only after all reach terminal state."
+    },
+    "audit_leaf_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Link to the Merkle leaf (audit-leaf.schema.json) binding this record into the tamper-evident tree."
+    },
+    "commit_log_entry_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Link back to the Stage-1 commit_log_entry this was enriched from."
+    }
+  }
+}
