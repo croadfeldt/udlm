@@ -540,6 +540,16 @@
           }
         }
       }
+    },
+    "priced_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). Per-INSTANCE cost-model reference override — overrides the resource type's `priced_by` default for this entity (per-customer/contract pricing, whose lifecycle stays external). UDLM never defines the model's contents (ADR-COST-001).",
+      "required": ["information_provider_uuid", "external_model_id"],
+      "properties": {
+        "information_provider_uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The registered serve_data:cost provider (the cost engine)."},
+        "external_model_id": {"type": "string", "description": "Opaque id of the cost model within that engine."}
+      }
     }
   },
   "$defs": {
