@@ -138,6 +138,13 @@ dcm_group:
 | `provider_grouping` | Provider collections | provider | many | advisory |
 | `composite` | (new) | all types | many | configurable |
 | `federation` | (new) | group (tenant_boundary) | many | advisory |
+| `cross_tenant_authorization` | Cross-Tenant Authorization | resource_entity | many | enforced |
+
+The `cross_tenant_authorization` class is the formal grant by which one Tenant authorizes
+another to reference, allocate from, or stake its resources (§13; lifecycle also detailed in
+[Resource Grouping](../entities/resource-grouping.md) §10). Its members are the authorized
+resource entities; a resource may appear in many authorizations (`per_member: many`), and the
+class is `enforced` — CTX-001 gates cross-tenant relationships on an active authorization.
 
 ### 2.3 Structural Invariants — Non-Overridable
 
@@ -382,7 +389,7 @@ A **Federated Tenant** structure is a `federation` group containing multiple ind
 
 ### 6.1 Universal Registry
 
-All groups are stored in a single **Group Registry** — a GitOps store following the standard data store contract. The registry is queryable by any combination of fields.
+All groups are stored in a single **Group Registry** — a lifecycle store bound by contract, not technology ([data-model-core](../foundations/data-model-core.md) §6 [D1]; git is the conforming minimal-profile carrier). The registry is queryable by any combination of fields.
 
 ### 6.2 Class-Filtered API Views
 
@@ -402,14 +409,13 @@ Existing API references continue to work unchanged. New API consumers can use th
 
 ## 8. DCM System Policies
 
+The structural invariants `GRP-INV-001`..`GRP-INV-006` are **defined once in §2.3** (every
+GRP-* id has exactly one definition — this includes [Resource Grouping](../entities/resource-grouping.md),
+whose former GRP-003 circular-nesting rule is now a pointer to `GRP-INV-005` here). The
+policies below add behavior on top of those invariants:
+
 | Policy | Rule |
 |--------|------|
-| `GRP-INV-001` | A resource_entity may belong to exactly one active tenant_boundary group |
-| `GRP-INV-002` | Constituent relationships may not cross tenant_boundary group boundaries |
-| `GRP-INV-003` | Destroying a parent tenant_boundary group requires explicit resolution of all child groups first |
-| `GRP-INV-004` | A resource in a child tenant_boundary group belongs to the child — never the parent |
-| `GRP-INV-005` | Circular group membership is invalid and must be rejected |
-| `GRP-INV-006` | A group cannot be a member of itself |
 | `GRP-007` | Composite group `on_group_destroy` default is `detach` — destroying a group releases memberships but does not destroy members |
 | `GRP-008` | Policies targeting a composite group apply to all member types by default; `member_type_filter` narrows scope |
 | `GRP-009` | Federation groups cannot override member Tenant isolation boundaries |
@@ -528,7 +534,13 @@ member:
   warn_before_expiry: P7D          # notify 7 days before expiry
 ```
 
-Membership expiry produces a `MEMBER_REMOVE` audit record with `reason: membership_ttl_expired`.
+Membership expiry produces a `MEMBERSHIP_EXPIRE` audit record (event
+`group.membership_expired` — [event catalog](../contracts/event-catalog.md)) with
+`reason: membership_ttl_expired`. `MEMBER_REMOVE` is emitted **only** when a member is
+actually removed — i.e. the `remove` on_expiry action additionally produces a
+`MEMBER_REMOVE` record; `notify` and `suspend_member` emit the expire event alone (the
+membership persists with `membership_status: expired` / the member is suspended, nothing is
+removed).
 
 ### 9.5 Group Policy Inheritance — Nested Groups (Q39)
 
@@ -561,7 +573,7 @@ dcm_group:
 | `GRP-011` | The group_class set is closed — system behavior is tied to declared classes only. group_subclass is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference. No validation or enforcement on subclass values. |
 | `GRP-012` | Sovereignty interaction is group_class-specific. tenant_boundary groups never span sovereignty boundaries (structural). resource_grouping groups may span sovereignty boundaries by default — policy may restrict for classified resources. policy_collection and layer_grouping groups always permitted cross-sovereignty. composite groups are governed by the sovereignty rules of their most restrictive member type. |
 | `GRP-013` | Tenant decommission requires pre-decommission validation (resource state, cross-tenant relationships, compliance holds, child group resolution). Resources follow declared lifecycle policy. Child tenant_boundary groups must be resolved before parent decommission. Audit records enter post-lifecycle retention — never destroyed as part of Tenant decommission. |
-| `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBER_REMOVE audit record. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
+| `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBERSHIP_EXPIRE audit record (event group.membership_expired); MEMBER_REMOVE is additionally produced only by the `remove` on_expiry action, when the member is actually removed. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
 | `GRP-015` | Group policy inheritance is group_class-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (minimal/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
 
 

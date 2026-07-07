@@ -122,17 +122,23 @@ Resource Groups function like **structured tags** — a resource accumulates gro
 
 Each group membership is a different dimension of context — not a hierarchy within a single dimension.
 
-### 3.2 Resource Group Classes
+### 3.2 Resource Group Subclasses
 
-DCM defines two classes of Resource Group, both implementing the same **Resource Group Interface**:
+> **`group_class` has ONE vocabulary** — the closed set defined in
+> [Universal Group Model](../observability/universal-groups.md) §2.2
+> ([data-model-core](../foundations/data-model-core.md) §5). Every Resource Group carries
+> `group_class: resource_grouping` from that model. The `dcm_default | custom` distinction
+> defined here is a **`group_subclass`** — the open, advisory axis — not a group_class.
 
-**Class 1 — DCM Default Resource Group**
+DCM defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:
+
+**Subclass 1 — DCM Default Resource Group (`group_subclass: dcm_default`)**
 Built into DCM. The standard mechanism for grouping resources. No implementor customization required to use it.
 
-**Class 2 — Custom Resource Group**
+**Subclass 2 — Custom Resource Group (`group_subclass: custom`)**
 Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with DCM Default Resource Groups in terms of DCM capabilities.
 
-Both classes implement the same interface. The DCM Default Resource Group is simply DCM's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
+Both subclasses implement the same interface. The DCM Default Resource Group is simply DCM's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
 
 ### 3.3 The Resource Group Interface
 
@@ -143,7 +149,8 @@ resource_group:
   uuid: <uuid>
   name: <human-readable name>
   description: <description>
-  group_class: <dcm_default|custom>
+  group_class: resource_grouping        # from the closed universal-groups §2.2 vocabulary
+  group_subclass: <dcm_default|custom>  # advisory axis — this document's two subclasses
   group_type: <for custom groups — e.g., CostCenter, BusinessUnit, RegulatoryScope>
   version: <Major.Minor.Revision>
   status:
@@ -158,11 +165,17 @@ resource_group:
     # If true, this group can contain other groups as members
     max_depth: <integer|unlimited>
   membership:
+    # ONE membership record shape — the Universal Group Model form
+    # (universal-groups §2.1; data-model-core §5). The former
+    # joined_timestamp/joined_by_uuid variant is SUPERSEDED by added_at/added_by.
     members:
       - member_uuid: <uuid of Resource/Service Entity or child Resource Group>
         member_type: <entity|resource_group>
-        joined_timestamp: <ISO 8601>
-        joined_by_uuid: <uuid of persona or policy that added this member>
+        added_at: <RFC 3339 UTC 'Z'>
+        added_by: <actor record — persona or policy that added this member>
+        valid_from: <RFC 3339 UTC 'Z' — null = immediately>
+        expires_at: <RFC 3339 UTC 'Z' — null = indefinite; time-bounded membership>
+        membership_status: <active|suspended|expired>
     membership_policy:
       exclusive: <true|false>
       # If true, a resource can only belong to one group of this type at a time
@@ -222,7 +235,7 @@ Tenant: Payments Platform
 |--------|------|-------------|
 | `GRP-001` | Every Resource/Service Entity must belong to exactly one DCM Tenant | Enforced at Entity creation |
 | `GRP-002` | A Resource/Service Entity cannot be removed from its Tenant without being transferred to another Tenant | Enforced at all lifecycle states |
-| `GRP-003` | Circular nesting in Resource Groups is invalid | Enforced at group membership modification |
+| `GRP-003` | *(pointer — not a separate rule)* Circular nesting is governed by `GRP-INV-005` ([Universal Group Model](../observability/universal-groups.md) §2.3), the single definition of the circular-membership invariant | Enforced at group membership modification (per GRP-INV-005) |
 | `GRP-004` | Custom Resource Groups must implement the full Resource Group Interface | Enforced at group registration |
 | `GRP-005` | Exclusive membership groups must reject membership requests that violate exclusivity | Enforced at group membership addition |
 
@@ -286,7 +299,7 @@ custom_group_type_registration:
 | 1 | Should there be a DCM-maintained registry of well-known custom group types to encourage standardization? | Interoperability | ✅ Resolved — group_subclass open and advisory; community subclass catalog as non-authoritative reference; no validation or enforcement; see doc 15 (GRP-011) |
 | 2 | How does group membership interact with sovereignty — can a group span sovereignty boundaries? | Sovereignty model | ✅ Resolved — class-specific: tenant_boundary never cross-sovereignty (structural); resource_grouping permitted+policy restriction; policy_collection always permitted; composite governed by most restrictive member; see doc 15 (GRP-012) |
 | 3 | When a Tenant is decommissioned, what happens to its resources and group memberships? | Lifecycle management | ✅ Resolved — four-phase staged decommission: pre-validation → resource decommission → membership cleanup → audit archival; child groups must be resolved first; audit records never destroyed; see doc 15 (GRP-013) |
-| 4 | Should Resource Groups support time-bounded membership — a resource belongs to a group for a defined period? | Operational flexibility | ✅ Resolved — valid_from/expires_at already in Universal Group Model; on_expiry (remove/notify/suspend_member); Lifecycle Constraint Enforcer handles; MEMBER_REMOVE audit record; see doc 15 (GRP-014) |
+| 4 | Should Resource Groups support time-bounded membership — a resource belongs to a group for a defined period? | Operational flexibility | ✅ Resolved — valid_from/expires_at already in Universal Group Model; on_expiry (remove/notify/suspend_member); Lifecycle Constraint Enforcer handles; MEMBERSHIP_EXPIRE audit record (MEMBER_REMOVE only on actual removal); see doc 15 (GRP-014) |
 | 5 | How are group-level policies inherited by nested child groups — is inheritance opt-in or opt-out? | Policy model | ✅ Resolved — class-specific defaults profile-governed; tenant_boundary: opt_out (standard/prod), opt_in (fsi/sovereign); federation always opt_in; composite opt_out; see doc 15 (GRP-015) |
 
 ---

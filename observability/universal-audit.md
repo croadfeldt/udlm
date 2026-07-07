@@ -61,7 +61,8 @@ audit_record:
   actor:
     # The immediate actor that performed the change
     immediate:
-      type: <human|system_component|policy|provider|scheduled_job|mode4_provider>
+      type: <human|service_account|system_component|policy|provider|scheduled_job>
+      # ONE actor.type vocabulary (used by every audit surface — §5.1, §10.3, AUD-016)
       uuid: <uuid of the actor — policy UUID, provider UUID, component UUID, etc.>
       display_name: <human-readable name>
       session_uuid: <session UUID — for human actors>
@@ -120,7 +121,7 @@ audit_record:
       relationship_nature: <constituent|operational|informational>
       cross_tenant: <true|false>
 
-    # For MEMBER_ADD, MEMBER_REMOVE
+    # For MEMBER_ADD, MEMBER_REMOVE, MEMBERSHIP_EXPIRE
     membership_detail:
       group_uuid: <uuid>
       group_class: <class>
@@ -203,7 +204,8 @@ The `action` field uses a closed vocabulary. Free-text actions are invalid and r
 | `DEPRECATE` | All | Artifact deprecated |
 | `RETIRE` | All | Artifact retired |
 | `MEMBER_ADD` | Groups | Member added to group |
-| `MEMBER_REMOVE` | Groups | Member removed from group |
+| `MEMBER_REMOVE` | Groups | Member removed from group (actual removal only) |
+| `MEMBERSHIP_EXPIRE` | Groups | Time-bounded membership expired (universal-groups §9.4) — distinct from removal; the `remove` on_expiry action additionally emits MEMBER_REMOVE |
 | `RELATIONSHIP_CREATE` | Entities | Relationship established |
 | `RELATIONSHIP_RELEASE` | Entities | Relationship released |
 | `AUTHORIZE` | Cross-tenant, actors | Authorization granted |
@@ -237,11 +239,15 @@ The `who` in an audit record is not a single identity — it is a **composite ac
 | Type | Example | authorized_by |
 |------|---------|--------------|
 | `human` | Platform admin changes a policy | Self |
+| `service_account` | API/programmatic change via a service identity | Owner of the service account → human who authorized it |
 | `system_component` | Lifecycle Constraint Enforcer fires expiry | Policy that set the constraint → human who activated policy |
 | `policy` | Transformation Policy enriches a field | Human who activated the policy |
-| `provider` | Service Provider updates Realized State | Dispatch that triggered it → human who submitted request |
+| `provider` | Service Provider updates Realized State; external ("black box") policy evaluation enriches a field | Dispatch that triggered it → human who submitted request (or, for external evaluation: policy that triggered the query → human who activated policy) |
 | `scheduled_job` | Discovery cycle runs | Owner of the scheduled job |
-| `mode4_provider` | Black box enriches a field | Policy that triggered the query → human who activated policy |
+
+This is the ONE `actor.type` enum. External policy-evaluation ("black box") actors are
+`provider` actors — the former separate value for them was removed when the flat
+human/service_account/system model (§10.3/Q3) was reconciled into this nested shape.
 
 ### 5.2 System-Initiated Actions
 
@@ -316,7 +322,7 @@ Stage 1 — Commit Log (synchronous, in critical path, < 1ms)
 Stage 2 — Audit Store (asynchronous, out of critical path, full record)
 ```
 
-**Stage 1** writes a minimal Commit Log entry synchronously using consensus protocol (Raft). The write is confirmed when a quorum of Commit Log replicas acknowledges it. The operation returns success after Stage 1 confirms — not after the Audit Store write.
+**Stage 1** writes a minimal Commit Log entry synchronously to a **consensus-durable store** (Raft-class consensus; **etcd is the reference implementation** — the Commit Log is a store CONTRACT, not a technology, per [data-model-core](../foundations/data-model-core.md) §6 [D1]). The write is confirmed when a quorum of Commit Log replicas acknowledges it. The operation returns success after Stage 1 confirms — not after the Audit Store write.
 
 **Stage 2** runs asynchronously via the Audit Forward Service: enriches the minimal Commit Log entry into a full audit_record, computes the hash chain, and writes to the Audit Store with retry.
 
@@ -386,7 +392,7 @@ Audit Forward Service reads pending_forward Commit Log entries
 
 | Component | Latency | In Critical Path? |
 |-----------|---------|-----------------|
-| Stage 1 — Commit Log quorum write | < 1ms (local NVMe + Raft) | Yes |
+| Stage 1 — Commit Log quorum write | < 1ms (local NVMe + Raft-class consensus) | Yes |
 | Stage 2 — Audit Store write | 5–50ms (network + indexing) | No |
 | Full audit record visible | Seconds to minutes after Stage 1 | No |
 
@@ -564,7 +570,7 @@ Output: all leaves for the request + inclusion proofs + payload hash chain verif
 | `AUD-009` | The Audit Forward Service must deliver all Commit Log entries to the Audit Store with exponential backoff retry. Commit Log entries may only be cleared after both: (a) Audit Store confirms receipt AND (b) entry has aged beyond the Commit Log retention window. |
 | `AUD-010` | Merkle tree verification (inclusion proofs, consistency proofs, request chain verification) must be available as first-class DCM operations. Verification failures trigger immediate security alerts. |
 | `AUD-011` | On DCM restart, the Audit Forward Service must replay all `status: pending_forward` Commit Log entries before accepting new operations. |
-| `AUD-012` | Signed Tree Heads must be computed at the interval configured by the deployment profile. STH signing key must be stored in the secrets table (internal) or Vault (external). |
+| `AUD-012` | Signed Tree Heads must be computed at the interval configured by the deployment profile. The STH signing key is held by a **Credential Provider** ([governance/credentials.md](../governance/credentials.md) — a capability-declaring provider selected against the profile's assurance/attestation floor); key values are NEVER stored in realization stores (CPX-001). The substrate carries only the key reference and signature. |
 | `AUD-013` | The Stage 1 timestamp in the Commit Log is the authoritative audit timestamp. Stage 2 enrichment timestamps record when the full audit record became queryable — not when the change occurred. |
 | `AUD-014` | Audit granularity level is configured per deployment profile. `fsi` and `sovereign` profiles require `field` granularity — this cannot be downgraded. |
 | `AUD-015` | Inter-stage verification mode is configured per deployment profile. `fsi` and `sovereign` profiles require `synchronous` verification — the pipeline halts if any signature verification fails. |
@@ -626,27 +632,37 @@ commit_log_capacity:
 
 ### 10.3 System-Initiated Audit Records (Q3)
 
-Audit records for system-initiated changes declare `actor.type: system` with a `system_actor` block identifying the DCM component, trigger, and authorizing policy.
+Audit records for system-initiated changes use the same **nested actor shape as every other
+record** (§3, AUD-005): `actor.immediate.type: system_component` with a `system_actor` detail
+block identifying the DCM component and trigger, and the `authorized_by` chain naming the
+authorizing policy. (An earlier resolution used a flat `actor.type: human|service_account|system`
+model — superseded; the §3 nested model with the single §5.1 vocabulary is canonical.)
 
 ```yaml
 audit_record:
   action: REHYDRATE
   actor:
-    uuid: <system-actor-uuid>
-    type: system                      # human | service_account | system
-    system_actor:
-      component: lifecycle_constraint_enforcer
-      trigger: entity_ttl_expired
-      entity_uuid: <triggering-entity-uuid>
-      policy_uuid: <policy-that-triggered>
-    authorization: implicit           # implicit = authorized by DCM architecture
-                                      # explicit = authorized by named policy
+    immediate:
+      type: system_component          # ONE actor.type enum — §3/§5.1:
+                                      # human | service_account | system_component |
+                                      # policy | provider | scheduled_job
+      uuid: <lifecycle-constraint-enforcer-uuid>
+      display_name: "Lifecycle Constraint Enforcer"
+      system_actor:                   # system-initiated detail block
+        component: lifecycle_constraint_enforcer
+        trigger: entity_ttl_expired
+        entity_uuid: <triggering-entity-uuid>
+    authorized_by:
+      uuid: null                      # no specific human — traceable to the policy
+      display_name: "Policy <policy-handle>"
+      authorization_method: policy_activation   # or system_policy for DCM System Policies
+    policy_uuid: <policy-that-triggered>
 ```
 
-System actor records are full audit records — they appear in all queries and compliance reports. `actor.type` enables filtering:
-- `filter: actor.type = human` → all human-initiated changes
-- `filter: actor.type = system` → all automated lifecycle operations
-- `filter: actor.type = service_account` → all API/programmatic changes
+System actor records are full audit records — they appear in all queries and compliance reports. `actor.immediate.type` enables filtering:
+- `filter: actor.immediate.type = human` → all human-initiated changes
+- `filter: actor.immediate.type IN (system_component, policy, scheduled_job)` → all automated lifecycle operations
+- `filter: actor.immediate.type = service_account` → all API/programmatic changes
 
 ### 10.4 Distributed Hash Chain Integrity (Q4)
 
@@ -677,7 +693,7 @@ distributed_hash_chain:
 |--------|------|
 | `AUD-020` | Hash chain verification operates at three levels: continuous (hash computed on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
 | `AUD-021` | The Commit Log has configurable maximum capacity with a declared overflow policy: alert_and_continue (standard/prod) or reject_new_ops (fsi/sovereign). Backpressure alerts fire at 75% and 90% capacity. Records older than P7D trigger escalation regardless of capacity. |
-| `AUD-016` | Audit records for system-initiated changes declare actor.type: system with a system_actor block identifying the DCM component, trigger, and authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.type enables filtering between human, service_account, and system-initiated changes. |
+| `AUD-016` | Audit records for system-initiated changes use the nested actor shape (AUD-005): actor.immediate.type: system_component with a system_actor detail block identifying the DCM component and trigger, and an authorized_by chain naming the authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.immediate.type (single vocabulary: human, service_account, system_component, policy, provider, scheduled_job) enables filtering between human-, service-account-, and system-initiated changes. |
 | `AUD-017` | In distributed DCM deployments, each instance maintains its own independent hash chain scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub DCM. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
 
 ## 11. Audit vs Observability — The Definitive Distinction (Q16)
@@ -698,7 +714,7 @@ Audit and Observability are separate components with separate storage contracts,
 | **Cost per event** | High — hash chain computation | Low — time series append |
 | **Failure behavior** | Missing audit = compliance violation | Missing observability = operational inconvenience |
 | **Query model** | Point-in-time, actor-based, compliance reports | Time-series, rate queries, anomaly detection |
-| **Data model** | Closed 30-action vocabulary, structured | Open schema — any component emits any metric |
+| **Data model** | Closed action vocabulary (§4), structured | Open schema — any component emits any metric |
 | **Storage type** | Audit Store (specialized sub-type) | Time-series database (Prometheus, InfluxDB) |
 
 ### 11.2 The Relationship
@@ -724,7 +740,7 @@ These are different questions requiring different storage architectures.
 |---|----------|--------|--------|
 | 1 | Should hash chain verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (chain construction), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
 | 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-021) |
-| 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — actor.type: human/service_account/system; system_actor block with component/trigger/policy; full audit records; enables filtering in queries and dashboards (AUD-016) |
+| 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — nested actor shape with actor.immediate.type: system_component + system_actor block (component/trigger) + authorized_by chain; full audit records; enables filtering in queries and dashboards (AUD-016) |
 | 4 | How does hash chain verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance hash chains; daily Merkle root federation integrity proof at Hub DCM; cross-instance queries via parallel chains + correlation_id (AUD-017) |
 
 ---

@@ -66,7 +66,7 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 | Finding | UDLM/DCM today |
 |---|---|
 | 1 | uuid-authoritative + handle-advisory refs (identifier-scheme §2.3; estate CI enforces) ✅ |
-| 3 (partially) | `connected_to` is LLDP-*discovered*, not hand-drawn; estate CI is the integrity service for git data ✅ |
+| 3 (partially) | `connects_to` (renamed from `connected_to`, common-elements §9) is LLDP-*discovered*, not hand-drawn; estate CI is the integrity service for git data ✅ |
 | 9 | VERSIONING.md additive-minor / removal-at-major discipline ✅ |
 | 10 | meta-schema `relationships.target` is the unversioned type NAME — edges already version-decoupled ✅ (codify as an explicit rule) |
 | 7 | Tier-2 `Vendor.Type` namespace + `provider_hints` ≈ augmentation-in-new-module ✅ (make it the normative extension mechanism for #198) |
@@ -92,7 +92,7 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
    retired` first (uuid never reused — identifier-scheme §5 already forbids); estate CI to
    FAIL a removal that leaves inbound edges dangling and suggest retire-first.
 3. **Constrained reference topology.** Declare which relationship kinds may cross which
-   scopes (e.g. `contained_by` never crosses a sovereignty zone; `connected_to` only between
+   scopes (e.g. `contained_by` never crosses a sovereignty zone; `connects_to` only between
    physical interfaces). Validator emits machine-readable violations (K8s event analog).
 4. **Enum discipline (adopt K8s rule).** Enum-value addition = breaking UNLESS the field is
    explicitly marked extensible. Add an `extensible: true` marker to the meta-schema for

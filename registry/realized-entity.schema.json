@@ -79,7 +79,7 @@
     },
     "provenance": {
       "type": "object",
-      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; DCM writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model.",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; DCM writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.",
       "additionalProperties": {
         "type": "array",
         "items": {
@@ -103,8 +103,12 @@
                     "layer",
                     "policy",
                     "actor",
-                    "provider"
-                  ]
+                    "provider",
+                    "discovery",
+                    "rehydration",
+                    "override"
+                  ],
+                  "description": "Canonical provenance source kinds (data-model-core §6/§7): layer = layer assembly wrote the value; policy = a policy set/enriched/locked it; actor = an authenticated identity wrote it directly ('consumer' in older documents maps here — a consumer acts as an actor); provider = the realizing provider reported it; discovery = a discovery cycle observed it; rehydration = a rehydration pipeline restored it; override = an authorized override set it (ADR-013)."
                 },
                 "id": {
                   "type": "string"
@@ -117,6 +121,19 @@
             "actor": {
               "type": "string",
               "description": "The authenticated identity on whose behalf the change was made."
+            },
+            "operation_type": {
+              "enum": [
+                "set",
+                "merge",
+                "remove"
+              ],
+              "description": "Write semantics of this provenance entry (the audit-provenance modifications[] operation, normalized): set = value written/replaced; merge = value combined with the prior value (e.g. list/object merge during layer assembly); remove = value deleted. Optional — omitted entries are read as `set`."
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Explicit position of this entry in the field's ordered modification chain (audit-provenance modifications[].sequence). Optional — when omitted, array order is the chain order."
             },
             "timestamp": {
               "type": "string",

@@ -124,7 +124,8 @@ restated here.
 
 **`source`, `license`, and `license_compatibility` are mandatory** (SPEC-DESIGN-REQUIREMENTS §22–23): the
 provenance (name + version + canonical URL) and a recorded license-compatibility verdict against the
-UDLM license (Apache-2.0). `license_compatibility` ∈ `{compatible-reference, compatible-vendor,
+UDLM license (Apache-2.0 — declared once in [`README.md` § License](../README.md#license) /
+the repository `LICENSE` file). `license_compatibility` ∈ `{compatible-reference, compatible-vendor,
 reference-only}` — `reference-only` flags a copyleft/file-scoped source (GPL/LGPL/MPL) whose **names may
 be referenced but whose text/files MUST NOT be vendored** into UDLM. Because adoption only references
 the standard's vocabulary (field names = facts) and never restates its columns, the default verdict is

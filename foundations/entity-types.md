@@ -204,7 +204,7 @@ A **Composite Resource Entity** is produced by a composite resource type specifi
 - Drift detection operates at two levels: the composite level (is the composite healthy as a whole?) and the constituent level (is each underlying resource still in its expected state?)
 - Decommission is staged: composite decommissioned first, then constituents in reverse dependency order
 
-**Lifecycle state machine:** Same as Infrastructure Resource Entity. The composite's `lifecycle_state` reflects the aggregate health of all constituents — a composite is OPERATIONAL only when all required constituents are OPERATIONAL.
+**Lifecycle state machine:** Same as Infrastructure Resource Entity — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational, and **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
 
 **Constituent relationship:** Each constituent is recorded as a `constituent_of` relationship from the constituent to the composite. The composite holds `has_constituent` relationships to each constituent. The composite UUID is the correlation key across all constituent audit records.
 
@@ -223,9 +223,10 @@ composite_resource_entity:
     - constituent_entity_uuid: <uuid>
       role: <primary|supporting|optional>
       required_for_composite_operational: <bool>
-      # If a required constituent fails, the composite enters DEGRADED
+      # If a required constituent fails, composite_health becomes degraded/failed —
+      # a health-axis condition (data-model-core §3), NOT a lifecycle_state value
       constituent_lifecycle_state: <mirrors constituent entity>
-  composite_health: <healthy|degraded|failed>
+  composite_health: <healthy|degraded|failed>   # health axis (status overlay) — separate from lifecycle_state
 ```
 
 ### 2.3 Process Resource Entity
@@ -343,7 +344,7 @@ resource_type_spec:
 | `ENT-001` | Every Infrastructure Resource Entity must be owned by exactly one Tenant at all times |
 | `ENT-002` | Process Resource Entities must declare max_execution_time — this field has no default and is not optional |
 | `ENT-003` | Process Resource Entities must record all affected entity UUIDs if any infrastructure modifications are made during execution |
-| `ENT-004` | Composite Resource Entity lifecycle_state reflects aggregate constituent health — OPERATIONAL only when all required constituents are OPERATIONAL |
+| `ENT-004` | Composite Resource Entity aggregate constituent health is carried on the `composite_health` axis (a status/conditions overlay — data-model-core §3): healthy only when all required constituents are operational. DEGRADED/degraded is a health-axis value, never a lifecycle_state — the lifecycle enum is unchanged for composites |
 | `ENT-005` | PENDING_REVIEW is a valid Infrastructure Resource Entity state requiring human resolution — it is never an error state and never automatically resolved |
 | `ENT-006` | The entity UUID is immutable across the full entity lifecycle including rehydration, provider migration, and ownership transfer |
 
