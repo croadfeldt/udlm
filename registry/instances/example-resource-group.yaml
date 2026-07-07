@@ -1,0 +1,24 @@
+# Worked-example Resource Group: a resource_grouping DCMGroup (registry/dcm-group.schema.json).
+# Structured-tag grouping (entities/resource-grouping.md §3) — non-exclusive, advisory.
+uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
+handle: org/resource-group/example-orders-deployment
+conforms_to: udlm/0.1
+group_class: resource_grouping
+group_subclass: dcm_default
+name: Example Orders Deployment
+description: Groups the resources that make up the example orders deployment.
+version: 1.0.0
+status:
+  state: active
+nesting:
+  supported: false
+membership:
+  members:
+    - member_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21   # the orders-db example entity
+      member_type: entity
+      added_at: "2026-06-17T15:05:00Z"
+      added_by: alice@example.com
+      membership_status: active
+  membership_policy:
+    exclusive: false
+    max_memberships: unlimited

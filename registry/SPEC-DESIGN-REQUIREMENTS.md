@@ -207,6 +207,12 @@ Each hard constraint cites the UDLM contract it derives from.
     evaluated and not adopted is recorded with the same rigor, so the next reader doesn't
     re-run the evaluation.
 
+32. **Tenancy is schema-enforced.** Every realized-entity instance carries a required
+    `tenant_uuid` — the uuid of a `tenant_boundary` DCMGroup validating against
+    `registry/dcm-group.schema.json` (TEN-001/TEN-003, `entities/resource-grouping.md` §2.2;
+    `foundations/data-model-core.md` §5 [D3]). **[enforced]** (`registry/tools/validate.py`;
+    referential existence of the tenant is a store-level check, not a schema one).
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
