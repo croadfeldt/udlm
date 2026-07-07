@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/layer.schema.json",
+  "title": "DCM Data Layer record",
+  "description": "Machine-validatable Data Layer (foundations/layering-and-versioning.md; DCM ADR-012). A request payload is assembled by merging ordered layers lowest-authority-first; every field a layer sets records that layer's uuid as its provenance source. UDLM carries the layer records; DCM's assembly engine merges them. Layers carry DATA (the what); Policies (policy.schema.json) decide/transform (the how). data-model-core.md §2 [D8.4].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "uuid", "conforms_to", "name", "version", "tenant_uuid", "layer_type", "fields"],
+  "properties": {
+    "record_type": {"const": "layer", "description": "Dispatch discriminator (data-model-core §2)."},
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "RFC 9562 v4 identity. This uuid is the field-provenance source recorded for every field this layer sets (layering-and-versioning §provenance)."
+    },
+    "handle": {"type": "string"},
+    "conforms_to": {"type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Owning tenant (TEN-001). system/platform-domain layers (base, core, reference_data) are owned by the platform tenant; tenant-domain layers by the consuming tenant."
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {"enum": ["active", "deprecated", "retired"]},
+        "deprecation_date": {"type": "string"},
+        "sunset_date": {"type": "string"},
+        "replacement_uuid": {"type": "string"},
+        "deprecation_reason": {"type": "string"},
+        "migration_guidance": {"type": "string"}
+      }
+    },
+    "layer_type": {
+      "enum": ["base", "core", "intermediate", "service", "request", "policy", "reference_data"],
+      "description": "The six+ layer types (layering-and-versioning §3): base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization), service (catalog/provider), request (consumer's direct declarations — highest data authority), policy (applied over the merged result), reference_data (shared lookup data)."
+    },
+    "precedence_class": {
+      "enum": ["base", "core", "intermediate", "service", "request", "policy"],
+      "description": "Position in the assembly precedence chain, lowest-authority first: base → core → intermediate → service → request, with policy applied over the result. Higher classes override lower field-by-field (narrow-never-widen for constraint profiles, E1). Usually equals layer_type; reference_data layers are looked up, not merged, so they declare their functional class."
+    },
+    "precedence_order": {
+      "type": "integer",
+      "description": "Optional fine-grained ordering WITHIN a precedence_class (e.g. multiple stacked intermediate layers); higher wins. Ties break by class then by declared chain order."
+    },
+    "domain": {
+      "enum": ["system", "platform", "tenant", "resource_type", "entity"],
+      "description": "Ownership/precedence scope. resource_type-scoped layers MUST declare resource_type."
+    },
+    "resource_type": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+      "description": "When the layer is type-scoped: the Category.Type it applies to. A type-scoped base layer must conform to that type's universal field requirements (layering-and-versioning §3.1)."
+    },
+    "contributor": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Who may author this layer + the review it requires (layering-and-versioning §2; federated-contribution-model §3).",
+      "properties": {
+        "contributor_type": {"enum": ["platform_admin", "tenant_admin", "consumer", "provider", "system"]},
+        "review": {"enum": ["auto", "per_profile", "none", "dual_approval"], "description": "request layers = none (direct consumer declaration); all others flow through the GitOps PR review model."}
+      }
+    },
+    "fields": {
+      "type": "object",
+      "description": "The DATA this layer contributes to the assembled payload — dot-path-or-nested field values. Each field set here records THIS layer's uuid as its provenance source. Values are typed by the target Resource Type Spec and are not re-validated here (the layer is a partial contribution, not a complete entity)."
+    },
+    "narrow_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, this is a constraint/narrowing layer (E1): it may only TIGHTEN field markers/values declared by lower layers, never loosen them (narrow-never-widen). Recorded so the assembly engine enforces the direction."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "display_name": {"type": "string"},
+        "description": {"type": "string"},
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["at", "author", "text"],
+            "properties": {
+              "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
+              "author": {"type": "string"},
+              "text": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"domain": {"const": "resource_type"}}},
+      "then": {"required": ["resource_type"]}
+    }
+  ]
+}

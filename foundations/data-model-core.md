@@ -42,7 +42,7 @@ it governs.
   (2) catalog item — **DONE** (`registry/catalog-item.schema.json`, dispatched on
   `record_type: catalog_item` + validate.py semantic checks; the application model — an
   application IS a Composite catalog item — and the DCM ADR-016 evidence;
-  `entities/composite-service-model.md` §1.4/§2.5), (3) policy record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the referenceable typed binding surface, output-resolved by the validator]**, (4) layer record, (5) audit record +
+  `entities/composite-service-model.md` §1.4/§2.5), (3) policy record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the referenceable typed binding surface, output-resolved by the validator]**, (4) layer record **[DONE — registry/layer.schema.json]**, (5) audit record +
   Commit Log entry, (6) DecisionRecord, (7) Process Resource. Until an artifact's schema
   exists, its prose definition is explicitly marked *pre-schema* and is not citable as
   "[enforced]".
