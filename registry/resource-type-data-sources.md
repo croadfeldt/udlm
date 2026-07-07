@@ -128,3 +128,5 @@ Because adoption references vocabulary (field names = facts) and never restates 
 
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.
+
+**Storage.Volume** (2026-07-07, #271) — Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume; the consumable volume distinct from Storage.Cluster (provisioner) and Hardware.StorageDevice (component).

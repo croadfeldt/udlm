@@ -127,3 +127,5 @@ into open-world semantics by annotating it `x-extensible-enum: true` next to the
 consumers of such fields MUST tolerate unknown values. Unmarked enums are closed: additions are
 MAJOR. *Grandfather note:* `Hardware.NetworkInterface.device_class` gained values at 0.2.0/0.3.0
 under the previous rule; it is now marked extensible (0.4.0) rather than retroactively re-versioned.
+
+- **2026-07-07 (wave 3.8):** `Storage.Volume` 0.1.0 authored (consumable volume; fills the #271 storage gap). `Data.Database` 0.1.1 → **0.2.0** — `resources` now required (matches the dcm-project catalog DatabaseSpec) and storage/host relationships added; requiring a previously-optional field is a compat break, taken under the pre-1.0 exception.
