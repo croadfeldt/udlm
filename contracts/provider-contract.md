@@ -67,6 +67,14 @@ provider_base_registration:
       framework: <framework>
       status: active
 
+  # Data ROLES this provider accepts across the dispatch boundary (ADR-PROV-001;
+  # contracts/data-roles.md). Default [execution] — only execution-role data is naturalized
+  # to the provider. A provider MAY opt into non-execution roles (e.g. assembly context).
+  # The set actually delivered is the INTERSECTION of this declaration and what the
+  # Governance Matrix permits at the DCM→Provider boundary — sovereignty policy can strip a
+  # role the provider requested; it can never widen beyond this declaration.
+  accepts_roles: [execution]             # e.g. [execution, assembly]
+
   # Endpoints (which endpoints are required varies by type — see extensions)
   health_endpoint: "https://<provider>/health"
 
@@ -532,6 +540,7 @@ The registry lists the **provider kinds** (interaction shapes: `service_provider
 | `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability extension. No changes to DCM core are required. |
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
 | `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
+| `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the DCM→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
 
 ---
 
