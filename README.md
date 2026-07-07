@@ -67,6 +67,13 @@ Post-1.0, UDLM follows semver: two realizations conformant to the same major ver
 wire-compatible, and cross-major interop requires a peer to support multiple majors
 concurrently. See [`CONFORMANCE.md`](CONFORMANCE.md) §9.
 
+## License
+
+UDLM is licensed under the **Apache License 2.0** — see [`LICENSE`](LICENSE). This is the
+project's single license declaration; other documents (e.g.
+[`design-principles/adopted-standards.md`](design-principles/adopted-standards.md)) reference
+it rather than restating it.
+
 ## Provenance
 
 UDLM was extracted from the DCM repository's `architecture/data-model/`

@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "e9d945a5-c7b2-44f7-b1c4-48b0717d5a02",
   "resource_type": "Network.Switch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Switch",
-    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Compute.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connected_to` adjacency (LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics (UniFi, Catalyst, …) are the provider/extension, never the type.",
+    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Compute.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics (UniFi, Catalyst, …) are the provider/extension, never the type.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z"
   },
@@ -36,7 +36,7 @@
           "selective"
         ],
         "default": "opaque",
-        "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connected_to link records)."
+        "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connects_to link records)."
       },
       "identity": {
         "type": "object",

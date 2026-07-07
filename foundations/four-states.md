@@ -46,10 +46,10 @@ The **Intent State** is the immutable record of a consumer's original declaratio
 
 **Characteristics:**
 - Immutable once created — the consumer's original intent is never modified
-- Stored in a GitOps store — branched, reviewed, merged
+- Stored in a profile-bound State Store per the [D1] contract (§1 note, §4) — append-only, versioned, tenant-isolated; git is the conforming carrier at `minimal` and the PR-based ingress at `standard`/`prod`
 - The CI/CD pipeline operates on the Intent State — policy pre-validation, cost estimation, sovereignty check, approval workflow
-- Versioned via Git history — every revision of an intent is traceable
-- Supports human review and debate via the PR mechanism
+- Fully versioned — every revision of an intent is traceable (git history when git is the carrier/ingress; store version history otherwise)
+- Supports human review and debate via the PR mechanism (git-ingress deployments)
 - The entity UUID is assigned at Intent State creation — it follows the entity through all subsequent states
 
 **When created:** Every request submission, every rehydration operation, every drift remediation authorization
@@ -62,7 +62,7 @@ The **Requested State** is the fully assembled, policy-processed, provider-ready
 
 **Characteristics:**
 - Immutable once created — a new Requested State is created for each request cycle
-- Stored in a GitOps store — committed, versioned, triggering CD pipeline
+- Stored in a profile-bound State Store per the [D1] contract (§1 note, §4) — committed, versioned, triggering the CD pipeline (git carries this domain at the `minimal` profile)
 - The CD pipeline dispatches from the Requested State to the provider
 - Contains the complete assembled payload with full field-level provenance
 - Contains the results of all policy evaluations — which policies ran, what they did, what they locked
@@ -136,19 +136,28 @@ Multiple discovery sources correlate to ONE entity via `correlation_ids`
 (realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
 
 
-### 2.5 Recovery States
+### 2.5 Recovery Conditions — a `status.conditions` overlay, NOT lifecycle states
 
-Five additional states apply to Infrastructure Resource Entities when the normal provisioning lifecycle encounters timeouts, cancellation failures, or partial realization. These states are governed by Recovery Policies (see [Operational Models](../lifecycle/operational-models.md) Section 5).
+**Recovery and health are `status.conditions`, not lifecycle states**
+([data-model-core](data-model-core.md) §3): `lifecycle_state` never leaves its five canonical
+values (`Intent → Requested → Realized ↔ Discovered` + `Decommissioned`). When the normal
+provisioning lifecycle encounters timeouts, cancellation failures, or partial realization on an
+Infrastructure Resource Entity, the situation is expressed as a **condition type** on the
+entity's `status.conditions` (realized-entity.schema.json `status`) — an overlay on whatever
+lifecycle state the entity is in. Conditions are governed by Recovery Policies (see
+[Operational Models](../lifecycle/operational-models.md) Section 5).
 
-| State | Meaning | Entry Trigger |
-|-------|---------|--------------|
+| Condition type | Meaning | Entry Trigger |
+|----------------|---------|--------------|
 | `TIMEOUT_PENDING` | Dispatch timeout fired; cancellation sent to provider | `DISPATCH_TIMEOUT` recovery trigger |
 | `LATE_REALIZATION_PENDING` | Provider responded after timeout; NOTIFY_AND_WAIT active | `LATE_RESPONSE_RECEIVED` recovery trigger |
 | `INDETERMINATE_REALIZATION` | State ambiguous; drift detection resolving | `DRIFT_RECONCILE` recovery action |
 | `COMPENSATION_IN_PROGRESS` | Compound service rollback underway | `PARTIAL_REALIZATION` trigger |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | Compensation step failure |
 
-See [Operational Models](../lifecycle/operational-models.md) for the complete recovery state machine and Recovery Policy model.
+See [Operational Models](../lifecycle/operational-models.md) for the complete recovery
+condition machine and Recovery Policy model. (Earlier revisions called these "five additional
+states" — that wording is superseded; they never extend the lifecycle enum.)
 
 
 ---
@@ -158,12 +167,12 @@ See [Operational Models](../lifecycle/operational-models.md) for the complete re
 Every entity has a single UUID assigned at Intent State creation. This UUID is the universal key linking the entity across all four states and all stores:
 
 ```
-Intent Store:    file path includes entity_uuid, content declares entity_uuid
-Requested Store: file path includes entity_uuid, content declares entity_uuid
+Intent Store:    records keyed by entity_uuid (git carrier: file path + content declare it)
+Requested Store: records keyed by entity_uuid (git carrier: file path + content declare it)
 Realized Store:  event stream keyed by entity_uuid
 Discovered Store: snapshot stream keyed by entity_uuid (matched via provider labels)
 Audit Store:     all provenance events indexed by entity_uuid
-Search Index:    entity_uuid → git_path mapping for Git stores
+Search Index:    entity_uuid → record-locator mapping (git_path when git carries a domain)
 ```
 
 Given an entity UUID, DCM can reconstruct the complete history of that entity across its entire lifecycle — from the consumer's original intent through every state transition to the current discovered state.
@@ -543,7 +552,7 @@ Unsanctioned changes are always reported to the Policy Engine as `UNSANCTIONED_C
 
 ## 7. CI/CD Integration
 
-The GitOps stores are the natural integration point for CI/CD pipelines. DCM does not prescribe a specific CI/CD tool — the GitOps store contract requires hook support, and the CI/CD tool is a deployment choice.
+The git ingress (PR-based intent submission at `standard`/`prod`; full State-Store carrier at `minimal` — a profile binding per [D1], §4) is the natural integration point for CI/CD pipelines. DCM does not prescribe a specific CI/CD tool — the store contract requires hook support where git plays either role, and the CI/CD tool is a deployment choice.
 
 ### 7.1 CI Pipeline (Intent State)
 
@@ -577,7 +586,7 @@ CD pipeline executes:
   1. Request Payload Processor assembles full payload
   2. Full policy evaluation (binding — not dry run)
   3. Provider selection (or re-evaluation if placement flag set)
-  4. Requested State committed to Git store
+  4. Requested State committed to its profile-bound store (git when git carries the domain)
   5. Provider dispatch via API Gateway
   6. Status monitoring — poll or receive callbacks until terminal state
   7. Status written back to PR or status file
