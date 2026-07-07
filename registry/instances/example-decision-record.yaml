@@ -1,0 +1,45 @@
+record_type: decision_record
+uuid: 7d3e180f-dec2-4e0a-9f2d-809c49256431
+handle: ADR-EXAMPLE-001
+conforms_to: udlm/0.1
+title: Adopt RFC 9562 UUIDv4 as the universal identity primitive
+version: 1.0.0
+scope: architecture
+rationale: Every entity, record, and reference needs one stable, collision-free identity. RFC 9562 v4
+  (CSPRNG) carries no correlatable structure and needs no coordination to mint. Worked example (example.com
+  content) demonstrating the DecisionRecord shape.
+question_refs:
+- FINDING-identity-primitive
+options_considered:
+- option: RFC 9562 v4
+  pros: no structure leak; no coordination needed
+- option: RFC 9562 v7
+  cons: "encodes time \u2014 fine for ordered fields, not identity"
+  rejected_because: time-leak for identity
+- option: sequential integers
+  cons: coordination + enumeration
+  rejected_because: not distributable
+decision: RFC 9562 v4 for identity; v7 only for declared time-ordered fields.
+action: answer
+abstraction_decomposition:
+  data: the uuid field on every record + the reference {uuid, handle} shape
+  policy: validators enforce the v4 version-nibble + variant at ingest
+  provider: n/a, because identity minting is not provider-specific
+validation_evidence:
+  method: use_case_conformance
+  evidence_ref: identifier-scheme conformance UCs
+  passed: true
+about:
+- contracts/identifier-scheme.md
+state: CANONICAL
+provenance:
+  proposed_by: example-architect
+  model_version: n/a
+  at: '2026-07-07T14:05:00Z'
+metadata:
+  display_name: UUID identity ADR (example)
+  notes:
+  - at: '2026-07-07T14:05:00Z'
+    author: claude-fable-5 (session f78102d7, wave 3.6)
+    text: "Worked DecisionRecord \u2014 architecture scope, Data\xB7Policy\xB7Provider decomposition,\
+      \ CANONICAL with UC-conformance validation evidence."
