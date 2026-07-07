@@ -381,7 +381,7 @@
         "license",
         "license_compatibility"
       ],
-      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `licenseCompatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
+      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `license_compatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
       "properties": {
         "standard": {
           "type": "string",

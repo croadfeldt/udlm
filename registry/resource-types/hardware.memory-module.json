@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.MemoryModule/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.MemoryModule/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "a511d9fa-e7a6-4475-801d-178f00429996",
   "resource_type": "Hardware.MemoryModule",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -85,12 +85,14 @@
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "host",
       "description": "The host this module is installed in; the parent carries the reconciled memory rollup (§26)."
     },
     {
       "kind": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
+      "name": "guest",
       "description": "For device_class=virtual, the guest the memory is presented to."
     }
   ],

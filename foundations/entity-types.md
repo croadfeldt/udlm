@@ -235,7 +235,7 @@ A **Process Resource Entity** represents an ephemeral execution — an automatio
 **Characteristics:**
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
 - Must declare `max_execution_time` — mandatory, not optional
-- If max_execution_time is exceeded, the process enters FAILED state and DCM generates a `PROCESS_TIMEOUT` event
+- If max_execution_time is exceeded, the process enters FAILED state and DCM generates a `PROCESS_TIMEOUT` event (catalogued as `process.timeout` — contracts/event-catalog.md §17a)
 - If the process modifies any Infrastructure Resource Entity, it must record the modified entity UUIDs in its provenance
 - Owned by the Tenant that initiated the execution
 - Subject to audit — every process execution produces a full audit trail

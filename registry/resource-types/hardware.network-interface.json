@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -151,18 +151,21 @@
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "host",
       "description": "The host the physical NIC is installed in."
     },
     {
       "kind": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
+      "name": "guest",
       "description": "For virtual / passthrough / partition, the guest the interface is presented to."
     },
     {
       "kind": "contained_by",
       "target": "Network.Switch",
       "cardinality": "0..1",
+      "name": "switch",
       "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the §27 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances."
     },
     {
