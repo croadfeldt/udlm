@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "21b5da18-94c1-44af-a09b-ecd1e1a38a65",
   "resource_type": "Storage.Cluster",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Composite",
   "portability": "portable",
@@ -88,12 +88,14 @@
       "kind": "depends_on",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
+      "name": "node_vm",
       "description": "Storage nodes/OSDs hosted on VMs (the cluster needs a quorum of these up)."
     },
     {
       "kind": "depends_on",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
+      "name": "node_host",
       "description": "Storage nodes/OSDs hosted on bare-metal hosts."
     }
   ],

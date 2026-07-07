@@ -129,6 +129,15 @@ relationships:
 
 ## 4. Relationship Types
 
+> **SUPERSEDED by [data-model-core](../foundations/data-model-core.md) §4 (kind + relation).** The
+> authoritative relationship data model is two-tier: a closed universal `kind`
+> (`depends_on` (strength: hard|soft) | `contained_by` | `binds_to` | `references`) plus a
+> type-declared domain `relation` name (`registry/common-elements.md` §9). The six-type table
+> below maps as: `requires` → `depends_on (hard)`; `contains` → the inverse reading of
+> `contained_by` (declared child-side only); `peer` and `manages` → declared relation names
+> (under `references` and `depends_on` respectively). The table is retained for the inverse
+> vocabulary and historical context only.
+
 Relationship types form a fixed standard vocabulary. Every type has an inverse — when you record the relationship on both entities, the type is expressed from each entity's perspective.
 
 | Type | Inverse | Meaning |
@@ -227,7 +236,7 @@ The full matrix below is the **reference** for the remaining (rarer or invalid) 
 
 **Key behavioral rules derived from the matrix:**
 
-- Any `constituent` or `operational` relationship **must** declare a lifecycle policy (REL-004, REL-008)
+- Any `constituent` or `operational` relationship **must** declare a lifecycle policy (ERL-004, REL-008)
 - `constituent` + `requires` is the strongest possible relationship — both the entity and its component are mutually dependent; cross-tenant is prohibited (REL-010)
 - `operational` + `depends_on` is the **allocated resource cell** — this is where cross-tenant allocations are modeled
 - `informational` + `references` is the **business context cell** — Business Unit, Cost Center, Person relationships live here
@@ -854,12 +863,14 @@ The relationship graph exists across all four states:
 
 ### 11.1 DCM System Policies for Relationships
 
+> `ERL-001..004` were renumbered from `REL-001..004` (2026-07-06 consistency review) — the `REL-*` family is owned by `registry/common-elements.md` §9.
+
 | Policy | Rule |
 |--------|------|
-| `REL-001` | Every relationship must have a UUID |
-| `REL-002` | Every relationship must be recorded on both participating entities |
-| `REL-003` | Circular relationships are invalid and must be rejected |
-| `REL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
+| `ERL-001` | Every relationship must have a UUID |
+| `ERL-002` | Every relationship must be recorded on both participating entities |
+| `ERL-003` | Circular relationships are invalid and must be rejected |
+| `ERL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
 | `REL-005` | External relationships must reference a registered Information Provider |
 | `REL-006` | Relationship types must be from the standard vocabulary |
 | `REL-007` | Consumer-declared binding types must be permitted by the Resource Type Specification |
@@ -922,11 +933,13 @@ lifecycle_policy:
 
 ### 11.2a Cross-Tenant Dependency System Policies
 
+> `ERL-D01..D03` were renumbered from `DEP-001..003` (2026-07-06 consistency review) — the `DEP-*` family is owned by `entities/service-dependencies.md`.
+
 | Policy | Rule |
 |--------|------|
-| `DEP-001` | Cross-tenant constituent dependencies are prohibited — a dependency that would produce a constituent cross-tenant relationship is rejected at dependency graph construction time |
-| `DEP-002` | Cross-tenant operational dependencies require a valid available allocation record on the target resource — failure returns `CROSS_TENANT_DEPENDENCY_UNAVAILABLE` |
-| `DEP-003` | A Resource Type Specification may only declare cross-tenant dependencies if explicitly marked `cross_tenant: permitted` — default is `cross_tenant: not_permitted` |
+| `ERL-D01` | Cross-tenant constituent dependencies are prohibited — a dependency that would produce a constituent cross-tenant relationship is rejected at dependency graph construction time |
+| `ERL-D02` | Cross-tenant operational dependencies require a valid available allocation record on the target resource — failure returns `CROSS_TENANT_DEPENDENCY_UNAVAILABLE` |
+| `ERL-D03` | A Resource Type Specification may only declare cross-tenant dependencies if explicitly marked `cross_tenant: permitted` — default is `cross_tenant: not_permitted` |
 
 ### 11.3 Relationship Versioning and Deprecation
 

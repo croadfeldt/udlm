@@ -36,7 +36,7 @@ lifecycle/        Operational models, recovery state machine
     extension surface (`portability: provider-specific` / `provider_hints`).
   - **Reuse canonical common-elements** (§24–25) — camelCase, explicit-unit `Quantity`, RFC 3339.
   - **Adopt standards by reference, record provenance + license** (§22–23): every `adopts[]` entry
-    carries `source` (name/version/URL) and `license` + `licenseCompatibility`
+    carries `source` (name/version/URL) and `license` + `license_compatibility`
     (`compatible-vendor` | `compatible-reference` | `reference-only`). UDLM is Apache-2.0 — copying
     schema text only from Apache-compatible sources; copyleft (GPL/MPL) is **reference-by-name only**.
   - **Component granularity is both-ways** (§26): the parent always carries the **rollup** data element

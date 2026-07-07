@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e3d6a303-ea5b-44ce-bfc2-fea53b718732",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -60,12 +60,14 @@
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "host",
       "description": "The host providing a host-scoped virtual network (libvirt case). Guests stop before the host regardless; this scopes the network's lifecycle to its host."
     },
     {
       "kind": "contained_by",
       "target": "Compute.Cluster",
       "cardinality": "0..1",
+      "name": "cluster",
       "description": "Cluster-scoped virtual networks (NetworkAttachmentDefinition / OVN logical networks)."
     },
     {

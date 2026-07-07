@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "f34ce0a0-d1a3-4693-9e05-11fb1a05600a",
   "resource_type": "Automation.Job",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Process",
   "portability": "portable",
@@ -71,25 +71,28 @@
       "kind": "depends_on",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
+      "name": "executor_host",
       "description": "Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)."
     },
     {
       "kind": "depends_on",
       "target": "Network.Switch",
       "cardinality": "0..n",
+      "name": "fabric",
       "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on."
     },
     {
       "kind": "depends_on",
       "target": "Network.AddressService",
       "cardinality": "0..n",
+      "name": "resolver",
       "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)."
     },
     {
       "kind": "references",
-      "target": "Compute",
+      "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
-      "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid)."
+      "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid). NOTE: the declared target is representative — affected entities may be of ANY resource type; this edge is informational and never constrains what a job may touch (the former bare 'Compute' category target was not a registered type)."
     }
   ],
   "adopts": [

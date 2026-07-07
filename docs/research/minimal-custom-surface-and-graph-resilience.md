@@ -16,7 +16,7 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 
 **Identity & references**
 1. **UUID-authoritative + advisory names is THE proven pattern** (K8s: every object carries
-   a `uid`, typically RFC 4122, existing to distinguish a same-named deleted-and-recreated
+   a `uid`, typically RFC 9562 v4, existing to distinguish a same-named deleted-and-recreated
    object; valid ownerReferences carry name AND uid, so a recreated owner is a *dangling
    edge*, never silently rebound). *UDLM's uuid+handle reference design is validated as-is.*
    Scope caveat: name-based late binding is legitimate for non-identity fields.

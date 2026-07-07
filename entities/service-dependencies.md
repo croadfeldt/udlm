@@ -549,7 +549,7 @@ composite_service_registration:
 |---|----------|--------|--------|
 | 1 | How are dependency graphs versioned — does a new version of a catalog item invalidate existing dependency graphs? | Versioning model | ✅ Resolved — versioned as part of catalog item; semver semantics; captured in assembly provenance (ENT-006) |
 | 2 | Should the dependency graph be stored as a separate entity or embedded in the request payload? | Data model structure | ✅ Resolved — embedded in assembly provenance; declared in Resource Type Spec; resolved in placement.yaml (ENT-007) |
-| 3 | How are cross-tenant dependencies handled? | Multi-tenancy | ✅ Resolved — governed by REL-010/011/012 and DEP-001/002/003; see Entity Relationships doc |
+| 3 | How are cross-tenant dependencies handled? | Multi-tenancy | ✅ Resolved — governed by REL-010/011/012 and ERL-D01/D02/D03; see Entity Relationships doc |
 | 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — profile-governed max (10 standard/prod, 7 fsi/sovereign); circular detection always enforced (ENT-008) |
 | 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as DCM entities (ENT-009) |
 

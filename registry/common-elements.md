@@ -127,7 +127,7 @@ Identity:
                                     # reboots (DIMM slot, drive bay "Bay 7", PCIe slot). Primary key.
   serial_number:  "S3F2NX0M..."      # globally unique hardware serial — survives a move to another parent
   wwn:           "0x5000c500..."    # storage-device World-Wide Name (drives); alt global key to serial
-  assetTag:      "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag
+  asset_tag:     "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag (renamed from assetTag in the snake_case reversal)
   model:         "M393A4K40DB3-CWE" # type identity (part number) — equal across identical units
   role:          "system"           # OPTIONAL semantic usage — distinguishes same-model by PURPOSE
                                     # (drive: boot|data|ceph-osd|cache; memory: system|persistent)
@@ -202,10 +202,10 @@ and RFC 8343 interface stacking; mirrors Redfish `NetworkAdapter`→`NetworkDevi
 `PCIeDevice`→`PCIeFunction`. `device_class` is a UDLM-defined cross-cutting classifier (no single
 standard owns it).
 
-### 7a. `connected_to` — physical adjacency (the third traversal method)
+### 7a. `connects_to` — physical adjacency (the third traversal method)
 
 §7's `parent_device` (composition **down**, 1→N) and `lower_layer` (composition **up**, N→1) relate an
-interface to its foundational components *within* one device. **`connected_to`** is the cross-device
+interface to its foundational components *within* one device. **`connects_to`** (renamed from `connected_to` when relation names were adopted from standards, §9) is the cross-device
 edge: a physical interface's link to its **peer termination point** — host NIC ↔ switch port, switch ↔
 switch uplink. A self-referential `references` relationship (`Hardware.NetworkInterface →
 Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once from either end.
@@ -215,15 +215,15 @@ Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once fr
 - id: host01-eno2                        - id: sw-leaf01-port14
   type: Hardware.NetworkInterface          type: Hardware.NetworkInterface
   contained_by: host01                     contained_by: sw-leaf01           # a Network.Switch
-  connected_to: sw-leaf01-port14           attrs: { identity: { location: "Port 14" } }
+  connects_to: sw-leaf01-port14           attrs: { identity: { location: "Port 14" } }
 ```
 
 Together the three make the estate graph traversable end-to-end from ANY resource:
-`IP → bridge → (lower_layer) bond → (lower_layer) NIC → (connected_to) switch port → (contained_by)
+`IP → bridge → (lower_layer) bond → (lower_layer) NIC → (connects_to) switch port → (contained_by)
 switch → (depends_on) power feed` — and the reverse walk answers "what goes dark if this feed drops."
 
 **Discovery & drift:** grounded in **IEEE 802.1AB (LLDP)** — the Chassis ID + Port ID TLVs name the peer,
-so `connected_to` enters as **Discovered** state from an LLDP probe (`lldpcli show neighbors`); a mismatch
+so `connects_to` enters as **Discovered** state from an LLDP probe (`lldpcli show neighbors`); a mismatch
 between declared cabling and the observed neighbor is **drift** (OBS-001), never silently merged.
 **RFC 8345** (ietf-network-topology) models the same thing as a first-class *link* between two
 *termination-points*; UDLM keeps it as a reference for minimal surface area — promote to a link entity

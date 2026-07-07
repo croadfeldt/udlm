@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "8a9285ba-e17d-486b-aa81-37c7f94b16f9",
   "resource_type": "Hardware.GraphicsProcessor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -83,18 +83,21 @@
       "kind": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
+      "name": "host",
       "description": "The host the physical GPU is installed in."
     },
     {
       "kind": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
+      "name": "guest",
       "description": "For passthrough / partition (vGPU), the guest the device is presented to."
     },
     {
       "kind": "references",
       "target": "Hardware.GraphicsProcessor",
       "cardinality": "0..1",
+      "name": "parent_device",
       "description": "parent_device — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when device_class is passthrough or partition (common-elements §7)."
     }
   ],

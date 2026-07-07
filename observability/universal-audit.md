@@ -25,7 +25,7 @@
 The Universal Audit Model defines the **unconditional obligation** for every DCM component to record every change to every artifact in a uniform, tamper-evident, retention-governed audit trail. No change is silent. No change is exempt.
 
 **The four required fields for every audit record:**
-- **Date and time** — when the change occurred (ISO 8601 with milliseconds)
+- **Date and time** — when the change occurred (RFC 3339, normalized to UTC `Z`; millisecond precision permitted — `registry/common-elements.md` §8.1)
 - **Who** — the complete actor chain (immediate actor + human authorization chain)
 - **What** — the subject of the change (entity UUID, type, handle)
 - **Action** — what happened (closed vocabulary — not free text)
@@ -54,7 +54,7 @@ The Universal Audit Model defines the **unconditional obligation** for every DCM
 audit_record:
   # IDENTITY — immutable once written
   record_uuid: <uuid>
-  record_timestamp: <ISO 8601 with milliseconds — when the change occurred>
+  record_timestamp: <RFC 3339 UTC 'Z', millisecond precision permitted — when the change occurred (common-elements §8.1)>
   dcm_version: <DCM version that produced this record>
 
   # WHO — composite actor chain
@@ -126,7 +126,7 @@ audit_record:
       group_class: <class>
       member_role: <role>
       time_bounded: <true|false>
-      expires_at: <ISO 8601 — if time-bounded>
+      expires_at: <RFC 3339 UTC 'Z' — if time-bounded>
 
     # For EVALUATE (policy evaluation)
     evaluation_detail:
@@ -173,7 +173,7 @@ audit_record:
     # all_retired:    all referenced entities have reached terminal state
     # policy_governed: apply governing_policy after all_retired
     governing_policy_uuid: <uuid>
-    retain_until: <ISO 8601 — null if live; calculated when status becomes policy_governed>
+    retain_until: <RFC 3339 UTC 'Z' — null if live; calculated when status becomes policy_governed>
 
   # INTEGRITY — tamper-evident hash chain
   integrity:
@@ -326,7 +326,7 @@ Stage 2 — Audit Store (asynchronous, out of critical path, full record)
 commit_log_entry:
   entry_uuid: <uuid>            # links to full audit_record in Stage 2
   sequence: <integer>           # monotonically increasing — global ordering
-  timestamp: <ISO 8601 microseconds>   # authoritative audit timestamp
+  timestamp: <RFC 3339 UTC 'Z', microsecond precision>   # authoritative audit timestamp (common-elements §8.1)
   entity_uuid: <uuid>
   entity_type: <type>
   action: <closed vocabulary>
@@ -337,7 +337,7 @@ commit_log_entry:
   # change_fingerprint enables Stage 2 to verify full record matches Stage 1
 
   status: <pending_forward|forwarded|forward_failed>
-  forwarded_at: <ISO 8601>      # populated by Audit Forward Service
+  forwarded_at: <RFC 3339 UTC 'Z'> # populated by Audit Forward Service
   audit_record_uuid: <uuid>     # UUID of full audit_record in Audit Store
 ```
 
@@ -477,7 +477,7 @@ audit_leaf:
   # Who
   signer_uuid: <uuid>                       # service or actor identity
   signer_type: service | actor | provider
-  timestamp: <ISO 8601>
+  timestamp: <RFC 3339 UTC 'Z'>
 
   # Cryptographic binding
   signature: <Ed25519 or ECDSA-P256>        # signature over all above fields
@@ -497,7 +497,7 @@ The Audit Service periodically computes a new Merkle root and signs it:
 ```yaml
 signed_tree_head:
   tree_size: <int>                          # number of leaves in the tree
-  timestamp: <ISO 8601>
+  timestamp: <RFC 3339 UTC 'Z'>
   sha256_root_hash: <sha-256>               # Merkle root
   signature: <Ed25519>                      # signed by DCM's audit signing key
 ```
@@ -570,26 +570,6 @@ Output: all leaves for the request + inclusion proofs + payload hash chain verif
 | `AUD-015` | Inter-stage verification mode is configured per deployment profile. `fsi` and `sovereign` profiles require `synchronous` verification — the pipeline halts if any signature verification fails. |
 
 ---
-
-## 10. Open Questions
-
-| # | Question | Impact | Status |
-|---|----------|--------|--------|
-| 1 | Should hash chain verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (chain construction), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-014) |
-| 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-015) |
-| 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — actor.type: human/service_account/system; system_actor block with component/trigger/policy; full audit records; enables filtering in queries and dashboards (AUD-016) |
-| 4 | How does hash chain verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance hash chains; daily Merkle root federation integrity proof at Hub DCM; cross-instance queries via parallel chains + correlation_id (AUD-017) |
-
----
-
-## 11. Related Concepts
-
-- **Audit, Provenance, and Observability** (doc 12) — three distinct concerns; this document covers the audit concern in full
-- **Field-Level Provenance** — data lineage embedded in every payload; separate from audit records
-- **data stores** (doc 11) — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
-- **Universal Groups** (doc 15) — all group changes produce audit records per this model
-- **Policy Organization** (doc 14) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
-
 
 ## 10. Universal Audit Gap Resolutions
 
@@ -695,17 +675,16 @@ distributed_hash_chain:
 
 | Policy | Rule |
 |--------|------|
-| `AUD-014` | Hash chain verification operates at three levels: continuous (hash computed on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
-| `AUD-015` | The Commit Log has configurable maximum capacity with a declared overflow policy: alert_and_continue (standard/prod) or reject_new_ops (fsi/sovereign). Backpressure alerts fire at 75% and 90% capacity. Records older than P7D trigger escalation regardless of capacity. |
+| `AUD-020` | Hash chain verification operates at three levels: continuous (hash computed on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
+| `AUD-021` | The Commit Log has configurable maximum capacity with a declared overflow policy: alert_and_continue (standard/prod) or reject_new_ops (fsi/sovereign). Backpressure alerts fire at 75% and 90% capacity. Records older than P7D trigger escalation regardless of capacity. |
 | `AUD-016` | Audit records for system-initiated changes declare actor.type: system with a system_actor block identifying the DCM component, trigger, and authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.type enables filtering between human, service_account, and system-initiated changes. |
 | `AUD-017` | In distributed DCM deployments, each instance maintains its own independent hash chain scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub DCM. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
 
-
-## 9a. Audit vs Observability — The Definitive Distinction (Q16)
+## 11. Audit vs Observability — The Definitive Distinction (Q16)
 
 Audit and Observability are separate components with separate storage contracts, separate consumers, and opposite fundamental trade-offs. They cannot be combined without violating one contract or the other.
 
-### 9a.1 Comparison
+### 11.1 Comparison
 
 | Dimension | Audit | Observability |
 |-----------|-------|--------------|
@@ -722,7 +701,7 @@ Audit and Observability are separate components with separate storage contracts,
 | **Data model** | Closed 30-action vocabulary, structured | Open schema — any component emits any metric |
 | **Storage type** | Audit Store (specialized sub-type) | Time-series database (Prometheus, InfluxDB) |
 
-### 9a.2 The Relationship
+### 11.2 The Relationship
 
 Observability data MAY reference audit record UUIDs for correlation — a spike in error rate can link to audit records from that time window. But they live in separate stores with separate contracts.
 
@@ -731,12 +710,32 @@ Observability data MAY reference audit record UUIDs for correlation — a spike 
 
 These are different questions requiring different storage architectures.
 
-### 9a.3 System Policy
+### 11.3 System Policy
 
 | Policy | Rule |
 |--------|------|
-| `AUD-013` | Audit and Observability are separate components with separate storage contracts, consumers, and failure behaviors. Audit is compliance-grade, append-only, hash-chained, long-retention. Observability is operational, time-series, high-throughput, short-retention. They serve different consumers and cannot be combined without violating one contract or the other. Observability data may reference audit record UUIDs for correlation but is stored separately. |
+| `AUD-022` | Audit and Observability are separate components with separate storage contracts, consumers, and failure behaviors. Audit is compliance-grade, append-only, hash-chained, long-retention. Observability is operational, time-series, high-throughput, short-retention. They serve different consumers and cannot be combined without violating one contract or the other. Observability data may reference audit record UUIDs for correlation but is stored separately. |
 
+---
+
+## 12. Open Questions
+
+| # | Question | Impact | Status |
+|---|----------|--------|--------|
+| 1 | Should hash chain verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (chain construction), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
+| 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-021) |
+| 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — actor.type: human/service_account/system; system_actor block with component/trigger/policy; full audit records; enables filtering in queries and dashboards (AUD-016) |
+| 4 | How does hash chain verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance hash chains; daily Merkle root federation integrity proof at Hub DCM; cross-instance queries via parallel chains + correlation_id (AUD-017) |
+
+---
+
+## 13. Related Concepts
+
+- **Audit, Provenance, and Observability** (doc 12) — three distinct concerns; this document covers the audit concern in full
+- **Field-Level Provenance** — data lineage embedded in every payload; separate from audit records
+- **data stores** (doc 11) — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
+- **Universal Groups** (doc 15) — all group changes produce audit records per this model
+- **Policy Organization** (doc 14) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
 
 ---
 

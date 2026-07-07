@@ -29,7 +29,7 @@ DCM is built on three foundational abstractions. Every concept in the architectu
 │  component DCM       │   │  decides what happens, transforms    │
 │  calls or that       │   │  values, or enforces constraints.    │
 │  calls DCM.          │   │                                      │
-│  Twelve typed       │   │  Seven typed output schemas.       │
+│  Eleven typed       │   │  Seven typed output schemas.       │
 │  capability          │   │  One evaluation algorithm.           │
 │  extensions.         │   │  Same lifecycle for all.             │
 │  One base contract.  │   │                                      │
@@ -145,7 +145,7 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 | **Peer DCM** | Another DCM instance (federation) | DCM ↔ DCM via federation tunnel |
 | **ITSM integration** | Bidirectional integration with ITSM systems (ServiceNow, Jira, Remedy, etc.); creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
 
-**The unified Provider base contract** is defined in [provider-contract.md](../contracts/provider-contract.md). All twelve Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
+**The unified Provider base contract** is defined in [provider-contract.md](../contracts/provider-contract.md). All eleven Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
 
 **Peer DCM as Provider:** A federated DCM instance is a typed Provider. The federation tunnel is the Provider's communication channel. Federation routing is policy-governed provider selection. There is no separate "federation abstraction" — federation is the Provider abstraction applied across DCM instances.
 

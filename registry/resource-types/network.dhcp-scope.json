@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "bb2b301f-b5d9-4d5e-b9bf-7d9a4bb6c1ff",
   "resource_type": "Network.DHCPScope",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -112,12 +112,14 @@
       "kind": "depends_on",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
+      "name": "dhcp_server_host",
       "description": "Host(s) running the DHCP server(s) serving this scope (e.g. an HA pair)."
     },
     {
       "kind": "depends_on",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
+      "name": "dhcp_server_vm",
       "description": "DHCP server(s) hosted on VMs."
     }
   ],

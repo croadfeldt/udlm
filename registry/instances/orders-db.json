@@ -21,7 +21,8 @@
       "fields": { "engine": "postgres", "version": "16", "resources": { "cpu": 1, "memory": "512MB" } },
       "outputs": { "host": "orders-db.fsi.internal", "port": 5432, "connection_string": "***", "username": "orders_app" },
       "at": "2026-06-17T15:01:30Z",
-      "provider": "rh-database-provider"
+      "provider": "rh-database-provider",
+      "time_source": "rh-database-provider host clock, chrony stratum 2, NTP-traceable"
     }
   },
 
