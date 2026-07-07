@@ -4,7 +4,7 @@
 **Status:** Active
 **Audience:** Architects, Service Provider implementers, Policy authors
 
-> **Machine-validatable schema:** Composite Service catalog items validate against
+> **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs (wave-3.2 deferral closed, wave 3.3). Machine-validatable schema:** Composite Service catalog items validate against
 > [`registry/catalog-item.schema.json`](../registry/catalog-item.schema.json)
 > (`registry/tools/validate.py` dispatches any instance carrying `record_type: catalog_item`
 > to it, and additionally enforces the cross-field rules JSON Schema cannot express:

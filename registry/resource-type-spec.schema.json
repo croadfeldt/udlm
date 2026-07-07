@@ -168,7 +168,7 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced.",
+      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern) — they are the referenceable, typed binding surface: a catalog-item binding names a producer output by this key, and the validator resolves it against this list (data-model-core §2 [D8.3] typed outputs).",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -194,6 +194,9 @@
             "default": false
           }
         }
+      },
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
       }
     },
     "relationships": {

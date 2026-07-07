@@ -9,6 +9,8 @@
 
 ## 1. The Unified Policy Contract
 
+> **Machine-validatable schema:** `registry/policy.schema.json` (data-model-core §2 [D8.3]). The record shape below is enforced; `registry/tools/validate.py` dispatches `record_type: policy` to it.
+
 Every Policy in DCM — regardless of type — implements a single base contract. What varies between policy types is the **output schema**: what the Policy produces when its match conditions are satisfied.
 
 ```
