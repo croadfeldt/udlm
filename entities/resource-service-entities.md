@@ -263,6 +263,8 @@ All terminal states are permanent. The execution record is immutable after reach
 
 ### 6.3 Process Resource Entity Data Model
 
+> **Machine-validatable:** the Process execution axis is the `process` block on `registry/realized-entity.schema.json` (execution_state + process_type + affected_entities + execution_record). It is a SEPARATE axis from the four-state `lifecycle_state` (data-model-core §3 [D7]); `registry/tools/validate.py` requires it on entity_type: Process instances and forbids it elsewhere.
+
 ```yaml
 process_resource_entity:
   uuid: <uuid>
