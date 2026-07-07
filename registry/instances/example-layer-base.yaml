@@ -1,0 +1,26 @@
+record_type: layer
+uuid: 06f58d2d-ca84-434e-bcf1-1cdb2a5eb73a
+handle: base-virtual-machine
+conforms_to: udlm/0.1
+name: Base layer — Compute.VirtualMachine universal defaults
+description: The foundation layer for VM requests — minimum universal fields every VM starts with.
+  Worked example (example.com content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+layer_type: base
+precedence_class: base
+domain: resource_type
+resource_type: Compute.VirtualMachine
+contributor: {contributor_type: platform_admin, review: auto}
+fields:
+  vcpu: 2
+  memory_gb: 4
+  disk_gb: 40
+metadata:
+  display_name: VM base layer
+  notes:
+  - at: "2026-07-07T13:35:00Z"
+    author: claude-fable-5 (session f78102d7, wave 3.4)
+    text: Worked base layer — sets universal VM defaults; every field records this layer's uuid as
+      its provenance source at assembly.

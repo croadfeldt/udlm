@@ -279,6 +279,8 @@ Every layer type has a declared contributor type. The contributor determines wha
 The Request Layer is the only layer type that does not require a PR review — it is a consumer's direct field declarations on a specific request. All other layers flow through the GitOps PR model.
 
 
+> **Machine-validatable schema:** `registry/layer.schema.json` (data-model-core §2 [D8.4]); `registry/tools/validate.py` dispatches `record_type: layer`.
+
 ## 3. Layer Types
 
 DCM defines six layer types. Each has a distinct purpose, scope, ownership model, and position in the assembly precedence chain.
