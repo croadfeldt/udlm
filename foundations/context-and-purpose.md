@@ -230,81 +230,28 @@ See [Data Layers and Assembly — Section 4b](layering-and-versioning.md) for th
 
 ## 6. The Four States
 
-UDLM tracks the lifecycle of every resource through four distinct states. Together, these four states provide complete visibility into the gap between what was wanted, what was asked for, what was built, and what actually exists.
+UDLM tracks the lifecycle of every resource through four distinct states, together giving complete visibility into the gap between what was wanted, what was asked for, what was built, and what actually exists:
 
-### 6.1 Intent State
-
-The **Intent State** represents what a consumer wants to happen. It is the declared desire, captured at the moment a consumer initiates a request, before any processing, validation, or enrichment has occurred.
-
-- **When it is created:** When a consumer submits a request via a consumer interface
-- **Where it is stored:** Intent Store
-- **Key characteristic:** Captures the consumer's raw intent — what they asked for in their own terms
-- **Primary use:** Source for Intent Portability — replaying an intent through current policies to produce a new request for a different environment or provider
-
-### 6.2 Requested State
-
-The **Requested State** represents the fully processed, policy-validated, and enriched payload that has been submitted to a provider for execution. It is the output of request assembly after all policies have been applied and all data layers have been merged.
-
-- **When it is created:** When request assembly completes and the request is submitted to the provider
-- **Where it is stored:** Requested Store
-- **Key characteristic:** Represents a complete, validated, provider-ready declaration of desired state
-- **Primary use:** Record of what was formally requested; input to audit and drift processes
-
-### 6.3 Realized State
-
-The **Realized State** represents what was actually provisioned or executed by a Service Provider, returned to DCM in unified data model format via Denaturalization. It is the ground truth of what was built.
-
-- **When it is created:** When a provider completes execution and returns the realized payload
-- **Where it is stored:** Realized Store
-- **Key characteristic:** Must be a complete representation of the provisioned resource in DCM unified format — not a status code, but a full state description
-- **Primary use:** Baseline for drift detection; source of truth for audit and reporting; input to cost analysis
-
-### 6.4 Discovered State
-
-The **Discovered State** represents what actually exists in the environment as interrogated by a Service Provider during a discovery operation. It is an independent observation of reality, not derived from any previous DCM state.
-
-- **When it is created:** When a Service Provider completes a discovery cycle and returns the discovered payload to DCM
-- **Where it is stored:** Discovered Store
-- **Key characteristic:** Produced independently of the Realized State — it is what is actually there, regardless of what was supposed to be there
-- **Primary use:** Drift detection (compared against Realized State); brownfield ingestion (pathway to lifecycle ownership of unmanaged resources)
-
-### 6.5 State Relationships and Lifecycle Flow
-
-The four states relate to each other as follows:
+| State | Represents | Primary use |
+|-------|-----------|-------------|
+| **Intent** | What the consumer wants (raw declaration, before processing) | Intent portability — replay through current policies |
+| **Requested** | The assembled, policy-validated, provider-ready payload | Record of what was formally requested; input to audit/drift |
+| **Realized** | What a provider actually built (ground truth) | Baseline for drift; source of truth for audit; cost input |
+| **Discovered** | What is independently observed to exist right now | Drift detection; brownfield ingestion |
 
 ```
-Consumer Request
-      │
-      ▼
-┌─────────────┐
-│ INTENT      │  ◄── What the consumer wants
-│ STATE       │
-└──────┬──────┘
-       │  Policy evaluation processes, enriches, validates
-       ▼
-┌─────────────┐
-│ REQUESTED   │  ◄── What was formally submitted to the provider
-│ STATE       │
-└──────┬──────┘
-       │  Service Provider executes
-       ▼
-┌─────────────┐
-│ REALIZED    │  ◄── What was actually built
-│ STATE       │
-└──────┬──────┘
-       │
-       │                    ┌─────────────┐
-       │  Compare ◄─────────│ DISCOVERED  │  ◄── What actually exists now
-       │                    │ STATE       │
-       ▼                    └─────────────┘
-  Drift Detection
+Intent  ──policy evaluation──▶  Requested  ──provider executes──▶  Realized
+                                                                      ▲
+                                                        Compare ──────┤
+                                                                      │
+                                                                 Discovered
+                                                          (what actually exists)
+                                                                      │
+                                                                      ▼
+                                                               Drift Detection
 ```
 
-**Key operations across states:**
-- **Drift Detection:** Discovered State vs. Realized State
-- **Request Validation:** Requested State vs. Policy definitions
-- **Intent Portability:** Intent State → re-process through current policies → new Requested State
-- **Brownfield Ingestion:** Discovered State → enrichment → Realized State (lifecycle ownership)
+The four states, their definitions, storage contracts, and the operations across them (drift detection, intent portability, brownfield ingestion, rehydration) are defined canonically in **[The Four States](four-states.md)**. This section is an at-a-glance summary — see that document for the authoritative model.
 
 ---
 
