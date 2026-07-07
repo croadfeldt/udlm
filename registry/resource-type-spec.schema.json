@@ -305,6 +305,48 @@
           }
         }
       }
+    },
+    "metering": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). The meterable cost SURFACE — WHAT about this resource is measurable and WHERE each value comes from — the inputs a cost engine consumes. UDLM carries the surface only; rates and the calculation are the engine's (ADR-COST-001). This is one side of the reciprocal contract: UDLM/DCM hands these dimensions out; the engine hands cost back.",
+      "required": ["dimensions"],
+      "properties": {
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "unit", "cost_class", "source"],
+            "properties": {
+              "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "snake_case dimension name, e.g. allocated_vcpu, power_kwh."},
+              "unit": {"type": "string", "description": "Unit of measure, e.g. vcpu, GB, hours, kWh, cpu_hours."},
+              "cost_class": {"enum": ["capex", "opex"], "description": "capex = capital/allocation (amortized); opex = operational/usage."},
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind"],
+                "description": "Where the value is resolved from. Deliberately no 'formula'/'derived' kind — UDLM declares sources, never computes (ADR-COST-001). A realization resolves each source; the engine does the math.",
+                "properties": {
+                  "kind": {"enum": ["field", "lifecycle", "telemetry"], "description": "field = read a spec field / outputs key; lifecycle = derived from four-state timestamps; telemetry = looked up from a serve_data telemetry Information Provider."},
+                  "ref": {"type": "string", "description": "For kind=field: dot-path to a spec field or `outputs` key. For kind=lifecycle: a named interval, e.g. realized_to_decommissioned."},
+                  "metric": {"type": "string", "description": "For kind=telemetry: the metric name the realization looks up from a telemetry provider, e.g. vm.cpu.usage."}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "priced_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). Cost-model REFERENCE: associates this type with an external cost model in a serve_data:cost provider. UDLM never defines the model's contents (ADR-COST-001). On a type = the default; a realized entity may override it (per-customer/contract pricing, whose lifecycle stays external). Which reference wins is admin POLICY, not data.",
+      "required": ["information_provider_uuid", "external_model_id"],
+      "properties": {
+        "information_provider_uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The registered serve_data:cost provider (the cost engine)."},
+        "external_model_id": {"type": "string", "description": "Opaque id of the cost model within that engine. UDLM treats it as a black box."}
+      }
     }
   },
   "allOf": [

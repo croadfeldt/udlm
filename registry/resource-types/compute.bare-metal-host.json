@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -173,5 +173,43 @@
       "name": "Bare Metal Server",
       "note": "common colloquial name"
     }
-  ]
+  ],
+  "metering": {
+    "dimensions": [
+      {
+        "name": "installed_cores",
+        "unit": "cores",
+        "cost_class": "capex",
+        "source": { "kind": "field", "ref": "spec.cpu.cores" }
+      },
+      {
+        "name": "installed_memory",
+        "unit": "GB",
+        "cost_class": "capex",
+        "source": { "kind": "field", "ref": "spec.memory.size" }
+      },
+      {
+        "name": "installed_storage",
+        "unit": "GB",
+        "cost_class": "capex",
+        "source": { "kind": "field", "ref": "spec.storage.capacity" }
+      },
+      {
+        "name": "provisioned_hours",
+        "unit": "hours",
+        "cost_class": "capex",
+        "source": { "kind": "lifecycle", "ref": "realized_to_decommissioned" }
+      },
+      {
+        "name": "power_kwh",
+        "unit": "kWh",
+        "cost_class": "opex",
+        "source": { "kind": "telemetry", "metric": "host.power.draw" }
+      }
+    ]
+  },
+  "priced_by": {
+    "information_provider_uuid": "c1a2b3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+    "external_model_id": "onprem-baremetal-2026-q3"
+  }
 }
