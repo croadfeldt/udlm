@@ -21,7 +21,8 @@ Every DCM event shares a common envelope. Event-specific fields are in the `payl
 event_uuid: <uuid>                  # RFC 9562 v7 (time-ordered — identifier-scheme §2.1); idempotency key; stable across retries
 event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
-timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1)
+timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1);
+                                    # inherits the Commit Log's microsecond-precision instant (universal-audit §7.2)
 dcm_version: <semver>               # DCM instance version that generated the event
 dcm_instance_uuid: <uuid>           # identifies the DCM instance (federation context)
 
@@ -62,7 +63,7 @@ links:
 | Domain | Events | Description |
 |--------|--------|-------------|
 | `request.*` | 15 | Request pipeline lifecycle |
-| `entity.*` | 14 | Resource entity lifecycle (incl. `entity.state_transition`, appendix) |
+| `entity.*` | 13 | Resource entity lifecycle |
 | `drift.*` | 4 | Drift detection and resolution |
 | `provider.*` | 5 | Provider registration and health |
 | `provider_update.*` | 5 | Provider-initiated update lifecycle |
@@ -86,7 +87,7 @@ links:
 | `process.*` | 1 | Process Resource execution events (§17a) |
 | `accreditation.*` | 7 | Accreditation verification lifecycle (§20) |
 | `itsm.*` | 3 | ITSM integration record lifecycle (§21) |
-| `group.*` | 3 | DCMGroup lifecycle (appendix) |
+| `group.*` | 4 | DCMGroup lifecycle (appendix) |
 | `authorization.*` | 1 | Cross-tenant authorization events (appendix) |
 | **Total** | **102** | across 27 domains |
 
@@ -176,7 +177,7 @@ payload:
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
 | `entity.realized` | medium | Entity first realized; Realized State written |
-| `entity.state_changed` | medium | Entity lifecycle state transition |
+| `entity.state_changed` | medium | Entity lifecycle state transition. *Absorbs the former appendix `entity.state_transition` (merged 2026-07-06 — one state-transition event, not two).* |
 | `entity.modified` | info | Entity fields updated (Day-2 operation) |
 | `entity.ttl_warning` | medium | TTL expires within declared warning window |
 | `entity.ttl_expired` | high | TTL reached; expiry action triggered |
@@ -310,7 +311,11 @@ payload:
 ```yaml
 payload:
   provider_uuid: <uuid>
-  provider_type: service_provider | information_provider | auth_provider | peer_dcm | process_provider
+  provider_type: service_provider | information_provider | process_provider | peer_dcm
+  # The provider KINDS of contracts/provider-contract.md §8/§9 (data-model-core §7 [D5],
+  # ADR-005 capability model). There is no auth_provider (or credential_provider) kind —
+  # auth/credential issuance/notification/ITSM/telemetry are CAPABILITIES a kind declares;
+  # peer_dcm is the federation kind (provider-contract §8.5).
   provider_handle: <string>
   resource_types_affected: [<string>]  # on deregistered: types now unserviced
   active_entity_count: <int>           # on deregistered: entities at risk
@@ -807,7 +812,7 @@ payload:
 |--------|------|
 | `EVT-001` | Every event must include the base envelope fields (`event_uuid`, `event_type`, `event_schema_version`, `timestamp`, `dcm_version`, `dcm_instance_uuid`, `urgency`). Events omitting required envelope fields are invalid and must not be published. |
 | `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as already-processed. DCM may re-deliver events on failure; this is not a bug. |
-| `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write. It represents when the event was authoritatively recorded, not when it was delivered. |
+| `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write and **inherits the Commit Log's RFC 3339 UTC 'Z' microsecond-precision instant** (universal-audit §7.2) — one cross-store precision, no re-stamping. It represents when the event was authoritatively recorded, not when it was delivered. |
 | `EVT-004` | `event_schema_version` must increment on any breaking change to a payload schema. Adding optional fields is not a breaking change. Removing fields, changing field types, or changing field semantics are breaking changes. |
 | `EVT-005` | Events with `urgency: critical` must be delivered via the push channel if the notification service supports it, regardless of consumer subscription preferences. |
 | `EVT-006` | This catalog is the authoritative source for event type names. Any event type not in this catalog is non-standard. Non-standard events may be published by providers or extensions but must use a reverse-DNS prefix (e.g. `com.acme.custom_event`). |
@@ -925,7 +930,7 @@ entity.realized            entity.state_changed         entity.modified
 entity.ttl_warning         entity.ttl_expired           entity.suspended
 entity.resumed             entity.decommissioning       entity.decommissioned
 entity.decommission_deferred   entity.ownership_transferred  entity.pending_review
-entity.expired             entity.state_transition
+entity.expired
 
 drift.detected             drift.severity_escalated     drift.resolved
 drift.escalated
@@ -980,10 +985,11 @@ accreditation.contract_event      accreditation.expiry_approaching
 itsm.record_created        itsm.record_updated          itsm.record_failed
 
 group.deleted              group.member_added           group.member_removed
+group.membership_expired
 authorization.granted
 ```
 
-**Total: 102 event types across 27 domains**
+**Total: 102 event types across 27 domains** *(recounted 2026-07-06 wave 2: `entity.state_transition` merged into `entity.state_changed` (−1, entity.\* now 13) and `group.membership_expired` added (+1, group.\* now 4) — net unchanged; the index, this total, and the quick reference above agree.)*
 
 ---
 
@@ -992,11 +998,13 @@ authorization.granted
 ### Additional Event Types
 
 > `entity.deleted` was MERGED into `entity.decommissioned` (§4) — one terminal decommission event.
+> `entity.state_transition` was MERGED into `entity.state_changed` (§4, 2026-07-06) — one
+> state-transition event, not an appendix near-duplicate.
 
 | Event Type | Description | Key Fields | Consumers |
 |------------|-------------|-----------|----------|
-| `entity.state_transition` | An entity lifecycle state has changed (e.g., OPERATIONAL → SUSPENDED) | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `group.deleted` | A DCMGroup has been deleted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `group.member_added` | A member (actor or entity) has been added to a DCMGroup | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
-| `group.member_removed` | A member (actor or entity) has been removed from a DCMGroup | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
+| `group.member_removed` | A member (actor or entity) has been removed from a DCMGroup (actual removal only) | entity_uuid, group_uuid, member_uuid | LCM, AUD, OBS |
+| `group.membership_expired` | A time-bounded group membership reached expires_at ([universal-groups](../observability/universal-groups.md) §9.4, GRP-014) — distinct from removal: the `notify`/`suspend_member` on_expiry actions emit ONLY this event; the `remove` action additionally emits `group.member_removed` | group_uuid, member_uuid, expires_at, on_expiry action taken | LCM, AUD, OBS |
 | `authorization.granted` | A cross-tenant authorization has been granted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |

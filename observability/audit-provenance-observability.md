@@ -59,7 +59,10 @@ field_name:
   provenance:
     origin:
       value: <original value>
-      source_type: <layer|policy|consumer|provider|discovery|rehydration>
+      source_type: <layer|policy|actor|provider|discovery|rehydration|override>
+      # Canonical provenance source-kind vocabulary (data-model-core §6/§7,
+      # realized-entity.schema.json provenance source.kind). The former `consumer`
+      # value maps to `actor` — a consumer acts as an authenticated actor.
       source_uuid: <uuid of originating entity>
       timestamp: <ISO 8601>
     modifications:
@@ -178,7 +181,13 @@ POST /api/v1/audit/query
      Returns: matching audit records
 ```
 
-### 3.4 Audit Record Structure
+### 3.4 Audit Record Structure — SUPERSEDED (legacy view)
+
+> ⚠️ **SUPERSEDED.** This `event_type`/`audit_uuid` record shape is a **legacy view**, retained
+> for historical context only. The authoritative Universal Audit Record — `record_uuid`
+> identity, closed `action` vocabulary, nested composite actor chain, retention and integrity
+> blocks — is defined in [Universal Audit Model §3](universal-audit.md) (see also §4 for the
+> closed action vocabulary; AUD-005/AUD-007). Do not implement against this section.
 
 ```yaml
 audit_record:
@@ -426,12 +435,12 @@ default_observability_dashboard:
 
 ### 7.4 Audit Component Handling Failing data store (Q4)
 
-The two-stage audit model handles this by design — the Stage 1 Commit Log (etcd) has no dependency on any data store.
+The two-stage audit model handles this by design — the Stage 1 Commit Log (a **consensus-durable store** — Raft-class consensus; etcd is the reference implementation, per the contract framing of [data-model-core](../foundations/data-model-core.md) §6 [D1]) has no dependency on any data store.
 
 ```
 store failure detected
   │
-  ▼ Stage 1 Commit Log (etcd) — independent of data store
+  ▼ Stage 1 Commit Log (consensus-durable store) — independent of data store
   │   Records: STORAGE_PROVIDER_FAILURE event immediately
   │
   ▼ Stage 2 Audit Forward Service — async, after recovery
@@ -453,7 +462,7 @@ The gap record is not a failure — it is evidence of correct behavior. Auditors
 | `STO-004` | The Audit Store is a specialized PostgreSQL store contract — append-only, hash chain integrity, reference-based retention, compliance-grade queries. Event Stream is the delivery channel only. (See doc 11) |
 | `AUD-018` | Audit records are replicated using live sync (Regional DCMs) or signed bundle export (Sovereign DCMs). Sovereignty checks required before any replication. Hash chain integrity preserved across transport. Fully isolated Sovereign DCMs maintain local-only audit stores with manual export. |
 | `OBS-002` | DCM ships a default Grafana-based observability dashboard for minimal/dev/standard profiles. Standard+ profiles may substitute enterprise platforms. FSI requires enterprise observability. Sovereign DCMs use local dashboard only with no external connections. |
-| `AUD-019` | store failures are recorded via the Stage 1 Commit Log (etcd), which is independent of all data stores. Audit Store self-failures produce pending_forward records. On recovery, a gap record (AUDIT_STORE_UNAVAILABLE) is inserted with the outage window timestamps. The hash chain gap is explicit and auditable. |
+| `AUD-019` | store failures are recorded via the Stage 1 Commit Log (a consensus-durable store — Raft-class; etcd is the reference implementation), which is independent of all data stores. Audit Store self-failures produce pending_forward records. On recovery, a gap record (AUDIT_STORE_UNAVAILABLE) is inserted with the outage window timestamps. The hash chain gap is explicit and auditable. |
 
 
 ---

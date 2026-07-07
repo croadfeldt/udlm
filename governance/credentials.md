@@ -633,7 +633,9 @@ credential_capability:        # declared on any provider that issues Credential.
 
   # Security properties
   hsm_backed: false           # true if all keys are HSM-protected
-  fips_140_2_level: 0         # 0=none, 1, 2, or 3
+  fips_140_level: 0           # 0=none, 1, 2, or 3 — FIPS 140-3 validation level
+                              # (140-2 module certificates accepted during transition);
+                              # ONE field name across the substrate: fips_140_level
   dynamic_secrets: true       # can generate credentials on demand (not just store/retrieve)
 
   # Rotation capabilities
@@ -838,6 +840,7 @@ credential_profile:
     sovereign:  true            # mandatory
 
   # --- Cryptographic Requirements ---
+  # FIPS 140-3 validation levels (140-2 module certificates accepted during transition)
   fips_140_level_required:
     minimal:    0               # no requirement
     dev:        0
@@ -873,8 +876,8 @@ Profile credential requirements map to NIST 800-63B Authenticator Assurance Leve
 | `dev` | AAL1 | Same as minimal; shorter lifetimes |
 | `standard` | AAL2 | MFA required for sensitive credential retrieval (ssh_key, database_password, kubeconfig) |
 | `prod` | AAL2 | MFA required for all credential retrieval |
-| `fsi` | AAL2+ | Hardware MFA token required; FIPS 140-2 Level 2 modules |
-| `sovereign` | AAL3 | Hardware-bound authenticator; FIPS 140-2 Level 3; physical tamper evidence |
+| `fsi` | AAL2+ | Hardware MFA token required; FIPS 140-3 Level 2 modules (140-2 accepted during transition) |
+| `sovereign` | AAL3 | Hardware-bound authenticator; FIPS 140-3 Level 3 (140-2 accepted during transition); physical tamper evidence |
 
 ### 12.3 Compliance Domain Overlays
 
