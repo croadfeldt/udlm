@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/catalog-item.schema.json",
+  "title": "UDLM Composite Service Catalog Item",
+  "description": "The catalog-level Composite Service definition (entities/composite-service-model.md): constituent resource types, their dependency edges, their declared data-movement bindings, and their failure classification — everything DCM needs to expand a catalog request into a Composite Entity. This is item (2) of the [D8] machine-validatable-surface program (data-model-core §2) and the schema evidence for the application model: an 'application' IS a Composite catalog item. Cross-file constraints (depends_on/bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic; a binding's from_component must appear in that constituent's depends_on) are not expressible in pure JSON Schema — registry/tools/validate.py enforces them as semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "name",
+    "version",
+    "tenant_uuid",
+    "constituents"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "catalog_item",
+      "description": "Top-level dispatch discriminator. Instance-record kinds are distinguished by record_type going forward; resource_type (realized entities) and group_class (DCMGroups) remain the legacy discriminators for the pre-existing record kinds. registry/tools/validate.py dispatches on record_type first."
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Stable RFC 9562 v4 identity of this catalog item, minted once at creation (identifier-scheme §2.1; version nibble + variant bits pattern-enforced). Composite Entities produced from this item reference it — never the reverse."
+    },
+    "handle": {
+      "type": "string",
+      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3), e.g. org/catalog/three-tier-web-app. The uuid is the authoritative identity; never resolve by handle alone."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the Composite Service, e.g. ApplicationStack.WebApp."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable purpose."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Major.Minor.Revision of this catalog item (registry/VERSIONING.md semantics). Consumers pin catalog_ref to a version."
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "description": "Catalog lifecycle status: active | deprecated | retired, with the universal deprecation fields when deprecated (same shape as dcm-group.schema.json).",
+      "properties": {
+        "state": {
+          "enum": [
+            "active",
+            "deprecated",
+            "retired"
+          ]
+        },
+        "deprecation_date": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+        },
+        "sunset_date": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+        },
+        "replacement_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "The successor catalog item, if deprecated."
+        },
+        "deprecation_reason": {
+          "type": "string"
+        },
+        "migration_guidance": {
+          "type": "string"
+        }
+      }
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "REQUIRED owning Tenant — the uuid of a tenant_boundary DCMGroup (registry/dcm-group.schema.json), consistent with [D3] (data-model-core §5): every record belongs to exactly one Tenant. Ownership only — consumption of this catalog item by other tenants happens via requests and cross-tenant authorization grants, never by shared ownership."
+    },
+    "composition_visibility": {
+      "enum": [
+        "opaque",
+        "transparent",
+        "selective"
+      ],
+      "description": "How constituents surface as DCM entities (composite-service-model.md §5): opaque = composite uuid only; transparent = every constituent is a first-class entity with a deterministic uuid (CMP-007); selective = only selective_visible constituents surface."
+    },
+    "selective_visible": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "description": "Only when composition_visibility = selective: the component_ids surfaced as DCM entities (composite-service-model.md §5). Must reference declared component_ids (registration-time check; not enforced by validate.py yet)."
+    },
+    "constituents": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The composite payload declaration (composite-service-model.md §2.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). component_ids must be unique within the item; depends_on and bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/§2.3) — registry/tools/validate.py enforces all three.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "component_id",
+          "resource_type",
+          "provided_by",
+          "failure_effect"
+        ],
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Stable local identifier for the constituent within this composite — unique within the item (validate.py-enforced). Used in depends_on references, runtime constituent_status, and transparent-mode uuid derivation (CMP-007)."
+          },
+          "resource_type": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+            "description": "Tier-1 vendor-neutral Category.Type name from the Resource Type Registry; single-segment permitted for cross-cutting types — exactly the same name grammar as the realized-entity schema (data-model-core §2)."
+          },
+          "type_version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+            "description": "Optional pin to a specific Resource Type Specification version. Omitted = the registry's current version at expansion time."
+          },
+          "provided_by": {
+            "enum": [
+              "self",
+              "external"
+            ],
+            "description": "self = the registering provider fulfills this constituent directly via its standard Services API; external = DCM's Placement Engine selects a provider at request time (composite-service-model.md §2.2, CMP-006)."
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "description": "Sibling component_ids whose realized state must exist before this constituent can be dispatched — the ordering edges within the item (composite-service-model.md §2.3). The graph must be acyclic; forward topological order = dispatch, reverse = compensation/decommission. Sibling resolution and cycle rejection are validate.py-enforced."
+          },
+          "bindings": {
+            "type": "array",
+            "description": "DECLARED data movement (data-model-core §4): values pulled from a producer constituent's typed realized outputs into this constituent's spec at dispatch time. This is the typed, declared equivalent of the DCM control-plane's CEL ${component.output} wiring — data movement, not transformation (T4). A binding's from_component MUST also appear in this constituent's depends_on: data movement implies ordering (validate.py-enforced).",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "from_component",
+                "output",
+                "to_field"
+              ],
+              "properties": {
+                "from_component": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*$",
+                  "description": "The producer constituent's component_id (a sibling within this item; validate.py-enforced)."
+                },
+                "output": {
+                  "type": "string",
+                  "description": "The producer's declared output name — a key of its Resource Type Spec's typed outputs (E2)."
+                },
+                "to_field": {
+                  "type": "string",
+                  "description": "Dot-path on THIS constituent's spec that receives the value at dispatch time (the catalog-level form of the instance schema's binds_to bound_field)."
+                }
+              }
+            }
+          },
+          "failure_effect": {
+            "enum": [
+              "required",
+              "partial",
+              "optional"
+            ],
+            "description": "How this constituent's failure affects the composite outcome — the §2.4 required_for_delivery classification (composite-service-model.md): required = halt + compensate (composite FAILED); partial = record, continue (composite DEGRADED); optional = note, ignore. Evaluated by DCM, never by the registering provider (CMP-004)."
+          },
+          "spec_defaults": {
+            "type": "object",
+            "description": "Free-form layer-assembled defaults for this constituent's spec — injected during the standard layer assembly phase (composite-service-model.md §7 step 3). Field values are typed by the constituent's Resource Type Spec, not re-validated here."
+          }
+        }
+      }
+    },
+    "consumer_fields": {
+      "type": "array",
+      "description": "The consumer-facing parameter surface: what a consumer supplies in the Intent record (composite-service-model.md §3.1) alongside the catalog_ref. Expansion maps these into constituent specs via layer assembly.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "type": {
+            "enum": [
+              "string",
+              "integer",
+              "boolean",
+              "enum"
+            ]
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "default": {
+            "description": "Default value when the consumer omits the field (any JSON type, matching `type`)."
+          },
+          "enum_values": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            },
+            "description": "Allowed values — required when type = enum."
+          }
+        },
+        "if": {
+          "properties": {
+            "type": {
+              "const": "enum"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        "then": {
+          "required": [
+            "enum_values"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Human-facing context, same shape as realized-entity: operational commentary lives in notes — data ABOUT the record, never used for resolution.",
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "array",
+          "description": "Auditable operational notes: each entry is attributed and timestamped — never an anonymous mutable blob.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
+            "properties": {
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "When recorded. RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+              },
+              "author": {
+                "type": "string",
+                "description": "Who/what recorded it (person, agent+session, or process uuid)."
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
