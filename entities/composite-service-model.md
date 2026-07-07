@@ -4,6 +4,14 @@
 **Status:** Active
 **Audience:** Architects, Service Provider implementers, Policy authors
 
+> **Machine-validatable schema:** Composite Service catalog items validate against
+> [`registry/catalog-item.schema.json`](../registry/catalog-item.schema.json)
+> (`registry/tools/validate.py` dispatches any instance carrying `record_type: catalog_item`
+> to it, and additionally enforces the cross-field rules JSON Schema cannot express:
+> component_id uniqueness, sibling depends_on/binding resolution, cycle rejection, and
+> binding⊆depends_on ordering). Worked example:
+> [`registry/instances/example-catalog-item.yaml`](../registry/instances/example-catalog-item.yaml).
+
 > A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary DCM policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is DCM's standard machinery.
 
 ---
@@ -56,6 +64,10 @@ DCM then:
 - Assembles the aggregate Realized State from all constituent realized states
 
 The registering provider's execution responsibility is limited to: naturalizing and realizing the constituent resource types it owns, then denaturalizing and returning the realized state — exactly as a standard Service Provider does.
+
+### 1.4 Applications Are Composite Catalog Items
+
+An "application" is modeled as a Composite catalog item — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/instances/example-catalog-item.yaml`](../registry/instances/example-catalog-item.yaml) is a three-tier application expressed this way.
 
 ---
 
@@ -132,6 +144,18 @@ Each constituent declares how its failure affects the composite outcome:
 - **`optional`** — Failure is noted but ignored. Composite status reflects only required and partial constituents.
 
 These classifications are evaluated by DCM, not by the registering provider, when computing composite status from constituent outcomes.
+
+### 2.5 Interop Note — DCM Control-Plane Catalog Model
+
+The DCM control-plane's merged catalog model (catalog-item-schema / declarative-api, dcm-project enhancements) expresses the same composition concepts in a name-referenced, inferred form. The mapping:
+
+| UDLM catalog item | DCM control-plane catalog | Note |
+|---|---|---|
+| `component_id` | blueprint resource `name` | Their names are unique per item; ours pattern-locked and uuid-anchored at the item level |
+| `depends_on` | `requires_resources` | Their single untyped "must-come-before" edge; ours is the same edge, typed |
+| `bindings` (`from_component`/`output`/`to_field`) | CEL `${component.output}` wiring | Ours is the DECLARED/typed form; theirs the INFERRED form (edges implied by CEL references) |
+
+Projection is lossless downward (data-model-core §4): a UDLM catalog item compiles onto their execution DAG without loss — `depends_on` becomes `requires_resources`, each binding becomes a `${from_component.output}` reference. The reverse is lossy (their model cannot express typed outputs' declared consumption, edge strength, or containment), which is why the typed form is the data model and their DAG is treated as a compiled artifact at the boundary.
 
 ---
 

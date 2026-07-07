@@ -39,8 +39,10 @@ it governs.
   spec, realized-entity, provider-adopted-standards, dcm-group. **[D8] Committed program**, in
   priority order: (1) Tenant + DCMGroup — **DONE** (`registry/dcm-group.schema.json` + required
   instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on `group_class`),
-  (2) catalog item (unblocks the application model and the DCM
-  ADR-016 decision), (3) policy record + typed outputs, (4) layer record, (5) audit record +
+  (2) catalog item — **DONE** (`registry/catalog-item.schema.json`, dispatched on
+  `record_type: catalog_item` + validate.py semantic checks; the application model — an
+  application IS a Composite catalog item — and the DCM ADR-016 evidence;
+  `entities/composite-service-model.md` §1.4/§2.5), (3) policy record + typed outputs, (4) layer record, (5) audit record +
   Commit Log entry, (6) DecisionRecord, (7) Process Resource. Until an artifact's schema
   exists, its prose definition is explicitly marked *pre-schema* and is not citable as
   "[enforced]".
@@ -175,9 +177,12 @@ One definition each; everything else defers here:
 
 A rule may claim **[enforced]** only if a running validator checks it. Current honest state:
 schema validation (type spec, realized-entity — incl. required `tenant_uuid` [D3] — provider
-matrices, and DCMGroup via `registry/dcm-group.schema.json` with per-class conditionals:
+matrices, DCMGroup via `registry/dcm-group.schema.json` with per-class conditionals:
 tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth
-grant fields) + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid
+grant fields, and Composite Service catalog items via `registry/catalog-item.schema.json` —
+incl. required `tenant_uuid` — plus validate.py semantic checks: component_id uniqueness,
+sibling depends_on/binding resolution, depends_on cycle rejection, and binding⊆depends_on
+ordering) + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid
 v4-nibble, semver compat (compat-check), snake_case key patterns, and relationship-name
 coverage are **NOT yet enforced** at the registry layer — tracked defects, not claims. Every
 "[enforced]" marker elsewhere is audited against this ledger.
