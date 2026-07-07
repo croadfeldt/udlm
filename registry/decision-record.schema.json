@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/decision-record.schema.json",
+  "title": "UDLM DecisionRecord (ADR/DR)",
+  "description": "Machine-validatable DecisionRecord — the Knowledge-family ADR/Decision-Record entity (entities/knowledge-family.md §4.5; SPEC-DESIGN §29). Records the WHY of a decision (the rationale resolving a Finding about a Capability/dependency/spec element) as a first-class, queryable record. An ADR = a DecisionRecord whose anchor is architecture; process/enablement decisions are DecisionRecords too. ADR's 'supersede, never edit' IS UDLM immutability + supersedes. data-model-core §2 [D8.6].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "uuid", "conforms_to", "title", "rationale", "decision", "action", "abstraction_decomposition", "state"],
+  "properties": {
+    "record_type": {"const": "decision_record"},
+    "uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "handle": {"type": "string", "description": "e.g. 'ADR-017'-style within an owning scope; advisory."},
+    "conforms_to": {"type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$"},
+    "title": {"type": "string"},
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Owning tenant. OPTIONAL — a Knowledge artifact (spec-level ADR) is platform/global; a tenant's own decision records carry its tenant_uuid."
+    },
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "rationale": {"type": "string", "description": "The prose ADR narrative — kept FIRST-CLASS; the structure is an envelope around it, never a replacement (knowledge-family §4.5)."},
+    "scope": {
+      "enum": ["architecture", "policy", "provider"],
+      "description": "The anchor's scope — determines the CANONICAL-gating mechanism: architecture → use-case/conformance validation; policy → Policy-Engine + Shadow Mode; provider → attestation + conformance. There is no single validation runner."
+    },
+    "question_refs": {"type": "array", "items": {"type": "string"}, "description": "Finding/question UUIDs or handles this record addresses (M:N — one record can close a class)."},
+    "options_considered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["option"],
+        "properties": {"option": {"type": "string"}, "pros": {"type": "string"}, "cons": {"type": "string"}, "rejected_because": {"type": "string"}}
+      }
+    },
+    "decision": {"type": "string", "description": "The chosen decision (the answer)."},
+    "action": {
+      "enum": ["answer", "clarify", "change-spec", "defer", "wontfix"],
+      "description": "The disposition (knowledge-family §4.5)."
+    },
+    "abstraction_decomposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data", "policy", "provider"],
+      "description": "REQUIRED: the Data · Policy · Provider aspects of the decision (the three foundational abstractions; SPEC-DESIGN §29). A record that can't name all three must mark one 'n/a, because…'. A fully-scoped decision names all three.",
+      "properties": {
+        "data": {"type": "string"},
+        "policy": {"type": "string"},
+        "provider": {"type": "string"}
+      }
+    },
+    "validation_evidence": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "OPTIONAL — where the decision is testable, the passing validation that earned CANONICAL (scope-appropriate: UC/conformance | Policy-Engine+Shadow | attestation). Non-validatable decisions (e.g. a naming choice) may be CANONICAL without it.",
+      "properties": {
+        "method": {"enum": ["use_case_conformance", "policy_engine_shadow", "attestation_conformance"]},
+        "evidence_ref": {"type": "string"},
+        "passed": {"type": "boolean"}
+      }
+    },
+    "about": {"type": "array", "items": {"type": "string"}, "description": "references — Capability / TaxonomyTerm / spec-element anchor(s) this record justifies (by uuid/handle)."},
+    "produces": {"type": "array", "items": {"type": "string"}, "description": "change/proposal artifacts this decision produces (realization-specific)."},
+    "supersedes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"}, "description": "DecisionRecord uuid(s) this one supersedes (ADR 'never edit, supersede')."},
+    "state": {
+      "enum": ["PROPOSED", "UNDER_REVIEW", "CANONICAL", "OBSERVED", "DEPRECATED"],
+      "description": "Curation lifecycle = ADR status: PROPOSED → UNDER_REVIEW → CANONICAL (the authoritative WHY) → re-OBSERVED if premises drift; DEPRECATED when superseded."
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Who/what proposed this — human + model/prompt version (knowledge-family §4.5).",
+      "properties": {
+        "proposed_by": {"type": "string"},
+        "model_version": {"type": "string"},
+        "prompt_version": {"type": "string"},
+        "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "display_name": {"type": "string"},
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["at", "author", "text"],
+            "properties": {
+              "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
+              "author": {"type": "string"},
+              "text": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "comment": "A CANONICAL record whose action is a substantive resolution SHOULD carry either validation_evidence or an explicit non-testable note — enforced as: CANONICAL + testable-method present implies passed true.",
+      "if": {"properties": {"validation_evidence": {"required": ["passed"]}}},
+      "then": {"properties": {"validation_evidence": {"properties": {"passed": {"const": true}}}}}
+    }
+  ]
+}
