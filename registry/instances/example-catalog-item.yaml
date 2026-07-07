@@ -1,0 +1,98 @@
+# Worked-example Composite Service catalog item (registry/catalog-item.schema.json).
+# A three-tier application — database / app / web — as a Composite catalog item:
+# constituents + dependency edges + declared bindings (entities/composite-service-model.md).
+# This is the [D8] item-(2) evidence that an "application" is a Composite catalog item,
+# not a flat resource type (data-model-core §2/§4).
+record_type: catalog_item
+uuid: d52a8ea8-8446-4e45-94c8-d3359f54e3d6
+handle: org/catalog/example-three-tier-app
+conforms_to: udlm/0.1
+name: ApplicationStack.ThreeTierWebApp
+description: >-
+  Worked-example three-tier application composite: a relational database, an
+  application tier bound to the database's connection output, and a web tier
+  bound to the application's internal endpoint. Generic example.com content only.
+version: 1.0.0
+status:
+  state: active
+
+# Owned by the example tenant (registry/instances/example-tenant.yaml) — coherent worked
+# set with orders-db and the example resource group. Ownership only: other tenants consume
+# via requests + cross-tenant authorization, never shared ownership ([D3]).
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+
+composition_visibility: transparent
+
+constituents:
+  # Tier 1 — the database. No dependencies; dispatches first.
+  - component_id: database
+    resource_type: Data.Database
+    type_version: 0.1.1
+    provided_by: external          # Placement Engine selects a database provider
+    depends_on: []
+    failure_effect: required
+    spec_defaults:
+      engine: postgresql
+      high_availability: false
+
+  # Tier 2 — the application. Depends on the database; the binding pulls the
+  # database's declared connection_string output into the app's spec at dispatch
+  # time (the typed, declared form of ${database.connection_string}).
+  - component_id: app
+    resource_type: Compute.Container
+    type_version: 0.1.0
+    provided_by: self              # the registering provider fulfills this tier
+    depends_on: [database]
+    bindings:
+      - from_component: database
+        output: connection_string
+        to_field: env.database_url
+    failure_effect: required
+    spec_defaults:
+      image: registry.example.com/shop/app:1.4.2
+      replicas: 2
+
+  # Tier 3 — the web front end. Depends on the app; binds the app's internal
+  # DNS output into the web tier's upstream configuration.
+  - component_id: web
+    resource_type: Compute.Container
+    type_version: 0.1.0
+    provided_by: self
+    depends_on: [app]
+    bindings:
+      - from_component: app
+        output: internal_dns
+        to_field: env.upstream_host
+    failure_effect: partial        # web-tier failure degrades, does not halt (§2.4)
+    spec_defaults:
+      image: registry.example.com/shop/web:1.4.2
+      replicas: 2
+
+# Consumer-facing parameter surface — what an Intent record supplies with the catalog_ref.
+consumer_fields:
+  - name: environment
+    type: enum
+    required: true
+    enum_values: [dev, staging, prod]
+  - name: domain
+    type: string
+    required: true
+  - name: replicas
+    type: integer
+    required: false
+    default: 2
+  - name: enable_tls
+    type: boolean
+    required: false
+    default: true
+
+metadata:
+  display_name: Example Three-Tier Web Application
+  description: Generic worked example — example.com content only.
+  notes:
+    - at: "2026-07-07T09:00:00Z"
+      author: alice@example.com
+      text: >-
+        Worked example for the catalog-item schema (D8 item 2): dispatch order
+        database -> app -> web derives from depends_on; teardown is the reverse
+        projection of the same edges (data-model-core §4).
