@@ -6,7 +6,7 @@
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
@@ -23,7 +23,7 @@
 
 ## 1. Purpose
 
-This document defines the complete ownership model for DCM entities — specifically the three ownership patterns that govern how resources are owned, shared, and allocated across Tenants. It establishes precise vocabulary and clear boundaries between concepts that are frequently conflated:
+This document defines the complete ownership model for UDLM entities — specifically the three ownership patterns that govern how resources are owned, shared, and allocated across Tenants. It establishes precise vocabulary and clear boundaries between concepts that are frequently conflated:
 
 - **Ownership** — who is accountable for a resource's lifecycle and costs
 - **Shareable** — multiple entities have a stake in a single resource that they do not own
@@ -52,7 +52,7 @@ Platform Tenant owns: the infrastructure, compute capacity, network fabric
 Consumer Tenant owns: VirtualMachine-A (a distinct entity)
 Consumer Tenant owns: VirtualMachine-B (another distinct entity)
 ```
-There is no relationship between VirtualMachine-A and the infrastructure Tenant — the consumer simply used DCM's Service Provider to provision a resource. Once provisioned, the entity belongs to the consumer's Tenant entirely. The platform Tenant has no visibility into the consumer's entity unless an explicit Information Provider or cross-tenant relationship is established.
+There is no relationship between VirtualMachine-A and the infrastructure Tenant — the consumer simply used a Service Provider to provision a resource. Once provisioned, the entity belongs to the consumer's Tenant entirely. The platform Tenant has no visibility into the consumer's entity unless an explicit Information Provider or cross-tenant relationship is established.
 
 **Examples:** VirtualMachine, Container, StorageVolume, NetworkInterface, DNSRecord.
 
@@ -102,10 +102,10 @@ resource_type_spec:
   fqn: Network.IPAddress
   ownership_model: allocation          # each instance is an allocation from a pool
   allocated_from_pool_type: Network.IPAddressPool
-  # When a consumer requests Network.IPAddress, DCM:
+  # When a consumer requests Network.IPAddress, a realization:
   # 1. Runs placement to find an eligible IPAddressPool
   # 2. The pool provider carves out a specific IP
-  # 3. DCM creates a new IPAddress entity owned by the requesting Tenant
+  # 3. Creates a new IPAddress entity owned by the requesting Tenant
   # 4. Records an AllocationRecord relationship between the entity and the pool
 ```
 
@@ -131,7 +131,7 @@ relationship:
 
 **Decommission behavior:** When the consumer decommissions their allocation entity, DCM dispatches a decommission payload to the provider. The provider releases the specific allocated resource back to the pool. The pool's available capacity increases. The AllocationRecord relationship is terminated. The allocation entity enters DECOMMISSIONED state. The pool entity is unaffected.
 
-**Cross-tenant visibility:** The allocation entity is in the consumer's Tenant. The consumer cannot see the pool entity unless an explicit cross-tenant relationship or Information Provider is configured. The pool owner can see allocation counts and capacity via the Cost Analysis component and the provider's capacity reporting API — they cannot see the consumer's entity data.
+**Cross-tenant visibility:** The allocation entity is in the consumer's Tenant. The consumer cannot see the pool entity unless an explicit cross-tenant relationship or Information Provider is configured. The pool owner can see allocation counts and capacity via the provider's capacity reporting API — they cannot see the consumer's entity data.
 
 ---
 
@@ -224,27 +224,13 @@ The consumer-facing 10.1.0.0/24 is an allocation — AppTeam owns it. The parent
 
 ---
 
-## 5. Placement Engine Interaction
+## 5. How Placement Differs by Ownership Model
 
-The placement engine handles all three ownership models, but the selection criteria differ:
+Each ownership model implies a different placement shape. Placement itself is admin-policy-driven and runtime (see the DCM architecture documentation and [policy-contract.md](../contracts/policy-contract.md) `placement`); what the data model fixes is *what placement is selecting for* in each case:
 
-**Whole Allocation:** Standard placement. The placement engine selects a provider with available capacity. The provider provisions the resource and returns it owned by the requesting Tenant.
-
-**Allocation:** The placement engine selects an eligible pool resource owned by a platform Tenant with sufficient available capacity. The pool provider carves an allocation and returns it. DCM creates the new allocation entity in the requesting Tenant.
-
-```yaml
-# Placement engine for allocation requests:
-# Step 1: Find providers that offer Network.IPAddressPool
-# Step 2: Filter by sovereignty constraints
-# Step 3: Filter by available capacity (pool.available_count > 0)
-# Step 4: Apply tie-breaking hierarchy
-# Step 5: Dispatch allocation request to selected pool provider
-# Step 6: Provider returns the specific carved allocation
-# Step 7: DCM creates IPAddress entity in requesting Tenant
-# Step 8: AllocationRecord relationship created
-```
-
-**Shareable:** The placement engine finds the shareable resource instance that satisfies the consumer's attachment constraints. No new entity is provisioned — the provider registers the stake relationship. If no eligible shareable instance exists, the request fails with a clear error (unlike Allocation where failure means insufficient pool capacity).
+- **Whole Allocation:** placement selects a provider with available capacity; the provider provisions the resource and returns it owned by the requesting Tenant.
+- **Allocation:** placement selects an eligible **pool** resource with sufficient available capacity; the pool provider carves an allocation, and a new allocation entity is created in the requesting Tenant with an `allocated_from` AllocationRecord to the pool.
+- **Shareable:** placement finds the existing shareable resource instance that satisfies the consumer's attachment constraints; **no new entity is provisioned** — a stake relationship is registered. If no eligible shareable instance exists, the request fails outright (unlike Allocation, where failure means insufficient pool capacity).
 
 ---
 
@@ -278,21 +264,14 @@ The three patterns have different decommission safety behaviors:
 
 ---
 
-## 7. Cost Attribution Model
+## 7. Cost Accountability
 
-**Whole Allocation and Allocation:** Cost is attributed entirely to the owning Tenant. Standard Cost Analysis billing. The entity's `billing_state` governs the rate (billable/non_billable/reduced_rate).
+What the ownership model fixes is the **cost-accountable Tenant** — a data-model fact:
 
-**Shareable:** The shared resource's cost is attributed to its owner Tenant by default. Organizations that want to distribute shared resource costs to stakeholders configure a cost attribution policy:
+- **Whole Allocation and Allocation:** the owning Tenant is accountable for the entity's cost.
+- **Shareable:** the resource owner Tenant is accountable by default; costs may be redistributed to stakeholders (owner-bears-all, equal split, proportional-by-usage, chargeback).
 
-```yaml
-cost_attribution_policy:
-  resource_type: Network.VLAN
-  model: <owner_bears_all|equal_split|proportional_by_usage|chargeback>
-  # owner_bears_all: NetworkOps Tenant pays for VLAN regardless of how many VMs attach
-  # equal_split:     cost divided equally among active stakeholders
-  # proportional_by_usage: cost allocated by traffic volume or similar metric
-  # chargeback:      each stakeholder is invoiced for their declared portion
-```
+UDLM does not model or calculate cost. Which cost model applies, and any redistribution across stakeholders, is admin **policy** evaluated against an external metering model — see [ADR-COST-001](../registry/instances/adr-cost-metering-placement.json) and the metering & billing extension. UDLM carries only the accountability edge (who bears the cost) via the ownership and stake relationships above.
 
 ---
 
