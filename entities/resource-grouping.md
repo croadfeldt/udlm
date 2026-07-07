@@ -3,6 +3,9 @@
 
 
 > **Related:** See [Universal Group Model](../observability/universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to `group_class` values in that model.
+>
+> **Machine-validatable schema:** Tenants, Resource Groups, and cross-tenant authorizations are
+> DCMGroup instances validating against [`registry/dcm-group.schema.json`](../registry/dcm-group.schema.json).
 
 **Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)

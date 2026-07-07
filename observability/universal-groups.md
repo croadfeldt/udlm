@@ -1,5 +1,8 @@
 # UDLM — Universal Group Model
 
+> **Machine-validatable schema:** DCMGroup instances validate against
+> [`registry/dcm-group.schema.json`](../registry/dcm-group.schema.json)
+> (`registry/tools/validate.py` dispatches any instance carrying `group_class` to it).
 
 **Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Resource Grouping](../entities/resource-grouping.md) | [Entity Relationships](../entities/entity-relationships.md)

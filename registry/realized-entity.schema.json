@@ -7,6 +7,7 @@
   "additionalProperties": false,
   "required": [
     "uuid",
+    "tenant_uuid",
     "conforms_to",
     "resource_type",
     "type_version",
@@ -18,6 +19,11 @@
       "type": "string",
       "format": "uuid",
       "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (entities/composite-service-model.md)."
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "REQUIRED owning Tenant — the uuid of a tenant_boundary DCMGroup (registry/dcm-group.schema.json). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, entities/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
     },
     "conforms_to": {
       "type": "string",
