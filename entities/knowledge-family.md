@@ -117,6 +117,7 @@ recommended alternative).
 - **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
 
 ### 4.5 DecisionRecord (a Decision Record / ADR — adopted, not invented)
+> **Machine-validatable schema:** `registry/decision-record.schema.json` (data-model-core §2 [D8.6]); `registry/tools/validate.py` dispatches `record_type: decision_record`. The Data·Policy·Provider decomposition is schema-required (SPEC-DESIGN §29).
 A `DecisionRecord` is the established **Decision Record (DR)** concept — of which an **ADR (Architecture Decision
 Record) is the architecture-scoped kind** — expressed as a first-class UDLM entity. We **adopt the ADR/DR format
 and lifecycle by reference** (per the "adopt, don't absorb" tenet, [core-tenets.md](../design-principles/core-tenets.md))
