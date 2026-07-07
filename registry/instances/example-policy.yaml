@@ -1,0 +1,35 @@
+record_type: policy
+uuid: 764f476d-8fe8-4bfd-9c7e-5b2431cc79e7
+handle: eu-data-residency-gate
+conforms_to: udlm/0.1
+name: EU data residency — deny non-EU placement zones
+description: Compliance-class validation policy — a request whose data_classification is
+  eu_personal may only be realized in an EU sovereignty zone. Worked example (example.com content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+policy_type: validation
+policy_class: compliance
+concern_type: compliance
+domain: tenant
+match:
+  conditions:
+  - {field: data_classification, operator: eq, value: eu_personal}
+  - {field: sovereignty_zone, operator: not_in, value: [eu-west, eu-central, eu-north]}
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+output:
+  decision: deny
+  reason: eu_personal data may only be realized in an EU sovereignty zone
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: high
+compliance_basis: "GDPR Art. 44 (transfers)"
+review_required_before: "2027-01-01T00:00:00Z"
+metadata:
+  display_name: EU data residency gate
+  notes:
+  - at: "2026-07-07T13:20:00Z"
+    author: claude-fable-5 (session f78102d7, wave 3.3)
+    text: Worked example for the policy schema — validation/compliance shape (deny + reason).

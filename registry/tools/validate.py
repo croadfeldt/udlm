@@ -31,6 +31,19 @@ INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.sc
 GROUP_VALIDATOR = Draft202012Validator(json.loads((ROOT / "dcm-group.schema.json").read_text()))
 PROVIDER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "provider-adopted-standards.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
+POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
+
+
+def _type_outputs_index():
+    """resource_type -> set(declared output names). The typed-outputs surface a catalog-item
+    binding resolves against (data-model-core §2 [D8.3])."""
+    index = {}
+    for path in (ROOT / "resource-types").glob("*"):
+        if path.suffix not in (".json", ".yaml", ".yml"):
+            continue
+        doc = load(path)
+        index[doc["resource_type"]] = set((doc.get("outputs") or {}).keys())
+    return index
 
 
 def load(path: pathlib.Path):
@@ -129,6 +142,23 @@ def check_catalog_item(doc):
         if color[cid] == WHITE and dfs(cid, [cid]):
             break  # one reported cycle is enough
 
+    # (e) binding output type-safety: a binding's `output` must be a DECLARED output of the
+    #     producer constituent's resource_type (data-model-core §2 [D8.3] typed outputs).
+    #     Skip gracefully if the type is not in the registry; FAIL if the type is known and the
+    #     output is not one of its declared output names.
+    type_outputs = _type_outputs_index()
+    rt_of = {c.get("component_id"): c.get("resource_type") for c in constituents}
+    for c in constituents:
+        cid = c.get("component_id", "?")
+        for b in c.get("bindings", []):
+            src, out = b.get("from_component"), b.get("output")
+            src_type = rt_of.get(src)
+            if src_type in type_outputs and out not in type_outputs[src_type]:
+                declared = sorted(type_outputs[src_type]) or ["(none declared)"]
+                errors.append(
+                    f"constituent '{cid}': binding output '{src}.{out}' is not a declared output of "
+                    f"{src_type} (declared: {', '.join(declared)})")
+
     return errors
 
 
@@ -139,6 +169,8 @@ def pick_instance(doc):
         return (CATALOG_VALIDATOR,
                 lambda d: f"catalog item {d['name']} v{d['version']} {d['uuid'][:8]} ({len(d['constituents'])} constituents)",
                 check_catalog_item)
+    if isinstance(doc, dict) and doc.get("record_type") == "policy":
+        return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
     if isinstance(doc, dict) and "group_class" in doc:
         return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
     return INSTANCE_VALIDATOR, lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]"
