@@ -778,6 +778,8 @@ Five additional lifecycle states are part of the substrate vocabulary. Any confo
 | `COMPENSATION_IN_PROGRESS` | Composite service rollback underway | — |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | `COMPENSATION_FAILED` |
 
+> **Data-model note (data-model-core §3 [D7]):** the recovery states below are `status.conditions` OVERLAYS on the universal four-state `lifecycle_state` — they are NOT new `lifecycle_state` enum values. A dispatch-timed-out entity is still `lifecycle_state: Requested`/`Realized`; `TIMEOUT_PENDING` etc. are condition types the recovery machinery reads. This DCM-runtime state machine is the operational view over those conditions.
+
 Updated state machine:
 
 ```

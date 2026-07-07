@@ -183,8 +183,8 @@ grant fields, and Composite Service catalog items via `registry/catalog-item.sch
 incl. required `tenant_uuid` — plus validate.py semantic checks: component_id uniqueness,
 sibling depends_on/binding resolution, depends_on cycle rejection, and binding⊆depends_on
 ordering) + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid
-v4-nibble, semver compat (compat-check), snake_case key patterns, and relationship-name
-coverage are **NOT yet enforced** at the registry layer — tracked defects, not claims. Every
+v4-nibble, snake_case key patterns, and relationship-name
+coverage are **NOT yet enforced** at the registry layer (semver compat IS now enforced — tests/ci_compat_gate.py runs compat-check on every changed spec vs origin/main) — tracked defects, not claims. Every
 "[enforced]" marker elsewhere is audited against this ledger.
 
 ---
