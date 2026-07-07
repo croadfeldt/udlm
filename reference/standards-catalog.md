@@ -89,8 +89,8 @@
 | **AES-128-GCM** | Permitted for minimal/dev profiles where performance matters | minimal, dev | Conditional |
 | **SHA-256** | Hash function for audit chain integrity; entity handle generation; minimum acceptable | All profiles | Normative |
 | **SHA-384 / SHA-512** | Preferred hash function for fsi/sovereign profiles | fsi, sovereign | Normative for fsi+ |
-| **FIPS 140-2 Level 1** | Minimum cryptographic module requirement for standard/prod | standard, prod | Normative |
-| **FIPS 140-2 Level 2** | Cryptographic module requirement for regulated environments | fsi, fedramp_moderate | Normative |
+| **FIPS 140-3 Level 1** | Minimum cryptographic module requirement for standard/prod (140-2 module certificates accepted during transition) | standard, prod | Normative |
+| **FIPS 140-3 Level 2** | Cryptographic module requirement for regulated environments (140-2 accepted during transition) | fsi, fedramp_moderate | Normative |
 | **FIPS 140-3 Level 3** | Cryptographic module requirement for sovereign deployments | sovereign, dod_il4 | Normative |
 | **TLS 1.3** | Preferred; mandatory cipher suites; forward secrecy required | All profiles | Normative (preferred) |
 | **TLS 1.2** | Minimum acceptable; TLS 1.0/1.1 strictly prohibited | All profiles | Normative (minimum) |
@@ -139,10 +139,10 @@ These frameworks drive specific UDLM profiles, overlays, and policy constraints.
 | **NIST SP 800-53** | Security and Privacy Controls for Information Systems | `fedramp_moderate`, `fedramp_high` | Policy control families mapped to UDLM policy domains; access control, audit, configuration management |
 | **NIST SP 800-63B** | Digital Identity Guidelines | All profiles (AAL mapping) | AAL1 (minimal/dev), AAL2 (standard/prod), AAL2+ (fsi), AAL3 (sovereign); MFA requirements per level |
 | **NIST SP 800-207** | Zero Trust Architecture | All profiles | Zero-trust posture defaults; five-check boundary model substrate |
-| **FedRAMP Moderate** | Federal Risk and Authorization Management Program — Moderate | `fedramp_moderate` overlay | NIST 800-53 Moderate baseline; FIPS 140-2 Level 1+; Federal data handling requirements |
-| **FedRAMP High** | Federal Risk and Authorization Management Program — High | `fedramp_high` overlay | NIST 800-53 High baseline; FIPS 140-2 Level 2+; enhanced audit retention |
-| **DoD IL4** | Department of Defense Impact Level 4 | `dod_il4` overlay | Controlled Unclassified Information; FIPS 140-2 Level 2; hardware attestation; enhanced logging |
-| **FIPS 140-2/140-3** | Federal Information Processing Standard — Cryptographic Modules | fsi+ profiles | Cryptographic module validation; forbidden algorithm enforcement; key management requirements |
+| **FedRAMP Moderate** | Federal Risk and Authorization Management Program — Moderate | `fedramp_moderate` overlay | NIST 800-53 Moderate baseline; FIPS 140-3 Level 1+ (140-2 accepted during transition); Federal data handling requirements |
+| **FedRAMP High** | Federal Risk and Authorization Management Program — High | `fedramp_high` overlay | NIST 800-53 High baseline; FIPS 140-3 Level 2+ (140-2 accepted during transition); enhanced audit retention |
+| **DoD IL4** | Department of Defense Impact Level 4 | `dod_il4` overlay | Controlled Unclassified Information; FIPS 140-3 Level 2 (140-2 accepted during transition); hardware attestation; enhanced logging |
+| **FIPS 140-3** (140-2 transitional) | Federal Information Processing Standard — Cryptographic Modules | fsi+ profiles | Cryptographic module validation; forbidden algorithm enforcement; key management requirements |
 
 ### 5.2 Industry Compliance
 
