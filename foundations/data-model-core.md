@@ -36,8 +36,10 @@ it governs.
   `Category.Type` (single-segment permitted for cross-cutting types, e.g. `Topology`) — and
   the instance schema accepts exactly the same name grammar as the type schema.
 - **Machine-validatable surface** — the model is only as solid as its schemas. Current: type
-  spec, realized-entity, provider-adopted-standards. **[D8] Committed program**, in priority
-  order: (1) Tenant + DCMGroup, (2) catalog item (unblocks the application model and the DCM
+  spec, realized-entity, provider-adopted-standards, dcm-group. **[D8] Committed program**, in
+  priority order: (1) Tenant + DCMGroup — **DONE** (`registry/dcm-group.schema.json` + required
+  instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on `group_class`),
+  (2) catalog item (unblocks the application model and the DCM
   ADR-016 decision), (3) policy record + typed outputs, (4) layer record, (5) audit record +
   Commit Log entry, (6) DecisionRecord, (7) Process Resource. Until an artifact's schema
   exists, its prose definition is explicitly marked *pre-schema* and is not citable as
@@ -172,7 +174,10 @@ One definition each; everything else defers here:
 ## 8. Conformance — the honest enforcement ledger
 
 A rule may claim **[enforced]** only if a running validator checks it. Current honest state:
-schema validation + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid
+schema validation (type spec, realized-entity — incl. required `tenant_uuid` [D3] — provider
+matrices, and DCMGroup via `registry/dcm-group.schema.json` with per-class conditionals:
+tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth
+grant fields) + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid
 v4-nibble, semver compat (compat-check), snake_case key patterns, and relationship-name
 coverage are **NOT yet enforced** at the registry layer — tracked defects, not claims. Every
 "[enforced]" marker elsewhere is audited against this ledger.

@@ -1,0 +1,447 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/dcm-group.schema.json",
+  "title": "UDLM DCMGroup (instance)",
+  "description": "The universal grouping record (observability/universal-groups.md): ONE entity for all grouping — Tenants, Resource Groups, policy collections, federations, cross-tenant authorizations — distinguished by group_class. Tenants ARE DCMGroups (data-model-core §5 [D3]); this schema is item (1) of the [D8] machine-validatable-surface program, making TEN-001/003 and the group model schema-enforceable instead of prose. Conditional blocks activate per group_class (tenant_boundary → ownership + isolation_level; cross_tenant_authorization → grant fields).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uuid",
+    "conforms_to",
+    "group_class",
+    "name"
+  ],
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Stable RFC 9562 v4 identity of this group, minted once at creation (identifier-scheme §2.1; version nibble + variant bits pattern-enforced). For a tenant_boundary group this uuid IS the value entities carry in tenant_uuid."
+    },
+    "handle": {
+      "type": "string",
+      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3), e.g. org/tenant/payments-bu. The uuid is the authoritative identity; never resolve by handle alone."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "group_class": {
+      "enum": [
+        "tenant_boundary",
+        "resource_grouping",
+        "policy_collection",
+        "policy_profile",
+        "layer_grouping",
+        "provider_grouping",
+        "composite",
+        "federation",
+        "cross_tenant_authorization"
+      ],
+      "description": "CLOSED set — the ONE group_class vocabulary (universal-groups §2.2 table incl. cross_tenant_authorization; data-model-core §5/§7). System behavior binds to declared classes only (GRP-011)."
+    },
+    "group_subclass": {
+      "type": "string",
+      "description": "OPEN, advisory semantic axis (GRP-011) — e.g. cost_center, business_unit, or resource-grouping's dcm_default|custom. No system behavior, no validation of values; the community subclass catalog is a non-authoritative reference."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable purpose."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Major.Minor.Revision of this group record (registry/VERSIONING.md semantics)."
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "description": "Lifecycle status per the Resource Group Interface (entities/resource-grouping.md §3.3): active | deprecated | retired, with the universal deprecation fields when deprecated.",
+      "properties": {
+        "state": {
+          "enum": [
+            "active",
+            "deprecated",
+            "retired"
+          ]
+        },
+        "deprecation_date": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+        },
+        "sunset_date": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+        },
+        "replacement_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "The successor group, if deprecated."
+        },
+        "deprecation_reason": {
+          "type": "string"
+        },
+        "migration_guidance": {
+          "type": "string"
+        }
+      }
+    },
+    "nesting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supported"
+      ],
+      "description": "Whether this group can contain other groups as members (entities/resource-grouping.md §3.5). Circular membership is invalid (GRP-INV-005/006); tenant_boundary nesting depth is profile-governed (universal-groups §9 Q2).",
+      "properties": {
+        "supported": {
+          "type": "boolean"
+        },
+        "max_depth": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "const": "unlimited"
+            }
+          ],
+          "description": "Declared nesting depth — an integer bound or the literal string \"unlimited\"."
+        }
+      }
+    },
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "ONE membership record shape — the universal-groups form (universal-groups §2.1; data-model-core §5). The former joined_timestamp/joined_by_uuid variant is SUPERSEDED by added_at/added_by.",
+      "properties": {
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "member_uuid",
+              "member_type",
+              "added_at",
+              "added_by"
+            ],
+            "properties": {
+              "member_uuid": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "description": "The Resource/Service Entity or child group this membership binds (uuid authoritative — never name alone)."
+              },
+              "member_type": {
+                "enum": [
+                  "entity",
+                  "resource_group"
+                ],
+                "description": "What kind of member: entity = a realized-entity instance; resource_group = a nested DCMGroup (nesting.supported must be true)."
+              },
+              "added_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+              },
+              "added_by": {
+                "type": "string",
+                "description": "Actor record — the persona or policy that added this member."
+              },
+              "valid_from": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "Membership start (RFC 3339 UTC 'Z'). Omitted = immediately."
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "Time-bounded membership end (RFC 3339 UTC 'Z'). Omitted = indefinite. Expiry is enforced by the Lifecycle Constraint Enforcer (GRP-014)."
+              },
+              "membership_status": {
+                "enum": [
+                  "active",
+                  "suspended",
+                  "expired"
+                ]
+              },
+              "on_expiry": {
+                "enum": [
+                  "remove",
+                  "notify",
+                  "suspend_member"
+                ],
+                "description": "Action on expires_at (GRP-014). remove = member removed (emits MEMBER_REMOVE); notify = owner notified, membership persists as expired (DEFAULT); suspend_member = member entity suspended."
+              }
+            }
+          }
+        },
+        "membership_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "exclusive": {
+              "type": "boolean",
+              "description": "true = a member can belong to only one group of this class at a time. Non-overridable const true for tenant_boundary (TEN-001, GRP-INV-001)."
+            },
+            "max_memberships": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "const": "unlimited"
+                }
+              ],
+              "description": "Maximum number of groups of this type a member can belong to — an integer bound or the literal string \"unlimited\"."
+            },
+            "allowed_entity_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Resource Types permitted as members (entities/resource-grouping.md §3.3) — empty means all types allowed."
+            }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      },
+      "description": "Group-level policy UUIDs (lookup-only references; the policy record schema is [D8] program item 3)."
+    },
+    "sovereignty_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Applicable sovereignty requirements. Sovereignty interaction is group_class-specific (GRP-012): tenant_boundary never spans sovereignty boundaries (structural)."
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_uuid",
+        "owner_type",
+        "created_at"
+      ],
+      "description": "Who owns this Tenant (entities/resource-grouping.md §2.4). REQUIRED for group_class tenant_boundary — the unambiguous, always-auditable answer to \"who owns this resource\" rolls up here.",
+      "properties": {
+        "owner_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "The persona or entity that owns this tenant."
+        },
+        "owner_type": {
+          "enum": [
+            "persona",
+            "business_unit",
+            "organization"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+        }
+      }
+    },
+    "isolation_level": {
+      "enum": [
+        "shared_rls",
+        "schema_per_tenant",
+        "database_per_tenant",
+        "store_per_tenant_zone"
+      ],
+      "description": "The [D1] tenancy-isolation ladder (data-model-core §6) — how this Tenant's data is isolated in the bound lifecycle stores; profile-keyed and REQUIRED for group_class tenant_boundary. shared_rls = shared store, row-level security keyed by tenant_uuid (the standard/prod floor). schema_per_tenant = dedicated schema per tenant in a shared database (fsi). database_per_tenant = dedicated database per tenant (fsi, where isolation policy requires). store_per_tenant_zone = dedicated store instance per tenant/zone (sovereign — and MUST where residency policy requires)."
+    },
+    "store_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contract",
+          "binding"
+        ],
+        "properties": {
+          "contract": {
+            "enum": [
+              "commit_log",
+              "state_store",
+              "audit_store",
+              "discovered_stream"
+            ],
+            "description": "One of the four normative store CONTRACTS (data-model-core §6 [D1]) this binding satisfies. Conformance is measured against the contract, never the brand."
+          },
+          "binding": {
+            "type": "string",
+            "description": "The conforming store bound to this contract for this Tenant — a storage-provider record reference or declared carrier (e.g. the PostgreSQL reference implementation, or git at minimal profile)."
+          },
+          "residency_zone": {
+            "type": "string",
+            "description": "Sovereign/residency placement of the bound store, where policy requires it declared."
+          }
+        }
+      },
+      "description": "The auditable [D1] binding declaration: which conforming store satisfies each lifecycle-store contract FOR THIS TENANT. A deployment binds contract → store via profile + sovereignty/tenancy policy, and the binding is declared and auditable (data-model-core §6; contracts/data-store-contracts.md)."
+    },
+    "granting_tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "cross_tenant_authorization: the Tenant granting access (entities/resource-grouping.md §10.1)."
+    },
+    "consuming_tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "cross_tenant_authorization: the Tenant receiving access."
+    },
+    "authorized_resource_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$"
+      },
+      "description": "cross_tenant_authorization: Tier-1 resource type names the grant covers (same name grammar as the type schema)."
+    },
+    "authorized_entity_uuids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      },
+      "description": "cross_tenant_authorization: specific authorized entities. Omitted = all resources of the declared types."
+    },
+    "duration": {
+      "type": "string",
+      "pattern": "^P(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$",
+      "description": "cross_tenant_authorization: ISO 8601 duration of the grant (e.g. P1Y). Omitted = perpetual until revoked (XTA-002 governs expiry)."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "cross_tenant_authorization: grant expiry instant (RFC 3339 UTC 'Z'). Expiry is treated identically to explicit revocation (CTX-003)."
+    },
+    "purpose": {
+      "type": "string",
+      "description": "cross_tenant_authorization: human-readable justification for the grant."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Human-facing context, same shape as realized-entity: operational commentary lives in notes — data ABOUT the record, never used for resolution.",
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "array",
+          "description": "Auditable operational notes: each entry is attributed and timestamped — never an anonymous mutable blob.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
+            "properties": {
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "When recorded. RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+              },
+              "author": {
+                "type": "string",
+                "description": "Who/what recorded it (person, agent+session, or process uuid)."
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "group_class": {
+            "const": "tenant_boundary"
+          }
+        },
+        "required": [
+          "group_class"
+        ]
+      },
+      "then": {
+        "required": [
+          "ownership",
+          "isolation_level"
+        ],
+        "properties": {
+          "membership": {
+            "properties": {
+              "membership_policy": {
+                "properties": {
+                  "exclusive": {
+                    "const": true,
+                    "description": "STRUCTURAL LOCK for tenant_boundary (TEN-001/GRP-INV-001): a resource belongs to exactly one active Tenant — non-overridable."
+                  }
+                },
+                "required": [
+                  "exclusive"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "group_class": {
+            "const": "cross_tenant_authorization"
+          }
+        },
+        "required": [
+          "group_class"
+        ]
+      },
+      "then": {
+        "required": [
+          "granting_tenant_uuid",
+          "consuming_tenant_uuid",
+          "authorized_resource_types"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+# Worked-example Tenant: a tenant_boundary DCMGroup (registry/dcm-group.schema.json).
+# This uuid is the tenant_uuid carried by instances/orders-db.json — the example entity
+# belongs to this example tenant (TEN-001/003; data-model-core §5 [D3]).
+uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+handle: org/tenant/example-payments
+conforms_to: udlm/0.1
+group_class: tenant_boundary
+name: Example Payments Tenant
+description: >-
+  Worked-example ownership and isolation boundary. Owns the orders-db example
+  entity; all its costs, policy scope, drift scope, and audit scope roll up here.
+version: 1.0.0
+status:
+  state: active
+
+# REQUIRED for tenant_boundary (schema conditional)
+ownership:
+  owner_uuid: 01318b6c-0211-496b-8911-b778969a550e
+  owner_type: business_unit
+  created_at: "2026-06-17T14:55:00Z"
+
+# The [D1] tenancy-isolation ladder (data-model-core §6) — standard-profile floor here.
+isolation_level: shared_rls
+
+# The auditable [D1] binding declaration: which conforming store satisfies each
+# lifecycle-store contract for this Tenant (contract, never brand).
+store_bindings:
+  - contract: commit_log
+    binding: postgresql-reference
+  - contract: state_store
+    binding: postgresql-reference
+  - contract: audit_store
+    binding: postgresql-reference
+  - contract: discovered_stream
+    binding: postgresql-reference
+
+membership:
+  members:
+    - member_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21   # the orders-db example entity
+      member_type: entity
+      added_at: "2026-06-17T15:01:30Z"
+      added_by: alice@example.com
+      membership_status: active
+  membership_policy:
+    exclusive: true    # STRUCTURAL LOCK — exactly one Tenant per entity (TEN-001/GRP-INV-001)
+
+metadata:
+  display_name: Example Payments Tenant
+  description: Generic worked example — example.com content only.
