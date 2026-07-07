@@ -16,8 +16,7 @@ jobs:
       - run: pip install jsonschema pyyaml
       - run: python3 tests/validate_registry.py
       - run: python3 tests/check_estate_tokens.py
-      # compat-check smoke test — compat-check.py has no --self-test flag, so at minimum
-      # compile-check the tool so CI catches syntax/key-drift regressions in it
-      # (compile() rather than ast.parse: catches e.g. await-outside-async that ast misses).
-      # Full version-pair compat gating (old/new spec fixtures) is tracked as follow-up.
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
+      # Real §9 gate: every changed type spec must declare a sufficient version bump
+      # vs origin/main (compat-check old-vs-new). New types are skipped.
+      - run: python3 tests/ci_compat_gate.py origin/main

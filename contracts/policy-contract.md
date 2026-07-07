@@ -782,6 +782,8 @@ transformation_output:
 
 ## 13. Output Schema — Recovery
 
+> Recovery `action` targets a recovery CONDITION (status.conditions overlay, data-model-core §3 [D7]), not a `lifecycle_state` transition.
+
 **Fires on:** A failure or ambiguity trigger condition (DISPATCH_TIMEOUT, PARTIAL_REALIZATION, CANCELLATION_FAILED, etc.).
 **Produces:** A recovery action and parameters.
 
