@@ -167,6 +167,34 @@ def check_catalog_item(doc):
     return errors
 
 
+
+def _type_entity_index():
+    """resource_type -> entity_type (Infrastructure Resource | Composite | Process | ...)."""
+    index = {}
+    for path in (ROOT / "resource-types").glob("*"):
+        if path.suffix not in (".json", ".yaml", ".yml"):
+            continue
+        doc = load(path)
+        index[doc["resource_type"]] = doc.get("entity_type")
+    return index
+
+
+def check_process_entity(doc):
+    """A realized entity whose Resource Type is entity_type: Process MUST carry the `process`
+    execution axis with an execution_state (resource-service-entities §6.3; data-model-core §3
+    [D7]). Non-Process entities must NOT carry it."""
+    errors = []
+    rt = doc.get("resource_type")
+    et = _type_entity_index().get(rt)
+    has_proc = isinstance(doc.get("process"), dict)
+    if et == "Process" and not has_proc:
+        errors.append(f"{rt} is entity_type: Process but the instance has no `process` block "
+                      f"(execution_state required; §6.3 / D7)")
+    if et and et != "Process" and has_proc:
+        errors.append(f"{rt} is entity_type: {et}, not Process — it must not carry a `process` "
+                      f"execution axis")
+    return errors
+
 def pick_instance(doc):
     """Dispatch: `record_type` first (catalog_item ⇒ catalog item, + semantic checks);
     legacy keys — `group_class` ⇒ DCMGroup; `resource_type` ⇒ realized entity."""
@@ -188,7 +216,9 @@ def pick_instance(doc):
         return DECISION_VALIDATOR, lambda d: f"decision_record {d.get('handle', d['title'][:24])} [{d['state']}] {d['uuid'][:8]}"
     if isinstance(doc, dict) and "group_class" in doc:
         return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
-    return INSTANCE_VALIDATOR, lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]"
+    return (INSTANCE_VALIDATOR,
+            lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]",
+            check_process_entity)
 
 
 def main() -> int:

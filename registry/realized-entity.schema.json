@@ -32,7 +32,7 @@
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — exactly the same name grammar as the type schema (data-model-core \u00a72)."
+      "description": "Tier-1 vendor-neutral Category.Type name; single-segment permitted for cross-cutting types (e.g. Topology) — exactly the same name grammar as the type schema (data-model-core §2)."
     },
     "type_version": {
       "type": "string",
@@ -444,6 +444,99 @@
           },
           "value": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Process-execution axis (resource-service-entities §6.3; data-model-core §3 [D7]). REQUIRED on entities whose Resource Type has entity_type: Process (Automation.Job) — validate.py enforces this via the registry. The universal lifecycle_state still applies (a playbook that exists and is adopted is Realized/Discovered); execution_state is a SEPARATE axis tracking each RUN and never changes lifecycle_state.",
+      "required": [
+        "execution_state"
+      ],
+      "properties": {
+        "execution_state": {
+          "enum": [
+            "REQUESTED",
+            "INITIATED",
+            "EXECUTING",
+            "COMPLETED",
+            "FAILED",
+            "CANCELLED"
+          ],
+          "description": "The current run's state (§6.2). Distinct from lifecycle_state."
+        },
+        "process_type": {
+          "enum": [
+            "playbook",
+            "workflow",
+            "pipeline",
+            "automation_job",
+            "script",
+            "other"
+          ]
+        },
+        "affected_entities": {
+          "type": "array",
+          "description": "Entities this process created/modified/decommissioned/read (§6.3). §6.4: each affected entity's realized provenance MUST cite THIS process's uuid as the change source.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "entity_uuid",
+              "effect_type"
+            ],
+            "properties": {
+              "entity_uuid": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+              },
+              "effect_type": {
+                "enum": [
+                  "created",
+                  "modified",
+                  "decommissioned",
+                  "read"
+                ]
+              },
+              "effect_description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "execution_record": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "initiated_at": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "completed_at": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "executing_provider_uuid": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "authorized_by_policy_uuid": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "max_execution_time": {
+              "type": "string",
+              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+            },
+            "on_max_exceeded": {
+              "enum": [
+                "terminate",
+                "notify",
+                "escalate"
+              ]
+            }
           }
         }
       }
