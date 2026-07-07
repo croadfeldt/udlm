@@ -1,0 +1,22 @@
+record_type: audit_record
+record_uuid: f0eb4596-d884-40e2-9312-69e10bcacad1
+record_timestamp: '2026-07-07T13:50:00Z'
+dcm_version: 0.1.0
+actor:
+  immediate:
+    type: human
+    uuid: 1c2ea4b9-d3d7-45ec-9784-30b88bae20ab
+    display_name: alice@example.com
+  authorized_by:
+    uuid: 73286b1d-c4cf-437c-9db2-634ac896cbd6
+    display_name: alice@example.com
+    authorization_method: direct_action
+  request_uuid: 5df9dbc2-5bd8-47f9-bd36-6c38211e1ee1
+subject:
+  entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
+  entity_type: resource_entity
+  entity_handle: example-db
+  entity_version_after: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+action: MODIFY
+retention_status: live

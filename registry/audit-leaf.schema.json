@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/audit-leaf.schema.json",
+  "title": "DCM Audit Merkle Leaf",
+  "description": "Machine-validatable Merkle tree leaf (universal-audit §8, RFC 9162 CT v2 pattern; AUD-006). Each audit record is a leaf; the tree provides O(log n) inclusion + consistency proofs; Signed Tree Heads are the root of trust. leaf_uuid MAY be v7 (declared time-ordered). data-model-core §2 [D8.5].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "leaf_uuid",
+    "leaf_index",
+    "request_uuid",
+    "tenant_uuid",
+    "stage",
+    "action",
+    "input_payload_hash",
+    "output_payload_hash",
+    "signer_uuid",
+    "signer_type",
+    "timestamp",
+    "signature",
+    "previous_leaf_hash"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "audit_leaf"
+    },
+    "leaf_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "leaf_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "request_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "entity_uuid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "stage": {
+      "type": "string",
+      "description": "Pipeline stage (intent_submitted | layer_applied | policy_evaluated | constraint_resolved | placement_scored | dispatched | provider_callback | ...)."
+    },
+    "source": {
+      "type": "string"
+    },
+    "source_type": {
+      "enum": [
+        "actor",
+        "layer_merge",
+        "policy_gating",
+        "policy_transformation",
+        "policy_validation",
+        "constraint_resolution",
+        "placement",
+        "dispatch",
+        "provider_callback",
+        "system"
+      ]
+    },
+    "action": {
+      "enum": [
+        "ACTIVATE",
+        "AUTHORIZE",
+        "CONFIG_CHANGE",
+        "CREATE",
+        "DEACTIVATE",
+        "DELETE",
+        "DEPRECATE",
+        "DISCOVER",
+        "DRIFT_DETECT",
+        "DRIFT_RESOLVE",
+        "ENRICH",
+        "EVALUATE",
+        "EXPIRE",
+        "HOLD_CONFIRM",
+        "HOLD_PLACE",
+        "HOLD_RELEASE",
+        "INGEST",
+        "LOCK",
+        "LOGIN",
+        "LOGOUT",
+        "MEMBER_ADD",
+        "MEMBER_REMOVE",
+        "MEMBERSHIP_EXPIRE",
+        "MODIFY",
+        "PROMOTE",
+        "QUERY",
+        "REHYDRATE",
+        "RELATIONSHIP_CREATE",
+        "RELATIONSHIP_RELEASE",
+        "RETIRE",
+        "REVOKE",
+        "STATE_TRANSITION"
+      ]
+    },
+    "decision": {
+      "type": "string"
+    },
+    "input_payload_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "output_payload_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "context_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "fields_changed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "field_mutations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "action",
+          "new_value_hash"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "injected",
+              "overridden",
+              "removed"
+            ]
+          },
+          "old_value_hash": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "new_value_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "signer_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "signer_type": {
+      "enum": [
+        "service",
+        "actor",
+        "provider"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "signature": {
+      "type": "string",
+      "description": "Ed25519 or ECDSA-P256 over all above fields."
+    },
+    "previous_leaf_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of the previous leaf for this request — the per-request chain."
+    }
+  },
+  "$defs": {
+    "signed_tree_head": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tree_size",
+        "timestamp",
+        "sha256_root_hash",
+        "signature"
+      ],
+      "properties": {
+        "tree_size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestamp": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "sha256_root_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
