@@ -69,7 +69,7 @@
             "properties": {
               "field": {
                 "type": "string",
-                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | sovereignty_zone | tenant_uuid | resource_type | application_uuid | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field)."
+                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | data_role | sovereignty_zone | tenant_uuid | resource_type | application_uuid | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field). data_role (ADR-PROV-001) lets Governance-Matrix boundary policies control which roles a provider may receive at the DCM→Provider boundary — parallel to data_classification."
               },
               "operator": {"enum": ["eq", "ne", "in", "not_in", "exists", "not_exists", "matches", "gt", "lt", "gte", "lte"]},
               "value": {"description": "Comparison value (omit for exists/not_exists)."}
