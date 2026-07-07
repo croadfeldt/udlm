@@ -1,0 +1,61 @@
+{
+  "record_type": "decision_record",
+  "uuid": "b7e04c19-2a8d-4f30-8b6e-1c9d5a2f8e73",
+  "handle": "ADR-COST-001",
+  "conforms_to": "udlm/0.1",
+  "title": "Metering & billing is referenced by UDLM, not modeled in it — cost decisions are admin policy, calculation is a provider",
+  "version": "1.0.0",
+  "scope": "architecture",
+  "rationale": "The 2026-07-07 DCM/Cost-Management session settled where cost lives relative to UDLM. Cost/metering/billing has its OWN lifecycle, independent of a resource's: prices differ per customer, contracts have their own lifecycles, and there is no external cost STANDARD to adopt-by-reference. Therefore UDLM does not model, calculate, or own cost. Its proper name is 'metering & billing', and a realization (DCM or otherwise) works fully WITHOUT it — a homelab estate is modeled in UDLM with no cost at all. This record is the first worked instance of the UDLM/DCM boundary (ADR-UDLM-DCM-001): calculation is realization/provider concern; UDLM carries only the DATA that bridges to an external metering model and the POLICY that selects it. Crucially, the substrate the meeting called for ALREADY EXISTS in UDLM 1.0: the external-data bridge is contracts/information-providers.md (External Entity Reference — a DCM-UUID wrapping an external-UUID, lookup/verify, never owned); metadata/tag injection onto resources is information-providers §5.2 extended data (org-defined fields carried in payload explicitly for 'cost analysis tools'); a metering provider declaring partial scope ('I implement 21 of 31 phases') is the capability-discovery.md unified capability model, which already ships a cost_analysis capability and cost.estimated/cost.attributed streams. No new UDLM 1.0 core structure is required — only this decision, recorded.",
+  "question_refs": [
+    "ADR-UDLM-DCM-001",
+    "pkliczewski dcm-project/udlm#17 ownership-sharing-allocation.md:274 (define cost types in UDLM instead)"
+  ],
+  "options_considered": [
+    {
+      "option": "Model cost types natively in UDLM 1.0 core (Piotr ownership:274 — 'define cost types in UDLM')",
+      "pros": "cost data travels with the resource; single model",
+      "cons": "cost has an independent lifecycle (per-customer pricing, contract cycles); no standard exists to anchor it; bloats the core model for a concern many realizations don't use",
+      "rejected_because": "couples two lifecycles that the meeting agreed are separate; violates adopt-or-reference (there is nothing to adopt, so REFERENCE, don't embed)"
+    },
+    {
+      "option": "A UDLM cost/metering EXTENSION namespace shipped inside udlm core 1.0",
+      "pros": "one repo; discoverable",
+      "cons": "1.0 core should not carry an optional, still-being-authored vocabulary; the metering-extension owners own the metering model, not UDLM core",
+      "rejected_because": "deferred, not rejected — a metering & billing extension MAY be authored against the substrate, but it is out of 1.0 core"
+    },
+    {
+      "option": "UDLM references an external metering model via the existing Information-Provider bridge; cost selection + quotas/budgets are admin policy; the costing engine is a provider (chosen)",
+      "pros": "reuses existing substrate (information-providers + capability-discovery + extended-data); keeps the two lifecycles independent; lets the metering tool be swapped by repointing; DCM consumes engine output without calculating",
+      "cons": "the metering & billing vocabulary itself must still be authored (by the metering-extension owners) as an extension against this substrate"
+    }
+  ],
+  "decision": "UDLM does not model or calculate cost. Metering & billing is an external data model with its own lifecycle, bridged from UDLM via the Information-Provider External Entity Reference (contracts/information-providers.md) and enriched via extended-data injection. WHICH cost model applies to a resource, plus quotas and budgets, are admin-defined POLICY (policy.schema.json), evaluated by the realization's Policy Engine — quotas/budgets may originate in a third system (e.g. ServiceNow) and synchronize in. The costing/metering engine is a PROVIDER (serve_data cost domains + needs_from_realization), which MAY declare partial phase coverage. DCM consumes the engine's output and feeds it usage/quota/budget data; DCM never performs the calculation. A metering & billing extension vocabulary is deferred to the metering-extension owners, authored against this substrate — not part of UDLM 1.0 core.",
+  "action": "answer",
+  "abstraction_decomposition": {
+    "data": "UDLM carries the REFERENCE/bridge to the external metering model — an information-providers External Entity Reference plus extended-data fields tagging a resource for cost attribution — never the cost VALUES or cost TYPES themselves. Cost types live in the external model / deferred metering extension.",
+    "policy": "'Cost as admin policy' — which cost model applies to which resource, and the quotas/budgets that gate provisioning, are admin-defined policy records (policy.schema.json). Cost DECISIONS are policy, evaluated by the realization's Policy Engine; UDLM carries the policy records. Quotas/budgets may be authored in a third system and synchronized.",
+    "provider": "The metering/billing engine (Koku / Median / Cosmata / any FinOps tool) is a Provider — capability serve_data over cost domains, with needs_from_realization for entity-lifecycle + placement + cost-attribution streams (capability-discovery.md already models exactly this, incl. the 'Acme FinOps Platform' example). A provider MAY cover only part of the 31-phase metering flow. DCM consumes its output; DCM never calculates."
+  },
+  "about": [
+    "contracts/information-providers.md",
+    "contracts/capability-discovery.md",
+    "registry/policy.schema.json"
+  ],
+  "state": "PROPOSED",
+  "provenance": {
+    "proposed_by": "maintainer",
+    "model_version": "claude-opus-4-8",
+    "at": "2026-07-07T00:00:00Z"
+  },
+  "metadata": {
+    "display_name": "Metering & billing placement — reference, don't model",
+    "notes": [
+      {
+        "at": "2026-07-07T00:00:00Z",
+        "author": "claude-opus-4-8 (session f78102d7)",
+        "text": "Child of ADR-UDLM-DCM-001. Records the 2026-07-07 cost-management session ruling + closes pkliczewski ownership:274. Key finding: the meeting's UDLM requirements are already-existing substrate (information-providers bridge + capability-discovery cost capability + extended-data injection); the metering vocabulary is a deferred extension owned by the metering-extension owners, not UDLM 1.0 core."
+      }
+    ]
+  }
+}
