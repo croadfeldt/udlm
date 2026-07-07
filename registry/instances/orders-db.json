@@ -1,5 +1,6 @@
 {
   "uuid": "7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21",
+  "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
   "conforms_to": "udlm/0.1",
   "resource_type": "Data.Database",
   "type_version": "0.1.0",
