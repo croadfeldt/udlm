@@ -1,0 +1,28 @@
+record_type: layer
+uuid: 08784152-e4f3-4c84-b8a6-8a47c328817c
+handle: org-eu-hardening
+conforms_to: udlm/0.1
+name: "Org customization layer \u2014 EU hardening defaults"
+description: "The foundation layer for VM requests \u2014 minimum universal fields every VM starts with.\
+  \ Worked example (example.com content)."
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: tenant
+contributor:
+  contributor_type: tenant_admin
+  review: per_profile
+fields:
+  sovereignty_zone: eu-west
+  encryption_at_rest: true
+metadata:
+  display_name: VM base layer
+  notes:
+  - at: '2026-07-07T13:35:00Z'
+    author: claude-fable-5 (session f78102d7, wave 3.4)
+    text: "Worked base layer \u2014 sets universal VM defaults; every field records this layer's uuid\
+      \ as its provenance source at assembly."
+narrow_only: true
