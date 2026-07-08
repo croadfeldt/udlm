@@ -29,14 +29,14 @@ A Composite Service is a **catalog-level definition** that declares:
 
 DCM uses that declaration to:
 
-1. **Select appropriate constituent providers** via the standard Placement Engine
+1. **Select appropriate constituent providers** via the standard placement
 2. **Determine execution order** from the dependency graph
 3. **Govern rehydration sequence** using the same dependency information
 
 A Service Provider that registers a Composite Service operates as a standard Service Provider for each constituent resource type it owns (those flagged `provided_by: self`). DCM's standard machinery handles everything else: placement, sequencing, failure handling, compensation, and audit.
 
 **A Composite Service is not an orchestrator.** Its definition does not:
-- Select constituent providers — the Placement Engine does this
+- Select constituent providers — the placement does this
 - Sequence execution rounds — the dependency graph informs DCM's Orchestration Flow Policy
 - Manage parallel execution — parallelism is derived from the dependency graph (resources with no unresolved dependencies execute simultaneously)
 - Run compensation — DCM's Recovery Policy executes compensation using the dependency graph in reverse
@@ -45,7 +45,7 @@ A Service Provider that registers a Composite Service operates as a standard Ser
 ### 1.2 Why This Model Is Correct
 
 Every DCM design principle is preserved:
-- **Governance stays with DCM** — constituent provider selection goes through the Placement Engine, including sovereignty filtering, accreditation checking, and trust scoring
+- **Governance stays with DCM** — constituent provider selection goes through the placement, including sovereignty filtering, accreditation checking, and trust scoring
 - **Policy stays with DCM** — Validation and Transformation policies fire on the composite payload; the same policies govern each constituent sub-request
 - **Audit stays with DCM** — each constituent request is a standard DCM request with its own audit trail; the composite audit is assembled from constituent audit records
 - **Recovery stays with DCM** — the Recovery Policy handles constituent failures using the dependency graph; the Composite Service definition does not make recovery decisions
@@ -83,7 +83,7 @@ Each constituent in the composition definition declares:
 constituents:
   - component_id: vm           # local identifier within this composite
     resource_type: Compute.VirtualMachine
-    provided_by: external      # DCM places via Placement Engine
+    provided_by: external      # placement selects the provider
     depends_on: []
     required_for_delivery: required
 
@@ -110,7 +110,7 @@ Field semantics:
 
 - **`component_id`** — Stable identifier for the constituent within this composite. Used in `depends_on` references, runtime status reporting (`constituent_status`), and (in transparent visibility mode) UUID derivation.
 - **`resource_type`** — Standard resource type identifier from the Resource Type Registry.
-- **`provided_by`** — Either `self` (the registering provider fulfills it) or `external` (DCM's Placement Engine selects a provider).
+- **`provided_by`** — Either `self` (the registering provider fulfills it) or `external` (placement selects a provider).
 - **`depends_on`** — Component IDs whose realized state must exist before this constituent can be dispatched. The dependency graph is constructed from these declarations.
 - **`required_for_delivery`** — See §2.4.
 
@@ -119,7 +119,7 @@ Field semantics:
 Two values:
 
 - **`self`** — The registering provider fulfills this constituent directly. At dispatch time, DCM sends a standard constituent payload to this provider's standard Services API endpoint. The provider returns a standard realized state. There is no special "composite dispatch" protocol — the provider receives one constituent's payload, just as it would for any standalone request for that resource type.
-- **`external`** — DCM's Placement Engine selects an eligible provider for this constituent at request time. Sovereignty filtering, accreditation checking, and trust scoring all apply normally. The Composite Service definition has no influence on this selection.
+- **`external`** — placement selects an eligible provider for this constituent at request time. Sovereignty filtering, accreditation checking, and trust scoring all apply normally. The Composite Service definition has no influence on this selection.
 
 A single Composite Service can mix `self` and `external` constituents freely.
 
@@ -230,7 +230,7 @@ Discovered State for a Composite Entity is derived: there is no provider-side "d
 | Concern | DCM | Registering Provider |
 |---------|-----|----------------------|
 | Catalog publication | Stores Composite Service registrations; publishes as catalog items | Provides registration: composition definition + constituent declarations |
-| Placement of `external` constituents | Selects providers via Placement Engine | — |
+| Placement of `external` constituents | Selects providers via placement | — |
 | Policy evaluation (composite payload) | Runs all policies on assembled payload | — |
 | Dependency graph construction | Built from `depends_on` declarations | — |
 | Constituent dispatch sequencing | Derived from dependency graph | — |
@@ -294,7 +294,7 @@ For each constituent in dependency-forward order:
 
 1. Resolve the constituent's provider:
    - `self` constituents: dispatched to the registering provider as it stands at rehydration time
-   - `external` constituents: re-resolved via Placement Engine using the rehydration policy (faithful, provider-portable, historical-exact, or historical-portable; see doc 17)
+   - `external` constituents: re-resolved via placement using the rehydration policy (faithful, provider-portable, historical-exact, or historical-portable; see doc 17)
 2. Send the standard rehydration payload to the resolved provider
 3. Record the resulting realized state
 
@@ -323,7 +323,7 @@ A Composite Service request flows through DCM's standard request pipeline with o
                 runtime values.
 3. Layer        Standard layer assembly applies to each constituent's payload
    assembly     (defaults, standards, organization layers, etc.).
-4. Placement    For each `external` constituent, the Placement Engine selects
+4. Placement    For each `external` constituent, the placement selects
                 a provider. `self` constituents bind to the registering
                 provider.
 5. Policy       All standard policies fire against the composite payload:
@@ -361,9 +361,7 @@ Compensation in nested composites runs bottom-up: the innermost composite compen
 
 ## 9. Scoring Model Integration
 
-The Placement Engine's standard scoring applies to composite placements, with one adjustment: when a Composite Service registration is chosen as a candidate, its score is the worst score among the constituents it would dispatch (the bottleneck score). This prevents a Composite Service registration with one strong constituent and one weak one from being preferred over a single-resource provider that scores well on the actually-needed resource.
-
-`self` constituents are scored as the registering provider's standard score for that resource type. `external` constituents are scored as the placement scores of the providers that would be selected — meaning composite scoring depends on the current Placement Engine state.
+The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is realization concern (see the DCM architecture documentation).
 
 ---
 
@@ -414,7 +412,7 @@ Registration is otherwise validated like any other catalog item.
 | `CMP-003` | Parallelism in constituent execution is derived from the dependency graph. Constituents with no unresolved dependencies execute concurrently within DCM's standard pipeline. The registering provider does not manage this. |
 | `CMP-004` | Composite status determination (`OPERATIONAL` / `DEGRADED` / `FAILED`) is performed by DCM based on constituent outcomes and `required_for_delivery` classifications. |
 | `CMP-005` | Recovery Policy governs all constituent failure handling and compensation. The Composite Service definition does not make recovery decisions. The registering provider implements standard decommission handling for `self` constituents when a decommission payload arrives. |
-| `CMP-006` | `provided_by: external` constituents are placed by the Placement Engine using standard placement rules. The Composite Service definition does not influence external constituent provider selection. |
+| `CMP-006` | `provided_by: external` constituents are placed by the placement using standard placement rules. The Composite Service definition does not influence external constituent provider selection. |
 | `CMP-007` | In transparent composition visibility mode, constituent entity UUIDs are `deterministic_uuid(parent_composite_uuid + component_id)` — stable across rehydration. |
 | `CMP-008` | Maximum Composite Service nesting depth is 3, enforced by DCM at registration time and at placement time by checking the composite definition chain depth. |
 
