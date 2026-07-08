@@ -35,6 +35,8 @@ UDLM is built on three foundational abstractions. Every concept in the model is 
 └─────────────────────┘   └─────────────────────────────────────┘
 ```
 
+> The two arrows are **peers, not a sequence** — any Data can flow directly to a Provider *or* a Policy; there is no fixed Data→Policy→Provider order. Both emit new Data that re-enters at the top, so the diagram is a **cycle**, not a pipeline. The loop is the invariant, not the order.
+
 The three abstractions compose through a simple loop: a change in **Data** is an event; **Policy** evaluates against that data and decides, transforms, or constrains; decisions invoke **Providers** or produce new **Data**, which is itself a new event. *How a specific realization implements that loop — the event bus, the policy evaluator, the named runtime components — is realization architecture, not part of the data model. See §5 and the DCM architecture documentation.*
 
 ---
