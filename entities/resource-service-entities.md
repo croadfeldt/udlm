@@ -388,24 +388,9 @@ provider_lifecycle_event:
 **Maximum Reporting Latency:**
 Providers must report lifecycle events within the timeframe declared in their provider registration. For CRITICAL severity events, immediate reporting is required. The reporting latency SLA is part of the Provider SLA/Operational Contract.
 
-### 7.3 Capacity Rating Contract
+### 7.3 Provider Capacity — declaration vs rating
 
-The realization maintains an internal capacity rating per provider, per Resource Type, per location. This rating is used by placement logic. The substrate defines the rating data structure; specific freshness thresholds may be realization-configurable.
-
-```yaml
-capacity_rating:
-  provider_uuid: <uuid>
-  resource_type_uuid: <uuid>
-  location_uuid: <uuid>
-  last_updated: <ISO 8601>
-  update_source: <mode_1_query|mode_2_registration|mode_3_denial>
-  available_capacity: <units>
-  capacity_confidence: <high|medium|low>
-  # high: updated within last scheduled window
-  # medium: updated within 2x scheduled window
-  # low: stale — beyond 2x scheduled window
-  next_scheduled_update: <ISO 8601>
-```
+What UDLM carries is the provider's **capacity declaration** — reported at registration and refreshed on the provider's declared schedule (part of the provider contract). What a realization does with it — maintaining an **internal capacity rating** per provider/type/location, its freshness/confidence bookkeeping, and the placement logic that consumes it — is a runtime optimization (a non-authoritative placement cache), not part of the data model. See the DCM architecture documentation for the rating structure and refresh mechanics.
 
 ---
 

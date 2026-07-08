@@ -359,27 +359,9 @@ indexed_fields:
 
 ---
 
-## 7. DCM-Internal Caches
+## 7. Caches are realization-internal
 
-DCM may maintain internal performance caches between components and stores. These are not Storage Providers — they are internal implementation details that do not require external registration or trust.
-
-### 7.1 Cache Characteristics
-
-- **Non-authoritative** — explicitly marked. Cache hits are not treated as ground truth.
-- **Cache-aside pattern** — DCM checks cache first; on miss, reads from authoritative store and populates cache
-- **Invalidation on write** — any write to an authoritative store invalidates the corresponding cache entry
-- **Bounded staleness** — maximum staleness window configured per cache; entries older than the window are treated as misses
-- **Rebuildable** — any cache can be cleared and rebuilt from its authoritative store
-
-### 7.2 Candidate Cache Locations
-
-| Cache | Authoritative Source | Purpose |
-|-------|---------------------|---------|
-| Layer Cache | Layer Store (Git) | Avoid repeated Git reads for frequently used layers |
-| Policy Cache | Policy Store (Git) | OPA policy bundles cached in Policy Engine memory |
-| Catalog Cache | Catalog Store (Git) | Service catalog items cached for presentation |
-| Provider Registry Cache | Provider Registry | Registered provider list cached for routing |
-| Search Index | GitOps stores | Queryable projection (also functions as a cache) |
+A realization MAY maintain internal performance caches in front of the authoritative stores. The only data-model invariant is the one from D1: **caches are non-authoritative projections** — the authoritative store always wins, a cache hit is never ground truth, and any cache is rebuildable from its authoritative store. Cache topology, patterns (cache-aside, invalidation-on-write), staleness windows, and which components cache what are realization concern (see the DCM architecture documentation) — they require no registration or trust and are not Storage Providers.
 
 ---
 
