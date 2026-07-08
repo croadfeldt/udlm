@@ -169,91 +169,34 @@ All four states are distinct data domains, each with specific immutability rules
 
 ## 5. Rehydration
 
-Rehydration is the process of using a previously stored state record as the starting point for a new request. It is not a shortcut around governance — **all relevant governance policies always apply regardless of rehydration source.** Rehydration is a new request that happens to start from a known prior state.
+Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance: all current policies always apply.
 
-*This section defines the data-model aspects of rehydration — the sources, the preserved identity, the record shapes, and the mode taxonomy. The rehydration RUNTIME — the governance pipeline, placement re-evaluation, exclusive leases, TTL/concurrency handling, and the tenancy-conflict pause mechanism — is realization concern; see the DCM operational model (`operations/rehydration.md`).*
+**Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order), preserving the entity's identity. UDLM contributes only the three irreducible things below; *how* a realization runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is realization concern (see the DCM operational model, `operations/rehydration.md`).
 
-### 5.1 Three Rehydration Sources
+### 5.1 Sources — the three stored states
 
-| Source | What is loaded | Layer assembly | Typical use |
-|--------|----------------|----------------|-------------|
-| **From Intent** | The consumer's original declaration is replayed | Full assembly runs (current layers) | Upgrade to current standards, apply new sovereignty constraints, environment refresh |
-| **From Requested** | The previously assembled, policy-processed payload | Skipped (already applied) | Reproduce close to the approved specification |
-| **From Realized** | The provider-confirmed payload (provider-specific fields stripped) | Skipped | Exact reproduction for DR, environment cloning, replacing a failed resource |
+A rehydration starts from any of the three stored states; this is not new structure, just the four-state model read backwards:
 
-All three run all current governance policies. Provider selection is configurable (see the four modes below).
+| Source | What is replayed | Typical use |
+|--------|------------------|-------------|
+| **Intent** | the raw declaration, through current layers | upgrade to current standards, environment refresh |
+| **Requested** | the assembled, policy-processed payload | reproduce close to the approved spec |
+| **Realized** | the provider-confirmed state (provider-specific fields stripped) | exact DR / clone / replace a failed resource |
 
-### 5.2 Entity UUID Preservation
+### 5.2 Preserved identity + lineage
 
-Entity UUIDs are **preserved on rehydration**. The UUID represents the stable logical identity of the resource across provider migrations, sovereignty changes, and lifecycle events. All external references — CMDB records, cost attribution, audit trails, cross-tenant relationships, dependency declarations — reference the entity by UUID; regenerating it would silently break all of them. What changes on rehydration is the **provider-side identifier** (the actual VM ID, container name, or resource handle), recorded in the rehydration history:
+The entity **UUID is preserved** across rehydration — every external reference (CMDB, cost attribution, audit, relationships, dependency declarations) is by UUID, so regenerating it would silently break them. Only the **provider-side identifier** changes, and that change is already recorded in `provider_entity_id_history`; the event itself is in the audit trail (`REHYDRATE` action). **So the data model needs no separate rehydration-history structure** — it is reconstructable from those two. Lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent records `source_store` / `source_record_uuid` for the record it was rehydrated from.
 
-```yaml
-entity:
-  uuid: <original-uuid>              # PRESERVED across all rehydrations
-  rehydration_history:
-    - rehydration_uuid: <uuid>
-      rehydrated_at: <ISO 8601>
-      trigger: <provider_migration|sovereignty_violation|manual|provider_decommission>
-      from_provider_uuid: <uuid>
-      to_provider_uuid: <uuid>
-      from_realized_entity_id: "vm-12345"   # provider's ID — no longer valid
-      to_realized_entity_id: "vm-67890"     # new provider's ID after rehydration
-      rehydrated_by: <actor-uuid>
-      intent_state_ref: <uuid>
-      previous_requested_state_ref: <uuid>
-      new_requested_state_ref: <uuid>
-```
+### 5.3 The two invariants
 
-Rehydration is **transactional**: if the target provider cannot accept the entity, the original entity remains in its current state with no UUID change and no partial state.
-
-Every rehydration also records its provenance on the new Intent State: `source_store`, `source_record_uuid`, `rehydration_reason`, `requested_by_uuid`, `rehydration_timestamp`.
-
-### 5.3 Rehydration Constraints
-
-An entity MAY declare a minimum authentication level required to rehydrate it, preventing privilege escalation through the rehydration mechanism:
-
-```yaml
-entity:
-  rehydration_constraints:
-    min_auth_level: hardware_token_mfa
-    # Ascending: api_key | ldap_password | oidc | oidc_mfa | hardware_token | hardware_token_mfa
-    auth_level_source: <original_provisioning|policy_declared>
-    allow_delegated_rehydration: false   # true = authorized service accounts may rehydrate
-```
-
-How strictly a realization enforces this is profile-governed (advisory at `standard`, rejecting at `prod`, dual-approval at `fsi`/`sovereign`) — an operational binding, not part of the data model.
-
-### 5.4 The Four Rehydration Modes
-
-Two independent axes — placement and policy version — produce four distinct rehydration configurations:
-
-| Mode | Provider re-evaluated | Policy version | Use Case |
-|------|-----------------------|----------------|----------|
-| **Faithful** | no | current | Same provider, current governance |
-| **Provider-Portable** | yes | current | New provider, current governance |
-| **Historical Exact** | no | pinned | Same provider, historical governance (audit evidence) |
-| **Historical Portable** | yes | pinned | New provider, historical governance |
-
-Historical (pinned) modes require elevated authorization. **Policies set placement constraints; the placement component selects the provider** — a policy that names a specific provider would be portability-breaking.
-
-### 5.5 Rehydration Tenancy and Sovereignty — always current
-
-**Tenancy controls, sovereignty directives, and cross-tenant authorizations are always evaluated against current policies during rehydration — they cannot be pinned to historical versions.** The `policy_version: pinned` setting governs resource configuration policies only.
-
-```yaml
-rehydration:
-  policy_version: pinned                 # governs resource configuration policies
-  tenancy_controls: always_current       # cannot be pinned
-  sovereignty_controls: always_current
-  cross_tenant_authorizations: always_current
-```
+Everything genuinely data-model about rehydration reduces to two rules:
 
 | Policy | Rule |
 |--------|------|
-| `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use current policies during rehydration — cannot be pinned. |
-| `RHY-005` | Entity UUIDs are preserved on rehydration; provider-side identifiers change and are recorded in `rehydration_history`; rehydration is transactional. |
+| `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use **current** policies during rehydration — they cannot be pinned to a historical version (only resource-configuration policy may be pinned). |
+| `RHY-005` | The entity **UUID is preserved** on rehydration; the provider-side identifier changes (recorded in `provider_entity_id_history`); rehydration is transactional — a failed target leaves the pre-rehydration state intact, no UUID change. |
 
-*The remaining rehydration policies (`RHY-002/003/004/006/007/008/010/011/012`) govern the runtime — the PENDING_REVIEW pause, lease acquisition, TTL, concurrency priority, and snapshot-stream retention windows — and live with the DCM operational model.*
+*The rest is realization/policy, not data model, and lives in the DCM operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
 
 ---
 
@@ -295,7 +238,7 @@ An **unsanctioned change** is a change made directly to a resource without a cor
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — UUID preserved; `rehydration_history` records provider-side ID changes; transactional (RHY-005) |
+| 1 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — UUID preserved; provider-side ID changes recorded in `provider_entity_id_history` + the REHYDRATE audit trail (no separate rehydration-history structure); transactional (RHY-005) |
 | 2 | Should the Discovered stream retain full history or only a configurable window? | Retention | ✅ Resolved — snapshot-stream retention is profile-governed (operational); the durable per-UUID inventory record is exempt and persists until claim/retirement (RHY-008) |
 
 ---
