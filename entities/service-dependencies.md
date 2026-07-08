@@ -333,10 +333,10 @@ Dependency failure handling is **configurable per request or per policy**:
 |-------------|---------|
 | `fail_all` | Any hard dependency failure fails the entire request. All partially realized nodes are decommissioned. |
 | `fail_dependent` | A hard dependency failure fails only the dependent resource and its dependents. Independent branches continue. |
-| `retry` | Failed dependencies are retried with the same or alternative provider before failing. Retry count and provider selection policy are configurable. |
-| `partial_complete` | Request is marked partially complete. Failed nodes are flagged for retry or manual intervention. |
+| `retry` | Failed dependencies are retried before failing. |
+| `partial_complete` | Request is marked partially complete; failed nodes await retry or manual resolution. |
 
-The failure mode is declared in the request payload or in an applicable organizational policy.
+The failure **mode** is a declared choice — set in the request payload or an applicable organizational policy (this enum is data). How a realization *executes* a mode — retry counts, same-vs-alternative provider re-selection, node flagging, and compensation/rollback — is governed by **Recovery Policy** at runtime, not fixed by the data model.
 
 ---
 
