@@ -998,18 +998,7 @@ The minimum stake strength threshold per event type is declared in the resource 
 
 ### 14.3 Notification Traversal and Graph Depth
 
-Notification traversal respects the same depth limits as other graph operations (REL-021: max depth 15 standard/prod, 10 fsi/sovereign). However, notification traversal depth is typically much shallower — most event types only traverse depth 1 (direct relationships).
-
-```
-VLAN-100 decommissioning (depth 1 traversal):
-  Direct relationships:
-    ├── VM-A (attached_to, required) → AppTeam notified as stakeholder
-    ├── VM-B (attached_to, required) → DevTeam notified as stakeholder
-    └── VM-C (attached_to, optional) → OpsTeam notified as observer
-  No depth-2 traversal — VM-A's dependencies are not notified about VLAN changes
-```
-
-Security events (sovereignty violation, audit chain break) use depth 0 (system audiences only — no relationship traversal needed).
+What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared in the Resource Type Specification (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) declare depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is realization concern (foundations §5 lists notification routing as realization machinery); it consumes these declarations.
 
 ### 14.4 Notification Traversal Policies
 
