@@ -1539,126 +1539,17 @@ Policies matching the `request.layers_assembled` payload type are evaluated agai
 2. **Validation Policies** — check the payload against rules. Pass/fail only — no field modification. Failures reject the request.
 3. **Compliance-class Validation Policies** — apply hard overrides and blocks. May set `override: immutable`. All overrides recorded in provenance.
 
-Pre-placement policies produce **placement constraints** — declarative requirements a provider must satisfy (sovereignty zone, hardware class, conformance level, etc.). These constraints are carried forward as inputs to the Placement Engine.
+Pre-placement policies produce **placement constraints** — declarative requirements a provider must satisfy (sovereignty zone, hardware class, conformance level, etc.). These constraints are carried forward as inputs to placement.
 
-### Step 6 — Placement Engine — Placement Loop
+### Step 6 — Placement
 
-The Placement Engine takes the policy-processed payload and placement constraints, builds a candidate provider list (filtered by constraints, ordered by scoring criteria), and iterates through candidates until placement is confirmed or all candidates are exhausted.
+Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is realization concern (see the DCM operational model and the provider contract). What the data model retains from this step is two records:
 
-**Placement loop governance** (configurable by policy):
-```yaml
-placement_loop_config:
-  max_iterations: 5              # maximum candidates to attempt
-  max_duration_seconds: 30       # timeout for entire loop
-  on_exhaustion: <reject | escalate | manual_placement>
-  hold_ttl_seconds: 300          # how long provider holds resources
-```
-
-**Per-candidate iteration:**
-
-```
-── RESERVE QUERY (single atomic call to provider) ──
-  Request: constraints + resource spec + hold TTL + metadata_requested
-  Response status:
-    confirmed: resources held, constraints satisfied, metadata returned
-    partial:   hold confirmed, some metadata unavailable
-    insufficient: provider lacks capacity — skip to next candidate
-    refused:   provider cannot satisfy constraints — skip to next candidate
-
-── POLICY PHASE (placement_phase: loop) ──
-  Policies evaluate: payload + constraints + reserve query response
-  For each field declared in policy required_context:
-    Field present:   evaluate normally
-    Field absent, required_context declared:
-      if_absent: gate  → release hold, abort loop, REJECT REQUEST
-      if_absent: warn      → record warning, continue
-      if_absent: skip      → record as skipped, continue
-    Field absent, no policy declares required_context:
-      → record policy_gap_record (implicit_approval), continue
-  Policy outcomes:
-    gate         → release hold, abort loop, REJECT REQUEST
-    reject_candidate → release hold, skip to next candidate
-    pass / warn      → PLACEMENT CONFIRMED — exit loop
-```
-
-**Reserve query structure:**
-```yaml
-reserve_query_request:
-  request_uuid: <uuid>
-  hold_uuid: <uuid — DCM-generated>
-  resource_type: <e.g., Compute.VirtualMachine>
-  placement_constraints: <from pre-placement policy outputs>
-  resource_spec:
-    cpu: 16
-    ram_gb: 64
-    storage_gb: 500
-  hold_ttl_seconds: 300
-  metadata_requested:
-    - capacity_available
-    - topology
-    - sovereignty_certifications
-    - patch_level
-    - maintenance_windows
-
-reserve_query_response:
-  hold_uuid: <echoed>
-  provider_hold_reference: <provider-native hold ID — opaque>
-  hold_status: <confirmed | insufficient | refused | partial>
-  hold_confirmed_spec:
-    cpu: 16
-    ram_gb: 64
-    storage_gb: 500
-    zone: eu-west-1a
-    rack: rack-07
-  metadata:
-    topology:
-      zone: eu-west-1a
-      rack: rack-07
-      network_segment: vlan-142
-      available_ips: ["10.20.4.0/24"]
-    sovereignty_certifications:
-      - cert: ISO-27001
-        expires_at: "2027-06-30"
-    missing_metadata:
-      - field: patch_level
-        reason: "Provider does not track patch metadata at this conformance level"
-```
-
-**Non-hold queries** (available outside the placement loop for capacity checks, provider health, cost estimation, and pre-filtering):
-
-| Query Type | Hold? | Purpose |
-|-----------|-------|---------|
-| `reserve_query` | Yes — atomic | Primary placement loop query |
-| `capacity_query` | No | Pre-loop filtering, dashboard, cost estimation |
-| `metadata_query` | No | Provider health checks, audit, policy pre-evaluation |
-| `constraint_verification` | No | Rapid pre-filter before entering the loop |
-
-**Policy gap records** — when a field is absent and no policy declares `required_context` for it:
-```yaml
-policy_gap_record:
-  request_uuid: <uuid>
-  field: patch_level
-  field_value: null
-  evaluation_result: implicit_approval
-  reason: >
-    No active policy declared required_context for this field.
-    Field was absent in reserve query response.
-    Request proceeded without policy evaluation of this field.
-  provider_uuid: <uuid>
-  recorded_at: <ISO 8601>
-  resolution_expected: realized_payload
-  # Provider expected to supply this field in the realized payload or discovery
-```
-
-**Provider metadata completeness — eventual consistency:**
-Fields missing from the reserve query response are expected to be completed in:
-1. **Realized payload** (primary) — provider returns full metadata when confirming realization
-2. **Discovery loop** (fallback) — periodic discovery fills remaining gaps
-
-The realized entity carries `enrichment_status: pending | partial | complete` reflecting how complete its metadata is. This is the same pattern as the ingestion model.
+- **Policy-gap record** — when a field is absent and *no* policy declares `required_context` for it, an `implicit_approval` record is written (field, `provider_uuid`, reason, `recorded_at`, `resolution_expected: realized_payload`). This is the same road-not-taken provenance discipline UDLM applies elsewhere: the fact that a field went un-evaluated is recorded, not silently dropped.
+- **Metadata completeness** — metadata a provider cannot supply at placement is completed later via the **realized payload** (primary) or **discovery** (fallback); the realized entity carries `enrichment_status: pending | partial | complete`. Same pattern as the ingestion model.
 
 ### Step 7 — Post-Placement Policy Processing
-Policies with `placement_phase: post` (or `both`) execute after the Placement Engine has confirmed a provider selection. These policies have full access to the `placement` block of the payload including the provider selection, hold confirmation, and all returned metadata.
+Policies with `placement_phase: post` (or `both`) execute after placement has confirmed a provider selection. These policies have full access to the `placement` block of the payload including the provider selection, hold confirmation, and all returned metadata.
 
 1. **Transformation Policies** — provider-aware enrichment. Inject zone-specific configuration, provider-specific defaults, topology-derived values that are only knowable after provider selection.
 2. **Validation Policies** — post-placement checks. Verify the selected provider meets requirements that couldn't be expressed as pre-placement constraints.
