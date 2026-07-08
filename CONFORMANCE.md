@@ -100,7 +100,7 @@ GET /.well-known/udlm/conformance
 ```json
 {
   "realization": {
-    "name": "DCM",
+    "name": "example-realization",
     "vendor": "example-org",
     "version": "1.4.2"
   },
@@ -110,7 +110,7 @@ GET /.well-known/udlm/conformance
   "extensions_published": true,
   "schema_bundle_url": "/.well-known/udlm/schema-bundle",
   "interop_surfaces": {
-    "consumer_api": { "available": true, "transport": "http", "base_url": "https://dcm.example/api/v1" },
+    "consumer_api": { "available": true, "transport": "http", "base_url": "https://example-realization/api/v1" },
     "provider_callbacks": { "available": true, "transport": "http", "auth": "mtls+credential" },
     "federation": { "available": true, "transport": "http", "auth": "mtls+credential" },
     "audit_export": { "available": true, "transport": "http" }
