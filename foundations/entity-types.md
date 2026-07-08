@@ -6,7 +6,7 @@
 
 > **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the DCM architecture.
+> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md). All concepts in this document map to one or
 > more of those three abstractions.
@@ -29,7 +29,7 @@
 
 ## 1. Purpose
 
-This document defines the complete taxonomy of entity types in DCM. Every resource, service, group, and process managed by DCM is an entity — and every entity belongs to one of the types defined here. The entity type determines the lifecycle state machine, the ownership model, the decommission behavior, and which data model fields are applicable.
+This document defines the complete taxonomy of entity types in UDLM. Every resource, service, group, and process a realization manages is an entity — and every entity belongs to one of the types defined here. The entity type determines the lifecycle state machine, the ownership model, the decommission behavior, and which data model fields are applicable — i.e. it is the discriminator a consumer uses to know how an entity behaves.
 
 Understanding entity types is prerequisite to understanding:
 - How lifecycle states are assigned and transition
@@ -41,7 +41,7 @@ Understanding entity types is prerequisite to understanding:
 
 ## 2. The Three Primary Entity Types
 
-DCM defines three primary entity types. Every entity is exactly one of these.
+UDLM defines three primary entity types. Every entity is exactly one of these.
 
 ### 2.1 Infrastructure Resource Entity
 
@@ -81,7 +81,7 @@ An **Infrastructure Resource Entity** is a realized physical or virtual infrastr
                                     ▼
                     ┌─────────────────────────────────┐
                     │           REALIZED               │
-                    │  (Provider-confirmed, DCM has    │
+                    │  (Provider-confirmed, with a     │
                     │   full Realized State record)    │
                     └───────────────┬─────────────────┘
                                     │  Passes health checks
@@ -117,6 +117,8 @@ Any state except DECOMMISSIONED:
 **Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet, and all other persistent infrastructure resource types.
 
 #### 2.1.1 Infrastructure Resource Entity Data Model
+
+The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. A realization that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
 
 ```yaml
 infrastructure_resource_entity:
@@ -178,7 +180,7 @@ infrastructure_resource_entity:
 
 #### 2.1.2 PENDING_REVIEW State
 
-`PENDING_REVIEW` is a formal lifecycle state for Infrastructure Resource Entities (not Process Resources). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed:
+`PENDING_REVIEW` is a formal lifecycle state for Infrastructure Resource Entities (not Process Resources). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed. **Why a distinct state rather than FAILED:** the underlying resource is unchanged and healthy — the conflict is a *governance* question (sovereignty/authorization), not a provisioning fault. `FAILED` would imply the resource is broken and invite teardown; `PENDING_REVIEW` preserves the resource intact while a human or policy resolves the conflict, and it is never auto-resolved.
 
 | Trigger | Description |
 |---------|-------------|
@@ -236,7 +238,7 @@ A **Process Resource Entity** represents an ephemeral execution — an automatio
 **Characteristics:**
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
 - Must declare `max_execution_time` — mandatory, not optional
-- If max_execution_time is exceeded, the process enters FAILED state and DCM generates a `PROCESS_TIMEOUT` event (catalogued as `process.timeout` — contracts/event-catalog.md §17a)
+- If max_execution_time is exceeded, the process enters FAILED state and a `PROCESS_TIMEOUT` event is generated (catalogued as `process.timeout` — contracts/event-catalog.md §17a)
 - If the process modifies any Infrastructure Resource Entity, it must record the modified entity UUIDs in its provenance
 - Owned by the Tenant that initiated the execution
 - Subject to audit — every process execution produces a full audit trail
@@ -317,7 +319,7 @@ These invariants apply to all entity types without exception:
 | Composite constituent ownership | A Composite Resource Entity's constituents are owned individually — the composite UUID does not override constituent Tenant ownership |
 | Immutable Realized State | Realized State events are append-only; a new event is created for every state change |
 | Audit trail preservation | Audit records for an entity are never destroyed while any related entity is active; preservation policy governs post-terminal retention |
-| Provider ID separation | The entity UUID is the DCM stable identity; the provider entity ID is the provider's own reference. These are separate and the provider ID may change on rehydration |
+| Provider ID separation | The entity UUID is the UDLM stable identity; the provider entity ID is the provider's own reference. These are separate and the provider ID may change on rehydration |
 
 ---
 
