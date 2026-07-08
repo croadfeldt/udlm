@@ -1,0 +1,66 @@
+{
+  "record_type": "decision_record",
+  "uuid": "f1e2d3c4-5b6a-4c8d-9e0f-1a2b3c4d5e6f",
+  "handle": "ADR-AEP-001",
+  "conforms_to": "udlm/0.1",
+  "title": "Adopt AEP — RFC 9457 for the error model (UDLM), resource-oriented design + the Spectral linter for the API specs (DCM)",
+  "version": "1.0.0",
+  "scope": "architecture",
+  "rationale": "pkliczewski asked on dcm-project/udlm#18 (error-model:95) whether the error model should align with AEP (aep.dev — the API Enhancement Proposals, the industry successor to Google's AIP). Running the adopted-standards decision procedure (adopted-standards.md §1b): AEP-193 defines its error model as IETF RFC 9457 (Problem Details for HTTP APIs) — a wide, stable, extensible standard. UDLM's bespoke error envelope maps onto it cleanly: our closed error-code vocabulary becomes the problem `type`, `message` splits into RFC 9457 `title`/`detail`, the audit link becomes `instance`, and request_id/retryable/retry_after_seconds/timestamp/context become RFC 9457 extension members (which RFC 9457 §3.2 and AEP-193 explicitly sanction as top-level). This is a Tier-2 record adoption and a step-3 CLEAN REPLACEMENT: RFC 9457 subsumes the homegrown envelope, so we adopt it and RETIRE the bespoke shape — surface area goes down, not up. The broader AEP (resource-oriented design AEP-121, the standard methods Get/List/Create/Update/Delete, resource names, pagination) governs API SHAPE, which is DCM's API specs (OpenAPI), not the UDLM data model — so it lands DCM-side, enforced by the AEP Spectral OpenAPI linter (aep-dev/aep-openapi-linter). UDLM's field naming is already snake_case and conforms. Grounded in producers/consumers: real consumers already parse the error envelope (they gain a referenced standard instead of a bespoke one); real API clients gain uniform resource semantics.",
+  "question_refs": [
+    "pkliczewski dcm-project/udlm#18 error-model.md:95 (align with AEP?)",
+    "task #231 (adopt AEP + Spectral aep-openapi-linter for DCM API specs)"
+  ],
+  "options_considered": [
+    {
+      "option": "Keep the bespoke UDLM error envelope",
+      "pros": "no change; flat and simple",
+      "cons": "a homegrown wire standard where a wide IETF one (RFC 9457) cleanly fits; not net-negative; ignores the review ask",
+      "rejected_because": "adopted-standards §1b step 2/3 — a clean standard fit means adopt, don't keep a parallel bespoke form"
+    },
+    {
+      "option": "Adopt the google.rpc.Status / ErrorInfo model (the older AIP shape)",
+      "pros": "familiar from AIP",
+      "cons": "AEP-193 itself moved to RFC 9457; adopting the superseded shape would diverge from current AEP",
+      "rejected_because": "AEP's current error model IS RFC 9457 — adopt what AEP actually specifies"
+    },
+    {
+      "option": "Adopt AEP: RFC 9457 error envelope (UDLM) + resource-oriented API design & the Spectral linter (DCM) (chosen)",
+      "pros": "replaces the bespoke envelope with an IETF standard (surface down); keeps our closed vocab as `type` + semantics as extension members; aligns the API specs to a broadly-supported convention set with real tooling; answers the review",
+      "cons": "a wire-format change to the error envelope (acceptable pre-1.0; error-model is Draft) and a DCM-side OpenAPI/linter effort to schedule"
+    }
+  ],
+  "decision": "Adopt AEP. (1) UDLM error model: adopt RFC 9457 (Problem Details) via AEP-193 as the error envelope — `type` carries the closed error-code vocabulary, `title`/`detail` replace `message`, `instance` carries the audit URN, and request_id/retryable/retry_after_seconds/timestamp/context are RFC 9457 extension members; the former bespoke envelope shape is retired. Declared as a Tier-2 adoption in adopted-standards.md terms. (2) DCM API specs (follow-on, DCM repo): adopt AEP resource-oriented design (AEP-121) and the standard methods, and wire the AEP Spectral OpenAPI linter (aep-openapi-linter) into the API-spec CI. (3) UDLM field naming already conforms (snake_case). This DR is the adoption record; the error-model.md change is its first execution.",
+  "action": "change-spec",
+  "abstraction_decomposition": {
+    "data": "The error envelope is DATA (a wire contract) — so RFC 9457 adoption lands in UDLM (contracts/error-model.md). The closed error-code vocabulary and retryable semantics are preserved as the problem `type` and extension members; only the shape is replaced. snake_case field naming already conforms.",
+    "policy": "No new policy — the retryable/retry semantics that drive retry/backoff policy are unchanged; they move from bespoke fields to RFC 9457 extension members with identical meaning.",
+    "provider": "AEP resource-oriented design + standard methods shape the provider/consumer/admin API surface, which is realization (DCM) concern — enforced by the AEP Spectral OpenAPI linter in the DCM API-spec CI, not by the UDLM data model. UDLM keeps only the wire DATA (the error envelope, entity/record schemas)."
+  },
+  "produces": [
+    "contracts/error-model.md (RFC 9457 / AEP-193 error envelope)",
+    "design-principles/adopted-standards.md (AEP/RFC-9457 as an adopted Tier-2 standard — reference)",
+    "DCM follow-on: AEP resource-oriented OpenAPI conventions + aep-openapi-linter in CI"
+  ],
+  "about": [
+    "contracts/error-model.md",
+    "design-principles/adopted-standards.md",
+    "CONFORMANCE.md"
+  ],
+  "state": "PROPOSED",
+  "provenance": {
+    "proposed_by": "maintainer",
+    "model_version": "claude-opus-4-8",
+    "at": "2026-07-08T00:00:00Z"
+  },
+  "metadata": {
+    "display_name": "Adopt AEP (RFC 9457 errors + resource-oriented API design)",
+    "notes": [
+      {
+        "at": "2026-07-08T00:00:00Z",
+        "author": "claude-opus-4-8 (session f78102d7)",
+        "text": "Answers pkliczewski error-model:95. AEP-193's error model IS RFC 9457 (Problem Details) — a clean Tier-2 replacement for the bespoke envelope (surface down). UDLM error-model.md aligned as first execution: type=closed vocab, title/detail split, instance=audit URN, extension members for request_id/retryable/retry_after/timestamp/context. Broader AEP (resource-oriented design + standard methods + Spectral OpenAPI linter) is DCM API-spec work, scheduled as the follow-on. UDLM already snake_case."
+      }
+    ]
+  }
+}

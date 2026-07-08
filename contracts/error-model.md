@@ -27,48 +27,67 @@ and validation rules.
 
 ---
 
-## 2. Error envelope
+## 2. Error envelope — RFC 9457 Problem Details
 
-Every error emitted on an interop surface MUST conform to this envelope:
+The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (Problem Details for HTTP APIs)** via **[AEP-193](https://aep.dev/193/)** (ADR-AEP-001; a Tier-2 record adoption per [adopted-standards.md](../design-principles/adopted-standards.md) §1a). This *replaces* UDLM's former bespoke envelope — the closed error-code vocabulary (§3) and the `retryable` semantics survive as the problem `type` and extension members; the custom envelope shape is retired (net-negative surface). Every error emitted on an interop surface MUST be an RFC 9457 problem object:
 
 ```json
 {
-  "error_code": "validation.scope_not_recognized",
-  "message": "Scope 'tenant-foo' is not recognized by this realization.",
+  "type": "validation.scope_not_recognized",
+  "status": 400,
+  "title": "Scope not recognized",
+  "detail": "Scope 'tenant-foo' is not recognized by this realization.",
+  "instance": "urn:udlm:audit:a1b2c3d4-2c95-4a1b-8d3e-7a9c1b2e4f8d",
   "request_id": "f3b64dda-2c95-4a1b-8d3e-7a9c1b2e4f8d",
-  "audit_uuid": "a1b2c3d4-...",
   "retryable": false,
   "retry_after_seconds": null,
-  "details": {
-    "scope_attempted": "tenant-foo",
-    "scopes_known": ["tenant-a", "tenant-b"]
-  },
-  "timestamp": "2026-05-26T14:32:18.456Z"
+  "timestamp": "2026-05-26T14:32:18.456Z",
+  "scope_attempted": "tenant-foo",
+  "scopes_known": ["tenant-a", "tenant-b"]
 }
 ```
 
 ### Field semantics
 
+**RFC 9457 core members:**
+
 | Field | Required | Type | Description |
 |---|---|---|---|
-| `error_code` | yes | string | Closed-vocabulary code (see §3) |
-| `message` | yes | string | Human-readable; localizable; informative only |
-| `request_id` | yes | UUID | UUID of the request/operation that errored |
-| `audit_uuid` | yes | UUID | UUID of the audit record for this error |
-| `retryable` | yes | boolean | Whether the operation can safely be retried |
-| `retry_after_seconds` | optional | number \| null | If retryable, suggested minimum delay before retry |
-| `details` | optional | object | Structured error-specific context; schema per error code |
-| `timestamp` | yes | RFC 3339 UTC | When the error occurred |
+| `type` | yes | string | The problem-type token from the closed vocabulary (§3), e.g. `validation.scope_not_recognized` — the stable identifier a peer matches on (never the `detail` string). MAY be a dereferenceable `https://udlm.dev/errors/<type>` URI. |
+| `status` | yes | integer | HTTP status (§5). The envelope is authoritative; status is the transport-level summary. |
+| `title` | yes | string | Short, human-readable description of the problem **type** — stable across occurrences, no PII. Localizable. |
+| `detail` | optional | string | Explanation specific to **this occurrence**. Developer-facing; MAY include PII (do not log); never string-matched by clients. |
+| `instance` | yes | string | Identifies this specific occurrence — the URN of the audit record, `urn:udlm:audit:<audit_uuid>`, which carries the forensic link (§6). |
 
-Peers MUST reject error responses missing required fields with
-`validation.error_envelope_malformed`.
+**UDLM extension members** — RFC 9457 §3.2 sanctions additional top-level members; per AEP-193, any dynamic/context values MUST appear as top-level members (not nested) so peers can read them without knowing an error-specific schema:
+
+| Field | Required | Type | Description |
+|---|---|---|---|
+| `request_id` | yes | UUID | The request/operation that errored (RFC 9562). |
+| `retryable` | yes | boolean | Whether the operation can safely be retried (§4). |
+| `retry_after_seconds` | optional | number \| null | If retryable, suggested minimum delay; mirrors the HTTP `Retry-After` header. |
+| `timestamp` | yes | RFC 3339 UTC | When the error occurred. |
+| *(context)* | optional | any | Error-specific structured context as **top-level** members (e.g. `scope_attempted`, `scopes_known`) — the former nested `details.*`, flattened per AEP-193. |
+
+Peers MUST reject problem objects missing required members with `type: validation.error_envelope_malformed`.
+
+### 2a. Mapping from the former bespoke envelope
+
+| Was | Now |
+|---|---|
+| `error_code` | **`type`** (same closed vocabulary, §3) |
+| `message` | split into **`title`** (stable problem-type text) + **`detail`** (this-occurrence text) |
+| `audit_uuid` | carried by **`instance`** as `urn:udlm:audit:<uuid>` |
+| `details` (nested object) | **flattened to top-level extension members** (AEP-193) |
+| `request_id`, `retryable`, `retry_after_seconds`, `timestamp` | **RFC 9457 extension members** (unchanged semantics) |
 
 ---
 
 ## 3. Closed error code vocabulary
 
-Error codes use a `namespace.code` pattern. Namespaces are closed at the
-udlm-conformance boundary; new namespaces require a udlm spec change.
+Error codes use a `namespace.code` pattern and are the values of the problem
+`type` member (§2). Namespaces are closed at the udlm-conformance boundary; new
+namespaces require a udlm spec change.
 
 ### 3.1 Namespaces
 
@@ -168,7 +187,7 @@ written for the error. The audit record MUST contain:
 - The `request_id` and `audit_uuid` from the envelope (same UUIDs).
 - The originating actor (authenticated identity or `unauthenticated`).
 - The operation attempted.
-- The error_code and message.
+- The problem `type`, `title`, and `detail`.
 - Structured `details` for reproducibility.
 - Timestamp per [`time-and-clock.md`](time-and-clock.md).
 
@@ -179,8 +198,8 @@ can find the full audit context. See [`universal-audit.md`](../observability/uni
 
 ## 7. Localization
 
-- `error_code` is NEVER localized — codes are normative tokens.
-- `message` MAY be localized. Localization is the emitter's responsibility.
+- `type` is NEVER localized — problem-type tokens are normative.
+- `title` and `detail` MAY be localized. Localization is the emitter's responsibility.
 - `details` field keys are normative; values MAY be localized where they are
   human-readable, but identifiers, codes, and other tokens remain in canonical
   form.
@@ -210,13 +229,19 @@ A conformant realization MUST:
 - Emit only error codes in the closed vocabulary (or declared extensions).
 - Set `retryable` correctly per the code semantics.
 - Include `request_id` and `audit_uuid` in every error.
-- Use the wire envelope schema exactly.
+- Emit the RFC 9457 problem object exactly (§2), with `type` from the closed vocabulary.
 - Reject malformed envelopes from peers with `validation.error_envelope_malformed`.
 
 ---
 
-## 10. Related contracts
+## 10. Adopted standards & related contracts
 
+**Adopted (ADR-AEP-001, Tier-2 per [adopted-standards.md](../design-principles/adopted-standards.md)):**
+- [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) — Problem Details for HTTP APIs (the error envelope, §2)
+- [AEP-193](https://aep.dev/193/) — the AEP error model, which adopts RFC 9457
+- [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562) — UUIDs (`request_id`, audit id) · [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) — `timestamp`
+
+**Related contracts:**
 - [`identifier-scheme.md`](identifier-scheme.md) — UUIDs for request_id and audit_uuid
 - [`time-and-clock.md`](time-and-clock.md) — timestamp format
 - [`retry-semantics.md`](retry-semantics.md) — how `retryable` and `retry_after_seconds` drive retry behavior
