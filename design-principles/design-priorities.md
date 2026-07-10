@@ -44,7 +44,7 @@ The security model is present and correct. The enforcement strictness and automa
 
 | Property | Rule | Reference |
 |----------|------|-----------|
-| Credential values never in DCM-internal stores of consumer-facing credentials | Absolute, no profile exception | [credentials](../governance/credentials.md) |
+| Credential values never in realization-internal stores of consumer-facing credentials | Absolute, no profile exception | [credentials](../governance/credentials.md) |
 | Governance Matrix always boolean | Scoring never applies to boundary decisions | [governance-matrix](../governance/governance-matrix.md) |
 | Every provider dispatch requires scoped interaction credential | Substrate requirement | [credentials](../governance/credentials.md) |
 | Shadow mode on all contributed policies | Substrate requirement | [federated-contribution-model](../governance/federated-contribution-model.md) |
