@@ -103,17 +103,25 @@ so "Kea stores its records in UDLM format" is satisfied by construction.
 5. Kea renders `{mac: <new>, ip: 10.0.0.91, hostname: vis}` from #2–#3; the old MAC disappears when the
    record changes. Same edit reassigns the IP on any future motherboard swap.
 
-## Open decisions (for review)
+## Decisions taken (2026-07-09)
 
-- **MAC placement:** keep as a `Hardware.NetworkInterface` attribute (my recommendation), or promote to a
-  separate NetBox-style MACAddress record now?
-- **Config type:** name + exact scope of `Network.ConnectionProfile`; adopt NMstate as the *whole body*
-  (Tier 2, recommended) vs. borrow only its vocabulary.
+- **MAC placement — DECIDED:** MAC stays an attribute of the ethernet-adapter resource
+  (`Hardware.NetworkInterface`), not a separate record. (A separate NetBox-style MACAddress record
+  remains the escalation path if multi-MAC / permanent-vs-assigned is ever needed.)
+- **Config type — DECIDED:** adopt **NMstate as the whole body** of the config resource (Tier-2
+  adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the body). Not just its
+  vocabulary.
+- **Coverage — DECIDED:** all of Kea's reservation records live in UDLM format (fleet + IoT) — "Kea stores
+  its records in UDLM format." `Network.DHCPScope.reservations` becomes a projection of the estate.
+
+## Still open
+
+- **Config type name:** `Network.ConnectionProfile` vs `Config.HostNetwork` vs other; and its exact
+  attachment relation to the adapter (`configures`).
 - **Reservation rendering:** a generator tool in `roadfeldt-dcm/tools/` that emits Kea reservations (fits
   the repo idiom — `shutdown_order.py`, `provenance.py`), with a byte-for-byte parity check against
-  today's `dhcp_servers.yml` before Kea is switched to consume it (this touches live DHCP).
-- **Coverage / migration:** port all ~40 current reservations (fleet + IoT) into UDLM records, or fleet
-  first and leave consumer IoT in the hand-list initially.
+  today's `dhcp_servers.yml` before Kea is switched to consume it (this touches live DHCP). Built as its
+  own reviewed PR after this proposal is ratified.
 
 ## Ties
 #267 (host-network model: `parent_device`/`lower_layer`, `device_class`), `Network.IPAddress` +
