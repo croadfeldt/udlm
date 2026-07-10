@@ -9,8 +9,6 @@
 
 ## 1. The Unified Policy Contract
 
-> **Machine-validatable schema:** `registry/policy.schema.json` (data-model-core §2 [D8.3]). The record shape below is enforced; `registry/tools/validate.py` dispatches `record_type: policy` to it.
-
 Every Policy in DCM — regardless of type — implements a single base contract. What varies between policy types is the **output schema**: what the Policy produces when its match conditions are satisfied.
 
 ```
@@ -426,6 +424,15 @@ Pass 1 (escalation scenario):
   → Request paused. Escalation with conflict report.
 ```
 
+### 7.3 Policy engine — built-in vs. delegated (external)
+
+This document is the policy **contract**. *Where* policies live and *who* evaluates them is a realization choice, in one of two modes — the contract is identical either way:
+
+- **Built-in engine (default).** A realization evaluates with its own engine, and its policies are **first-class, realization-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For DCM specifically, **policies are DCM-controlled**: the policy engine is a core DCM component and its policy store sits under DCM's governance. Whether that store is *physically* the same database as other DCM Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
+- **Delegated to an external engine.** A realization MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the realization sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
+
+Wire-compatibility holds regardless: a peer cannot tell — and need not care — whether a decision came from a built-in or a delegated engine, only that it conforms to §2–§5 and the three-phase, re-entrant evaluation (§7.2; ADR-006).
+
 Maximum passes is configurable (default 3). If the evaluation does not converge, the request fails with a full conflict report showing every constraint, every conflict, and every attempted resolution.
 
 ### 7.3 Constraint Emission
@@ -781,8 +788,6 @@ transformation_output:
 ---
 
 ## 13. Output Schema — Recovery
-
-> Recovery `action` targets a recovery CONDITION (status.conditions overlay, data-model-core §3 [D7]), not a `lifecycle_state` transition.
 
 **Fires on:** A failure or ambiguity trigger condition (DISPATCH_TIMEOUT, PARTIAL_REALIZATION, CANCELLATION_FAILED, etc.).
 **Produces:** A recovery action and parameters.

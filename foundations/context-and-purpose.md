@@ -39,19 +39,11 @@ The data model is not owned by any single component — it is the **contract bet
 
 ---
 
-## 3. Universal Identity Requirement
+## 3. Universal Identity (why it matters)
 
-Every data object in UDLM must have a **UUID (Universally Unique Identifier)**. This is not optional — it is a foundational requirement that applies to every entity in the data model without exception.
+Every data object in UDLM is identified by a **UUID**, and that single decision is what makes the rest of the model work: unambiguous reference across every component, policy, and layer; provenance anchoring (each recorded change references the UUID of the entity that caused it); dependency mapping by reference rather than by name; audit fidelity across renames; and correlation of the same resource across the Intent, Requested, Realized, and Discovered states. Because identity is the anchor for provenance and cross-state correlation, it cannot be optional.
 
-UUIDs serve several critical functions:
-
-- **Unambiguous reference** — any component, policy, layer, catalog item, or process that touches a data object can reference it precisely and without ambiguity
-- **Provenance anchoring** — every change recorded in a data object's lineage references the UUID of the entity that caused the change
-- **Dependency mapping** — relationships between resources, services, and components are expressed as UUID references, never by name alone
-- **Audit fidelity** — audit records reference UUIDs, ensuring that even if names or labels change, the audit trail remains accurate and traceable
-- **Cross-state correlation** — the same resource across Intent, Requested, Realized, and Discovered states can be correlated via UUID chains
-
-This applies to all entities including but not limited to: resource definitions, catalog items, data layers, policies, policy sets, components, service providers, consumers, and requests.
+The **normative** identifier rules — UUID required on every entity, the allowed UUID versions and reject-at-ingest behavior, handle syntax, and reference resolution — are defined in [identifier-scheme.md](../contracts/identifier-scheme.md) and [data-model-core](data-model-core.md). This section is the motivation; those specs bind.
 
 ---
 
@@ -91,12 +83,13 @@ Without field-level provenance, it is impossible to determine after the fact whe
 
 ### 4.3 Provenance as a Structural Element
 
-Field-level provenance must be carried within the data object itself — not in an external log. This ensures that:
+What is **normative** is that a field's evolution is *reconstructable*: for any field, who/what/why/when set each value can be recovered from stored facts. Provenance is a structural property of the data, not a side log to be reconciled after the fact. This ensures that:
 
-- The data and its lineage are always co-located and cannot be separated
-- Any consumer of the data can inspect its lineage without querying an external system
+- Any consumer of the data can recover its lineage without querying a separate system
 - Provenance survives data export, migration, and portability scenarios
-- The audit capability reads provenance that is intrinsic to the data, not reconstructed from logs
+- The audit capability reads lineage that was recorded at the point of change, not reconstructed from logs
+
+**Where** provenance is stored is a realization choice. It MAY be carried inline with the field, or content-addressed/tiered so the object is not bloated — `layering-and-versioning.md` §3a defines the deduplicated and tiered storage models, and OPS-002 guarantees full reconstruction regardless of model. The obligation is reconstructability; inline co-location is not required.
 
 ### 4.4 Provenance Metadata Structure
 
@@ -143,7 +136,9 @@ field_name:
 
 ### 4.5 The Provenance Obligation
 
-Provenance recording is a **data-model obligation, not optional**: any entity that creates or modifies a field value MUST record, alongside that value, the source UUID and source type that produced it, the timestamp, and — for modifications — the operation type and reason (§4.4). Any process that modifies data without recording this provenance violates the data model contract.
+Provenance recording is a **data-model obligation, not optional**: any entity that creates or modifies a field value records, alongside that value, the source UUID and source type that produced it, the timestamp, and — for modifications — the operation type and reason (§4.4). A process that modifies data without recording this violates the data-model contract.
+
+This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (LAY-00x / OPS-00x), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
 
 *Which specific realization components carry this obligation, and exactly what each records, is realization architecture — see the DCM architecture documentation.*
 
@@ -188,7 +183,7 @@ Once a version of any entity is published, it cannot be modified. If a change is
 This constraint is what makes the following capabilities trustworthy:
 - **Audit trails** — every state at every point in time is preserved and verifiable
 - **Drift detection** — comparison between states is meaningful because neither state can change retroactively
-- **Intent portability** — a previously declared intent can be replayed against current policies with confidence that the original intent is unchanged
+- **Intent portability** — a previously declared intent can be replayed against **current** tenancy/sovereignty/authorization policies while the **original intent record stays immutable**; only resource-*configuration* policy MAY optionally be pinned to a historical version. This is the rehydration invariant RHY-001 — the intent record is historical, the governing policies are current-by-default (see [four-states.md](four-states.md) §5)
 - **Rollback** — reverting to a previous version is always possible because previous versions are never destroyed
 - **Chain of trust** — the provenance of any configuration can be traced through an unbroken chain of immutable versions
 
@@ -270,17 +265,14 @@ This separation of concerns is what makes a realization technology-agnostic whil
 
 ---
 
-## 8. Open Questions
+## 8. Resolved Questions
 
-The following questions remain unresolved and require decisions before the data model specification can be considered complete:
-
-| # | Question | Impact | Status |
-|---|----------|--------|--------|
-| 1 | Caching architecture, synchronization, and consistency | Realization performance | ✅ Data-model position: the authoritative store (the deployment's D1 binding) is the single source of truth; caches are **non-authoritative projections** rebuilt from it on divergence. The cache topology, push/pull synchronization, invalidation, and consistency mechanics are **realization concern** (see the DCM architecture documentation) — not part of the data model. |
-| 5 | Should the data model allow embedded target-technology-specific data bundles? | Portability | ✅ Resolved — native_passthrough field sanctioned; always audit-logged; opaque mode blocked in fsi/sovereign (DATA-001) |
-| 6 | How are the four states represented physically? | Physical model | ✅ Resolved — stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1 revised 2026-07-06): four store contracts (Commit Log, State Store, Audit Store, Discovered stream) bound per profile + sovereignty/tenancy policy; PostgreSQL is the `standard`/`prod` reference implementation; git is a conforming `minimal` carrier; `fsi`/`sovereign` split stores per tenant/zone as isolation/residency requires. *(Supersedes both the earlier STO-005 resolution and the interim single-PostgreSQL ruling.)* |
-| 7 | What is the performance impact of field-level provenance at scale? What optimization strategies are acceptable? | Scalability, storage cost | ✅ Resolved — three configurable provenance models: full_inline, deduplicated (Model B recommended), tiered; profile-appropriate Policy Groups; see [`layering-and-versioning.md`](layering-and-versioning.md) (OPS-001) |
-| 8 | Should provenance metadata be stored inline with field data or in a linked provenance document? | Data model structure, query performance | ✅ Resolved — three-level structure: implicit chain ref, inline delta, linked history document; all reconstructable from stored facts; see [`layering-and-versioning.md`](layering-and-versioning.md) (OPS-002) |
+The prior-state "open questions" for this document are all resolved, and each
+outcome now lives where it is normative: the store-contract model in
+[data-model-core](data-model-core.md) §6 (ruling D1), `native_passthrough`
+(DATA-001), and the provenance models (OPS-001/OPS-002) in
+[layering-and-versioning.md](layering-and-versioning.md). The resolved-questions
+table has been removed so those decisions are not duplicated here.
 
 ---
 
@@ -289,9 +281,9 @@ The following questions remain unresolved and require decisions before the data 
 - **Sovereign Execution Posture** — the target end state the data model enables by providing a verified, auditable chain of custody through the full resource lifecycle
 - **CMDB Replacement** — DCM's four-state model is intended to replace the fragmented multi-CMDB problem by becoming the singular resource domain
 - **GitOps** — an ingress/carrier profile: consumers who prefer PR-based workflows can submit intent via Git; at the `minimal` profile git is itself a conforming State-Store carrier. Store bindings are contract-based per profile + sovereignty policy ([data-model-core](data-model-core.md) §6, ruling D1)
-- **Data Lineage** — the complete chain of custody of any field value from its origin through every modification, recorded within the data object itself
-- **Field-Level Provenance** — the structural mechanism by which data lineage is captured, carried, and made available for audit and compliance purposes
-- **UUID** — the universal identity mechanism that makes provenance references, dependency mapping, and cross-state correlation unambiguous and durable
+- **Data Lineage** — the chain of custody of a field value from origin through every modification; defined canonically with field-level provenance in [layering-and-versioning.md](layering-and-versioning.md) (see [GLOSSARY](../GLOSSARY.md) and §4 here for the summary)
+- **Field-Level Provenance** — the structural mechanism by which data lineage is captured and carried; defined canonically in [layering-and-versioning.md](layering-and-versioning.md) (§4 here summarizes it)
+- **UUID** — the universal identity mechanism that makes provenance references, dependency mapping, and cross-state correlation unambiguous and durable; defined normatively in [identifier-scheme.md](../contracts/identifier-scheme.md)
 
 ---
 
