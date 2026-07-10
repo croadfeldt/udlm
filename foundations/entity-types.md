@@ -338,9 +338,12 @@ resource_type_spec:
 
 ---
 
-## 6. Related Policies
+## 6. Entity-Type Invariants
 
-| Policy | Rule |
+These `ENT-00x` rows are invariants of the entity-type model — constraints a
+conformant realization guarantees, not runtime governance policy.
+
+| Invariant | Rule |
 |--------|------|
 | `ENT-001` | Every Infrastructure Resource Entity must be owned by exactly one Tenant at all times |
 | `ENT-002` | Process Resource Entities must declare max_execution_time — this field has no default and is not optional |

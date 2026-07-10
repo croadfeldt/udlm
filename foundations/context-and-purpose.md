@@ -270,17 +270,14 @@ This separation of concerns is what makes a realization technology-agnostic whil
 
 ---
 
-## 8. Open Questions
+## 8. Resolved Questions
 
-The following questions remain unresolved and require decisions before the data model specification can be considered complete:
-
-| # | Question | Impact | Status |
-|---|----------|--------|--------|
-| 1 | Caching architecture, synchronization, and consistency | Realization performance | ✅ Data-model position: the authoritative store (the deployment's D1 binding) is the single source of truth; caches are **non-authoritative projections** rebuilt from it on divergence. The cache topology, push/pull synchronization, invalidation, and consistency mechanics are **realization concern** (see the DCM architecture documentation) — not part of the data model. |
-| 5 | Should the data model allow embedded target-technology-specific data bundles? | Portability | ✅ Resolved — native_passthrough field sanctioned; always audit-logged; opaque mode blocked in fsi/sovereign (DATA-001) |
-| 6 | How are the four states represented physically? | Physical model | ✅ Resolved — stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1 revised 2026-07-06): four store contracts (Commit Log, State Store, Audit Store, Discovered stream) bound per profile + sovereignty/tenancy policy; PostgreSQL is the `standard`/`prod` reference implementation; git is a conforming `minimal` carrier; `fsi`/`sovereign` split stores per tenant/zone as isolation/residency requires. *(Supersedes both the earlier STO-005 resolution and the interim single-PostgreSQL ruling.)* |
-| 7 | What is the performance impact of field-level provenance at scale? What optimization strategies are acceptable? | Scalability, storage cost | ✅ Resolved — three configurable provenance models: full_inline, deduplicated (Model B recommended), tiered; profile-appropriate Policy Groups; see [`layering-and-versioning.md`](layering-and-versioning.md) (OPS-001) |
-| 8 | Should provenance metadata be stored inline with field data or in a linked provenance document? | Data model structure, query performance | ✅ Resolved — three-level structure: implicit chain ref, inline delta, linked history document; all reconstructable from stored facts; see [`layering-and-versioning.md`](layering-and-versioning.md) (OPS-002) |
+The prior-state "open questions" for this document are all resolved, and each
+outcome now lives where it is normative: the store-contract model in
+[data-model-core](data-model-core.md) §6 (ruling D1), `native_passthrough`
+(DATA-001), and the provenance models (OPS-001/OPS-002) in
+[layering-and-versioning.md](layering-and-versioning.md). The resolved-questions
+table has been removed so those decisions are not duplicated here.
 
 ---
 

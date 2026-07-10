@@ -15,6 +15,14 @@
 
 ## 1. Purpose
 
+Schema-sharing is a **peer-to-peer, machine-to-machine** protocol between
+realizations — not a user-facing surface. Consumers use the service catalog and
+admins/SREs author types in their own deployment; this contract exists so that
+when one realization federates or ingests data carrying a type another peer was
+never compiled against, the receiving peer can fetch the sender's schema (from
+`/.well-known/udlm/schema-bundle`) and validate it on the fly. It is the
+interop layer under the catalog, not a replacement for it.
+
 A peer realization may extend udlm with custom resource types, custom event
 types, custom credential types, custom location layers, or other extensions
 allowed by the relevant base contract. Wire-compatibility requires that any

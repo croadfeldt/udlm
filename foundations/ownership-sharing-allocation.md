@@ -275,9 +275,12 @@ UDLM does not model or calculate cost. Which cost model applies, and any redistr
 
 ---
 
-## 8. System Policies
+## 8. Ownership Invariants
 
-| Policy | Rule |
+These `OWN-00x` rows are invariants of the ownership model — constraints the
+model guarantees, not runtime governance policy.
+
+| Invariant | Rule |
 |--------|------|
 | `OWN-001` | `whole_allocation` resources are owned entirely by the requesting Tenant from the moment of realization. The providing platform Tenant has no ownership claim. |
 | `OWN-002` | `allocation` resources are owned entirely by the requesting Tenant. The pool owner retains ownership of the pool entity only. AllocationRecord relationships are the only cross-Tenant link. |

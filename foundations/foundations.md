@@ -113,6 +113,8 @@ Realized State ─────────────────────�
 Discovered State ───────────────────────────────── discovered_records (ephemeral)
 ```
 
+These four stages are defined canonically in **[The Four States](four-states.md)** — this section shows only how Data flows through them, it does not redefine each stage.
+
 **How Data is composed — the layering model:**
 
 Data fields are assembled from multiple contributing layers in a deterministic precedence order. See [Data Model Context](context-and-purpose.md) and [Layering and Versioning](layering-and-versioning.md) for the complete assembly algorithm.

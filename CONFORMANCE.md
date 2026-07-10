@@ -30,6 +30,15 @@ This document defines the conformance surface in one place. Each individual
 contract doc carries its own validation rules; CONFORMANCE.md consolidates them
 and adds the meta-rules (declaration format, versioning, certification).
 
+> **Transport binding.** The conformance and schema surfaces defined here — the
+> conformance declaration, the schema bundle, and the error/event envelopes —
+> are **transport-agnostic**. **HTTP is the normative v1 binding**: the
+> `/.well-known/udlm/...` paths and the §3.2 status mapping are the HTTP binding
+> of these surfaces, not a requirement that HTTP be the only transport. Other
+> bindings MAY be defined in later versions; the HTTP-specific rules (well-known
+> paths, status mapping, `Retry-After` header) apply only to peers using the
+> HTTP binding.
+
 ---
 
 ## 2. What conformance certifies
@@ -89,13 +98,18 @@ the schema bundle.
 
 ## 4. Conformance declaration
 
-Every conformant realization MUST publish a conformance declaration at:
+Every conformant realization MUST publish a conformance declaration. Over the
+HTTP binding (the normative v1 binding — see the transport-binding note in §1)
+it is served at:
 
 ```
 GET /.well-known/udlm/conformance
 ```
 
 ### 4.1 Declaration schema
+
+The declaration body (the JSON response served at the endpoint above) has the
+following shape:
 
 ```json
 {
