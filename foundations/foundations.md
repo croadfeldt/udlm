@@ -29,7 +29,7 @@ DCM is built on three foundational abstractions. Every concept in the architectu
 │  component DCM       │   │  decides what happens, transforms    │
 │  calls or that       │   │  values, or enforces constraints.    │
 │  calls DCM.          │   │                                      │
-│  Twelve typed       │   │  Seven typed output schemas.       │
+│  Typed               │   │  Typed output schemas.               │
 │  capability          │   │  One evaluation algorithm.           │
 │  extensions.         │   │  Same lifecycle for all.             │
 │  One base contract.  │   │                                      │
@@ -62,40 +62,17 @@ This is the complete DCM operational model: **Data · Policy · Provider are pee
 - **UUID** — every Data artifact has a universally unique identifier, stable across its full lifecycle
 - **Type** — every Data artifact has a declared type that determines its schema and valid field set
 - **Lifecycle state** — every Data artifact is in exactly one lifecycle state at any moment
-- **Artifact metadata** — every Data artifact carries a standard metadata block (handle, version, status, owned_by, created_by, created_via)
+- **Artifact metadata** — every Data artifact carries a standard metadata block (handle, version, status, owned_by, created_by, created_via, contact modes); the **complete v1 field set** is defined canonically in [layering-and-versioning.md](layering-and-versioning.md) §4b, not a representative sample
 - **Provenance** — every field in every Data artifact carries lineage metadata describing its origin and all modifications
 - **Data classification** — every field carries a classification (public → classified) governing what may cross interaction boundaries
 - **Immutability if versioned** — once a version is published, it cannot be modified; changes produce new versions
 - **Contributor identity** — every Data artifact records who contributed it (platform admin, consumer/tenant, service provider, or peer DCM) and what review it received before activation. DCM defaults to a federated contribution model — all authorized actor types can create Data within the bounds their role permits. See [Federated Contribution Model](../governance/federated-contribution-model.md).
 
-**The complete Data taxonomy:**
-
-| Data Type | Description | Storage |
-|-----------|-------------|---------|
-| **Resource Entity** | A realized infrastructure resource; the primary managed thing | Realized Store |
-| **Process Entity** | An ephemeral execution (job, playbook, pipeline) | Realized Store |
-| **Composite Entity** | A composition of Resource Entities produced by a Composite Service request (see [`composite-service-model.md`](../entities/composite-service-model.md)) | Realized Store |
-| **Intent State** | Consumer's raw declaration before processing | Intent Store (GitOps) |
-| **Requested State** | Fully assembled, policy-validated provider payload | Requested Store |
-| **Discovered State** | What actually exists per discovery observation | Discovered Store |
-| **Data Layer** | A versioned artifact contributing fields to assembly | Layer Store (GitOps) |
-| **Resource Type Specification** | Schema definition for a resource type | Registry |
-| **Provider Catalog Item** | Provider-specific instantiation of a Resource Type Spec | Registry |
-| **Policy** | A rule artifact with match conditions and output schema | Policy Store (GitOps) |
-| **Policy Group** | A collection of policies grouped by concern_type | Policy Store (GitOps) |
-| **Policy Profile** | A composition: one posture + zero or more compliance domains | Policy Store (GitOps) |
-| **Accreditation** | A compliance certification artifact | Accreditation Store |
-| **Sovereignty Zone** | A geopolitical/regulatory boundary artifact | Config Store |
-| **Registration Token** | A scoped authorization artifact for provider registration | Token Store |
-| **DCMGroup** | A grouping artifact (tenant_boundary, resource_grouping, etc.) | Config Store |
-| **Drift Record** | A comparison result artifact | Operational Store |
-| **Audit Record** | An immutable event record | Audit Store |
-| **Governance Matrix Rule** | A boundary control rule artifact | Policy Store (GitOps) |
-| **Orphan Candidate** | A potentially untracked resource artifact | Operational Store |
+**The Data taxonomy** — the enumerated Data/resource types (resource and process entities, the four states, data layers, policies and policy groups, accreditations, groups, tokens, drift and audit records, and the rest) are defined canonically in the **[registry](../registry/)** (the Resource Type Specifications and the instance meta-schema). This document defines the Data *abstraction* and its universal properties; it does not restate the member list, so there is a single source of truth and no drift with the registry.
 
 **How Data flows — the four lifecycle stages:**
 
-Every Resource Entity flows through four stages. These are not four separate things — they are the same entity at four different lifecycle stages, stored as four data domains in DCM's PostgreSQL database, each with distinct immutability and access patterns:
+Data flows through four lifecycle stages — the same entity observed at four points, not four separate things:
 
 ```
 Consumer Intent
@@ -134,23 +111,11 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 - **Zero trust** — every Provider interaction is authenticated and authorized; no implicit trust from network position
 - **Lifecycle** — every Provider registration goes through a defined lifecycle (SUBMITTED → VALIDATING → ACTIVE → DEREGISTERED)
 
-**The complete Provider taxonomy:**
+The single interface every Provider implements — the base contract, and the capability declaration that distinguishes one Provider type from another — is defined in [provider-contract.md](../contracts/provider-contract.md).
 
-| Provider Type | Capability | Data direction |
-|--------------|-----------|---------------|
-| **Service Provider** | Realizes infrastructure resources | DCM → Provider → DCM |
-| **Information Provider** | Serves authoritative external data | DCM queries → Provider responds |
-| **data store** | Persists DCM state | DCM reads/writes ↔ Provider |
-| **External Policy Evaluator** | Evaluates policies externally | DCM sends payload → Provider decides |
-| **credential management service** | Manages secrets and credentials | DCM requests → Provider issues |
-| **Auth Provider** | Authenticates identities | DCM verifies → Provider confirms |
-| **notification service** | Delivers notifications | DCM sends envelope → Provider delivers |
-| **event routing service** | Async event streaming | DCM publishes/subscribes ↔ Provider |
-| **Resource Type Registry** | Serves the resource type registry | DCM pulls → Provider serves |
-| **Peer DCM** | Another DCM instance (federation) | DCM ↔ DCM via federation tunnel |
-| **ITSM integration** | Bidirectional integration with ITSM systems (ServiceNow, Jira, Remedy, etc.); creates/updates ITSM records from DCM events; routes ITSM approvals back to DCM | DCM → ITSM (outbound) / ITSM → DCM (inbound) |
+**The Provider taxonomy** — the enumerated Provider types (Service Provider, Information Provider, data store, External Policy Evaluator, credential management service, Auth Provider, notification service, event routing service, Resource Type Registry, Peer realization, ITSM integration, …) and their capability declarations are defined canonically in the **[Provider Contract](../contracts/provider-contract.md)**. This document defines the Provider *abstraction* and its universal properties; the member list lives in one place there, not restated here.
 
-**The unified Provider base contract** is defined in [provider-contract.md](../contracts/provider-contract.md). All twelve Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
+**The unified Provider base contract** is defined in [provider-contract.md](../contracts/provider-contract.md). All Provider types implement this base contract. What varies is the capability declaration — what operations the Provider exposes and what data flows in which direction.
 
 **Peer DCM as Provider:** A federated DCM instance is a typed Provider. The federation tunnel is the Provider's communication channel. Federation routing is policy-governed provider selection. There is no separate "federation abstraction" — federation is the Provider abstraction applied across DCM instances.
 
@@ -169,19 +134,11 @@ Data fields are assembled from multiple contributing layers in a deterministic p
 - **Shadow mode** — proposed Policies execute against real traffic without applying results; safe validation before activation
 - **Audit** — every Policy evaluation produces an audit record regardless of outcome
 
-**The complete Policy taxonomy:**
+UDLM is deliberately **policy-language-agnostic**: it defines the policy *contract* (match conditions, typed output schemas, evaluation model) — not a policy language. What data is in scope during evaluation, and the required output schema per policy type, are defined in [policy-contract.md](../contracts/policy-contract.md).
 
-| Policy Type | Fires on | Output |
-|-------------|---------|--------|
-| **Validation Policy** | Request payload | `pass` or `fail` with field-level details; compliance-class: `allow` or `deny` with reason |
-| **Transformation** | Request payload | `mutations[]` — field additions, changes, locks |
-| **Recovery** | Failure/timeout trigger condition | `action` + parameters (DRIFT_RECONCILE, DISCARD_AND_REQUEUE, etc.) |
-| **Orchestration Flow** | Payload type events | `flow_directive` — sequence ordering for pipeline steps |
-| **Governance Matrix Rule** | Any cross-boundary interaction | `ALLOW / DENY / ALLOW_WITH_CONDITIONS / STRIP_FIELD / REDACT / AUDIT_ONLY` |
-| **Lifecycle Policy** | Relationship events | `action` on the related entity (save, destroy, notify, cascade) |
-| **ITSM Action** | DCM events (state transitions, drift, realization) | `itsm_action` — create/update/close ITSM records; non-blocking by default |
+**The Policy taxonomy** — the enumerated Policy types (Validation, Transformation, Recovery, Orchestration Flow, Governance Matrix Rule, Lifecycle, ITSM Action, …) and their typed output schemas are defined canonically in the **[Policy Contract](../contracts/policy-contract.md)**. This document defines the Policy *abstraction* and its universal properties; the member list is not restated here.
 
-**The unified Policy base contract** is defined in [policy-contract.md](../contracts/policy-contract.md). All seven Policy types implement this base contract. What varies is the output schema.
+**The unified Policy base contract** is defined in [policy-contract.md](../contracts/policy-contract.md). All Policy types implement this base contract. What varies is the output schema.
 
 **Policies as orchestration — two levels that compose:**
 

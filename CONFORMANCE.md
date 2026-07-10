@@ -14,17 +14,24 @@
 
 ---
 
-## 1. Purpose
+## 1. Conformance commitment and document purpose
+
+### 1.1 The conformance commitment
 
 A peer realization that claims udlm conformance commits to:
 
 - Producing data, events, and errors that any other conformant peer can
   deserialize and act on.
-- Honoring the contracts defined in `contracts/`, `lifecycle/`, `governance/`,
-  `entities/`, and `foundations/`.
+- Honoring the interface specifications in `contracts/`, `lifecycle/`,
+  `governance/`, `entities/`, and `foundations/` (UDLM reserves the word
+  *[contract](GLOSSARY.md)* for exactly these specs).
 - Publishing schemas, capabilities, and a conformance declaration via the
-  schema-sharing protocol so peers can discover compatibility.
+  [schema-sharing protocol](contracts/schema-sharing.md) (the schema bundle at
+  `/.well-known/udlm/schema-bundle`, consolidated in §6) so peers can discover
+  compatibility.
 - Maintaining versioning discipline so peers can negotiate.
+
+### 1.2 Purpose of this document
 
 This document defines the conformance surface in one place. Each individual
 contract doc carries its own validation rules; CONFORMANCE.md consolidates them
@@ -57,14 +64,21 @@ version. Specifically, a conformant realization:
 Two conformant realizations with disjoint runtime implementations can federate
 and exchange data; they cannot necessarily swap controllers or share storage.
 
+Requiring a document in [§5](#5-required-contracts) — including
+`design-principles/design-priorities.md` and
+`design-principles/infrastructure-optimization.md` — means requiring its **data
+contracts** (append-only, versioning, tamper-evidence, tenant isolation, the
+four design principles as constraints), **not** certifying storage technology,
+internal APIs, or runtime mechanics. Contracts are certified; mechanics are not.
+
 ---
 
 ## 3. Conformance levels
 
 ### 3.1 Full Conformance
 
-Implements every required contract listed in §5. Publishes a conformance
-declaration with `level: "full"` and no exclusions.
+Implements every required contract listed in [§5](#5-required-contracts).
+Publishes a conformance declaration with `level: "full"` and no exclusions.
 
 ### 3.2 Declared Partial Conformance
 
@@ -73,7 +87,7 @@ Implements a documented subset of required contracts. The realization MUST:
 - Publish a conformance declaration with `level: "partial"`.
 - Enumerate excluded contracts in the `exclusions` field.
 - Reject operations on excluded features with `conformance.feature_not_implemented`
-  (see §7).
+  (see [§7](#7-new-error-code-added-by-this-contract)).
 - NOT silently fail or partially implement an excluded contract.
 
 A peer interacting with a partially-conformant realization MUST check the
@@ -119,6 +133,7 @@ following shape:
     "version": "1.4.2"
   },
   "udlm_version": "0.1.0",
+  "profile": "standard",
   "level": "full",
   "exclusions": [],
   "extensions_published": true,
@@ -149,25 +164,48 @@ following shape:
 |---|---|---|
 | `realization` | yes | Self-identification |
 | `udlm_version` | yes | udlm semver this realization conforms to |
+| `profile` | yes | The realization's active **base profile** (from the [profile vocabulary](design-principles/design-priorities.md)). In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). `fsi`/`sovereign` compose as overlays on the base profile. |
 | `level` | yes | `"full"` or `"partial"` |
 | `exclusions` | required if level=partial | List of contract names not implemented |
 | `extensions_published` | yes | Whether schema bundle includes extensions |
 | `schema_bundle_url` | yes | Where to fetch the schema bundle |
 | `interop_surfaces` | yes | Which surfaces are available and how to reach them |
-| `leap_second_strategy` | yes | `"smear"` (required by `time-and-clock.md`) |
+| `leap_second_strategy` | yes | The peer's **declared** leap-second handling, drawn from the named, open set defined in [`time-and-clock.md`](contracts/time-and-clock.md) §8 (e.g. `smear`, `step`). A monotonic clock is **required**; smearing is **recommended**. The peer states its strategy rather than being forced to a single one. |
 | `auth_mechanism_for_schema_endpoints` | yes | How peers authenticate to fetch schemas |
 | `conformance_test_suite_version` | yes | Which version of the test suite (see §8) was run |
 | `self_certified_at` | yes | RFC 3339 UTC; when self-certification was performed |
 | `independent_verification` | optional | Present if an independent verifier has validated |
 
+### 4.3 Declaring multiple major versions
+
+A realization MAY conform to more than one major udlm version concurrently
+(see [§9.2](#92-compatibility-windows)). The conformance declaration is a
+**single document** that expresses **all** supported majors: its top-level
+`declarations` field is a list of per-major declaration objects, each object
+carrying the §4.1 shape (`udlm_version`, `profile`, `level`, `exclusions`,
+`interop_surfaces`, and the rest). A realization that supports exactly one major
+MAY serve the bare §4.1 object directly.
+
+Whether that single document is served at one `/.well-known/udlm/conformance`
+path or split across per-major paths is a **realization choice at the HTTP
+binding** (§1), not part of the data model. The **v1 HTTP binding is one path**:
+`GET /.well-known/udlm/conformance` returns the multi-version document.
+
 ---
 
 ## 5. Required contracts
 
-A Full Conformance realization MUST implement every contract below. Partial
-Conformance realizations MAY exclude contracts marked **excludable**.
+A Full Conformance realization MUST implement every contract below. Each
+contract is either **required (not excludable)** or **excludable (must
+declare)** — a partial-conformance realization MAY omit an excludable contract
+only if it enumerates the exclusion in its declaration (§3.2).
 
-### 5.1 Foundations (NOT excludable)
+> Resource and entity **types** referenced by these contracts are defined
+> canonically in the [registry](registry/) — the Resource Type Specifications
+> and the meta-schema. The contracts below bind their *behavior*; the registry
+> is where the type members live.
+
+### 5.1 Foundations (required — not excludable)
 
 - `foundations/context-and-purpose.md`
 - `foundations/foundations.md`
@@ -176,7 +214,7 @@ Conformance realizations MAY exclude contracts marked **excludable**.
 - `foundations/layering-and-versioning.md`
 - `foundations/ownership-sharing-allocation.md`
 
-### 5.2 Wire-compatibility contracts (NOT excludable)
+### 5.2 Wire-compatibility contracts (required — not excludable)
 
 These are the contracts that make wire-compatibility work. Excluding any of
 them disqualifies the realization from any conformance level.
@@ -187,7 +225,7 @@ them disqualifies the realization from any conformance level.
 - `contracts/event-catalog.md`
 - `contracts/schema-sharing.md`
 
-### 5.3 Operational contracts (NOT excludable)
+### 5.3 Operational contracts (required — not excludable)
 
 - `contracts/retry-semantics.md`
 - `contracts/rate-limit-and-backpressure.md`
@@ -195,33 +233,33 @@ them disqualifies the realization from any conformance level.
 - `contracts/policy-contract.md`
 - `contracts/data-store-contracts.md`
 
-### 5.4 Entity and lifecycle contracts (mostly required)
+### 5.4 Entity and lifecycle contracts (required and excludable)
 
-- `entities/resource-service-entities.md` — required
-- `entities/resource-type-hierarchy.md` — required
-- `entities/entity-relationships.md` — required
-- `lifecycle/operational-models.md` — required
-- `entities/composite-service-model.md` — **excludable**
-- `lifecycle/scheduled-requests.md` — **excludable**
-- `lifecycle/request-dependency-graph.md` — **excludable**
-- `lifecycle/subscription-lifecycle.md` — **excludable**
-- `lifecycle/ingestion-model.md` — **excludable** (peer may not support brownfield)
+- `entities/resource-service-entities.md` — required (not excludable)
+- `entities/resource-type-hierarchy.md` — required (not excludable)
+- `entities/entity-relationships.md` — required (not excludable)
+- `lifecycle/operational-models.md` — required (not excludable)
+- `entities/composite-service-model.md` — **excludable (must declare)**
+- `lifecycle/scheduled-requests.md` — **excludable (must declare)**
+- `lifecycle/request-dependency-graph.md` — **excludable (must declare)**
+- `lifecycle/subscription-lifecycle.md` — **excludable (must declare)**
+- `lifecycle/ingestion-model.md` — **excludable (must declare)** (peer may not support brownfield)
 
-### 5.5 Governance contracts (mostly required, some excludable)
+### 5.5 Governance contracts (required and excludable)
 
-- `governance/governance-matrix.md` — required
-- `governance/auth-providers.md` — required (at least one auth mode)
-- `governance/credentials.md` — required
-- `governance/authority-tier-model.md` — required
-- `governance/accreditation-and-authorization-matrix.md` — required
-- `governance/registry-governance.md` — **excludable** (peer may not host a registry)
-- `governance/federated-contribution-model.md` — **excludable** (peer may not accept federation contributions)
+- `governance/governance-matrix.md` — required (not excludable)
+- `governance/auth-providers.md` — required (not excludable; at least one auth mode)
+- `governance/credentials.md` — required (not excludable)
+- `governance/authority-tier-model.md` — required (not excludable)
+- `governance/accreditation-and-authorization-matrix.md` — required (not excludable)
+- `governance/registry-governance.md` — **excludable (must declare)** (peer may not host a registry)
+- `governance/federated-contribution-model.md` — **excludable (must declare)** (peer may not accept federation contributions)
 
-### 5.6 Observability (required minima)
+### 5.6 Observability (required — not excludable)
 
-- `observability/audit-provenance-observability.md` — required
-- `observability/universal-audit.md` — required
-- `observability/universal-groups.md` — required
+- `observability/audit-provenance-observability.md` — required (not excludable)
+- `observability/universal-audit.md` — required (not excludable)
+- `observability/universal-groups.md` — required (not excludable)
 
 ### 5.7 Topology and design principles
 
@@ -254,7 +292,7 @@ MUST satisfy every item.
 - [ ] All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix
 - [ ] Skew ≤±5 seconds from peers
 - [ ] Future timestamps >5s ahead are rejected
-- [ ] Leap-second smearing in use
+- [ ] Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](contracts/time-and-clock.md) §8
 - [ ] Total ordering via `(timestamp, sequence_uuid)` available
 
 ### Errors ([`error-model.md`](contracts/error-model.md))
@@ -313,9 +351,8 @@ This document adds one error code namespace to the closed vocabulary:
 | `conformance.version_unsupported` | no | 409 |
 | `conformance.declaration_unavailable` | yes (transient retrieval failure) | 503 |
 
-These extend the error vocabulary in [`error-model.md`](contracts/error-model.md).
-The `error-model.md` doc SHOULD be updated to include the `conformance.*`
-namespace in its closed vocabulary at next revision.
+The `conformance.*` codes are **defined here and registered into** the closed
+error vocabulary in [`error-model.md`](contracts/error-model.md).
 
 ---
 
@@ -340,6 +377,14 @@ verifier. Independent verification:
 - Produces a verification report linked from the conformance declaration.
 - Carries more weight for peers evaluating whether to federate.
 
+**Certification progression.** Self-certification is the **v0 baseline** — a
+realization runs the suite and records the suite version and results in its
+declaration. Independent verification is **optional at 0.x** but **carries more
+weight** for peers deciding whether to federate. A **required run of the shared
+certified suite** is the **1.0 conformance bar**: at 1.0, self-certification
+alone no longer suffices for a full conformance claim. This is a deliberate
+escalation, not "self-signed forever."
+
 ---
 
 ## 9. Versioning and compatibility windows
@@ -361,11 +406,12 @@ udlm follows semver:
   [`schema-sharing.md`](contracts/schema-sharing.md) handles minor-version
   differences.
 - Cross-major-version interoperation is NOT guaranteed. Realizations MAY
-  support multiple major versions concurrently by publishing schemas and
-  conformance declarations for each.
+  support multiple major versions concurrently by publishing schemas for each
+  and expressing every supported major in the single conformance declaration
+  (see [§4.3](#43-declaring-multiple-major-versions)).
 - A realization deprecating support for an older major version MUST give peers
   at least **6 months** notice via federation events
-  (`conformance.version_deprecated`).
+  (`conformance.version_deprecated`; see [`event-catalog.md`](contracts/event-catalog.md)).
 
 ### 9.3 Deprecation policy
 
@@ -391,8 +437,9 @@ A realization claiming conformance follows this process:
 6. **Re-run** the test suite after any change affecting interop surfaces. Update
    the `self_certified_at` timestamp.
 
-Self-certification is the baseline. Independent verification (§8) is stronger
-but optional.
+Self-certification is the v0 baseline. Independent verification
+([§8](#8-test-suite)) is stronger but optional at 0.x, and a required certified-
+suite run becomes the 1.0 bar (see the certification progression in §8).
 
 ---
 
@@ -402,12 +449,22 @@ Before federating, a peer SHOULD:
 
 1. Fetch the remote realization's conformance declaration.
 2. Verify `udlm_version` is compatible with the local realization's version.
-3. Check `level` and `exclusions` against the features needed for the planned
+3. Check `profile` compatibility — confirm the remote's advertised base profile
+   (and any overlays) satisfies local policy for federation (e.g. a `sovereign`
+   peer may refuse to federate with a `minimal` peer).
+4. Check `level` and `exclusions` against the features needed for the planned
    federation.
-4. Optionally verify `independent_verification.report_url` for third-party
+5. For each interop surface the federation will use, confirm that surface's
+   `available` flag (and its declared transport/auth) in the remote
+   `interop_surfaces`; if a required surface is unavailable, refuse with
+   `conformance.feature_not_implemented`.
+6. Optionally verify `independent_verification.report_url` for third-party
    validation.
-5. Fetch the remote schema bundle and cache it.
-6. Proceed with federation per the relevant contracts.
+7. Fetch the remote schema bundle and cache it.
+8. Proceed with federation per the relevant contracts.
+
+The substrate carries the **declaration and the compatibility check**; how a
+realization orchestrates the resulting federation is a realization concern.
 
 If any check fails, the peer MUST refuse federation with the appropriate
 error (`conformance.version_unsupported`, `conformance.feature_not_implemented`,

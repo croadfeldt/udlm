@@ -12,7 +12,7 @@
 
 ## Design Principles as Interoperability Substrate
 
-The four principles below are **invariant**. Any realization conformant to UDLM must honor them; they are the contract foundation. Specific enforcement strictness, threshold values, and operational trade-offs are realization choices (a peer implementation could pick differently and still be a valid UDLM peer). The principles themselves are not negotiable.
+The four principles below are **invariant**. Any realization conformant to UDLM must honor them; they are the **immutable ground rules** of the [substrate](../GLOSSARY.md) — the shared, realization-neutral layer every conformant peer binds to. Specific enforcement strictness, threshold values, and operational trade-offs are realization choices (a peer implementation could pick differently and still be a valid UDLM peer). The principles themselves are not negotiable.
 
 When priorities conflict, higher priorities win. When there is no conflict, all four apply simultaneously.
 
@@ -28,15 +28,16 @@ Security properties — value separation, rotation, audit trails, idle detection
 
 **The `minimal` profile is "security with minimal operational overhead" — not "minimal security."**
 
-A `minimal` profile realization:
+A `minimal` profile realization keeps every one of these properties, only scaled down. Here a *[credential](../governance/credentials.md)* is a consumer-facing secret brokered under the credential contract:
+
 - Rotates credentials (at longer intervals with manual triggers acceptable — not never)
 - Detects idle credentials (at a generous threshold — not never)
-- Requires algorithm baselines (via forbidden list — not null)
+- Enforces a cryptographic-algorithm baseline by **denying weak algorithms via a forbidden list**, rather than leaving the approved set open (`approved_algorithms` is never null)
 - Runs shadow mode on contributed policies (always — not optionally)
-- Audits first credential retrieval (always — not sometimes)
-- Maintains revocation registry (with bounded cache TTL — not disabled)
+- Audits the first retrieval of a provisioned credential (always — not sometimes)
+- Maintains a **revocation registry** — the fast "revoked-but-not-yet-expired" check every component consults per request (with a bounded cache TTL — not disabled)
 
-The security model is present and correct. The enforcement strictness and automation burden are reduced.
+Every one of these security properties is present in `minimal`; only its enforcement strictness and operational automation are scaled down.
 
 **When security and convenience conflict, security wins** — but the design must find a way to make the secure option easy. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability. The profile system is the mechanism: the right profile makes secure behavior automatic, not effortful.
 
@@ -90,7 +91,7 @@ New compliance requirements should be expressible as policy additions within the
 
 ---
 
-### Priority 4 — Fit for Purpose (Always Required)
+### Priority 4 — Fit for Purpose
 
 A UDLM realization must manage data center infrastructure lifecycle. All of the above is in service of this purpose. An architecturally beautiful system that cannot provision a VM, track its drift, and decommission it cleanly has failed at its reason for existing.
 
@@ -198,6 +199,8 @@ UDLM defines an ordered authority tier vocabulary that applies to requests, poli
 
 ### Default Tier Vocabulary
 
+Each tier carries a `decision_gravity` — the governance weight of a decision (`none` / `routine` / `elevated` / `critical`), indicating how much authority it warrants. The term is defined in [GLOSSARY](../GLOSSARY.md) and specified in [Authority Tier Model](../governance/authority-tier-model.md).
+
 | Tier | Required authority level | Substrate role |
 |------|-------------------------|-----------------|
 | `auto` | None — `decision_gravity: none`; system confidence sufficient | Validation passes; automatic activation |
@@ -205,28 +208,9 @@ UDLM defines an ordered authority tier vocabulary that applies to requests, poli
 | `verified` | Elevated authority — `decision_gravity: elevated`; independent confirmation required; separation of duties | Two distinct actors with reviewer role each record a decision |
 | `authorized` | Senior/governing authority — `decision_gravity: critical`; highest organizational weight; most consequential decisions | N members of the declared group record decisions within a window |
 
-### Tier Extensibility Contract
+### Tier Extensibility (Vocabulary)
 
-The four default tiers (`auto`, `reviewed`, `verified`, `authorized`) are UDLM substrate defaults. Realizations and organizations may add custom tiers by inserting them into the ordered list between existing tiers. The tier name is stable; numeric weight is derived from list position at evaluation time. This extensibility is part of the substrate contract — any conformant realization must accept custom tier insertions and evaluate them consistently.
-
-Example: An organization adds `compliance_reviewed` between `verified` and `authorized`:
-```
-auto → reviewed → verified → compliance_reviewed → authorized
-```
-All existing references to `authorized` continue to work. Only the threshold ranges in the affected profile need updating. See [Authority Tier Model](../governance/authority-tier-model.md).
-
-### The `authorized` Tier — Substrate Definition
-
-UDLM defines `authorized` as the tier requiring quorum decision-making by a declared group. The substrate requires:
-
-1. **Group membership** — which actors constitute the authorized group
-2. **Quorum declaration** — `N of M` threshold declared in the profile or per-decision configuration
-3. **Notification routing** — when a decision enters `pending_authorized` state, notifications fire to all group members
-4. **Vote recording surface** — an API or equivalent surface by which members (or external systems acting on their behalf) record `approve` or `reject`
-5. **Quorum tracking** — votes are counted and the pipeline advances when N is reached
-6. **Audit trail** — every vote is audited with actor identifier, timestamp, decision, and the system that recorded it
-
-UDLM does not specify how the organization deliberates or which external systems integrate with the vote recording surface. The substrate requires only that decisions are recorded against an authenticated authorized-group member.
+The ordered tier vocabulary is extensible: custom tiers may be inserted into the ordered list between existing tiers (e.g. `compliance_reviewed` between `verified` and `authorized`), tier names are stable, and existing references continue to resolve. The **mechanics** — how numeric weight derives from list position, the quorum/vote/notification/audit machinery that `authorized` requires, the custom-tier contribution model, and the dynamic threshold format — are specified once in [Authority Tier Model](../governance/authority-tier-model.md). This document carries only the tier **vocabulary** (the ordered list and the `on_expiry` closed set); it does not restate the mechanism.
 
 ### Deadline and Escalation (Substrate Vocabulary)
 
