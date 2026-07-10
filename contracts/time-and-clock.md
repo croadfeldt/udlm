@@ -1,25 +1,33 @@
 # UDLM — Time and Clock Model Contract
 
-**Document Status:** 📋 Draft — Initial Specification
+**Document Status:** 📋 Draft — Specification
 **Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
+**Governed by:** [ADR-005 — Time integrity](../docs/adr/ADR-005-time-integrity.md)
 
-> Defines how time is represented, ordered, and tolerated across udlm-conformant
-> realizations and between peers. Wire-compatible: any conformant peer MUST
-> emit timestamps any other peer can interpret without ambiguity.
+> Defines how time is represented, how events are ordered, how clock
+> synchronization is required, and how independent peers agree on ordering and
+> audit. Wire-compatible: any conformant peer MUST emit timestamps any other
+> peer can interpret without ambiguity — and ordering MUST be reconstructible
+> without trusting anyone's clock.
 
 ---
 
 ## 1. Purpose
 
-Distributed systems coordinate on time. Audit chains depend on ordering. Federation
-depends on event sequencing. Without a normative time model, peers cannot
-exchange data with shared meaning.
+Audit chains depend on ordering; federation depends on peers agreeing on that
+ordering; regulated data depends on time being accurate to a known bound. This
+contract keeps those three concerns **separate**, because conflating them is how
+time models go wrong:
 
-This document defines: the required wall-clock representation, ordering
-semantics, skew tolerance, validation rules, and how time appears in every
-wire format.
+- **Ordering is structural, not temporal** (§4). Order comes from a hash-linked
+  sequence and causal references — never from comparing wall clocks. Audit stays
+  correct even when a clock is wrong.
+- **Cross-peer agreement is a causal partial order plus mutual attestation** (§5),
+  not a fictional single global line.
+- **Clock accuracy is a profile-declared, adopt-by-reference capability** (§6).
+  The platform mandates no tolerance; the profile binds the standard.
 
 ---
 
@@ -27,16 +35,15 @@ wire format.
 
 A conformant realization MUST:
 
-- Use **UTC** for all timestamps that cross interop boundaries. Local time is
-  permitted only within UI rendering layers; it MUST be converted to UTC before
-  persistence or transport.
-- Encode timestamps as **ISO 8601 / RFC 3339** strings with explicit `Z`
-  suffix. Example: `2026-05-26T14:32:18.456Z`.
-- Use **millisecond precision** in all wire-level timestamps. Higher precision
-  (microseconds, nanoseconds) MAY be used internally but MUST be truncated to
-  milliseconds when emitted.
-- NEVER use Unix epoch seconds, fractional days, or other non-ISO encodings on
-  the wire.
+- Use **UTC** for all timestamps crossing interop boundaries. Local time is
+  permitted only in UI rendering, converted to UTC before persistence or transport.
+- Encode timestamps as **ISO 8601 / RFC 3339** with explicit `Z`. Example:
+  `2026-05-26T14:32:18.456Z`.
+- Use **millisecond precision** on the wire. Higher precision MAY be kept
+  internally but MUST be truncated to milliseconds when emitted (finer accuracy
+  than milliseconds is carried by the sync-capability attestation, §6, not by
+  wire timestamps).
+- NEVER use Unix epoch seconds, fractional days, or other non-ISO encodings on the wire.
 
 ### 2.1 Required precision and format
 
@@ -48,15 +55,14 @@ A conformant realization MUST:
 | Scheduled request times (`not_before`, etc.) | Second (millis permitted) | `2026-05-26T15:00:00Z` |
 | Date-only fields (rare) | Day | `2026-05-26` |
 
-Peers MUST reject timestamps that lack timezone indication or fail ISO 8601
+Peers MUST reject timestamps lacking timezone indication or failing ISO 8601
 parsing with `validation.timestamp_malformed`.
 
 ---
 
 ## 3. Authoritative timestamps
 
-Some artifacts have multiple timestamp candidates (when received, when committed,
-when audited). The contract defines which is authoritative:
+Where an artifact has multiple timestamp candidates, this is the authoritative one:
 
 | Artifact | Authoritative timestamp source |
 |---|---|
@@ -64,100 +70,154 @@ when audited). The contract defines which is authoritative:
 | Audit record | Set by the audit log at append time |
 | Lifecycle state transition | Set by the system effecting the transition |
 | Scheduled request `not_before` | Set by the consumer at submission |
-| Provider callback report | Provider-supplied; subject to validation rules in §5 |
+| Provider callback report | Provider-supplied; subject to §7 validation |
 
-The authoritative timestamp is the one used for ordering and for audit-chain
-linking.
-
----
-
-## 4. Clock skew tolerance
-
-Peers will have clocks that drift. The contract defines tolerance bounds:
-
-- **Maximum acceptable skew**: ±5 seconds between a conformant peer and the
-  source of an inbound artifact.
-- **Recommended sync mechanism**: NTP or equivalent; peers SHOULD maintain sync
-  to within 1 second of UTC reference time.
-- **Skew detection**: peers MUST detect inbound artifacts whose timestamp
-  exceeds tolerance and:
-  - For provider-supplied timestamps: reject with `validation.timestamp_skew_exceeded`.
-  - For peer-supplied timestamps in federation: log an audit event and proceed,
-    but flag the source for sync investigation.
-- **Future timestamps**: any timestamp more than 5 seconds in the future
-  relative to the receiving peer's clock MUST be rejected.
+The authoritative timestamp is used for **correlation and display**. It is **not**
+the basis of ordering — see §4.
 
 ---
 
-## 5. Provider timestamp validation
+## 4. Ordering is structural (not temporal)
 
-Provider callbacks include timestamps. The contract requires:
+Ordering MUST NOT depend on wall-clock comparison. A conformant realization
+orders as follows:
 
-1. Provider timestamp MUST be UTC + ISO 8601.
-2. Provider timestamp MUST be within ±5 seconds of the receiving peer's clock.
-3. If validation fails, the callback is rejected and the provider is notified
-   via the standard error envelope (see [`error-model.md`](error-model.md)).
-4. A conformant peer MUST NOT silently rewrite provider timestamps. Either
-   accept or reject.
+1. **Within an audit stream — a total order by construction.** The audit chain
+   ([`universal-audit.md`](../observability/universal-audit.md)) is hash-linked:
+   each entry references the hash of its predecessor. Ties (entries appended in
+   the same millisecond) break on `sequence_uuid`, a **UUIDv7** generated at
+   append time — a millisecond Unix timestamp plus, per RFC 9562, a monotonic
+   counter in its sub-millisecond bits, so same-millisecond appends stay ordered.
+   A conformant peer MUST reconstruct the total order of any contiguous segment
+   from the hash links + `sequence_uuid` alone.
+2. **Across streams — a causal partial order.** Every event carries **causal
+   references** (the events/entities it depends on — already present as the audit
+   record's references). A conformant peer MUST preserve *happened-after* order:
+   if `X → Y` then no peer may order `Y` before `X`. Events with **no** causal
+   link are **concurrent**; different peers MAY linearize them differently, and
+   that is not a conflict — the shared truth is the DAG, not any single line.
+   Hybrid Logical Clocks (HLC) or vector clocks MAY be used where tight cross-node
+   ordering granularity is required.
+3. **A genuine total order across peers** (needed only for a *shared* resource
+   two peers both act on) is established by an **explicit, audited authority** —
+   the resource's single-writer owner — or by a consensus round. The tie-break
+   decision is itself a signed audit event; it is never implied by clocks.
 
 ---
 
-## 6. Total ordering and audit chain
+## 5. Cross-peer agreement and attestation
 
-The audit chain ([`universal-audit.md`](../observability/universal-audit.md)) requires total
-ordering of events. Timestamps alone are insufficient when two events have
-identical millisecond stamps. The contract:
+When two independent realizations exchange or co-observe events, they reconcile
+by causality and prove integrity by mutual attestation:
 
-1. The audit chain orders by `(timestamp, sequence_uuid)` where `sequence_uuid`
-   is a UUIDv7 generated at append time.
-2. UUIDv7 carries embedded time at sub-millisecond resolution, providing a
-   stable tiebreak.
-3. A conformant peer MUST be able to reconstruct total ordering from any
-   contiguous segment of the audit chain using only `(timestamp, sequence_uuid)`.
+1. **Reconcile to the causal DAG** (§4.2). "Peer A says XYZ, peer B says YXZ" is
+   either **concurrency** (both are valid linearizations of the same DAG — no
+   conflict) or a **causal-order violation** (detected below).
+2. **Mutual signed checkpoints.** Each peer periodically publishes a **signed
+   checkpoint** — its audit-chain Merkle root plus its `sequence_uuid`/HLC
+   high-water-mark — under an **attested identity** (see the trust/attestation
+   model). When peer A cross-references an event from peer B, A embeds B's signed
+   root at that point.
+3. **Divergence is detectable and attributable.** A peer that reorders or rewrites
+   its chain breaks the cross-anchors its peers hold; verification against the
+   embedded roots fails, and the fault is attributable to a signed identity. This
+   is the Certificate-Transparency cross-witnessing pattern (no shared ledger
+   required for a known federation). See `cross-dcm-audit-data-model`.
 
 ---
 
-## 7. Leap seconds
+## 6. Clock synchronization — a profile-declared capability
+
+The platform mandates **no** fixed skew tolerance. Instead:
+
+1. UDLM defines the **shape** of a `TimeSync` requirement: UTC-traceable, a
+   `max_divergence` bound, and a mechanism class (NTP / PTP). The bound MUST be
+   **attestable** — a node declares the sync it can hold.
+2. The **profile declares the standard**, adopted **by reference** (T5), not a
+   value coined here:
+
+   | Profile | `max_divergence` | Adopted standard |
+   |---|---|---|
+   | Base | **50 ms** of UTC | FINRA **CAT** (business-clock sync to NIST) |
+   | Regulated / FSI | **1 s / 1 ms / 100 µs** by activity | **MiFID II RTS 25** |
+   | High-precision | sub-µs | **PTP (IEEE 1588)**, hardware timestamping |
+   | Sovereign | per regime | the regime's national time standard |
+
+3. **Providers advertise and attest** achievable sync as a capability
+   ([ADR-004](../docs/adr/ADR-004-provider-capability-declaration.md)); **placement
+   admits** a workload only where the node's attested capability meets its
+   profile's declared `max_divergence`.
+4. **Skew detection.** A peer MUST detect inbound artifacts whose divergence
+   exceeds the **applicable profile bound** and:
+   - provider-supplied: reject with `validation.timestamp_skew_exceeded`;
+   - peer-supplied in federation: record an audit event and proceed, flagging the
+     source for sync investigation.
+   Any timestamp beyond the profile bound **in the future** MUST be rejected.
+
+Traceability to UTC (NIST / BIPM) is required in every profile; only the bound and
+mechanism vary. Because ordering is structural (§4), sync accuracy governs
+**correlation and admission**, never order-correctness.
+
+---
+
+## 7. Provider timestamp validation
+
+Provider callbacks include timestamps. A conformant peer:
+
+1. MUST require the provider timestamp to be UTC + ISO 8601.
+2. MUST validate it against the **applicable profile's `max_divergence`** (§6),
+   not a fixed constant.
+3. MUST, on failure, reject via the standard error envelope
+   ([`error-model.md`](error-model.md)) — never silently rewrite a provider
+   timestamp. Accept or reject.
+
+---
+
+## 8. Leap seconds
+
+A conformant realization MUST keep time **monotonic and UTC-traceable** through a
+leap-second event (time never steps backward). It:
+
+- **SHOULD** smear the leap second (a gradual adjustment over a window) — the
+  approach taken by major time services, and forward-compatible with the CGPM's
+  decision to abandon leap seconds by 2035.
+- **MAY** instead use a leap-aware strategy (e.g. a repeated or `:60` second) that
+  remains monotonic and UTC-traceable.
+- MUST declare its strategy in its conformance declaration.
+
+Ordering is unaffected either way, because it is structural (§4), not clock-derived.
+
+---
+
+## 9. Time zones (consumer-facing)
+
+- Storage and transport: **UTC**.
+- Display: per-user preference (UI MAY render local time).
+- Audit records: always UTC; the source of truth is UTC regardless of display.
+
+---
+
+## 10. Validation rules (conformance checks)
 
 A conformant realization MUST:
 
-- Use a **leap-second smearing** strategy (gradual ±N ms adjustment over a
-  configured window) rather than a hard step.
-- Reject the introduction of `:60` second values in timestamps. Smear instead.
-- Document its smearing strategy in its conformance declaration.
-
-This avoids audit-chain ordering anomalies during leap-second events.
-
----
-
-## 8. Time zones (consumer-facing)
-
-UI / consumer-facing rendering MAY display timestamps in local time. The
-contract:
-
-- Storage and transport: UTC.
-- Display: per-user preference.
-- Audit records: always UTC; UI may render in local but the source-of-truth
-  is UTC.
-
----
-
-## 9. Validation rules (conformance checks)
-
-A conformant realization MUST:
-
-- Reject non-UTC timestamps at ingest.
-- Reject timestamps lacking explicit timezone indication.
-- Reject timestamps with skew >5 seconds (with categorization per §4).
+- Reject non-UTC timestamps, and timestamps lacking explicit timezone, at ingest.
+- Reject timestamps whose divergence exceeds the **applicable profile bound** (§6),
+  categorized per §6.4.
 - Truncate or reject sub-millisecond precision on the wire.
-- Smear, not step, through leap seconds.
+- Reconstruct total order from hash links + `sequence_uuid` **without** relying on
+  wall-clock comparison (§4).
+- Keep time monotonic and UTC-traceable through leap events (§8).
 
 ---
 
-## 10. Related contracts
+## 11. Related contracts
 
-- [`identifier-scheme.md`](identifier-scheme.md) — UUIDv7 carries embedded time
-- [`event-catalog.md`](event-catalog.md) — events carry authoritative timestamps
-- [`universal-audit.md`](../observability/universal-audit.md) — audit chain total ordering
+- [ADR-005 — Time integrity](../docs/adr/ADR-005-time-integrity.md) — the decision this contract implements
+- [`identifier-scheme.md`](identifier-scheme.md) — UUIDv4 identity / UUIDv7 time-ordered policy
+- [`event-catalog.md`](event-catalog.md) — events carry authoritative timestamps + causal references
+- [`universal-audit.md`](../observability/universal-audit.md) — hash-linked audit chain, total ordering
+- `cross-dcm-audit-data-model` — federated causal reconciliation + cross-signed checkpoints
+- [ADR-004](../docs/adr/ADR-004-provider-capability-declaration.md) — the capability model `TimeSync` uses
 - [`error-model.md`](error-model.md) — timestamp-related error codes
 - [`scheduled-requests.md`](../lifecycle/scheduled-requests.md) — `not_before` and recurring schedules
