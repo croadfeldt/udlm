@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/function-capability-matrix.schema.json",
+  "title": "UDLM DCM Function Capability Matrix + Role Assignment (ADR-RBAC-001)",
+  "description": "Two record shapes for DCM RBAC, enforced by the ONE Governance Matrix (no new engine). `role_capability` binds an access-role to the DCM functions it may perform (default-deny: only listed functions permitted). `role_assignment` binds an actor or access-group to a role (optionally tenant-scoped, time-bounded). Roles are access-role TaxonomyTerms; functions are dcm-function TaxonomyTerms. Role-assignment CHANGES are audited as immutable forward events (CAPABILITY_ADMIT-style; SPEC-DESIGN §18a-e) — this record is the current binding. Authored as data so it PROJECTS onto Kessel/SpiceDB (roles->relations, functions->computed permissions) without depending on it.",
+  "type": "object",
+  "required": ["record_type"],
+  "oneOf": [
+    { "$ref": "#/$defs/role_capability" },
+    { "$ref": "#/$defs/role_assignment" }
+  ],
+  "$defs": {
+    "role_capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_type", "uuid", "conforms_to", "role", "permitted_functions"],
+      "properties": {
+        "record_type": { "const": "role_capability" },
+        "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
+        "role": { "type": "string", "description": "access-role TaxonomyTerm handle (e.g. platform_admin)." },
+        "permitted_functions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "dcm-function TaxonomyTerm handles this role may perform (e.g. provider.capability.admit). DEFAULT-DENY: a function not listed (nor inherited via a parent function-domain term) is denied. A domain term (e.g. `provider`) grants all its leaves."
+        },
+        "tier": { "enum": ["core", "verified", "org"], "description": "Governance tier of this binding (registry-governance §2)." }
+      }
+    },
+    "role_assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_type", "uuid", "conforms_to", "subject_type", "subject_ref", "role", "granted_by", "reason"],
+      "properties": {
+        "record_type": { "const": "role_assignment" },
+        "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
+        "subject_type": { "enum": ["actor", "access_group"], "description": "actor = an Identity.Person/ServiceAccount; access_group = a DCMGroup with group_class access_grouping (holds actors — the keystone delta)." },
+        "subject_ref": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "actor_uuid or DCMGroup uuid (authoritative — never name alone)." },
+        "role": { "type": "string", "description": "access-role TaxonomyTerm handle granted to the subject." },
+        "tenant_scope": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "OPTIONAL — scopes the assignment to one tenant (e.g. tenant_admin over tenant X). Absent = platform-wide." },
+        "granted_by": { "type": "string", "description": "The platform_admin actor who made the assignment. REQUIRED — assignment is an audited, admin-gated function (access.role.assign); every grant/revoke is an immutable forward audit event." },
+        "reason": { "type": "string", "description": "Justification (mirrors the accreditation/capability-admission audited-with-reason pattern)." },
+        "granted_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+        "expires_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$", "description": "OPTIONAL — time-bounded assignment (reuses DCMGroup membership time-bounds)." }
+      }
+    }
+  }
+}

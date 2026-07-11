@@ -1,0 +1,116 @@
+# DCM-function taxonomy (seed) — ADR-RBAC-001.
+#
+# The governed catalog of DCM administrative FUNCTIONS (permission verbs), harvested from the
+# per-endpoint `Role:` gates in dcm-admin-api-spec and the prose gates (SCH-006, FCM-001, GUI-006/007,
+# ATM-005, POL-016/019). Each entry is a TaxonomyTerm; the `dcm-function` ROOT subtree is disjoint from
+# access-role / provider-capability. A role is granted a set of these functions by the
+# FunctionCapabilityMatrix, and DCM's Admin API `Role:` gates resolve to these terms. Default-deny:
+# a function is inaccessible unless a role granting it is assigned to the actor.
+#
+# Naming: `<domain>.<verb>` (domain = the object class, verb = the action) — the same (verb x domain)
+# shape as provider capabilities, applied to DCM's own operations.
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: dcm-function
+
+terms:
+  - term: dcm-function
+    root: dcm-function
+    parent: null
+    curation_state: canonical
+    definition: Root of the DCM administrative-function permission catalog.
+
+  # ---- domain groupings (parent = root) ----
+  - term: provider
+    root: dcm-function
+    parent: dcm-function
+    curation_state: canonical
+    definition: Provider lifecycle + capability admission functions.
+  - term: policy
+    root: dcm-function
+    parent: dcm-function
+    curation_state: canonical
+    definition: Governance-Matrix policy functions.
+  - term: accreditation
+    root: dcm-function
+    parent: dcm-function
+    curation_state: canonical
+    definition: Accreditation-record functions.
+  - term: trust
+    root: dcm-function
+    parent: dcm-function
+    curation_state: canonical
+    definition: Trust-posture / elevation functions.
+  - term: tenant
+    root: dcm-function
+    parent: dcm-function
+    curation_state: canonical
+    definition: Tenant administration functions.
+  - term: access
+    root: dcm-function
+    parent: dcm-function
+    curation_state: canonical
+    definition: RBAC administration functions (roles, assignments, groups).
+
+  # ---- function leaves (verbs; parent = domain) ----
+  - term: provider.capability.admit
+    root: dcm-function
+    parent: provider
+    curation_state: canonical
+    definition: Disposition a provider's declared capability/category (approve/provision/deny). The ADR-PROV-003 admin action; gated platform_admin.
+  - term: provider.register.approve
+    root: dcm-function
+    parent: provider
+    curation_state: canonical
+    definition: Approve a provider registration (PENDING_APPROVAL -> ACTIVE).
+  - term: provider.register.reject
+    root: dcm-function
+    parent: provider
+    curation_state: canonical
+    definition: Reject a provider registration.
+  - term: provider.deregister
+    root: dcm-function
+    parent: provider
+    curation_state: canonical
+    definition: Force-deregister a provider.
+  - term: policy.author
+    root: dcm-function
+    parent: policy
+    curation_state: canonical
+    definition: Author/edit Governance-Matrix policy (policy_owner).
+  - term: policy.activate
+    root: dcm-function
+    parent: policy
+    curation_state: canonical
+    definition: Activate a policy from shadow to enforcing.
+  - term: accreditation.manage
+    root: dcm-function
+    parent: accreditation
+    curation_state: canonical
+    definition: Register/update accreditation records.
+  - term: accreditation.approve
+    root: dcm-function
+    parent: accreditation
+    curation_state: canonical
+    definition: Approve an accreditation (proposed -> active).
+  - term: trust.elevate
+    root: dcm-function
+    parent: trust
+    curation_state: canonical
+    definition: Elevate an external policy evaluator / peer trust (PROF-007 workflow).
+  - term: tenant.manage
+    root: dcm-function
+    parent: tenant
+    curation_state: canonical
+    definition: Create/administer tenants.
+  - term: access.role.assign
+    root: dcm-function
+    parent: access
+    curation_state: canonical
+    definition: Assign/revoke a role to an actor or access-group (role_assignment). Gated platform_admin; append-only audited.
+  - term: access.role.author
+    root: dcm-function
+    parent: access
+    curation_state: canonical
+    definition: Author the role vocabulary / FunctionCapabilityMatrix (Core-tier governance).
