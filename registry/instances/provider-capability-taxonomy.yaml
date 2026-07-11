@@ -1,0 +1,126 @@
+# Provider-capability taxonomy (seed) — ADR-PROV-002.
+#
+# The governed vocabulary of PROVIDER capabilities: what operation a provider exposes at the
+# unified interface, as (verb x resource-domain). Each entry is a TaxonomyTerm
+# (registry/resource-types/taxonomy-term.json), curation-lifecycle governed (Core/Verified/Org tiers,
+# registry-governance.md §2). This is the `provider-capability` ROOT subtree — DISJOINT from the
+# `architecture-capability` subtree that holds Capability [Knowledge] (DAV). One shared TaxonomyTerm
+# TYPE, two disjoint subtrees; parent chains never cross roots.
+#
+# LAYERS:
+#   root   -> `provider-capability`
+#   verb   -> the closed capability vocabulary (capability-discovery.md §2.2); parent = root
+#   category -> a (verb x domain) LEAF; parent = the verb. A CATEGORY IS A verb-x-domain TERM.
+#              Providers are classified under the categories their declared capabilities place them in
+#              (non-exclusive); Governance-Matrix policy targets a category / a verb / the data.
+#
+# Seed = representative, not exhaustive. New verbs/domains register through the tiered governance flow.
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: provider-capability
+
+terms:
+  # ---- root ----
+  - term: provider-capability
+    root: provider-capability
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the substrate provider-operation vocabulary. A provider declares capabilities drawn from
+      this subtree; it never declares a "provider type". Disjoint from architecture-capability.
+
+  # ---- verbs (closed vocabulary; parent = root) ----
+  - term: realize_resources
+    root: provider-capability
+    parent: provider-capability
+    domain: "*"                       # domain-scoped at the category leaves below
+    curation_state: canonical
+    definition: Provision, update, and decommission typed resources under a lifecycle contract (four states). Legacy label =service_provider.
+  - term: serve_data
+    root: provider-capability
+    parent: provider-capability
+    domain: "*"
+    curation_state: canonical
+    definition: Respond to queries with authoritative external data (lookup-only, owns no resource). Legacy label =information_provider.
+  - term: authenticate
+    root: provider-capability
+    parent: provider-capability
+    domain: Identity
+    curation_state: canonical
+    definition: Authenticate identities and return tokens/roles/groups. Legacy label =auth_provider.
+  - term: federate
+    root: provider-capability
+    parent: provider-capability
+    domain: Peer
+    curation_state: canonical
+    definition: Act as another UDLM-conformant peer (mTLS mandatory, dual audit, sovereignty pre-check). Legacy label =peer_realization.
+  - term: execute_workflows
+    root: provider-capability
+    parent: provider-capability
+    domain: Process
+    curation_state: canonical
+    definition: Run ephemeral workflows to completion without producing a persistent resource. Legacy label =process_provider.
+
+  # ---- categories = (verb x domain) leaves; parent = the verb. These are what policy targets. ----
+  - term: realize_resources/Storage
+    category: storage-provisioning
+    root: provider-capability
+    parent: realize_resources
+    domain: Storage
+    curation_state: canonical
+    definition: Provision/manage Storage.* resources (volumes, file shares, buckets). e.g. the Samba/Ceph providers.
+  - term: realize_resources/Compute
+    category: compute-provisioning
+    root: provider-capability
+    parent: realize_resources
+    domain: Compute
+    curation_state: canonical
+    definition: Provision/manage Compute.* resources (VMs, containers, bare-metal). e.g. libvirt, OCP/podman.
+  - term: realize_resources/Network
+    category: network-provisioning
+    root: provider-capability
+    parent: realize_resources
+    domain: Network
+    curation_state: canonical
+    definition: Provision/manage Network.* resources (IP addresses, subnets, segments). e.g. an InfoBlox IPAM allocating IPs.
+  - term: serve_data/Network
+    category: network-information
+    root: provider-capability
+    parent: serve_data
+    domain: Network
+    curation_state: canonical
+    definition: >-
+      Serve authoritative Network data (IP availability, subnet utilization). The SECOND capability of an
+      InfoBlox IPAM — same provider, alongside realize_resources/Network; two categories, one registration.
+  - term: serve_data/Storage
+    category: storage-information
+    root: provider-capability
+    parent: serve_data
+    domain: Storage
+    curation_state: canonical
+    definition: >-
+      Serve authoritative data ABOUT what is stored (inventory, metadata) on Storage.* resources. Chris's
+      example: a provider that both provisions storage (realize_resources/Storage) AND retrieves information
+      stored on it (serve_data/Storage) — two categories, non-exclusive, one provider.
+  - term: authenticate/Identity
+    category: authentication
+    root: provider-capability
+    parent: authenticate
+    domain: Identity
+    curation_state: canonical
+    definition: Authenticate identities against a directory (FreeIPA, OIDC). Category label for the authenticate verb.
+  - term: federate/Peer
+    category: federation
+    root: provider-capability
+    parent: federate
+    domain: Peer
+    curation_state: canonical
+    definition: Federate with a peer DCM. Category label for the federate verb.
+  - term: execute_workflows/Process
+    category: workflow-execution
+    root: provider-capability
+    parent: execute_workflows
+    domain: Process
+    curation_state: canonical
+    definition: Run day-2 processes (scans, remediation, reports). Category label for the execute_workflows verb.

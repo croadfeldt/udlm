@@ -515,15 +515,15 @@ Every Service Provider must declare its accreditation status during registration
 provider_registration:
   # ... existing fields ...
   accreditations:
+    # Reference ONLY. status/expires_at are NOT restated here — DCM resolves currency from the
+    # registered accreditation record at evaluation time (a provider cannot assert a revoked
+    # accreditation is still active). framework/accreditation_type are readability hints.
     - accreditation_uuid: <uuid>       # reference to registered accreditation record
       framework: fedramp_high
-      status: active
-      expires_at: "2026-12-31"
 
     - accreditation_uuid: <uuid>
       framework: hipaa
       accreditation_type: baa
-      status: active
 
   # Self-declared compliance (lowest trust; used when no formal accreditation exists)
   self_declared_compliance:
@@ -531,9 +531,11 @@ provider_registration:
     last_self_review: "2026-01-15"
     evidence_ref: <url>
 
-  # Maximum data classification this provider is permitted to handle
-  # The realization computes this from active accreditations; self_declared_max is the fallback
-  self_declared_max_data_classification: confidential
+  # Maximum data classification this provider is permitted to handle — DCM-COMPUTED from active
+  # accreditations only; NOT self-declared. A provider without accreditations is capped at the hard
+  # floor below (public/internal), so there is no self-declared fallback that could raise the ceiling
+  # above what policy permits. A value supplied by the provider is ignored.
+  # (computed field, DCM-owned — resolved in the dcm registration verdict, not the submission)
 ```
 
 Providers without any accreditation records are treated as `self_declared` level and are subject to the most restrictive authorization matrix rules. They may only receive data classified as `public` or `internal`.

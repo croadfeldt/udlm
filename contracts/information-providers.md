@@ -367,8 +367,10 @@ information_provider_registration:
   sovereignty_constraints:
     <same model as Service Providers>
 
-  trust_declaration:
-    <same model as Service Providers>
+  attestation:
+    # attestation EVIDENCE — same model as provider-contract.md §2. Trust is NOT self-declared:
+    # trust_posture is DCM-assigned in the registration verdict, not stated here (ADR-022).
+    <same evidence model as Service Providers>
 
   health_check:
     endpoint: /health

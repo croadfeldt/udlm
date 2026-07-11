@@ -54,9 +54,12 @@ provider:
       data_domains:
         - ip_availability
         - subnet_utilization
-      authority_level: authoritative
       query_interface: rest
-      confidence_model: { default: 95, staleness_decay: true }
+      # authority_level and confidence are NOT self-declared here (INF-006). The provider names the
+      # domains it can serve; DCM assigns authority_level from the admin-owned authority layer and the
+      # realization COMPUTES confidence (source authority × freshness × corroboration). authority_level
+      # decides which source wins data conflicts, so a provider stamping its own data "authoritative"
+      # would self-grant precedence over the true system-of-record. A value supplied here is ignored.
 
   sovereignty:
     zones: [eu-west-1, eu-west-2]
@@ -75,7 +78,7 @@ This single registration replaces what previously required two separate registra
 | `federate` | Provider is another UDLM-conformant peer — mTLS mandatory, dual audit, sovereignty pre-check | peer_realization |
 | `execute_workflows` | Provider runs ephemeral workflows without producing persistent resources | process_provider |
 
-A provider MAY declare **multiple capabilities**. The capability declaration MUST include everything the realization needs to interact with the provider for that capability — resource types, data domains, auth methods, etc.
+A provider MAY declare **multiple capabilities**, and each capability is explicitly **(verb × domain)** — a verb from the vocabulary above scoped to the resource-type **Category** (`naming-conventions §2`) it operates over. The declaration MUST name that domain **uniformly**: `realize_resources.resource_types` and `serve_data.data_domains` are the same idea under different names — the domain a capability acts on — and both are the domain axis. Beyond the domain, the declaration MUST include everything else the realization needs for that capability (operations, auth methods, etc.). The verbs above are the top of the governed **provider-capability taxonomy** (`TaxonomyTerm`; `registry/instances/provider-capability-taxonomy.yaml`), and a (verb × domain) leaf is a **capability category** (§2.4). See ADR-PROV-002.
 
 ### 2.3 Type-Label Compatibility
 
@@ -90,6 +93,29 @@ The legacy type names become convenience labels — shorthand for common capabil
 | process_provider | `capabilities: [execute_workflows]` |
 
 The `provider_type` field becomes a resolved label derived from the declared capabilities. Substrate consumers MAY rely on the capability set; the type label is informational.
+
+### 2.4 Capability Categories (Policy-Targetable Groupings)
+
+A **capability category** is a **(verb × domain)** term in the provider-capability taxonomy — e.g. `realize_resources/Storage` (*storage-provisioning*), `serve_data/Network` (*network-information*). It is:
+
+- **Derived, not declared.** A provider's categories follow from the capabilities it declares and the domains they operate over — no separate registration.
+- **Non-exclusive.** A provider occupies *every* category its capabilities place it in. An InfoBlox IPAM that both allocates IPs and answers availability queries is in **both** `realize_resources/Network` and `serve_data/Network` — one registration, two categories (the double-registration the typed model forced is gone).
+- **The policy target.** The Governance Matrix targets a capability category, a capability verb, or the data itself (`data_classification`/`data_role`), replacing the old `provider_type` match axis. Differentiated policy per domain falls out — an encryption-at-rest rule binds `realize_resources/Storage` without touching `realize_resources/Compute`.
+
+Write **"capability category"** in full: bare "category" is the resource-type Category (`naming-conventions §2`) — the domain axis a capability category *composes on* — and it is never a "role" (that is `data_role`, ADR-PROV-001). See ADR-PROV-002.
+
+### 2.5 Capability Admission (Default-Deny)
+
+Declaring a capability is a **claim, not a permission** — **default-deny**: by default no use of a provider is allowed, and a declared capability/category is **unusable until admitted** (ADR-PROV-003; `effective_capabilities` starts empty). Two levels, separated by concern:
+
+- **Platform level (admin).** A **platform admin** admits a capability/category — a *coarse* per-`(provider × capability/category)` disposition `pending | approved | provisional | denied`, recorded in the DCM-assigned registration verdict (`provider-contract.md §2`, `capability_admissions`). Approval stringency is **profile-governed** ("default safe" — derived from the platform profile(s) in use; no profile weakens default-deny). `provisional` = admitted but restricted/shadowed (reuses the federation provisional posture).
+- **Granular (policy).** Conditional approval — per tenant / zone / resource-type / context — is **policy**: Governance-Matrix rules (`ALLOW_WITH_CONDITIONS`), not an admin field. Domain granularity is inherent (a category *is* verb × domain, so `realize_resources/Storage` is admitted independently of `realize_resources/Compute`).
+
+What a provider may actually do is the **computed intersecting ceiling**:
+
+> `effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`
+
+— never an independent grant list; a provider can exceed neither its declaration nor its admission. This adopts, by reference, the **IAM permission-boundary / SCP** and **OAuth 2.0 scope** intersection semantics (effective = requested ∩ granted; the grantor echoes the granted set back), with **OAuth RAR (RFC 9396)** as the structured `verb × domain` shape (SPEC-DESIGN adopt-by-ref §22–23). Enforcement is the *one* Governance Matrix (§2.4) keyed on the provider + capability category — not a parallel path; the admission record **sources** those rules. Every admission change is an immutable, append-only `CAPABILITY_ADMIT` audit event (actor + reason), reconstructed **LIFO**. See ADR-PROV-003.
 
 ---
 
