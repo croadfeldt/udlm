@@ -212,6 +212,69 @@ def check_taxonomy_seed(doc):
             errors.append(f"taxonomy term '{t.get('term', '?')}' has dangling parent '{p}'")
     return errors
 
+
+def _spec_field_paths(schema, prefix=""):
+    """Dot-paths of every field declared in a type-spec `spec` (recursing into object props)."""
+    out = set()
+    for name, sub in ((schema or {}).get("properties") or {}).items():
+        p = f"{prefix}{name}"
+        out.add(p)
+        if isinstance(sub, dict) and sub.get("type") == "object":
+            out |= _spec_field_paths(sub, p + ".")
+    return out
+
+
+def _type_spec_field_index():
+    """resource_type -> set(dot-path) of base spec fields a provider extension may NOT collide with."""
+    index = {}
+    for path in (ROOT / "resource-types").glob("*"):
+        if path.suffix not in (".json", ".yaml", ".yml"):
+            continue
+        doc = load(path)
+        index[doc["resource_type"]] = _spec_field_paths(doc.get("spec") or {})
+    return index
+
+
+def _data_paths(obj, prefix=""):
+    out = set()
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            p = f"{prefix}{k}"
+            out.add(p)
+            out |= _data_paths(v, p + ".")
+    return out
+
+
+def check_provider_extensions(doc):
+    """ADR-PROV-004: provider_extensions are strictly ADDITIVE and honest about portability.
+      (a) NO-OVERRIDE — no extension element path may collide with a base spec field path.
+      (b) NO SILENT NON-PORTABILITY — an entity carrying extensions MUST declare degraded
+          portability (portability_breaking:true) and record consumer notification."""
+    errors = []
+    exts = doc.get("provider_extensions") or {}
+    if not exts:
+        return errors
+    base = _type_spec_field_index().get(doc.get("resource_type"), set())
+    for handle, elements in exts.items():
+        for p in _data_paths(elements):
+            if p in base:
+                errors.append(f"provider_extensions[{handle}].{p} collides with base spec field "
+                              f"'{p}' — extensions are additive-only, never override the base (ADR-PROV-004)")
+    port = doc.get("portability") or {}
+    if not port.get("portability_breaking"):
+        errors.append("carries provider_extensions but portability.portability_breaking is not true "
+                      "— extensions degrade portability and MUST be declared (ADR-PROV-004)")
+    if not port.get("consumer_notified"):
+        errors.append("carries provider_extensions but portability.consumer_notified is absent — "
+                      "silent non-portability is prohibited; the consumer MUST be notified (ADR-PROV-004)")
+    return errors
+
+
+def check_realized_entity(doc):
+    """All semantic checks for a realized entity."""
+    return check_process_entity(doc) + check_provider_extensions(doc)
+
+
 def pick_instance(doc):
     """Dispatch: `record_type` first (catalog_item ⇒ catalog item, + semantic checks);
     legacy keys — `group_class` ⇒ DCMGroup; `resource_type` ⇒ realized entity."""
@@ -239,7 +302,7 @@ def pick_instance(doc):
         return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
     return (INSTANCE_VALIDATOR,
             lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]",
-            check_process_entity)
+            check_realized_entity)
 
 
 def main() -> int:
