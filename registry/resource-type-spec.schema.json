@@ -48,7 +48,8 @@
     "family": {
       "enum": [
         "Resource",
-        "Knowledge"
+        "Knowledge",
+        "Access"
       ],
       "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary."
     },
@@ -404,6 +405,24 @@
               "Alias",
               "Antipattern",
               "UseCase"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "family": {
+            "const": "Access"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entity_type": {
+            "enum": [
+              "Identity"
             ]
           }
         }

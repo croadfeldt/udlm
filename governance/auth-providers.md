@@ -91,11 +91,15 @@ auth_provider_registration:
   # What actor types this provider can authenticate
   authenticates: [human, service_account, webhook_service_account]
 
-  # Trust level — closed substrate vocabulary
+  # Trust level — closed substrate vocabulary. PLATFORM-ADMIN-ASSIGNED, not self-declared (ADR-022):
+  # trust_level gates whether this provider's authz decisions are re-evaluated, so it is an
+  # authorization input. In a self-service or federated registration a trust_level in the payload is
+  # IGNORED — only a platform admin sets it (default: advisory). Mirrors the dcm_registration_verdict
+  # pattern in provider-contract.md §2.
   trust_level: <authoritative|verified|advisory>
   # authoritative: realization accepts all decisions without re-evaluation
   # verified:      realization accepts with additional Policy Engine checks
-  # advisory:      realization treats decisions as input — full re-evaluation always
+  # advisory:      realization treats decisions as input — full re-evaluation always (default)
 
   # Connection credentials
   connection_credentials_ref:
@@ -115,7 +119,10 @@ auth_provider_registration:
     refresh_ttl: P7D
     concurrent_sessions: 3
 
-  # Role mapping — external groups → realization roles
+  # Role mapping — external groups → realization roles. `role` values are governed access-role
+  # TaxonomyTerms (ADR-RBAC-001; registry/instances/access-role-taxonomy.yaml) — the ONE role
+  # vocabulary, not free strings. An external-group→role map is one way to ASSIGN a role; the
+  # authoritative record is a role_assignment (function-capability-matrix.schema.json).
   role_mapping:
     default_role: consumer
     group_role_map:
@@ -148,6 +155,8 @@ The substrate defines a closed taxonomy of authentication modes. Any conformant 
 ### 4.1 Built-In Auth Provider (zero configuration)
 
 Substrate-required default. Always registered. Cannot be deregistered — only deprioritized.
+
+This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (ADR-RBAC-001): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a DCMGroup with `group_class: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
 
 ```yaml
 built_in_auth_provider:
@@ -451,7 +460,7 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 | `AUTH-009` | Webhook and message bus inbound surfaces always require authentication regardless of active profile. Anonymous actors are never permitted on these surfaces. |
 | `AUTH-010` | Rate limiting is enforced per authenticated actor. Limits are declared on the Auth Provider or webhook actor registration. |
 | `AUTH-011` | Git PR actor identity resolution must use the registered Auth Provider. The realization trusts the Git server's verified identity assertion — not user-declared Git configuration. The resolved actor carries the same role, group, and tenant scope as any other user authenticated via the same Auth Provider. |
-| `AUTH-012` | SCIM 2.0 is supported as an optional Auth Provider capability. SCIM provisions and deprovisions actors and group memberships. Roles are not SCIM-provisioned — they require explicit policy authorization. SCIM deprovisioning suspends actors by default; in-flight requests complete before suspension. |
+| `AUTH-012` | SCIM 2.0 is supported as an optional Auth Provider capability. SCIM provisions and deprovisions actors and group memberships. Roles are not SCIM-provisioned — they require explicit policy authorization: a role is a governed **access-role** TaxonomyTerm (ADR-RBAC-001), assigned by an admin-gated `role_assignment` (`function-capability-matrix.schema.json`; function `access.role.assign`, append-only audited) — never a free string and never SCIM-set. SCIM deprovisioning suspends actors by default; in-flight requests complete before suspension. |
 | `AUTH-013` | In-flight requests authenticated before Auth Provider failure continue using cached session tokens. New requests follow the declared failover chain. Sessions remain valid for their declared TTL during outages. All providers unavailable → new authentication rejected. |
 | `AUTH-014` | MFA enforcement is two-tier: per-session MFA (captured in `mfa_verified` field) and step-up MFA (additional challenge at sensitive operations). Policy declares which operations require step-up regardless of session MFA status. Step-up tokens are short-lived. Profile governs default requirements. |
 | `AUTH-015` | The built-in Auth Provider uses a pluggable storage backend. FSI and sovereign profiles require encryption at rest. The local user store should only contain bootstrap users, service accounts, and API key holders. |

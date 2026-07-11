@@ -35,9 +35,10 @@
         "provider_grouping",
         "composite",
         "federation",
-        "cross_tenant_authorization"
+        "cross_tenant_authorization",
+        "access_grouping"
       ],
-      "description": "CLOSED set — the ONE group_class vocabulary (universal-groups §2.2 table incl. cross_tenant_authorization; data-model-core §5/§7). System behavior binds to declared classes only (GRP-011)."
+      "description": "CLOSED set — the ONE group_class vocabulary (universal-groups §2.2 table incl. cross_tenant_authorization; data-model-core §5/§7). System behavior binds to declared classes only (GRP-011). `access_grouping` (ADR-RBAC-001) = a group of IDENTITIES for RBAC — the subject-set the authority-enforcement voting model already assumes (authority-enforcement.md 'N members of a declared DCMGroup'); requires `member_type: actor`."
     },
     "group_subclass": {
       "type": "string",
@@ -146,9 +147,10 @@
               "member_type": {
                 "enum": [
                   "entity",
-                  "resource_group"
+                  "resource_group",
+                  "actor"
                 ],
-                "description": "What kind of member: entity = a realized-entity instance; resource_group = a nested DCMGroup (nesting.supported must be true)."
+                "description": "What kind of member: entity = a realized-entity instance; resource_group = a nested DCMGroup (nesting.supported must be true); actor = an Identity.Person/ServiceAccount (ADR-RBAC-001) — permitted only in an `access_grouping` group, so a DCMGroup can be the RBAC subject-set the authority-enforcement voting model already references."
               },
               "added_at": {
                 "type": "string",
