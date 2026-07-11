@@ -1,0 +1,102 @@
+# UDLM Resource Type Specification (YAML; validated against registry/resource-type-spec.schema.json).
+$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.1.0
+conforms_to: udlm/0.1
+uuid: c63f6d8c-8d1c-44c3-b996-62a7fe62b48a
+resource_type: Storage.FileShare
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: provisioning
+portability: portable
+status: active
+metadata:
+  display_name: File Share
+  description: >-
+    A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network.
+    The shares and their access are TYPED config — UDLM owns them and DCM's interface manages them
+    (ADR-023 tier (i), the "full" scale). Provider-specific serialization (the smb.conf file, the
+    FreeIPA [global] block) is naturalized by the provider (ADR-023 §1); share knobs not lifted into
+    typed fields ride the `options` passthrough (basic scale, ADR-023 §6). Authentication data lives
+    in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-11T00:00:00Z"
+
+adopts:
+  - standard: SMB / CIFS
+    version: "3.1.1 (MS-SMB2)"
+    standard_name: SMB File Service
+    role: share + access vocabulary (share name, exported path, access, read-only)
+    source: https://learn.microsoft.com/openspecs/windows_protocols/ms-smb2/
+    license: Microsoft OSP
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    Provider stops advertising the shares and removes the service config; the underlying Storage.Volume
+    data is untouched (a share is an access surface, not the data). Non-destructive to data.
+
+spec:
+  type: object
+  required: [protocol, shares]
+  properties:
+    protocol:
+      enum: [smb, nfs]
+      default: smb
+      description: File-sharing protocol.
+    workgroup:
+      type: string
+      description: SMB workgroup / domain scope.
+    directory_service_ref:
+      type: string
+      description: >-
+        handle/uuid of the Security.DirectoryService that authenticates principals. The membership/role
+        data is external and referenced, not stored (PDP/PIP; provider-contract §1a.8).
+    shares:
+      type: array
+      description: The exported shares — TYPED config (tier i). DCM owns these; the provider naturalizes them to smb.conf.
+      items:
+        type: object
+        required: [name, path]
+        properties:
+          name: { type: string }
+          path: { type: string, description: Exported filesystem path (typically a Storage.Volume mount). }
+          read_only: { type: boolean, default: false }
+          browseable: { type: boolean, default: true }
+          valid_principals:
+            type: array
+            items: { type: string }
+            description: Users/groups permitted, resolved via the DirectoryService (membership held externally). e.g. "@examplecom", "maintainer".
+          options:
+            type: object
+            additionalProperties: { type: string }
+            description: >-
+              Provider-passthrough share knobs NOT lifted into typed fields — the basic-scale text
+              passthrough (ADR-023 §6). e.g. {"fruit:time machine": "yes", "inherit acls": "yes"}.
+
+outputs:
+  mount_uri:
+    type: string
+    description: Reachable share URI once Realized, e.g. //host1.example.com/export.
+
+relationships:
+  - kind: contained_by
+    target: Compute.BareMetalHost
+    cardinality: 0..1
+    description: Runs on a host as a native service — or (below) as a container / on a cluster.
+  - kind: contained_by
+    target: Compute.Container
+    cardinality: 0..1
+    description: Or runs as a containerized service.
+  - kind: references
+    target: Security.DirectoryService
+    cardinality: 0..1
+    description: Authenticates principals against this directory (auth data external — PDP/PIP).
+  - kind: references
+    target: Security.CredentialRef
+    cardinality: 0..n
+    description: Service credentials (e.g. the Samba keytab) — referenced, never inline.
+  - kind: depends_on
+    target: Storage.Volume
+    cardinality: 0..n
+    description: The underlying storage the shares expose.

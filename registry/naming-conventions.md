@@ -60,6 +60,28 @@ Resource vs Information: a **provisioned server is a Resource**; the **data it h
 A directory *server* is `Security.DirectoryService` (a Resource); `Identity.*` (Person/Group/
 ServiceAccount) is the Information data — don't conflate them.
 
+## 2a. Provider capabilities and capability categories (ADR-PROV-002)
+
+Three terms here are easy to collide; keep them distinct.
+
+- **Provider capability** — what operation a provider exposes at the unified interface, as **(verb × domain)**:
+  a closed-vocabulary verb (`realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows`)
+  scoped to a resource-type **Category** (§2, the domain). Declared explicitly by the provider; organized by
+  the governed **provider-capability taxonomy** (a `TaxonomyTerm` subtree under the `provider-capability` root,
+  `registry/instances/provider-capability-taxonomy.yaml`). This is **not** the Knowledge-family
+  **`Capability [Knowledge]`** — that is DAV's *architecture-capability* sense ("what an architecture
+  provides," `entities/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
+  `architecture-capability`. One shared `TaxonomyTerm` **type**, two disjoint subtrees; parent chains never cross.
+- **Capability category** — a **(verb × §2-Category)** term in the provider-capability taxonomy (e.g.
+  `realize_resources/Storage` = *storage-provisioning*). Its domain axis **is** a §2 Category — a capability
+  category composes on the resource-type Category, it does not replace or shadow it. **Non-exclusive**: a
+  provider occupies every capability category its declared capabilities place it in (an InfoBlox IPAM sits in
+  both `realize_resources/Network` and `serve_data/Network`). Always write **"capability category"** — never bare
+  "category," which means the §2 resource-type Category. Policy targets a capability category, a capability verb,
+  or the data itself (`data_classification`/`data_role`) — replacing the old `provider type` match axis.
+- **Not "role."** A provider's capability grouping is a **capability category**, never a "role" — `role`/`data_role`
+  is the data-purpose axis (`execution | assembly | governance | audit | cost`, ADR-PROV-001).
+
 ## 3. Suite products = composites, not monolithic types
 
 A product that bundles several capabilities is modeled as **realizing multiple types**, not one bespoke

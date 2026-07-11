@@ -7,13 +7,51 @@ resource_type: Compute.Container
 version: 0.1.0
 family: Resource
 entity_type: Infrastructure Resource
+lifecycle_archetype: provisioning
 portability: portable
 status: active
 metadata:
   display_name: Container
-  description: A container workload with an image, resource requests, environment, and exposed ports.
+  description: >-
+    A container workload — image, resources, environment, mounts, and exposed ports — realized and
+    managed by a *resource* provider (OCP, podman) under the four-state lifecycle (ADR-023). Models the
+    service/workload layer of the estate: MCP servers, the media stack, mail, etc. Secret material is
+    never inline — env/mounts reference a Security.CredentialRef.
   maintainer: udlm-registry
   origination_timestamp: "2026-06-17T18:31:11Z"
+
+# Adopted by reference (core-tenets T5) — the standards' schemas are NOT restated here; only an
+# identity join + a version-pinned pointer. Version negotiation/translation is Policy (DCM), not data.
+adopts:
+  - standard: OCI Image Specification
+    version: "1.1"
+    standard_name: Image manifest / descriptor
+    role: image reference + content-addressable digest vocabulary
+    identity_join: { local_field: image.digest, standard_column: digest }
+    source: https://github.com/opencontainers/image-spec
+    license: Apache-2.0
+    license_compatibility: compatible-reference
+  - standard: Open Application Model
+    version: ">=0.3"
+    standard_name: Component (container workload)
+    role: infra-neutral workload shape (image, resources, env, ports)
+    source: https://oam.dev/
+    license: MIT
+    license_compatibility: compatible-reference
+  - standard: Kubernetes Container (core/v1)
+    version: ">=1.29"
+    standard_name: Container
+    role: runtime field vocabulary (command/args, ports, mounts, restart) — naturalized by the provider, not restated
+    source: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+    license: CC-BY-4.0
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    Provider stops and removes the container; Discovered reflects exited/absent. The container owns no
+    persistent data of its own (mounts reference external sources), so decommission is non-destructive to data.
+
 spec:
   type: object
   required: [image]
@@ -24,12 +62,23 @@ spec:
       properties:
         reference:
           type: string
-          description: Container image reference, e.g. registry.example.com/orders-api:1.0
+          description: OCI image reference, e.g. quay.example.com/maintainer/estate-mcp:latest
+        digest:
+          type: string
+          pattern: "^sha256:[a-f0-9]{64}$"
+          description: OCI content-addressable digest, pinned at Realized/Discovered for provenance.
+    command:
+      type: array
+      items: { type: string }
+      description: Entrypoint override.
+    args:
+      type: array
+      items: { type: string }
     resources:
       type: object
       properties:
-        cpu: { type: number, minimum: 0.1 }
-        memory: { type: string, pattern: "^[0-9]+(MB|GB)$" }
+        cpu: { type: number, minimum: 0.1, description: vCPU request in cores. }
+        memory: { type: string, pattern: "^[0-9]+(Mi|Gi|MB|GB)$" }
     process:
       type: object
       properties:
@@ -40,7 +89,22 @@ spec:
             required: [name]
             properties:
               name: { type: string }
-              value: { type: string }
+              value: { type: string, description: Literal value — non-secret only. }
+              value_from:
+                type: object
+                description: Reference to a Security.CredentialRef or config source. Secret material is NEVER inline (ADR-023).
+                properties:
+                  credential_ref: { type: string, description: handle or uuid of a Security.CredentialRef }
+                  key: { type: string }
+        mounts:
+          type: array
+          items:
+            type: object
+            required: [mount_path, source_ref]
+            properties:
+              mount_path: { type: string }
+              source_ref: { type: string, description: handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets). }
+              read_only: { type: boolean, default: true }
     network:
       type: object
       properties:
@@ -51,15 +115,36 @@ spec:
             required: [container_port]
             properties:
               container_port: { type: integer, minimum: 1, maximum: 65535 }
-              visibility: { type: string, enum: [internal, external], default: internal }
+              published_port: { type: integer, minimum: 1, maximum: 65535 }
+              protocol: { type: string, enum: [tcp, udp], default: tcp }
+              visibility: { type: string, enum: [loopback, internal, external], default: internal }
+    runtime:
+      type: object
+      properties:
+        restart_policy: { type: string, enum: [always, on-failure, never], default: always }
+        replicas: { type: integer, minimum: 0, default: 1 }
+
 outputs:
   endpoint:
     type: string
     description: Reachable endpoint once Realized.
   internal_dns:
     type: string
-    description: In-cluster DNS name.
+    description: In-cluster / on-host DNS name.
+
 relationships:
+  - kind: contained_by
+    target: Compute.Cluster
+    cardinality: 0..1
+    description: Runs on a cluster (exactly one of Compute.Cluster / Compute.BareMetalHost).
+  - kind: contained_by
+    target: Compute.BareMetalHost
+    cardinality: 0..1
+    description: Or runs directly on a host (e.g. rootless podman).
+  - kind: references
+    target: Security.CredentialRef
+    cardinality: 0..n
+    description: Env/mounts that resolve secrets reference a CredentialRef; no secret material inline (ADR-023).
   - kind: depends_on
     target: Data.Database
     target_field: connection_string

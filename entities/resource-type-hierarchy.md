@@ -601,8 +601,8 @@ provider_registration:
     <see sovereignty contract — provider-contract.md>
   supported_lifecycle_operations:
     <see lifecycle contract — provider-contract.md>
-  trust_declaration:
-    <see trust contract — provider-contract.md>
+  attestation:
+    <attestation EVIDENCE — see provider-contract.md §2. trust_posture is DCM-assigned in the verdict, not self-declared here (ADR-022).>
 ```
 
 ### 6.2 Catalog Item Declaration

@@ -38,6 +38,21 @@ Every Provider in DCM — regardless of type — implements a single base contra
 
 ---
 
+## 1a. The Base Level of Integration (the floor)
+
+The **base level** is the minimum a provider must implement for **DCM/UDLM to own the lifecycle** of its target resources — basic lifecycle + the required-data functions that enable that ownership. Everything below is MUST; anything richer is a **capability extension** (§8), i.e. a deeper *scale of integration* (ADR-023 §6), opt-in. A provider at the base level MUST **declare** and **provide**:
+
+1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). DCM places/matches against this.
+2. **Required data** — the input schema it needs to realize/manage each target resource, so DCM can collect intent and own the lifecycle.
+3. **Config-projection detail** — enough config schema/detail for the **DCM interface to project a configuration interface to the user across the config lifecycle**, at the provider's supported scale (basic text passthrough → typed; ADR-023 §6). No detail → DCM still projects a basic text passthrough; more detail → a typed interface.
+4. **Lifecycle functions** — realize / converge / decommission: execute the four-state transitions DCM drives (§6 dispatch). MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
+5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization, ADR-023 §1), with an **identity correlation** (UDLM `uuid` ↔ the provider's native id). *Without this read-back DCM is blind to reality and cannot own the lifecycle* — it is the load-bearing function that closes the loop and feeds drift/convergence/rehydrate.
+6. **Audit** — emit audit events for its actions (state transitions, relationship mutations) into the chain (SPEC-DESIGN §18d; §7).
+7. **Relationships** — declare and maintain the target resources' relationships: one authoritative direction, targets that resolve, mutations as explicit forward audit events (SPEC-DESIGN §18a–e).
+8. **Security, governance, tenancy, RBAC** — each target resource carries its **tenant** and **governance context** and declares its **security posture** (sovereignty, trust; §2/§4/§5, ADR-022). **Authorization is resolved by DCM as the *authoritative lookup*** — "can actor X do action Y on resource Z" — while the **enabling data (identity, group membership, roles) lives in external systems** (IdP / FreeIPA / RBAC) and is **referenced, not stored**. This is the classic **PDP/PIP split**: DCM is the Policy Decision Point (and gates enforcement); external systems are Policy Information Points that *inform* the decision — the same broker stance as ADR-022 (DCM brokers trust, never custodies it). No provider action bypasses this resolution.
+
+The floor is what makes DCM the lifecycle owner and single pane of glass for the resource at all; the scale of *config* integration (3) can be shallow (text) or deep (typed) without changing that.
+
 ## 2. Base Contract — Registration
 
 All providers register through the same pipeline (registration specification is implementation-specific; see DCM repo for the complete flow).
@@ -52,20 +67,29 @@ provider_base_registration:
     status: submitted                      # submitted → validating → active
     owned_by: { display_name: "<team>" }
 
-  provider_type_id: <type>               # from Provider Type Registry
+  capabilities: [<verb × domain>, ...]   # the declared capability set (ADR-PROV-002); the accepted
+                                         # capabilities/categories are governed by the Capability &
+                                         # Category Registry (§9). provider_type, if present, is a
+                                         # resolved convenience label derived from this set — never a
+                                         # mutually-exclusive type.
   display_name: "<human-readable name>"
   description: "<what this provider does>"
 
-  # All providers declare these
+  # All providers declare these. NOTE (ADR-022): the sovereignty_declaration is a CLAIM, not proof.
+  # For sovereign/restricted zones DCM honors it for placement only when backed by a resolved
+  # sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
+  # self_asserted tier (see storage-providers.md §11). Drift detection is the backstop, not the gate.
   sovereignty_declaration:
     operating_jurisdictions: [<country_codes>]
     data_residency_zones: [<zone_ids>]
     sub_processors: []                   # third parties with data access
 
   accreditations:
+    # Reference ONLY. status/expiry are NOT restated here — DCM resolves currency from the registered
+    # accreditation record at evaluation time (a provider cannot assert a revoked accreditation is
+    # still active). `framework` is a readability hint.
     - accreditation_uuid: <uuid>         # reference to registered accreditation
       framework: <framework>
-      status: active
 
   # Data ROLES this provider accepts across the dispatch boundary (ADR-PROV-001;
   # contracts/data-roles.md). Default [execution] — only execution-role data is naturalized
@@ -85,11 +109,9 @@ provider_base_registration:
     rotation_interval: P90D              # max age before DCM expects a rotated cert;
                                          # a cert older than this is flagged at health check
 
-  # Trust posture — how much DCM trusts this provider's self-declarations (DCM ADR-022).
-  # Set by attestation verification at registration, not by the provider's own claim.
-  trust_posture: verified | vouched | provisional   # verified = attestation independently
-                                         # checked; vouched = attested by a trusted third
-                                         # party; provisional = self-asserted, capability-gated
+  # NOTE: trust_posture is NOT submitted here. Trust is never self-declared (ADR-022) — the provider
+  # submits attestation EVIDENCE (its certificate, accreditation references) and DCM COMPUTES the
+  # posture in the dcm_registration_verdict below. A trust_posture supplied in this block is rejected.
 
   # Declared network reachability — so onboarding a provider is a DECLARATION, not a
   # manual firewall edit. DCM provisions the egress/ingress policy from this block; an
@@ -106,7 +128,35 @@ provider_base_registration:
     provisioned_by: platform             # platform provisions policy from this declaration
 ```
 
-Field notes: `rotation_interval` is the maximum certificate age DCM tolerates before flagging; `trust_posture` is assigned by DCM's attestation verification (not accepted from the provider); `network_reachability` is consumed by the platform to provision connectivity so no per-provider manual firewall change is required.
+**DCM-assigned registration verdict.** Produced by DCM *after* attestation verification; **not part of the provider's submission** — the provider cannot set these, and a submitted value is rejected. This is the structural guarantee behind ADR-022 (trust is never self-declared):
+
+```yaml
+dcm_registration_verdict:                # DCM-OWNED — references the submission above
+  provider_uuid: <uuid>
+  trust_posture: verified | vouched | provisional   # COMPUTED by DCM from attestation:
+                                         # verified = attestation independently checked;
+                                         # vouched  = attested by a trusted third party;
+                                         # provisional = provider self-asserted only, capability-gated (weakest)
+  effective_accepts_roles: [execution]   # INTERSECTION of the provider's requested accepts_roles and what
+                                         # the Governance Matrix permits — DCM-computed, authoritative
+  capability_admissions:                 # ADR-PROV-003 — PLATFORM-LEVEL admin disposition of each DECLARED
+    - capability: realize_resources/Storage   # capability/category. DEFAULT-DENY: a declared capability is
+      disposition: approved              # UNUSABLE until admitted; each starts `pending` at registration.
+    - capability: realize_resources/Compute   # disposition: pending | approved | provisional | denied — COARSE,
+      disposition: denied                # platform-wide. GRANULAR approval (per tenant/zone/resource/context) is
+    - capability: serve_data/Network           # POLICY (Governance Matrix), not here. Domain granularity is inherent:
+      disposition: provisional           # a category IS verb×domain (approve /Storage, deny /Compute independently).
+  effective_capabilities: [realize_resources/Storage]   # COMPUTED intersecting CEILING (ADR-PROV-003); starts EMPTY:
+                                         # declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted
+                                         # (mirrors effective_accepts_roles). A provider can never exceed this.
+                                         # Admission history is IMMUTABLE: every admin change is an explicit forward
+                                         # CAPABILITY_ADMIT audit event (actor+reason); current = LIFO-newest.
+  attestation:
+    verified_at: <timestamp>
+    method: <how the submitted evidence was checked>
+```
+
+Field notes: `rotation_interval` is the maximum certificate age DCM tolerates before flagging; `trust_posture` and `effective_accepts_roles` live in the **DCM-assigned verdict**, not the provider submission — the provider supplies attestation **evidence** (certificate, accreditation references) and DCM **computes** the verdict; a provider-supplied value is ignored/rejected. `capability_admissions` and `effective_capabilities` (ADR-PROV-003) are likewise verdict-side and admin-owned: a **platform admin** dispositions each *declared* capability/category at **platform level** (`pending | approved | provisional | denied` — coarse; **granular** per-tenant/zone/context approval is **policy**, not here), **default-deny** (unusable until admitted), and `effective_capabilities` is the **computed intersecting ceiling** (declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted) — a provider holds no authority from declaring, and can never exceed this set. The disposition is **immutable/append-only**: every change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason + resulting disposition), and the current disposition is the LIFO-newest such event — the same durability model as relationship edges (SPEC-DESIGN §18a–e). `network_reachability` is consumed by the platform to provision connectivity so no per-provider manual firewall change is required.
 
 **Registration lifecycle states:**
 ```
@@ -290,16 +340,18 @@ this surface.
 ---
 
 
-## 8. Capability Extensions — Provider Kinds and Capabilities
+## 8. Capability Extensions — Capabilities and Categories
 
-Each provider shares the base contract (Section 1–7) and adds a typed capability extension declaring what it can do. Two things are distinguished here:
+Each provider shares the base contract (Section 1–7) and adds a typed capability extension declaring what it can do. There is **one axis**: the **capability**, expressed as **(verb × domain)** (ADR-PROV-002; capability-discovery §2). What earlier drafts split into "provider kinds" (interaction shape) versus "yielded capabilities" is unified here — both are capabilities:
 
-- **Provider kinds** — distinguished by *interaction shape* (what data flows in which direction, what operations exist): **Service/Resource Provider**, **Information Provider**, **Process Provider**, and **Peer DCM**. A Composite Service is *not* a kind — it is an ordinary Service Provider registering a multi-resource definition (§8.3).
-- **Provider capabilities** — *yields* a provider declares via resource types, independent of kind: **credential issuance** (`Credential.*`), **authentication** (the auth capability), **notification delivery** (`Notification.*`), **ITSM** (`ITSM.*`), and **telemetry** (§7). A capability is something a provider *yields*, not a separate kind of provider — any provider that declares the resource types and capability block exercises it. This is the reconciliation point with the Service/Resource taxonomy: name providers by what they *yield*, and treat credentials/auth/notifications as declared capabilities, not parallel provider kinds.
+- The former **kinds** are capability **verbs**: Service/Resource = `realize_resources`, Information = `serve_data`, Process = `execute_workflows`, Peer DCM = `federate`. (A Composite Service is *not* a kind — it is an ordinary `realize_resources` provider registering a multi-resource definition, §8.3.)
+- The former **yields** are simply more capabilities: **authentication** = `authenticate`; **credential issuance**, **notification** (`Notification.*`), **ITSM** (`ITSM.*`), and **telemetry** (§7) are `realize_resources`/`serve_data` scoped to those domains. Any provider that declares the capability exercises it — there is no separate "kind of provider."
 
-### 8.1 Service / Resource Provider
+A provider declares its capabilities once; the **capability categories** (verb × domain; capability-discovery §2.4) it occupies follow, non-exclusive, and are what policy targets. The convenience-labeled blocks below (`service_provider_capabilities`, `information_provider_capabilities`, …) are per-capability **profile extensions** — shorthand for a capability + its domain; the canonical identity is the declared capability set, not the block name.
 
-**What it does:** Realizes infrastructure resources. Receives assembled payloads, provisions the resource, returns realized state. The same kind also **yields** other capabilities by declaring their resource types: credential issuance (`Credential.*` — see [Credentials](../governance/credentials.md)), notification delivery (`Notification.*`), and ITSM integration (`ITSM.*`). These are **capabilities declared on a provider, not separate provider kinds** — a provider that declares `Credential.*` *is* a Credential Provider for those types.
+### 8.1 `realize_resources` — Service / Resource profile
+
+**What it does:** Realizes infrastructure resources. Receives assembled payloads, provisions the resource, returns realized state. The same provider also **declares** other capabilities by declaring their resource types: credential issuance (`Credential.*` — see [Credentials](../governance/credentials.md)), notification delivery (`Notification.*`), and ITSM integration (`ITSM.*`). These are **capabilities declared on a provider, not separate provider types** — a provider that declares `Credential.*` *is* a credential-issuing provider for those types.
 
 **Additional endpoints:**
 ```
@@ -342,8 +394,12 @@ service_provider_capabilities:
     max_edges_per_response: 500
   naturalization:
     target_format: openstack_nova | vmware_vsphere | custom
+  # cost_metadata is an UNVERIFIED HINT only. The external cost engine is authoritative for placement
+  # scoring and cost attribution (contracts/cost-metering-linkage.md — "the engine computes; it never
+  # decides"). A provider's self-declared opex MUST NOT be the authoritative input to placement
+  # tie-breaking, or a provider could under-declare to win placement.
   cost_metadata:
-    opex_per_unit_per_hour: 0.28
+    opex_per_unit_per_hour: 0.28          # advisory hint; not authoritative
     currency: USD
 ```
 
@@ -351,7 +407,7 @@ service_provider_capabilities:
 
 ---
 
-### 8.2 Information Provider
+### 8.2 `serve_data` — Information profile
 
 **What it does:** Serves authoritative external data to enrich DCM's understanding of resources and business context.
 
@@ -367,7 +423,9 @@ information_provider_capabilities:
   data_domains:
     - domain: business_data
       data_types: [business_unit, cost_center, product_owner]
-      authority_level: primary | secondary | supplementary
+      # authority_level is NOT self-declared (INF-006) — DCM assigns it from the admin-owned authority
+      # layer. It decides which source wins data conflicts, so a provider naming its own data "primary"
+      # would self-grant precedence over the true system-of-record. A value supplied here is ignored.
   query_capacity:
     max_queries_per_second: 100
   confidence_model:
@@ -420,9 +478,9 @@ composite_service_capabilities:
 
 ---
 
-### 8.4 Auth Capability
+### 8.4 `authenticate` — Auth capability
 
-**Authentication is a capability, not a provider kind** (parallel to credential issuance — see [Credentials](../governance/credentials.md) §1). A provider that authenticates actors declares the **auth capability**; DCM consumes it the same way it consumes any other yield. Multiple providers may declare it — tenant routing determines which authenticates a given actor. (DCM is itself a consumer of this capability for its own user auth; it does not have to *be* the authenticator — it brokers/consumes, see DCM `ADR-022`.)
+**Authentication is a capability, not a separate provider type** (parallel to credential issuance — see [Credentials](../governance/credentials.md) §1). A provider that authenticates actors declares the **auth capability**; DCM consumes it the same way it consumes any other yield. Multiple providers may declare it — tenant routing determines which authenticates a given actor. (DCM is itself a consumer of this capability for its own user auth; it does not have to *be* the authenticator — it brokers/consumes, see DCM `ADR-022`.)
 
 **Additional endpoints (a provider declaring the auth capability exposes):**
 ```
@@ -447,11 +505,11 @@ auth_capability:                 # declared on any provider; not a provider_type
 
 **Data direction:** Consumer sends credentials → the auth-capable provider validates → returns token + claims → DCM extracts actor identity.
 
-> **Credential capability.** Credential issuance is the sibling capability, declared via `Credential.*` + a `credential_capability` block (assurance + attestation level the realization selects against). Its full contract — issuance, rotation, revocation, declare-and-select, the broker model — lives in [Credentials](../governance/credentials.md). Like auth, it is a declared capability, not a provider kind; DCM brokers it and never holds the value (CPX-001).
+> **Credential capability.** Credential issuance is the sibling capability, declared via `Credential.*` + a `credential_capability` block (assurance + attestation level the realization selects against). Its full contract — issuance, rotation, revocation, declare-and-select, the broker model — lives in [Credentials](../governance/credentials.md). Like auth, it is a declared capability, not a separate provider type; DCM brokers it and never holds the value (CPX-001).
 
 ---
 
-### 8.5 Peer DCM (Federation)
+### 8.5 `federate` — Peer DCM (Federation)
 
 **What it does:** Another DCM instance participating in federation. Treated as a typed Provider with a federation tunnel as the communication channel.
 
@@ -461,22 +519,28 @@ peer_dcm_capabilities:
   dcm_version: "1.0.0"
   tunnel_type: peer | parent_child | hub_spoke
   deployment_accreditations: [<accreditation_uuids>]
-  inbound_authorization:
+  # inbound/outbound_authorization here are a REQUEST/advertisement, NOT authoritative. The
+  # authoritative authorization scope for the peer channel lives on the LOCAL side of the federation
+  # tunnel wire contract (governance/accreditation-and-authorization-matrix.md) — "what the remote
+  # peer may request" is set locally. A peer cannot widen its own grants by declaring them here.
+  inbound_authorization:                 # requested (advisory)
     - operation: catalog_query
       resource_types: [Compute.VirtualMachine]
-  outbound_authorization:
+  outbound_authorization:                # requested (advisory)
     - operation: placement_query
       resource_types: [Compute.VirtualMachine]
   data_boundary:
     max_classification: restricted
-  trust_posture: verified | vouched | provisional
+  # trust_posture is NOT declared here (ADR-022). A federating peer submits attestation EVIDENCE
+  # (deployment_accreditations above + its federation certificate); DCM COMPUTES the peer's
+  # trust_posture in the dcm_registration_verdict (§2) — a value supplied in this block is rejected.
 ```
 
 **Data direction:** Bidirectional within declared authorization scope. Federation tunnel with mTLS, certificate pinning, per-message signing.
 
 ---
 
-### 8.6 Process Provider
+### 8.6 `execute_workflows` — Process profile
 
 **What it does:** Executes ephemeral workflows to completion. Unlike service providers that manage persistent resource lifecycle (create → operate → decommission), process providers execute a job and report a result. No persistent resource is created — the entity type is `process_resource` which reaches a terminal state on completion.
 
@@ -510,22 +574,24 @@ process_provider_capabilities:
 
 ---
 
-## 9. Provider Type Registry
+## 9. Capability & Category Registry
 
-The Provider Type Registry is the authoritative list of provider types that a DCM deployment accepts registrations for. It follows the three-tier registry model (Core / Verified Community / Organization).
+The Capability & Category Registry is the authoritative, governed list of the **capabilities and capability categories** (the provider-capability taxonomy — verb × domain; `registry/instances/provider-capability-taxonomy.yaml`) that a DCM deployment accepts registrations for. It follows the three-tier registry model (Core / Verified Community / Organization). It replaces the old "Provider Type Registry" — there are **no provider types**, only capabilities and the categories they form (ADR-PROV-002).
 
 ```yaml
-provider_type_registry_entry:
-  provider_type_id: service_provider
+capability_registry_entry:
+  capability: realize_resources          # a verb from the closed vocabulary
+  domain: Storage                        # a resource-type Category (naming-conventions §2)
+  category: realize_resources/Storage    # the (verb × domain) taxonomy term = the capability category
   tier: core
-  default_approval_method: reviewed   # auto | reviewed | verified | authorized
+  default_approval_method: reviewed      # auto | reviewed | verified | authorized
   enabled_in_profiles: [minimal, dev, standard, prod, fsi, sovereign]
   capability_extension_schema_ref: <uuid>
 ```
 
-Profile-governed approval methods override provider type defaults. The complete approval method resolution model is implementation-specific (see DCM repo).
+Profile-governed approval methods override the registry defaults. The complete approval method resolution model is implementation-specific (see DCM repo).
 
-The registry lists the **provider kinds** (interaction shapes: `service_provider`/resource, `information_provider`, `process_provider`, `peer_dcm`). It does **not** list capabilities — auth, credential issuance, notification, ITSM, and telemetry are **yields declared on a provider** via its resource types and capability blocks, verified at registration (PRV-003), not separate registry entries. There is no `auth_provider` or `credential_provider` kind.
+A provider registers with a **capability set** (each `verb × domain`), verified at registration (PRV-003); the registry governs which capabilities/categories are accepted, not a mutually-exclusive "kind." Auth, credential issuance, notification, ITSM, and telemetry are ordinary capabilities (`authenticate`, and `realize_resources`/`serve_data` scoped to those domains) — not separate registry types. There is no `auth_provider` or `credential_provider` type; a `provider_type` label, where it appears, is a **resolved convenience label** derived from the declared capability set, never an accepted mutually-exclusive type.
 
 ---
 
@@ -541,6 +607,7 @@ The registry lists the **provider kinds** (interaction shapes: `service_provider
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
 | `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 | `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the DCM→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
+| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted (mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
 
 ---
 
