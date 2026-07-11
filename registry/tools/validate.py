@@ -37,6 +37,7 @@ AUDIT_RECORD_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-record.s
 COMMIT_LOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "commit-log-entry.schema.json").read_text()))
 AUDIT_LEAF_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-leaf.schema.json").read_text()))
 DECISION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "decision-record.schema.json").read_text()))
+TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
 
 def _type_outputs_index():
@@ -195,6 +196,22 @@ def check_process_entity(doc):
                       f"execution axis")
     return errors
 
+
+def check_taxonomy_seed(doc):
+    """A taxonomy seed (registry/instances/*-taxonomy.yaml, term_type: TaxonomyTerm) is a batch of
+    governed vocabulary terms, not a realized entity. Each term MUST carry `term` + `definition`;
+    every non-root `parent` MUST resolve to a term in the file (dangling-parent check)."""
+    errors = []
+    terms = doc.get("terms") or []
+    handles = {t.get("term") for t in terms}
+    for t in terms:
+        if not t.get("term") or not t.get("definition"):
+            errors.append(f"taxonomy term '{t.get('term', '?')}' missing term/definition")
+        p = t.get("parent")
+        if p and p not in handles:
+            errors.append(f"taxonomy term '{t.get('term', '?')}' has dangling parent '{p}'")
+    return errors
+
 def pick_instance(doc):
     """Dispatch: `record_type` first (catalog_item ⇒ catalog item, + semantic checks);
     legacy keys — `group_class` ⇒ DCMGroup; `resource_type` ⇒ realized entity."""
@@ -214,6 +231,10 @@ def pick_instance(doc):
         return AUDIT_LEAF_VALIDATOR, lambda d: f"audit_leaf idx={d['leaf_index']} {d['stage']} {d['leaf_uuid'][:8]}"
     if isinstance(doc, dict) and doc.get("record_type") == "decision_record":
         return DECISION_VALIDATOR, lambda d: f"decision_record {d.get('handle', d['title'][:24])} [{d['state']}] {d['uuid'][:8]}"
+    if isinstance(doc, dict) and (doc.get("term_type") == "TaxonomyTerm" or "terms" in doc):
+        return (TAXONOMY_SEED_VALIDATOR,
+                lambda d: f"taxonomy seed '{d.get('root', '?')}' ({len(d.get('terms', []))} terms)",
+                check_taxonomy_seed)
     if isinstance(doc, dict) and "group_class" in doc:
         return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
     return (INSTANCE_VALIDATOR,
