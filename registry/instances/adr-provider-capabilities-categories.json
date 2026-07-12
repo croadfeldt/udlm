@@ -1,0 +1,76 @@
+{
+  "record_type": "decision_record",
+  "uuid": "b7f4a1c9-2e63-4d18-9a05-6c3f8e0b71d2",
+  "handle": "ADR-PROV-002",
+  "conforms_to": "udlm/0.1",
+  "title": "Provider capabilities and capability categories — one unified interface; providers declare capabilities as (verb × domain), explicitly domain-scoped; a governed capability taxonomy (TaxonomyTerm) organizes them; categories (capability × resource-domain, non-exclusive) group them; policy targets category, capability, or data",
+  "version": "1.0.0",
+  "scope": "architecture",
+  "rationale": "The unified provider model already replaced fixed provider types with a closed capability vocabulary (capability-discovery.md §2 — a provider declares capabilities, not a type; an InfoBlox IPAM both serves data AND provisions, so a single system with two capabilities must not register twice). Two gaps remain. FIRST, the legacy type names (Storage/Service/Information/Auth Provider) still appear as first-class TYPES in places — storage-providers.md calls a Storage Provider 'the fourth formal DCM provider type … one of eleven'; provider-contract.md keeps a 'Provider Type Registry' and a provider_type_id; and the Governance Matrix still matches on target.type (policy-evaluation.md:43). The migration is half-done, so the mutually-exclusive-type bug the unified model rejected still lives in the drift. SECOND, the model has no first-class grouping between the fine-grained capability atom and the whole provider. To write differentiated policy ('encrypt at rest for storage provisioning but not compute') you must target a GROUPING; to let one provider serve multiple roles those groupings must be NON-EXCLUSIVE. The clean primitive is a CATEGORY: a named, non-exclusive grouping defined as capability × resource-domain, DERIVED from the capabilities a provider declares and the domains they operate over. A provider that both provisions storage (realize_resources / Storage.*) and serves what is stored (serve_data) belongs to BOTH the storage-provisioning and information categories at once — no double registration. Categories reuse the existing capability vocabulary (no new atoms) and the resource-type domains already in the registry, and become a Governance-Matrix match source alongside capability and the existing data axes (data_classification, data_role) — so policy can target a category, a capability, or the data itself. This finishes the type→capability migration (types become categories, never exclusive), keeps the provider INTERFACE uniform (the standardize-the-mechanics / simplify-integration goal), and gives policy the targeting granularity the platform needs. NB: the grouping is a 'category', NOT a 'role' — 'role' is already the data-purpose axis (data_role: execution | assembly | governance | audit | cost, ADR-PROV-001). Provider-grouping and data-purpose must not collide in policy authors' minds. THIRD, capability domain-dependence must be EXPLICIT, not inferred: a capability declaration already half-carries its domain (realize_resources carries resource_types; serve_data carries data_domains) but in inconsistent shapes — a capability is properly (verb × domain-scope) and MUST declare the domain(s) it operates over uniformly, because both category derivation and per-domain policy depend on it. FOURTH, the capability vocabulary should be a GOVERNED TAXONOMY, not a flat closed list — new capabilities and domains arrive over time and need the same tiered governance (Core / Verified / Org) and hierarchy as other registry vocabularies. The substrate already has the machinery: TaxonomyTerm (Knowledge family, knowledge-family.md §4.2) is the canonical hierarchical vocabulary type (parent → TaxonomyTerm), paired with Capability [Knowledge] ('reality' normalized to the 'spec'). NB a naming collision to resolve: Capability [Knowledge] is DAV's architecture-capability sense (what an architecture provides), distinct from a PROVIDER capability (the substrate operation verb realize_resources | serve_data | …). The provider-capability taxonomy reuses the TaxonomyTerm TYPE as shared machinery but occupies its own disjoint term-space (a 'provider-capability' root, separate from the 'architecture-capability' subtree that holds Capability [Knowledge]) — resolved 2026-07-11.",
+  "question_refs": [
+    "Maintainer 2026-07-11: standardize the interface mechanics and simplify integration while exposing declared capabilities; I suspect we will need categories of capabilities. A single provider could serve multiple roles (another name for a category) — e.g. provision storage AND retrieve information stored on it — with different policies per capability, and be able to target categories of them and the data itself."
+  ],
+  "options_considered": [
+    {
+      "option": "Keep fixed provider types (status-quo drift)",
+      "pros": "no change; familiar type names",
+      "cons": "mutually-exclusive types force double registration (the InfoBlox problem the unified model already rejected); cannot express a provider that sits in two groups; policy stuck matching a single type",
+      "rejected_because": "reintroduces the exact defect the unified capability model was adopted to remove"
+    },
+    {
+      "option": "Capabilities only, no category layer",
+      "pros": "smallest model; the capability vocabulary already exists",
+      "cons": "policy can bind to the atom or the whole provider but has no grouping to attach differentiated policy to; 'serves multiple roles' has no first-class expression; every policy must enumerate capabilities",
+      "rejected_because": "the platform needs a targetable grouping for differentiated policy and multi-role providers"
+    },
+    {
+      "option": "Category = capability verb alone (domain-agnostic)",
+      "pros": "tiny closed set (~5, mirroring the capability vocab); simple",
+      "cons": "cannot differentiate storage-provisioning from compute-provisioning (both realize_resources) without a separate domain axis on every rule; less expressive for the stated policy-targeting goal",
+      "rejected_because": "Maintainer's storage example requires policy to differ by domain, which the verb alone cannot carry"
+    },
+    {
+      "option": "Category = capability × resource-domain, non-exclusive, derived (chosen)",
+      "pros": "differentiated policy per domain (storage vs compute) falls out; one provider belongs to many categories; reuses the capability vocabulary AND the resource-type domains already in the registry; category is a derived VIEW over declared capabilities, not a second source of truth",
+      "cons": "a larger category set; category derivation must be specified (capability + the resource-domain it targets)"
+    }
+  ],
+  "decision": "(a) Affirm the single unified provider INTERFACE + closed capability vocabulary (realize_resources | serve_data | authenticate | federate | execute_workflows; extensible) as the ONLY contract-shape axis, and finish retiring 'provider type' as a contract concept — storage-providers.md and the other per-type docs become capability/category references exactly as information-providers.md already frames itself ('an Information Provider is a provider that declares serve_data'). (b) Introduce CATEGORY as a first-class, NON-EXCLUSIVE grouping = capability × resource-type domain, DERIVED from a provider's declared capabilities and the domains they operate over; the legacy type labels become named categories (e.g. storage-provisioning = realize_resources / Storage.*; information = serve_data; authentication = authenticate). (c) Make category and capability first-class Governance-Matrix match sources on the subject/target axes, REPLACING the stale target.type, so policy binds at category (storage-provisioning), capability (serve_data), or data (data_classification / data_role) granularity — a provider in multiple categories is evaluated per category. (d) Reframe the 'Provider Type Registry' as the governed registry of the capabilities + categories a deployment accepts (three-tier Core / Verified / Org preserved); provider_type_id becomes a reference to a registered capability/category profile, not a mutually-exclusive type. (e) Reserve 'role' for the data axis (data_role, ADR-PROV-001); provider groupings are 'categories'. 'resource-domain' means the Category segment of a resource type's $id (Storage, Compute, Network…; naming-conventions §1). (f) Clarify ADR-023's resource-vs-process 'modes' as capability groupings (resource = realize_resources; process = execute_workflows), not a reintroduced type. (g) A capability is EXPLICITLY (verb × domain-scope): every capability declaration MUST name the resource-type domain(s) it operates over, uniformly — reconcile today's split shapes (realize_resources.resource_types, serve_data.data_domains) into one explicit domain-scope on the capability. Category derivation then reads directly off the declared (verb × domain). (h) Provider capabilities are organized by a GOVERNED CAPABILITY TAXONOMY built on the existing TaxonomyTerm machinery (hierarchical parent → TaxonomyTerm; three-tier Core / Verified / Org governance); categories are terms in that taxonomy (a category = a (verb × domain) node providers are classified under and policy targets). Disambiguate the substrate 'provider capability' from the Knowledge-family 'Capability [Knowledge]' (DAV architecture-capability sense) explicitly in naming-conventions. RESOLVED (2026-07-11): reuse the TaxonomyTerm TYPE as shared vocabulary machinery, but provider capabilities occupy their OWN term-space — a 'provider-capability' taxonomy root, a disjoint subtree from the 'architecture-capability' (Capability [Knowledge]) subtree. One vocabulary type, two disjoint subtrees; policy targets a provider-capability term (= a category).",
+  "action": "change-spec",
+  "abstraction_decomposition": {
+    "data": "Capability is the declared unit ON a provider, EXPLICITLY (verb × domain-scope) — the verb from the substrate vocabulary and the resource-type domain(s) it operates over, declared uniformly (reconciling today's realize_resources.resource_types / serve_data.data_domains split). The capability vocabulary is a GOVERNED TAXONOMY on the existing TaxonomyTerm machinery (Knowledge family; hierarchical parent → TaxonomyTerm; Core/Verified/Org tiers), NOT a flat closed list — new verbs/domains register with governance. Category is a DERIVED grouping = a (verb × domain) term in that taxonomy, a queryable view over a provider's declared capabilities, NOT a second stored truth; legacy type names become category terms; resource-domain = the Category segment of a resource-type $id (Storage, Compute, Network…). Naming-conventions must disambiguate substrate 'provider capability' from the Knowledge-family 'Capability [Knowledge]'.",
+    "policy": "The Governance Matrix gains CATEGORY and CAPABILITY as match sources on the subject/target axes, parallel to the existing data_classification and data_role axes, replacing the stale target.type. Policy can bind differentiated rules at category (e.g. encryption-at-rest ON storage-provisioning only), capability (any provider exercising serve_data), or the data itself (classification / role). A provider that occupies several categories is evaluated per category — the grouping is non-exclusive, so rules compose rather than pick one type.",
+    "provider": "The provider INTERFACE is unchanged and UNIFORM across categories — this is the standardize-the-mechanics / simplify-integration goal. A provider declares its capabilities (and the domains they cover) ONCE; category membership follows and is non-exclusive; there is no double registration for a multi-capability provider (the InfoBlox case). 'Provider type' survives only as a governance profile (a named, approved bundle of capabilities/categories), never as a contract shape."
+  },
+  "produces": [
+    "contracts/capability-discovery.md (capability = explicit verb × domain-scope, uniform declaration; define Category = a (verb × domain) taxonomy term; category derivation; retire the residual type framing)",
+    "registry/resource-types/ + registry (a governed capability TAXONOMY on TaxonomyTerm — the provider-capability vocabulary as hierarchical terms with Core/Verified/Org tiers; categories are terms in it)",
+    "registry/naming-conventions.md (disambiguate substrate 'provider capability' from Knowledge-family 'Capability [Knowledge]'; resolve the reuse-vs-adopt sub-decision)",
+    "contracts/provider-contract.md (capability + category declaration; reframe 'Provider Type Registry' → capability/category profile registry; align the *_provider_capabilities block names to the capability verbs)",
+    "contracts/storage-providers.md (reframe as a capability/category reference, matching information-providers.md; undo the 'fourth formal type / eleven types' framing and the MED-2 provider-type enumeration)",
+    "dcm: architecture/convergence-engine/policy-evaluation.md + Governance Matrix (add category + capability match sources; retire target.type)",
+    "dcm: architecture/adr/023-provider-naturalization-boundary.md (clarify resource/process 'modes' = capability groupings, not types)"
+  ],
+  "about": [
+    "contracts/capability-discovery.md",
+    "contracts/provider-contract.md",
+    "contracts/storage-providers.md",
+    "contracts/information-providers.md"
+  ],
+  "state": "PROPOSED",
+  "provenance": {
+    "proposed_by": "maintainer",
+    "model_version": "claude-opus-4-8",
+    "at": "2026-07-11T00:00:00Z"
+  },
+  "metadata": {
+    "display_name": "Provider capabilities + capability categories",
+    "notes": [
+      {
+        "at": "2026-07-11T00:00:00Z",
+        "author": "claude-opus-4-8 (session a3cae804)",
+        "text": "Formalizes the layer between the capability and the whole provider. Capability = explicit (verb × domain); a governed capability TAXONOMY (TaxonomyTerm) organizes the vocabulary; Categories = (verb × domain) terms, non-exclusive, derived — so one provider serves multiple 'roles' without double registration, and policy targets category / capability / data. Reuses the existing capability vocabulary + resource-type domains + TaxonomyTerm machinery; adds no atoms. Finishes the half-done type→capability migration (storage-providers.md still says 'formal type'; policy still matches target.type). Named 'category' not 'role' to avoid colliding with data_role (ADR-PROV-001). Surfaced from Maintainer's audit question 'I thought we standardized on a provider with capabilities/categories vs storage/service/information provider,' refined by 'capabilities are domain-dependent — be explicit' and 'we probably need a capability taxonomy.' SUB-DECISION RESOLVED (2026-07-11, Maintainer): shared TaxonomyTerm machinery, distinct provider-capability term-space (own subtree, disjoint from Capability [Knowledge]) — one vocabulary type, two subtrees; categories are provider-capability terms. Realization sweep spans udlm (contracts + registry taxonomy + naming-conventions) + dcm (policy matrix, ADR-023) — HELD for review."
+      }
+    ]
+  }
+}

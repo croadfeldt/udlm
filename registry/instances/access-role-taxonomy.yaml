@@ -1,0 +1,74 @@
+# Access-role taxonomy (seed) — ADR-RBAC-001.
+#
+# The ONE governed vocabulary of DCM RBAC roles, replacing the >=3 disagreeing string enums
+# (auth-providers role_mapping, layer.schema contributor_type, policy-contract eligible_approver_roles).
+# Each entry is a TaxonomyTerm (registry/resource-types/taxonomy-term.json), curation-governed
+# (Core/Verified/Org tiers, registry-governance §2). This is the `access-role` ROOT subtree — DISJOINT
+# from `provider-capability` and `architecture-capability`. One shared TaxonomyTerm TYPE, distinct subtrees.
+#
+# A role is GRANTED functions by the FunctionCapabilityMatrix (dcm-function taxonomy) and ASSIGNED to
+# actors/groups by a role_assignment (function-capability-matrix.schema.json). Default-deny: no actor
+# holds a function absent an assignment granting it (ADR-RBAC-001 / ADR-PROV-003 posture).
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: access-role
+
+terms:
+  - term: access-role
+    root: access-role
+    parent: null
+    curation_state: canonical
+    definition: Root of the DCM RBAC role vocabulary. Core-tier terms below are the closed platform role set.
+
+  # ---- Core tier (parent = root) ----
+  - term: platform_admin
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Full platform administration — the highest role. Admits provider capabilities, approves registrations, manages policy/accreditation/tenants, elevates trust. The gate ADR-PROV-003 references (PRV-009).
+  - term: tenant_admin
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Administration scoped to an owned tenant (own-tenant Admin API operations).
+  - term: sre
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Site reliability — operate/remediate; day-2 operations, no governance authority.
+  - term: auditor
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Read-only access to audit records and compliance views; no mutation.
+  - term: security
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Security officer — a required approver for sovereign/fsi elevations (PROF-007/PROF-010) and security-sensitive functions.
+  - term: policy_owner
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Authors and activates Governance-Matrix policy (the policy_author/policy_owner surface).
+  - term: finops
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Cost/metering visibility and attribution; no provisioning authority.
+  - term: provider_owner
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Owns a registered provider — may amend its own capability declarations (re-enters pending admission), cannot self-admit.
+  - term: consumer
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: Default role — request resources from the catalog within tenant scope. No admin functions.
+  - term: system
+    root: access-role
+    parent: access-role
+    curation_state: canonical
+    definition: The realization's own internal component identity (actor_type system_component); not human-assignable.

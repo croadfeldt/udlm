@@ -52,11 +52,12 @@
     "validation_evidence": {
       "type": "object",
       "additionalProperties": true,
-      "description": "OPTIONAL — where the decision is testable, the passing validation that earned CANONICAL (scope-appropriate: UC/conformance | Policy-Engine+Shadow | attestation). Non-validatable decisions (e.g. a naming choice) may be CANONICAL without it.",
+      "description": "OPTIONAL — where the decision is testable, the passing validation that earned CANONICAL (scope-appropriate: UC/conformance | Policy-Engine+Shadow | attestation). Non-validatable decisions (e.g. a naming choice) may be CANONICAL without it. When a testable `method` is claimed the evidence MUST be resolvable and ATTRIBUTED: `evidence_ref` + `validated_by` (the runner/attestor, NOT the proposer) are required — a bare self-asserted passed:true is not accepted (see allOf).",
       "properties": {
         "method": {"enum": ["use_case_conformance", "policy_engine_shadow", "attestation_conformance"]},
         "evidence_ref": {"type": "string"},
-        "passed": {"type": "boolean"}
+        "passed": {"type": "boolean"},
+        "validated_by": {"type": "string", "description": "The validating AUTHORITY that ran the method (conformance runner / Policy-Engine / attestation service) — NOT the proposer (that is provenance.proposed_by). Required when a testable method is claimed."}
       }
     },
     "about": {"type": "array", "items": {"type": "string"}, "description": "references — Capability / TaxonomyTerm / spec-element anchor(s) this record justifies (by uuid/handle)."},
@@ -103,6 +104,11 @@
       "comment": "A CANONICAL record whose action is a substantive resolution SHOULD carry either validation_evidence or an explicit non-testable note — enforced as: CANONICAL + testable-method present implies passed true.",
       "if": {"properties": {"validation_evidence": {"required": ["passed"]}}},
       "then": {"properties": {"validation_evidence": {"properties": {"passed": {"const": true}}}}}
+    },
+    {
+      "comment": "A claimed validation must be RESOLVABLE and ATTRIBUTED, not a bare self-asserted passed:true. When a testable method is named, the record MUST carry the evidence reference and the validating authority (validated_by = the runner/attestor, not the proposer). NOTE: whether a substantive CANONICAL action REQUIRES a method at all remains a scope-gated review control (§24 CANONICAL-gating), not schema-enforceable without a substantive/non-testable marker.",
+      "if": {"properties": {"validation_evidence": {"required": ["method"]}}},
+      "then": {"properties": {"validation_evidence": {"required": ["passed", "evidence_ref", "validated_by"]}}}
     }
   ]
 }

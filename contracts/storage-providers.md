@@ -25,7 +25,7 @@
 
 ## 1. Purpose
 
-A **Storage Provider** is the fourth formal DCM provider type. It is the interface through which DCM persists, retrieves, and streams all state data. DCM defines the contract — the characteristics, capabilities, and obligations each store must satisfy. The implementation technology is a deployment choice made by implementors.
+In the unified provider model ([capability-discovery.md](capability-discovery.md); ADR-PROV-002), a **Storage Provider** is *not* a provider type — it is a provider that declares the **`realize_resources` capability over the `Storage` domain** (the `realize_resources/Storage`, *storage-provisioning*, capability category), and typically **`serve_data`** over what it stores as well. It is the interface through which DCM persists, retrieves, and streams state data. DCM defines the contract — the characteristics, capabilities, and obligations each store must satisfy; the implementation technology is a deployment choice made by implementors. A provider MAY declare storage capabilities alongside others; fixed provider *types* are superseded by capability declarations, and "Storage Provider" is the convenience label for this capability profile.
 
 This is consistent with DCM's governing framework philosophy: DCM does not prescribe technology. It defines what is required and what is guaranteed. An organization using GitHub and Kafka satisfies the same contracts as one using Gitea and EventStoreDB.
 
@@ -33,9 +33,9 @@ This is consistent with DCM's governing framework philosophy: DCM does not presc
 
 ## 2. Storage Provider Sub-Types
 
-Storage Providers are one of eleven DCM provider types (see [Unified Provider Contract](provider-contract.md)). Within the Storage Provider type, four storage sub-types are defined, each optimized for different access patterns and consistency requirements:
+There are no provider *types* in the unified model — a provider declares capabilities (verb × domain) and occupies the **capability categories** they form ([capability-discovery.md](capability-discovery.md) §2.4; ADR-PROV-002). "Storage Provider" is the convenience label for a provider in the `realize_resources/Storage` category. Within storage, four **store sub-profiles** are defined, each optimized for different access patterns and consistency requirements. (The rows below are capability profiles — convenience labels — not mutually-exclusive types; one provider may occupy several.)
 
-| Provider Type | Purpose | Data Direction | DCM Owns Result? |
+| Capability profile (convenience label) | Purpose | Data Direction | DCM Owns Result? |
 |--------------|---------|---------------|-----------------|
 | **Service Provider** | Realizes resources; may register Composite Services to deliver composite payloads | DCM → Provider → DCM | Yes |
 | **Information Provider** | Serves external authoritative data | DCM → Provider (lookup) | No |
@@ -60,7 +60,7 @@ storage_provider_registration:
   endpoint: <base URL>
   capabilities: <list — store-type specific>
   sovereignty_constraints: <same model as all providers>
-  trust_declaration: <same model as all providers>
+  attestation: <attestation EVIDENCE — same model as provider-contract.md §2. Trust is NOT self-declared: trust_posture is DCM-assigned in the registration verdict, not stated here (ADR-022).>
   status: <active|deprecated|retired>
 ```
 
@@ -582,7 +582,9 @@ Commit Log → Audit Forward Service → Event Stream → Audit Store
 
 ### 11.1 Obligation
 
-Every provider registration — Service Provider, Information Provider, Message Bus Provider, Policy Provider, and Auth Provider — must include a `sovereignty_declaration` block. This is a contractual obligation, not optional metadata. DCM uses sovereignty declarations to make placement decisions, enforce Tenant sovereignty requirements, and detect drift between declared and actual posture.
+Every provider registration — whatever capabilities it declares (`realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows`, in any combination) — must include a `sovereignty_declaration` block. This is a contractual obligation, not optional metadata. DCM uses sovereignty declarations to make placement decisions, enforce Tenant sovereignty requirements, and detect drift between declared and actual posture.
+
+**The declaration is a claim, not proof (ADR-022).** For `sovereign`/`restricted` zones — and any zone whose governance sets a sovereignty requirement — DCM honors the declaration for placement only when it is backed by a resolved `sovereign_authorization` / regulatory-adequacy accreditation (the attestation ladder). An unattested declaration is treated at `self_asserted` tier and cannot satisfy a regulated-zone requirement on the provider's word alone. Drift detection is the backstop, not the gate.
 
 ### 11.2 Sovereignty Declaration Structure
 

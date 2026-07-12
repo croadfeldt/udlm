@@ -56,6 +56,39 @@ Each hard constraint cites the UDLM contract it derives from.
 18. Relationships are **first-class and typed** (`depends_on`/`binds_to`/`references`/`contained_by`),
     target **resource types** (never provider-specific refs), and form **acyclic** composite DAGs
     (`entities/service-dependencies.md`, `entities/composite-service-model.md`). **[enforced: shape]**
+18a. **One authoritative direction — no stored inverse.** A relationship is declared **once**, on the
+    **dependent/subordinate side** (the resource that `depends_on` / is `contained_by` / `binds_to` /
+    `references` another). Only **direct** (one-generation) edges are recorded; ancestry/descendants are a
+    **query**, not a record. The inverse is **derived** by traversal (a reverse index); storing it as a second
+    authoritative record is a conformance violation — denormalization drifts (cf. the `ownership_model`
+    deferral: "the authoritative declaration the relationships conform to, not a derived copy"). Prior art:
+    Git parent-pointers, Kubernetes `ownerReferences`. **[enforced: shape]**
+18b. **Targets MUST resolve (referential integrity).** Every relationship target resolves by **`target_uuid`**
+    (authoritative; `target_handle` advisory — never name alone), to a resource in scope. An unresolved target
+    is a **dangling reference**, flagged by `registry/tools/validate.py` — never silently accepted.
+    **[enforced: validate.py]**
+18c. **Durability is the audit chain, not duplication.** Relationship resilience comes from immutable UUID
+    references plus the append-only audit/provenance chain (`registry/audit-record.schema.json`; ADR-005) —
+    which is the **preferred mechanism to rebuild or quasi-confirm** a relationship when an edge is lost or in
+    doubt. Redundant both-sides storage is explicitly **not** the resilience mechanism; it only adds drift.
+    Reconstruction reads the chain **LIFO** (most-recent-first) for relationship data: the **latest** mutation
+    event for an edge is its authoritative current state (last-write-wins), older events are provenance — so a
+    rebuild pops the newest event per edge and stops, rather than replaying the whole history forward.
+18d. **To rely on audit, the relationship MUST be audited explicitly.** Every relationship mutation
+    (create / change / remove) is recorded as a first-class **audit event** —
+    `{source_uuid, target_uuid, kind, operation, at, provenance}` — in the append-only chain (ADR-005). The
+    chain can only rebuild or confirm (18c) what it explicitly holds; an edge that never emitted an audit event
+    is not recoverable. Relationship edges are therefore **auditable events, not merely resource fields** —
+    which requires `audit-record.schema.json` to carry a relationship-mutation event shape. **[enforced: validate.py + audit schema]**
+18e. **Undo/revert is permitted, but it resolves to an explicit forward action — never a differential.** A
+    consumer may request an undo or revert; DCM **resolves it into a new, explicit forward action**, and the
+    audit chain records the **resulting** relationship explicitly (a forward create/change/remove to that
+    state) — never an "undo the last event" reference. This keeps the chain append-only and self-describing and
+    keeps LIFO (18c) valid: the newest event always states the full current state, so no replay or
+    interpretation is needed. A revert is admissible only when the **target resource's lifecycle contract and
+    its resource provider can actually realize that state** — you cannot declare a relationship the provider
+    cannot reach. (Same as declarative desired-state systems: `git revert` is a *new* commit recording the
+    resulting tree, not a deletion.)
 
 ### Interop & data discipline
 19. **Wire-compatible** — any conformant peer can deserialize, scope-resolve, reference, and validate
