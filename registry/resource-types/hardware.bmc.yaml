@@ -1,0 +1,72 @@
+# UDLM Resource Type Specification — Hardware.BMC
+#
+# A baseboard management controller (BMC / IPMI / iDRAC / ASPEED) — the out-of-band management and
+# POWER-CONTROL surface of a physical host. It's what an ordered shutdown/startup actuates for the
+# force-off and (critically) the power-ON side, where the OS can't act because the host is off.
+#
+# ADOPT (not absorb), core-tenets T5: the BMC's data model and power/reset actions are DMTF Redfish's
+# (Manager + ComputerSystem.Reset); UDLM carries identity + a version-pinned pointer + which host it
+# manages. IPMI is the legacy fallback protocol, named not modeled.
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.1.0
+conforms_to: udlm/0.1
+uuid: e5e97d76-ab1c-4286-8ca4-db6aaeb08eb2
+resource_type: Hardware.BMC
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: curation
+portability: partial
+status: active
+metadata:
+  display_name: BMC
+  description: >-
+    A host's baseboard management controller — its management address, protocol, and the power/reset
+    control surface — modeled so power actions have a first-class target. Common types are ASPEED/
+    Supermicro, Dell iDRAC, and HPE iLO; credentials are never inline (reference a
+    Security.CredentialRef). `manages` points at the host it powers; power operations are Redfish
+    (or a vendor tool like ipmitool where a board's Redfish is incomplete) — the mechanism is Policy (DCM), not data.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-12T00:00:00Z"
+
+adopts:
+  - standard: Redfish
+    version: ">=2023.1"
+    standard_name: Manager + ComputerSystem.Reset (power/reset actions)
+    role: management-controller data model + the power-control action vocabulary UDLM references, never restates
+    identity_join: { local_field: management_address, standard_column: Manager.EthernetInterfaces.IPv4Addresses }
+    source: https://www.dmtf.org/standards/redfish
+    license: DMTF
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Discovered, Realized, Intent]
+  decommission: >-
+    A BMC is a component of its host — it decommissions with the board. Removing the resource does not
+    power-cycle anything. Non-destructive.
+
+# Instance edges:
+#   contained_by  -> the Compute.BareMetalHost the BMC physically belongs to
+#   references (relation: manages) -> the same host, as the power-control target
+spec:
+  type: object
+  required: [management_address]
+  additionalProperties: false
+  properties:
+    management_address:
+      type: string
+      description: BMC management IP (e.g. 192.0.2.10).
+    protocol:
+      type: string
+      enum: [redfish, ipmi, redfish+ipmi]
+      default: redfish+ipmi
+      description: Out-of-band protocol(s) the BMC answers. redfish for power/reset; ipmi as legacy fallback.
+    vendor:
+      type: string
+      description: BMC/board vendor (e.g. ASPEED/Supermicro, Dell iDRAC).
+    dns_name:
+      type: string
+      description: Management DNS name (e.g. ipmi-host01.example.com).
+outputs:
+  power_state:
+    type: string
+    description: Last-observed chassis power state (On/Off) from Redfish ComputerSystem.PowerState.

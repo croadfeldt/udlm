@@ -1,0 +1,119 @@
+# UDLM Resource Type Specification — Software.Service
+#
+# A LOGICAL running service — the unit an operator reasons about and orders in a shutdown/startup:
+# a web app, a registry, a mail server, a CI system. Deliberately form-agnostic: its constituents may
+# be container(s) on a cluster/host (Compute.Container) OR native systemd units on a host/VM (e.g. a
+# mail server's postfix/dovecot/amavis units, not containers). One node per service, carrying the runtime edges
+# that a plain container can't — runs_on, uses_storage, requires(hard/soft), binds_to — which is
+# exactly what a derived dependency-ordered shutdown needs.
+#
+# ADOPT (not absorb), core-tenets T5: the standards' schemas are NOT restated here — only an identity
+# join + a version-pinned pointer. Composition and relationship *semantics* are TOSCA's and OAM's;
+# the OCP realization vocabulary is Kubernetes'; the provider naturalizes them. (Design also informed
+# by CNCF Backstage Component/System catalog entities and systemd ordering-vs-dependency semantics —
+# referenced, not adopted, to keep the register surface minimal.)
+$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.1.0
+conforms_to: udlm/0.1
+uuid: 94762c84-a096-4e54-a4f7-95123807fc95
+resource_type: Software.Service
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: provisioning
+portability: partial
+status: active
+metadata:
+  display_name: Service
+  description: >-
+    A logical running service composed of one or more constituents (containers and/or native systemd
+    units) that a provider realizes and manages under the four-state lifecycle. Models the application
+    layer of the estate — Kubernetes/OCP workloads (web apps, registries, observability, model serving)
+    and host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime
+    dependencies carry order. Secret material is never inline; env/mounts reference a Security.CredentialRef. Fine-grained
+    per-container detail, when wanted, hangs off `constituents` as Compute.Container references.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-12T00:00:00Z"
+
+adopts:
+  - standard: OASIS TOSCA
+    version: "1.3"
+    standard_name: ServiceTemplate / node composition + HostedOn·DependsOn·BindsTo
+    role: service-as-composed-nodes shape and the typed relationship vocabulary for runs_on / requires / binds_to
+    source: https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/
+    license: OASIS
+    license_compatibility: compatible-reference
+  - standard: Open Application Model
+    version: ">=0.3"
+    standard_name: Application (set of Components)
+    role: grounds `constituents[]` — an application is a set of component workloads, one level up from Compute.Container
+    source: https://oam.dev/
+    license: MIT
+    license_compatibility: compatible-reference
+  - standard: Kubernetes
+    version: ">=1.29"
+    standard_name: Workload objects (Deployment/StatefulSet/DaemonSet, KServe InferenceService)
+    role: realization vocabulary for OCP-hosted services — naturalized by the provider, not restated
+    source: https://kubernetes.io/docs/concepts/workloads/
+    license: CC-BY-4.0
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    Provider stops the service's constituents; Discovered reflects stopped/absent. A service owns no
+    persistent data of its own — it `uses_storage` external Storage.* and `binds_to` Data.Database — so
+    decommission is non-destructive to data. Reverse of the realization/startup order.
+
+# Instance dependency edges (the point of this type — expressed with the estate-wide edge kinds,
+# aligned to TOSCA root relationships; not restated in spec):
+#   runs_on     kind: references, relation: runs_on     -> Compute.Cluster | Compute.BareMetalHost | Compute.VirtualMachine   (TOSCA HostedOn)
+#   uses_storage kind: references, relation: uses_storage -> Storage.Cluster | Storage.FileShare | Storage.Volume            (TOSCA DependsOn)
+#   requires    kind: depends_on, relation: requires, strength: hard|soft -> Security.DirectoryService | Network.AddressService | Software.Service
+#   binds_to    kind: binds_to,   -> Data.Database                                                                           (TOSCA BindsTo)
+spec:
+  type: object
+  required: [service_kind]
+  additionalProperties: false
+  properties:
+    service_kind:
+      type: string
+      enum: [application, infrastructure-daemon, database, gateway, registry, monitoring, other]
+      description: Coarse classification for grouping/ordering (an infrastructure-daemon shuts down after applications).
+    constituents:
+      type: array
+      description: The workloads that make up the service. Container form references a Compute.Container; systemd form names host + units.
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          form:
+            type: string
+            enum: [container, systemd]
+          container_ref:
+            type: string
+            description: handle/uuid of a Compute.Container resource (form=container).
+          host:
+            type: string
+            description: handle of the host/VM the systemd units run on (form=systemd).
+          units:
+            type: array
+            items: { type: string }
+            description: systemd unit names (form=systemd).
+        required: [form]
+    endpoints:
+      type: array
+      description: How the service is reached — a route/URL/host:port. Informational (naturalized from provider).
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name: { type: string }
+          url: { type: string }
+          port: { type: integer }
+    replicas:
+      type: integer
+      description: Desired/observed instance count (0 = intentionally scaled down).
+outputs:
+  ready:
+    type: boolean
+    description: Whether the service's constituents are up and serving (Realized/Discovered).
