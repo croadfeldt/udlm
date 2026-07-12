@@ -1,0 +1,70 @@
+# UDLM Resource Type Specification — Hardware.BiosProfile
+# ADOPT (not absorb): BIOS settings are already modeled by DMTF Redfish (Bios `Attributes` +
+# `BiosAttributeRegistry`). Per adopted-standards.md §1, UDLM references that standard and owns
+# only identity + a version-pinned pointer + the binding — it does NOT re-express Redfish's schema.
+# Litmus (§1): Redfish releasing a new version must NOT force a change here. So this type carries
+# no attribute value-typing and no apply-time semantics (those are Redfish's, referenced); the
+# desired settings ride as an OPAQUE passthrough interpreted via the pinned attribute_registry.
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.1.0
+conforms_to: udlm/0.1
+uuid: c1a483e0-f52a-4e0f-b58d-1b8425884afe
+resource_type: Hardware.BiosProfile
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: curation
+portability: partial
+status: active
+metadata:
+  display_name: BIOS Profile
+  description: >-
+    A reusable desired firmware/BIOS configuration a fleet of hosts converge to ("synced across
+    systems"). ADOPTS DMTF Redfish (Bios Attributes + BiosAttributeRegistry) by reference: UDLM carries
+    identity, the version-pinned registry pointer (binding), and the apply method; the attribute
+    schema, value types, and apply-time semantics are Redfish's and are never restated here. Desired
+    settings are an opaque passthrough interpreted via `attribute_registry`. Applied out-of-band
+    (Redfish SetBiosAttributes, or Supermicro SUM where a board's Redfish Bios.Attributes is empty).
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-12T00:00:00Z"
+adopts:
+  - standard: Redfish
+    version: ">=2023.1"
+    standard_name: Bios (Attributes) + BiosAttributeRegistry
+    role: BIOS-settings shape + attribute-registry metadata — the schema/value-types/apply-time UDLM references, never copies
+    identity_join: { local_field: attribute_registry, standard_column: AttributeRegistry }
+    source: https://www.dmtf.org/standards/redfish
+    license: DMTF
+    license_compatibility: compatible-reference
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    A profile is reference configuration; decommission = no host references it. Removing it does not
+    alter any host's live BIOS (that needs an explicit re-apply + reboot). Non-destructive.
+spec:
+  type: object
+  required: [attribute_registry, attributes]
+  additionalProperties: false
+  properties:
+    attribute_registry:
+      type: string
+      description: >-
+        Version-pinned identity of the Redfish BiosAttributeRegistry the attribute names conform to
+        (board + firmware). The binding pointer (§2) — makes the vendor names interpretable WITHOUT
+        UDLM restating them.
+    management_interface:
+      type: string
+      enum: [redfish, sum, ipmi, manual]
+      default: redfish
+      description: >-
+        How DCM applies the profile out-of-band (UDLM's realization concern, not Redfish schema).
+        `sum` = Supermicro SUM (a supported board Redfish Bios.Attributes is empty, so SUM is the path).
+    attributes:
+      type: object
+      description: >-
+        Desired settings as Redfish Bios `Attributes` (name->value). OPAQUE passthrough — UDLM does not
+        model or type these; they are the adopted standard's data, interpreted via `attribute_registry`
+        and naturalized by the provider. Vendor/firmware-specific; lives only in the instance (gitlab).
+outputs:
+  applied_generation:
+    type: integer
+    description: The profile generation the host's Realized BIOS reflects (drift = live != profile).
