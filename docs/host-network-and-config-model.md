@@ -118,7 +118,7 @@ so "Kea stores its records in UDLM format" is satisfied by construction.
 
 - **Config type name:** `Network.ConnectionProfile` vs `Config.HostNetwork` vs other; and its exact
   attachment relation to the adapter (`configures`).
-- **Reservation rendering:** a generator tool in `roadfeldt-dcm/tools/` that emits Kea reservations (fits
+- **Reservation rendering:** a generator tool in `<estate>-dcm/tools/` that emits Kea reservations (fits
   the repo idiom — `shutdown_order.py`, `provenance.py`), with a byte-for-byte parity check against
   today's `dhcp_servers.yml` before Kea is switched to consume it (this touches live DHCP). Built as its
   own reviewed PR after this proposal is ratified.
@@ -127,4 +127,4 @@ so "Kea stores its records in UDLM format" is satisfied by construction.
 #267 (host-network model: `parent_device`/`lower_layer`, `device_class`), `Network.IPAddress` +
 `Network.DHCPScope` + `Network.AddressService` (existing types), `ownership-sharing-allocation.md`
 (IPAddressPool→IPAddress allocation), `design-principles/adopted-standards.md` (Tier-2 adopt-by-reference),
-and the Kea DHCP estate in `roadfeldt-ansible` + `roadfeldt-dcm`.
+and the Kea DHCP estate in `<estate>-ansible` + `<estate>-dcm`.

@@ -77,7 +77,7 @@ spec:
 outputs:
   mount_uri:
     type: string
-    description: Reachable share URI once Realized, e.g. //stark.roadfeldt.com/export.
+    description: Reachable share URI once Realized, e.g. //fileserver.example.com/export.
 
 relationships:
   - kind: contained_by
