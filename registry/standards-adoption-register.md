@@ -124,6 +124,26 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `libvirt virtual network` · **Since:** 2026-07-05T02:10:32Z · **Where:** Network.VirtualNetwork (forward-mode vocabulary).
 **Why:** the host-bridge attachment producer on all four virt hosts. **License:** LGPL — reference-only.
 
+## Compute — Container
+
+### OCI Image Specification — CANONICAL
+**Covers:** `OCI Image Specification` · **Body:** Open Container Initiative · **Since:** 2026-07-11T00:00:00Z · **Where:** `Compute.Container` image reference (`image.reference` + content-addressable digest).
+**Why:** the vendor-neutral image-reference + digest vocabulary; adopting it keeps container image identity portable across any OCI runtime. *Alternatives:* Docker legacy image refs (subsumed by OCI). **License:** Apache-2.0 — compatible-reference.
+
+### Open Application Model — CANONICAL
+**Covers:** `Open Application Model` · **Body:** OAM (CNCF lineage) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Compute.Container` infra-neutral workload shape (image, resources, env, ports).
+**Why:** an infrastructure-neutral component/workload model matching UDLM's portable-intent goal — the shape is provider-agnostic and the provider naturalizes it. *Alternatives:* raw K8s PodSpec (runtime-coupled; used only as the field vocabulary below). **License:** MIT — compatible-reference.
+
+### Kubernetes Container (core/v1) — PATTERN
+**Covers:** `Kubernetes Container (core/v1)` · **Body:** Kubernetes (CNCF) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Compute.Container` runtime field vocabulary (command/args, ports, mounts, restart) — naturalized by the provider, not restated in the base.
+**Why:** the de-facto runtime container field vocabulary, absorbed as a naming pattern the provider naturalizes — consumers get familiar fields without coupling the base type to K8s. *Alternatives:* per-provider bespoke runtime fields (fragmenting). **License:** CC-BY-4.0 (docs) — reference-only.
+
+## Storage
+
+### SMB / CIFS — CANONICAL
+**Covers:** `SMB / CIFS` · **Body:** Microsoft (MS-SMB2 open specification) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Storage.FileShare` share + access vocabulary (share name, exported path, access, read-only).
+**Why:** the dominant cross-platform file-share protocol; its share/access vocabulary is what a portable FileShare type must express. *Alternatives:* NFS (modeled alongside via the `protocol` enum). **License:** Microsoft Open Specification Promise — compatible-reference.
+
 ## Cost
 
 ### FOCUS — CANONICAL (scoped) / RETIRED (as the platform-wide cost model)

@@ -29,6 +29,7 @@ validation_evidence:
   method: use_case_conformance
   evidence_ref: identifier-scheme conformance UCs
   passed: true
+  validated_by: udlm-conformance-runner
 about:
 - contracts/identifier-scheme.md
 state: CANONICAL

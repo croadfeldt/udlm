@@ -48,7 +48,8 @@
     "family": {
       "enum": [
         "Resource",
-        "Knowledge"
+        "Knowledge",
+        "Access"
       ],
       "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary."
     },
@@ -143,7 +144,7 @@
         "type",
         "properties"
       ],
-      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them.",
+      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): a provider EXTENDS an instance additively via the realized entity's provider-namespaced `provider_extensions` surface, never by widening this base — no-override is structural (ADR-PROV-004, closes #198).",
       "properties": {
         "type": {
           "const": "object"
@@ -404,6 +405,24 @@
               "Alias",
               "Antipattern",
               "UseCase"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "family": {
+            "const": "Access"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entity_type": {
+            "enum": [
+              "Identity"
             ]
           }
         }

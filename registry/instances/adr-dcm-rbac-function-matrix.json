@@ -1,0 +1,77 @@
+{
+  "record_type": "decision_record",
+  "uuid": "d9a1c4e7-2f83-4b56-8c07-1e5a9d3f0b62",
+  "handle": "ADR-RBAC-001",
+  "conforms_to": "udlm/0.1",
+  "title": "DCM RBAC — a default (no-IdP) way to declare admin groups/accounts/roles, and a governed capability matrix for DCM FUNCTIONS (role → function), modeled as UDLM data and enforced by the one Governance Matrix",
+  "version": "1.0.0",
+  "scope": "architecture",
+  "rationale": "ADR-PROV-003 gates capability admission on the `platform_admin` role (PRV-009). That gate must be REAL — declarable, governed, enforceable, auditable — not prose. Research across both repos (citations verified) found the identity PLUMBING exists but the RBAC DATA does not. What EXISTS: the built-in auth provider (auth-providers.md §4.1 — `built_in | static_api_key | local_users`, always registered, no external IdP required); a closed actor-type vocabulary (`human | service_account | system_component | policy | provider | scheduled_job`, universal-audit.md, AUD-016); the DCMGroup universal grouping (dcm-group.schema.json) with full lifecycle/time-bound/audit machinery; a de-facto `platform_admin` gate stamped per-endpoint in dcm-admin-api-spec; the Governance Matrix as the one enforcement engine (ALLOW | DENY | ALLOW_WITH_CONDITIONS); and TaxonomyTerm as the governed hierarchical-vocabulary type (ADR-PROV-002 just established reusing it for a new vocabulary in a disjoint term-space). What is MISSING (the gap Chris named): (1) no first-class Role type/closed vocabulary — roles are free strings in >=3 DISAGREEING enums (auth role_mapping platform_admin/sre/consumer; layer.schema.json contributor_type platform_admin/tenant_admin/consumer/provider/system; policy-contract eligible_approver_roles security_officer/operations_lead); (2) no Identity/Account record — `Identity.*` (Person/ServiceAccount/Group) is NAMED (naming-conventions.md:60, resource-type-hierarchy.md:158) but has NO resource-type spec; (3) no DCM-function permission catalog or role→function matrix as data — only per-endpoint `Role:` prose and a FROZEN SpiceDB sketch (kessel-evaluation.md, 'no changes until Kessel alignment'); (4) DCMGroup CANNOT hold actors — `member_type` is `[entity, resource_group]`, `group_class` has no identity/access value — yet the enforcement model ALREADY assumes groups-of-actors: the `authorized` approval tier is 'N members of a declared DCMGroup record decisions' and the vote endpoint authorizes 'any actor who is a member of the required DCMGroup' (authority-enforcement.md:75,84,215). That contradiction — groups-of-actors used in practice, forbidden in the schema — is the keystone. The clean path is ADOPT-EXTEND, reusing the ADR-PROV-002/003 patterns wholesale: RBAC-as-DATA now, projectable onto Kessel/SpiceDB ReBAC later (the natural seam is the Auth Provider abstraction, kessel-evaluation.md:168-174), without depending on it. Default posture is DEFAULT-DENY and profile-governed 'default safe' — consistent with ADR-PROV-003.",
+  "question_refs": [
+    "Chris 2026-07-11: we need a way to declare admin groups / accounts / roles — this should be a default RBAC method. There needs to be a capability matrix for DCM functions. UDLM needs the data/specs in place to enable this."
+  ],
+  "options_considered": [
+    {
+      "option": "Status quo — roles as scattered strings gated in prose",
+      "pros": "no work",
+      "cons": ">=3 disagreeing role enums, no closed vocabulary, no function catalog, no role-assignment record; the platform_admin gate ADR-PROV-003 depends on is undeclarable/ungovernable; DCMGroup can't hold the actors the vote model already needs",
+      "rejected_because": "the gate must be real data to be enforceable and auditable"
+    },
+    {
+      "option": "Adopt SpiceDB / Kessel ReBAC now",
+      "pros": "powerful relationship-based authorization; DCM already sketched the projection",
+      "cons": "kessel-evaluation is explicitly FROZEN ('no architectural changes until Kessel alignment'); premature external dependency; over-engineered for the homelab/minimal default",
+      "rejected_because": "keep it projectable, do not depend on it yet"
+    },
+    {
+      "option": "A new parallel RBAC enforcement engine/matrix",
+      "pros": "self-contained",
+      "cons": "violates the substrate's single-enforcement-surface rule ('no parallel enforcement paths'); the Governance Matrix already does ALLOW/DENY and already has capability/category match sources",
+      "rejected_because": "duplicates the one engine"
+    },
+    {
+      "option": "Adopt-extend: Identity.* types + governed Role/function TaxonomyTerms + a FunctionCapabilityMatrix enforced by the existing Governance Matrix + DCMGroup-holds-actors + built_in default + bootstrap role-assignment (chosen)",
+      "pros": "reuses DCMGroup / TaxonomyTerm / actor-vocab / immutable-forward-audit / the one Governance Matrix; one governed role source replacing the disagreeing enums; resolves the authority-enforcement contradiction with a 2-line schema delta; no new engine; RBAC-as-data stays ReBAC-projectable",
+      "cons": "adds Identity.* specs + two governed vocabularies + a matrix record; a bootstrap-admin story to specify"
+    }
+  ],
+  "decision": "(a) DEFAULT RBAC METHOD (no external IdP required): the substrate's built-in auth provider (`built_in`/`local_users`/`static_api_key`, auth-providers.md §4.1) is the default identity+account source; DCM RBAC works with zero external IdP. Authorization is DEFAULT-DENY and profile-governed ('default safe', per ADR-PROV-003) — no actor holds a function until a role granting it is assigned. (b) DCMGroup HOLDS IDENTITIES (keystone): add `access_grouping` to the closed `group_class` set and `actor` to the `member_type` enum (dcm-group.schema.json) — the minimal delta that lets the universal group be the RBAC subject-set the enforcement model already assumes (authority-enforcement.md), reusing all of DCMGroup's lifecycle/time-bound/audit machinery. (c) IDENTITY.* TYPES: author `Identity.Person`, `Identity.ServiceAccount`, `Identity.Group` resource-type specs (fill the named-but-empty slot; carry the closed actor-type tag), giving accounts — including the built-in provider's local users — a first-class record. (d) GOVERNED ROLE VOCABULARY: declare roles as TaxonomyTerms in a disjoint `access-role` term-space (reuse the ADR-PROV-002 machinery + three-tier Core/Verified/Org governance), replacing the >=3 disagreeing string enums with ONE governed source; Core tier seeds the observed closed set {platform_admin, tenant_admin, sre, auditor, security, policy_owner, finops, provider_owner, consumer, system}. (e) DCM-FUNCTION PERMISSION CATALOG: enumerate administrative functions as governed TaxonomyTerms (verbs harvested from the per-endpoint `Role:` gates + prose): e.g. `provider.capability.admit`, `registration.approve|reject`, `provider.deregister`, `policy.author|activate`, `accreditation.manage|approve`, `trust.elevate`, `tenant.manage`, `tier.reorder`, `session.revoke`. (f) FUNCTION CAPABILITY MATRIX: a `FunctionCapabilityMatrix` record maps role → permitted functions, ENFORCED by the existing Governance Matrix (role/function become subject/target match inputs → ALLOW | ALLOW_WITH_CONDITIONS | DENY); NOT a new engine. Role-ASSIGNMENT (actor|group → role, optional tenant scope, time-bounded) is an append-only binding recorded via the immutable-forward-audit model already adopted for capability admission (ADR-PROV-003 / SPEC-DESIGN §18a-e). (g) BOOTSTRAP: the built-in bootstrap account receives a `platform_admin` role-assignment at first-run (GOV-006) — closing the fresh-deploy admin gap so `platform_admin` exists before anything else is admitted. (h) FUTURE-PROOF: roles/permissions/assignments are authored as data with clean relations so they PROJECT onto Kessel/SpiceDB (roles→relations, functions→computed permissions) via the Auth Provider seam — kept open, not depended on. This makes the ADR-PROV-003 `platform_admin` gate real end-to-end: a governed role, assigned to a bootstrap-able account, granting an enumerated function, enforced by the one matrix, audited immutably.",
+  "action": "change-spec",
+  "abstraction_decomposition": {
+    "data": "NEW/EXTENDED UDLM data: `Identity.Person|ServiceAccount|Group` resource types (accounts/identities, actor-type tagged); a governed `access-role` TaxonomyTerm vocabulary (Core-seeded closed role set) replacing the scattered string enums; a governed DCM-function TaxonomyTerm catalog (permission verbs); a `FunctionCapabilityMatrix` record (role → functions); an append-only role-ASSIGNMENT binding (actor|group → role, tenant-scoped, time-bounded); and a 2-value extension of dcm-group.schema.json (`access_grouping` group_class + `actor` member_type) so DCMGroup holds identities. Reuses DCMGroup lifecycle/audit + the closed actor-type vocabulary + TaxonomyTerm.",
+    "policy": "Authorization is DEFAULT-DENY and profile-governed. The FunctionCapabilityMatrix is enforced by the ONE Governance Matrix — role + requested function are match inputs → ALLOW / ALLOW_WITH_CONDITIONS(scope, e.g. own-tenant) / DENY — no parallel engine (checks 1-2 of the five-check boundary). Role assignment is itself a governed, audited action (append-only forward events; who assigned which role to whom, when, why). No actor holds a function absent an assignment granting it.",
+    "provider": "The Auth Provider abstraction supplies identity + authentication (built-in by default, or an external IdP mapping groups→roles via role_mapping); DCM is the authoritative decision point (PDP) that owns authorization — the same broker stance as ADR-022 (identity data referenced from PIPs, decision made by DCM). Providers are also SUBJECTS of function-RBAC: who may admit a provider's capabilities, approve its registration, or deregister it is a governed role→function grant. The Kessel/SpiceDB path, if adopted, registers as an Auth Provider handling checks 1-2."
+  },
+  "produces": [
+    "registry/dcm-group.schema.json (add `access_grouping` to group_class + `actor` to member_type — the keystone deltas; resolves the authority-enforcement contradiction)",
+    "registry/resource-types/identity.person.json + identity.service-account.json + identity.group.json (NEW Identity.* specs; fill the named-but-empty slot)",
+    "registry/instances/access-role-taxonomy.yaml (governed Role vocabulary as TaxonomyTerms; Core-tier closed role set)",
+    "registry/instances/dcm-function-taxonomy.yaml (governed DCM-function permission catalog; harvested from dcm-admin-api Role: gates + prose)",
+    "registry/function-capability-matrix.schema.json (NEW — role → permitted functions; + role-assignment binding, append-only) enforced via the Governance Matrix",
+    "governance/auth-providers.md (built_in = default RBAC method; role_mapping references the governed role vocabulary; a role-assignment record for AUTH-012)",
+    "dcm: dcm-admin-api-spec `Role:` gates reference the function catalog; GOV-006 bootstrap grants the bootstrap account platform_admin; kessel-evaluation projection note"
+  ],
+  "about": [
+    "governance/auth-providers.md",
+    "registry/dcm-group.schema.json",
+    "observability/universal-groups.md",
+    "entities/resource-type-hierarchy.md",
+    "contracts/provider-contract.md"
+  ],
+  "state": "PROPOSED",
+  "provenance": {
+    "proposed_by": "chris",
+    "model_version": "claude-opus-4-8",
+    "at": "2026-07-11T00:00:00Z"
+  },
+  "metadata": {
+    "display_name": "DCM RBAC — roles/groups/identities + DCM-function capability matrix",
+    "notes": [
+      {
+        "at": "2026-07-11T00:00:00Z",
+        "author": "claude-opus-4-8 (session a3cae804)",
+        "text": "Makes the ADR-PROV-003 `platform_admin` gate real. Research (verified): identity plumbing exists (built_in auth provider, closed actor-type vocab, DCMGroup, the one Governance Matrix, TaxonomyTerm) but RBAC DATA is missing — no Role type (>=3 disagreeing string enums), no Identity.* spec (named, unbuilt), no role→function matrix (prose + frozen SpiceDB sketch), and DCMGroup can't hold actors though authority-enforcement already votes 'members of a DCMGroup'. ADOPT-EXTEND: DCMGroup-holds-actors (2-line delta, the keystone) + Identity.* types + governed Role & DCM-function TaxonomyTerms + a FunctionCapabilityMatrix enforced by the ONE Governance Matrix + built_in default + bootstrap platform_admin assignment. Default-deny, profile-governed 'default safe', immutable role-assignment audit — all consistent with ADR-PROV-003. RBAC-as-data now, Kessel/SpiceDB-projectable later via the Auth Provider seam (not depended on). Realization sweep (7 produces) NOT yet written — awaiting Chris's go, like the ADR-PROV-002/003 sweeps. HELD."
+      }
+    ]
+  }
+}

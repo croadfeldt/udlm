@@ -1,0 +1,81 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "a4d21f7e-3c85-4b09-8e16-2f9c0a7d5b34",
+  "resource_type": "TaxonomyTerm",
+  "version": "0.1.0",
+  "family": "Knowledge",
+  "entity_type": "TaxonomyTerm",
+  "lifecycle_archetype": "curation",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Taxonomy Term",
+    "description": "A canonical vocabulary term — the normalization authority a catalog normalizes onto (the 'spec' half of the spec/reality pair; Capability is 'reality'). Formalizes entities/knowledge-family.md §4.2. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), never realized by a provider. Cross-cutting foundational machinery — SHARED by multiple vocabularies that occupy DISJOINT subtrees under distinct roots (parent chains never cross roots): e.g. 'architecture-capability' (holds Capability [Knowledge], DAV's architecture-capability sense) and 'provider-capability' (the substrate provider-operation vocabulary; ADR-PROV-002). The `parent` chain up to a root is what keeps those vocabularies disjoint under one type.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-11T00:00:00Z"
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "term",
+      "definition"
+    ],
+    "properties": {
+      "term": {
+        "type": "string",
+        "description": "Canonical term (single normalized handle) that items normalize onto. Unique within its root subtree."
+      },
+      "definition": {
+        "type": "string",
+        "description": "What the term means — the authoritative definition items are normalized against."
+      },
+      "pillar": {
+        "type": "string",
+        "description": "Top-level grouping the term rolls up to (e.g. a maturity-framework pillar)."
+      },
+      "domain": {
+        "type": "string",
+        "description": "Term domain (prefix + name). For a provider-capability term this is the resource-type domain the capability operates over (the Category segment of a resource-type $id, e.g. Storage, Compute, Network); ADR-PROV-002."
+      },
+      "root": {
+        "type": "string",
+        "description": "The vocabulary root this term belongs to (e.g. 'architecture-capability', 'provider-capability'). Distinct roots are disjoint subtrees sharing this one type. Derivable by walking `parent` to the top; recorded for query convenience."
+      },
+      "normalization_rules": {
+        "type": "string",
+        "description": "How to normalize items for this subject matter onto the term."
+      },
+      "category": {
+        "type": "string",
+        "description": "Source grouping the term was drawn from (provenance of the term itself)."
+      },
+      "curation_state": {
+        "enum": [
+          "proposed",
+          "under-review",
+          "canonical",
+          "deprecated"
+        ],
+        "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states. Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate a catalog surfaced. Promotion is a curation act applied by Policy, not by a provider."
+      }
+    }
+  },
+  "immutable": [],
+  "outputs": {
+    "term_handle": {
+      "type": "string",
+      "description": "The canonical handle a term resolves to once curated to `canonical`. Other Knowledge entities (Capability.normalized_to, Alias.resolves_to) and — for provider-capability terms — provider capability declarations and Governance-Matrix policy targets bind to this via typed references rather than free-text."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "references",
+      "target": "TaxonomyTerm",
+      "target_field": "term_handle",
+      "cardinality": "0..1",
+      "description": "parent — this term's parent in the hierarchy. The parent chain terminates at a vocabulary root and never crosses into another root's subtree (keeps shared-machinery vocabularies disjoint)."
+    }
+  ]
+}

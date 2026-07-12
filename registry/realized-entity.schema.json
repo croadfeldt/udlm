@@ -371,6 +371,48 @@
         "$ref": "#/$defs/adopted_standard_binding"
       }
     },
+    "provider_extensions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "The additive extension elements one provider adds to this realized entity. Strictly ADDITIVE (ADR-PROV-004): a provider MAY add elements the base type does not model, but MUST NOT override, shadow, or redefine any base `spec` field — the base type-spec is closed (additionalProperties:false), and the validator REJECTS any extension element whose path collides with a base spec field path. A provider declares the schema of its extensions at registration (provider-contract), so DCM validates shape and can project it. Typed successor to `provider_hints`."
+      },
+      "description": "Provider-namespaced additive extensions (ADR-PROV-004, closes #198). Keyed by the EXTENDING provider's handle; each value is that provider's additive element set. Presence of ANY entry means the entity carries provider-specific data the base type does not model — which DEGRADES portability (see `portability` below) and binds the resource to the extending provider(s). The base type keeps its identity; this is an extension, not a fork. Absent = the entity carries only base-declared elements (fully portable to any provider of its type)."
+    },
+    "portability": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "INSTANCE portability (ADR-PROV-004): the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries `provider_extensions` (or provider-specific fields). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (resource-type-hierarchy Transparency principle); a portability-degradation event is emitted.",
+      "properties": {
+        "classification": {
+          "enum": ["portable", "partial", "provider-specific", "exclusive"],
+          "description": "Effective instance classification. Narrows from the type's declared value when extensions/provider-specific data are present (e.g. portable -> provider-specific). COMPUTED by DCM, not provider-declared."
+        },
+        "portability_breaking": {
+          "type": "boolean",
+          "description": "true iff this entity cannot be moved to another provider of the same type without loss — i.e. it carries provider_extensions (or provider-specific base values). COMPUTED: any provider_extensions entry ⇒ true."
+        },
+        "portability_notes": {
+          "type": "string",
+          "description": "Human-readable explanation surfaced to the consumer: which extension elements/keys make it non-portable and which provider(s) it is thereby bound to."
+        },
+        "bound_providers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Provider handles this entity is bound to via extensions (the keys of provider_extensions). Moving to a provider not in this set would drop the extension data."
+        },
+        "consumer_notified": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Transparency record (ADR-PROV-004 §e): the deviation MUST be surfaced to the consumer before/at realization — silent non-portability is prohibited.",
+          "properties": {
+            "at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+            "event_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The emitted portability-degradation notification event." }
+          }
+        }
+      }
+    },
     "handle": {
       "type": "string",
       "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."

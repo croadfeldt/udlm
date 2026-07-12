@@ -1,0 +1,40 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "e1c7a4d9-3b62-4f08-9a15-2d6e8c0b7f31",
+  "resource_type": "Identity.Person",
+  "version": "0.1.0",
+  "family": "Access",
+  "entity_type": "Identity",
+  "lifecycle_archetype": "provisioning",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Person",
+    "description": "A human identity/account — an ACTOR that DCM authenticates and authorizes (ADR-RBAC-001). Fills the named-but-unbuilt Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity). Holds NO secret material — credentials are referenced (Security.CredentialRef). Backs the built-in auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type is `human`, from the one closed actor-type vocabulary (universal-audit).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-11T00:00:00Z"
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["handle", "actor_type"],
+    "properties": {
+      "handle": { "type": "string", "description": "Login handle / username, unique within the realization." },
+      "display_name": { "type": "string" },
+      "email": { "type": "string" },
+      "actor_type": { "const": "human", "description": "From the closed actor-type vocabulary (universal-audit); a Person is always `human`." },
+      "authenticated_by": { "type": "string", "description": "handle/uuid of the Auth Provider (auth capability) or Security.DirectoryService that authenticates this person. Default: the built-in provider (no external IdP required)." },
+      "credential_ref": { "type": "string", "description": "Reference to a Security.CredentialRef — never inline secret material (CPX-001)." },
+      "external_subject": { "type": "string", "description": "The external IdP subject id when federated (a PIP reference, resolved not stored)." },
+      "status": { "enum": ["active", "suspended", "disabled"], "default": "active" }
+    }
+  },
+  "outputs": {
+    "actor_uuid": { "type": "string", "description": "The stable actor id referenced by role-assignments and by DCMGroup (access_grouping) membership." }
+  },
+  "relationships": [
+    { "kind": "contained_by", "target": "Group", "cardinality": "0..n", "description": "Member of an access DCMGroup (access_grouping) or Identity.Group; membership drives role binding (ADR-RBAC-001)." },
+    { "kind": "references", "target": "Security.CredentialRef", "cardinality": "0..n", "description": "Credentials — referenced, never inline." }
+  ]
+}

@@ -60,6 +60,28 @@ Resource vs Information: a **provisioned server is a Resource**; the **data it h
 A directory *server* is `Security.DirectoryService` (a Resource); `Identity.*` (Person/Group/
 ServiceAccount) is the Information data — don't conflate them.
 
+## 2a. Provider capabilities and capability categories (ADR-PROV-002)
+
+Three terms here are easy to collide; keep them distinct.
+
+- **Provider capability** — what operation a provider exposes at the unified interface, as **(verb × domain)**:
+  a closed-vocabulary verb (`realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows`)
+  scoped to a resource-type **Category** (§2, the domain). Declared explicitly by the provider; organized by
+  the governed **provider-capability taxonomy** (a `TaxonomyTerm` subtree under the `provider-capability` root,
+  `registry/instances/provider-capability-taxonomy.yaml`). This is **not** the Knowledge-family
+  **`Capability [Knowledge]`** — that is DAV's *architecture-capability* sense ("what an architecture
+  provides," `entities/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
+  `architecture-capability`. One shared `TaxonomyTerm` **type**, two disjoint subtrees; parent chains never cross.
+- **Capability category** — a **(verb × §2-Category)** term in the provider-capability taxonomy (e.g.
+  `realize_resources/Storage` = *storage-provisioning*). Its domain axis **is** a §2 Category — a capability
+  category composes on the resource-type Category, it does not replace or shadow it. **Non-exclusive**: a
+  provider occupies every capability category its declared capabilities place it in (an InfoBlox IPAM sits in
+  both `realize_resources/Network` and `serve_data/Network`). Always write **"capability category"** — never bare
+  "category," which means the §2 resource-type Category. Policy targets a capability category, a capability verb,
+  or the data itself (`data_classification`/`data_role`) — replacing the old `provider type` match axis.
+- **Not "role."** A provider's capability grouping is a **capability category**, never a "role" — `role`/`data_role`
+  is the data-purpose axis (`execution | assembly | governance | audit | cost`, ADR-PROV-001).
+
 ## 3. Suite products = composites, not monolithic types
 
 A product that bundles several capabilities is modeled as **realizing multiple types**, not one bespoke
@@ -195,6 +217,12 @@ composability). Normative rules:
 3. **A recurring need is a base revision, not N vendor forks.** When the same extension appears
    across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
    IETF response to augmentation fragmentation), promoted through registry governance §3.
-4. **The formal `extends` mechanism** (how a Tier-2 spec machine-declares its Tier-1 base and
-   inherits its schema) is the open #198 design question — until it lands, rules 1–3 govern by
-   review. See docs/research/minimal-custom-surface-and-graph-resilience.md.
+4. **The formal `extends` mechanism** is **RESOLVED** — ADR-PROV-004 (closes #198). A provider
+   extends an instance **additively** via the provider-namespaced `provider_extensions` surface on
+   the realized entity, never by modifying the closed base spec. **No-override is structural**: the
+   base type-spec is `additionalProperties: false`, and the validator rejects any extension path that
+   collides with a base field. Any extension **computes a portability degradation** (`portability_breaking:
+   true`, classification narrowed, extension keys + bound provider recorded) that **MUST be surfaced to
+   the consumer** — silent non-portability is prohibited. A Tier-2 `Vendor.Type` fork remains the path
+   for a genuinely *new* type; a recurrence across ≥2 providers promotes to a base MINOR (rule 3). See
+   docs/research/minimal-custom-surface-and-graph-resilience.md.
