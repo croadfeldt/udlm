@@ -62,7 +62,7 @@ spec:
       properties:
         reference:
           type: string
-          description: OCI image reference, e.g. quay.example.com/maintainer/estate-mcp:latest
+          description: OCI image reference, e.g. registry.example.com/org/app:1.0
         digest:
           type: string
           pattern: "^sha256:[a-f0-9]{64}$"
