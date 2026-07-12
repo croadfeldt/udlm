@@ -1,0 +1,71 @@
+{
+  "record_type": "decision_record",
+  "uuid": "b4f7d2a1-6c39-4e85-9b12-7a3f0e5c8d64",
+  "handle": "ADR-PROV-004",
+  "conforms_to": "udlm/0.1",
+  "title": "Resource-type extension model — a provider may ADD data elements (additive, provider-namespaced) but NEVER override a base element; any extension degrades portability, computed and surfaced to the consumer (closes the open #198 `extends` mechanism)",
+  "version": "1.0.0",
+  "scope": "architecture",
+  "rationale": "UDLM must let a provider EXTEND a resource type (add data elements a base type doesn't model) without letting it OVERRIDE the base — and it must be honest that any such extension likely breaks portability. This is the open #198 question: `naming-conventions.md` §Extension model ('augment, don't fork') already sets the discipline (grounded in RFC 8345's augmentation failure mode — ≥92 modules augmenting a base with inconsistent patterns broke composability) with three review-governed rules — (1) never add vendor/org fields to a Tier-1 spec (extensions live at Tier-2 Vendor.Type / Tier-3 Org.Type or in `provider_hints` on the instance), (2) extensions are ADDITIVE against the base (layer new properties, never redefine/remove base semantics), (3) a recurring extension is a base MINOR revision, not N forks — but leaves the FORMAL `extends` mechanism (rule 4) as the open design question. The machinery to close it already exists: the base type-spec is `additionalProperties: false` (closed — a provider structurally cannot inject into or redefine base fields); the type carries a `portability` classification (`portable | partial | provider-specific`; realized-entity portability block: `portability_breaking`, `portability_notes`); `provider_hints` is the substrate's explicitly-opaque extension surface (SPEC-DESIGN §17/§24, §155 — non-base data goes here, never in base); and the resource-type-hierarchy Transparency principle is normative: 'any deviation from full portability is explicitly declared, versioned, and surfaced to consumers.' So closing #198 is a FORMALIZATION using existing constructs, not new invention: the `extends` mechanism = an additive, provider-namespaced extension surface on the realized entity + the closed base (no-override, structural) + a COMPUTED portability degradation + a CONSUMER notification. This keeps UDLM's portability promise honest: a resource is portable exactly to the extent it carries no provider extensions, and when it does, the consumer is told what makes it non-portable and to which provider it is thereby bound.",
+  "question_refs": [
+    "Chris 2026-07-11: how do providers extend resource types? Providers cannot override existing resource type data elements; any additional data elements will likely break portability and we should notify the consumer. Ensure UDLM allows for the extension of a resource type.",
+    "#198 — the formal `extends` mechanism (naming-conventions §Extension model rule 4, left open)."
+  ],
+  "options_considered": [
+    {
+      "option": "Let providers add fields directly to the base type spec (open the base)",
+      "pros": "simplest for the provider",
+      "cons": "destroys portability and the vendor-neutral contract; a base field could be shadowed/redefined; exactly the RFC 8345 fragmentation failure the #198 seed warns against",
+      "rejected_because": "violates no-override and the vendor-neutral base; the base MUST stay closed (additionalProperties:false)"
+    },
+    {
+      "option": "Extensions only via a new Tier-2 Vendor.Type / Tier-3 Org.Type (fork the type)",
+      "pros": "clean namespace separation; already allowed (#198 rule 1)",
+      "cons": "heavyweight for a few added fields; encourages forking; the extended resource is a different type, losing the base-type identity a consumer requested",
+      "rejected_because": "too heavy for instance-level additions; the resource should stay the base type with a marked extension, not become a fork (fork stays available for genuinely new types)"
+    },
+    {
+      "option": "Additive, provider-namespaced extension surface on the realized entity + closed base + computed portability degradation + consumer notification (chosen)",
+      "pros": "formalizes provider_hints into a typed, additive surface; no-override is STRUCTURAL (closed base); the resource keeps its base-type identity; portability impact is computed and honestly surfaced (Transparency principle); recurring extensions still promote to a base MINOR (#198 rule 3)",
+      "cons": "adds an extension surface + a portability-degradation computation + a notification path; extended resources are non-portable by construction (the honest, intended consequence)"
+    }
+  ],
+  "decision": "(a) A provider MAY extend a resource type by ADDING data elements ONLY through a designated, additive, PROVIDER-NAMESPACED extension surface on the realized entity — `provider_extensions` (a typed formalization of today's opaque `provider_hints`; each element keyed under the extending provider's handle). This closes the #198 `extends` mechanism: a resource keeps its base-type identity and gains a marked extension, rather than forking to a Vendor.Type (which stays available for genuinely new types). (b) NO-OVERRIDE is STRUCTURAL: the base type-spec is and stays `additionalProperties: false` (closed) — a provider cannot inject into, shadow, or redefine any base element. The validator additionally REJECTS any `provider_extensions` key whose (unprefixed) name collides with a base `spec` field path (no shadowing by namespacing trick). The base type's declared elements are authoritative; a provider extension can only be strictly additive (#198 rule 2, now enforced not just reviewed). (c) A provider DECLARES the extensions it adds at registration/capability time (which base type, which added elements + their schema), so DCM knows the extension surface ahead of realization. (d) PORTABILITY IS COMPUTED AND DEGRADED: a realized entity that carries any `provider_extensions` has `portability.portability_breaking: true` and `portability.classification` narrowed from the base's (portable → provider-specific), with `portability_notes` listing the extension keys and the bound provider. Portability is thus an INSTANCE property (base-type-declared, instance-degraded), never silently full. (e) THE CONSUMER IS NOTIFIED (Transparency principle, resource-type-hierarchy): whenever a request would realize with provider extensions, DCM surfaces the portability deviation to the consumer BEFORE/at realization — an explicit warning naming the non-portable elements and the provider they bind the resource to — carried on the realized entity's portability block and emitted as a portability-degradation event. Silent non-portability is prohibited. (f) RECURRENCE → BASE MINOR: when the same extension appears across ≥2 independent providers, the remedy is a backward-compatible Tier-1 base MINOR revision through registry governance (#198 rule 3), not permanent per-provider extension. (g) Update `naming-conventions.md` §Extension model rule 4 from OPEN to RESOLVED (this ADR is the `extends` mechanism).",
+  "action": "change-spec",
+  "abstraction_decomposition": {
+    "data": "The base type-spec `spec` stays CLOSED (`additionalProperties: false`) — the authoritative, vendor-neutral element set. The realized entity gains a `provider_extensions` surface: additive elements keyed by extending-provider handle, each with its own schema, NEVER overlapping a base field path. Portability becomes an INSTANCE property: the realized entity carries `portability` (classification + `portability_breaking` + `portability_notes` listing extension keys + bound provider), computed from whether `provider_extensions` is present — not inherited silently full from the type. `provider_extensions` is the typed successor to the opaque `provider_hints` blob.",
+    "policy": "NO-OVERRIDE is policy the validator enforces (closed base + reject extension keys colliding with base field paths — strictly additive, #198 rule 2). Portability-degradation is computed policy (extensions present ⇒ portability_breaking true, classification narrowed). Consumer NOTIFICATION is Transparency policy (resource-type-hierarchy principle 4): any deviation from full portability MUST be explicitly declared and surfaced to the consumer before/at realization — silent non-portability is prohibited. Recurrence-to-base-MINOR is registry-governance policy (#198 rule 3).",
+    "provider": "A provider DECLARES its extensions at registration/capability time (base type + added elements + their schema) and writes them only into `provider_extensions` at realization. It CANNOT override or shadow a base element (structural). By extending, the provider binds the resource to itself for portability purposes — which DCM computes and surfaces; the provider does not get to hide that cost. A genuinely new type is a Vendor.Type fork (still available), not an extension."
+  },
+  "produces": [
+    "registry/resource-type-spec.schema.json + registry/realized-entity.schema.json (the `provider_extensions` surface — additive, provider-namespaced; instance-level `portability` block with portability_breaking + notes)",
+    "registry/tools/validate.py (no-override: reject extension keys colliding with base spec field paths; strictly additive)",
+    "entities/resource-type-hierarchy.md (portability is an instance property; extension ⇒ degradation; the consumer-notification requirement)",
+    "registry/naming-conventions.md §Extension model (rule 4 OPEN → RESOLVED: the extends mechanism = provider_extensions + closed base + computed degradation + consumer notice)",
+    "contracts/provider-contract.md (a provider declares its extensions at registration; may add via provider_extensions, never override; portability cost is computed + surfaced)",
+    "a portability-degradation consumer notification (event + realized-entity portability block; Transparency principle)"
+  ],
+  "about": [
+    "registry/naming-conventions.md",
+    "registry/resource-type-spec.schema.json",
+    "registry/realized-entity.schema.json",
+    "entities/resource-type-hierarchy.md",
+    "contracts/provider-contract.md"
+  ],
+  "state": "PROPOSED",
+  "provenance": {
+    "proposed_by": "chris",
+    "model_version": "claude-opus-4-8",
+    "at": "2026-07-11T00:00:00Z"
+  },
+  "metadata": {
+    "display_name": "Resource-type extension model (closes #198)",
+    "notes": [
+      {
+        "at": "2026-07-11T00:00:00Z",
+        "author": "claude-opus-4-8 (session a3cae804)",
+        "text": "Closes the open #198 `extends` mechanism using existing machinery (naming-conventions §Extension model + RFC 8345 augmentation discipline, the closed base additionalProperties:false, the portability classification + realized-entity portability block, provider_hints, and the resource-type-hierarchy Transparency principle). Design: providers extend ONLY via an additive, provider-namespaced `provider_extensions` surface on the realized entity (typed successor to provider_hints); NO-OVERRIDE is structural (closed base + validator rejects base-field collisions); any extension COMPUTES portability_breaking:true + narrows classification + lists the keys/bound provider; the consumer is NOTIFIED of the deviation before/at realization (silent non-portability prohibited); recurrence across ≥2 providers → base MINOR (not permanent forks). Realization NOT yet written — touches the meta-schema (W0 floor / load-bearing), held for Chris's alignment on the extension-surface shape. Stacks on feat/provider-model."
+      }
+    ]
+  }
+}
