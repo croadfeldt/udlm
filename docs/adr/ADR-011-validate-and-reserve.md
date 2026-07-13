@@ -74,6 +74,8 @@ Reconciliation is **not assumed to converge in one pass, or quickly.** Reserving
 - **(B) Reserve as provider-selection only (the trimmed status quo).** Rejected: picks a provider but does not hold cross-graph state, has no commit barrier, and cannot compute-and-validate `fulfillment: provider` criteria across the graph before building.
 - **(C) [chosen] Two-phase reserve → barrier → commit, with reserve/commit/release provider verbs and a first-class TTL'd hold.** Validates the whole graph with zero side effects, computes realize-time criteria in the reserve phase, and makes abort a hold-drop rather than a teardown.
 
+**Data scoping is preserved across the split.** `reserve`, `commit`, and `release` are each ordinary governed DCM→Provider crossings: each carries only the `role: execution` slice of the Requested snapshot, and the Governance Matrix fires at every crossing (`contracts/data-roles.md`; `PRV-008`; provider-contract §6a). The two-phase model adds request *types*, not new data-exposure paths — *what data goes where, for what use* is unchanged, and `fulfillment: provider` criteria/returned facts ride the same execution-role boundary (with the §1b.2 minimum-necessary rule for any parent-identity reference).
+
 ## Formal basis (adopt-not-absorb)
 
 This is **not an invented protocol** — it is a well-specified distributed-transaction pattern, mapped onto the provider contract. Naming the precedent keeps the vocabulary honest and tells implementers where to look:
