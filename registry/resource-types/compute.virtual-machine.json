@@ -3,7 +3,7 @@
   "conforms_to": "udlm/0.1",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -181,6 +181,10 @@
     "instance_id": {
       "type": "string",
       "description": "Provider-assigned instance identifier."
+    },
+    "target_segment": {
+      "type": "string",
+      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
     }
   },
   "immutable": [
