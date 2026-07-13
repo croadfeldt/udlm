@@ -130,7 +130,7 @@
             "properties": {
               "field": {
                 "type": "string",
-                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | data_role | sovereignty_zone | tenant_uuid | resource_type | application_uuid | graph.has_cycle | graph.cycle_severity | graph.cycle_members | graph.cycle_mechanisms | graph.fault_domain | graph.blast_radius | graph.unmet_dependency | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field). data_role (ADR-PROV-001) lets Governance-Matrix boundary policies control which roles a provider may receive at the DCM\u2192Provider boundary \u2014 parallel to data_classification. The graph.* sources (docs/graph-integrity.md) expose DependencyCycle diagnostics so policy governs cyclic estates \u2014 e.g. graph.cycle_severity eq blocking / graph.unmet_dependency.severity eq blocking \u2192 deny; graph.blast_radius / graph.fault_domain for redundancy + impact policy (ADR-010); matched against the effective dependency graph, not a stored field."
+                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | data_role | sovereignty_zone | tenant_uuid | resource_type | application_uuid | graph.has_cycle | graph.cycle_severity | graph.cycle_members | graph.cycle_mechanisms | graph.fault_domain | graph.blast_radius | graph.unmet_dependency | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field). data_role (ADR-PROV-001) lets Governance-Matrix boundary policies control which roles a provider may receive at the DCM→Provider boundary — parallel to data_classification. The graph.* sources (docs/graph-integrity.md) expose DependencyCycle diagnostics so policy governs cyclic estates — e.g. graph.cycle_severity eq blocking / graph.unmet_dependency.severity eq blocking → deny; graph.blast_radius / graph.fault_domain for redundancy + impact policy (ADR-010); matched against the effective dependency graph, not a stored field. During the reserve-phase reconciliation loop (ADR-011), reserved facts are exposed as reserved.* match sources (e.g. reserved.segment_ref, reserved.<component>.<fact>) so a participating policy (see `reconciliation`) evaluates against holds as they land, before commit."
               },
               "operator": {
                 "enum": [
@@ -194,6 +194,23 @@
         }
       },
       "description": "Which lifecycle operations the policy evaluates on (policy-contract \u00a7default lifecycle scope). Compliance-class validation + governance_matrix must include 'all' at standard/prod; fsi/sovereign cannot scope out any operation."
+    },
+    "reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Participation in the reserve-phase reconciliation loop (ADR-011 §1; ADR-006 re-entrant evaluation; policy-contract §7.6). During reserve, holds land incrementally and each yields new reserved facts (a reserved segment, a placement). A PARTICIPATING policy is re-evaluated as those facts arrive, so placement / cycle / quota / governance-matrix rules act on the enriched reserved graph as it converges — not just once at the end. A non-participating policy is evaluated once, at the commit barrier (default). Default barrier-only keeps cheap static checks from re-running every iteration. Re-evaluation MUST be idempotent (ADR-006 soundness).",
+      "properties": {
+        "participates": {
+          "type": "boolean",
+          "default": false,
+          "description": "true = re-evaluated on each qualifying reserve-phase change during reconciliation; false (default) = evaluated once at the commit barrier."
+        },
+        "reevaluate_on": {
+          "type": "array",
+          "items": {"enum": ["reservation_added", "reservation_changed", "reservation_released", "fact_updated"]},
+          "description": "When participates=true, which reserve-phase changes re-trigger this policy. Omitted = all. A policy that only cares about newly reserved facts sets [fact_updated] to avoid needless re-runs."
+        }
+      }
     },
     "output": {
       "type": "object",

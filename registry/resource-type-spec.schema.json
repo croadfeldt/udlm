@@ -202,7 +202,7 @@
     },
     "relationships": {
       "type": "array",
-      "description": "Allowed relationship types from this resource to others (entities/entity-relationships.md, service-dependencies.md).",
+      "description": "Relationship TEMPLATES this resource illustrates — guidance and placement hints, NOT a closed allowlist (UDLM ADR-009 §4). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). entities/entity-relationships.md, service-dependencies.md.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -222,6 +222,11 @@
           "target": {
             "type": "string",
             "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$"
+          },
+          "enforcement": {
+            "enum": ["example", "structural"],
+            "default": "example",
+            "description": "example (default) = an illustrative/placement-hint relationship a provider may satisfy, override, or ignore (REL-001 advisory). structural = an invariant true by the nature of the resource (a dataset cannot exist without its pool) — required and validated (REL-002). UDLM ADR-009 §4."
           },
           "target_field": {
             "type": "string",

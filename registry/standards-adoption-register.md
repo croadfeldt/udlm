@@ -161,6 +161,18 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ### OpenCost — CANONICAL
 **Covers:** `OpenCost` · **Since:** 2026-06-18T01:34:51Z · **Where:** Compute.Cluster cost fields, cost-sp provider. **Why:** the CNCF in-cluster cost implementation matching FOCUS-shaped output. **License:** Apache-2.0 — compatible-reference.
 
+## Orchestration & transactions
+
+### TCC (Try-Confirm-Cancel) + Two-Phase Commit (X/Open XA, ISO/IEC 10026 OSI-TP) — PATTERN
+**Covers:** `TCC` · `2PC` · **Body:** X/Open (XA DTP) · ISO/IEC 10026 (OSI-TP); TCC = established microservices distributed-transaction pattern · **Since:** 2026-07-13 (ADR-011).
+**Where:** two-phase realization — `contracts/provider-contract.md` §6a, `foundations/four-states.md` §2.3a, SPEC-DESIGN hard constraint 15.
+**Why:** realization spans providers that cannot share a lock, so it needs a reservation-based commit protocol: **Try = `reserve`** (tentative hold, no side effects), **Confirm = `commit`**, **Cancel = `release`**; DCM is the 2PC **coordinator**, providers are **participants** (a provider that cannot hold votes no by failing reserve), and the **commit barrier** is the global commit decision. **Pattern, not vocabulary:** we adopt the try/confirm/cancel + coordinator/barrier shape and map it onto the existing REST dispatch channel — we do **not** absorb XA's C API or WS-AtomicTransaction/WS-BusinessActivity SOAP envelopes (the transport is already defined). *Contrast — SAGA:* commit-then-compensate; reserve-first avoids most compensation (nothing is built before the barrier), so SAGA applies only to a partially-failed *commit* (`COMPENSATE_AND_FAIL`). **License:** open specifications — compatible-reference.
+
+### Lease (timeout-bounded reservation) — RFC 2131 (DHCP) as protocol precedent — PATTERN
+**Covers:** `Lease` · **Body:** IETF (RFC 2131); Gray & Cheriton (leases) · **Since:** 2026-07-13 (ADR-011).
+**Where:** reservation-hold TTL — `provider-contract.md` §6a (`requested_ttl` / `granted_ttl` / `min_hold_ttl` / `max_hold_ttl`), `reservation.expired` event.
+**Why:** a hold must not leak reserved capacity if reconciliation stalls. DHCP is the near-exact precedent — `DHCPOFFER` = reserve, `DHCPREQUEST`/`ACK` = commit, and **lease expiry = implied release** — which is precisely our TTL semantics (expiry auto-drops the hold and emits `reservation.expired` for audit). **License:** IETF Trust — compatible-reference.
+
 ## Prior art (informed decisions; no conformance relationship)
 
 **Since (evaluated):** 2026-07-05, relation-vocabulary research (common-elements §9 records the survey):

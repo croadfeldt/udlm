@@ -142,6 +142,11 @@
             ],
             "description": "self = the registering provider fulfills this constituent directly via its standard Services API; external = DCM's Placement Engine selects a provider at request time (composite-service-model.md §2.2, CMP-006)."
           },
+          "fulfillment": {
+            "enum": ["platform", "provider", "consumer"],
+            "default": "platform",
+            "description": "Who procures this constituent's request content, and when (UDLM ADR-009). platform = DCM's loop assembles it from consumer_fields at assembly-time (default); provider = the realizing provider brokers a sub-intent THROUGH DCM at realize-time, contributing realization-time specifics via a binding; consumer = the consumer supplies an existing resource reference (BYO). Orthogonal to provided_by (the realizer axis) — fulfillment is the procurement axis. DCM always orchestrates and applies policy + cycle detection regardless of mode."
+          },
           "depends_on": {
             "type": "array",
             "items": {

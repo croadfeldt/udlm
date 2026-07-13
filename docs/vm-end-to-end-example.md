@@ -45,6 +45,10 @@ That is the **entire** graph for one VM: 4 foundational + 4 realized resources, 
 - **network attachment** (`net-dmz`) — **consumer** selection; the **vNIC + IP** are then **platform/provider** fulfilled: `ip_mode: dynamic` → the network provider allocates `ip-app` and reports it back (realized relationship, provider-authoritative).
 - **disk** — **platform** fulfilled: DCM provisions `vol-app` from `pool-fast` from `disk_size`.
 
+## How it's realized — two-phase (ADR-011)
+
+Provisioning this graph is **reserve → barrier → commit**, not a single pass. In the **reserve phase** DCM validates and *holds* every target with **no side effects** — the host placement (`host-a`), the IP on `net-vlan-20`'s segment, the volume from `pool-fast` — each returning its realize-time facts (the reserved segment, the reserved address) and a **TTL'd hold**. The IP's criteria are just the **target segment** (`net-dmz` → `net-vlan-20`), a shared reference — never the vNIC or MAC. Reservations feed each other and reconcile to a fixed point (a bounded, multi-round negotiation; a slow provider whose hold expires is named by `reservation.expired`). Only once **every** hold is valid and all applicable policy is green (the **commit barrier**) does DCM **commit** — the providers build, write realized state, and report the relationships below. Nothing is half-built: an abort, TTL expiry (implied release), or reconcile stalemate releases holds, never tears down.
+
 ## The intermediary types — what we actually need
 
 1. **vNIC — already covered, do NOT add `Hardware.VirtualInterface`.** A virtual NIC is `Hardware.NetworkInterface` with `device_class: virtual` (the enum already has `virtual | passthrough | bridge | aggregate | partition`). It carries `vlan_id` and stacks on the host bridge via `parent_device` — exactly the physical/bond/bridge/virtual stack the estate already models. Adding a parallel `Hardware.VirtualInterface` would duplicate it (minimal-surface: reject).
