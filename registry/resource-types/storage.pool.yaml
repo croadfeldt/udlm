@@ -1,0 +1,116 @@
+# UDLM Resource Type Specification — Storage.Pool (YAML; validated against resource-type-spec.schema.json).
+#
+# A host-local storage POOL that aggregates physical drives into a fault-tolerant capacity source from
+# which datasets/volumes are carved — the ZFS zpool (extensible to an LVM VG / btrfs pool). Distinct
+# from Storage.Cluster (a DISTRIBUTED multi-node system, Ceph) and from Storage.Volume (a CONSUMABLE
+# volume a workload attaches): a Pool is the single-host aggregation layer between the drives
+# (Hardware.StorageDevice) and the datasets (Storage.Dataset). It owns the redundancy topology — the
+# vdev grouping — which a flat "dataset on host" edge would lose, exactly as PSU→feed captures power
+# redundancy the coarse "host on UPS" edge drops.
+#
+# ADOPT (not absorb), core-tenets T5: schemas are not restated — only an identity join + version-pinned
+# pointer. The pool/vdev vocabulary is OpenZFS's; the capacity/redundancy alignment is SNIA Swordfish
+# StoragePool's; a provider (zfs) naturalizes the concrete zpool.
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.1.0
+conforms_to: udlm/0.1
+uuid: 91b18748-7f03-461a-9ee1-6cd77e8367c7
+resource_type: Storage.Pool
+version: 0.1.0
+family: Resource
+entity_type: Composite
+lifecycle_archetype: provisioning
+portability: portable
+status: active
+metadata:
+  display_name: Storage Pool
+  description: >-
+    A host-local storage pool aggregating physical drives (Hardware.StorageDevice) into a
+    redundancy-protected capacity source that datasets/volumes are carved from. The concrete technology
+    (ZFS zpool, LVM VG, btrfs) is the PROVIDER, declared on the instance and in adopts[] — never in the
+    type name. Owns the vdev/redundancy topology so a derived shutdown honors it: a pool stops after the
+    datasets it backs and before the drives it aggregates. Grounded in OpenZFS (zpool) + SNIA Swordfish
+    StoragePool.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-13T00:00:00Z"
+
+adopts:
+  - standard: OpenZFS
+    version: "2.x"
+    standard_name: zpool / vdev
+    role: pool-and-vdev topology vocabulary (raidz/mirror/stripe, members, health)
+    source: https://openzfs.github.io/openzfs-docs/
+    license: CDDL-1.0
+    license_compatibility: compatible-reference
+  - standard: SNIA-Swordfish
+    version: "1.2"
+    standard_name: StoragePool
+    role: capacity + data-protection alignment (same family as Storage.Cluster / Storage.Volume)
+    source: https://www.snia.org/forums/smi/swordfish
+    license: SNIA
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    Provider exports/destroys the pool; Discovered reflects exported/absent. Destroying a pool destroys
+    every dataset it holds — so decommission is DATA-DESTRUCTIVE and must follow the datasets in order.
+
+spec:
+  type: object
+  required: [pool_kind]
+  properties:
+    pool_kind:
+      type: string
+      enum: [zfs, lvm, btrfs, other]
+      description: Pooling technology (provider hint; the provider is authoritative).
+    health:
+      type: string
+      description: Pool health as the provider reports it (ZFS ONLINE/DEGRADED/FAULTED; Swordfish Status).
+    capacity:
+      type: object
+      properties:
+        size: { type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$", description: Total pool size. }
+        allocated: { type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$" }
+        free: { type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$" }
+    vdevs:
+      type: array
+      description: >-
+        The redundancy topology — each vdev groups member drives under a protection scheme. Data-protection
+        is per-vdev; the pool's fault tolerance is the vdev's (a raidz2 tolerates 2 lost members). The
+        member drives are ALSO expressed as depends_on Hardware.StorageDevice edges (the graph layer);
+        this array carries the grouping the edges can't.
+      items:
+        type: object
+        required: [type]
+        properties:
+          type: { type: string, enum: [stripe, mirror, raidz1, raidz2, raidz3, draid, cache, log, spare], description: vdev redundancy class. }
+          members:
+            type: array
+            items: { type: string }
+            description: handles/serials of the Hardware.StorageDevice members of this vdev.
+    properties:
+      type: object
+      additionalProperties: { type: string }
+      description: Provider-passthrough pool properties not lifted into typed fields (e.g. compression, recordsize, ashift).
+
+outputs:
+  usable_capacity:
+    type: string
+    description: Usable capacity after redundancy overhead, once Realized.
+  degraded:
+    type: boolean
+    description: Whether the pool is currently degraded (a member vdev is not fully redundant).
+
+relationships:
+  - kind: contained_by
+    target: Compute.BareMetalHost
+    cardinality: 0..1
+    name: host
+    description: The host whose drives make up this pool (a pool is host-local).
+  - kind: depends_on
+    target: Hardware.StorageDevice
+    cardinality: 1..n
+    name: member_drive
+    description: >-
+      The physical drives the pool aggregates (grouped into vdevs in spec). The pool cannot outlive its
+      members; a derived shutdown stops the pool before its drives spin down.
