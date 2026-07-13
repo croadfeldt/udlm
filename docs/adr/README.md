@@ -5,6 +5,23 @@ Short, reviewable records of significant UDLM data-model decisions — the **why
 §4.5); UDLM **adopts the ADR/MADR format by reference**, it does not coin its own. DCM keeps its
 own ADRs in `architecture/adr/` (the control-plane side); UDLM ADRs here cross-reference them.
 
+**Referenced DCM ADRs (external — resolve in the DCM repo `architecture/adr/`).** UDLM docs cite these
+control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
+
+| Ref | Topic (as cited in UDLM) |
+|---|---|
+| DCM ADR-012 | (control-plane; cited by UDLM docs) |
+| DCM ADR-013 | Override model (control-plane side of policy override) |
+| DCM ADR-014 | Layer/authority seam |
+| DCM ADR-016 / 017 / 018 | Discovery/inventory control-plane decisions |
+| DCM ADR-019 | Placement (the placement engine + algorithm) |
+| DCM ADR-020 | Placement-adjacent control-plane decision |
+| DCM ADR-022 | Trust model (DCM brokers trust, never custodies it) |
+| DCM ADR-023 | Scale-of-integration / denaturalization tiers |
+
+The local sequence below (ADR-001…011) is UDLM's own; any `ADR-0XX` above 011 without a file is a
+`DCM ADR-` reference — always write it qualified so it resolves cross-repo.
+
 **Required lens (every ADR / DecisionRecord).** Each decision MUST state its **Data · Policy · Provider**
 aspects — the three foundational abstractions (DCM ADR-002). *Data* = what's modeled/held (UDLM);
 *Policy* = what's decided/computed/governed (DCM); *Provider* = what's declared as possible and what

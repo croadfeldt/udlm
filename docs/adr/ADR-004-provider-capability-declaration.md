@@ -58,7 +58,7 @@ Capability declaration says what's **possible**; the `Topology` instance (ADR-00
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the provider capability declaration shape — `topology_capability` + `mobility` + `operational_capability`.
-- **Policy (DCM):** matching/scoring/gating consume it (ADR-019/020) — requirements ↔ capability negotiation.
+- **Policy (DCM):** matching/scoring/gating consume it (DCM ADR-019/020) — requirements ↔ capability negotiation.
 - **Provider:** **authors** the declaration and **executes** what it declares (naturalization, migration, rehearsal).
 
 ## Options considered
