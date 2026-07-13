@@ -1,0 +1,74 @@
+# UDLM Resource Type Specification — Topology.DependencyBundle
+#
+# A named, reusable SET of dependencies that member resources inherit. Attach a resource to a bundle
+# (a single membership edge) and it takes on the bundle's whole dependency set at derivation time —
+# instead of hand-wiring each ambient dependency onto every resource. This is how cross-cutting,
+# environment-scoped dependencies are modeled: a rack bundle carries power (a PowerFeed) + cooling +
+# uplink; a realm bundle carries identity + DNS; a site bundle carries the site's shared services.
+# Attach one, get the others for free.
+#
+# HOW IT WORKS: a bundle's own `dependencies[]` are the shared dependencies. A member points at the
+# bundle with a plain `references` edge; the consumer (shutdown/startup derivation, visualizer) sees
+# the target is a DependencyBundle and expands the membership into a dependency on each of the
+# bundle's targets. Bundles compose — a rack bundle may itself be a member of a site bundle.
+#
+# ADOPT (not absorb): OASIS TOSCA groups + policies already model "a set of nodes sharing typed
+# requirements"; UDLM references that grouping semantics rather than restating it.
+$id: https://udlm.dev/registry/udlm/0.1/Topology.DependencyBundle/0.1.0
+conforms_to: udlm/0.1
+uuid: adbe205f-17fb-4f94-98e9-4f360ed01992
+resource_type: Topology.DependencyBundle
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: curation
+portability: portable
+status: active
+metadata:
+  display_name: Dependency Bundle
+  description: >-
+    A reusable set of dependencies that member resources inherit by attaching to it — the modeling
+    home for ambient, environment-scoped dependencies (power/cooling from a physical location,
+    identity/DNS from an administrative realm, shared services from a site). A member attaches with a
+    single reference edge and takes on the bundle's whole dependency set; the ordering/derivation
+    tools expand membership into the concrete dependencies, so new resources inherit their ambient
+    dependencies from where they sit and whose realm they're in, never by hand-wiring each edge.
+    Bundles compose (a rack bundle may be a member of a site bundle).
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-13T00:00:00Z"
+
+adopts:
+  - standard: OASIS TOSCA
+    version: "1.3"
+    standard_name: groups + policies (a set of nodes sharing typed requirements)
+    role: grouping semantics for "members share these dependencies" — referenced, not restated
+    source: https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/
+    license: OASIS
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    A bundle is reference structure; decommission = no member attaches to it. Removing it does not
+    change any member's live state — members simply stop inheriting its dependencies. Non-destructive.
+
+# Instance edges:
+#   dependencies[] — the SHARED dependencies members inherit (edges to a PowerFeed, DirectoryService,
+#     AddressService, another DependencyBundle, ...). Members attach with a plain `references` edge
+#     whose target is this bundle; the derivation expands that into a dependency on each target here.
+spec:
+  type: object
+  required: [kind]
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum: [location, realm, power-domain, network-domain, cooling-domain, site, other]
+      description: What environment scope this bundle represents (drives how tools reason about it).
+    label:
+      type: string
+      description: Human name for the scope (e.g. "server rack", "workbench", "a realm").
+outputs:
+  member_count:
+    type: integer
+    description: How many resources currently attach to (inherit from) this bundle.
