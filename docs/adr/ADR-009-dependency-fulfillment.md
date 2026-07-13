@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-006 (convergence control model — DCM drives the loop); ADR-008 (UDLM/DCM boundary + the compatibility rule); ADR-004 (provider capability declaration); ADR-019 (placement); `contracts/provider-contract.md`; `registry/catalog-item.schema.json` (composite-service-model.md); `docs/graph-integrity.md` (cycle detection)
+**Related:** ADR-006 (convergence control model — DCM drives the loop); ADR-011 (validate-and-reserve — the two-phase realization that resolves the chicken-and-egg without side effects); ADR-008 (UDLM/DCM boundary + the compatibility rule); ADR-004 (provider capability declaration); `contracts/provider-contract.md` §6a (reserve/commit/release verbs); `registry/catalog-item.schema.json` (composite-service-model.md); `docs/graph-integrity.md` (cycle detection)
 **Tracking:** The recurring question of who defines and procures a catalog item's dependencies — the request or the provider. This ADR is the decision-of-record so it is not re-litigated.
 
 ## Context
@@ -98,17 +98,16 @@ constituents:
 
 Both are conformant. This is the concrete instance of Decision §3.
 
-## Chicken-and-egg: realize-time criteria and the reconciliation loop
+## Chicken-and-egg: realize-time criteria and validate-and-reserve
 
-Provider-mode fulfillment where a dependency's criteria derive from the parent's **realize-time** facts creates a chicken-and-egg: the `Network.IPAddress` criteria need the VM's assigned port (a realize-time fact), but the VM needs the IP. This is **not a hard dependency cycle** (`docs/graph-integrity.md`) — the modeled edge is one-directional (VM `depends_on` IP); the mutuality is in *realization ordering*, not in the graph. It is resolved by DCM's **convergence / reconciliation loop** (ADR-006, idempotent + re-entrant):
+Provider-mode fulfillment where a dependency's criteria derive from the parent's **realize-time** facts creates a chicken-and-egg: the `Network.IPAddress` criteria need the VM's assigned port (a realize-time fact), but the VM needs the IP. This is **not a hard dependency cycle** (`docs/graph-integrity.md`) — the modeled edge is one-directional (VM `depends_on` IP); the mutuality is in *realization ordering*, not in the graph. It resolves through **validate-and-reserve** (ADR-011) — the two-phase realization the substrate provides (`foundations/four-states.md` §2.3a) — with **no live partial realization**:
 
-1. **Partially realize the parent** to the point it yields the facts the dependency's criteria need — place the VM, obtain the port it landed on.
-2. The parent provider **calculates the dependency criteria** from those facts and supplies them to DCM.
-3. **DCM fulfills the dependency** — place the IP provider, allocate on the reachable segment.
-4. **Complete the parent** — bind the realized IP; the VM's network comes up.
-5. **Re-drive to convergence** — the loop is idempotent, so DCM re-runs the plan until the graph is stable; a resource already in its desired state is a no-op (the idempotent-reconvergence case).
+1. **Reserve the parent.** DCM reserves the VM: the provider validates and **holds** a placement, returning its realize-time facts — the reserved **port** — building nothing.
+2. **Compute the child criteria.** The parent provider calculates the `Network.IPAddress` criteria from the reserved port (which segment is reachable, via the port's `Network.VLAN` reference) plus the request parameters, and supplies them to DCM.
+3. **Reserve the child.** DCM reserves the IP on that segment — an address is held, still nothing built.
+4. **Commit barrier.** Only once the whole reserved graph is held-and-valid and all policy is green does DCM **commit** — building the VM and IP together, in dependency order.
 
-So provider-mode with realize-time-derived criteria is safe: the loop **stages** the realization and **reconciles** the mutual dependency rather than deadlocking on it. This is another reason DCM must own the loop (§1) — only the orchestrator can stage and re-drive across the parent/child boundary. Where a *genuine* hard cycle exists (each side blocks the other with no stageable order), that is a `DependencyCycle` and is **denied**, not reconciled.
+No half-built VM ever exists: the reserved facts flow parent→child *before* either is committed, and an abort is a **hold-drop**, not a teardown. The catalog `depends_on` graph stays acyclic (the "VM needs IP" completion is a commit-order fact, not a modeled edge), so `graph-integrity.md` cycle detection is unaffected. A **genuine** hard cycle — where no reserve order yields the facts the next reserve needs — surfaces as `RESERVE_QUERY_ALL_EXHAUSTED` / `DependencyCycle` and is **denied**, not looped. Reserve and commit both run inside DCM's re-entrant convergence loop (ADR-006), which is why DCM must own them (§1): only the orchestrator can reserve across the parent/child boundary and hold the commit barrier.
 
 ## Consequences
 

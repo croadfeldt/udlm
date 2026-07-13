@@ -40,6 +40,15 @@ Each hard constraint cites the UDLM contract it derives from.
     (Realized/Discovered, provider-authored). Never blurred (the K8s spec/status discipline).
 14. **Realization is the authoritative system of record** for realized data — the basis of sovereignty
     and audit (`entities/resource-service-entities.md`).
+15. **Realization is two-phase — validate-and-reserve, then commit** (`foundations/four-states.md` §2.3a;
+    ADR-011). The Requested → Realized transition MUST **reserve** every target (validate + hold, **no
+    side effects**, returning computed realize-time facts) and reconcile the reserved graph to a fixed
+    point, MUST NOT **commit** (build) any target until the **whole reserved graph is held-and-valid and
+    all applicable policy is green** (the commit barrier), and MUST **release** any uncommitted hold on
+    failure/cancellation/TTL-expiry. Providers expose `reserve` / `commit` / `release`, all idempotent
+    (`contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (ADR-009)
+    side-effect-free: cross-dependency criteria are computed against **reserved** facts before anything
+    is built.
 
 ### Portability & provider-neutrality
 15. The spec is the contract **any** provider of the type MUST satisfy; providers
