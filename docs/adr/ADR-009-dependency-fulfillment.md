@@ -29,10 +29,10 @@ Each constituent of a catalog item declares a **`fulfillment`** mode (alongside 
 | `fulfillment` | who contributes the request content | when | typical `provided_by` | use for |
 |---|---|---|---|---|
 | **`platform`** (default) | DCM's loop assembles it from catalog-declared `consumer_fields` | assembly-time | `external` | well-understood deps whose parameters are declarable up front — most IPs, storage |
-| **`provider`** | **DCM completes the declared request using a realize-time output the provider reports** (via a constituent `binding`) — the provider reports the output (e.g. the port it landed on), DCM makes the request | realize-time | `self` | deps whose parameters only exist post-placement, or where the provider owns IPAM / has special requirements |
+| **`provider`** | the parent provider **receives the initial request, calculates the dependency's request criteria** (from the request + realize-time facts) and supplies them to DCM, which fulfills the *catalog-declared* dependency | realize-time | `self` | deps whose criteria the parent provider must compute, or that only exist post-placement |
 | **`consumer`** | the consumer supplies an existing resource reference (BYO) | request-time | — | deps the consumer owns (bring-your-own IP, DNS zone) |
 
-The two axes are orthogonal and both belong on the constituent: **`provided_by` = who realizes; `fulfillment` = who procures/contributes.** **DCM is always the requester.** `provider`-mode is **not a separate provider request** — the dependency is *already declared in the catalog item*, so DCM has already planned, placed, governed, and cycle-checked it; the provider merely **reports a realize-time output** (e.g. the port it landed on) that DCM needs to *complete* the request it was always going to make. `fulfillment` just says *when* DCM has the parameters — from `consumer_fields` at assembly (`platform`) or from a provider output at realize-time (`provider`).
+The two axes are orthogonal and both belong on the constituent: **`provided_by` = who realizes; `fulfillment` = who procures/contributes.** `provider`-mode is **not a separate provider request**, but it is more than a passive output. The dependency is *declared in the catalog* (so DCM plans, places, governs, and cycle-checks it in advance); at request-time the **parent provider receives the initial request, calculates the specific criteria the dependency needs** — which segment, which port, what constraints, using its own logic and realize-time facts — and **supplies those criteria to DCM**. DCM then **fulfills** the declared dependency with them: it places, governs, cycle-checks, and realizes. So DCM is the fulfiller and the provider supplies the *computed criteria*; `fulfillment` says where those criteria come from — `consumer_fields` at assembly (`platform`) or the parent provider's calculation at realize-time (`provider`).
 
 **Why declare the dependency in the catalog at all?** Because the declaration is what lets **placement and policy act on it *in advance*** — DCM plans, places, governs, sequences, and cycle-checks the dependency *before* realization, rather than discovering it mid-realization. The catalog declaration *is* the request, made ahead of time; the provider never issues a redundant one. It is the same mechanism as a Composite Service Definition (provider-contract §8.3).
 
@@ -72,7 +72,7 @@ constituents:
   - component_id: ipaddr
     resource_type: Network.IPAddress
     provided_by: external        # a DCM-placed IP/IPAM provider realizes it
-    fulfillment: provider        # DCM completes this at realize-time using a provider-reported output
+    fulfillment: provider        # the VM provider calculates the IP criteria at realize-time; DCM fulfills
     depends_on: [vm]             # ordered after the VM is placed (acyclic — CMP-002)
     bindings:                    # realize-time facts flow VM -> IP request
       - from_component: vm
@@ -90,7 +90,7 @@ constituents:
 **Flow:**
 1. Consumer submits intent: `catalog_ref: vm-service`, `network_segment: dmz`, `location: rack-3`, `size: 100Gi`. (Intent carries no IP — none is allocated yet.)
 2. DCM assembles + policy-evaluates + places the **VM** (ADR-019). The VM provider realizes it and reports the physical **`Hardware.NetworkInterface`** port (`device_class: physical`, `contained_by` the `Network.Switch`) its vNIC `connects_to` as a realized output — the network-side port whose **`Network.VLAN` reference determines the reachable segment**.
-3. The **IP** constituent is `fulfillment: provider`: the `Network.IPAddress` request was **declared in the catalog** (so DCM already planned, governed, and cycle-checked it). At realize-time **DCM completes that request** using the **physical-port reference the VM provider reports** (via the `binding`). The port's `Network.VLAN` reference determines which segment is reachable, so the IP provider allocates an address on that segment.
+3. The **IP** constituent is `fulfillment: provider`: the `Network.IPAddress` dependency was **declared in the catalog** (so DCM planned, governed, and cycle-checked it in advance). At realize-time the VM provider — having received the initial request — **calculates the IP's request criteria**: the reachable segment (via the physical port's `Network.VLAN` reference) plus the request's parameters, and **supplies them to DCM** through the `binding`. **DCM fulfills** the declared IP request with those criteria — placing the IP provider, which allocates an address on that segment.
 4. The IP provider allocates the address and **reports the realized relationship back** — the IP's UUID, correlated to the VM (provider-contract §1a.5, §1b). The VM now `realized-depends-on` the IP as a **`soft`** edge (portable: on rehydration the IP is *remapped*, not preserved).
 5. The **disk** constituent is `platform`: DCM's loop assembles it from `size` and places a storage provider — no VM-provider round-trip.
 
