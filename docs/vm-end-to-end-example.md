@@ -1,6 +1,6 @@
 # Worked example — a VM, end to end, and the intermediary resources it surfaces
 
-**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`Hardware.NetworkInterface` with `device_class: virtual`), and the only genuine intermediary decision is **how VLAN/encapsulation is modeled**. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
+**What this settles:** a concrete trace of one VM request from intent to realized, naming **every** resource and relationship — so we can see which intermediary types the model actually needs. The headline: the **vNIC is not a new type** (`Hardware.NetworkInterface` with `device_class: virtual`), and VLAN is a foundational **`Network.VLAN`** shared reference (like `Facility.Location`), not an inline field. This grounds ADR-009 (fulfillment), `foundational-resources.md` (selections), and the P1 VM enrichment in a real flow.
 
 ## The request
 
@@ -55,8 +55,8 @@ That is the **entire** graph for one VM: 4 foundational + 4 realized resources, 
 
 ## Gaps this example confirms (feeds the September plan)
 
-- **(a) `Network.VirtualNetwork.encapsulation`** — small additive field (the VLAN decision above). *Recommend adding as base guidance.*
+- **`Network.VLAN`** — created as a foundational shared reference (owned by a network/fabric provider, selected by reference like `Facility.Location`); `Network.VirtualNetwork references Network.VLAN`. No inline encapsulation field.
 - **P1 already landed** the VM `networks[].network_ref` + `placement.location_ref` selections this trace relies on.
 - **P4 fault domain** shows up literally: `vm-app` and every other guest on `host-kenny` share `host-kenny`'s fault domain, and everything in `fac-rack3` shares the rack's — derived from these `contained_by`/`references` edges (ADR-010), no new authoring.
 
-**Net:** the model realizes a full VM with **no new intermediary types** — `device_class: virtual` covers the vNIC — and one small, org-ratifiable encapsulation decision on `Network.VirtualNetwork`.
+**Net:** the model realizes a full VM with **no new intermediary types** — `device_class: virtual` covers the vNIC — and VLAN modeled as a `Network.VLAN` shared reference, consistent with every other foundational resource.
