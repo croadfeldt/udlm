@@ -79,6 +79,44 @@ timeout_declarations:
     on_timeout: skip this provider; continue placement loop with remaining candidates
     # Reserve query timeout does not trigger RESERVE_QUERY_TIMEOUT recovery policy
     # unless ALL candidates have timed out or been exhausted
+
+  reservation_reconcile_grace:
+    description: "DCM-side watchdog after a reservation hold's expires_at. A provider MUST emit
+      reservation.expired at expiry (provider-contract §6a); DCM does not trust that for correctness.
+      DCM independently tracks expires_at (known from the reserve grant) and arms this grace timer.
+      If no reservation.expired arrives within the grace, DCM emits its OWN reservation.expiry_unconfirmed
+      event and fires the RESERVATION_EXPIRY_UNCONFIRMED recovery policy."
+    profile_defaults:
+      minimal: PT60S
+      dev: PT60S
+      standard: PT30S
+      prod: PT15S
+      fsi: PT15S
+      sovereign: PT15S
+    on_timeout: emit reservation.expiry_unconfirmed (DCM-authored); trigger RESERVATION_EXPIRY_UNCONFIRMED
+
+  reservation_reconcile_budget:
+    description: "Bound on the reserve-phase reconciliation loop (ADR-011). Reconciliation is
+      multi-round NEGOTIATION — reserving one dependency returns facts that shift another's criteria,
+      which re-reserves, and so on; each round is a real round-trip and takes time. This budget caps
+      it: a maximum number of rounds AND a maximum wall-clock, with backoff. Exceeding it WITHOUT a
+      fixed point is a stalemate (mutually unsatisfiable criteria, oscillation, or holds that cannot be
+      kept valid long enough to converge) — distinct from RESERVE_QUERY_ALL_EXHAUSTED (no capacity)."
+    max_rounds:
+      minimal: 20
+      dev: 20
+      standard: 12
+      prod: 8
+      fsi: 8
+      sovereign: 8
+    max_duration:
+      minimal: PT10M
+      dev: PT10M
+      standard: PT5M
+      prod: PT3M
+      fsi: PT3M
+      sovereign: PT3M
+    on_exhausted: release ALL holds; trigger RESERVATION_RECONCILE_STALEMATE (nothing was built)
 ```
 
 ### 2.2 Timeout Audit Record (Wire Contract)
@@ -375,7 +413,9 @@ recovery_policy:
 |---------|-------------|
 | `ASSEMBLY_TIMEOUT` | Assembly pipeline exceeded configured timeout |
 | `DISPATCH_TIMEOUT` | Provider did not respond within dispatch_timeout |
-| `RESERVE_QUERY_ALL_EXHAUSTED` | All placement candidates timed out or rejected |
+| `RESERVE_QUERY_ALL_EXHAUSTED` | All placement candidates timed out or rejected — **no capacity** |
+| `RESERVATION_RECONCILE_STALEMATE` | The reserve-phase reconciliation loop exhausted `reservation_reconcile_budget` (max rounds or max duration) **without reaching a fixed point** — mutually unsatisfiable criteria, oscillation, or holds that could not be kept valid long enough to converge. Distinct from `RESERVE_QUERY_ALL_EXHAUSTED` (that is *no capacity*; this is *no agreement*) |
+| `RESERVATION_EXPIRY_UNCONFIRMED` | A reservation hold's TTL lapsed and the provider did **not** emit `reservation.expired` within `reservation_reconcile_grace` — provider non-conformance; DCM must force-resolve the hold |
 | `LATE_RESPONSE_RECEIVED` | Provider responded after timeout was declared |
 | `CANCELLATION_SENT` | Cancellation sent to provider |
 | `CANCELLATION_CONFIRMED` | Provider confirmed clean cancellation |
@@ -392,6 +432,8 @@ recovery_policy:
 | `DISCARD_AND_REQUEUE` | Best-effort cleanup sent to provider; new request cycle created immediately from Intent State |
 | `DISCARD_NO_REQUEUE` | Best-effort cleanup sent to provider; entity FAILED; no automatic requeue |
 | `ACCEPT_LATE_REALIZATION` | Accept late provider response; write Realized State; entity proceeds to OPERATIONAL |
+| `RELEASE_AND_NOTIFY_AFFECTED` | Force-resolve an unconfirmed-expiry hold: issue an **explicit `release`** to the delinquent provider **and** to every affected party (providers holding dependent reservations in the same reserved graph), record the DCM-authored release for audit, and flag the provider's non-conformance (`provider.capability_changed`) |
+| `RELEASE_ALL_AND_SURFACE` | Stalemate handling: **release every hold** in the reserved graph (nothing was built, so this is a hold-drop, not a teardown) and **surface the non-convergence** — re-plan, or `NOTIFY_AND_WAIT` for human negotiation, or `ESCALATE`, per the profile's Recovery Policy for `RESERVATION_RECONCILE_STALEMATE` |
 | `COMPENSATE_AND_FAIL` | Execute compensation rollback for composite service; entity FAILED when complete |
 | `NOTIFY_AND_WAIT` | Fire notification to configured audience; wait for human decision up to deadline |
 | `ESCALATE` | Notify platform admin immediately; no automatic action |

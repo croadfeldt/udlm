@@ -45,13 +45,62 @@ The **base level** is the minimum a provider must implement for **DCM/UDLM to ow
 1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). DCM places/matches against this.
 2. **Required data** — the input schema it needs to realize/manage each target resource, so DCM can collect intent and own the lifecycle.
 3. **Config-projection detail** — enough config schema/detail for the **DCM interface to project a configuration interface to the user across the config lifecycle**, at the provider's supported scale (basic text passthrough → typed; ADR-023 §6). No detail → DCM still projects a basic text passthrough; more detail → a typed interface.
-4. **Lifecycle functions** — realize / converge / decommission: execute the four-state transitions DCM drives (§6 dispatch). MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
+4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommission`: execute the four-state transitions DCM drives (§6, §6a dispatch). Realization is **reserve-then-commit** (ADR-011): `reserve` validates + holds with **no side effects**; `commit` builds the held reservation; nothing is committed until the whole reserved graph validates. All MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
 5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization, ADR-023 §1), with an **identity correlation** (UDLM `uuid` ↔ the provider's native id). *Without this read-back DCM is blind to reality and cannot own the lifecycle* — it is the load-bearing function that closes the loop and feeds drift/convergence/rehydrate.
 6. **Audit** — emit audit events for its actions (state transitions, relationship mutations) into the chain (SPEC-DESIGN §18d; §7).
 7. **Relationships** — declare and maintain the target resources' relationships: one authoritative direction, targets that resolve, mutations as explicit forward audit events (SPEC-DESIGN §18a–e).
 8. **Security, governance, tenancy, RBAC** — each target resource carries its **tenant** and **governance context** and declares its **security posture** (sovereignty, trust; §2/§4/§5, ADR-022). **Authorization is resolved by DCM as the *authoritative lookup*** — "can actor X do action Y on resource Z" — while the **enabling data (identity, group membership, roles) lives in external systems** (IdP / FreeIPA / RBAC) and is **referenced, not stored**. This is the classic **PDP/PIP split**: DCM is the Policy Decision Point (and gates enforcement); external systems are Policy Information Points that *inform* the decision — the same broker stance as ADR-022 (DCM brokers trust, never custodies it). No provider action bypasses this resolution.
 
 The floor is what makes DCM the lifecycle owner and single pane of glass for the resource at all; the scale of *config* integration (3) can be shallow (text) or deep (typed) without changing that.
+
+## 1b. Relationships — authored intent vs provider-reported realized
+
+A resource's relationships arise at two different points in the lifecycle, and the contract must not conflate them. This is the distinction that settles "who defines the relationship — the request or the provider?": **both do, at different times, about different things** (UDLM ADR-009).
+
+1. **Intent relationships — declared on the catalog item.** The catalog item — **defined by the provider** — declares the relationships the service *needs*. Their role is to **inform DCM what must be requested in connection with the catalog item, and why**; DCM then procures the realized resource that satisfies each relationship and hands it back to the provider in support of the original request. They travel on the wire and inform placement, and are drawn from — but not limited to — the example relationships a resource type illustrates. **UDLM does not enforce a closed relationship set on a type** — a type's `relationships[]` are illustrative templates plus, at most, the few marked `enforcement: structural`; a catalog item or provider MAY declare relationships a type never enumerated. The type spec is guidance, not a gate.
+2. **Realized relationships — DCM-authored from the provider's report.** When a provider realizes an intent it creates or binds concrete resources the consumer never named by UUID. The provider **MUST report the realized state and the identity correlation** (UDLM `uuid` ↔ provider-native id) for each resource it created/bound, via the discovered-state read-back (§1a.5) and the dependency-introspection endpoint (§8). **DCM authors the Realized relationship** from that correlation and the request it orchestrated (§1b.2) — the provider supplies the correlation, DCM sets the edge. A provider is authoritative for the *resources it created* (their native ids and state), **not** for the Realized graph; relationships a provider *independently observes* are authored into Discovered (§1b.3). This layer builds the operational graph (blast-radius, impact, rehydration).
+
+**One authoritative direction.** Every relationship is recorded **child → parent** — the dependent names its dependency; a parent is never required to know its children. The reverse view is derived, or rebuilt from the audit chain. Every mutation is an explicit forward audit event (§1a.6–7).
+
+**Strength reflects portability.** A realized relationship the provider cannot guarantee across environments (a specific IP, a specific DNS record) is a **`soft`** dependency — it survives rehydration by being *remapped*, not preserved. Only relationships intrinsic to the resource are `hard`.
+
+**A consumer may override a relationship's category** where their intent requires it. DNS, for example, is `soft` by default (any resolvable name will do, remappable on rehydration) — but a consumer who **must** have a specific FQDN raises it to `hard`, so DCM treats that exact name as a firm requirement rather than a remappable one. The override travels with the request; the default lives on the catalog item.
+
+### 1b.1 Accommodating a broker's custom information (ADR-009 §3)
+
+When a provider brokers a dependency it does **not** own (a VM provider needs a `Network.IPAddress` the IP provider owns — `fulfillment: provider`), it conveys the criteria the dependency needs via a constituent `binding` into the target resource. **Most of what a broker conveys is a shared foundational reference, not custom info** — the IP case needs only the **target `Network.VLAN` segment (or `Facility.Location`)** so the IP provider knows *where* to allocate; no NIC, MAC, or switch-port is involved (binding the returned IP to a vNIC is the VM provider's own post-allocation concern). That path needs **no accommodation** — the base type already references the shared segment.
+
+Accommodation is the **rarer** case: a broker must convey **genuinely provider-specific realize-time state the base type does not model** (e.g. a vendor-specific offload or QoS class). A provider that **owns** a resource type therefore **MUST** make that type accommodate such fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers when — and only when — a shared reference does not suffice:
+
+- **(a) Base-type extension surface** — the target type carries an open extension block (a provider-extension layer, `domain: provider`, `layering-and-versioning.md`) into which the broker's fields are written, namespaced to the contributing provider; the base type stays vendor-neutral.
+- **(b) Custom resource type layered on the base** — a derived type (`entities/resource-type-hierarchy.md`) that extends the base and adds the broker's fields as first-class.
+
+A type that supports **neither** — where a genuinely-bespoke field is required — is **non-conformant for brokered fulfillment**. *Note:* `Network.IPAddress` is **not** such a case: it needs only the shared segment reference above, so it requires no extension and no derived type. Accommodation applies only where the base type cannot carry provider-specific realize-time state at all. See UDLM ADR-009 for the end-to-end flow.
+
+**Why.** The goal is to let the broker and the owning provider **exchange the full, contextual information the dependency needs** — not to constrain them to a fixed vocabulary. Usually that information is a **shared reference** both sides already understand (a segment, a location), and nothing bespoke crosses the boundary. Where a broker genuinely must convey provider-specific state the base type does not model, a sanctioned extension (a) or custom type (b) carries it faithfully, namespaced and typed, so nothing is dropped or approximated. Agreeing the shape in advance and validating it at admission follows from this, but the aim is the **complete, contextual exchange** itself.
+
+### 1b.2 Who writes the relationship — DCM by default, provider only when required
+
+A relationship *is* data, and DCM — which orchestrated the request and already holds both the parent and child identities — is its authoritative writer. **By default DCM builds the `child → parent` relationship directly into the Requested and Realized objects**: it requested the child in service of the parent, so it records the edge itself. The provider realizes its resource and reports its **realized state + native-id correlation** (§1a.5); DCM correlates and sets the edge. The provider does **not** receive the parent's identity for this — so nothing about the parent crosses the provider boundary at all. This is the most sovereignty-safe posture and the default.
+
+**Hybrid — the provider holds the relationship only when required.** The parent identity reference crosses to the provider only when **(a)** the provider **needs it to realize** correctly (e.g. a storage provider attaching a `Storage.Volume` to a specific VM must know that VM's reference), or **(b)** a **policy requires** the provider to hold or attest the relationship (a sovereignty/compliance attestation). When it does cross, it is governed:
+
+- **execution slice only** — the parent identity reference (`uuid` + correlation), never the parent's record (ADR-008);
+- **sovereignty** — no reference crosses a sovereignty boundary except via the federation/peer path (`data-store-contracts.md` §5); a cross-zone parent is a **cross-zone reference**, not a raw hand-off;
+- **tenancy** — the provider MUST be admitted for the parent's tenant/zone (capability admission + Governance-Matrix, PRV-009) before it receives the reference; the reference is tenant-scoped and audited;
+- **minimum-necessary** — identity + relationship kind only; the provider is a PIP that *records* the edge, not a custodian of the parent (PDP/PIP + broker-not-custody, ADR-022).
+
+So relationship-writing defaults to DCM (parent data stays inside the control plane), and provider-held relationships are a governed, policy-driven exception — not the norm.
+
+### 1b.3 Authorship and provenance of relationships (by state)
+
+Relationships are authored differently across the four states — where **"authored" means which system *generates the relationship record* in that state's payload**, not who conceived the dependency. Every relationship carries **provenance**, so the graph stays honest across authors:
+
+- **Requested — DCM generates the record.** DCM writes the relationship records into the Requested payload from the assembled, placed request (§1b.2).
+- **Realized — DCM generates the record.** DCM writes the relationship records into the Realized payload, correlating the native ids a provider reports (§1a.5) against what it orchestrated. A provider does not generate Realized relationship records; it supplies the correlation, DCM writes the record.
+- **Discovered — provider OR DCM generates the record.** A relationship *observed in reality* has its Discovered record generated by whoever observed it — a purpose-built discovery engine, a resource provider's dependency-introspection (§8 / PRV-006), an automation run, or DCM's own probes. There is no single privileged generator of Discovered records; reality flows in from whoever observes it.
+
+**Provenance is captured for every relationship** (the field-level provenance model, §1a / `data-model-core.md`): each edge records its **author** (the provider / discovery-engine / automation / DCM identity), its **state** (requested | realized | discovered), and its **timestamp + mechanism** (authored | discovered | derived | provider-reported | policy-injected). This is what lets multiple authors coexist: where a Discovered edge contradicts a Requested/Realized one, **both are kept**, provenance distinguishes them, and DCM emits a **drift finding** (authored/realized is intent; discovered is reality — `data-store-contracts.md` §2). Provenance also answers "*who* asserted this dependency" for audit and for reconciling a discovery engine against a provider.
 
 ## 2. Base Contract — Registration
 
@@ -251,7 +300,8 @@ POST {dcm_lifecycle_endpoint}
   "event_uuid": "<uuid>",
   "event_type": "<event_type>",       // resource.drift_detected | resource.degraded |
                                       // resource.capacity_changed | resource.unsanctioned_change |
-                                      // resource.decommissioned | provider.capability_changed
+                                      // resource.decommissioned | provider.capability_changed |
+                                      // reservation.ttl_changed | reservation.expired   (§6a two-phase realization)
   "provider_uuid": "<uuid>",
   "affected_entity_uuids": ["<uuid>"],
   "event_timestamp": "<ISO 8601>",
@@ -260,6 +310,47 @@ POST {dcm_lifecycle_endpoint}
 ```
 
 `event_type` draws from the substrate event vocabulary; the full schema for each type is in the [event catalog](event-catalog.md). DCM reconciles the reported state against the entity's requested state and drives drift/degradation handling from there.
+
+---
+
+## 6a. Base Contract — Two-phase realization (reserve / commit / release)
+
+Realization is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, reconciles the reserved graph to a fixed point, checks it against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria from the reserved parent's facts **before any resource is built**, and makes abort a hold-drop, not a teardown.
+
+**Every provider that implements `realize_resources` MUST support three dispatch request types** — `reserve`, `commit`, `release` — alongside `converge` / `decommission`. They are **operations on the dispatch channel** (an `operation` discriminator on the dispatch payload, §8.1), a base-floor obligation (§1a item 4), not optional extensions:
+
+| Operation (request type) | Phase | MUST |
+|---|---|---|
+| **`reserve`** | validate + hold | Validate against capacity/identity/policy; **hold** the result (capacity, identity, an allocatable address); return `reservation_hold_uuid`, the **granted TTL** + absolute `expires_at`, and the **computed realize-time facts** (e.g. the reserved placement's port, the reserved address). **No infrastructure side effects.** Idempotent — re-issuing for the same hold returns the *same* hold (and re-grants its TTL — see renew). |
+| **`commit`** | execute | Realize the **held** reservation; write Realized State. Issued by DCM only after the commit barrier. **MUST fail if the hold is expired or released** (signals DCM to re-reserve). Idempotent / re-entrant (ADR-006). |
+| **`release`** | abort | Drop the hold; return the reserved capacity/identity. Issued on validation failure or cancellation. Idempotent — releasing an already-released or expired hold is a no-op. |
+
+**TTL is negotiated, and expiry is an implied release:**
+- **The reserve request carries a `requested_ttl`.** The provider **grants** a TTL within the **`min_hold_ttl` / `max_hold_ttl`** range it advertises (§8.1) — it MAY clamp the request to that range — and returns `granted_ttl` + absolute `expires_at`. DCM plans the commit barrier against the **shortest** granted TTL across the reserved graph.
+- **TTL expiration IS release — but never silent.** No explicit `release` call is required on expiry: once `expires_at` passes without a commit, the provider **MUST auto-drop the hold** and free the reserved capacity, and a later `commit` against it MUST fail. The provider **MUST also emit a `reservation.expired` lifecycle event** (§6) so DCM **records the expiry for audit and updates the request** — re-reserve or re-plan. A stalled reconciliation is therefore self-healing (abandoned holds evaporate rather than leaking reserved capacity) *and* observable (DCM is never left believing a lapsed hold is still valid).
+- **DCM does not trust the provider event for correctness — it has its own backstop.** DCM independently tracks `expires_at` (it holds the reserve grant) and arms a **separate watchdog**, `reservation_reconcile_grace` (`lifecycle/operational-models.md` §2), *after* the hold's expiry. If the provider fails to emit `reservation.expired` within that grace, **DCM emits its own `reservation.expiry_unconfirmed` event** (DCM-authored, for audit) and fires the **`RESERVATION_EXPIRY_UNCONFIRMED` Recovery Policy** — which force-resolves via **`RELEASE_AND_NOTIFY_AFFECTED`**: an **explicit `release` to the delinquent provider and to every affected party** (providers holding dependent reservations in the same reserved graph), plus a provider **non-conformance** flag. A provider that skips its required event does not strand the graph — DCM times it out and explicitly releases all parties by policy.
+- **TTL is changeable in both directions.** DCM **renews** a hold by re-issuing `reserve` for the existing `reservation_hold_uuid` with a new `requested_ttl` (idempotent — same hold, re-granted TTL) to keep a valid hold alive while the rest of the graph reconciles. A **provider MAY initiate a TTL change** on a hold it granted — extend it, or **shorten** it because it can no longer hold that long — by emitting a `reservation.ttl_changed` lifecycle event (§6, bounded by its own min/max); DCM reconciles by committing sooner or re-planning. A provider MUST NOT silently outlive or undercut the granted TTL without signaling.
+
+The reservation hold is a **first-class, TTL'd** object recorded in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`, `entities/service-dependencies.md` §11), so the full reserved graph is auditable **before** commit. A provider with nothing to hold (a purely idempotent config target) MAY implement `reserve` as **validate-only** — validate + return facts, hold nothing (`hold_supported: false`, §8.1) — and `commit` as its realize; the two-phase contract still holds, the hold is simply empty.
+
+```json
+// RESERVE — validate + hold, no side effects; DCM requests a TTL, provider grants within min/max
+POST {dispatch_endpoint}  { "operation": "reserve", "request_uuid": "<uuid>",
+                            "entity_uuid": "<uuid>", "requested_ttl": "PT10M", "spec": { ... } }
+// -> 200 { "reservation_hold_uuid": "<uuid>", "granted_ttl": "PT10M",
+//          "expires_at": "2026-07-13T18:22:00Z",
+//          "realized_facts": { "bound_port": "<Hardware.NetworkInterface uuid>", ... } }
+
+// RENEW (TTL change) — re-issue reserve for an existing hold with a new requested_ttl (idempotent)
+POST {dispatch_endpoint}  { "operation": "reserve", "reservation_hold_uuid": "<uuid>",
+                            "requested_ttl": "PT10M" }
+
+// COMMIT — execute the held reservation (only after the barrier); MUST fail if expired/released
+POST {dispatch_endpoint}  { "operation": "commit",  "reservation_hold_uuid": "<uuid>" }
+
+// RELEASE — drop the hold (abort). Expiry is an implied release and needs no call.
+POST {dispatch_endpoint}  { "operation": "release", "reservation_hold_uuid": "<uuid>" }
+```
 
 ---
 
@@ -373,6 +464,10 @@ service_provider_capabilities:
     - fqn: Compute.VirtualMachine
       spec_version: "2.1.0"
       catalog_item_uuid: <uuid>
+  two_phase_realization:                # reserve/commit/release — base MUST for realize_resources (§6a)
+    hold_supported: true                # false = validate-only reserve (validates + returns facts, holds nothing)
+    min_hold_ttl: PT30S                 # shortest TTL this provider will grant on reserve
+    max_hold_ttl: PT30M                 # longest TTL this provider will grant; DCM's requested_ttl is clamped to [min,max]
   cancellation:
     supports_cancellation: true
     cancellation_supported_during: [DISPATCHED, PROVISIONING]

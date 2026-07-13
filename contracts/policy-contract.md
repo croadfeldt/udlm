@@ -522,6 +522,15 @@ Every pass, every constraint, every hint, every resolution — fully auditable. 
 
 ---
 
+### 7.6 Reserve-phase reconciliation participation
+
+Realization is two-phase (ADR-011): the **reserve phase** is a reconciliation loop in which holds land incrementally, each yielding new reserved facts (a reserved segment, a placement), converging to a fixed point before the commit barrier. Policy evaluation is **re-entrant** (ADR-006) — but a policy **declares whether it participates in that loop**, via the `reconciliation` block (`registry/policy.schema.json`):
+
+- **`participates: true`** — the policy is **re-evaluated as new reserved data arrives** during reconciliation (filtered by `reevaluate_on`: `reservation_added` | `reservation_changed` | `reservation_released` | `fact_updated`). This is the right setting for rules that must act on the *enriched* reserved graph as it converges — **placement**, **cycle/graph** integrity, **quota** (running totals across landing holds), and **governance-matrix** boundary rules whose inputs are reserved facts. Reserved facts are addressable as `reserved.*` match sources.
+- **`participates: false` (default)** — the policy is evaluated **once, at the commit barrier**, against the completed reserved graph. Correct for cheap, static, or request-only checks (a data-residency `deny`, a fixed compliance gate) that gain nothing from re-running each iteration and would only add cost.
+
+Two obligations hold regardless: re-evaluation MUST be **idempotent** (ADR-006 — re-evaluating unchanged state must not double-apply), and **every** applicable policy — participating or not — MUST be green at the commit barrier before anything commits (§commit barrier, ADR-011). Participation changes *when and how often* a policy runs during reserve, never whether it must ultimately pass.
+
 ## 8. Constraint Type Registry
 
 Constraint types are the shared vocabulary of the Evaluation Context. Every constraint emitted by a policy and every context field matched by a policy must reference a registered constraint type. Freeform strings are not permitted — if two policies should interact, they must agree on the vocabulary, and the registry enforces that agreement.
