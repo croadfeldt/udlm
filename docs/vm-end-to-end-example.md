@@ -23,18 +23,18 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 |---|---|---|
 | `fac-rack3` | `Facility.Location` | platform data layer / facilities provider |
 | `net-dmz` | `Network.VirtualNetwork` (`forward_mode: bridge`) | platform layer / network provider; `references net-vlan-20` |
-| `net-vlan-20` | `Network.VLAN` (`encapsulation: vlan`, `segment_id: 20`) | network/fabric provider — the shared segment `net-dmz` and `br0@kenny` ride |
+| `net-vlan-20` | `Network.VLAN` (`encapsulation: vlan`, `segment_id: 20`) | network/fabric provider — the shared segment `net-dmz` and `br0@host-a` ride |
 | `pool-fast` | `Storage.Pool` | storage provider |
-| `host-kenny` | `Compute.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
-| `br0@kenny` | `Hardware.NetworkInterface` `device_class: bridge`, `vlan_id: 20` | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
+| `host-a` | `Compute.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
+| `br0@host-a` | `Hardware.NetworkInterface` `device_class: bridge`, `vlan_id: 20` | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
 
 **Created by realization (provider-reported, ADR-009 / provider-contract §1b):**
 
 | handle | type | key relationships |
 |---|---|---|
-| `vm-app` | `Compute.VirtualMachine` | `contained_by host-kenny` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
-| `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`, `vlan_id: 20`** | `contained_by vm-app` · `references net-dmz` · `parent_device br0@kenny` (rides the host bridge) |
-| `ip-app` (10.0.20.55) | `Network.IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
+| `vm-app` | `Compute.VirtualMachine` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
+| `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`, `vlan_id: 20`** | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
+| `ip-app` (192.0.2.55) | `Network.IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
 | `vol-app` (100Gi) | `Storage.Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |
 
 That is the **entire** graph for one VM: 4 foundational + 4 realized resources, 9 typed edges. Every one resolves to an existing resource type.
@@ -93,6 +93,6 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 
 - **`Network.VLAN`** — created as a foundational shared reference (owned by a network/fabric provider, selected by reference like `Facility.Location`); `Network.VirtualNetwork references Network.VLAN`. No inline encapsulation field.
 - **P1 already landed** the VM `networks[].network_ref` + `placement.location_ref` selections this trace relies on.
-- **P4 fault domain** shows up literally: `vm-app` and every other guest on `host-kenny` share `host-kenny`'s fault domain, and everything in `fac-rack3` shares the rack's — derived from these `contained_by`/`references` edges (ADR-010), no new authoring.
+- **P4 fault domain** shows up literally: `vm-app` and every other guest on `host-a` share `host-a`'s fault domain, and everything in `fac-rack3` shares the rack's — derived from these `contained_by`/`references` edges (ADR-010), no new authoring.
 
 **Net:** the model realizes a full VM with **no new intermediary types** — `device_class: virtual` covers the vNIC — and VLAN modeled as a `Network.VLAN` shared reference, consistent with every other foundational resource.

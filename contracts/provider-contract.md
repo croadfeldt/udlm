@@ -419,7 +419,7 @@ resource_advertisement:                 # returned from {capabilities_endpoint},
       resource_type: Network.VLAN
       selectable: true                   # part of the consumer-selectable set (subject to eligibility)
   capacity:                              # the QUANTITATIVE input placement decides against, per offered resource
-    - resource_ref: host-kenny
+    - resource_ref: host-a
       dimensions: { vcpu: {total: 96, free: 40}, memory: {total: "512GB", free: "180GB"}, storage: {total: "10TB", free: "3TB"} }
   eligibility:                           # provider-declared constraints; DCM POLICY resolves the final eligible set
     - resource_ref: net-vlan-20
