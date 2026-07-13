@@ -74,8 +74,8 @@ constituents:
     depends_on: [vm]             # ordered after the VM is placed (acyclic — CMP-002)
     bindings:                    # realize-time facts flow VM -> IP request
       - from_component: vm
-        from_output: network_port  # the Network.Port the vNIC actually attached through
-        to_field: port_ref         # the port determines the reachable segment -> the allocatable IP
+        from_output: connected_port # the physical Hardware.NetworkInterface port the vNIC connects_to
+        to_field: port_ref          # the port's VLAN membership determines the reachable segment -> the IP
     failure_effect: fatal
   - component_id: disk
     resource_type: Storage.Volume
@@ -87,12 +87,12 @@ constituents:
 
 **Flow:**
 1. Consumer submits intent: `catalog_ref: vm-service`, `network_segment: dmz`, `location: rack-3`, `size: 100Gi`. (Intent carries no IP — none is allocated yet.)
-2. DCM assembles + policy-evaluates + places the **VM** (ADR-019). The VM provider realizes it and reports the **`Network.Port`** its vNIC attached through as a realized output — the physical network-side port, which **determines the reachable network segment**.
-3. The **IP** constituent is `fulfillment: provider`: the VM provider brokers a `Network.IPAddress` sub-intent **through DCM**, carrying the **`Network.Port` reference** via the `binding`. The port determines which segment is reachable, so the IP provider allocates an address on that segment. DCM policy-evaluates + cycle-checks + places the IP provider.
+2. DCM assembles + policy-evaluates + places the **VM** (ADR-019). The VM provider realizes it and reports the physical **`Hardware.NetworkInterface`** port (`device_class: physical`, `contained_by` the `Network.Switch`) its vNIC `connects_to` as a realized output — the network-side port whose **VLAN membership determines the reachable segment**.
+3. The **IP** constituent is `fulfillment: provider`: the VM provider brokers a `Network.IPAddress` sub-intent **through DCM**, carrying the **physical-port reference** via the `binding`. The port's VLAN membership determines which segment is reachable, so the IP provider allocates an address on that segment. DCM policy-evaluates + cycle-checks + places the IP provider.
 4. The IP provider allocates the address and **reports the realized relationship back** — the IP's UUID, correlated to the VM (provider-contract §1a.5, §1b). The VM now `realized-depends-on` the IP as a **`soft`** edge (portable: on rehydration the IP is *remapped*, not preserved).
 5. The **disk** constituent is `platform`: DCM's loop assembles it from `size` and places a storage provider — no VM-provider round-trip.
 
-**Accommodation (Decision §3):** the broker conveys a **reference to a `Network.Port`** — a foundational *shared* resource (`docs/foundational-resources.md`) owned by the network/fabric provider, not a provider-invented field — because the port is what determines the reachable segment (and thus the allocatable IP). `Network.IPAddress` accommodates it as a `references Network.Port` edge (the clean base case). Where a provider has genuinely bespoke, port-specific realize-time config the base type does not model, that *residual* rides one of the two sanctioned mechanisms — **(a)** a provider-extension block on `Network.IPAddress`, or **(b)** a derived type — but the port selection itself is a shared reference, not custom info.
+**Accommodation (Decision §3):** the broker conveys a **reference to the physical port** — a `Hardware.NetworkInterface` (`device_class: physical`, `contained_by` a `Network.Switch`), a *shared* resource the network/fabric provider owns (`docs/foundational-resources.md`), not a provider-invented field. It needs **no new type**: `Hardware.NetworkInterface` already adopts Redfish `NetworkAdapter` + IEEE 802.1Q, so the port's `vlan_id` is what determines the reachable segment (and thus the allocatable IP). `Network.IPAddress` references the port natively. Only genuinely bespoke, port-specific realize-time config the base type does not model would ride the two sanctioned mechanisms — **(a)** a provider-extension block or **(b)** a derived type — and even then the port selection itself is a shared reference, never custom info.
 
 Both are conformant. This is the concrete instance of Decision §3.
 
