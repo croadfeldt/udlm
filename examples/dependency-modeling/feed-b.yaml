@@ -1,0 +1,15 @@
+uuid: 33f2a808-1dff-4f3d-95ed-5fdb46511ff8
+handle: feed-b
+conforms_to: udlm/0.1
+resource_type: Facility.PowerFeed
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.1.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      ups: rack UPS B
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+# The second, independent power rail. host-a's PSU2 draws from here so a single-feed loss keeps host-a up.

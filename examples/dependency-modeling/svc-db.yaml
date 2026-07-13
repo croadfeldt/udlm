@@ -1,0 +1,22 @@
+uuid: dd974906-ef2d-4313-85ca-9a82c4aeeb48
+handle: svc-db
+conforms_to: udlm/0.1
+resource_type: Software.Service
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.1.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      service_kind: database
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+dependencies:
+# Runs on host-b, in the realm. svc-app depends on it, so it stops after svc-app but before host-b.
+- kind: references
+  target_uuid: 75364bd7-3861-4028-a46c-078c35712a28
+  target_handle: host-b
+- kind: references
+  target_uuid: 31aad112-908e-444a-839f-89dbd4a35b8c
+  target_handle: realm

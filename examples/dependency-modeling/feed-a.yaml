@@ -1,0 +1,15 @@
+uuid: 85722781-fa2b-41b6-bb06-cd897b96d9a9
+handle: feed-a
+conforms_to: udlm/0.1
+resource_type: Facility.PowerFeed
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.1.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      ups: rack UPS A
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+# Graph root: a power feed. Nothing here depends on anything — hosts (via their PSUs) depend on it.
