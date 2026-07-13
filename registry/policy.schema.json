@@ -87,9 +87,10 @@
         "governance_matrix_rule",
         "placement",
         "lifecycle",
-        "itsm_action"
+        "itsm_action",
+        "override"
       ],
-      "description": "The policy's kind \u2014 determines the `output` schema (policy-contract.md \u00a78-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (ADR-019) and itsm_action (\u00a717) extend it."
+      "description": "The policy's kind \u2014 determines the `output` schema (policy-contract.md \u00a78-18). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (DCM ADR-019), itsm_action (\u00a717), and override (\u00a718 \u2014 a time-bounded, approved exception to a soft policy; hard policies are unoverridable, POL-003) extend it."
     },
     "policy_class": {
       "enum": [
@@ -130,7 +131,7 @@
             "properties": {
               "field": {
                 "type": "string",
-                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | data_role | sovereignty_zone | tenant_uuid | resource_type | application_uuid | graph.has_cycle | graph.cycle_severity | graph.cycle_members | graph.cycle_mechanisms | graph.fault_domain | graph.blast_radius | graph.unmet_dependency | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field). data_role (ADR-PROV-001) lets Governance-Matrix boundary policies control which roles a provider may receive at the DCM→Provider boundary — parallel to data_classification. The graph.* sources (docs/graph-integrity.md) expose DependencyCycle diagnostics so policy governs cyclic estates — e.g. graph.cycle_severity eq blocking / graph.unmet_dependency.severity eq blocking → deny; graph.blast_radius / graph.fault_domain for redundancy + impact policy (ADR-010); matched against the effective dependency graph, not a stored field. During the reserve-phase reconciliation loop (ADR-011), reserved facts are exposed as reserved.* match sources (e.g. reserved.segment_ref, reserved.<component>.<fact>) so a participating policy (see `reconciliation`) evaluates against holds as they land, before commit."
+                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | data_role | sovereignty_zone | tenant_uuid | resource_type | application_uuid | graph.has_cycle | graph.cycle_severity | graph.cycle_members | graph.cycle_mechanisms | graph.fault_domain | graph.blast_radius | graph.unmet_dependency | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field). data_role (ADR-PROV-001) lets Governance-Matrix boundary policies control which roles a provider may receive at the DCM→Provider boundary — parallel to data_classification. The graph.* sources (docs/graph-integrity.md) expose DependencyCycle diagnostics so policy governs cyclic estates — e.g. graph.cycle_severity eq blocking / graph.unmet_dependency.severity eq blocking → deny; graph.blast_radius / graph.fault_domain for redundancy + impact policy (ADR-010); matched against the effective dependency graph, not a stored field. During the reserve-phase reconciliation loop (ADR-011), reserved facts are exposed as reserved.* match sources (e.g. reserved.segment_ref, reserved.<component>.<fact>) so a participating policy (see `reconciliation`) evaluates against holds as they land, before commit. Tenant-quota consumption is exposed as quota.* match sources (quota.dimension, quota.used, quota.limit, quota.exceeded — dcm-group.schema.json quota block) so policy governs over-quota at the commit barrier (e.g. quota.exceeded eq true -> deny)."
               },
               "operator": {
                 "enum": [
@@ -426,6 +427,39 @@
             "required": [
               "constraints"
             ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "policy_type": {
+            "const": "override"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output": {
+            "required": [
+              "scope",
+              "expires_at"
+            ],
+            "properties": {
+              "target_policy_uuid": {
+                "type": "string",
+                "description": "The soft policy this override suppresses (policy-contract §18.1). Hard-enforcement policies are unoverridable (POL-003)."
+              },
+              "scope": {
+                "description": "The narrowed match scope the override applies to — never global (§18.1)."
+              },
+              "expires_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "Mandatory expiry — overrides are time-bounded (POL-009). RFC 3339 UTC 'Z'."
+              }
+            }
           }
         }
       }
