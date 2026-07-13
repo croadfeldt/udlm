@@ -1,0 +1,16 @@
+uuid: 38410da1-c12c-42d0-a17d-1d542076a720
+handle: loc-bench
+conforms_to: udlm/0.1
+resource_type: Facility.Location
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Facility.Location/0.1.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      kind: bench
+      label: workbench
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+# Where host-b sits — different place, different power than the rack, but the same realm.

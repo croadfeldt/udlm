@@ -1,0 +1,26 @@
+uuid: 1ee1aaa9-efe9-4adf-ab5e-e7475c0bd136
+handle: svc-app
+conforms_to: udlm/0.1
+resource_type: Software.Service
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.1.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      service_kind: application
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+dependencies:
+# Runs on host-a, in the realm, and needs the database service directly (a plain depends_on edge).
+# So svc-app stops before svc-db, host-a, and the realm's identity/DNS.
+- kind: references
+  target_uuid: a266ce49-e7a8-47b4-9a84-e50fa37d556c
+  target_handle: host-a
+- kind: references
+  target_uuid: 31aad112-908e-444a-839f-89dbd4a35b8c
+  target_handle: realm
+- kind: depends_on
+  target_uuid: dd974906-ef2d-4313-85ca-9a82c4aeeb48
+  target_handle: svc-db
