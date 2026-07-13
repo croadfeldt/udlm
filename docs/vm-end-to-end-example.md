@@ -26,14 +26,14 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 | `net-vlan-20` | `Network.VLAN` (`encapsulation: vlan`, `segment_id: 20`) | network/fabric provider — the shared segment `net-dmz` and `br0@host-a` ride |
 | `pool-fast` | `Storage.Pool` | storage provider |
 | `host-a` | `Compute.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
-| `br0@host-a` | `Hardware.NetworkInterface` `device_class: bridge`, `vlan_id: 20` | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
+| `br0@host-a` | `Hardware.NetworkInterface` `device_class: bridge`, vlan_membership→`net-vlan-20` (tagged) | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
 
 **Created by realization (provider-reported, ADR-009 / provider-contract §1b):**
 
 | handle | type | key relationships |
 |---|---|---|
 | `vm-app` | `Compute.VirtualMachine` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
-| `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`, `vlan_id: 20`** | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
+| `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`**, vlan_membership→`net-vlan-20` | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
 | `ip-app` (192.0.2.55) | `Network.IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
 | `vol-app` (100Gi) | `Storage.Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |
 
