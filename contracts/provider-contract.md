@@ -53,6 +53,26 @@ The **base level** is the minimum a provider must implement for **DCM/UDLM to ow
 
 The floor is what makes DCM the lifecycle owner and single pane of glass for the resource at all; the scale of *config* integration (3) can be shallow (text) or deep (typed) without changing that.
 
+## 1b. Relationships — authored intent vs provider-reported realized
+
+A resource's relationships arise at two different points in the lifecycle, and the contract must not conflate them. This is the distinction that settles "who defines the relationship — the request or the provider?": **both do, at different times, about different things** (UDLM ADR-009).
+
+1. **Intent relationships — authored, catalog-time.** The catalog item (authored by an admin/SRE, optionally from a provider template) declares the relationships the service *needs*; they travel on the wire and inform placement. They are drawn from, but not limited to, the example relationships a resource type illustrates. **UDLM does not enforce a closed relationship set on a type** — a type's `relationships[]` are illustrative templates plus, at most, the few marked `enforcement: structural`; a catalog item or provider MAY declare relationships a type never enumerated. The type spec is guidance, not a gate.
+2. **Realized relationships — provider-reported, realization-time.** When a provider realizes an intent it creates or binds concrete resources the consumer never named by UUID. The provider **MUST** report each as a realized relationship carrying the specific UUID it created/bound, with identity correlation (UDLM `uuid` ↔ provider-native id), via the discovered-state read-back (§1a.5) and the dependency-introspection endpoint (§8). The provider is authoritative for realized relationships; this layer builds the operational graph (blast-radius, impact, rehydration).
+
+**One authoritative direction.** Every relationship is recorded **child → parent** — the dependent names its dependency; a parent is never required to know its children. The reverse view is derived, or rebuilt from the audit chain. Every mutation is an explicit forward audit event (§1a.6–7).
+
+**Strength reflects portability.** A realized relationship the provider cannot guarantee across environments (a specific IP, a specific DNS record) is a **`soft`** dependency — it survives rehydration by being *remapped*, not preserved. Only relationships intrinsic to the resource are `hard`.
+
+### 1b.1 Accommodating a broker's custom information (ADR-009 §3)
+
+When a provider brokers a dependency it does **not** own (a VM provider needs a `Network.IPAddress` the IP provider owns — `fulfillment: provider`), it must convey requirements only it knows — the NIC to bind, the MAC, the host network — via a constituent `binding` into the target resource. A provider that **owns** a resource type therefore **MUST** make that type accommodate a broker's custom fields in one of two sanctioned ways, and a **brokering** provider **MUST** use whichever the target offers:
+
+- **(a) Base-type extension surface** — the target type carries an open extension block (a provider-extension layer, `domain: provider`, `layering-and-versioning.md`) into which the broker's fields are written, namespaced to the contributing provider; the base type stays vendor-neutral.
+- **(b) Custom resource type layered on the base** — a derived type (`entities/resource-type-hierarchy.md`) that extends the base and adds the broker's fields as first-class.
+
+A type that supports **neither** is **non-conformant for brokered fulfillment**. *Example:* a libvirt VM provider brokering an IP writes `x-libvirt.bind_nic` either into `Network.IPAddress`'s provider-extension block (a) or into a derived `Network.IPAddress.LibvirtBound` type (b). See UDLM ADR-009 for the end-to-end flow.
+
 ## 2. Base Contract — Registration
 
 All providers register through the same pipeline (registration specification is implementation-specific; see DCM repo for the complete flow).
