@@ -58,7 +58,7 @@ The floor is what makes DCM the lifecycle owner and single pane of glass for the
 A resource's relationships arise at two different points in the lifecycle, and the contract must not conflate them. This is the distinction that settles "who defines the relationship — the request or the provider?": **both do, at different times, about different things** (UDLM ADR-009).
 
 1. **Intent relationships — declared on the catalog item.** The catalog item — **defined by the provider** — declares the relationships the service *needs*. Their role is to **inform DCM what must be requested in connection with the catalog item, and why**; DCM then procures the realized resource that satisfies each relationship and hands it back to the provider in support of the original request. They travel on the wire and inform placement, and are drawn from — but not limited to — the example relationships a resource type illustrates. **UDLM does not enforce a closed relationship set on a type** — a type's `relationships[]` are illustrative templates plus, at most, the few marked `enforcement: structural`; a catalog item or provider MAY declare relationships a type never enumerated. The type spec is guidance, not a gate.
-2. **Realized relationships — provider-reported, realization-time.** When a provider realizes an intent it creates or binds concrete resources the consumer never named by UUID. The provider **MUST** report each as a realized relationship carrying the specific UUID it created/bound, with identity correlation (UDLM `uuid` ↔ provider-native id), via the discovered-state read-back (§1a.5) and the dependency-introspection endpoint (§8). The provider is authoritative for realized relationships; this layer builds the operational graph (blast-radius, impact, rehydration).
+2. **Realized relationships — DCM-authored from the provider's report.** When a provider realizes an intent it creates or binds concrete resources the consumer never named by UUID. The provider **MUST report the realized state and the identity correlation** (UDLM `uuid` ↔ provider-native id) for each resource it created/bound, via the discovered-state read-back (§1a.5) and the dependency-introspection endpoint (§8). **DCM authors the Realized relationship** from that correlation and the request it orchestrated (§1b.2) — the provider supplies the correlation, DCM sets the edge. A provider is authoritative for the *resources it created* (their native ids and state), **not** for the Realized graph; relationships a provider *independently observes* are authored into Discovered (§1b.3). This layer builds the operational graph (blast-radius, impact, rehydration).
 
 **One authoritative direction.** Every relationship is recorded **child → parent** — the dependent names its dependency; a parent is never required to know its children. The reverse view is derived, or rebuilt from the audit chain. Every mutation is an explicit forward audit event (§1a.6–7).
 
@@ -89,6 +89,16 @@ A relationship *is* data, and DCM — which orchestrated the request and already
 - **minimum-necessary** — identity + relationship kind only; the provider is a PIP that *records* the edge, not a custodian of the parent (PDP/PIP + broker-not-custody, ADR-022).
 
 So relationship-writing defaults to DCM (parent data stays inside the control plane), and provider-held relationships are a governed, policy-driven exception — not the norm.
+
+### 1b.3 Authorship and provenance of relationships (by state)
+
+Relationships are authored differently across the four states — and every relationship carries **provenance**, so the graph stays honest across authors:
+
+- **Requested — DCM-authored.** DCM writes the relationships from the assembled, placed request (§1b.2).
+- **Realized — DCM-authored.** DCM writes the realized relationships, correlating the native ids a provider reports (§1a.5) against what it orchestrated. A provider does not author Realized; it supplies the correlation.
+- **Discovered — provider- OR DCM-authored.** Relationships *observed in reality* — by a purpose-built discovery engine, a resource provider's dependency-introspection (§8 / PRV-006), an automation run, or DCM's own probes — are authored into Discovered. There is no single privileged author of Discovered; reality flows in from whoever observes it.
+
+**Provenance is captured for every relationship** (the field-level provenance model, §1a / `data-model-core.md`): each edge records its **author** (the provider / discovery-engine / automation / DCM identity), its **state** (requested | realized | discovered), and its **timestamp + mechanism** (authored | discovered | derived | provider-reported | policy-injected). This is what lets multiple authors coexist: where a Discovered edge contradicts a Requested/Realized one, **both are kept**, provenance distinguishes them, and DCM emits a **drift finding** (authored/realized is intent; discovered is reality — `data-store-contracts.md` §2). Provenance also answers "*who* asserted this dependency" for audit and for reconciling a discovery engine against a provider.
 
 ## 2. Base Contract — Registration
 
