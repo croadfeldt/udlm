@@ -91,6 +91,10 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `Kubernetes` `Kubernetes NetworkAttachmentDefinition` `Kubernetes well-known topology labels` `Kubernetes-Gateway-API` · **Body:** CNCF/Kubernetes SIGs · **Since:** 2026-06-27 (Gateway API, topology labels) → 2026-07-05 (NAD 02:10:32Z, batch Job 03:29:34Z) · **Where:** Network.Gateway (Gateway API), Topology (well-known labels), Network.VirtualNetwork (NAD attachment vocabulary), Automation.Job (batch/v1 run-to-completion semantics — `activeDeadlineSeconds` ≈ `max_execution_time`).
 **Why:** k8s is both a major producer and consumer in the estate (OCP) and the de-facto vocabulary source for cloud-native concepts; adopting its names keeps the DCM Provider boundary translation-free. Also adopted structurally elsewhere: `managedFields`/server-side apply is the model behind field `ownership` (R4). **License:** Apache-2.0 — compatible-reference.
 
+### KubeVirt — CANONICAL
+**Covers:** `KubeVirt` · **Body:** CNCF · **Since:** 2026-07-13 · **Where:** Compute.VirtualMachine (VirtualMachine/VirtualMachineInstance — domain cpu/memory, interfaces->networks, volumes, runStrategy/power).
+**Why:** the k8s-native VM realization the estate actually runs (OpenShift Virtualization), the parallel to Metal3 for bare metal — Redfish ComputerSystem gives the vendor-neutral system+power shape, KubeVirt the realization vocabulary. *Alternatives:* OpenStack Nova (not the deployment reality), DMTF OVF (VM packaging/portability — PRIOR-ART, reference only). **License:** Apache-2.0 — compatible-reference.
+
 ### Metal3 — CANONICAL
 **Covers:** `Metal3` · **Since:** 2026-06-26T22:30:12Z · **Where:** Compute.BareMetalHost.
 **Why:** k8s-native bare-metal lifecycle vocabulary (BareMetalHost CRD), OpenShift-aligned (deployment reality + OSS/Red Hat preference). *Alternatives:* pure Redfish (asset view only — no provisioning lifecycle), Ironic-standalone (Metal3 wraps it). **License:** Apache-2.0 — compatible-reference.

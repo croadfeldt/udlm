@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -77,6 +77,95 @@
             }
           }
         }
+      },
+      "placement": {
+        "type": "object",
+        "description": "Placement INTENT expressed as a SELECTION of an existing Facility.Location (populated by a platform data layer and/or a Facility.Location provider), plus affinity relative to other existing resources. Policy governs which locations a given consumer may select; the VM only references one \u2014 it does not define locations itself (ADR-009 \u00a74: guidance, not a gate).",
+        "properties": {
+          "location_ref": {
+            "type": "string",
+            "description": "handle/uuid of an existing Facility.Location the VM is placed in \u2014 chosen from the eligible set (platform-layer + provider-advertised, policy-filtered). Also carried as a references->Facility.Location relationship."
+          },
+          "zone": {
+            "type": "string",
+            "description": "Sovereignty/availability zone constraint (resolved against the selected location's zone)."
+          },
+          "affinity": {
+            "type": "array",
+            "description": "Co-location / separation intent relative to OTHER existing resources.",
+            "items": {
+              "type": "object",
+              "required": [
+                "target",
+                "rule"
+              ],
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "handle/uuid of an existing resource to co-locate with or avoid."
+                },
+                "rule": {
+                  "enum": [
+                    "affinity",
+                    "anti_affinity"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "networks": {
+        "type": "array",
+        "description": "Network attachment INTENT \u2014 each entry SELECTS an existing Network.VirtualNetwork (platform-layer and/or provider-advertised) the NIC attaches to; the responsible network provider + policy decide eligibility. The VM references existing networks, it does not define network segments itself.",
+        "items": {
+          "type": "object",
+          "required": [
+            "network_ref"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Local NIC name, e.g. eth0."
+            },
+            "network_ref": {
+              "type": "string",
+              "description": "handle/uuid of an existing Network.VirtualNetwork the NIC attaches to (selected from the eligible set). Carried as a references->Network.VirtualNetwork relationship."
+            },
+            "ip_mode": {
+              "enum": [
+                "dynamic",
+                "static",
+                "byo"
+              ],
+              "default": "dynamic",
+              "description": "How the address is procured (ADR-009 fulfillment): dynamic=allocate, static=a specific requested address, byo=a consumer-supplied existing Network.IPAddress reference."
+            },
+            "requested_address": {
+              "type": "string",
+              "description": "For ip_mode=static/byo: the desired/existing address (byo references an existing Network.IPAddress)."
+            },
+            "mac": {
+              "type": "string",
+              "description": "Optional requested MAC address."
+            }
+          }
+        }
+      },
+      "power": {
+        "type": "object",
+        "description": "Desired guest power state the provider drives to (KubeVirt runStrategy / Redfish PowerState). Distinct from the four-state lifecycle_state.",
+        "properties": {
+          "desired_state": {
+            "enum": [
+              "running",
+              "stopped",
+              "suspended"
+            ],
+            "default": "running",
+            "description": "Target guest power state."
+          }
+        }
       }
     }
   },
@@ -104,6 +193,47 @@
       "target_field": "address",
       "cardinality": "0..n",
       "description": "May consume one or more pre-allocated addresses."
+    },
+    {
+      "kind": "references",
+      "target": "Facility.Location",
+      "name": "placement",
+      "cardinality": "0..1",
+      "description": "Placed in an existing Facility.Location (selected, policy-governed) \u2014 see spec.placement.location_ref."
+    },
+    {
+      "kind": "references",
+      "target": "Network.VirtualNetwork",
+      "name": "network_attachment",
+      "cardinality": "0..n",
+      "description": "Attaches to existing Network.VirtualNetwork(s) \u2014 see spec.networks[].network_ref."
+    },
+    {
+      "kind": "depends_on",
+      "target": "Storage.Volume",
+      "name": "disk",
+      "cardinality": "0..n",
+      "description": "Consumes existing/allocated Storage.Volume(s) for its disks."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standard_name": "ComputerSystem",
+      "role": "vendor-neutral virtual system inventory + power vocabulary (ProcessorSummary, MemorySummary, PowerState) \u2014 same family as Compute.BareMetalHost",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "KubeVirt",
+      "version": ">=1.2",
+      "standard_name": "VirtualMachine / VirtualMachineInstance",
+      "role": "k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power) \u2014 the parallel to Metal3 for bare metal",
+      "source": "https://kubevirt.io/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference"
     }
   ]
 }
