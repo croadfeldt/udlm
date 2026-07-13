@@ -47,6 +47,12 @@ def main() -> int:
         if old_blob.returncode != 0:
             print(f"ok   {rel}  — NEW type (no prior version on {base})")
             continue
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            # symmetric to a NEW type: a REMOVED type has no new version to compat-check.
+            # The removal is a deliberate, reviewed change (e.g. retiring an anti-pattern type);
+            # the gate checks bump sufficiency, not removal policy, so don't crash on it.
+            print(f"ok   {rel}  — REMOVED type (retired; no new version to compat-check)")
+            continue
         suffix = os.path.splitext(rel)[1]
         with tempfile.NamedTemporaryFile("w", suffix=suffix, delete=False) as tmp:
             tmp.write(old_blob.stdout)
