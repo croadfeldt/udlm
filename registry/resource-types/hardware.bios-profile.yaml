@@ -57,7 +57,7 @@ spec:
       default: redfish
       description: >-
         How DCM applies the profile out-of-band (UDLM's realization concern, not Redfish schema).
-        `sum` = Supermicro SUM (H12SSL Redfish Bios.Attributes is empty, so SUM is the path).
+        `sum` = Supermicro SUM (some Supermicro boards leave Redfish Bios.Attributes empty, so SUM is the path).
     attributes:
       type: object
       description: >-

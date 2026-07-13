@@ -36,7 +36,7 @@ Reused by anything that sizes compute: `Compute.VirtualMachine`, a `Compute.Clus
 ```
 
 ### 2.4 Network
-- `cidr`: a CIDR string (`"10.0.0.0/24"`).
+- `cidr`: a CIDR string (`"192.0.2.0/24"`).
 - `ip_family`: enum `{ ipv4, ipv6, dual }` (canonicalizes `network.ip-address`'s `family`).
 - `address`: an IP string (an `outputs` value, per existing `network.ip-address`).
 
