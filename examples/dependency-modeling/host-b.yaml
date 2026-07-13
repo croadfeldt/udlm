@@ -18,6 +18,3 @@ dependencies:
 - kind: references
   target_uuid: 38410da1-c12c-42d0-a17d-1d542076a720
   target_handle: loc-bench
-- kind: references
-  target_uuid: 31aad112-908e-444a-839f-89dbd4a35b8c
-  target_handle: realm

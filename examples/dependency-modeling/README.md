@@ -1,90 +1,45 @@
-# Dependency-modeling example estate
+# Example: dependency modeling
 
-A small, fully anonymized UDLM estate (15 resources, one tenant) that demonstrates the four
-dependency-modeling patterns UDLM uses to keep a derived shutdown/startup order correct. All data is
-synthetic — no real hostnames, domains, or addresses.
-
-Every edge follows the estate-wide rule: an edge `source -> target` means **source depends on
-target**, so in a shutdown the source stops *before* the target. The order is never stored; it is a
-topological sort derived live from these files.
-
-## The four patterns
-
-### 1. Component chain / redundancy — power modeled on the PSU, not the host
-
-`host-a` never declares a power dependency itself. Instead it *contains* two power supplies, and each
-PSU points at its own feed:
+A small, anonymized estate (15 resources) demonstrating the ways UDLM lets you express dependencies —
+and, importantly, how **bundling** and **secondary dependencies** fall out of the graph itself
+without any special construct. Run it through the order derivation:
 
 ```
-psu-a1 --contained_by/chassis--> host-a      psu-a1 --powered_by--> feed-a   (rail A)
-psu-a2 --contained_by/chassis--> host-a      psu-a2 --powered_by--> feed-b   (rail B, independent)
+python3 <estate-explorer>/ingest/shutdown_order.py .
 ```
 
-So `host-a`'s power dependency is the **union of both feeds**, carried through its PSUs. This is the
-point of modeling power at the PSU level: a coarse host-level "host-a on UPS A" edge would silently
-lose the second rail, and a single-feed loss would look fatal when it isn't. `host-b`, by contrast,
-has one PSU on `feed-wall` (an unprotected utility outlet) — a single point of power failure, and the
-model shows exactly that.
+## The patterns it shows
 
-### 2. Direct edge — service-to-service
+### Direct edge
+`svc-app` `depends_on` `svc-db` — an explicit, precise dependency. The base case.
 
-`svc-app --depends_on--> svc-db`: an explicit, authored runtime dependency. `svc-app` stops before
-`svc-db` on shutdown and starts after it on startup. No indirection — the plainest form of edge.
+### Component chain (and redundancy)
+Power is modeled on the **component that carries it**, not the host. `host-a` contains two power
+supplies; `psu-a1 → feed-a` and `psu-a2 → feed-b` — two independent rails. Because `host-a` depends on
+its PSUs and each PSU depends on a feed, **host-a's power dependency is the union of both feeds** —
+acquired as *secondary dependencies* through the PSUs. A single host-level "on this UPS" edge would
+have silently dropped the second rail. `host-b` shows the non-redundant case: one PSU → `feed-wall`.
 
-### 3. Bundle — inherited, ambient dependencies
+### Bundling — declare deps on a node, depend on the node
+`core-services` declares the shared platform dependencies **once**: `depends_on idm` + `depends_on
+dns`. `svc-app` and `svc-db` each add a single `depends_on core-services`, and thereby inherit `idm`
+and `dns` as **secondary dependencies** — the topological order carries it (`svc-app → core-services →
+{idm, dns}`, so idm/dns rank above svc-app). **This is all "bundling" is**: there is no special bundle
+type — you group a set of dependencies on a node and depend on that node.
 
-`realm` is a `Topology.DependencyBundle` whose own dependencies are the shared identity + address
-services (`idm`, `dns`). Members attach with a **single** reference edge to the bundle:
+### Scope-derived
+The hosts get the *same* identity/DNS a different way: they share the realm via `tenant_uuid`, and the
+resolver derives the realm's `idm`/`dns` from that field (no edge authored). Use this when the
+dependency is ambient to a whole realm rather than routed through a shared node.
 
-```
-host-a, host-b, svc-app, svc-db  --references--> realm
-realm  --references-->  idm ,  dns          (the shared set)
-```
+### Location
+`host-a` is in `loc-rack`, `host-b` at `loc-bench` — physical placement. Note power is *not* modeled
+on the location (the PSUs carry it), because "where a thing is" and "what powers it" are different
+questions — and here they differ: same realm, different power.
 
-At derivation time the bundle membership expands into a dependency on each of the bundle's targets, so
-all four members inherit `idm` + `dns` (visible as eight `derived` edges) without hand-wiring identity
-and DNS onto every resource. Add a new resource to the realm and it inherits the same ambient
-dependencies for free.
+## Takeaway
 
-### 4. Location — where it sits vs. what powers it
-
-`host-a` references `loc-rack` (the server rack); `host-b` references `loc-bench` (the workbench).
-Location answers "where is it", which is deliberately a **different question** from "what powers it" —
-the two hosts sit in different places on different power, yet share one realm. Location carries no
-power edge; power is on the PSUs (pattern 1).
-
-## Files
-
-| Resource | Type | Role in the example |
-|----------|------|---------------------|
-| `feed-a`, `feed-b` | Facility.PowerFeed | Two independent rack rails (redundant pair for host-a) |
-| `feed-wall` | Facility.PowerFeed | Unprotected utility outlet (single feed for host-b) |
-| `loc-rack`, `loc-bench` | Facility.Location | Rack vs. bench — different places, same realm |
-| `host-a` | Compute.BareMetalHost | Compute host, dual-PSU redundant power |
-| `host-b` | Compute.BareMetalHost | Bench host, single-PSU power |
-| `psu-a1`, `psu-a2` | Hardware.PowerSupply | host-a's two PSUs, one per rail |
-| `psu-b1` | Hardware.PowerSupply | host-b's single PSU |
-| `idm` | Security.DirectoryService | Realm identity directory (control-plane) |
-| `dns` | Network.AddressService | Realm DHCP/DNS service (control-plane) |
-| `realm` | Topology.DependencyBundle | Shared idm+dns members inherit |
-| `svc-app` | Software.Service | Application, depends on svc-db |
-| `svc-db` | Software.Service | Database, depended on by svc-app |
-
-## Deriving the order
-
-```
-python3 <estate-explorer>/ingest/shutdown_order.py examples/dependency-modeling
-```
-
-The derivation resolves cleanly — **0 cycles, 0 unresolved targets** — into tiers where leaf consumers
-stop first and the control-plane identity/DNS services hold until last:
-
-```
-step 0   psu-a1, psu-a2, psu-b1, svc-app        (leaf consumers stop first)
-step 1   feed-a, feed-b, feed-wall, host-a, svc-db
-step 2   host-b, loc-rack
-step 3   loc-bench, realm
-step 4   dns, idm                               (control-plane gate — hold until last)
-```
-
-Startup is the exact reverse (`--startup`): identity/DNS come up first, leaf services last.
+Bundling and secondary dependencies are emergent: **depend on a node that carries a set of
+dependencies, and you inherit them transitively.** The only thing the resolver *adds* beyond
+transitivity is scope-derivation (turning the `tenant` field into edges). Everything else — direct
+edges, component chains, node-bundles — is already in the authored graph.

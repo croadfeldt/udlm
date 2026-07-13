@@ -38,10 +38,12 @@ difference is *how many* edges an implementor authors and *where* they sit.
    resource. Canonically **power**: a host contains `Hardware.PowerSupply` units, each `powered_by` a
    `Facility.PowerFeed` — and the feeds need not match, so redundancy is preserved. A consumer
    follows `host → PSU → feed` transitively. Same shape for network fabric (NIC → switch port).
-3. **Dependency bundle** — `Topology.DependencyBundle` is a named set of shared dependencies. A
-   resource attaches with one edge and inherits the whole set. For ambient, cross-cutting
-   dependencies applied uniformly to many members (a realm's identity/DNS, a site's shared services,
-   a cooling domain). Bundles compose. Adopts TOSCA groups/policies.
+3. **Bundling (via a node)** — to share a set of dependencies across resources, declare them on a
+   node and have each resource `depends_on` that node. The dependents inherit the set as **secondary
+   dependencies** through the graph's transitivity — no expansion, no special type. Best for shared
+   platform concerns routed through a real thing (a gateway, a control-plane service). One edge per
+   member; the shared deps live in one place. (See the anti-pattern below on why a dedicated "bundle
+   type" is *not* the answer.)
 4. **Scope** — some memberships are already fields. `tenant_uuid` **is** realm membership; a consumer
    can derive the realm's identity/DNS dependency without an edge. `Facility.Location` gives physical
    scope (site/room/rack) for location-scoped concerns — note it deliberately does **not** own power
@@ -53,9 +55,21 @@ difference is *how many* edges an implementor authors and *where* they sit.
 |---|---|
 | Direct edge | every resource type (`dependencies[]`) |
 | Component power | `Hardware.PowerSupply` → `Facility.PowerFeed` |
-| Bundle | `Topology.DependencyBundle` (adopts OASIS TOSCA) |
+| Bundling | *any* node the members `depends_on` — its deps become theirs transitively (no dedicated type) |
 | Physical scope | `Facility.Location` (adopts Redfish Location) |
 | Realm scope | `Security.DirectoryService` + `Network.AddressService`, keyed by `tenant_uuid` |
+
+## Anti-pattern: a dedicated "bundle" type
+
+It is tempting to add a first-class type — call it `DependencyBundle` — whose members "attach" and
+"inherit" its dependencies. **Avoid it.** It buys nothing the graph doesn't already give you: a
+resource that `depends_on` a node is *already* transitively dependent on that node's dependencies, and
+the topological order already reflects it. A bundle type only adds a parallel mechanism (membership +
+an expansion pass) that reproduces transitivity, plus surface area to learn, validate, and keep
+consistent — for no functional gain. This is the minimal-surface / adopt-not-absorb tenet in action:
+**do not introduce a construct when a primitive already expresses it.** If you need to mark a node as
+a non-material grouping — something depended on for ordering but never actually acted on — use a
+lightweight flag on the node, not a whole type. Bundling is `depends_on` a node; nothing more.
 
 ## What the data model does NOT do
 
