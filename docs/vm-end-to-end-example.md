@@ -53,6 +53,42 @@ That is the **entire** graph for one VM: 4 foundational + 4 realized resources, 
 
 3. **Everything else exists** — VM, Location, VirtualNetwork, IPAddress, Volume, Pool, BareMetalHost, and the bridge/virtual NetworkInterface stack.
 
+## The full lifecycle — where the rest of the shared references surface
+
+Provisioning shows the storage/network/placement roots. The **operational lifecycle** is where the others appear — identity, DNS, credentials, time, telemetry, backup — each a shared reference with an owner. Walking all six phases roots them out:
+
+| Phase | What happens | Shared references it introduces (owner) |
+|---|---|---|
+| **1. Provision** (`new_request`) | select foundational roots, provider allocates the rest | `Facility.Location` (facilities), `Network.VLAN`/`Network.VirtualNetwork` (network), `Network.IPAddress` (IPAM), `Storage.Pool`→`Storage.Volume` (storage), `Compute.BareMetalHost` (compute/hypervisor) |
+| **2. Operate** (running) | the VM serves; steady-state dependencies bind | `Security.DirectoryService` realm — identity/auth (identity provider, scope-derived from `tenant_uuid`); **`Network.DNSZone`** record — name→IP (DNS provider); `Security.CredentialRef` — secrets (credential/secrets provider); **time-sync** capability (ADR-005, provider-attested); **observability sink** — logs/metrics (observability provider); `Facility.PowerFeed` via the host (facilities — the fault-domain anchor) |
+| **3. Modify** (`modification`) | add a NIC / resize / re-home | new `Network.VirtualNetwork`+`IPAddress` refs; new `Storage.Volume` from the same `Storage.Pool`; the provider re-reports the changed realized relationships |
+| **4. Drift** (`drift_detection`) | discovered ≠ realized (an out-of-band IP change, a moved disk) | reconciles the VM's references against the **same shared resources** — the roots are the truth the drift is measured against |
+| **5. Rehydrate** (`rehydration_*`) | rebuild after loss | **identity (`uuid`) preserved**; `IPAddress`/host/vNIC **remapped** (soft refs); `Location`/`VLAN`/`VirtualNetwork` **re-selected** (may differ in provider-portable mode); **`DNSZone` record remapped to the new IP** (the DNS-over-IP portability point); data restored from the **backup/DR target** (a `Storage` resource owned by a backup/DR provider) |
+| **6. Decommission** (`decommission`) | teardown in reverse dependency order | **the shared roots are NOT torn down** — `Location`, `VLAN`, `Pool`, realm, DNS zone are shared and survive; only the VM's *references* release (IP back to IPAM, volume detached — data retained per policy, DNS record withdrawn). This is the proof the model is right: killing the VM releases references, it does not delete the shared resources others depend on. |
+
+## Shared resources & likely owners (the catalog this roots out)
+
+Every shared/foundational resource a VM touches across its whole life, and who owns it — the reference-and-owner map to build against:
+
+| Shared resource | Type | VM references it as | Likely owner (provider) | Foundational? |
+|---|---|---|---|---|
+| Location | `Facility.Location` | placement (`references`) | facilities / DC | ✔ |
+| VLAN / segment id | `Network.VLAN` | segment (`references`, via the network) | network / fabric | ✔ |
+| Virtual network | `Network.VirtualNetwork` | attachment (`references`) | network | ✔ |
+| IP address | `Network.IPAddress` | `binds_to` (dynamic/static/byo) | IPAM | ✔ |
+| DNS record/zone | `Network.DNSZone` | name→IP (operate; remap on rehydrate) | DNS | ✔ |
+| Storage pool | `Storage.Pool` / `Storage.Cluster` | volume source | storage | ✔ |
+| Volume | `Storage.Volume` | disk (`attaches_to`) | storage | — (consumable) |
+| Hypervisor host | `Compute.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, OCP) | ✔ |
+| Realm / identity | `Security.DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (e.g. FreeIPA) | ✔ |
+| Secret | `Security.CredentialRef` | `references` (never inline) | credential / secrets | ✔ |
+| Power feed | `Facility.PowerFeed` | via the host's PSU (fault domain) | facilities | ✔ |
+| Time sync | (ADR-005 capability) | clock discipline | provider-attested per profile | — (capability) |
+| Telemetry sink | observability provider surface | logs/metrics | observability | ✔ |
+| Backup / DR target | `Storage.*` | data replication (rehydrate) | backup / DR | ✔ |
+
+**What this tells us for September:** the roots are almost all already typed (`Facility.Location`, `Network.VLAN` (new), `Network.VirtualNetwork`, `Network.IPAddress`, `Network.DNSZone`, `Storage.Pool`, `Security.DirectoryService`, `Security.CredentialRef`, `Facility.PowerFeed`, `Compute.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (September P3 — every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption (P7). No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
+
 ## Gaps this example confirms (feeds the September plan)
 
 - **`Network.VLAN`** — created as a foundational shared reference (owned by a network/fabric provider, selected by reference like `Facility.Location`); `Network.VirtualNetwork references Network.VLAN`. No inline encapsulation field.
