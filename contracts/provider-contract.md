@@ -75,7 +75,7 @@ When a provider brokers a dependency it does **not** own (a VM provider needs a 
 
 A type that supports **neither** is **non-conformant for brokered fulfillment**. *Example:* a libvirt VM provider brokering an IP writes `x-libvirt.bind_nic` either into `Network.IPAddress`'s provider-extension block (a) or into a derived `Network.IPAddress.LibvirtBound` type (b). See UDLM ADR-009 for the end-to-end flow.
 
-**Why ahead of execution.** This exists so the two providers agree on the exchanged shape at **registration/admission time, not execution time**. A sanctioned extension (a) or custom type (b) makes the broker's fields **declared and validatable in advance**, so DCM confirms the exchange is well-formed before realization — a mismatch is caught at admission, not as a half-realized resource at run time. Realization then carries out a pre-validated exchange: a pre-destined, true outcome rather than a run-time gamble. Providers exchange what they need to *before* execution, so there are no execution-time conflicts.
+**Why.** The goal is to let the broker and the owning provider **exchange the full, contextual information the dependency needs** — not to constrain them to a fixed vocabulary. A broker conveys things only it knows (the NIC, the host network); a sanctioned extension (a) or custom type (b) carries that information faithfully, namespaced and typed, so nothing is dropped or approximated. Agreeing the shape in advance and validating it at admission follows from this, but the aim is the **complete, contextual exchange** itself.
 
 ## 2. Base Contract — Registration
 
