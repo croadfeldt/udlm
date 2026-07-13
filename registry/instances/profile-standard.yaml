@@ -1,0 +1,34 @@
+# Built-in profile: STANDARD — baseline production posture.
+# policy_profile DCMGroup (DCM ADR-007). Floor is a superset of dev's by set-containment
+# (profile-resolution.md): adds governance-matrix enforcement, recovery, and drift reconciliation.
+uuid: 7ce1ac91-4a8b-4dbb-82c2-f468e9eb0499
+handle: udlm/profile/standard
+conforms_to: udlm/0.1
+group_class: policy_profile
+name: Standard
+description: >-
+  Baseline production profile — the dev/evaluation floor plus governance-matrix enforcement, recovery
+  policy, and steady-state drift reconciliation. The default posture for non-regulated workloads.
+version: 1.0.0
+status:
+  state: active
+profile:
+  is_builtin: true
+  default: false
+  approved: true
+  composed_from: []
+  floor:
+    - policy/structural-validation
+    - policy/tenant-isolation
+    - policy/resolved-profile-evaluation
+    - policy/governance-matrix               # boundary enforcement on every DCM→Provider crossing
+    - policy/recovery                         # partial-realization / timeout handling (operational-models)
+    - policy/drift-reconciliation             # discovered-vs-realized drift → remediation
+    - audit/append-only-log
+    - lifecycle/four-state-tracking
+  required_mechanics:
+    - store/requested
+    - store/realized
+    - store/discovered
+    - time-sync/causal
+    - discovery/scheduled                     # drift needs a discovery cadence (operational-models)

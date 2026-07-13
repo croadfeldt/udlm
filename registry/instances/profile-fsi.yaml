@@ -1,0 +1,46 @@
+# Built-in profile: FSI — financial-services / regulated posture.
+# policy_profile DCMGroup (DCM ADR-007). Superset of prod: tamper-evident (merkle) audit,
+# attestation-gated providers, regulatory retention, governance-matrix on ALL lifecycle operations,
+# and the override-approval workflow. Full production architecture — implemented against dev in Sept.
+uuid: 6c86370c-0b54-4417-bd60-6359c748d1e5
+handle: udlm/profile/fsi
+conforms_to: udlm/0.1
+group_class: policy_profile
+name: FSI (Financial Services)
+description: >-
+  Regulated financial-services profile — the prod floor plus tamper-evident Merkle audit with
+  inclusion/consistency proofs (universal-audit §8, RFC 9162), attestation-gated provider admission
+  (accreditation matrix; DCM ADR-022), regulatory retention, governance-matrix evaluated on every
+  lifecycle operation (no scope-out), and the time-bounded override-approval workflow
+  (policy-contract §18). Architecture is production-grade; September implements it against the dev
+  floor for co-engineering.
+version: 1.0.0
+status:
+  state: active
+profile:
+  is_builtin: true
+  default: false
+  approved: true
+  composed_from: []
+  floor:
+    - policy/structural-validation
+    - policy/tenant-isolation
+    - policy/resolved-profile-evaluation
+    - policy/governance-matrix-all-operations # cannot scope out any lifecycle operation
+    - policy/recovery
+    - policy/drift-reconciliation
+    - policy/blast-radius-impact
+    - policy/dual-approval-destructive
+    - policy/override-approval                 # time-bounded, approved soft-policy override (policy-contract §18)
+    - audit/merkle-transparency-log            # signed tree heads + inclusion/consistency proofs (universal-audit §8)
+    - lifecycle/four-state-tracking
+  required_mechanics:
+    - store/requested
+    - store/realized
+    - store/discovered
+    - time-sync/attested                       # attested clock, not causal-only (DCM ADR-005 profile-scoped)
+    - discovery/scheduled
+    - recovery/bounded-convergence
+    - audit/merkle-log                          # append-only Merkle tree (audit-leaf.schema.json)
+    - accreditation/attestation                 # provider admission gated on resolved accreditation (DCM ADR-022)
+    - retention/regulatory                       # regulatory-grade audit/data retention
