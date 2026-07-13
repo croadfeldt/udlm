@@ -53,7 +53,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Relationship & graph semantics (common-elements §9)
 
 ### OASIS TOSCA (relationship types) — CANONICAL
-**Covers:** `OASIS TOSCA` · **Body:** OASIS · **Since:** 2026-07-06T01:05:46Z · **Where:** relation names `connects_to` (ConnectsTo), `attaches_to` (AttachesTo); the four edge `kind`s are retroactively aligned with TOSCA root relationship types (DependsOn/HostedOn/BindsTo); REL-003 is TOSCA's derivation rule.
+**Covers:** `OASIS TOSCA` · **Body:** OASIS · **Since:** 2026-07-06T01:05:46Z · **Where:** relation names `connects_to` (ConnectsTo), `attaches_to` (AttachesTo); the four edge `kind`s are retroactively aligned with TOSCA root relationship types (DependsOn/HostedOn/BindsTo); REL-003 is TOSCA's derivation rule; composition/relationship templates (Software.Service); groups+policies (Topology.DependencyBundle).
 **Why:** the only standards-body vocabulary designed for infrastructure topology relationships, with an extension model (derive from root types) matching our augment-don't-fork rule. *Alternatives:* IANA link relations (REJECTED below), DMTF CIM associations (authoritative but aging; Redfish is its living profile — PRIOR-ART), invention (rejected on principle). **License:** OASIS — compatible-reference.
 
 ### RFC 8288 (Web Linking) — PATTERN
@@ -66,7 +66,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** 8+ Hardware/Compute/Network/Facility types (ComputerSystem, Processor, Memory, Drive, NetworkAdapter, Switch, Circuit); Bios + BiosAttributeRegistry (Hardware.BiosProfile).
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** 8+ Hardware/Compute/Network/Facility types (ComputerSystem, Processor, Memory, Drive, NetworkAdapter, Switch, Circuit); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); PowerSupply (Hardware.PowerSupply); Location/Placement (Facility.Location).
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL
