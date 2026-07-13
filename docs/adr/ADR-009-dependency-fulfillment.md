@@ -4,13 +4,13 @@
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
 **Related:** ADR-006 (convergence control model — DCM drives the loop); ADR-008 (UDLM/DCM boundary + the compatibility rule); ADR-004 (provider capability declaration); ADR-019 (placement); `contracts/provider-contract.md`; `registry/catalog-item.schema.json` (composite-service-model.md); `docs/graph-integrity.md` (cycle detection)
-**Tracking:** 2026-07-13 DCM engineering review — the recurring "who defines / procures the relationship, the request or the provider?" circular argument. This ADR is its decision-of-record home so it is not re-litigated.
+**Tracking:** The recurring question of who defines and procures a catalog item's dependencies — the request or the provider. This ADR is the decision-of-record so it is not re-litigated.
 
 ## Context
 
-A catalog item composes multiple resources — a VM that needs storage, a network attachment, an IP address. When the request is realized, **who procures each dependent resource, and where does the information to specify it come from?** The engineering review circled on this for the better part of an hour because the question was posed as a binary — *the request defines it* (Ondra) versus *the provider defines it* (Chris) — when in fact the information needed to procure a dependency is **split across three parties at three times**, and none of them holds all of it:
+A catalog item composes multiple resources — a VM that needs storage, a network attachment, an IP address. When the request is realized, **who procures each dependent resource, and where does the information to specify it come from?** This recurs as a binary — *the request defines it* versus *the provider defines it* — but neither is complete. The information needed to procure a dependency is **split across three parties at three times**, and none of them holds all of it:
 
-- the **catalog author** (admin/SRE) knows the *structural* dependency exists and which inputs the consumer must supply;
+- the **catalog item** (defined by the provider) declares that the *structural* dependency exists and which inputs the consumer must supply;
 - the **consumer** knows the *intent parameters* they care about — network segment, location, sovereignty zone — but not the mechanics;
 - the **realizing provider** knows the *realization-time specifics that do not exist until placement* — the assigned NIC/MAC, the host network the hypervisor actually landed on, driver constraints.
 
@@ -56,7 +56,7 @@ Applying ADR-008's test — *could a peer do this differently and still be a val
 
 ## Worked example (end to end): a VM that needs an IP
 
-**Catalog item `vm-service`** (authored by an SRE), `consumer_fields`: `network_segment`, `location`, `size`. `constituents`:
+**Catalog item `vm-service`** (defined by the VM provider), `consumer_fields`: `network_segment`, `location`, `size`. `constituents`:
 
 ```yaml
 constituents:
