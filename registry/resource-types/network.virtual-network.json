@@ -10,7 +10,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Virtual Network",
-    "description": "A host- or cluster-scoped virtual network that workloads (VMs, pods) attach to — the attachment POINT between guest vNICs and the host L2 stack. Realized by e.g. a libvirt network (forward mode=bridge/nat/routed/isolated), a Kubernetes NetworkAttachmentDefinition (Multus/CNI), or an OVN logical switch — the vendor mechanism is the provider, never the type. Completes graph traversal guest → VirtualNetwork → (references) underlying bridge/uplink Hardware.NetworkInterface → bond → NIC → switch. Consumers declare attachment by binds_to on the consumer side (a VM binds_to its VirtualNetwork), which implies depends_on: the network exists before the guest starts; guests stop before it tears down.",
+    "description": "A host- or cluster-scoped virtual network that workloads (VMs, pods) attach to \u2014 the attachment POINT between guest vNICs and the host L2 stack. Realized by e.g. a libvirt network (forward mode=bridge/nat/routed/isolated), a Kubernetes NetworkAttachmentDefinition (Multus/CNI), or an OVN logical switch \u2014 the vendor mechanism is the provider, never the type. Completes graph traversal guest \u2192 VirtualNetwork \u2192 (references) underlying bridge/uplink Hardware.NetworkInterface \u2192 bond \u2192 NIC \u2192 switch. Consumers declare attachment by binds_to on the consumer side (a VM binds_to its VirtualNetwork), which implies depends_on: the network exists before the guest starts; guests stop before it tears down.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:10:32Z"
   },
@@ -35,11 +35,11 @@
       },
       "identity": {
         "type": "object",
-        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS \u00a727).",
         "properties": {
           "location": {
             "type": "string",
-            "description": "The network's name on its host/cluster (e.g. 'host-bridge', 'default') — unique within the containing scope."
+            "description": "The network's name on its host/cluster (e.g. 'host-bridge', 'default') \u2014 unique within the containing scope."
           },
           "role": {
             "type": "string",
@@ -74,9 +74,16 @@
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "supporting_node (RFC 8345; renamed from underlying_device when relation names were adopted from standards, common-elements §9) — the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements §7/§7a).",
+      "description": "supporting_node (RFC 8345; renamed from underlying_device when relation names were adopted from standards, common-elements \u00a79) \u2014 the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements \u00a77/\u00a77a).",
       "name": "supporting_node",
       "adopted_from": "RFC 8345 supporting-node"
+    },
+    {
+      "kind": "references",
+      "target": "Network.VLAN",
+      "name": "segment",
+      "cardinality": "0..1",
+      "description": "The foundational Network.VLAN segment this virtual network rides (selected by reference, not inlined) \u2014 docs/foundational-resources.md."
     }
   ],
   "adopts": [
@@ -102,7 +109,7 @@
       "standard": "RFC 8345",
       "version": "8345",
       "standard_name": "ietf-network (supporting-node)",
-      "role": "relation vocabulary — supporting_node overlay-to-underlay relation name (common-elements §9)",
+      "role": "relation vocabulary \u2014 supporting_node overlay-to-underlay relation name (common-elements \u00a79)",
       "source": "https://www.rfc-editor.org/rfc/rfc8345",
       "license": "IETF-Trust-TLP",
       "license_compatibility": "compatible-reference"

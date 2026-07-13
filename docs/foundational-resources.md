@@ -1,6 +1,6 @@
 # Foundational (root) resources — the selectable base of the dependency graph
 
-**What this settles:** a class of resources — **Locations, Networks, and their kin** — are not things a consumer or provider *invents per request*; they are **existing, selectable resources that everything else depends on**. This names that class, says how it is populated and selected, and fixes the rule that dependents **reference** a foundational resource rather than defining one inline.
+**What this settles:** a class of resources — **Locations, Networks, and their kin** — are not things a consumer or provider *invents per request*; they are **existing, selectable resources that everything else depends on**. They are **shared references** whose purpose is to serve the **information and operational aspect** of the data model — one source of truth that many resources point at, so blast-radius, dependency ordering, placement, and information queries all reason over the same anchors. This names the class, says how it is populated and selected, and fixes the rule that dependents **reference** a foundational resource rather than defining one inline.
 
 ## The class
 
@@ -21,6 +21,7 @@ UDLM ships the **base definition** of each foundational resource as **guidance**
 |---|---|---|
 | **`Facility.Location`** (site/room/rack/row) | platform data layer and/or a facilities/location provider | placement — `references Facility.Location` |
 | **`Network.VirtualNetwork`** (segment/VLAN/overlay) | platform data layer and/or a network provider | attachment — `references Network.VirtualNetwork` |
+| **`Network.VLAN`** (802.1Q id / overlay VNI) | network/fabric provider and/or platform layer | segment — `references Network.VLAN` (a VirtualNetwork or interface rides it) |
 | **`Network.IPAddress`** | IPAM / network provider | `depends_on` (dynamic/static/byo — ADR-009 fulfillment) |
 | **`Storage.Pool` / `Storage.Cluster`** | storage provider | volumes provisioned from — `depends_on` |
 | **`Security.DirectoryService`** (realm/identity) | identity provider | scope-derived from `tenant_uuid` (the pervasive realm edge) |
