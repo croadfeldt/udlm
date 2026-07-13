@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/dcm-group.schema.json",
   "title": "UDLM DCMGroup (instance)",
-  "description": "The universal grouping record (observability/universal-groups.md): ONE entity for all grouping — Tenants, Resource Groups, policy collections, federations, cross-tenant authorizations — distinguished by group_class. Tenants ARE DCMGroups (data-model-core §5 [D3]); this schema is item (1) of the [D8] machine-validatable-surface program, making TEN-001/003 and the group model schema-enforceable instead of prose. Conditional blocks activate per group_class (tenant_boundary → ownership + isolation_level; cross_tenant_authorization → grant fields).",
+  "description": "The universal grouping record (observability/universal-groups.md): ONE entity for all grouping \u2014 Tenants, Resource Groups, policy collections, federations, cross-tenant authorizations \u2014 distinguished by group_class. Tenants ARE DCMGroups (data-model-core \u00a75 [D3]); this schema is item (1) of the [D8] machine-validatable-surface program, making TEN-001/003 and the group model schema-enforceable instead of prose. Conditional blocks activate per group_class (tenant_boundary \u2192 ownership + isolation_level; cross_tenant_authorization \u2192 grant fields).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,11 +15,11 @@
     "uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Stable RFC 9562 v4 identity of this group, minted once at creation (identifier-scheme §2.1; version nibble + variant bits pattern-enforced). For a tenant_boundary group this uuid IS the value entities carry in tenant_uuid."
+      "description": "Stable RFC 9562 v4 identity of this group, minted once at creation (identifier-scheme \u00a72.1; version nibble + variant bits pattern-enforced). For a tenant_boundary group this uuid IS the value entities carry in tenant_uuid."
     },
     "handle": {
       "type": "string",
-      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3), e.g. org/tenant/payments-bu. The uuid is the authoritative identity; never resolve by handle alone."
+      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md \u00a73), e.g. org/tenant/payments-bu. The uuid is the authoritative identity; never resolve by handle alone."
     },
     "conforms_to": {
       "type": "string",
@@ -38,11 +38,11 @@
         "cross_tenant_authorization",
         "access_grouping"
       ],
-      "description": "CLOSED set — the ONE group_class vocabulary (universal-groups §2.2 table incl. cross_tenant_authorization; data-model-core §5/§7). System behavior binds to declared classes only (GRP-011). `access_grouping` (ADR-RBAC-001) = a group of IDENTITIES for RBAC — the subject-set the authority-enforcement voting model already assumes (authority-enforcement.md 'N members of a declared DCMGroup'); requires `member_type: actor`."
+      "description": "CLOSED set \u2014 the ONE group_class vocabulary (universal-groups \u00a72.2 table incl. cross_tenant_authorization; data-model-core \u00a75/\u00a77). System behavior binds to declared classes only (GRP-011). `access_grouping` (ADR-RBAC-001) = a group of IDENTITIES for RBAC \u2014 the subject-set the authority-enforcement voting model already assumes (authority-enforcement.md 'N members of a declared DCMGroup'); requires `member_type: actor`."
     },
     "group_subclass": {
       "type": "string",
-      "description": "OPEN, advisory semantic axis (GRP-011) — e.g. cost_center, business_unit, or resource-grouping's dcm_default|custom. No system behavior, no validation of values; the community subclass catalog is a non-authoritative reference."
+      "description": "OPEN, advisory semantic axis (GRP-011) \u2014 e.g. cost_center, business_unit, or resource-grouping's dcm_default|custom. No system behavior, no validation of values; the community subclass catalog is a non-authoritative reference."
     },
     "name": {
       "type": "string",
@@ -63,7 +63,7 @@
       "required": [
         "state"
       ],
-      "description": "Lifecycle status per the Resource Group Interface (entities/resource-grouping.md §3.3): active | deprecated | retired, with the universal deprecation fields when deprecated.",
+      "description": "Lifecycle status per the Resource Group Interface (entities/resource-grouping.md \u00a73.3): active | deprecated | retired, with the universal deprecation fields when deprecated.",
       "properties": {
         "state": {
           "enum": [
@@ -76,13 +76,13 @@
           "type": "string",
           "format": "date-time",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps)."
         },
         "sunset_date": {
           "type": "string",
           "format": "date-time",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps)."
         },
         "replacement_uuid": {
           "type": "string",
@@ -103,7 +103,7 @@
       "required": [
         "supported"
       ],
-      "description": "Whether this group can contain other groups as members (entities/resource-grouping.md §3.5). Circular membership is invalid (GRP-INV-005/006); tenant_boundary nesting depth is profile-governed (universal-groups §9 Q2).",
+      "description": "Whether this group can contain other groups as members (entities/resource-grouping.md \u00a73.5). Circular membership is invalid (GRP-INV-005/006); tenant_boundary nesting depth is profile-governed (universal-groups \u00a79 Q2).",
       "properties": {
         "supported": {
           "type": "boolean"
@@ -118,14 +118,14 @@
               "const": "unlimited"
             }
           ],
-          "description": "Declared nesting depth — an integer bound or the literal string \"unlimited\"."
+          "description": "Declared nesting depth \u2014 an integer bound or the literal string \"unlimited\"."
         }
       }
     },
     "membership": {
       "type": "object",
       "additionalProperties": false,
-      "description": "ONE membership record shape — the universal-groups form (universal-groups §2.1; data-model-core §5). The former joined_timestamp/joined_by_uuid variant is SUPERSEDED by added_at/added_by.",
+      "description": "ONE membership record shape \u2014 the universal-groups form (universal-groups \u00a72.1; data-model-core \u00a75). The former joined_timestamp/joined_by_uuid variant is SUPERSEDED by added_at/added_by.",
       "properties": {
         "members": {
           "type": "array",
@@ -142,7 +142,7 @@
               "member_uuid": {
                 "type": "string",
                 "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-                "description": "The Resource/Service Entity or child group this membership binds (uuid authoritative — never name alone)."
+                "description": "The Resource/Service Entity or child group this membership binds (uuid authoritative \u2014 never name alone)."
               },
               "member_type": {
                 "enum": [
@@ -150,17 +150,17 @@
                   "resource_group",
                   "actor"
                 ],
-                "description": "What kind of member: entity = a realized-entity instance; resource_group = a nested DCMGroup (nesting.supported must be true); actor = an Identity.Person/ServiceAccount (ADR-RBAC-001) — permitted only in an `access_grouping` group, so a DCMGroup can be the RBAC subject-set the authority-enforcement voting model already references."
+                "description": "What kind of member: entity = a realized-entity instance; resource_group = a nested DCMGroup (nesting.supported must be true); actor = an Identity.Person/ServiceAccount (ADR-RBAC-001) \u2014 permitted only in an `access_grouping` group, so a DCMGroup can be the RBAC subject-set the authority-enforcement voting model already references."
               },
               "added_at": {
                 "type": "string",
                 "format": "date-time",
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-                "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+                "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps)."
               },
               "added_by": {
                 "type": "string",
-                "description": "Actor record — the persona or policy that added this member."
+                "description": "Actor record \u2014 the persona or policy that added this member."
               },
               "valid_from": {
                 "type": "string",
@@ -210,14 +210,14 @@
                   "const": "unlimited"
                 }
               ],
-              "description": "Maximum number of groups of this type a member can belong to — an integer bound or the literal string \"unlimited\"."
+              "description": "Maximum number of groups of this type a member can belong to \u2014 an integer bound or the literal string \"unlimited\"."
             },
             "allowed_entity_types": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "Resource Types permitted as members (entities/resource-grouping.md §3.3) — empty means all types allowed."
+              "description": "Resource Types permitted as members (entities/resource-grouping.md \u00a73.3) \u2014 empty means all types allowed."
             }
           }
         }
@@ -246,7 +246,7 @@
         "owner_type",
         "created_at"
       ],
-      "description": "Who owns this Tenant (entities/resource-grouping.md §2.4). REQUIRED for group_class tenant_boundary — the unambiguous, always-auditable answer to \"who owns this resource\" rolls up here.",
+      "description": "Who owns this Tenant (entities/resource-grouping.md \u00a72.4). REQUIRED for group_class tenant_boundary \u2014 the unambiguous, always-auditable answer to \"who owns this resource\" rolls up here.",
       "properties": {
         "owner_uuid": {
           "type": "string",
@@ -264,7 +264,7 @@
           "type": "string",
           "format": "date-time",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps)."
         }
       }
     },
@@ -275,7 +275,7 @@
         "database_per_tenant",
         "store_per_tenant_zone"
       ],
-      "description": "The [D1] tenancy-isolation ladder (data-model-core §6) — how this Tenant's data is isolated in the bound lifecycle stores; profile-keyed and REQUIRED for group_class tenant_boundary. shared_rls = shared store, row-level security keyed by tenant_uuid (the standard/prod floor). schema_per_tenant = dedicated schema per tenant in a shared database (fsi). database_per_tenant = dedicated database per tenant (fsi, where isolation policy requires). store_per_tenant_zone = dedicated store instance per tenant/zone (sovereign — and MUST where residency policy requires)."
+      "description": "The [D1] tenancy-isolation ladder (data-model-core \u00a76) \u2014 how this Tenant's data is isolated in the bound lifecycle stores; profile-keyed and REQUIRED for group_class tenant_boundary. shared_rls = shared store, row-level security keyed by tenant_uuid (the standard/prod floor). schema_per_tenant = dedicated schema per tenant in a shared database (fsi). database_per_tenant = dedicated database per tenant (fsi, where isolation policy requires). store_per_tenant_zone = dedicated store instance per tenant/zone (sovereign \u2014 and MUST where residency policy requires)."
     },
     "store_bindings": {
       "type": "array",
@@ -294,11 +294,11 @@
               "audit_store",
               "discovered_stream"
             ],
-            "description": "One of the four normative store CONTRACTS (data-model-core §6 [D1]) this binding satisfies. Conformance is measured against the contract, never the brand."
+            "description": "One of the four normative store CONTRACTS (data-model-core \u00a76 [D1]) this binding satisfies. Conformance is measured against the contract, never the brand."
           },
           "binding": {
             "type": "string",
-            "description": "The conforming store bound to this contract for this Tenant — a storage-provider record reference or declared carrier (e.g. the PostgreSQL reference implementation, or git at minimal profile)."
+            "description": "The conforming store bound to this contract for this Tenant \u2014 a storage-provider record reference or declared carrier (e.g. the PostgreSQL reference implementation, or git at minimal profile)."
           },
           "residency_zone": {
             "type": "string",
@@ -306,12 +306,12 @@
           }
         }
       },
-      "description": "The auditable [D1] binding declaration: which conforming store satisfies each lifecycle-store contract FOR THIS TENANT. A deployment binds contract → store via profile + sovereignty/tenancy policy, and the binding is declared and auditable (data-model-core §6; contracts/data-store-contracts.md)."
+      "description": "The auditable [D1] binding declaration: which conforming store satisfies each lifecycle-store contract FOR THIS TENANT. A deployment binds contract \u2192 store via profile + sovereignty/tenancy policy, and the binding is declared and auditable (data-model-core \u00a76; contracts/data-store-contracts.md)."
     },
     "granting_tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "cross_tenant_authorization: the Tenant granting access (entities/resource-grouping.md §10.1)."
+      "description": "cross_tenant_authorization: the Tenant granting access (entities/resource-grouping.md \u00a710.1)."
     },
     "consuming_tenant_uuid": {
       "type": "string",
@@ -352,7 +352,7 @@
     "metadata": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Human-facing context, same shape as realized-entity: operational commentary lives in notes — data ABOUT the record, never used for resolution.",
+      "description": "Human-facing context, same shape as realized-entity: operational commentary lives in notes \u2014 data ABOUT the record, never used for resolution.",
       "properties": {
         "display_name": {
           "type": "string"
@@ -362,7 +362,7 @@
         },
         "notes": {
           "type": "array",
-          "description": "Auditable operational notes: each entry is attributed and timestamped — never an anonymous mutable blob.",
+          "description": "Auditable operational notes: each entry is attributed and timestamped \u2014 never an anonymous mutable blob.",
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -375,7 +375,7 @@
               "at": {
                 "type": "string",
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-                "description": "When recorded. RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps)."
+                "description": "When recorded. RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps)."
               },
               "author": {
                 "type": "string",
@@ -386,6 +386,55 @@
               }
             }
           }
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Profile record fields (ADR-007: a profile is a composed SET with floors, not a level). Present when group_class=policy_profile. UDLM carries the record; DCM resolves + enforces it (docs/profile-resolution.md).",
+      "properties": {
+        "is_builtin": {
+          "type": "boolean",
+          "description": "Built-in profiles are immutable + reproducible; modifying one FORKS a custom profile (ADR-007 \u00a73)."
+        },
+        "forked_from": {
+          "type": "string",
+          "description": "uuid of the parent profile this custom profile was forked from (copy-on-write lineage)."
+        },
+        "floor": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The MINIMUM required policies/config/mechanics this profile guarantees present. Tenants may restrict further, never below the floor (ADR-007 \u00a72). Set-containment over floors is the comparison operator (profile-resolution.md)."
+        },
+        "composed_from": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Other profile uuids this profile overlays/composes (ADR-007 \u00a71: distinct composable sets, e.g. a compliance overlay). Composition UNIONS floors."
+        },
+        "required_mechanics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The data/mechanics the profile requires operative (attestation, time-sync capability, stores, retention) \u2014 not just policy defaults (ADR-007 option B rejected). Each names a capability/contract the deployment MUST provide."
+        },
+        "operational_config": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Org-defined operational config \u2014 e.g. the human-approval / escalation ladder (ADR-007 \u00a74: platform provides the mechanism, profile the definition)."
+        },
+        "default": {
+          "type": "boolean",
+          "description": "Whether this profile is the default for its scope; the applicable default resolves unless a more specific approved profile is selected (profile-resolution.md)."
+        },
+        "approved": {
+          "type": "boolean",
+          "description": "Whether this profile is on the org's APPROVED list for selection \u2014 custom profiles are first-class but org-ratified; selection is limited to approved profiles (ADR-007; foundational-resources 'org ratifies')."
         }
       }
     }
@@ -414,7 +463,7 @@
                 "properties": {
                   "exclusive": {
                     "const": true,
-                    "description": "STRUCTURAL LOCK for tenant_boundary (TEN-001/GRP-INV-001): a resource belongs to exactly one active Tenant — non-overridable."
+                    "description": "STRUCTURAL LOCK for tenant_boundary (TEN-001/GRP-INV-001): a resource belongs to exactly one active Tenant \u2014 non-overridable."
                   }
                 },
                 "required": [
@@ -443,6 +492,30 @@
           "consuming_tenant_uuid",
           "authorized_resource_types"
         ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "group_class": {
+            "const": "policy_profile"
+          }
+        },
+        "required": [
+          "group_class"
+        ]
+      },
+      "then": {
+        "required": [
+          "profile"
+        ],
+        "properties": {
+          "profile": {
+            "required": [
+              "floor"
+            ]
+          }
+        }
       }
     }
   ]
