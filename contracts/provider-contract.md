@@ -325,6 +325,8 @@ Realization is **two-phase** (UDLM ADR-011): DCM validates and **reserves** ever
 | **`commit`** | execute | Realize the **held** reservation; write Realized State. Issued by DCM only after the commit barrier. **MUST fail if the hold is expired or released** (signals DCM to re-reserve). Idempotent / re-entrant (ADR-006). |
 | **`release`** | abort | Drop the hold; return the reserved capacity/identity. Issued on validation failure or cancellation. Idempotent — releasing an already-released or expired hold is a no-op. |
 
+**Each of `reserve` / `commit` / `release` is a governed boundary crossing — same data scoping as any dispatch.** Every request carries **only the `role: execution` slice** of the Requested snapshot (`contracts/data-roles.md`; `PRV-008`) — `reserve` carries just what the provider needs to validate, hold, and compute criteria; `commit` the same slice to build; non-execution (control-plane) roles never cross. The **Governance Matrix fires at every crossing** (reserve, commit, *and* release), so *what data goes to which provider, for what use* is scoped identically across all three phases — the two-phase split adds request types, **not** new data-exposure paths. (For `fulfillment: provider`, the criteria the parent computes and the reserved facts it returns are execution-role data on the same governed boundary; the parent-identity minimum-necessary rule of §1b.2 still applies.)
+
 **TTL is negotiated, and expiry is an implied release:**
 - **The reserve request carries a `requested_ttl`.** The provider **grants** a TTL within the **`min_hold_ttl` / `max_hold_ttl`** range it advertises (§8.1) — it MAY clamp the request to that range — and returns `granted_ttl` + absolute `expires_at`. DCM plans the commit barrier against the **shortest** granted TTL across the reserved graph.
 - **TTL expiration IS release — but never silent.** No explicit `release` call is required on expiry: once `expires_at` passes without a commit, the provider **MUST auto-drop the hold** and free the reserved capacity, and a later `commit` against it MUST fail. The provider **MUST also emit a `reservation.expired` lifecycle event** (§6) so DCM **records the expiry for audit and updates the request** — re-reserve or re-plan. A stalled reconciliation is therefore self-healing (abandoned holds evaporate rather than leaking reserved capacity) *and* observable (DCM is never left believing a lapsed hold is still valid).
@@ -501,6 +503,35 @@ service_provider_capabilities:
 **Data direction:** DCM sends assembled Requested State → Provider naturalizes → executes → denaturalizes → returns Realized State. Separately, on demand, DCM sends `{entity_uuid}` to `{dependency_introspection_endpoint}` → Provider returns observed dependency edges → DCM records them in the Entity Relationship Graph under `edge_nature: observed`.
 
 ---
+
+### 8.1a Resource advertisement — inventory, capacity, eligibility (the placement input)
+
+Placement and consumer-selection only work over **real** resources. A `realize_resources` provider therefore **advertises**, per capability/category it offers, the three things placement decides against. This is how the **foundational (root) resources** consumers select get populated (`docs/foundational-resources.md`): the provider that owns them publishes them; the platform data layer may add more; policy governs eligibility.
+
+```yaml
+resource_advertisement:                 # returned from {capabilities_endpoint}, refreshed by lifecycle events
+  category: realize_resources/Network    # the capability category this advertises for
+  inventory:                             # the resources the provider OFFERS, as referenceable resources
+    - resource_ref: net-vlan-20          # identity of an offered foundational resource (Network.VLAN, Facility.Location, Storage.Pool, Compute.BareMetalHost, ...)
+      resource_type: Network.VLAN
+      selectable: true                   # part of the consumer-selectable set (subject to eligibility)
+  capacity:                              # the QUANTITATIVE input placement decides against, per offered resource
+    - resource_ref: host-a
+      dimensions: { vcpu: {total: 96, free: 40}, memory: {total: "512GB", free: "180GB"}, storage: {total: "10TB", free: "3TB"} }
+  eligibility:                           # provider-declared constraints; DCM POLICY resolves the final eligible set
+    - resource_ref: net-vlan-20
+      zone: dmz
+      requires_capability: []            # what a consumer must hold to select this
+```
+
+Rules:
+- **Availability is provider-authoritative; cost is not.** Unlike `cost_metadata` (an unverified hint — a provider must not be able to under-declare cost to win placement, §8.1), advertised **inventory + capacity** are authoritative for *what exists and how much is free*, but **bounded**: DCM cross-checks against realized state, and over-advertising (claiming free capacity that isn't) is a **drift finding**, not a silent win.
+- **Refreshed, not static.** Capacity changes are pushed via the `resource.capacity_changed` lifecycle event (§6), so placement reads current free capacity, not registration-time values.
+- **Eligibility is policy, not provider fiat.** The provider *declares* constraints; the **org's policy + Governance-Matrix** resolve which advertised resources a given consumer/zone/tenant may actually select (the "org ratifies" rule). A provider cannot grant itself selection authority by advertising.
+
+**Placement (ADR-019) selects from `inventory ∩ capacity-sufficient ∩ policy-eligible`.** A consumer's `*_ref` selection (e.g. `placement.location_ref`, `networks[].network_ref`) MUST resolve to a resource in that eligible set; when `fulfillment: platform` (ADR-009), DCM chooses within it. Consumption debits the selected resource's capacity and any applicable **quota** (the tenant-quota structure — the consumption side, September P7).
+
+**Boundary (ADR-008):** the advertisement *shape* (inventory/capacity/eligibility) is UDLM — a peer must read another provider's advertisement identically or placement disagrees. The placement *algorithm* and how a provider computes free capacity are DCM/provider.
 
 ### 8.2 `serve_data` — Information profile
 

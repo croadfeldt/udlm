@@ -531,6 +531,28 @@ Realization is two-phase (ADR-011): the **reserve phase** is a reconciliation lo
 
 Two obligations hold regardless: re-evaluation MUST be **idempotent** (ADR-006 — re-evaluating unchanged state must not double-apply), and **every** applicable policy — participating or not — MUST be green at the commit barrier before anything commits (§commit barrier, ADR-011). Participation changes *when and how often* a policy runs during reserve, never whether it must ultimately pass.
 
+### 7.7 Policy evaluation outcome — three states (governance honesty)
+
+A policy's result in the durable `policy_results` (Requested domain, data-store-contracts §2.2) is one of **three** states, never two:
+
+- **`evaluated_pass`** — the match conditions applied AND the policy passed (allow / valid).
+- **`evaluated_fail`** — the match conditions applied AND the policy failed (deny / invalid).
+- **`out_of_scope`** — the match conditions did **not** apply to this request; the policy was not evaluated.
+
+**`out_of_scope` is recorded, never collapsed into `evaluated_pass`.** A request that *no* compliance policy applied to is not the same as a request that *every* compliance policy passed — the first is **ungoverned**, the second is **governed-and-clean**. Folding out-of-scope into pass hides ungoverned requests, so the distinction is a governance-honesty invariant: a compliance auditor MUST be able to tell "0 policies applied" from "12 policies passed." This lifts the per-pass audit `matched` flag (§7.5: `matched: false` → `out_of_scope`) into the stored per-policy outcome.
+
+```yaml
+policy_results:
+  - policy_uuid: <uuid>
+    policy_version: "<semver>"
+    outcome: evaluated_pass | evaluated_fail | out_of_scope
+    detail: { ... }              # field_results / decision / reason (per output schema)
+coverage:
+  applicable: <int>              # policies with outcome != out_of_scope
+  out_of_scope: <int>
+  # applicable == 0 for a governed concern => the request is UNGOVERNED for it — surfaced, not hidden.
+```
+
 ## 8. Constraint Type Registry
 
 Constraint types are the shared vocabulary of the Evaluation Context. Every constraint emitted by a policy and every context field matched by a policy must reference a registered constraint type. Freeform strings are not permitted — if two policies should interact, they must agree on the vocabulary, and the registry enforces that agreement.

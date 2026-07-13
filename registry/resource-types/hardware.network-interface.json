@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Interface",
-    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1→N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device → the physical NIC), and — added 0.2.0 — a composite BUILT FROM multiple interfaces (N→1): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer → its member interfaces. aggregate/bridge are the inverse of partition (many members → one composite vs one parent → many slices), so the whole host interface stack — physical NICs → bond → bridge → sub-interfaces — is one traversable device tree in a single type (common-elements §7). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by Network.Switch), and a physical interface carries a connects_to adjacency (renamed from connected_to, common-elements §9) to its LLDP-discovered peer termination point (host NIC ↔ switch port) — the cross-device edge that makes the estate graph traversable host → NIC → port → switch (common-elements §7a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP.",
+    "description": "A network interface component. device_class covers a physical NIC (PF), a fully virtual interface (virtio / veth), a whole-NIC passthrough to a guest, a partition DERIVED FROM a physical NIC (1\u2192N: SR-IOV VF or VLAN/macvlan sub-interface, parent_device \u2192 the physical NIC), and \u2014 added 0.2.0 \u2014 a composite BUILT FROM multiple interfaces (N\u21921): an aggregate (bond / LACP LAG, 802.1AX) or a bridge (802.1Q software switch), with lower_layer \u2192 its member interfaces. aggregate/bridge are the inverse of partition (many members \u2192 one composite vs one parent \u2192 many slices), so the whole host interface stack \u2014 physical NICs \u2192 bond \u2192 bridge \u2192 sub-interfaces \u2014 is one traversable device tree in a single type (common-elements \u00a77). Added 0.3.0: the same type also serves SWITCH PORTS (contained_by Network.Switch), and a physical interface carries a connects_to adjacency (renamed from connected_to, common-elements \u00a79) to its LLDP-discovered peer termination point (host NIC \u2194 switch port) \u2014 the cross-device edge that makes the estate graph traversable host \u2192 NIC \u2192 port \u2192 switch (common-elements \u00a77a). Mirrors Redfish NetworkAdapter/NetworkPort/NetworkDeviceFunction + RFC 8343 interface stacking (lower-layer-if) + RFC 8345 links + IEEE 802.1AB LLDP.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },
@@ -29,7 +29,7 @@
           "bridge"
         ],
         "default": "physical",
-        "description": "Device realization (common-elements.md §7). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N→1 inverse of partition's 1→N.",
+        "description": "Device realization (common-elements.md \u00a77). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N\u21921 inverse of partition's 1\u2192N.",
         "x-extensible-enum": true
       },
       "partition_mechanism": {
@@ -38,7 +38,7 @@
       },
       "aggregation": {
         "type": "object",
-        "description": "Only when device_class=aggregate — bond / link-aggregation parameters (IEEE 802.1AX). The member interfaces are the lower_layer references.",
+        "description": "Only when device_class=aggregate \u2014 bond / link-aggregation parameters (IEEE 802.1AX). The member interfaces are the lower_layer references.",
         "properties": {
           "mode": {
             "type": "string",
@@ -79,7 +79,7 @@
       },
       "bridge": {
         "type": "object",
-        "description": "Only when device_class=bridge — software L2 bridge parameters (IEEE 802.1Q). The bridged ports are the lower_layer references.",
+        "description": "Only when device_class=bridge \u2014 software L2 bridge parameters (IEEE 802.1Q). The bridged ports are the lower_layer references.",
         "properties": {
           "stp": {
             "type": "boolean",
@@ -93,7 +93,7 @@
       },
       "identity": {
         "type": "object",
-        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS \u00a727).",
         "properties": {
           "location": {
             "type": "string",
@@ -101,7 +101,7 @@
           },
           "mac_address": {
             "type": "string",
-            "description": "MAC address (Redfish Ethernet MACAddress) — globally unique interface identity."
+            "description": "MAC address (Redfish Ethernet MACAddress) \u2014 globally unique interface identity."
           },
           "serial_number": {
             "type": "string"
@@ -136,7 +136,33 @@
         "type": "integer",
         "minimum": 1,
         "maximum": 4094,
-        "description": "802.1Q VLAN id when device_class=partition with partition_mechanism=vlan."
+        "description": "Optional \u2014 an OBSERVED/discovered VLAN tag, a discovery convenience only. NOT authoritative: the authoritative membership is `vlan_memberships` (references to Network.VLAN). Discovery may record a raw tag here; resolution promotes it into a vlan_memberships entry."
+      },
+      "vlan_memberships": {
+        "type": "array",
+        "description": "The port's VLAN membership set (802.1Q). Each entry REFERENCES an existing Network.VLAN (the shared segment object \u2014 the id/encapsulation is pulled from there, adopt-not-absorb) and declares its mode. A trunk carries many (one native/untagged + N tagged); an access port one. Each membership is also a references->Network.VLAN edge.",
+        "items": {
+          "type": "object",
+          "required": [
+            "network_vlan_ref",
+            "mode"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "network_vlan_ref": {
+              "type": "string",
+              "description": "handle/uuid of an existing Network.VLAN this port is a member of."
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "native",
+                "tagged"
+              ],
+              "description": "native = the untagged PVID (at most one per port); tagged = a tagged member (802.1Q). "
+            }
+          }
+        }
       }
     }
   },
@@ -166,13 +192,13 @@
       "target": "Network.Switch",
       "cardinality": "0..1",
       "name": "switch",
-      "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports — the §27 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances."
+      "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports \u2014 the \u00a727 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances."
     },
     {
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "parent_device — the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1→N). REQUIRED when device_class is passthrough or partition (common-elements §7).",
+      "description": "parent_device \u2014 the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1\u2192N). REQUIRED when device_class is passthrough or partition (common-elements \u00a77).",
       "name": "parent_device",
       "adopted_from": "RFC 8343 lower-layer-if (declared refinement: the 1-to-N slice direction)"
     },
@@ -180,7 +206,7 @@
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "1..n",
-      "description": "lower_layer — the MEMBER interfaces this composite is built from (N→1): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements §7).",
+      "description": "lower_layer \u2014 the MEMBER interfaces this composite is built from (N\u21921): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements \u00a77).",
       "name": "lower_layer",
       "adopted_from": "RFC 8343 lower-layer-if"
     },
@@ -188,9 +214,16 @@
       "kind": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "connects_to (renamed from connected_to when relation names were adopted from standards, common-elements §9) — the PEER termination point this physical interface is linked to (host NIC ↔ switch port; switch ↔ switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points — promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements §7a).",
+      "description": "connects_to (renamed from connected_to when relation names were adopted from standards, common-elements \u00a79) \u2014 the PEER termination point this physical interface is linked to (host NIC \u2194 switch port; switch \u2194 switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points \u2014 promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements \u00a77a).",
       "name": "connects_to",
       "adopted_from": "OASIS TOSCA ConnectsTo"
+    },
+    {
+      "kind": "references",
+      "target": "Network.VLAN",
+      "name": "vlan_membership",
+      "cardinality": "0..n",
+      "description": "The VLAN(s) this port is a member of (see spec.vlan_memberships); each carries a mode (native/tagged). The port references the shared Network.VLAN objects rather than duplicating the id."
     }
   ],
   "adopts": [
@@ -207,7 +240,7 @@
       "standard": "RFC 8343",
       "version": "8343",
       "standard_name": "ietf-interfaces (lower-layer-if / higher-layer-if)",
-      "role": "interface-stacking vocabulary — a composite interface (bond/bridge) references its member interfaces via lower_layer (RFC 8343 lower-layer-if)",
+      "role": "interface-stacking vocabulary \u2014 a composite interface (bond/bridge) references its member interfaces via lower_layer (RFC 8343 lower-layer-if)",
       "source": "https://www.rfc-editor.org/rfc/rfc8343",
       "license": "IETF-Trust-TLP",
       "license_compatibility": "compatible-reference"
@@ -234,7 +267,7 @@
       "standard": "OASIS TOSCA",
       "version": "2.0",
       "standard_name": "ConnectsTo",
-      "role": "relation vocabulary — connects_to peer-adjacency relation name (common-elements §9)",
+      "role": "relation vocabulary \u2014 connects_to peer-adjacency relation name (common-elements \u00a79)",
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
       "license_compatibility": "compatible-reference"

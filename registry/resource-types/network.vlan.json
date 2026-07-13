@@ -1,0 +1,79 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "4a1178f7-4da9-47cd-97f6-8d864adcb031",
+  "resource_type": "Network.VLAN",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "lifecycle_archetype": "provisioning",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "VLAN / Network Segment ID",
+    "description": "A foundational network segment identifier \u2014 a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve) \u2014 owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED by reference from the resources that ride it (a Network.VirtualNetwork, a Hardware.NetworkInterface). A root resource (docs/foundational-resources.md): dependents reference an existing VLAN, they do not invent one. The concrete encapsulation is provider data; a provider may offer a variant (e.g. Network.Port) that the org ratifies.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-13T00:00:00Z"
+  },
+  "adopts": [
+    {
+      "standard": "IEEE 802.1Q",
+      "version": "2022",
+      "standard_name": "VLAN tagging",
+      "role": "segment id + tagging vocabulary",
+      "source": "https://standards.ieee.org/ieee/802.1Q/",
+      "license": "IEEE",
+      "license_compatibility": "compatible-reference"
+    }
+  ],
+  "spec": {
+    "type": "object",
+    "required": [
+      "encapsulation"
+    ],
+    "properties": {
+      "encapsulation": {
+        "type": "string",
+        "enum": [
+          "vlan",
+          "vxlan",
+          "geneve",
+          "flat"
+        ],
+        "description": "Segmentation type. vlan = 802.1Q; vxlan/geneve = overlay VNI; flat = untagged."
+      },
+      "segment_id": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 16777215,
+        "description": "The VLAN id (1-4094 for 802.1Q) or VNI (0-16777215 for VXLAN/Geneve). Omitted for flat."
+      },
+      "name": {
+        "type": "string",
+        "description": "Human name for the segment, e.g. dmz."
+      }
+    }
+  },
+  "outputs": {
+    "segment_ready": {
+      "type": "boolean",
+      "description": "Whether the segment is provisioned on the fabric and available to attach."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "references",
+      "target": "Network.Switch",
+      "name": "fabric",
+      "cardinality": "0..n",
+      "description": "The switch(es)/fabric that carry this segment (where the provider manages it)."
+    },
+    {
+      "kind": "contained_by",
+      "target": "Compute.Cluster",
+      "name": "scope",
+      "cardinality": "0..1",
+      "description": "Optional cluster/fabric scope the segment is defined within."
+    }
+  ]
+}

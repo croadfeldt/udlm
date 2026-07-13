@@ -74,6 +74,8 @@ Reconciliation is **not assumed to converge in one pass, or quickly.** Reserving
 - **(B) Reserve as provider-selection only (the trimmed status quo).** Rejected: picks a provider but does not hold cross-graph state, has no commit barrier, and cannot compute-and-validate `fulfillment: provider` criteria across the graph before building.
 - **(C) [chosen] Two-phase reserve → barrier → commit, with reserve/commit/release provider verbs and a first-class TTL'd hold.** Validates the whole graph with zero side effects, computes realize-time criteria in the reserve phase, and makes abort a hold-drop rather than a teardown.
 
+**Data scoping is preserved across the split.** `reserve`, `commit`, and `release` are each ordinary governed DCM→Provider crossings: each carries only the `role: execution` slice of the Requested snapshot, and the Governance Matrix fires at every crossing (`contracts/data-roles.md`; `PRV-008`; provider-contract §6a). The two-phase model adds request *types*, not new data-exposure paths — *what data goes where, for what use* is unchanged, and `fulfillment: provider` criteria/returned facts ride the same execution-role boundary (with the §1b.2 minimum-necessary rule for any parent-identity reference).
+
 ## Formal basis (adopt-not-absorb)
 
 This is **not an invented protocol** — it is a well-specified distributed-transaction pattern, mapped onto the provider contract. Naming the precedent keeps the vocabulary honest and tells implementers where to look:
@@ -95,4 +97,4 @@ This is **not an invented protocol** — it is a well-specified distributed-tran
 - **+** Policy runs against the fully-reserved graph before commit — "validate everything before we pull the trigger" is a modeled barrier, not an aspiration.
 - **−** Providers now implement three dispatch verbs, not one. Mitigated: validate-only reserve for holdless targets keeps the floor low.
 - **−** Reservation holds are stateful and TTL'd — DCM must expire and release them (bounded via the existing `RESERVE_QUERY_*` timeouts), and a provider's held capacity is briefly unavailable to others.
-- **Companion schema changes (follow-on):** `compute.virtual-machine.json` gains a typed realize-time `placement` output — the reachable **target segment** (a `Network.VLAN` reference) — so it is a declarable binding source; `catalog-item.schema.json` binding gains a `phase: dispatch | reserve` marker; provider registration advertises reserve/commit/release support. Tracked separately from this ADR.
+- **Companion schema changes:** `compute.virtual-machine.json` gains the typed realize-time **`target_segment`** output — the reachable segment (a `Network.VLAN` reference) — so it is a declarable binding source for the `fulfillment: provider` IP example (landed on #71, VM spec 0.3.0). Still follow-on: `catalog-item.schema.json` binding gains a `phase: dispatch | reserve` marker; provider registration advertises reserve/commit/release support. Tracked separately from this ADR.
