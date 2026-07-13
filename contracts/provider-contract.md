@@ -45,7 +45,7 @@ The **base level** is the minimum a provider must implement for **DCM/UDLM to ow
 1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). DCM places/matches against this.
 2. **Required data** — the input schema it needs to realize/manage each target resource, so DCM can collect intent and own the lifecycle.
 3. **Config-projection detail** — enough config schema/detail for the **DCM interface to project a configuration interface to the user across the config lifecycle**, at the provider's supported scale (basic text passthrough → typed; ADR-023 §6). No detail → DCM still projects a basic text passthrough; more detail → a typed interface.
-4. **Lifecycle functions** — realize / converge / decommission: execute the four-state transitions DCM drives (§6 dispatch). MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
+4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommission`: execute the four-state transitions DCM drives (§6, §6a dispatch). Realization is **reserve-then-commit** (ADR-011): `reserve` validates + holds with **no side effects**; `commit` builds the held reservation; nothing is committed until the whole reserved graph validates. All MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
 5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization, ADR-023 §1), with an **identity correlation** (UDLM `uuid` ↔ the provider's native id). *Without this read-back DCM is blind to reality and cannot own the lifecycle* — it is the load-bearing function that closes the loop and feeds drift/convergence/rehydrate.
 6. **Audit** — emit audit events for its actions (state transitions, relationship mutations) into the chain (SPEC-DESIGN §18d; §7).
 7. **Relationships** — declare and maintain the target resources' relationships: one authoritative direction, targets that resolve, mutations as explicit forward audit events (SPEC-DESIGN §18a–e).
@@ -307,6 +307,34 @@ POST {dcm_lifecycle_endpoint}
 ```
 
 `event_type` draws from the substrate event vocabulary; the full schema for each type is in the [event catalog](event-catalog.md). DCM reconciles the reported state against the entity's requested state and drives drift/degradation handling from there.
+
+---
+
+## 6a. Base Contract — Two-phase realization (reserve / commit / release)
+
+Realization is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, checks the whole reserved graph against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria — the reserved parent returns its placement facts (the port), the parent provider computes the child's criteria from them, and the child is reserved — **all before any resource is built**. It also makes abort a hold-drop, not a teardown. The base floor (§1a item 4) therefore requires three dispatch verbs alongside `converge` / `decommission`:
+
+| Verb | Phase | Obligation |
+|------|-------|------------|
+| **`reserve`** | validate + hold | Validate the request against capacity/identity/policy; **hold** the result (capacity, identity, an allocatable address); return a **`reservation_hold_uuid`** and the provider's **computed realize-time facts** (e.g. the reserved placement's port, the reserved address). **No infrastructure side effects.** MUST be idempotent — re-issuing the same reserve returns the *same* hold, never a second one. |
+| **`commit`** | execute | Realize the **held** reservation and write Realized State. Issued by DCM only after the whole reserved graph validates. MUST be idempotent / re-entrant (re-drive-safe, ADR-006). |
+| **`release`** | abort / expire | Drop the hold and return the reserved capacity/identity. Issued on validation failure, cancellation, or **hold-TTL expiry** (`reserve_query_timeout`, `lifecycle/operational-models.md` §2). MUST be idempotent — releasing an already-released or expired hold is a no-op. |
+
+The reservation hold is a **first-class, TTL'd** object recorded in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`, `entities/service-dependencies.md` §11), so the full reserved graph is auditable **before** commit. A provider with nothing to hold (a purely idempotent config target) MAY implement `reserve` as **validate-only** — it validates and returns facts but holds nothing — and `commit` as its realize; the two-phase contract still holds, the hold is simply empty.
+
+```json
+// RESERVE — validate + hold, no side effects (ADR-011 §3)
+POST {dcm_dispatch_endpoint}/reserve
+{ "request_uuid": "<uuid>", "entity_uuid": "<uuid>", "spec": { ... } }
+// -> 200 { "reservation_hold_uuid": "<uuid>", "hold_ttl": "PT10M",
+//          "realized_facts": { "bound_port": "<Hardware.NetworkInterface uuid>", ... } }
+
+// COMMIT — execute the held reservation (only after the commit barrier passes)
+POST {dcm_dispatch_endpoint}/commit   { "reservation_hold_uuid": "<uuid>" }
+
+// RELEASE — drop the hold (abort / expiry)
+POST {dcm_dispatch_endpoint}/release  { "reservation_hold_uuid": "<uuid>" }
+```
 
 ---
 
