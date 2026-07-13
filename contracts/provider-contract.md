@@ -77,6 +77,19 @@ A type that supports **neither** is **non-conformant for brokered fulfillment**.
 
 **Why.** The goal is to let the broker and the owning provider **exchange the full, contextual information the dependency needs** — not to constrain them to a fixed vocabulary. A broker conveys things only it knows (the NIC, the host network); a sanctioned extension (a) or custom type (b) carries that information faithfully, namespaced and typed, so nothing is dropped or approximated. Agreeing the shape in advance and validating it at admission follows from this, but the aim is the **complete, contextual exchange** itself.
 
+### 1b.2 Who writes the relationship — DCM by default, provider only when required
+
+A relationship *is* data, and DCM — which orchestrated the request and already holds both the parent and child identities — is its authoritative writer. **By default DCM builds the `child → parent` relationship directly into the Requested and Realized objects**: it requested the child in service of the parent, so it records the edge itself. The provider realizes its resource and reports its **realized state + native-id correlation** (§1a.5); DCM correlates and sets the edge. The provider does **not** receive the parent's identity for this — so nothing about the parent crosses the provider boundary at all. This is the most sovereignty-safe posture and the default.
+
+**Hybrid — the provider holds the relationship only when required.** The parent identity reference crosses to the provider only when **(a)** the provider **needs it to realize** correctly (e.g. the physical port whose `Network.VLAN` membership determines the reachable segment — the network provider must know it), or **(b)** a **policy requires** the provider to hold or attest the relationship (a sovereignty/compliance attestation). When it does cross, it is governed:
+
+- **execution slice only** — the parent identity reference (`uuid` + correlation), never the parent's record (ADR-008);
+- **sovereignty** — no reference crosses a sovereignty boundary except via the federation/peer path (`data-store-contracts.md` §5); a cross-zone parent is a **cross-zone reference**, not a raw hand-off;
+- **tenancy** — the provider MUST be admitted for the parent's tenant/zone (capability admission + Governance-Matrix, PRV-009) before it receives the reference; the reference is tenant-scoped and audited;
+- **minimum-necessary** — identity + relationship kind only; the provider is a PIP that *records* the edge, not a custodian of the parent (PDP/PIP + broker-not-custody, ADR-022).
+
+So relationship-writing defaults to DCM (parent data stays inside the control plane), and provider-held relationships are a governed, policy-driven exception — not the norm.
+
 ## 2. Base Contract — Registration
 
 All providers register through the same pipeline (registration specification is implementation-specific; see DCM repo for the complete flow).
