@@ -1,0 +1,33 @@
+# Built-in profile: DEVELOPMENT / EVALUATION — the September implementation target.
+# A policy_profile DCMGroup (registry/dcm-group.schema.json; DCM ADR-007 — a profile is a composed
+# SET with a floor, NOT a level). Relaxed floor for co-engineering/evaluation; the architecture and
+# wire contracts are identical to the production profiles — only the required floor differs.
+uuid: cf28544a-6d7e-46d6-ae3f-ddb1c07a354e
+handle: udlm/profile/dev
+conforms_to: udlm/0.1
+group_class: policy_profile
+name: Development / Evaluation
+description: >-
+  Baseline profile for development, evaluation, and co-engineering — the September implementation
+  target. Minimal required floor so the 21 release use cases can be exercised end to end without
+  production-grade governance ceremony. Same architecture, types, and wire contracts as
+  prod/fsi/sovereign; fewer required mechanics.
+version: 1.0.0
+status:
+  state: active
+profile:
+  is_builtin: true
+  default: true                             # the September evaluation default
+  approved: true
+  composed_from: []
+  floor:
+    - policy/structural-validation          # schema-valid requests (policy-contract §11)
+    - policy/tenant-isolation               # TEN-001 single-tenant ownership
+    - policy/resolved-profile-evaluation    # three-state outcome (policy-contract §7.7)
+    - audit/append-only-log                 # universal-audit baseline (merkle NOT required here)
+    - lifecycle/four-state-tracking         # intent / requested / realized / discovered
+  required_mechanics:
+    - store/requested
+    - store/realized
+    - store/discovered
+    - time-sync/causal                      # structural/causal ordering only (DCM ADR-005) — no attested clock

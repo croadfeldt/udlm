@@ -1,0 +1,47 @@
+# Built-in profile: SOVEREIGN — data-sovereignty posture (strictest built-in floor).
+# policy_profile DCMGroup (DCM ADR-007). Superset of FSI: in-boundary key material, sovereign-only
+# placement, and sub-processor restriction. Full production architecture — implemented against dev in Sept.
+uuid: 6ed686f0-0ade-4d0b-b204-5cf1bb747dd0
+handle: udlm/profile/sovereign
+conforms_to: udlm/0.1
+group_class: policy_profile
+name: Sovereign
+description: >-
+  Data-sovereignty profile — the FSI floor plus in-boundary signing/key material (audit STH keys never
+  leave the sovereignty boundary, universal-audit AUD-012), sovereign-only placement (realization
+  confined to authorized jurisdictions/zones, sovereignty declaration attested not self-asserted,
+  DCM ADR-022), and sub-processor restriction. Every mechanic is production-grade; September implements
+  it against the dev floor for evaluation.
+version: 1.0.0
+status:
+  state: active
+profile:
+  is_builtin: true
+  default: false
+  approved: true
+  composed_from: []
+  floor:
+    - policy/structural-validation
+    - policy/tenant-isolation
+    - policy/resolved-profile-evaluation
+    - policy/governance-matrix-all-operations
+    - policy/recovery
+    - policy/drift-reconciliation
+    - policy/blast-radius-impact
+    - policy/dual-approval-destructive
+    - policy/override-approval
+    - policy/sovereign-placement                # placement confined to authorized jurisdiction/zone
+    - policy/sub-processor-restriction          # no data access by unauthorized sub-processors
+    - audit/merkle-transparency-log
+    - lifecycle/four-state-tracking
+  required_mechanics:
+    - store/requested
+    - store/realized
+    - store/discovered
+    - time-sync/attested
+    - discovery/scheduled
+    - recovery/bounded-convergence
+    - audit/merkle-log
+    - accreditation/sovereign-attestation       # sovereign accreditation, attested not self-asserted (DCM ADR-022)
+    - retention/regulatory
+    - key-material/in-boundary                   # signing/key material stays within the sovereignty boundary (AUD-012)
