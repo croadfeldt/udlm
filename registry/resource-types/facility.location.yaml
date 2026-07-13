@@ -1,0 +1,72 @@
+# UDLM Resource Type Specification — Facility.Location
+#
+# A physical place — site, building, room, row, rack, shelf, or bench — that resources sit in. The
+# anchor for physical organization and location-scoped environment (cooling, structured cabling,
+# physical uplink). NOTE: power is deliberately NOT owned here — a chassis's PSUs carry that (see
+# Hardware.PowerSupply), possibly to different feeds. Location answers "where is it", which is a
+# different question from "what powers it". Locations nest (bench within room within site).
+#
+# ADOPT (not absorb): DMTF Redfish Location (PhysicalLocation / Placement / PostalAddress) already
+# models physical placement; UDLM references it and owns only identity + the containment nesting.
+$id: https://udlm.dev/registry/udlm/0.1/Facility.Location/0.1.0
+conforms_to: udlm/0.1
+uuid: ef034d7f-d8ba-484a-9a0a-360c2327c8f2
+resource_type: Facility.Location
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: curation
+portability: portable
+status: active
+metadata:
+  display_name: Location
+  description: >-
+    A physical place resources are located in — a site, room, rack, or bench — nesting into a
+    containment hierarchy. Resources declare where they sit; DCM uses it for physical organization and
+    for location-scoped ambient dependencies (cooling, uplink) via the bundle/scope mechanisms. Power
+    is intentionally out of scope here: it is carried by each chassis's power supplies to their feeds,
+    which may differ even within one rack.
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-13T00:00:00Z"
+
+adopts:
+  - standard: Redfish
+    version: ">=2023.1"
+    standard_name: Location (PhysicalLocation / Placement)
+    role: physical-placement vocabulary (site/rack/row/unit, coordinates) — referenced, not restated
+    source: https://www.dmtf.org/standards/redfish
+    license: DMTF
+    license_compatibility: compatible-reference
+
+relationships:
+  - kind: contained_by
+    target: Facility.Location
+    cardinality: "0..1"
+    name: within
+    description: The parent place this location nests inside (bench within room within site).
+
+lifecycle:
+  states: [Discovered, Realized, Intent]
+  decommission: >-
+    A location is reference structure; decommission = nothing is located in it. Removing it does not
+    move or power down anything physically. Non-destructive.
+
+spec:
+  type: object
+  required: [kind]
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum: [site, building, room, row, rack, shelf, bench, other]
+      description: The granularity of this place.
+    label:
+      type: string
+      description: Human name (e.g. "server rack", "workbench").
+    position:
+      type: string
+      description: Placement within the parent (e.g. rack units "U20-U21", a grid cell).
+outputs:
+  occupant_count:
+    type: integer
+    description: How many resources are currently located in this place.
