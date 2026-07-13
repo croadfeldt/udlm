@@ -98,6 +98,18 @@ constituents:
 
 Both are conformant. This is the concrete instance of Decision §3.
 
+## Chicken-and-egg: realize-time criteria and the reconciliation loop
+
+Provider-mode fulfillment where a dependency's criteria derive from the parent's **realize-time** facts creates a chicken-and-egg: the `Network.IPAddress` criteria need the VM's assigned port (a realize-time fact), but the VM needs the IP. This is **not a hard dependency cycle** (`docs/graph-integrity.md`) — the modeled edge is one-directional (VM `depends_on` IP); the mutuality is in *realization ordering*, not in the graph. It is resolved by DCM's **convergence / reconciliation loop** (ADR-006, idempotent + re-entrant):
+
+1. **Partially realize the parent** to the point it yields the facts the dependency's criteria need — place the VM, obtain the port it landed on.
+2. The parent provider **calculates the dependency criteria** from those facts and supplies them to DCM.
+3. **DCM fulfills the dependency** — place the IP provider, allocate on the reachable segment.
+4. **Complete the parent** — bind the realized IP; the VM's network comes up.
+5. **Re-drive to convergence** — the loop is idempotent, so DCM re-runs the plan until the graph is stable; a resource already in its desired state is a no-op (the idempotent-reconvergence case).
+
+So provider-mode with realize-time-derived criteria is safe: the loop **stages** the realization and **reconciles** the mutual dependency rather than deadlocking on it. This is another reason DCM must own the loop (§1) — only the orchestrator can stage and re-drive across the parent/child boundary. Where a *genuine* hard cycle exists (each side blocks the other with no stageable order), that is a `DependencyCycle` and is **denied**, not reconciled.
+
 ## Consequences
 
 - **The circular debate is closed:** intent relationships are author-declared; realized relationships are provider-reported; procurement is a declared per-dependency mode. All three are true, at different times — not competing answers.
