@@ -181,6 +181,8 @@ payload:
 | `entity.modified` | info | Entity fields updated (Day-2 operation) |
 | `entity.ttl_warning` | medium | TTL expires within declared warning window |
 | `entity.ttl_expired` | high | TTL reached; expiry action triggered |
+| `reservation.ttl_changed` | medium | A reservation hold's granted TTL changed — provider-initiated extend/shorten (provider-contract §6a two-phase realization) |
+| `reservation.expired` | high | A reservation hold's TTL lapsed without commit; the hold is **implicitly released** (auto-dropped). DCM audits and updates the request (re-reserve / re-plan) |
 | `entity.suspended` | high | Entity entered SUSPENDED state |
 | `entity.resumed` | medium | Entity exited SUSPENDED state |
 | `entity.decommissioning` | medium | Decommission pipeline initiated |
@@ -217,6 +219,19 @@ payload:
   ttl_expires_at: <RFC 3339 UTC 'Z'>
   expiry_action: decommission | suspend | notify_only
   warning_window: <ISO 8601 duration>  # e.g. P7D
+```
+
+#### `reservation.ttl_changed` / `reservation.expired`
+```yaml
+# Two-phase realization holds (provider-contract §6a, ADR-011).
+payload:
+  reservation_hold_uuid: <uuid>
+  entity_uuid: <uuid>                   # the target the hold reserves
+  provider_uuid: <uuid>
+  granted_ttl: <ISO 8601 duration>      # ttl_changed: the new granted TTL
+  expires_at: <RFC 3339 UTC 'Z'>        # ttl_changed: new absolute expiry
+  change_direction: extend | shorten    # ttl_changed only — provider-initiated
+  outcome: implicit_release             # reservation.expired only — hold auto-dropped, capacity freed
 ```
 
 #### `entity.decommissioning` / `entity.decommissioned`

@@ -61,6 +61,16 @@ The staged mutual dependency (ADR-009) resolves in the **reserve** phase's recon
 - **(B) Reserve as provider-selection only (the trimmed status quo).** Rejected: picks a provider but does not hold cross-graph state, has no commit barrier, and cannot compute-and-validate `fulfillment: provider` criteria across the graph before building.
 - **(C) [chosen] Two-phase reserve → barrier → commit, with reserve/commit/release provider verbs and a first-class TTL'd hold.** Validates the whole graph with zero side effects, computes realize-time criteria in the reserve phase, and makes abort a hold-drop rather than a teardown.
 
+## Formal basis (adopt-not-absorb)
+
+This is **not an invented protocol** — it is a well-specified distributed-transaction pattern, mapped onto the provider contract. Naming the precedent keeps the vocabulary honest and tells implementers where to look:
+
+- **TCC (Try-Confirm-Cancel)** — the exact shape: **Try = `reserve`** (tentatively hold resources, no visible effect), **Confirm = `commit`**, **Cancel = `release`**. TCC is the standard reservation-based approach to distributed transactions across services that cannot share a lock.
+- **Two-phase commit (2PC)**, formalized as **X/Open XA** and **ISO/IEC 10026 (OSI-TP)** — coordinator + participants, *prepare → commit/abort*. DCM is the coordinator; providers are participants; `reserve` is the prepare/vote (a provider that cannot hold **votes no** by failing reserve), the commit barrier is the global commit decision.
+- **Lease** — the timeout-bounded reservation. **RFC 2131 (DHCP)** is the near-exact protocol precedent: `DHCPOFFER` = reserve, `DHCPREQUEST`/`ACK` = commit, and **lease expiry = implied release** — precisely our TTL semantics. The general distributed-systems lease (Gray & Cheriton) is the same idea.
+
+**What we adopt vs. absorb (per the standards-adoption methodology):** we **adopt the *pattern*** (TCC's try/confirm/cancel + 2PC's coordinator/barrier + the lease's expiry-is-release) and **map it onto the existing REST dispatch channel** with UDLM vocabulary (`reserve`/`commit`/`release`, `reservation_hold_uuid`, `granted_ttl`). We do **not** absorb a specific wire protocol — not XA's C API, not WS-AtomicTransaction/WS-BusinessActivity's SOAP envelopes — because the provider contract already defines the transport. Registered in `registry/standards-adoption-register.md` as `PATTERN` entries. **SAGA** (commit-then-compensate) is the *contrast*: reserve-first avoids most compensation because nothing is built until the barrier passes — SAGA-style compensation applies only if a *commit* partially fails (the existing `COMPENSATE_AND_FAIL` recovery path).
+
 ## Consequences
 
 - **+** `fulfillment: provider` is safe and side-effect-free: criteria are computed against reserved facts, the whole graph is validated, *then* built.

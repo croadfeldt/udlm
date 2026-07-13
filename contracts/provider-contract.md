@@ -298,7 +298,8 @@ POST {dcm_lifecycle_endpoint}
   "event_uuid": "<uuid>",
   "event_type": "<event_type>",       // resource.drift_detected | resource.degraded |
                                       // resource.capacity_changed | resource.unsanctioned_change |
-                                      // resource.decommissioned | provider.capability_changed
+                                      // resource.decommissioned | provider.capability_changed |
+                                      // reservation.ttl_changed | reservation.expired   (§6a two-phase realization)
   "provider_uuid": "<uuid>",
   "affected_entity_uuids": ["<uuid>"],
   "event_timestamp": "<ISO 8601>",
@@ -312,28 +313,40 @@ POST {dcm_lifecycle_endpoint}
 
 ## 6a. Base Contract — Two-phase realization (reserve / commit / release)
 
-Realization is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, checks the whole reserved graph against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria — the reserved parent returns its placement facts (the port), the parent provider computes the child's criteria from them, and the child is reserved — **all before any resource is built**. It also makes abort a hold-drop, not a teardown. The base floor (§1a item 4) therefore requires three dispatch verbs alongside `converge` / `decommission`:
+Realization is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, reconciles the reserved graph to a fixed point, checks it against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria from the reserved parent's facts **before any resource is built**, and makes abort a hold-drop, not a teardown.
 
-| Verb | Phase | Obligation |
-|------|-------|------------|
-| **`reserve`** | validate + hold | Validate the request against capacity/identity/policy; **hold** the result (capacity, identity, an allocatable address); return a **`reservation_hold_uuid`** and the provider's **computed realize-time facts** (e.g. the reserved placement's port, the reserved address). **No infrastructure side effects.** MUST be idempotent — re-issuing the same reserve returns the *same* hold, never a second one. |
-| **`commit`** | execute | Realize the **held** reservation and write Realized State. Issued by DCM only after the whole reserved graph validates. MUST be idempotent / re-entrant (re-drive-safe, ADR-006). |
-| **`release`** | abort / expire | Drop the hold and return the reserved capacity/identity. Issued on validation failure, cancellation, or **hold-TTL expiry** (`reserve_query_timeout`, `lifecycle/operational-models.md` §2). MUST be idempotent — releasing an already-released or expired hold is a no-op. |
+**Every provider that implements `realize_resources` MUST support three dispatch request types** — `reserve`, `commit`, `release` — alongside `converge` / `decommission`. They are **operations on the dispatch channel** (an `operation` discriminator on the dispatch payload, §8.1), a base-floor obligation (§1a item 4), not optional extensions:
 
-The reservation hold is a **first-class, TTL'd** object recorded in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`, `entities/service-dependencies.md` §11), so the full reserved graph is auditable **before** commit. A provider with nothing to hold (a purely idempotent config target) MAY implement `reserve` as **validate-only** — it validates and returns facts but holds nothing — and `commit` as its realize; the two-phase contract still holds, the hold is simply empty.
+| Operation (request type) | Phase | MUST |
+|---|---|---|
+| **`reserve`** | validate + hold | Validate against capacity/identity/policy; **hold** the result (capacity, identity, an allocatable address); return `reservation_hold_uuid`, the **granted TTL** + absolute `expires_at`, and the **computed realize-time facts** (e.g. the reserved placement's port, the reserved address). **No infrastructure side effects.** Idempotent — re-issuing for the same hold returns the *same* hold (and re-grants its TTL — see renew). |
+| **`commit`** | execute | Realize the **held** reservation; write Realized State. Issued by DCM only after the commit barrier. **MUST fail if the hold is expired or released** (signals DCM to re-reserve). Idempotent / re-entrant (ADR-006). |
+| **`release`** | abort | Drop the hold; return the reserved capacity/identity. Issued on validation failure or cancellation. Idempotent — releasing an already-released or expired hold is a no-op. |
+
+**TTL is negotiated, and expiry is an implied release:**
+- **The reserve request carries a `requested_ttl`.** The provider **grants** a TTL within the **`min_hold_ttl` / `max_hold_ttl`** range it advertises (§8.1) — it MAY clamp the request to that range — and returns `granted_ttl` + absolute `expires_at`. DCM plans the commit barrier against the **shortest** granted TTL across the reserved graph.
+- **TTL expiration IS release — but never silent.** No explicit `release` call is required on expiry: once `expires_at` passes without a commit, the provider **MUST auto-drop the hold** and free the reserved capacity, and a later `commit` against it MUST fail. The provider **MUST also emit a `reservation.expired` lifecycle event** (§6) so DCM **records the expiry for audit and updates the request** — re-reserve or re-plan. A stalled reconciliation is therefore self-healing (abandoned holds evaporate rather than leaking reserved capacity) *and* observable (DCM is never left believing a lapsed hold is still valid).
+- **TTL is changeable in both directions.** DCM **renews** a hold by re-issuing `reserve` for the existing `reservation_hold_uuid` with a new `requested_ttl` (idempotent — same hold, re-granted TTL) to keep a valid hold alive while the rest of the graph reconciles. A **provider MAY initiate a TTL change** on a hold it granted — extend it, or **shorten** it because it can no longer hold that long — by emitting a `reservation.ttl_changed` lifecycle event (§6, bounded by its own min/max); DCM reconciles by committing sooner or re-planning. A provider MUST NOT silently outlive or undercut the granted TTL without signaling.
+
+The reservation hold is a **first-class, TTL'd** object recorded in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`, `entities/service-dependencies.md` §11), so the full reserved graph is auditable **before** commit. A provider with nothing to hold (a purely idempotent config target) MAY implement `reserve` as **validate-only** — validate + return facts, hold nothing (`hold_supported: false`, §8.1) — and `commit` as its realize; the two-phase contract still holds, the hold is simply empty.
 
 ```json
-// RESERVE — validate + hold, no side effects (ADR-011 §3)
-POST {dcm_dispatch_endpoint}/reserve
-{ "request_uuid": "<uuid>", "entity_uuid": "<uuid>", "spec": { ... } }
-// -> 200 { "reservation_hold_uuid": "<uuid>", "hold_ttl": "PT10M",
+// RESERVE — validate + hold, no side effects; DCM requests a TTL, provider grants within min/max
+POST {dispatch_endpoint}  { "operation": "reserve", "request_uuid": "<uuid>",
+                            "entity_uuid": "<uuid>", "requested_ttl": "PT10M", "spec": { ... } }
+// -> 200 { "reservation_hold_uuid": "<uuid>", "granted_ttl": "PT10M",
+//          "expires_at": "2026-07-13T18:22:00Z",
 //          "realized_facts": { "bound_port": "<Hardware.NetworkInterface uuid>", ... } }
 
-// COMMIT — execute the held reservation (only after the commit barrier passes)
-POST {dcm_dispatch_endpoint}/commit   { "reservation_hold_uuid": "<uuid>" }
+// RENEW (TTL change) — re-issue reserve for an existing hold with a new requested_ttl (idempotent)
+POST {dispatch_endpoint}  { "operation": "reserve", "reservation_hold_uuid": "<uuid>",
+                            "requested_ttl": "PT10M" }
 
-// RELEASE — drop the hold (abort / expiry)
-POST {dcm_dispatch_endpoint}/release  { "reservation_hold_uuid": "<uuid>" }
+// COMMIT — execute the held reservation (only after the barrier); MUST fail if expired/released
+POST {dispatch_endpoint}  { "operation": "commit",  "reservation_hold_uuid": "<uuid>" }
+
+// RELEASE — drop the hold (abort). Expiry is an implied release and needs no call.
+POST {dispatch_endpoint}  { "operation": "release", "reservation_hold_uuid": "<uuid>" }
 ```
 
 ---
@@ -448,6 +461,10 @@ service_provider_capabilities:
     - fqn: Compute.VirtualMachine
       spec_version: "2.1.0"
       catalog_item_uuid: <uuid>
+  two_phase_realization:                # reserve/commit/release — base MUST for realize_resources (§6a)
+    hold_supported: true                # false = validate-only reserve (validates + returns facts, holds nothing)
+    min_hold_ttl: PT30S                 # shortest TTL this provider will grant on reserve
+    max_hold_ttl: PT30M                 # longest TTL this provider will grant; DCM's requested_ttl is clamped to [min,max]
   cancellation:
     supports_cancellation: true
     cancellation_supported_during: [DISPATCHED, PROVISIONING]
