@@ -74,8 +74,8 @@ constituents:
     depends_on: [vm]             # ordered after the VM is placed (acyclic — CMP-002)
     bindings:                    # realize-time facts flow VM -> IP request
       - from_component: vm
-        from_output: primary_nic   # the NIC the hypervisor actually assigned
-        to_field: x-libvirt.bind_nic
+        from_output: network_port  # the Network.Port the vNIC actually attached through
+        to_field: port_ref         # the port determines the reachable segment -> the allocatable IP
     failure_effect: fatal
   - component_id: disk
     resource_type: Storage.Volume
@@ -87,14 +87,12 @@ constituents:
 
 **Flow:**
 1. Consumer submits intent: `catalog_ref: vm-service`, `network_segment: dmz`, `location: rack-3`, `size: 100Gi`. (Intent carries no IP — none is allocated yet.)
-2. DCM assembles + policy-evaluates + places the **VM** (ADR-019). The VM provider realizes it and reports `primary_nic` as a realized output.
-3. The **IP** constituent is `fulfillment: provider`: the VM provider brokers a `Network.IPAddress` sub-intent **through DCM**, with `network_segment: dmz` (from consumer_fields) and the NIC fact carried by the `binding` into `x-libvirt.bind_nic`. DCM policy-evaluates + cycle-checks + places an IP provider.
+2. DCM assembles + policy-evaluates + places the **VM** (ADR-019). The VM provider realizes it and reports the **`Network.Port`** its vNIC attached through as a realized output — the physical network-side port, which **determines the reachable network segment**.
+3. The **IP** constituent is `fulfillment: provider`: the VM provider brokers a `Network.IPAddress` sub-intent **through DCM**, carrying the **`Network.Port` reference** via the `binding`. The port determines which segment is reachable, so the IP provider allocates an address on that segment. DCM policy-evaluates + cycle-checks + places the IP provider.
 4. The IP provider allocates the address and **reports the realized relationship back** — the IP's UUID, correlated to the VM (provider-contract §1a.5, §1b). The VM now `realized-depends-on` the IP as a **`soft`** edge (portable: on rehydration the IP is *remapped*, not preserved).
 5. The **disk** constituent is `platform`: DCM's loop assembles it from `size` and places a storage provider — no VM-provider round-trip.
 
-**The extensibility, both ways (Decision §3):** the broker's `x-libvirt.bind_nic` field reaches `Network.IPAddress` either
-- **(a)** as a provider-extension on the base type — `Network.IPAddress` carries an open `x-libvirt.*` extension block the libvirt provider writes and reads; the base type stays neutral; **or**
-- **(b)** as a custom type `Network.IPAddress.LibvirtBound` that extends `Network.IPAddress` with a first-class `bind_nic`, registered as a provider-extension type.
+**Accommodation (Decision §3):** the broker conveys a **reference to a `Network.Port`** — a foundational *shared* resource (`docs/foundational-resources.md`) owned by the network/fabric provider, not a provider-invented field — because the port is what determines the reachable segment (and thus the allocatable IP). `Network.IPAddress` accommodates it as a `references Network.Port` edge (the clean base case). Where a provider has genuinely bespoke, port-specific realize-time config the base type does not model, that *residual* rides one of the two sanctioned mechanisms — **(a)** a provider-extension block on `Network.IPAddress`, or **(b)** a derived type — but the port selection itself is a shared reference, not custom info.
 
 Both are conformant. This is the concrete instance of Decision §3.
 
