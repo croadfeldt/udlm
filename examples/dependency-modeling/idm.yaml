@@ -1,0 +1,16 @@
+uuid: e787a045-a475-48a8-890a-4a369d15b535
+handle: idm
+conforms_to: udlm/0.1
+resource_type: Security.DirectoryService
+type_version: 0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.2.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      realm: EXAMPLE.TEST
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+# The realm's identity directory. A control-plane service — everything in the realm inherits a
+# dependency on it (via the realm bundle), so it holds until last on shutdown.

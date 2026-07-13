@@ -1,0 +1,16 @@
+uuid: 1b70eee7-3169-457a-a805-a91766823292
+handle: dns
+conforms_to: udlm/0.1
+resource_type: Network.AddressService
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.1.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      dhcp: example-dhcp
+      dns: idm
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+# The realm's address/name service (DHCP + DNS). Also a control-plane service inherited via the realm.

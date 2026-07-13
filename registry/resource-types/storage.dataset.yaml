@@ -1,0 +1,92 @@
+# UDLM Resource Type Specification — Storage.Dataset (YAML; validated against resource-type-spec.schema.json).
+#
+# A dataset carved from a Storage.Pool — the ZFS dataset (filesystem / zvol), extensible to an LVM LV or
+# btrfs subvolume. This is the thing a host service's bind-mount actually points at, so it is the storage
+# node in the dependency graph for host/podman workloads: a container `depends_on` its dataset, the
+# dataset `depends_on` its pool, the pool `depends_on` its drives. Distinct from Storage.Volume (a
+# cluster-provisioned PVC/CSI volume a workload attaches) — a Dataset is the host-local, hierarchy-bearing
+# filesystem a pool carves, not a cluster-provisioned claim.
+#
+# ADOPT (not absorb): the dataset/property vocabulary is OpenZFS's; a provider (zfs) naturalizes it.
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.1.0
+conforms_to: udlm/0.1
+uuid: a87f8bfa-e544-4e64-8b5e-24c9c581ad64
+resource_type: Storage.Dataset
+version: 0.1.0
+family: Resource
+entity_type: Infrastructure Resource
+lifecycle_archetype: provisioning
+portability: portable
+status: active
+metadata:
+  display_name: Storage Dataset
+  description: >-
+    A dataset carved from a Storage.Pool — a ZFS filesystem or zvol (extensible to an LVM LV / btrfs
+    subvolume), with a mountpoint and optional dataset hierarchy. The consumable, host-local storage a
+    podman/host service bind-mounts; it is the storage node those workloads depend on. The provider (zfs)
+    naturalizes the concrete dataset; snapshot/replication policy is Policy (DCM), not stored here.
+    Grounded in OpenZFS (dataset).
+  maintainer: udlm-registry
+  origination_timestamp: "2026-07-13T00:00:00Z"
+
+adopts:
+  - standard: OpenZFS
+    version: "2.x"
+    standard_name: dataset (filesystem / volume)
+    role: dataset vocabulary (mountpoint, used, quota, properties, hierarchy)
+    source: https://openzfs.github.io/openzfs-docs/
+    license: CDDL-1.0
+    license_compatibility: compatible-reference
+
+lifecycle:
+  states: [Intent, Requested, Realized, Discovered]
+  decommission: >-
+    Provider destroys the dataset; Discovered reflects absent. DATA-DESTRUCTIVE — the dataset IS the data,
+    so it must be stopped/unmounted after the services that use it and before its pool is exported.
+
+spec:
+  type: object
+  required: [dataset_kind]
+  properties:
+    dataset_kind:
+      type: string
+      enum: [filesystem, volume, snapshot, other]
+      default: filesystem
+      description: ZFS dataset kind — filesystem (mounted), volume (zvol block device), or snapshot.
+    mountpoint:
+      type: string
+      description: Filesystem mountpoint when dataset_kind=filesystem (e.g. /export/gitlab); "none"/"-" if unmounted.
+    used:
+      type: string
+      pattern: "^[0-9]+(\\.[0-9]+)?(K|M|G|T|P|KB|MB|GB|TB|PB|KiB|MiB|GiB|TiB|PiB)$"
+      description: Space consumed as the provider reports it.
+    quota:
+      type: string
+      pattern: "^[0-9]+(\\.[0-9]+)?(K|M|G|T|P|KB|MB|GB|TB|PB|KiB|MiB|GiB|TiB|PiB)$"
+      description: Configured quota, if any.
+    properties:
+      type: object
+      additionalProperties: { type: string }
+      description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
+
+outputs:
+  device_or_path:
+    type: string
+    description: The realized mountpoint (filesystem) or /dev/zvol path (volume).
+
+relationships:
+  - kind: depends_on
+    target: Storage.Pool
+    cardinality: 1..1
+    name: pool
+    description: The pool this dataset is carved from; the dataset cannot outlive its pool.
+  - kind: references
+    target: Storage.Dataset
+    cardinality: 0..1
+    name: parent_dataset
+    description: The parent dataset in the hierarchy (e.g. aspen/nc/data → aspen/nc), when nested.
+  - kind: contained_by
+    target: Compute.BareMetalHost
+    cardinality: 0..1
+    name: host
+    description: The host the pool (and thus this dataset) is local to.

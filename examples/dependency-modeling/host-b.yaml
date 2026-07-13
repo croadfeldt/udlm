@@ -1,0 +1,20 @@
+uuid: 75364bd7-3861-4028-a46c-078c35712a28
+handle: host-b
+conforms_to: udlm/0.1
+resource_type: Compute.BareMetalHost
+type_version: 0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.2.0
+lifecycle_state: Discovered
+tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
+states:
+  discovered:
+    fields:
+      roles:
+      - workstation
+    outputs: {}
+    at: '2026-07-13T00:00:00Z'
+dependencies:
+# Sits at the bench, same realm as host-a. Single PSU on an unprotected utility outlet (feed-wall).
+- kind: references
+  target_uuid: 38410da1-c12c-42d0-a17d-1d542076a720
+  target_handle: loc-bench
