@@ -17,6 +17,6 @@ dependencies:
 - kind: references
   target_uuid: 75364bd7-3861-4028-a46c-078c35712a28
   target_handle: host-b
-- kind: references
-  target_uuid: 31aad112-908e-444a-839f-89dbd4a35b8c
-  target_handle: realm
+- kind: depends_on
+  target_uuid: 30fe47cb-e61b-490d-8657-a56c76581a4f
+  target_handle: core-services

@@ -19,6 +19,3 @@ dependencies:
 - kind: references
   target_uuid: aa5e9540-8e88-466f-9644-fdfea9b257b6
   target_handle: loc-rack
-- kind: references
-  target_uuid: 31aad112-908e-444a-839f-89dbd4a35b8c
-  target_handle: realm
