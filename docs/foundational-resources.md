@@ -11,6 +11,10 @@ A **foundational resource** (equivalently, a *root resource*) is one that:
 3. **Is populated by the platform and/or a responsible provider** — the selectable set of foundational resources comes from **a platform-level data layer** (an admin/SRE defines the catalog of locations/networks as a base layer, `layering-and-versioning.md`) **and/or** the **provider that owns them advertises them** (a Facility.Location provider, a network provider) with their capacity/capability (`provider-contract.md` registration).
 4. **Is eligibility-governed** — which foundational resources a given consumer may select is **policy** (`policy-contract.md`) over the provider-supplied and platform-defined data, not a free choice. The responsible provider's data + policy decide the eligible set; the consumer selects within it.
 
+## Base guidance, org ratification, provider variants
+
+UDLM ships the **base definition** of each foundational resource as **guidance**, plus the **mechanisms to support and enforce** its production and consumption (typed relationships, policy match sources, the Governance Matrix). It does **not** mandate a closed vocabulary. **The organization ratifies** what a base resource definition is for their estate, and **providers define their offerings** — a provider may offer a variant base type (a `Network.Port` in place of `Network.VirtualNetwork`, say), and the org decides — via policy/Governance-Matrix — which base or variant its providers must **produce** and its consumers may **consume**. The graph, placement, and diagnostics read whatever typed edges exist; they never require one specific type. So this table is the *recommended* base set and starting guidance, not a fixed list.
+
 ## The members (initial set)
 
 | Foundational resource | Owned/advertised by | Dependents select it as |
