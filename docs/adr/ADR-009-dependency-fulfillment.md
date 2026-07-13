@@ -12,7 +12,7 @@ A catalog item composes multiple resources — a VM that needs storage, a networ
 
 - the **catalog item** (defined by the provider) declares that the *structural* dependency exists and which inputs the consumer must supply;
 - the **consumer** knows the *intent parameters* they care about — network segment, location, sovereignty zone — but not the mechanics;
-- the **realizing provider** knows the *realization-time specifics that do not exist until placement* — the assigned NIC/MAC, the host network the hypervisor actually landed on, driver constraints.
+- the **realizing provider** knows the *realization-time specifics that do not exist until placement* — the network segment the placement can actually reach, the host it landed on, driver constraints (the assigned NIC/MAC are the provider's own internal facts, not cross-provider criteria).
 
 So the real question is not "who procures it" but **"who contributes which fields, when, and who drives the loop."** The last part has one answer under ADR-006, and it collapses most of the debate.
 
@@ -87,12 +87,21 @@ constituents:
     failure_effect: fatal
 ```
 
-**Flow:**
-1. Consumer submits intent: `catalog_ref: vm-service`, `network_segment: dmz`, `location: rack-3`, `size: 100Gi`. (Intent carries no IP — none is allocated yet.)
-2. DCM assembles + policy-evaluates + **reserves the VM** (ADR-011). The reserved placement determines which **network segment** the VM can reach — a `Network.VLAN` (or, at coarsest, its `Facility.Location`). That target segment is the VM provider's realize-time fact.
-3. The **IP** constituent is `fulfillment: provider`: the `Network.IPAddress` dependency was **declared in the catalog** (so DCM planned, governed, and cycle-checked it in advance). At reserve-time the VM provider — having received the initial request — **calculates the IP's request criteria**, which are simply the **target network segment** (the reserved placement's `Network.VLAN`) or its location, and **supplies that to DCM** through the `binding`. **DCM fulfills** the declared IP request with those criteria — reserving the IP provider, which allocates an address on that segment. The IP provider needs **nothing about the VM's NIC, MAC, or host networking** — only where to allocate.
-4. The IP provider allocates the address and **reports the realized relationship back** — the IP's UUID, correlated to the VM (provider-contract §1a.5, §1b). The VM now `realized-depends-on` the IP as a **`soft`** edge (portable: on rehydration the IP is *remapped*, not preserved).
-5. The **disk** constituent is `platform`: DCM's loop assembles it from `size` and places a storage provider — no VM-provider round-trip.
+**Flow (two-phase — reserve → barrier → commit, ADR-011):**
+
+*Intent.* Consumer submits `catalog_ref: vm-service`, `network_segment: dmz`, `location: rack-3`, `size: 100Gi`. Intent carries no IP — none is allocated yet.
+
+*Reserve phase — validate + hold, no side effects.* DCM assembles, policy-evaluates, and reserves across the graph, reconciling to a fixed point. Nothing is built in this phase.
+1. **Reserve the VM.** The VM provider validates and **holds** a placement (with a granted TTL), returning its realize-time fact: the **target `Network.VLAN` segment** the placement can reach (or, at coarsest, its `Facility.Location`).
+2. **Compute + reserve the IP** (`fulfillment: provider`). The `Network.IPAddress` dependency was **declared in the catalog** (so DCM planned, governed, and cycle-checked it in advance). Its criteria are just that **target segment**: the VM provider supplies it through the `binding`, and DCM **reserves** the IP provider, which holds an allocatable address on that segment. If that segment's pool is exhausted (or policy denies), DCM **re-reserves** the VM on a different placement and recomputes — the reserve reconciliation loop — until the holds are mutually consistent.
+3. **Reserve the disk** (`platform`). DCM assembles it from `size` and reserves a storage provider — no VM-provider round-trip.
+
+*Commit barrier.* DCM commits **nothing** until every hold (VM, IP, disk) is valid and mutually consistent **and** all policy (placement, governance-matrix, cycle, quota) is green against the **fully reserved** graph.
+
+*Commit phase — execute the holds, in dependency order.*
+4. DCM **commits** each held reservation: the storage / IP / VM providers build, write Realized State, and **report realized relationships back** — the IP's UUID correlated to the VM (provider-contract §1a.5, §1b). The VM now `realized-depends-on` the IP as a **`soft`** edge (portable: on rehydration the IP is *remapped*, not preserved).
+
+*Release / expiry.* Any hold not committed — validation failure, cancellation, or **TTL expiry** (an implied release that emits `reservation.expired`; DCM's watchdog backstops a silent provider) — is released. Because the reserve phase built nothing, **no half-built resource is ever left behind.**
 
 **This case needs no accommodation mechanism (Decision §3).** What the broker conveys is a **shared foundational reference** — the target `Network.VLAN` segment (or `Facility.Location`), a resource the network/fabric provider owns (`docs/foundational-resources.md`), not a provider-invented field. `Network.IPAddress` references the segment natively; the IP provider allocates from that segment's pool. There is **no NIC, no MAC, no switch-port ref, no extension block, and no custom type** involved — binding a returned IP to a vNIC is the VM provider's *own* post-allocation concern, never something the IP provider needs. IP allocation is therefore a plain shared-reference dependency, **deliberately not** an instance of broker-accommodation. The two sanctioned mechanisms — **(a)** a provider-extension block or **(b)** a derived type — exist only for the genuinely rare case where a broker must convey provider-specific realize-time state the base type does not model; a shared segment/location reference is not that case.
 
