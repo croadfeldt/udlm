@@ -79,6 +79,21 @@ timeout_declarations:
     on_timeout: skip this provider; continue placement loop with remaining candidates
     # Reserve query timeout does not trigger RESERVE_QUERY_TIMEOUT recovery policy
     # unless ALL candidates have timed out or been exhausted
+
+  reservation_reconcile_grace:
+    description: "DCM-side watchdog after a reservation hold's expires_at. A provider MUST emit
+      reservation.expired at expiry (provider-contract §6a); DCM does not trust that for correctness.
+      DCM independently tracks expires_at (known from the reserve grant) and arms this grace timer.
+      If no reservation.expired arrives within the grace, DCM emits its OWN reservation.expiry_unconfirmed
+      event and fires the RESERVATION_EXPIRY_UNCONFIRMED recovery policy."
+    profile_defaults:
+      minimal: PT60S
+      dev: PT60S
+      standard: PT30S
+      prod: PT15S
+      fsi: PT15S
+      sovereign: PT15S
+    on_timeout: emit reservation.expiry_unconfirmed (DCM-authored); trigger RESERVATION_EXPIRY_UNCONFIRMED
 ```
 
 ### 2.2 Timeout Audit Record (Wire Contract)
@@ -376,6 +391,7 @@ recovery_policy:
 | `ASSEMBLY_TIMEOUT` | Assembly pipeline exceeded configured timeout |
 | `DISPATCH_TIMEOUT` | Provider did not respond within dispatch_timeout |
 | `RESERVE_QUERY_ALL_EXHAUSTED` | All placement candidates timed out or rejected |
+| `RESERVATION_EXPIRY_UNCONFIRMED` | A reservation hold's TTL lapsed and the provider did **not** emit `reservation.expired` within `reservation_reconcile_grace` — provider non-conformance; DCM must force-resolve the hold |
 | `LATE_RESPONSE_RECEIVED` | Provider responded after timeout was declared |
 | `CANCELLATION_SENT` | Cancellation sent to provider |
 | `CANCELLATION_CONFIRMED` | Provider confirmed clean cancellation |
@@ -392,6 +408,7 @@ recovery_policy:
 | `DISCARD_AND_REQUEUE` | Best-effort cleanup sent to provider; new request cycle created immediately from Intent State |
 | `DISCARD_NO_REQUEUE` | Best-effort cleanup sent to provider; entity FAILED; no automatic requeue |
 | `ACCEPT_LATE_REALIZATION` | Accept late provider response; write Realized State; entity proceeds to OPERATIONAL |
+| `RELEASE_AND_NOTIFY_AFFECTED` | Force-resolve an unconfirmed-expiry hold: issue an **explicit `release`** to the delinquent provider **and** to every affected party (providers holding dependent reservations in the same reserved graph), record the DCM-authored release for audit, and flag the provider's non-conformance (`provider.capability_changed`) |
 | `COMPENSATE_AND_FAIL` | Execute compensation rollback for composite service; entity FAILED when complete |
 | `NOTIFY_AND_WAIT` | Fire notification to configured audience; wait for human decision up to deadline |
 | `ESCALATE` | Notify platform admin immediately; no automatic action |

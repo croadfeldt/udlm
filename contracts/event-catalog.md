@@ -183,6 +183,7 @@ payload:
 | `entity.ttl_expired` | high | TTL reached; expiry action triggered |
 | `reservation.ttl_changed` | medium | A reservation hold's granted TTL changed — provider-initiated extend/shorten (provider-contract §6a two-phase realization) |
 | `reservation.expired` | high | A reservation hold's TTL lapsed without commit; the hold is **implicitly released** (auto-dropped). DCM audits and updates the request (re-reserve / re-plan) |
+| `reservation.expiry_unconfirmed` | critical | **DCM-authored backstop:** the hold's TTL lapsed and the provider did **not** emit `reservation.expired` within `reservation_reconcile_grace`. DCM emits this, force-resolves via `RELEASE_AND_NOTIFY_AFFECTED`, and flags provider non-conformance |
 | `entity.suspended` | high | Entity entered SUSPENDED state |
 | `entity.resumed` | medium | Entity exited SUSPENDED state |
 | `entity.decommissioning` | medium | Decommission pipeline initiated |
@@ -232,6 +233,20 @@ payload:
   expires_at: <RFC 3339 UTC 'Z'>        # ttl_changed: new absolute expiry
   change_direction: extend | shorten    # ttl_changed only — provider-initiated
   outcome: implicit_release             # reservation.expired only — hold auto-dropped, capacity freed
+```
+
+#### `reservation.expiry_unconfirmed`
+```yaml
+# DCM-authored backstop when a provider misses its required reservation.expired (provider-contract §6a).
+payload:
+  reservation_hold_uuid: <uuid>
+  entity_uuid: <uuid>
+  provider_uuid: <uuid>                 # the non-conformant provider
+  expires_at: <RFC 3339 UTC 'Z'>        # the hold's original expiry
+  grace_elapsed: <ISO 8601 duration>    # reservation_reconcile_grace waited before DCM acted
+  recovery_action: RELEASE_AND_NOTIFY_AFFECTED
+  affected_holds: [<reservation_hold_uuid>, ...]  # dependent holds explicitly released
+  authored_by: dcm                      # provenance — DCM, not the provider
 ```
 
 #### `entity.decommissioning` / `entity.decommissioned`

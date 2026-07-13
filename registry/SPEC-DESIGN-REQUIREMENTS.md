@@ -48,7 +48,11 @@ Each hard constraint cites the UDLM contract it derives from.
     failure/cancellation/TTL-expiry. Providers expose `reserve` / `commit` / `release`, all idempotent
     (`contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (ADR-009)
     side-effect-free: cross-dependency criteria are computed against **reserved** facts before anything
-    is built.
+    is built. A `reserve` request carries a `requested_ttl` bounded by the provider-advertised
+    `min_hold_ttl` / `max_hold_ttl`; **TTL expiry is an implied release** and MUST emit
+    `reservation.expired`. DCM MUST **independently** time each hold (`reservation_reconcile_grace`) and,
+    if the provider misses that event, emit its own `reservation.expiry_unconfirmed` and force-resolve
+    by policy (`RELEASE_AND_NOTIFY_AFFECTED`) — a lapsed hold never resolves by silence.
 
 ### Portability & provider-neutrality
 15. The spec is the contract **any** provider of the type MUST satisfy; providers
