@@ -58,6 +58,13 @@ Same shape family as `DependencyCycle`: members + the offending edge + severity-
 
 The **diagnostic shapes and the derivation definitions** are UDLM (a peer must interpret a `SharedFaultDomain` / `UnmetDependency` the same, or interop breaks). The **computation** (traversal, grouping) is DCM. A peer may compute differently; it must expose the same shapes.
 
+## Options considered
+
+- **Author fault domains as their own edge kind (or a first-class `FaultDomain` type).** Rejected — a fault domain is fully determined by which foundational resources members co-reference; authoring it separately is redundant work that drifts from the edges it should track. Derived from foundational-resource references, no new authored edges.
+- **Compute blast radius / redundancy imperatively, outside the graph.** Rejected — impact analysis, ordered-shutdown, rehydration, and policy would each derive reach independently and disagree. It must fall out of the one graph so every consumer agrees by construction.
+- **Surface unmet dependencies only at dispatch time (fail the realization when the edge can't be resolved).** Rejected — that discovers the break mid-dispatch. `UnmetDependency` surfaces it pre-realization as a diagnostic siblings act on (ADR-006 terminal surface), like `DependencyCycle`.
+- **Coin a fixed type vocabulary the shapes require (e.g. mandate `Network.VirtualNetwork`).** Rejected — the shapes read whatever typed edges exist; the org ratifies anchors and providers offer base/variant types via policy. Fixing the vocabulary would break the guidance-plus-policy-hook principle and provider variation (ADR-009).
+
 ## Consequences
 
 - The dependency graph is now first-class in **all four** of its consumers (cycles, fault domains, blast radius, unmet deps) — UC-73071912 satisfied; the estate-explorer/ordered-shutdown, impact analysis, and rehydration read one graph.
