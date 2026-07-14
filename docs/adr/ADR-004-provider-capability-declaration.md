@@ -1,4 +1,4 @@
-# UDLM ADR-004: Provider capability declaration (topology + mobility + operational)
+# UDLM ADR-004: Provider capability declaration (topology + mobility + operational + sovereignty)
 
 **Status:** Proposed
 **Date:** 2026-06-27 (amended 2026-07-14 — capability blocks scoped per capability category, not per provider)
@@ -27,17 +27,19 @@ So the three blocks below are declared **on each capability entry** — the same
     "resource_types": ["Compute.VirtualMachine"],
     "topology_capability": { /* §1 — for THIS category */ },
     "mobility": [ /* §2 */ ],
-    "operational_capability": { /* §3 */ }
+    "operational_capability": { /* §3 */ },
+    "sovereignty": { "operating_jurisdictions": ["eu"], "data_residency_zones": ["eu-west"] }  // §4 — narrows the provider default
   },
   {
     "category": "realize_resources/Storage",
     "resource_types": ["Storage.Volume"],
     "topology_capability": { "kinds_supported": ["rack"], "max_separation": "rack" }
+    // no sovereignty override → inherits the provider-level sovereignty_declaration
   }
 ]
 ```
 
-A provider whose *entire* offering shares one topology/operational profile MAY set a provider-level default block, but any per-capability entry **overrides** it and is the value placement matches against. Per-capability is the floor; provider-wide is a convenience, never the authority.
+**The rule is general: declare per provider (default), override per capability, finest granularity wins.** A provider whose entire offering shares one profile MAY set a provider-level default block; any per-capability entry **overrides** it *for that capability* and is the value placement/policy matches against. This applies to **all** provider-declared "what I can do for X" data — `topology_capability`, `mobility`, `operational_capability`, **and the provider's `sovereignty_declaration` / residency** (§4). Each capability is treated as **separable from the provider**: it *assumes* the provider's declared stance but MAY override it. Per-capability is the operative value; the provider-level block is the default, never the ceiling.
 
 ### 1. `topology_capability` — the topologies a provider can *fulfill* for a capability (compat with ADR-001)
 **A provider does not author a `Topology` instance — it declares the topologies it can *fulfill*, as a capability.** (The concrete `Topology` instance — the actual domains — is realized/discovered, a separate artifact from this declaration; ADR-001.) Matched against a workload's abstract topology constraints.
@@ -73,6 +75,12 @@ What the provider supports so operational policies / SRE patterns can rely on it
 ```
 Fault-domain maintenance gating, rehearsal-based process validation (T6), and rolling cutover all require these primitives; if a provider can't `drain`, the SRE pattern that depends on draining can't be promised on it.
 
+### 4. `sovereignty` — per-capability override of the provider's residency stance
+
+The provider registration carries a provider-wide `sovereignty_declaration` (`provider-contract.md §2`: `operating_jurisdictions`, `data_residency_zones`, `sub_processors`). A capability entry MAY carry a `sovereignty` block that **overrides it for that capability** (finest granularity wins) — because residency legitimately differs by what is realized: a provider may run `realize_resources/Compute` EU-only while `realize_resources/Storage` is global. A capability with no `sovereignty` block **inherits** the provider default. This resolves the double-declaration between the provider stance and `topology_capability.jurisdictions`: `jurisdictions` is the *placement* input (where it can spread), `sovereignty` is the *residency/authorization* stance for the same category — the effective residency for a request is the finest declared.
+
+**Attestation invariant (DCM ADR-022) — claim and accreditation must correspond 1-1; never assume they agree.** A declared `sovereignty` at any scope is a **CLAIM**. Accreditations are the *separate* **attestation**, each covering its own scope (jurisdiction, capability, offering) and **declarable per capability** (finest wins), so the match is made at the capability grain. For a claim to be **trusted**, it MUST have a **one-to-one matching accreditation that attests exactly its scope** — claim ↔ accreditation, 1-1. There is **no partial or intersection credit**: a claim with no matching accreditation is **untrusted** (self_asserted tier, ADR-022) and is **not** honored for sovereign/restricted placement, and an accreditation with no matching claim attests nothing operative. So **finest-granularity-wins** governs the declared *value*; the required **1-1 claim↔accreditation match** governs whether that value is *trusted* — the two are reconciled by exact correspondence, never assumed equal.
+
 ## How it's consumed (matching, not just storage)
 
 - **Placement** (DCM ADR-019): filter/score providers by the `topology_capability` **of the capability category that would realize the resource** (can *that* category satisfy the abstract spread/anti-affinity/jurisdiction?) + its `mobility` (can it meet `data_mobility`?). A provider is not eligible because *some* capability of its clears the filter — the eligible capability is the one whose `resource_types` cover the request.
@@ -82,8 +90,8 @@ Fault-domain maintenance gating, rehearsal-based process validation (T6), and ro
 Capability declaration says what's **possible**; the `Topology` instance (ADR-001) is the **concrete** graph the provider contributes; placement uses the former to negotiate and the latter to place.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
-- **Data (UDLM):** the provider capability declaration shape — `topology_capability` + `mobility` + `operational_capability`.
-- **Policy (DCM):** matching/scoring/gating consume it (DCM ADR-019/020) — requirements ↔ capability negotiation.
+- **Data (UDLM):** the provider capability declaration shape — `topology_capability` + `mobility` + `operational_capability` + a per-capability `sovereignty` override, each on the capability entry, plus per-capability accreditation references.
+- **Policy (DCM):** matching/scoring/gating consume it (DCM ADR-019/020) — requirements ↔ capability negotiation; and the **1-1 claim↔accreditation reconciliation** (ADR-022) that decides the *trusted* per-capability residency (a claim without a matching accreditation is self_asserted, not honored).
 - **Provider:** **authors** the declaration and **executes** what it declares (naturalization, migration, rehearsal).
 
 ## Options considered
@@ -92,7 +100,7 @@ Capability declaration says what's **possible**; the `Topology` instance (ADR-00
 - **Generalize the provider declaration with topology + mobility + operational blocks** — **chosen.**
 
 ## Consequences
-- Extend `provider-adopted-standards.schema.json` → a **provider capability declaration** schema. The `topology_capability` / `mobility` / `operational_capability` blocks are nested **under each declared capability entry** (keyed by the ADR-PROV-002 `(verb × domain)` category + its `resource_types`), not at the provider root; an optional provider-level default block is permitted, overridden by any per-capability entry. Existing `adopted_standard_support` unchanged. (Not yet implemented — this ADR is the shape the schema will encode.)
+- Extend `provider-adopted-standards.schema.json` → a **provider capability declaration** schema. The `topology_capability` / `mobility` / `operational_capability` / `sovereignty` blocks **and** accreditation references are nested **under each declared capability entry** (keyed by the ADR-PROV-002 `(verb × domain)` category + its `resource_types`), not at the provider root; an optional provider-level default block is permitted, overridden by any per-capability entry (finest-granularity-wins). Sovereignty trust additionally requires a **1-1 claim↔accreditation match** at the capability grain (ADR-022). Existing `adopted_standard_support` unchanged. (Not yet implemented — this ADR is the shape the schema will encode.)
 - **Consistency:** this makes all provider-declared "what I can do for X" data — advertised inventory/capacity (`provider-contract.md` §8.1a), mobility, topology, and operational primitives — uniformly **per capability category**, so a multi-capability provider is never described by a single global claim.
 - Closes the loop: consumer requirements (`Topology` constraints + `data_mobility`) ↔ provider capability ↔ Policy matching/gating. Placement, sovereignty, fault-domain gating, and process validation (T6) all negotiate against one declaration.
 - DCM side (separate ADR): the matching/scoring + operational gating that consume this.
