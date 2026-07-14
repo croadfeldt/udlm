@@ -87,7 +87,8 @@
         "governance_matrix_rule",
         "placement",
         "lifecycle",
-        "itsm_action"
+        "itsm_action",
+        "override"
       ],
       "description": "The policy's kind \u2014 determines the `output` schema (policy-contract.md \u00a78-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (ADR-019) and itsm_action (\u00a717) extend it."
     },
@@ -426,6 +427,39 @@
             "required": [
               "constraints"
             ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "policy_type": {
+            "const": "override"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output": {
+            "required": [
+              "scope",
+              "expires_at"
+            ],
+            "properties": {
+              "target_policy_uuid": {
+                "type": "string",
+                "description": "The soft policy this override suppresses (policy-contract \u00a718.1). Hard-enforcement policies are unoverridable (POL-003)."
+              },
+              "scope": {
+                "description": "The narrowed match scope the override applies to \u2014 never global (\u00a718.1)."
+              },
+              "expires_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+                "description": "Mandatory expiry \u2014 overrides are time-bounded (POL-009). RFC 3339 UTC 'Z'."
+              }
+            }
           }
         }
       }
