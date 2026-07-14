@@ -23,6 +23,8 @@ So the three blocks below are declared **on each capability entry** — the same
 ```json
 "capabilities": [
   {
+    "capability_uuid": "8f2c…",                        // stable identity of THIS capability — an accreditation MAY bind here (§4)
+    "version": "1.2.0",                                // immutable-once-published; bumped on any change to the attested surface
     "category": "realize_resources/Compute",           // (verb × domain), ADR-PROV-002
     "resource_types": ["Compute.VirtualMachine"],
     "topology_capability": { /* §1 — for THIS category */ },
@@ -31,6 +33,8 @@ So the three blocks below are declared **on each capability entry** — the same
     "sovereignty": { "operating_jurisdictions": ["eu"], "data_residency_zones": ["eu-west"] }  // §4 — narrows the provider default
   },
   {
+    "capability_uuid": "b71a…",
+    "version": "1.0.0",
     "category": "realize_resources/Storage",
     "resource_types": ["Storage.Volume"],
     "topology_capability": { "kinds_supported": ["rack"], "max_separation": "rack" }
@@ -90,6 +94,14 @@ The **enforcement** is platform-level (the sovereignty Governance-Matrix policy 
 - **In-boundary data** — the execution-slice that crosses to each hop (`data-roles.md`) stays within the claimed boundary; a capability's sovereignty also bounds where its data may go, not just where it runs.
 
 So the choice — provider-scope vs per-capability — is the provider's, and UDLM gives it the machinery to guarantee the narrower route end-to-end; the platform's sovereignty policy is what holds the barrier.
+
+**How deterministic — a configurable dial, org/platform-admin policy (not a fixed rule).** An accreditation may bind at one of **three grains**, and *which grain is required* — plus whether a capability change **expires** the binding — is the platform's policy (naturally profile-governed: lax for dev, strict for sovereign/fsi):
+
+1. **per provider** — attests the whole provider (`subject_uuid` only); survives capability changes. Coarsest.
+2. **per capability category** — attests a `(verb × domain)` category; survives version changes within it.
+3. **per capability version** — binds the exact **`(capability_uuid, version)`**. Any change to that capability is a **new version the accreditation does not cover**, so the sovereignty claim reverts to `self_asserted` until re-attested. Most deterministic — a provider cannot broaden or alter an attested capability and keep riding the old attestation.
+
+To make (3) possible, each capability entry carries a stable **`capability_uuid`** and an immutable **`version`** (VERSIONING discipline — bumped on any change to its attested surface: topology/mobility/operational/sovereignty/resource_types). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) is the hook that fires **accreditation re-evaluation**; whether that change expires the binding is decided by the required grain the platform configured. Determinism is thus a knob the org sets — from "accredit the provider" to "accredit this exact capability version" — not a single hard-coded stance; UDLM carries all three binding grains and the change event, the platform policy picks the strictness.
 
 ## How it's consumed (matching, not just storage)
 
