@@ -1,0 +1,37 @@
+# Worked-example Accreditation record (governance/accreditation-and-authorization-matrix.md §3.3).
+# A GRAIN-3 (most deterministic) attestation: it binds an EXACT (capability_uuid, version) + one
+# category, so if the provider bumps that capability's version the accreditation no longer matches and
+# the sovereignty claim reverts to self_asserted until re-attested (§3.3.1). It attests the Compute
+# category of libvirt-vm-sp's "EU Sovereign Compute" capability — NOT its Network category.
+record_type: accreditation
+uuid: c091705c-a949-4a4c-837b-e05025f23e8e
+handle: accreditations/providers/libvirt-vm-sp/eu-sovereign-compute
+conforms_to: udlm/0.1
+version: 1.0.0
+subject_uuid: 5394a44c-fe43-40c2-8d67-cace95c1d363    # the provider (libvirt-vm-sp) — match axis 1
+subject_type: service_provider
+accreditation_type: sovereign_authorization
+framework: sovereign
+accreditor:
+  uuid: 94582d49-0e8f-4b64-91d9-f9f09be45dbd
+  name: Example Sovereignty Authority
+  type: government
+issued_at: "2026-07-14T00:00:00Z"
+expires_at: "2027-07-14T00:00:00Z"
+renewal_warning_before: P90D
+last_verified_at: "2026-07-14T00:00:00Z"
+scope:
+  capability_scope:
+    - capability_uuid: 7fafd8f3-cda6-4baf-b10a-f092210d5947   # grain 3: exact capability...
+      version: "1.2.0"                                        #   ...at exactly this version (expires on bump)
+      category: realize_resources/Compute                    #   ...narrowed to the Compute category only
+  geographic_scope: [eu]                                     # match axis 3 (jurisdiction/residency)
+  data_classifications: [sovereign]
+certificate_ref: "https://example.com/accreditations/eu-sovereign-compute.pdf"
+external_registry_id: "EU-SOV-2026-0042"
+status: active
+verification:
+  tier: external_registry
+  stale_after: P7D
+  stale_action: suspend
+  verification_failure_count: 0

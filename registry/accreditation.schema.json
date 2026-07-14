@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/accreditation.schema.json",
+  "title": "UDLM Accreditation record",
+  "description": "Machine-validatable Accreditation record (governance/accreditation-and-authorization-matrix.md §3.3). A formal, versioned, time-bounded attestation that a subject (a provider, policy evaluator, credential provider, or peer realization) satisfies a compliance framework — EXPLICITLY scoped to provider + capability + jurisdiction so the sovereignty 1-1 match (UDLM ADR-004 §4; §3.3.1) is machine-checkable. UDLM carries the record; DCM's Governance Matrix consumes it. The `scope.capability_scope` binding grain (provider-wide | category | exact capability version) is org/platform-admin policy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "uuid", "conforms_to", "subject_uuid", "subject_type", "accreditation_type", "framework", "accreditor", "issued_at", "scope", "status"],
+  "properties": {
+    "record_type": { "const": "accreditation", "description": "Dispatch discriminator (data-model-core §2)." },
+    "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "RFC 9562 v4 identity of this accreditation." },
+    "handle": { "type": "string", "description": "Advisory human identity, e.g. accreditations/providers/eu-west-prod-1/fedramp-high. uuid is authoritative." },
+    "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "subject_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The subject this attests — the PROVIDER uuid for a service_provider (axis 1 of the sovereignty 1-1 match, §3.3.1)." },
+    "subject_type": { "enum": ["service_provider", "external_policy_evaluation", "credential_provider", "peer_realization"] },
+    "accreditation_type": { "enum": ["self_declared", "first_party", "third_party", "qsa_assessment", "baa", "regulatory_certification", "sovereign_authorization"], "description": "Trust level (§3.2)." },
+    "framework": { "type": "string", "description": "fedramp_high | fedramp_moderate | hipaa | pci_dss_v4 | iso_27001 | soc2_type2 | dod_il4 | dod_il5 | dod_il6 | sovereign | classified | <custom> (open string, §3.3)." },
+    "accreditor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "uuid": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "enum": ["government", "regulatory_body", "qsa", "certification_body", "internal", "self"] },
+        "contact_url": { "type": "string" }
+      }
+    },
+    "issued_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$", "description": "RFC 3339 UTC 'Z', seconds precision minimum (common-elements §8)." },
+    "expires_at": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$", "description": "null = perpetual until revoked." },
+    "renewal_warning_before": { "type": "string", "description": "ISO 8601 duration, e.g. P90D." },
+    "last_verified_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What this accreditation covers — keyed to provider + capability + jurisdiction so the sovereignty 1-1 match is checkable (§3.3.1). `subject_uuid` names the provider; the fields here name WHICH capabilities and WHICH residency scope it attests.",
+      "properties": {
+        "capability_scope": {
+          "type": "array",
+          "description": "Which of the provider's capabilities this attests, at the platform-configured binding grain (ADR-004 §4). Each entry is grain 1 (provider_wide), grain 2 (category), or grain 3 (exact capability_uuid+version — expires on capability version change).",
+          "items": { "$ref": "#/$defs/capability_scope_entry" }
+        },
+        "geographic_scope": { "type": "array", "items": { "type": "string" }, "description": "Residency/jurisdiction this attests — the axis a sovereignty claim's operating_jurisdictions/data_residency_zones match against." },
+        "data_classifications": { "type": "array", "items": { "type": "string" }, "description": "Which data classifications this covers (phi, restricted, ...)." },
+        "framework_capabilities": { "type": "array", "items": { "type": "string" }, "description": "Compliance-framework capabilities (data_at_rest, data_in_transit, ...) — a DIFFERENT axis from capability_scope (which is the provider's (verb × domain) categories)." },
+        "exclusions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "certificate_ref": { "type": "string" },
+    "audit_report_ref": { "type": "string" },
+    "external_registry_id": { "type": "string" },
+    "status": { "enum": ["active", "suspended", "revoked", "expired", "pending_renewal", "pending_review"] },
+    "revocation_reason": { "type": ["string", "null"] },
+    "revoked_at": { "type": ["string", "null"] },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tier": { "enum": ["external_registry", "document_currency", "contract_webhook", "expiry_only"] },
+        "stale_after": { "type": "string", "description": "ISO 8601 duration; max gap before stale_action fires." },
+        "stale_action": { "enum": ["warn", "suspend", "escalate"] },
+        "verification_failure_count": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "capability_scope_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One binding-grain entry (§3.3.1). Exactly one of two shapes: {provider_wide:true} attests EVERY capability the provider declares (survives capability changes, coarsest); or {capability_uuid, version?, category?} attests a specific capability — add `version` for the deterministic grain a version change EXPIRES, and `category` to narrow to one (verb × domain) category within the capability.",
+      "properties": {
+        "provider_wide": { "const": true, "description": "Attests every capability the provider declares; survives capability changes." },
+        "capability_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The capability this attests (matches provider `capabilities[].capability_uuid`). Without `version` it attests that capability across versions; with `version` it binds the exact version." },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Bind the EXACT capability version — a new version is not covered, so the sovereignty claim reverts to self_asserted until re-attested (the deterministic grain)." },
+        "category": { "type": "string", "description": "Optional — narrow the attestation to one (verb × domain) category within the capability (e.g. attest only realize_resources/Compute within a multi-category capability)." },
+        "resource_types": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" } }
+      },
+      "oneOf": [
+        { "required": ["provider_wide"], "not": { "anyOf": [ { "required": ["capability_uuid"] }, { "required": ["version"] }, { "required": ["category"] } ] } },
+        { "required": ["capability_uuid"], "not": { "required": ["provider_wide"] } }
+      ]
+    }
+  }
+}

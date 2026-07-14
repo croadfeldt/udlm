@@ -150,13 +150,13 @@ accreditation:
     # BINDING GRAIN is org/platform-admin policy (profile-governed — UDLM ADR-004 §4). UDLM carries all
     # three grains; the platform picks the required strictness and whether a capability change EXPIRES it:
     capability_scope:
-      - capability_uuid: <uuid>                 # GRAIN 3 (most deterministic): binds an EXACT capability
-        version: "1.2.0"                        #   version — a NEW version does not inherit this accreditation,
-        category: realize_resources/Compute     #   so a capability change reverts the claim to self_asserted
-        resource_types: [Compute.VirtualMachine]  #   (category/resource_types carried for readability + grain-2 match)
-      # GRAIN 2 — omit capability_uuid/version to cover the whole (verb × domain) category (survives version bumps):
-      #   - category: realize_resources/Storage
-      # GRAIN 1 — a single provider-wide entry (survives capability changes entirely):
+      - capability_uuid: <uuid>                 # binds a specific capability (matches capabilities[].capability_uuid).
+        version: "1.2.0"                        #   + version => GRAIN 3 (deterministic): a NEW capability version is not
+                                                #   covered, so a change reverts the claim to self_asserted until re-attested.
+        category: realize_resources/Compute     #   + category (OPTIONAL) narrows to one (verb × domain) category within it.
+      # GRAIN 2 — capability_uuid WITHOUT version: attests that capability across versions (survives version bumps):
+      #   - capability_uuid: <uuid>
+      # GRAIN 1 — a single provider-wide entry (attests every capability; survives capability changes):
       #   - provider_wide: true
     geographic_scope: [US]                      # residency/jurisdiction this attests — the axis a
                                                 #   sovereignty claim's jurisdictions/residency match against
@@ -187,12 +187,12 @@ accreditation:
 An accreditation must be **explicit about what it attests, in terms of provider *and* capability** — otherwise a per-capability sovereignty claim (UDLM ADR-004 §4) cannot be evaluated. For a claim to be **trusted**, an **active accreditation** must match it **1-1** on three axes, all carried explicitly in §3.3:
 
 - **provider** — `subject_uuid` == the claiming provider;
-- **capability** — `scope.capability_scope` covers the claim's `(verb × domain)` capability category (or `provider_wide: true`);
+- **capability** — `scope.capability_scope` covers the claim's capability (by `capability_uuid`, optionally pinned to a `version` and/or narrowed to a `category` within it — or `provider_wide: true`);
 - **jurisdiction / residency** — `scope.geographic_scope` covers the claim's `operating_jurisdictions` / `data_residency_zones`.
 
 No accreditation matching **all three** → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes ADR-004 §4's **pipeline propagation** enforceable: each downstream hop in a capability's realization pipeline must present its **own** 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
 
-**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (UDLM ADR-004 §4): **grain 1** provider-wide, **grain 2** per capability category, or **grain 3** per exact `(capability_uuid, version)`. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation; whether that change **expires** a binding is decided by the grain the platform requires — so the same event supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
+**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (UDLM ADR-004 §4): **grain 1** provider-wide, **grain 2** a capability across its versions (`capability_uuid`, no `version`), or **grain 3** an exact `(capability_uuid, version)` — any grain optionally narrowed to a single `category` within the capability. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation; whether that change **expires** a binding is decided by the grain the platform requires — so the same event supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
 
 ### 3.4 Accreditation Lifecycle
 
