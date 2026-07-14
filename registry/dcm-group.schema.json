@@ -437,6 +437,38 @@
           "description": "Whether this profile is on the org's APPROVED list for selection \u2014 custom profiles are first-class but org-ratified; selection is limited to approved profiles (ADR-007; foundational-resources 'org ratifies')."
         }
       }
+    },
+    "quota": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Tenant consumption quota (the CONSUMPTION side of the capacity model \u2014 provider-contract \u00a78.1a advertises free capacity, this bounds a tenant's consumption of it). Present on a tenant_boundary group. UDLM carries the shape (a peer must read it identically or accounting disagrees); DCM debits it at the commit barrier (ADR-011) and Policy governs over-quota via quota.* match sources (policy.schema.json). Shape parallels resource_advertisement.capacity.dimensions.",
+      "properties": {
+        "enforcement": { "enum": ["hard", "soft"], "default": "hard", "description": "hard = a commit that would exceed the quota is denied at the commit barrier; soft = permitted with a quota.exceeded finding for policy/audit." },
+        "limits": {
+          "type": "array",
+          "description": "Per-dimension ceilings on this tenant's consumption.",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["dimension", "limit"],
+            "properties": {
+              "dimension": { "type": "string", "description": "Consumption axis \u2014 vcpu | memory | storage | instance_count | any advertised capacity dimension (provider-contract \u00a78.1a). Open string so a provider-specific dimension can be quota'd." },
+              "limit": { "description": "Ceiling \u2014 integer for counts; size string like \"512GB\" for capacity (same grammar as resource_advertisement.capacity)." },
+              "resource_type": { "type": "string", "description": "Optional \u2014 scope the limit to one resource type (e.g. storage only for Storage.Volume). Omitted = across all consumers of the dimension." }
+            }
+          }
+        },
+        "consumed": {
+          "type": "array",
+          "description": "Running consumption per dimension \u2014 DCM-maintained (debited at commit, credited at decommission/release); the realized counterpart of limits. Never consumer-authored.",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["dimension", "used"],
+            "properties": {
+              "dimension": { "type": "string" },
+              "used": { "description": "Current consumption, same units as the matching limit." },
+              "resource_type": { "type": "string" }
+            }
+          }
+        }
+      }
     }
   },
   "allOf": [
