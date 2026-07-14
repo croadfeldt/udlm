@@ -1,0 +1,38 @@
+# Built-in profile: PROD — hardened production posture.
+# policy_profile DCMGroup (DCM ADR-007). Superset of standard: tighter timeouts, mandatory recovery,
+# blast-radius-aware change control, and dual approval for destructive operations.
+uuid: 213eaf12-a0ff-4811-a98f-c0201096dee2
+handle: udlm/profile/prod
+conforms_to: udlm/0.1
+group_class: policy_profile
+name: Production
+description: >-
+  Hardened production profile — the standard floor plus blast-radius impact policy (DCM ADR-010),
+  dual-approval gating on destructive operations, and mandatory recovery with tightened dispatch
+  timeouts. For production workloads without a specific regulatory overlay.
+version: 1.0.0
+status:
+  state: active
+profile:
+  is_builtin: true
+  default: false
+  approved: true
+  composed_from: []
+  floor:
+    - policy/structural-validation
+    - policy/tenant-isolation
+    - policy/resolved-profile-evaluation
+    - policy/governance-matrix
+    - policy/recovery
+    - policy/drift-reconciliation
+    - policy/blast-radius-impact              # graph.blast_radius gating (DCM ADR-010)
+    - policy/dual-approval-destructive        # gating: destructive ops require dual_approval
+    - audit/append-only-log
+    - lifecycle/four-state-tracking
+  required_mechanics:
+    - store/requested
+    - store/realized
+    - store/discovered
+    - time-sync/causal
+    - discovery/scheduled
+    - recovery/bounded-convergence            # bounded retries + terminal failure (DCM ADR-006)
