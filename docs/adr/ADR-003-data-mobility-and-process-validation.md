@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `design-principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`), ADR-002 (capacity/utilization); the cost served pattern; **DCM ADR (migration policy + gating)**
+**Related:** `design-principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-004 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
 **Tracking:** placement-data family — "how is data migration handled, and how do we pre-validate it?"
 
 ## Context
@@ -12,7 +12,7 @@ Rehydrate, workload movement, topology-change, provider-switch, and DR are the *
 
 ## Decision
 
-Decompose across the boundary (same shape as placement): **consumer declares the *outcome*; the provider declares *methods* and *executes the mechanism*; Policy governs *permission* and *gating*; evidence is observed.** No new top-level type — the declarables are **common-elements** (attachable at resource / composite / policy layers) plus a provider-capability declaration plus observed evidence.
+Decompose across the boundary (same shape as placement): **consumer declares the *outcome*; the provider declares *methods* and *executes the mechanism*; Policy governs *permission* and *gating*; evidence is observed.** No new top-level type — the declarables are **common-elements** (attachable at resource / composite / policy layers) plus a provider-capability declaration plus observed evidence (consistent with ADR-002's Identity/Quantity common-elements and cost-pattern overlay).
 
 ### 1. `data_mobility` — migration requirements (consumer intent; common-element)
 The outcome a deployment requires of any move. Declarable on a resource, a composite/application (default), or mandated by Policy.
@@ -26,7 +26,7 @@ The outcome a deployment requires of any move. Declarable on a resource, a compo
   "method_class": ["online-streaming", "snapshot-ship", "logical-dump"]  // capability-level, NOT a mechanism
 }
 ```
-`rto`/`rpo` reuse the standard DR vocabulary (adopt-by-reference). `method_class` constrains at the *capability* level only — the consumer never names a mechanism (T-outcome).
+`rto`/`rpo` reuse the standard DR vocabulary (adopt-by-reference). `method_class` constrains at the *capability* level only — the consumer never names a mechanism (intent-as-outcome).
 
 ### 2. `process_validation` — the validation lifecycle requirement (consumer intent; common-element)
 Per **T6**: how continuously the mobility outcome must be proven.
@@ -39,9 +39,10 @@ Per **T6**: how continuously the mobility outcome must be proven.
   "gate_on_stale": true                 // request DCM refuse to depend on an unproven path (enforced as Policy)
 }
 ```
+**Modes:** `simulated` runs the process with synthetic, schema-conformant, non-sensitive data — the *process* is proven with **no regulated data moved**, enabling sovereignty-safe cross-jurisdiction DR rehearsal (the high-value FSI/sovereign case); `rehearsal` runs real data to a reversible/scratch target to prove the *real* path. Cadence is criticality-derived and stale claims gate dependence — both enforced as Policy (DCM ADR-020) — so a resilience claim is a living, freshness-tracked property, not a one-time cert.
 
 ### 3. Provider mobility capability (provider declares; in the provider declaration)
-What the provider can actually do — matched against `data_mobility`. Extends the provider-adopted-standards pattern.
+What the provider can actually do — matched against `data_mobility`. Extends the provider-adopted-standards pattern (ADR-004).
 ```json
 "mobility": [
   { "resource_type": "Data.Database", "methods": ["online-streaming", "snapshot-ship"],
@@ -61,29 +62,20 @@ A migration *operation* and its validation result — observed, source-attribute
   "result": "pass | fail", "evidence_ref": "<audit/finding ref>"
 }
 ```
-Both **rehearsals and real incidents** write this — a real DR event *is* a validation event (**T6**).
-
-## Why these shapes (not new types)
-Consistent with ADR-002 and §-minimal-core: requirements/constraints are **common-elements** on resources/composites (like Identity/Quantity); capability is a **provider declaration**; evidence is an **observed overlay** (cost pattern). The only thing that could later earn first-classing is the migration **operation/job** — deferred until needed.
-
-## Rehearsal & simulation — validating mobility claims (T6)
-- **`simulated`** runs the process with **synthetic, schema-conformant, non-sensitive** data → validates the *process* with **no real regulated data moved** → **sovereignty-safe cross-jurisdiction DR rehearsal** (the high-value case for FSI/sovereign).
-- **`rehearsal`** runs real data to a reversible/scratch target → validates the *real* path.
-- Each run updates `mobility_validation` (state + freshness + achieved RTO/RPO) and raises a **finding** on failure.
-- **Criticality → cadence**; **stale → gate** (Policy). A critical workload's resilience claim is a living, freshness-tracked property, not a one-time cert.
-
-## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
-- **Data (UDLM):** `data_mobility` + `process_validation` requirements + `mobility_validation` evidence.
-- **Policy (DCM):** migration permission/sequence + freshness gating + rehearsal scheduling (DCM ADR-020).
-- **Provider:** declares `mobility` + `operational_capability` (ADR-004); **executes** the migration mechanism and the rehearsals (unmodeled "how").
+Both **rehearsals and real incidents** write this — a real DR event *is* a validation event (**T6**); a failure raises a finding.
 
 ## Options considered
 - **Consumer authors the methodology** — rejected (violates intent-as-outcome; "how" is the provider's concern).
-- **A `Migration`/`Mobility` first-class type** — rejected for the requirements/capability/evidence (common-element + provider-declaration + observed overlay, per ADR-002); only the live operation might later first-class.
+- **A `Migration`/`Mobility` first-class type** — rejected for the requirements/capability/evidence (common-element + provider-declaration + observed overlay, per ADR-002); only the live migration operation/job might later earn first-classing, deferred until needed.
 - **Decomposed (requirements=data, methods=provider-declared, mechanism=provider, permission+gating=Policy, evidence=observed) + T6 rehearsal lifecycle** — **chosen.**
 
 ## Consequences
 - New common-elements `data_mobility` + `process_validation` (declarable at resource/composite/policy layers); a provider `mobility` capability block; an observed `mobility_validation` overlay. No new top-level type.
 - Makes ADR-001's "change topology → rebuild" **provable**: the rebuild path is rehearsed + freshness-tracked; the db tier's "not instant" caveat becomes a *matched, validated, policy-gated* contract.
 - Ties to the rehydration demo (#213): a rehearsed rehydration is a validated one.
-- DCM side (separate ADR): migration **policy** (sovereignty/windows/approval/serialization) + **gate-on-stale** enforcement + rehearsal **scheduling**.
+- DCM side (DCM ADR-020): migration **policy** (sovereignty/windows/approval/serialization) + **gate-on-stale** enforcement + rehearsal **scheduling**.
+
+## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
+- **Data (UDLM):** `data_mobility` + `process_validation` requirements + `mobility_validation` evidence.
+- **Policy (DCM):** migration permission/sequence + freshness gating + rehearsal scheduling (DCM ADR-020).
+- **Provider:** declares `mobility` + `operational_capability` (ADR-004); **executes** the migration mechanism and the rehearsals (unmodeled "how").
