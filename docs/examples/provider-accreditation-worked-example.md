@@ -41,6 +41,50 @@ are declared per category — e.g. the VM's Compute category advertises `online_
 
 Declaring a stance does **not** make it trusted — that takes a matching accreditation (§3).
 
+**The declaration** (`registry/providers/full-stack-sp.json`, abridged — Network/Storage constituent
+categories elided for length; they carry no per-category override and inherit the provider default):
+
+```json
+{
+  "provider": { "name": "full-stack-sp", "uuid": "ae18b73d-…", "kind": "service" },
+  "adopted_standard_support": [
+    { "standard": "Redfish",    "supports": ">=1.0",   "direction": "consume" },
+    { "standard": "KubeVirt",   "supports": ">=1.0",   "direction": "consume" },
+    { "standard": "Kubernetes", "supports": ">=1.28",  "direction": "both" }
+  ],
+  "provider_defaults": {
+    "sovereignty": { "operating_jurisdictions": ["US", "CA"] }
+  },
+  "capabilities": [
+    { "capability_uuid": "44e7eb3d-…", "version": "1.0.0", "name": "Virtual Machine Lifecycle",
+      "categories": [
+        { "category": "realize_resources/Compute", "resource_types": ["Compute.VirtualMachine"],
+          "topology_capability": { "kinds_supported": ["region","zone","host"], "max_separation": "zone" },
+          "operational_capability": { "drain": true, "online_migrate": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
+        { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress","Network.VirtualNetwork"] },
+        { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume"] } ] },
+
+    { "capability_uuid": "a26c91c8-…", "version": "1.0.0", "name": "Container Lifecycle",
+      "categories": [
+        { "category": "realize_resources/Container", "resource_types": ["Compute.Container"],
+          "operational_capability": { "drain": true, "rolling_update": true, "online_migrate": true, "rehearsal_support": ["rehearsal"] },
+          "sovereignty": { "operating_jurisdictions": ["US","CA"], "data_residency_zones": ["us-mn"] } },
+        { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress"] },
+        { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume"] } ] },
+
+    { "capability_uuid": "31aa387c-…", "version": "1.0.0", "name": "OpenShift Cluster Lifecycle",
+      "categories": [
+        { "category": "realize_resources/Compute", "resource_types": ["Compute.Cluster"],
+          "operational_capability": { "drain": true, "rolling_update": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
+        { "category": "realize_resources/Network", "resource_types": ["Network.VirtualNetwork","Network.Gateway"] },
+        { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume","Storage.Cluster"] } ] }
+  ]
+}
+```
+
+Note there is **no `sovereignty` block on the OpenShift capability** — it silently inherits the provider
+default `{US, CA}`, which is exactly the *claim* §3 shows is untrusted for want of an accreditation.
+
 ## 2. Two accreditations attest specific scopes
 
 Trust requires a **1-1 match** between a sovereignty *claim* and an accreditation attesting **exactly**
@@ -92,6 +136,48 @@ The two consequences worth stating plainly:
 - **The region accreditation does not vouch for the state requirement.** A container that must reside in
   Minnesota needs accreditation **B**; **A** (country-grain US/CA) is not a match for `US-MN`. Conversely
   B does not vouch for a VM — its `capability_scope` is the container category only.
+
+## 3a. The gap surfaced — a VM that must reside in Minnesota
+
+A consumer submits a **VM** intent under a **sovereign** profile with a **Minnesota residency**
+requirement. DCM resolves placement and runs the 1-1 match for (`full-stack-sp` × VM capability
+`44e7eb3d` × `US-MN`):
+
+- Accreditation **A** covers the VM capability — but its `geographic_scope` is country-grain `[US, CA]`,
+  which does **not** match `US-MN`.
+- Accreditation **B** covers `US-MN` — but its `capability_scope` is the **Container** category only,
+  so it does **not** cover the VM capability.
+
+No accreditation matches all three axes, so the VM's Minnesota claim is `self_asserted`. Under a sovereign
+profile that is a **hard fail**: the provider is **not eligible** for this request, and — with no other
+eligible provider — DCM surfaces an **accreditation gap** (§3.5) instead of silently placing it:
+
+```yaml
+accreditation_gap_record:
+  uuid: <uuid>
+  provider_uuid: ae18b73d-…            # full-stack-sp
+  required_framework: sovereign
+  required_for: [VM intent requiring US-MN residency]
+  gap_type: missing
+  detected_at: 2026-07-14T00:00:00Z
+  severity: critical
+  unmet_capability:
+    capability_uuid: 44e7eb3d-…        # VM Lifecycle
+    version: null                      # country-grain requirement — no exact version pinned
+    category: realize_resources/Compute
+  unmet_jurisdiction: [US-MN]
+  policy_response: NOTIFY_AND_WAIT      # sovereign-profile default (§3.5)
+```
+
+The outcome is **explicit and diagnosable**: the request does not fail with a vague "no capacity" — it
+names exactly what is missing (a Minnesota accreditation for the VM capability). The remedy is equally
+explicit: `full-stack-sp` obtains a state-MN accreditation whose `capability_scope` includes the VM
+capability `44e7eb3d`, and the same request then matches. Contrast the container case, which already has
+that accreditation (B) — the *only* difference between "VM in MN → gap" and "Container in MN → honored"
+is one accreditation record's `capability_scope`.
+
+That is the point of the per-capability × jurisdiction 1-1 match: a sovereignty shortfall is a **named,
+actionable gap at the capability grain**, not an opaque placement failure.
 
 ## 4. Lifecycle: what happens when a capability changes
 

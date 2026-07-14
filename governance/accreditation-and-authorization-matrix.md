@@ -242,6 +242,13 @@ accreditation_gap_record:
   detected_at: <ISO 8601>
   severity: critical                    # accreditation gaps are always high or critical
   affected_entity_uuids: [<uuid>, ...]  # entities currently hosted at this provider
+  # Which axes of the sovereignty 1-1 match (§3.3.1) had no matching accreditation — so the gap is
+  # diagnosable at the capability grain, not just "provider lacks framework X":
+  unmet_capability:                     # the capability (and optional version/category) with no match
+    capability_uuid: <uuid>
+    version: <semver | null>            # set when the required grain is grain-3 (exact version)
+    category: <verb × domain | null>    # set when the requirement is narrowed to one category
+  unmet_jurisdiction: [<geographic scope required, e.g. US-MN>]
   policy_response: <from Recovery Policy>
   # Default: NOTIFY_AND_WAIT for fsi/sovereign; ESCALATE for standard/prod
 ```
