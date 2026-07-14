@@ -14,9 +14,9 @@ metadata:
   description: >-
     A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network.
     The shares and their access are TYPED config — UDLM owns them and DCM's interface manages them
-    (ADR-023 tier (i), the "full" scale). Provider-specific serialization (the smb.conf file, the
-    FreeIPA [global] block) is naturalized by the provider (ADR-023 §1); share knobs not lifted into
-    typed fields ride the `options` passthrough (basic scale, ADR-023 §6). Authentication data lives
+    (DCM ADR-023 tier (i), the "full" scale). Provider-specific serialization (the smb.conf file, the
+    FreeIPA [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into
+    typed fields ride the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives
     in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored.
   maintainer: udlm-registry
   origination_timestamp: "2026-07-11T00:00:00Z"
@@ -72,7 +72,7 @@ spec:
             additionalProperties: { type: string }
             description: >-
               Provider-passthrough share knobs NOT lifted into typed fields — the basic-scale text
-              passthrough (ADR-023 §6). e.g. {"fruit:time machine": "yes", "inherit acls": "yes"}.
+              passthrough (DCM ADR-023 §6). e.g. {"fruit:time machine": "yes", "inherit acls": "yes"}.
 
 outputs:
   mount_uri:

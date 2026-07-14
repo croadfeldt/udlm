@@ -120,7 +120,7 @@ it governs.
   table); resource-grouping's `dcm_default|custom` becomes `group_subclass`. One membership
   record shape (the universal-groups form: added_at/added_by/valid_from/membership_status).
 
-*Governs:* `entities/resource-grouping.md`, `observability/universal-groups.md`, ADR-014 seam.
+*Governs:* `entities/resource-grouping.md`, `observability/universal-groups.md`, DCM ADR-014 seam.
 
 ## 6. Time, attribution, and audit-grade recording
 
@@ -130,7 +130,7 @@ it governs.
 - **E4 field-level provenance holds in every profile** (minimal = derivable-carrier/git;
   standard/prod = materialized; fsi/sovereign = + audit chain). Provenance `source.kind`
   vocabulary: `layer | policy | actor | provider | discovery | rehydration | override` (the
-  last three added so ADR-013 overrides and discovery/rehydration writes are recordable).
+  last three added so DCM ADR-013 overrides and discovery/rehydration writes are recordable).
 - **[D2] Audit integrity is the RFC 9162 Merkle model** (AUD-006, ADR-010) — per-leaf
   signatures, signed tree heads. The "linear SHA-256 chain" wording elsewhere is a defect.
 - **[D1] Lifecycle data stores are defined by CONTRACT, not technology** (revised 2026-07-06,

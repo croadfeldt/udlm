@@ -24,7 +24,7 @@ UDLM defines a unified **auth capability**. Authentication/authorization is a **
 1. **Authentication** — is this identity who they claim to be?
 2. **Authorization** — what is this identity permitted to do?
 
-Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The realization **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (DCM `ADR-022`).
+Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The realization **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (DCM `DCM ADR-022`).
 
 **Authentication is always required — there is no anonymous access in any UDLM profile.** The difference between profiles is how much effort authentication setup requires, not whether it exists.
 
@@ -91,7 +91,7 @@ auth_provider_registration:
   # What actor types this provider can authenticate
   authenticates: [human, service_account, webhook_service_account]
 
-  # Trust level — closed substrate vocabulary. PLATFORM-ADMIN-ASSIGNED, not self-declared (ADR-022):
+  # Trust level — closed substrate vocabulary. PLATFORM-ADMIN-ASSIGNED, not self-declared (DCM ADR-022):
   # trust_level gates whether this provider's authz decisions are re-evaluated, so it is an
   # authorization input. In a self-service or federated registration a trust_level in the payload is
   # IGNORED — only a platform admin sets it (default: advisory). Mirrors the dcm_registration_verdict
