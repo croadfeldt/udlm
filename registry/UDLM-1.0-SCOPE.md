@@ -41,7 +41,7 @@ nesting by set-containment (`docs/profile-resolution.md`):
 September builds and validates the 21 UCs against **dev**; the sovereign/fsi floors exist so the
 architecture is provably production-grade, not to be implemented first.
 
-## 3. The 21 use cases → coverage (verified against merged `main`, not the stale DAV list)
+## 3. The 21 use cases → coverage (verified against merged `main`)
 
 Grouped by what enables them. "Covered" cites the merged spec; "DCM-runtime" = enabled by a UDLM shape
 but executed by DCM (ADR-008).
@@ -70,8 +70,8 @@ but executed by DCM (ADR-008).
 | 20 | cross-domain/profile-resolution-capability | profile-resolution; `dcm-group` `policy_profile` + instances | Covered |
 | 21 | governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |
 
-**Net:** all 21 are enabled at the UDLM layer. The DAV roadmap's residual gaps for this set were
-either stale (closed by ADR-010/§8.1a/realized-entity) or DCM-runtime.
+**Net:** all 21 are enabled at the UDLM layer. Residual items for this set are either already closed
+by the merged spec (ADR-010 / §8.1a / realized-entity) or are DCM-runtime by the ADR-008 boundary.
 
 ## 4. September `P#` gap tracker — consolidated
 
