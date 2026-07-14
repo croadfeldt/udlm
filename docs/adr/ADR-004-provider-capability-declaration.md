@@ -1,9 +1,9 @@
 # UDLM ADR-004: Provider capability declaration (topology + mobility + operational)
 
 **Status:** Proposed
-**Date:** 2026-06-27
+**Date:** 2026-06-27 (amended 2026-07-14 — capability blocks scoped per capability category, not per provider)
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-001 (`Topology`), ADR-003 (data mobility + process validation); `registry/provider-adopted-standards.schema.json` (existing provider declaration); `contracts/provider-contract.md`; DCM ADR-005 (Provider Abstraction — capability declarations + bidirectional discovery), **DCM ADR-019 (Placement Policy)**
+**Related:** ADR-001 (`Topology`), ADR-003 (data mobility + process validation), ADR-PROV-002 (capabilities are `(verb × domain)` categories — the scoping this amendment aligns to); `registry/provider-adopted-standards.schema.json` (existing provider declaration); `contracts/provider-contract.md` §8.1/§8.1a; DCM ADR-005 (Provider Abstraction — capability declarations + bidirectional discovery), **DCM ADR-019 (Placement Policy)**
 **Tracking:** placement-data family — "providers must declare capabilities/compatibility with topology and data portability/migration, to satisfy placement and operational/SRE policies."
 
 ## Context
@@ -12,9 +12,34 @@
 
 ## Decision
 
-Generalize the provider declaration into a **provider capability declaration** — the provider-authored record of what it can satisfy. It carries the existing `adopted_standard_support` plus three new capability blocks. It is a **provider declaration (data)**, not a resource type; matching/negotiation against consumer requirements is **Policy** (the Placement Engine + operational policies).
+Generalize the provider declaration into a **provider capability declaration** — the provider-authored record of what it can satisfy. It carries the existing `adopted_standard_support` plus, **per declared capability**, three capability blocks. It is a **provider declaration (data)**, not a resource type; matching/negotiation against consumer requirements is **Policy** (the Placement Engine + operational policies).
 
-### 1. `topology_capability` — the topologies a provider can *fulfill* (compat with ADR-001)
+### 0. Scope — declared per capability category, not per provider
+
+A provider's capabilities are **`(verb × domain)` categories** (ADR-PROV-002), each scoped to the resource-type Category it realizes, and PROV-002 requires the declaration to "include everything else the realization needs **for that capability**." Topology fulfillment, data mobility, and operational primitives *are* that — and they **legitimately differ per category**: a provider's `realize_resources/Compute` may guarantee `zone` separation and online-migrate, while its `realize_resources/Storage` guarantees only `rack` and cannot drain. A single provider-wide `max_separation` or `drain: true` is wrong the moment a provider offers more than one thing.
+
+So the three blocks below are declared **on each capability entry** — the same shape as the provider's advertised inventory/capacity (`provider-contract.md` §8.1a, which is already per capability category). `mobility` was already resource-type-scoped; this amendment aligns `topology_capability` and `operational_capability` to the same rule.
+
+```json
+"capabilities": [
+  {
+    "category": "realize_resources/Compute",           // (verb × domain), ADR-PROV-002
+    "resource_types": ["Compute.VirtualMachine"],
+    "topology_capability": { /* §1 — for THIS category */ },
+    "mobility": [ /* §2 */ ],
+    "operational_capability": { /* §3 */ }
+  },
+  {
+    "category": "realize_resources/Storage",
+    "resource_types": ["Storage.Volume"],
+    "topology_capability": { "kinds_supported": ["rack"], "max_separation": "rack" }
+  }
+]
+```
+
+A provider whose *entire* offering shares one topology/operational profile MAY set a provider-level default block, but any per-capability entry **overrides** it and is the value placement matches against. Per-capability is the floor; provider-wide is a convenience, never the authority.
+
+### 1. `topology_capability` — the topologies a provider can *fulfill* for a capability (compat with ADR-001)
 **A provider does not author a `Topology` instance — it declares the topologies it can *fulfill*, as a capability.** (The concrete `Topology` instance — the actual domains — is realized/discovered, a separate artifact from this declaration; ADR-001.) Matched against a workload's abstract topology constraints.
 ```json
 "topology_capability": {
@@ -50,8 +75,8 @@ Fault-domain maintenance gating, rehearsal-based process validation (T6), and ro
 
 ## How it's consumed (matching, not just storage)
 
-- **Placement** (DCM ADR-019): filter/score providers by `topology_capability` (can it satisfy the abstract spread/anti-affinity/jurisdiction?) + `mobility` (can it meet `data_mobility`?). This is the capability filter extended to topology + mobility.
-- **Operational / SRE policies**: gate on `operational_capability` — e.g. "critical workloads only on providers with `online_migrate` + `rehearsal_support` + `drain`."
+- **Placement** (DCM ADR-019): filter/score providers by the `topology_capability` **of the capability category that would realize the resource** (can *that* category satisfy the abstract spread/anti-affinity/jurisdiction?) + its `mobility` (can it meet `data_mobility`?). A provider is not eligible because *some* capability of its clears the filter — the eligible capability is the one whose `resource_types` cover the request.
+- **Operational / SRE policies**: gate on the `operational_capability` of the realizing capability — e.g. "critical Compute workloads only on providers whose `realize_resources/Compute` capability has `online_migrate` + `rehearsal_support` + `drain`" (a provider that can drain hosts but not its storage is gated correctly).
 - **Process validation** (T6): `rehearsal_support` is what makes the mobility claim *validatable*; an un-rehearsable provider can't carry a fresh resilience claim.
 
 Capability declaration says what's **possible**; the `Topology` instance (ADR-001) is the **concrete** graph the provider contributes; placement uses the former to negotiate and the latter to place.
@@ -67,6 +92,7 @@ Capability declaration says what's **possible**; the `Topology` instance (ADR-00
 - **Generalize the provider declaration with topology + mobility + operational blocks** — **chosen.**
 
 ## Consequences
-- Extend `provider-adopted-standards.schema.json` → a **provider capability declaration** schema (adds `topology_capability`, `mobility`, `operational_capability`); existing `adopted_standard_support` unchanged.
+- Extend `provider-adopted-standards.schema.json` → a **provider capability declaration** schema. The `topology_capability` / `mobility` / `operational_capability` blocks are nested **under each declared capability entry** (keyed by the ADR-PROV-002 `(verb × domain)` category + its `resource_types`), not at the provider root; an optional provider-level default block is permitted, overridden by any per-capability entry. Existing `adopted_standard_support` unchanged. (Not yet implemented — this ADR is the shape the schema will encode.)
+- **Consistency:** this makes all provider-declared "what I can do for X" data — advertised inventory/capacity (`provider-contract.md` §8.1a), mobility, topology, and operational primitives — uniformly **per capability category**, so a multi-capability provider is never described by a single global claim.
 - Closes the loop: consumer requirements (`Topology` constraints + `data_mobility`) ↔ provider capability ↔ Policy matching/gating. Placement, sovereignty, fault-domain gating, and process validation (T6) all negotiate against one declaration.
 - DCM side (separate ADR): the matching/scoring + operational gating that consume this.
