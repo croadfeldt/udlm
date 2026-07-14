@@ -40,16 +40,16 @@ Every Provider in DCM — regardless of type — implements a single base contra
 
 ## 1a. The Base Level of Integration (the floor)
 
-The **base level** is the minimum a provider must implement for **DCM/UDLM to own the lifecycle** of its target resources — basic lifecycle + the required-data functions that enable that ownership. Everything below is MUST; anything richer is a **capability extension** (§8), i.e. a deeper *scale of integration* (ADR-023 §6), opt-in. A provider at the base level MUST **declare** and **provide**:
+The **base level** is the minimum a provider must implement for **DCM/UDLM to own the lifecycle** of its target resources — basic lifecycle + the required-data functions that enable that ownership. Everything below is MUST; anything richer is a **capability extension** (§8), i.e. a deeper *scale of integration* (DCM ADR-023 §6), opt-in. A provider at the base level MUST **declare** and **provide**:
 
 1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). DCM places/matches against this.
 2. **Required data** — the input schema it needs to realize/manage each target resource, so DCM can collect intent and own the lifecycle.
-3. **Config-projection detail** — enough config schema/detail for the **DCM interface to project a configuration interface to the user across the config lifecycle**, at the provider's supported scale (basic text passthrough → typed; ADR-023 §6). No detail → DCM still projects a basic text passthrough; more detail → a typed interface.
+3. **Config-projection detail** — enough config schema/detail for the **DCM interface to project a configuration interface to the user across the config lifecycle**, at the provider's supported scale (basic text passthrough → typed; DCM ADR-023 §6). No detail → DCM still projects a basic text passthrough; more detail → a typed interface.
 4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommission`: execute the four-state transitions DCM drives (§6, §6a dispatch). Realization is **reserve-then-commit** (ADR-011): `reserve` validates + holds with **no side effects**; `commit` builds the held reservation; nothing is committed until the whole reserved graph validates. All MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
-5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization, ADR-023 §1), with an **identity correlation** (UDLM `uuid` ↔ the provider's native id). *Without this read-back DCM is blind to reality and cannot own the lifecycle* — it is the load-bearing function that closes the loop and feeds drift/convergence/rehydrate.
+5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization, DCM ADR-023 §1), with an **identity correlation** (UDLM `uuid` ↔ the provider's native id). *Without this read-back DCM is blind to reality and cannot own the lifecycle* — it is the load-bearing function that closes the loop and feeds drift/convergence/rehydrate.
 6. **Audit** — emit audit events for its actions (state transitions, relationship mutations) into the chain (SPEC-DESIGN §18d; §7).
 7. **Relationships** — declare and maintain the target resources' relationships: one authoritative direction, targets that resolve, mutations as explicit forward audit events (SPEC-DESIGN §18a–e).
-8. **Security, governance, tenancy, RBAC** — each target resource carries its **tenant** and **governance context** and declares its **security posture** (sovereignty, trust; §2/§4/§5, ADR-022). **Authorization is resolved by DCM as the *authoritative lookup*** — "can actor X do action Y on resource Z" — while the **enabling data (identity, group membership, roles) lives in external systems** (IdP / FreeIPA / RBAC) and is **referenced, not stored**. This is the classic **PDP/PIP split**: DCM is the Policy Decision Point (and gates enforcement); external systems are Policy Information Points that *inform* the decision — the same broker stance as ADR-022 (DCM brokers trust, never custodies it). No provider action bypasses this resolution.
+8. **Security, governance, tenancy, RBAC** — each target resource carries its **tenant** and **governance context** and declares its **security posture** (sovereignty, trust; §2/§4/§5, DCM ADR-022). **Authorization is resolved by DCM as the *authoritative lookup*** — "can actor X do action Y on resource Z" — while the **enabling data (identity, group membership, roles) lives in external systems** (IdP / FreeIPA / RBAC) and is **referenced, not stored**. This is the classic **PDP/PIP split**: DCM is the Policy Decision Point (and gates enforcement); external systems are Policy Information Points that *inform* the decision — the same broker stance as DCM ADR-022 (DCM brokers trust, never custodies it). No provider action bypasses this resolution.
 
 The floor is what makes DCM the lifecycle owner and single pane of glass for the resource at all; the scale of *config* integration (3) can be shallow (text) or deep (typed) without changing that.
 
@@ -88,7 +88,7 @@ A relationship *is* data, and DCM — which orchestrated the request and already
 - **execution slice only** — the parent identity reference (`uuid` + correlation), never the parent's record (ADR-008);
 - **sovereignty** — no reference crosses a sovereignty boundary except via the federation/peer path (`data-store-contracts.md` §5); a cross-zone parent is a **cross-zone reference**, not a raw hand-off;
 - **tenancy** — the provider MUST be admitted for the parent's tenant/zone (capability admission + Governance-Matrix, PRV-009) before it receives the reference; the reference is tenant-scoped and audited;
-- **minimum-necessary** — identity + relationship kind only; the provider is a PIP that *records* the edge, not a custodian of the parent (PDP/PIP + broker-not-custody, ADR-022).
+- **minimum-necessary** — identity + relationship kind only; the provider is a PIP that *records* the edge, not a custodian of the parent (PDP/PIP + broker-not-custody, DCM ADR-022).
 
 So relationship-writing defaults to DCM (parent data stays inside the control plane), and provider-held relationships are a governed, policy-driven exception — not the norm.
 
@@ -124,7 +124,7 @@ provider_base_registration:
   display_name: "<human-readable name>"
   description: "<what this provider does>"
 
-  # All providers declare these. NOTE (ADR-022): the sovereignty_declaration is a CLAIM, not proof.
+  # All providers declare these. NOTE (DCM ADR-022): the sovereignty_declaration is a CLAIM, not proof.
   # For sovereign/restricted zones DCM honors it for placement only when backed by a resolved
   # sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
   # self_asserted tier (see storage-providers.md §11). Drift detection is the backstop, not the gate.
@@ -158,7 +158,7 @@ provider_base_registration:
     rotation_interval: P90D              # max age before DCM expects a rotated cert;
                                          # a cert older than this is flagged at health check
 
-  # NOTE: trust_posture is NOT submitted here. Trust is never self-declared (ADR-022) — the provider
+  # NOTE: trust_posture is NOT submitted here. Trust is never self-declared (DCM ADR-022) — the provider
   # submits attestation EVIDENCE (its certificate, accreditation references) and DCM COMPUTES the
   # posture in the dcm_registration_verdict below. A trust_posture supplied in this block is rejected.
 
@@ -177,7 +177,7 @@ provider_base_registration:
     provisioned_by: platform             # platform provisions policy from this declaration
 ```
 
-**DCM-assigned registration verdict.** Produced by DCM *after* attestation verification; **not part of the provider's submission** — the provider cannot set these, and a submitted value is rejected. This is the structural guarantee behind ADR-022 (trust is never self-declared):
+**DCM-assigned registration verdict.** Produced by DCM *after* attestation verification; **not part of the provider's submission** — the provider cannot set these, and a submitted value is rejected. This is the structural guarantee behind DCM ADR-022 (trust is never self-declared):
 
 ```yaml
 dcm_registration_verdict:                # DCM-OWNED — references the submission above
@@ -529,7 +529,7 @@ Rules:
 - **Refreshed, not static.** Capacity changes are pushed via the `resource.capacity_changed` lifecycle event (§6), so placement reads current free capacity, not registration-time values.
 - **Eligibility is policy, not provider fiat.** The provider *declares* constraints; the **org's policy + Governance-Matrix** resolve which advertised resources a given consumer/zone/tenant may actually select (the "org ratifies" rule). A provider cannot grant itself selection authority by advertising.
 
-**Placement (ADR-019) selects from `inventory ∩ capacity-sufficient ∩ policy-eligible`.** A consumer's `*_ref` selection (e.g. `placement.location_ref`, `networks[].network_ref`) MUST resolve to a resource in that eligible set; when `fulfillment: platform` (ADR-009), DCM chooses within it. Consumption debits the selected resource's capacity and any applicable **quota** (the tenant-quota structure — the consumption side, September P7).
+**Placement (DCM ADR-019) selects from `inventory ∩ capacity-sufficient ∩ policy-eligible`.** A consumer's `*_ref` selection (e.g. `placement.location_ref`, `networks[].network_ref`) MUST resolve to a resource in that eligible set; when `fulfillment: platform` (ADR-009), DCM chooses within it. Consumption debits the selected resource's capacity and any applicable **quota** (the tenant-quota structure — the consumption side, September P7).
 
 **Boundary (ADR-008):** the advertisement *shape* (inventory/capacity/eligibility) is UDLM — a peer must read another provider's advertisement identically or placement disagrees. The placement *algorithm* and how a provider computes free capacity are DCM/provider.
 
@@ -606,7 +606,7 @@ composite_service_capabilities:
 
 ### 8.4 `authenticate` — Auth capability
 
-**Authentication is a capability, not a separate provider type** (parallel to credential issuance — see [Credentials](../governance/credentials.md) §1). A provider that authenticates actors declares the **auth capability**; DCM consumes it the same way it consumes any other yield. Multiple providers may declare it — tenant routing determines which authenticates a given actor. (DCM is itself a consumer of this capability for its own user auth; it does not have to *be* the authenticator — it brokers/consumes, see DCM `ADR-022`.)
+**Authentication is a capability, not a separate provider type** (parallel to credential issuance — see [Credentials](../governance/credentials.md) §1). A provider that authenticates actors declares the **auth capability**; DCM consumes it the same way it consumes any other yield. Multiple providers may declare it — tenant routing determines which authenticates a given actor. (DCM is itself a consumer of this capability for its own user auth; it does not have to *be* the authenticator — it brokers/consumes, see DCM `DCM ADR-022`.)
 
 **Additional endpoints (a provider declaring the auth capability exposes):**
 ```
@@ -657,7 +657,7 @@ peer_dcm_capabilities:
       resource_types: [Compute.VirtualMachine]
   data_boundary:
     max_classification: restricted
-  # trust_posture is NOT declared here (ADR-022). A federating peer submits attestation EVIDENCE
+  # trust_posture is NOT declared here (DCM ADR-022). A federating peer submits attestation EVIDENCE
   # (deployment_accreditations above + its federation certificate); DCM COMPUTES the peer's
   # trust_posture in the dcm_registration_verdict (§2) — a value supplied in this block is rejected.
 ```

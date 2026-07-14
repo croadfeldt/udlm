@@ -23,7 +23,7 @@
 > declare → select → attest pattern the Placement Engine uses for any resource. A request **declares** what it
 > needs (credential type, scope, assurance); each candidate provider **declares** what it can issue and to what
 > assurance level (its credential capability); the realization **selects** the provider that meets the profile's
-> trust floor. This is the credential expression of the DCM Trust Model (DCM `ADR-022`): DCM is a trust **broker**,
+> trust floor. This is the credential expression of the DCM Trust Model (DCM `DCM ADR-022`): DCM is a trust **broker**,
 > not a credential authority. See the DCM trust documents for the cross-plane model; this document specifies the
 > UDLM substrate contract — the data model, lifecycle, and provider interface — that the brokering rests on.
 >
@@ -68,7 +68,7 @@ provider:
     supported_algorithms: [rsa-2048, rsa-4096, ecdsa-p256, ecdsa-p384, ed25519]
 ```
 
-The realization **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see DCM `ADR-022`, attestation ladder).
+The realization **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see DCM `DCM ADR-022`, attestation ladder).
 
 ---
 
@@ -251,7 +251,7 @@ Bootstrap anchor present (out-of-band; single-purpose; short TTL)
   │   From here, ALL credentials flow through registered Credential Providers
 ```
 
-After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the DCM Trust Model sense (DCM `ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
+After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the DCM Trust Model sense (DCM `DCM ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
 
 ---
 

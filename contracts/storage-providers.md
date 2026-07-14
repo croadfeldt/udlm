@@ -60,7 +60,7 @@ storage_provider_registration:
   endpoint: <base URL>
   capabilities: <list — store-type specific>
   sovereignty_constraints: <same model as all providers>
-  attestation: <attestation EVIDENCE — same model as provider-contract.md §2. Trust is NOT self-declared: trust_posture is DCM-assigned in the registration verdict, not stated here (ADR-022).>
+  attestation: <attestation EVIDENCE — same model as provider-contract.md §2. Trust is NOT self-declared: trust_posture is DCM-assigned in the registration verdict, not stated here (DCM ADR-022).>
   status: <active|deprecated|retired>
 ```
 
@@ -584,7 +584,7 @@ Commit Log → Audit Forward Service → Event Stream → Audit Store
 
 Every provider registration — whatever capabilities it declares (`realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows`, in any combination) — must include a `sovereignty_declaration` block. This is a contractual obligation, not optional metadata. DCM uses sovereignty declarations to make placement decisions, enforce Tenant sovereignty requirements, and detect drift between declared and actual posture.
 
-**The declaration is a claim, not proof (ADR-022).** For `sovereign`/`restricted` zones — and any zone whose governance sets a sovereignty requirement — DCM honors the declaration for placement only when it is backed by a resolved `sovereign_authorization` / regulatory-adequacy accreditation (the attestation ladder). An unattested declaration is treated at `self_asserted` tier and cannot satisfy a regulated-zone requirement on the provider's word alone. Drift detection is the backstop, not the gate.
+**The declaration is a claim, not proof (DCM ADR-022).** For `sovereign`/`restricted` zones — and any zone whose governance sets a sovereignty requirement — DCM honors the declaration for placement only when it is backed by a resolved `sovereign_authorization` / regulatory-adequacy accreditation (the attestation ladder). An unattested declaration is treated at `self_asserted` tier and cannot satisfy a regulated-zone requirement on the provider's word alone. Drift detection is the backstop, not the gate.
 
 ### 11.2 Sovereignty Declaration Structure
 

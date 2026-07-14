@@ -90,7 +90,7 @@
         "itsm_action",
         "override"
       ],
-      "description": "The policy's kind \u2014 determines the `output` schema (policy-contract.md \u00a78-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (ADR-019) and itsm_action (\u00a717) extend it."
+      "description": "The policy's kind \u2014 determines the `output` schema (policy-contract.md \u00a78-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (DCM ADR-019) and itsm_action (\u00a717) extend it."
     },
     "policy_class": {
       "enum": [

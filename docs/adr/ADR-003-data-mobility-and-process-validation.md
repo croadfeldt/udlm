@@ -74,7 +74,7 @@ Consistent with ADR-002 and §-minimal-core: requirements/constraints are **comm
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** `data_mobility` + `process_validation` requirements + `mobility_validation` evidence.
-- **Policy (DCM):** migration permission/sequence + freshness gating + rehearsal scheduling (ADR-020).
+- **Policy (DCM):** migration permission/sequence + freshness gating + rehearsal scheduling (DCM ADR-020).
 - **Provider:** declares `mobility` + `operational_capability` (ADR-004); **executes** the migration mechanism and the rehearsals (unmodeled "how").
 
 ## Options considered
