@@ -1,6 +1,6 @@
 # UDLM — Schema Sharing Protocol Contract
 
-**Document Status:** 📋 Draft — Initial Specification
+**Document Status:** ✅ Complete
 **Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
@@ -76,13 +76,13 @@ that catalogs all its declared types and extensions.
   "realization": {
     "name": "DCM",
     "vendor": "example-org",
-    "udlm_version": "0.1.0"
+    "udlm_version": "udlm/0.1"
   },
-  "published_at": "2026-05-26T14:32:18.456Z",
+  "published_at": "2026-05-26T14:32:18Z",
   "manifest": {
     "entity_types": [
-      { "id": "vm.standard", "version": "1.2.0", "schema_url": "/schemas/entity_types/vm.standard/1.2.0" },
-      { "id": "ip.allocation", "version": "1.0.0", "schema_url": "/schemas/entity_types/ip.allocation/1.0.0" }
+      { "id": "Compute.VirtualMachine", "version": "0.3.0", "schema_url": "/schemas/entity_types/Compute.VirtualMachine/0.3.0" },
+      { "id": "Network.IPAddress", "version": "0.2.0", "schema_url": "/schemas/entity_types/Network.IPAddress/0.2.0" }
     ],
     "event_types": [
       { "id": "request.scheduled", "version": "1.0.0", "schema_url": "/schemas/event_types/request.scheduled/1.0.0" }
@@ -104,9 +104,11 @@ that catalogs all its declared types and extensions.
 | `bundle_uuid` | UUID identifying this bundle release |
 | `bundle_version` | Semver for the bundle as a whole |
 | `realization` | Self-description of the publishing peer |
-| `realization.udlm_version` | Which udlm version this bundle conforms to |
-| `published_at` | RFC 3339 UTC timestamp |
+| `realization.udlm_version` | Which udlm SPEC version this bundle conforms to — the `conforms_to` form `udlm/<MAJOR.MINOR>` (VERSIONING.md; SPEC is `MAJOR.MINOR`, not `MAJOR.MINOR.REVISION`) |
+| `published_at` | RFC 3339 instant, UTC-normalized (`Z`), seconds precision minimum (common-elements.md §8) |
 | `manifest` | Categorized list of all schemas in the bundle, with per-schema versions |
+
+Each `manifest.entity_types[].id` is the type's **`resource_type` FQN** (`Category.Type`, `registry/naming-conventions.md`) — the same identity the registry uses — and its `version` is the entity `version` (`MAJOR.MINOR.REVISION`). `event_types[].id` are event-catalog names; other categories follow their contract's identity scheme.
 
 A peer MUST be able to publish its bundle and to fetch a remote peer's bundle.
 
@@ -229,20 +231,30 @@ A schema MAY:
 
 ## 10. Core udlm schemas
 
-The udlm specification publishes a baseline set of schemas at canonical URLs
-(to be hosted alongside the udlm repo). Every realization's bundle implicitly
-depends on these. The baseline includes:
+The udlm specification publishes a baseline set of schemas every realization's
+bundle implicitly depends on. These are **not hypothetical** — they are the
+record schemas in `registry/*.schema.json` and the resource-type specs in
+`registry/resource-types/`, each already carrying a canonical `$id` of the form
+`https://udlm.dev/registry/udlm/<MAJOR.MINOR>/<name>` (e.g.
+`https://udlm.dev/registry/udlm/0.1/policy.schema.json`). That `$id` **is** the
+canonical URL a bundle references; `validate_registry.py` enforces that a spec's
+`$id` spec-segment matches its `conforms_to`, so the core-schema URLs move with
+the spec version at the 0.1→1.0 cutover (VERSIONING.md). The baseline includes:
 
-- Error envelope schema
-- Event envelope schema
-- Identifier schema (UUID, handle, reference forms)
-- Timestamp schema (RFC 3339 UTC ms-precision)
-- Provider contract base
-- Policy contract base
-- Rate limit declaration schema
-- Bundle manifest schema (this document's bundle structure, recursively)
+- The record schemas — `realized-entity`, `dcm-group`, `policy`, `catalog-item`,
+  `layer`, `decision-record`, `audit-record`, `audit-leaf`, `commit-log-entry`,
+  `function-capability-matrix`, `provider-adopted-standards`, and the
+  `resource-type-spec` meta-schema.
+- The identifier forms (`identifier-scheme.md`: UUID, handle, reference) and the
+  timestamp discipline (RFC 3339, UTC `Z`, seconds precision minimum —
+  `common-elements.md` §8), enforced by `pattern` in the schemas above.
+- Every Tier-1 resource-type spec in `registry/resource-types/`.
 
-These are the **shared vocabulary** every peer can assume.
+These are the **shared vocabulary** every peer can assume. A realization's bundle
+manifest lists only its *own* extensions on top of this baseline; it does not
+re-publish the core. The bundle-manifest shape itself (§3) is the normative
+structure; publishing it as a machine-validatable `schema-bundle.schema.json` is
+a tracked follow-on tied to the conformance suite (UDLM-1.0-SCOPE.md §6).
 
 ---
 
