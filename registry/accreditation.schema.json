@@ -41,8 +41,9 @@
           "description": "Which of the provider's capabilities this attests, at the platform-configured binding grain (ADR-004 §4). Each entry is grain 1 (provider_wide), grain 2 (category), or grain 3 (exact capability_uuid+version — expires on capability version change).",
           "items": { "$ref": "#/$defs/capability_scope_entry" }
         },
-        "geographic_scope": { "type": "array", "items": { "type": "string" }, "description": "Residency/jurisdiction this attests — the axis a sovereignty claim's operating_jurisdictions/data_residency_zones match against." },
-        "data_classifications": { "type": "array", "items": { "type": "string" }, "description": "Which data classifications this covers (phi, restricted, ...)." },
+        "geographic_scope": { "type": "array", "items": { "type": "string" }, "description": "Residency/jurisdiction this attests (ISO 3166 country / 3166-2 subdivision, or a declared region grouping). Matched per §3.8: RESIDENCY subsumes DOWN a declared jurisdiction hierarchy (an authorization for US covers US-MN residency); a distinct SOVEREIGNTY regime is matched EXACTLY (US does NOT cover US-MN as a state regime)." },
+        "data_classifications": { "type": "array", "items": { "type": "string" }, "description": "Which data classifications this covers (phi, restricted, sovereign, ...) — one axis of the 1-1 match (§3.3.1): a claim over `sovereign` data is not vouched for by an accreditation scoped to `internal`." },
+        "plane": { "enum": ["data", "control", "both"], "default": "both", "description": "WHICH PLANE this attestation covers (§3.8): data = data-plane residency (bytes at rest/in-process); control = control-plane / operator-access / support / telemetry; both. The universal residency leak is the control plane — an accreditation covering only `data` does NOT attest operator access stays in-jurisdiction. Tied to the data_role execution-vs-control split (contracts/data-roles.md)." },
         "framework_capabilities": { "type": "array", "items": { "type": "string" }, "description": "Compliance-framework capabilities (data_at_rest, data_in_transit, ...) — a DIFFERENT axis from capability_scope (which is the provider's (verb × domain) categories)." },
         "exclusions": { "type": "array", "items": { "type": "string" } }
       }
@@ -61,6 +62,29 @@
         "stale_after": { "type": "string", "description": "ISO 8601 duration; max gap before stale_action fires." },
         "stale_action": { "enum": ["warn", "suspend", "escalate"] },
         "verification_failure_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "verification_method", "proof_value"],
+      "description": "The ACCREDITOR's cryptographic signature over this record — the accreditation is a Verifiable Credential (W3C VC Data Integrity / VC-JOSE-COSE; the Gaia-X model). DCM VERIFIES this proof + chains `verification_method` to a `trust_anchor` + checks `status`/currency BEFORE it appraises scope (§3.7; the two-gate model, §3.3.1). Absent proof = self_asserted tier: usable at dev/eval, never honored for sovereign/fsi.",
+      "properties": {
+        "type": { "type": "string", "description": "Proof suite, e.g. DataIntegrityProof / JsonWebSignature2020 / eddsa-jcs-2022 (VC Data Integrity), or a JOSE alg for VC-JOSE-COSE." },
+        "created": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+        "verification_method": { "type": "string", "description": "The accreditor's signing key/DID (e.g. did:web:accreditor.example#key-1, or an x5c cert reference) — resolved to check the signature." },
+        "proof_purpose": { "const": "assertionMethod" },
+        "proof_value": { "type": "string", "description": "The detached signature / JWS over the record's canonical form." }
+      }
+    },
+    "trust_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "reference"],
+      "description": "How the accreditor's signing key ROOTS to a recognized authority (§3.7). Verification fails if the chain does not terminate in a trust anchor the platform recognizes — the anti-substitution + issuer-trust requirement (RATS §8.1; W3C VC).",
+      "properties": {
+        "type": { "enum": ["cab", "eidas_tsp", "did_web", "x509_chain", "government_registry", "internal"], "description": "cab = accredited Conformity Assessment Body; eidas_tsp = eIDAS Trust Service Provider; did_web / x509_chain = key-chain roots; government_registry = a sovereign authority; internal = first-party (dev/eval)." },
+        "reference": { "type": "string", "description": "The anchor identifier (DID, cert-chain reference, CAB / registry id)." }
       }
     }
   },

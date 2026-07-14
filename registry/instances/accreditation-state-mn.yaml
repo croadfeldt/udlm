@@ -24,11 +24,21 @@ scope:
   capability_scope:
     - capability_uuid: a26c91c8-e4ce-4599-bc31-7bd106406512   # Container Lifecycle...
       category: realize_resources/Container                  # ...narrowed to the container category only
-  geographic_scope: [US-MN]                                  # match axis 3 (state: ISO 3166-2)
+  geographic_scope: [US-MN]                                  # match axis 3 (state SOVEREIGNTY regime: ISO 3166-2, matched EXACTLY, §3.8)
   data_classifications: [sovereign]
+  plane: both
 status: active
 verification:
   tier: document_currency
   stale_after: P30D
   stale_action: warn
   verification_failure_count: 0
+trust_anchor:
+  type: government_registry
+  reference: "mn-data-sovereignty-authority/root"
+proof:
+  type: DataIntegrityProof
+  created: "2026-07-14T00:00:00Z"
+  verification_method: "did:web:mn-data-sovereignty-authority#key-1"
+  proof_purpose: assertionMethod
+  proof_value: "z5Kd…<detached-jws-over-canonical-record>"

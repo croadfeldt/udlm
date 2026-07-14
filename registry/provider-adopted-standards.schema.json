@@ -5,81 +5,184 @@
   "description": "The provider-authored capability declaration (adopted-standards.md §3.2, DCM ADS-001; UDLM ADR-004). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); topology/mobility/operational/sovereignty vary per category WITHIN it (ADR-004 §2 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (DCM).",
   "type": "object",
   "additionalProperties": false,
-  "required": ["provider", "adopted_standard_support"],
+  "required": [
+    "provider",
+    "adopted_standard_support"
+  ],
   "properties": {
     "provider": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
-        "name": { "type": "string" },
-        "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "RFC 9562 v4 identity of the provider — the `subject_uuid` an accreditation attests against (accreditation §3.3.1 axis 1)." },
-        "kind": { "enum": ["service", "information", "composite"], "description": "Provider type (provider-contract.md). A provider may emit adopted-standard data in its Information-Provider role even when it also provisions (service)." }
+        "name": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "RFC 9562 v4 identity of the provider — the `subject_uuid` an accreditation attests against (accreditation §3.3.1 axis 1)."
+        },
+        "kind": {
+          "enum": [
+            "service",
+            "information",
+            "composite"
+          ],
+          "description": "Provider type (provider-contract.md). A provider may emit adopted-standard data in its Information-Provider role even when it also provisions (service)."
+        }
       }
     },
     "adopted_standard_support": {
       "type": "array",
       "minItems": 1,
       "description": "One entry per adopted standard this provider supports.",
-      "items": { "$ref": "#/$defs/standard_support" }
+      "items": {
+        "$ref": "#/$defs/standard_support"
+      }
     },
     "provider_defaults": {
       "type": "object",
       "additionalProperties": false,
       "description": "Provider-level DEFAULT blocks (UDLM ADR-004 §0/§4). Any per-category block on a capability OVERRIDES these for that category (finest-granularity-wins). Optional — a provider whose whole offering shares one stance sets it here; a multi-category provider overrides per category.",
       "properties": {
-        "sovereignty": { "$ref": "#/$defs/sovereignty" },
-        "topology_capability": { "$ref": "#/$defs/topology_capability" },
-        "operational_capability": { "$ref": "#/$defs/operational_capability" }
+        "sovereignty": {
+          "$ref": "#/$defs/sovereignty"
+        },
+        "topology_capability": {
+          "$ref": "#/$defs/topology_capability"
+        },
+        "operational_capability": {
+          "$ref": "#/$defs/operational_capability"
+        },
+        "conformance_claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/conformance_claim"
+          },
+          "description": "Provider-wide DECLARED standards adherence (self-declared). A per-capability entry may add/override; each claim is trusted only when an accreditation attests it (§3.7)."
+        }
       }
     },
     "capabilities": {
       "type": "array",
       "description": "The provider's declared, versioned, accreditable capabilities (UDLM ADR-004). Each is the accreditation/version unit and realizes one or more `(verb × domain)` categories.",
-      "items": { "$ref": "#/$defs/capability" }
+      "items": {
+        "$ref": "#/$defs/capability"
+      }
     }
   },
   "$defs": {
     "standard_support": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["standard", "supports", "direction"],
+      "required": [
+        "standard",
+        "supports",
+        "direction"
+      ],
       "properties": {
-        "standard": { "type": "string", "description": "External standard name, e.g. FOCUS, OpenCost, OSCAL, SCIM." },
-        "supports": { "type": "string", "minLength": 1, "description": "The version range/pins the provider can serve — a pin (\"1.4\"), wildcard (\"1.x\"), or range (\">=1.2 <2.0\"). RANGE RESOLUTION is Policy (DCM ADS-003), not the schema." },
-        "preferred": { "type": "string", "description": "The concrete version the provider prefers within `supports`." },
-        "direction": { "enum": ["emit", "consume", "both"], "description": "Whether the provider produces the standard's data, consumes it, or both." }
+        "standard": {
+          "type": "string",
+          "description": "External standard name, e.g. FOCUS, OpenCost, OSCAL, SCIM."
+        },
+        "supports": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The version range/pins the provider can serve — a pin (\"1.4\"), wildcard (\"1.x\"), or range (\">=1.2 <2.0\"). RANGE RESOLUTION is Policy (DCM ADS-003), not the schema."
+        },
+        "preferred": {
+          "type": "string",
+          "description": "The concrete version the provider prefers within `supports`."
+        },
+        "direction": {
+          "enum": [
+            "emit",
+            "consume",
+            "both"
+          ],
+          "description": "Whether the provider produces the standard's data, consumes it, or both."
+        }
       }
     },
     "capability": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["capability_uuid", "version", "categories"],
+      "required": [
+        "capability_uuid",
+        "version",
+        "categories"
+      ],
       "description": "One declared, VERSIONED, accreditable capability — the accreditation/version unit (ADR-004 §5; accreditation §3.3.1 grain 3 binds `capability_uuid` + `version`). It realizes one or more `(verb × domain)` categories; topology/mobility/operational/sovereignty are per-category, WITHIN this capability.",
       "properties": {
-        "capability_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "Stable RFC 9562 v4 identity of this capability — the anchor an accreditation binds to (accreditation §3.3.1)." },
-        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Immutable-once-published version (VERSIONING.md). Bumped on ANY change to its attested surface (any category's topology/mobility/operational/sovereignty/resource_types); a grain-3 accreditation covers exactly this version, so a bump expires it until re-attested." },
-        "name": { "type": "string", "description": "Advisory human label for the capability/offering (e.g. \"EU Sovereign Compute\"). uuid is authoritative." },
+        "capability_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "Stable RFC 9562 v4 identity of this capability — the anchor an accreditation binds to (accreditation §3.3.1)."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Immutable-once-published version (VERSIONING.md). Bumped on ANY change to its attested surface (any category's topology/mobility/operational/sovereignty/resource_types); a grain-3 accreditation covers exactly this version, so a bump expires it until re-attested."
+        },
+        "name": {
+          "type": "string",
+          "description": "Advisory human label for the capability/offering (e.g. \"EU Sovereign Compute\"). uuid is authoritative."
+        },
         "categories": {
           "type": "array",
           "minItems": 1,
           "description": "The `(verb × domain)` categories (ADR-PROV-002) this capability realizes, each carrying its own topology/mobility/operational/sovereignty. Two entries may share a category with different resource_types when a finer split is needed.",
-          "items": { "$ref": "#/$defs/category_scope" }
+          "items": {
+            "$ref": "#/$defs/category_scope"
+          }
         }
       }
     },
     "category_scope": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["category"],
+      "required": [
+        "category"
+      ],
       "description": "What a capability offers for one `(verb × domain)` category — the grain at which topology/sovereignty vary (ADR-004 §2). Blocks omitted here inherit `provider_defaults`.",
       "properties": {
-        "category": { "type": "string", "description": "The `(verb × domain)` capability category, e.g. realize_resources/Compute (ADR-PROV-002)." },
-        "resource_types": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" }, "description": "The resource types realized within this category." },
-        "topology_capability": { "$ref": "#/$defs/topology_capability" },
-        "mobility": { "type": "array", "items": { "$ref": "#/$defs/mobility_entry" } },
-        "operational_capability": { "$ref": "#/$defs/operational_capability" },
-        "sovereignty": { "$ref": "#/$defs/sovereignty" }
+        "category": {
+          "type": "string",
+          "description": "The `(verb × domain)` capability category, e.g. realize_resources/Compute (ADR-PROV-002)."
+        },
+        "resource_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$"
+          },
+          "description": "The resource types realized within this category."
+        },
+        "topology_capability": {
+          "$ref": "#/$defs/topology_capability"
+        },
+        "mobility": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mobility_entry"
+          }
+        },
+        "operational_capability": {
+          "$ref": "#/$defs/operational_capability"
+        },
+        "sovereignty": {
+          "$ref": "#/$defs/sovereignty"
+        },
+        "conformance_claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/conformance_claim"
+          },
+          "description": "Standards/frameworks this scope DECLARES adherence to (self-declared; accreditation §3.7). Each is a claim, trusted only when an accreditation attests its framework for this scope."
+        }
       }
     },
     "topology_capability": {
@@ -87,28 +190,73 @@
       "additionalProperties": false,
       "description": "The topologies this category can FULFILL (ADR-004 §1) — NOT a Topology instance (which is realized/discovered, ADR-001).",
       "properties": {
-        "kinds_supported": { "type": "array", "items": { "type": "string" }, "description": "Abstract failure/locality kinds it can guarantee separation across (region|zone|rack|host|power-domain|network-segment ...). [] = no failure-domain concept → fails any spread constraint." },
-        "native_mapping": { "type": "object", "additionalProperties": { "type": "string" }, "description": "native → abstract kind (naturalization), e.g. { \"zone\": \"aws-az\" }." },
-        "jurisdictions": { "type": "array", "items": { "type": "string" }, "description": "Residency/sovereignty coverage as a PLACEMENT input (where it can spread); the authorization stance is `sovereignty`." },
-        "max_separation": { "type": "string", "description": "Strongest anti-affinity kind it can promise." },
-        "reference_topologies": { "type": "array", "items": { "type": "string" }, "description": "Optional named topology archetypes it can fulfill." }
+        "kinds_supported": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Abstract failure/locality kinds it can guarantee separation across (region|zone|rack|host|power-domain|network-segment ...). [] = no failure-domain concept → fails any spread constraint."
+        },
+        "native_mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "native → abstract kind (naturalization), e.g. { \"zone\": \"aws-az\" }."
+        },
+        "jurisdictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Residency/sovereignty coverage as a PLACEMENT input (where it can spread); the authorization stance is `sovereignty`."
+        },
+        "max_separation": {
+          "type": "string",
+          "description": "Strongest anti-affinity kind it can promise."
+        },
+        "reference_topologies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional named topology archetypes it can fulfill."
+        }
       }
     },
     "mobility_entry": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["resource_type", "methods"],
+      "required": [
+        "resource_type",
+        "methods"
+      ],
       "description": "Data portability/migration capability for a resource type (ADR-003 §3 / ADR-004 §2).",
       "properties": {
-        "resource_type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" },
-        "methods": { "type": "array", "items": { "type": "string" }, "description": "e.g. online-streaming, snapshot-ship." },
+        "resource_type": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "e.g. online-streaming, snapshot-ship."
+        },
         "guarantees": {
           "type": "object",
           "additionalProperties": true,
           "properties": {
-            "rpo_min": { "type": "string" },
-            "cross_region": { "type": "boolean" },
-            "online": { "type": "boolean" }
+            "rpo_min": {
+              "type": "string"
+            },
+            "cross_region": {
+              "type": "boolean"
+            },
+            "online": {
+              "type": "boolean"
+            }
           }
         }
       }
@@ -118,12 +266,30 @@
       "additionalProperties": true,
       "description": "SRE-pattern primitives (ADR-004 §3). Open (additionalProperties) so a provider can advertise more; the named ones feed fault-domain gating, rehearsal validation (T6), and rolling cutover.",
       "properties": {
-        "drain": { "type": "boolean" },
-        "maintenance_mode": { "type": "boolean" },
-        "online_migrate": { "type": "boolean" },
-        "rolling_update": { "type": "boolean" },
-        "rehearsal_support": { "type": "array", "items": { "type": "string" } },
-        "health_reporting": { "type": "array", "items": { "type": "string" } }
+        "drain": {
+          "type": "boolean"
+        },
+        "maintenance_mode": {
+          "type": "boolean"
+        },
+        "online_migrate": {
+          "type": "boolean"
+        },
+        "rolling_update": {
+          "type": "boolean"
+        },
+        "rehearsal_support": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "health_reporting": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "sovereignty": {
@@ -131,9 +297,58 @@
       "additionalProperties": false,
       "description": "The residency/sovereignty STANCE for this category (ADR-004 §4). Overrides the provider default (finest wins). This is a CLAIM: trust requires a 1-1 match with an accreditation attesting exactly this scope (accreditation §3.3.1) — declaring it here does not by itself make it trusted, and it obligates the provider to guarantee it down the whole realization pipeline for the category.",
       "properties": {
-        "operating_jurisdictions": { "type": "array", "items": { "type": "string" } },
-        "data_residency_zones": { "type": "array", "items": { "type": "string" } },
-        "sub_processors": { "type": "array", "items": { "type": "string" }, "description": "Third parties with data access — themselves bound by the propagated sovereignty constraint (ADR-004 §4)." }
+        "operating_jurisdictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The legal SOVEREIGNTY regime(s) — matched EXACTLY (§3.8), not subsumed. ISO 3166."
+        },
+        "data_residency_zones": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Physical RESIDENCY zones — subsume DOWN a declared jurisdiction hierarchy (a US zone covers US-MN, §3.8)."
+        },
+        "enforcement_plane": {
+          "enum": [
+            "data",
+            "control",
+            "both"
+          ],
+          "default": "both",
+          "description": "Which plane the provider commits to enforce this stance on (accreditation §3.8). DCM does NOT enforce residency at the byte level — it conveys the sovereignty requirement + the role:execution data slice (contracts/data-roles.md) to the provider, and the provider's accreditation (§3.7, matching `plane`) attests it enforces at the DATA plane. The control-plane path (operator access / support / telemetry) is the universal leak; a data-only stance does not cover it."
+        },
+        "sub_processors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Third parties with data access — themselves bound by the propagated sovereignty constraint (ADR-004 §4)."
+        }
+      }
+    },
+    "conformance_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "framework"
+      ],
+      "description": "A DECLARED adherence to a standard/framework — the subject's self-declaration (accreditation §3.7; Gaia-X self-description / OSCAL SSP model). A CLAIM: trusted only when an accreditation with a matching `framework` attests this scope (the same claim→attestation link as sovereignty). An accreditation ties back to it by `framework` + scope.",
+      "properties": {
+        "framework": {
+          "type": "string",
+          "description": "The standard/framework claimed, e.g. iso_27001, soc2_type2, fedramp_moderate, gdpr, secnumcloud_3.2, c5."
+        },
+        "level": {
+          "type": "string",
+          "description": "Optional level/tier within the framework (e.g. Moderate, L3)."
+        },
+        "statement": {
+          "type": "string",
+          "description": "Optional human statement of the adherence + its scope."
+        }
       }
     }
   }

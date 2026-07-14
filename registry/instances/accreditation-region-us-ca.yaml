@@ -24,11 +24,22 @@ scope:
     - capability_uuid: 44e7eb3d-2c4c-469a-92cb-50ca48b4628b   # Virtual Machine Lifecycle (all categories)
     - capability_uuid: a26c91c8-e4ce-4599-bc31-7bd106406512   # Container Lifecycle (all categories)
     # NOTE: OpenShift Cluster Lifecycle (31aa387c-…) is intentionally NOT listed — no region attestation.
-  geographic_scope: [US, CA]                                 # match axis 3 (region: country codes)
+  geographic_scope: [US, CA]                                 # match axis 3 (region: country codes; residency subsumes to US-MN, §3.8)
   data_classifications: [sovereign]
+  plane: both                                                # attests both data-plane residency AND control-plane operator access
 status: active
 verification:
   tier: external_registry
   stale_after: P7D
   stale_action: suspend
   verification_failure_count: 0
+# Verifiable Credential proof (§3.7) — DCM verifies this signature + chains to the trust_anchor BEFORE appraising scope.
+trust_anchor:
+  type: government_registry
+  reference: "na-sovereignty-authority/root"
+proof:
+  type: DataIntegrityProof
+  created: "2026-07-14T00:00:00Z"
+  verification_method: "did:web:na-sovereignty-authority#key-1"
+  proof_purpose: assertionMethod
+  proof_value: "z3FXQ…<detached-jws-over-canonical-record>"

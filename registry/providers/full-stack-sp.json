@@ -10,7 +10,12 @@
     { "standard": "Kubernetes", "supports": ">=1.28", "direction": "both" }
   ],
   "provider_defaults": {
-    "sovereignty": { "operating_jurisdictions": ["US", "CA"] }
+    "sovereignty": { "operating_jurisdictions": ["US", "CA"], "enforcement_plane": "both" },
+    "conformance_claims": [
+      { "framework": "iso_27001" },
+      { "framework": "soc2_type2" },
+      { "framework": "gdpr", "statement": "GDPR processor obligations for EU personal data" }
+    ]
   },
   "capabilities": [
     {
@@ -37,7 +42,7 @@
           "category": "realize_resources/Container",
           "resource_types": ["Compute.Container"],
           "operational_capability": { "drain": true, "rolling_update": true, "online_migrate": true, "rehearsal_support": ["rehearsal"] },
-          "sovereignty": { "operating_jurisdictions": ["US", "CA"], "data_residency_zones": ["us-mn"] }
+          "sovereignty": { "operating_jurisdictions": ["US", "CA"], "data_residency_zones": ["us-mn"], "enforcement_plane": "both" }
         },
         { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress"] },
         { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume"] }
