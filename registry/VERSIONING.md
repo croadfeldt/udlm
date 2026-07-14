@@ -29,6 +29,24 @@ Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guar
 *post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
 settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
 
+### Cutting the spec `0.1 → 1.0` — the mechanical procedure
+
+The 1.0 exit criteria are enumerated in [`UDLM-1.0-SCOPE.md`](UDLM-1.0-SCOPE.md). Once they are met,
+declaring 1.0 is a **repo-wide, mechanical re-stamp** — not a redesign:
+
+1. **Re-stamp `conforms_to`** on every type spec, schema, and instance: `udlm/0.1 → udlm/1.0`.
+2. **Re-mint each `$id` spec-segment** to match (`.../udlm/0.1/... → .../udlm/1.0/...`).
+   `tests/validate_registry.py` enforces `$id` spec-segment == `conforms_to`, so 1 and 2 move together
+   or CI fails.
+3. **Bump the meta-schema `$id`** (`resource-type-spec.schema.json` and the record schemas) to `udlm/1.0`.
+4. **Entity versions do NOT rebase.** `conforms_to` is the SPEC axis; the per-entity `version` is the
+   independent entity axis (the two-axes rule above). A type at `0.6.0` stays `0.6.0` under `udlm/1.0`.
+5. **Tag the repo `udlm/1.0`.** From this tag, "same SPEC-MAJOR = wire-compatible" becomes a binding
+   promise; the next breaking spec change is `udlm/2.0`.
+
+This is deliberately deferred until the exit criteria pass — re-stamping early would spend the 1.0
+compatibility promise on an unfinished surface.
+
 ## Lifecycle vs. maturity — two independent axes
 
 A definition has two orthogonal signals; don't conflate them into one field:
