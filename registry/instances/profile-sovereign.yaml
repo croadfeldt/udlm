@@ -43,5 +43,7 @@ profile:
     - recovery/bounded-convergence
     - audit/merkle-log
     - accreditation/sovereign-attestation       # sovereign accreditation, attested not self-asserted (DCM ADR-022)
+    - accreditation/verifiable                   # accreditation carries a VC proof chaining to a trust anchor; DCM verifies before appraising scope (two-gate, matrix §3.7)
+    - sovereignty/data-plane-attested            # data-plane (data-at-rest residency) enforcement conveyed to and attested by the enforcing provider — enforcement_plane, matrix §3.8
     - retention/regulatory
     - key-material/in-boundary                   # signing/key material stays within the sovereignty boundary (AUD-012)
