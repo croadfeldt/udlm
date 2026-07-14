@@ -25,7 +25,7 @@ Placement scoring needs capacity/utilization. But:
 
 **This follows the cost pattern exactly.** Cost was deliberately *not* modeled as a UDLM type — it is adopted (FOCUS) and **served** by an information provider, referencing resources by id (`uuid ↔ ResourceId`). Capacity/utilization is the same shape (a multi-source observational overlay) and gets the same treatment. The principled line: **declared *structure* → a type (e.g. `Topology`, ADR-001); observed *measurement* → a served overlay (cost, capacity/utilization).**
 
-It is **DATA** (Data⇄Policy): the DCM Placement Policy (ADR-019) consumes it; the engine computes; no embedded expressions.
+It is **DATA** (Data⇄Policy): the DCM Placement Policy (DCM ADR-019) consumes it; the engine computes; no embedded expressions.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** total capacity (resource attribute) + the served utilization overlay; allocated is derived.

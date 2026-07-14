@@ -424,7 +424,7 @@ Pass 1 (escalation scenario):
   → Request paused. Escalation with conflict report.
 ```
 
-### 7.3 Policy engine — built-in vs. delegated (external)
+### 7.2a Policy engine — built-in vs. delegated (external)
 
 This document is the policy **contract**. *Where* policies live and *who* evaluates them is a realization choice, in one of two modes — the contract is identical either way:
 

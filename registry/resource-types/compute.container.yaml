@@ -14,7 +14,7 @@ metadata:
   display_name: Container
   description: >-
     A container workload — image, resources, environment, mounts, and exposed ports — realized and
-    managed by a *resource* provider (OCP, podman) under the four-state lifecycle (ADR-023). Models the
+    managed by a *resource* provider (OCP, podman) under the four-state lifecycle (DCM ADR-023). Models the
     service/workload layer of the estate: MCP servers, the media stack, mail, etc. Secret material is
     never inline — env/mounts reference a Security.CredentialRef.
   maintainer: udlm-registry
@@ -92,7 +92,7 @@ spec:
               value: { type: string, description: Literal value — non-secret only. }
               value_from:
                 type: object
-                description: Reference to a Security.CredentialRef or config source. Secret material is NEVER inline (ADR-023).
+                description: Reference to a Security.CredentialRef or config source. Secret material is NEVER inline (DCM ADR-023).
                 properties:
                   credential_ref: { type: string, description: handle or uuid of a Security.CredentialRef }
                   key: { type: string }
@@ -144,7 +144,7 @@ relationships:
   - kind: references
     target: Security.CredentialRef
     cardinality: 0..n
-    description: Env/mounts that resolve secrets reference a CredentialRef; no secret material inline (ADR-023).
+    description: Env/mounts that resolve secrets reference a CredentialRef; no secret material inline (DCM ADR-023).
   - kind: depends_on
     target: Data.Database
     target_field: connection_string
