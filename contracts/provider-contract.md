@@ -128,6 +128,11 @@ provider_base_registration:
   # For sovereign/restricted zones DCM honors it for placement only when backed by a resolved
   # sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
   # self_asserted tier (see storage-providers.md §11). Drift detection is the backstop, not the gate.
+  # SCOPE (UDLM ADR-004 §4): this is the provider-level DEFAULT stance. A capability MAY override it per
+  # (verb × domain) category — finest-granularity-wins — because residency differs by what is realized
+  # (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
+  # an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
+  # is self_asserted and never honored. Claim and accreditation are reconciled, never assumed to agree.
   sovereignty_declaration:
     operating_jurisdictions: [<country_codes>]
     data_residency_zones: [<zone_ids>]
