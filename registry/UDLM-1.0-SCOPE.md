@@ -26,13 +26,15 @@ called out below and are **not** 1.0 spec gaps.
 ## 2. Profile posture — implement dev/eval, architect for sovereign/fsi
 
 The architecture and wire contracts are **identical across profiles**; only the required *floor*
-differs (DCM ADR-007 — a profile is a composed set with a floor, not a level). The five built-in
+differs (DCM ADR-007 — a profile is a composed set with a floor, not a level). The six built-in
 profiles are now defined as `policy_profile` records (`registry/instances/profile-*.yaml`), floors
-nesting by set-containment (`docs/profile-resolution.md`):
+nesting by set-containment (`docs/profile-resolution.md`). **dev** and **homelab** are on-ramp
+siblings (small substrate, low ceremony), not rungs on the production ladder:
 
 | Profile | Role | Floor adds (over the one below) |
 |---|---|---|
 | **dev** (default) | **September implementation / evaluation target** | baseline: structural validation, tenant isolation, resolved-profile eval, append-only audit, four-state; causal-only time; no attestation |
+| **homelab** | **single-operator on-ramp (community/value/feedback — ADR-017)** | dev's substrate + drift/recovery/discovery pre-tuned *on* at low ceremony via `operational_config`; governance-matrix/attestation/merkle available but not mandated (nothing shut off) |
 | standard | baseline production | governance-matrix, recovery, drift reconciliation |
 | prod | hardened production | blast-radius impact (ADR-010), dual-approval-destructive, bounded convergence |
 | **fsi** | regulated (architected, not the impl target) | Merkle transparency audit, attestation-gated admission, override-approval, regulatory retention, attested time |
@@ -138,7 +140,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 memory-module / processor / storage-device / graphics-processor / power-supply, #88 — keeping
 BMC / BiosProfile / NetworkInterface; `Security.CredentialRef` added, #99) · 12 record schemas ·
 17 contracts (11 complete/stable, 6 draft — see §5/§6) · **16 prose ADRs (001–016)** + JSON
-DecisionRecords · foundations/lifecycle/governance/design-principles doc set · 5 built-in profiles.
+DecisionRecords · foundations/lifecycle/governance/design-principles doc set · 6 built-in profiles.
 
 Plus the 2026-07-15 **recurrence-prevention layer**: SPEC-DESIGN **§33** (single-source) / **§34**
 (resource-type role, ADR-016), the guards `tests/check_single_source.py` · `check_profile_tables.py` ·

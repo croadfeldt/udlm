@@ -1,0 +1,65 @@
+# Built-in profile: HOMELAB — the single-operator on-ramp.
+# A policy_profile DCMGroup (registry/dcm-group.schema.json; ADR-007 — a profile is a composed SET
+# with a floor, NOT a level). Goal: pure value for a self-hosting individual, with zero enterprise
+# ceremony required. The floor is deliberately the SMALLEST that still delivers UDLM's headline value
+# out of the box (dependency graph → ordered shutdown, drift visibility, rehydration).
+#
+# IMPORTANT (ADR-007 §2 + the "don't shut off capabilities" rule): a profile floor is a MINIMUM, not a
+# filter. Homelab does NOT remove governance-matrix, attestation, merkle audit, or approval gates —
+# every capability the production profiles require stays fully AVAILABLE and one toggle away. Homelab
+# simply doesn't *mandate* them, and pre-tunes the optional ones for a home environment via
+# operational_config. Same architecture, types, and wire contracts as dev/standard/prod/fsi/sovereign.
+uuid: f9985d7f-c298-408d-a9da-6da0dd820570
+handle: udlm/profile/homelab
+conforms_to: udlm/0.1
+group_class: policy_profile
+name: Homelab
+description: >-
+  Single-operator, self-hosted profile — the community on-ramp. The smallest floor that still
+  delivers the headline value (dependency graph, ordered shutdown/startup, drift visibility,
+  rehydration) with no enterprise ceremony required. Every stronger capability the production
+  profiles require is still available and one toggle away (operational_config); homelab does not
+  mandate it and pre-tunes the optional ones for a home lab. Easy to adopt, easy to raise.
+version: 1.0.0
+status:
+  state: active
+profile:
+  is_builtin: true
+  default: false                            # dev stays the September default; homelab is the opt-in home posture
+  approved: true
+  composed_from: []
+  floor:                                    # the minimum guaranteed substrate — small on purpose
+    - policy/structural-validation          # schema-valid requests (policy-contract §11)
+    - policy/tenant-isolation               # TEN-001 single-tenant ownership (you) — cheap; it's the ownership model
+    - policy/resolved-profile-evaluation    # three-state outcome (policy-contract §7.7)
+    - audit/append-only-log                 # provenance baseline (merkle NOT required — see operational_config)
+    - lifecycle/four-state-tracking          # intent / requested / realized / discovered (what powers rehydration)
+  required_mechanics:
+    - store/requested
+    - store/realized
+    - store/discovered
+    - time-sync/causal                       # NTP-grade causal ordering; no attested clock required (ADR-005)
+  operational_config:
+    # ── Optional-above-floor capabilities, pre-tuned for a home lab and easy to raise. ──
+    # Nothing here is OFF: these are low-ceremony DEFAULTS. Change any value to production-grade
+    # without changing profile; or fork homelab to make a value floor-REQUIRED (see the DCM how-to).
+    drift_reconciliation:
+      enabled: true
+      mode: report                          # surface drift; don't auto-remediate (raise to 'reconcile')
+      cadence: daily
+    recovery:
+      enabled: true
+      mode: best_effort                     # partial-realization/timeout handling; no dual-approval gate
+    discovery:
+      enabled: true
+      schedule: daily                       # feeds drift + the estate dependency graph
+    governance_matrix:
+      enforcement: advisory                 # boundary decisions logged, not blocked (raise to 'enforced')
+    approval_ladder:
+      destructive: none                     # single operator auto-approves (add gates any time)
+    audit:
+      merkle_transparency: false            # append-only is on (floor); merkle transparency is a toggle
+    attestation:
+      required: false                       # available for nodes that support it; not mandated
+    onboarding:
+      atomic: true                          # keep the safe floor-provisioning check (profile-resolution §5)
