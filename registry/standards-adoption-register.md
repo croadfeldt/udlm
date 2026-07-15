@@ -42,6 +42,11 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `RFC 3339` · **Body:** IETF · **Since:** first referenced 2026-05-27T01:33:19Z; ratified normative-with-patterns 2026-07-05 (common-elements §8) · **Where:** every time field in both schemas, estate records, `time_source` discipline.
 **Why:** auditable provenance requires unambiguous instants: UTC-normalized (`Z`), seconds minimum, clock attribution (`time_source`), no fabricated precision. RFC 3339 is the interoperable profile of ISO 8601 (bare ISO 8601 permits zone-less/reduced forms — the ambiguity we're eliminating). Regulatory precedent: MiFID II RTS 25 clock-sync discipline. **License:** IETF Trust — compatible-reference.
 
+### RFC 9457 (Problem Details for HTTP APIs) — CANONICAL
+**Covers:** `RFC 9457` · **Body:** IETF (via **AEP-193**) · **Since:** first referenced in `contracts/error-model.md` §2 (predates this entry); **registered 2026-07-15** — this backfills a register gap the standards-change audit found (the whole error surface conformed to RFC 9457 but the decision was never recorded). · **Where:** `error-model.md` §2 (the error envelope); referenced by `rate-limit-and-backpressure.md`, `retry-semantics.md`, and every interop error surface.
+**Why:** a shared, machine-readable error shape lets any conformant peer parse another's errors without per-realization adapters; RFC 9457 is the IETF standard for it (`type`/`title`/`detail`/`instance` + top-level extension members). Adopting it **retired** UDLM's former bespoke `error_code`/`message`/`audit_uuid`/`details` envelope (net-negative surface — error-model §2a). *Alternatives:* the bespoke envelope (reinvents a solved shape, no ecosystem — now RETIRED); gRPC `Status` (binary-first, off the REST surface). **License:** IETF Trust — compatible-reference.
+> **Retirement recorded:** the former bespoke UDLM error envelope is **RETIRED** in favour of this (error-model §2a). **AEP-193** (the AEP error model that adopts RFC 9457) is the adoption vehicle — register a dedicated AEP-193 entry if/when AEP standards get their own rows.
+
 ### RFC 9162 (Certificate Transparency v2 / Merkle logs) — CANONICAL
 **Covers:** `RFC 9162` · **Body:** IETF · **Since:** 2026-04-07T18:38:08Z · **Where:** `observability/universal-audit.md` AUD-006 (audit records form a Merkle tree; leaf signatures), `audit.log_head` in the instance schema.
 **Why:** tamper-evident audit for fsi/sovereign profiles needs an append-only structure with an established verification model; CT is the deployed-at-scale precedent. *Alternatives:* blockchain (consensus machinery we don't need), plain hash chain (no efficient inclusion proofs). **License:** IETF Trust — compatible-reference.
@@ -118,12 +123,16 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** RFC 2131 defines the protocol concepts; Kea is the estate's operational DHCP implementation and its config vocabulary names the operational objects. Kea is MPL-2.0 → **reference-only** verdict (vocabulary referenced, no text reproduction); RFC — compatible-reference.
 
 ### IETF DNS — RFC 1035 family — CANONICAL
-**Covers:** `IETF DNS` `RFC-1035` · **Since:** 2026-06-26T22:30:12Z · **Where:** Network.AddressService, Network.DNSZone.
+**Covers:** `IETF DNS` `RFC-1035` `RFC-3596` · **Since:** 2026-06-26T22:30:12Z · **Where:** Network.AddressService, Network.DNSZone (RFC 3596 = the AAAA/IPv6 resource record, part of the same DNS-RR family).
 **Why:** name-resolution vocabulary is IETF's; nothing to decide. **License:** IETF Trust — compatible-reference.
 
 ### Kerberos (RFC 4120) + LDAP (RFC 4511) — CANONICAL
-**Covers:** `RFC-4120` `RFC-4511` · **Since:** 2026-06-27T00:38:59Z · **Where:** Security.DirectoryService (the FreeIPA grounding: KDC + Directory).
-**Why:** directory services are these two protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
+**Covers:** `RFC-4120` `RFC-4511` `RFC-4512` · **Since:** 2026-06-27T00:38:59Z · **Where:** Security.DirectoryService (the FreeIPA grounding: KDC + Directory; RFC 4512 = the LDAP directory information models, companion to the 4511 protocol).
+**Why:** directory services are these protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
+
+### OAuth 2.0 Rich Authorization Requests — RFC 9396 — PATTERN
+**Covers:** `RFC 9396` `RFC-9396` · **Body:** IETF · **Since:** registered 2026-07-15 (first referenced in `capability-discovery.md` §2.5). · **Where:** the capability-admission model — RAR is the structured `verb × domain` request shape behind `effective_capabilities` (`contracts/capability-discovery.md` §2.5; SPEC-DESIGN adopt-by-ref §22–23).
+**Why:** the provider-capability model needed a standard shape for "a request for authorization to do specific actions on specific resources"; RAR's typed `authorization_details` *is* our `verb × domain`, and it pairs with the IAM permission-boundary / OAuth-scope intersection semantics already adopted. **Adopt the mechanism (PATTERN), not a specific OAuth server.** *Alternatives:* plain OAuth scopes (flat strings, no resource/action structure), an invented request grammar (rejected on the don't-reinvent rule). **License:** IETF Trust — compatible-reference.
 
 ### NUT (Network UPS Tools) — CANONICAL
 **Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** Facility.PowerFeed (`ups.status` vocabulary).
