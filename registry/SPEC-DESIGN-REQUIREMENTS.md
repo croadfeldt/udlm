@@ -271,19 +271,19 @@ Each hard constraint cites the UDLM contract it derives from.
     (`tests/check_single_source.py`) To find the home before you write, use the file
     index (`docs/file-index.md`) — it names what each document owns.
 
-34. **A resource type models the graph and the audit trail — not the provider's configuration** (ADR-016).
-    A field earns a place in the base spec **only** if it is **graph-bearing** (forms a dependency edge — a
-    `data_reference`, a relationship, or a network/route/port in the service graph), **audit / provenance /
-    identity-bearing** (the audit chain, sovereignty gate, or tenancy needs it), or **observability / drift-
-    bearing** (a typed output reconciled Discovered-vs-Realized). The review test per field: *does this form
-    an edge, or does audit / drift / sovereignty need it?* If **no**, it is **provider-projected config** —
-    the provider declares it, DCM **projects a configuration interface** for it (`contracts/provider-contract.md`
-    §1a.3), the consumer configures it *through DCM*, and the set values land in provider-namespaced
-    `provider_extensions` (`PRV-010`), audited and **portability-flagged** — never modeled field-by-field in
-    the portable type, and never leaking the mechanism into the substrate (DCM ADR-023). When the provider
-    owns deep/runtime config, **do not store it** — track a provider-filled `config_interface` reference (a
-    pointer to *where* config is managed), not the values; storing a copy makes UDLM a config
-    system-of-record and drifts (ADR-016 §3).
+34. **A resource type's base is the resource's *portable definition*; provider-specific config is stored
+    extra** (ADR-016). The **base spec** carries the resource's **portable, standard-grounded config** — the
+    fields every provider of the type accepts (a container's `image`/`resources`/`command`/`args`/`ports`/
+    `mounts`) — plus its **graph-bearing** (`data_reference` / relationship / service-graph),
+    **audit/provenance/identity**, and **observability/drift** elements. The line is **portable vs
+    provider-specific**, not config-vs-not: portable config that defines the resource is base;
+    **provider-specific** config is declared by the provider, projected as a config interface DCM offers
+    (`contracts/provider-contract.md` §1a.3), and its **values stored** as provider-namespaced
+    `provider_extensions` (`PRV-010`) across Requested/Realized, portability-flagged. **DCM stores the config
+    *state* — base and extra — because it is the state system-of-record and drift is a diff; there is no
+    "store a pointer instead of the values".** The provider owns the *schema*; the *mechanism* stays out of
+    the substrate (DCM ADR-023); the *state* is always recorded. **Corollary:** every resource DCM manages
+    has a resource record type. **[enforced: review]**
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.

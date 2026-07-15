@@ -1,4 +1,4 @@
-# UDLM ADR-016: What a Resource Type Models — the dependency graph and the audit trail; the provider projects the configuration
+# UDLM ADR-016: What a Resource Type Models — the resource's portable definition; provider-specific config is stored extra; DCM is the state system-of-record
 
 **Status:** Proposed (2026-07-15)
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
@@ -12,29 +12,31 @@ A resource-type spec is tempting to grow into a full model of everything a resou
 
 **A resource type models the elements that bear the dependency graph and the audit trail; the provider projects the concrete configuration, and DCM is the means to configure it. UDLM is a *conduit* for config, not a *modeler* of it.**
 
-### 1. What earns a field a place in the base type — three tests
+### 1. The base type is the resource's *portable definition* — its standard config, its graph, its audit surface
 
-A field belongs in the portable resource-type spec **only** if it is one of:
-- **Graph-bearing** — it forms a dependency edge: a `data_reference` (image → a governed image record → base-image/library blast-radius, ADR-024), a relationship (`binds_to` a `Storage.Volume`, `contained_by` a `Cluster`, `references` a `Security.CredentialRef`), or a network/route/port that places the resource in the service graph.
-- **Audit / provenance / identity-bearing** — the audit chain, sovereignty gate, or tenancy needs it: `uuid`, owner, `tenant_uuid`, `data_classification`, a pinned digest/version for provenance.
-- **Observability / drift-bearing** — a typed output or realized signal the realization reconciles Discovered against Realized on.
+The base resource-type spec defines **what the resource *is*** in DCM/UDLM, provider-neutrally — grounded in the adopted standard(s) for that resource (OAM Component + Kubernetes Container for a `Compute.Container`; Metal3 + Redfish for a bare-metal host). It carries, all portable:
 
-The per-field review test: **"Does this form an edge, or does the audit chain / drift detector / sovereignty gate need it?"** Yes → model it (typed, reference-able, relationship-declared). No → it is provider-projected config (below).
+- **Required + portable config** — the fields that *define* the resource and that **every provider of the type accepts**: a container's `image`, `resources`, `command`/`args`, `ports`, `mounts`, restart behaviour — the OAM/k8s shape. This is what a consumer authors to get *a container*, not *this vendor's container*.
+- **Graph-bearing elements** — fields that form dependency edges: a `data_reference` (image → blast-radius, ADR-024), a relationship (`binds_to` a `Storage.Volume`, `contained_by` a `Cluster`, `references` a `Security.CredentialRef`), a network/route/port in the service graph.
+- **Audit / provenance / identity / observability** — what the audit chain, sovereignty gate, tenancy, and drift baseline need.
 
-### 2. The provider may expose more — and DCM is the means to configure it
+The line that keeps the base thin is **portable vs provider-specific**, *not* config-vs-not-config: portable config that defines the resource belongs in the base; **provider-specific** config (a vendor's knobs) is the extra tier (§2). The per-field test: **is this portable across providers of this type (base), or specific to one provider (§2)?**
 
-Everything beyond the §1 subset is the **provider's configuration surface**. UDLM does not model it field-by-field, but a provider that wants to expose deeper config is not blocked — there is a governed channel:
-- The provider **declares its config schema** at whatever depth it supports (`provider-contract.md` §1a.3): none → DCM projects a **text passthrough**; typed → DCM projects a **typed configuration interface**.
-- **DCM projects that interface and the consumer configures it *through DCM*.** This is the means — a real configuration channel across the config lifecycle, not an opaque dead-drop.
-- The set values are captured as **provider-namespaced extension data** (`PRV-010` `provider_extensions`): governed like any data (audit, provenance, tenancy) but **outside the portable base type**, and DCM computes `portability_breaking: true` and **notifies the consumer** — a consumer that relies on provider-X's extra config is not portable to provider-Y, and silent non-portability is prohibited.
+### 2. Provider-specific config is *extra data* — declared by the provider, configured through DCM, stored as state
 
-So there are three tiers, not two: **portable base** (graph/audit/observability, every provider satisfies it) → **provider-projected config** (declared by the provider, projected + configured through DCM) → **provider extensions** (the captured values, namespaced, audited, portability-flagged). The concrete mechanism never enters the substrate (the naturalization boundary, DCM ADR-023).
+Beyond the portable definition, a provider may accept **extra, provider-specific config**. UDLM does not model its schema field-by-field — the provider **declares it** (`provider-contract.md` §1a.3 config-projection: none → text passthrough; typed → a typed interface), and **DCM projects a configuration interface** so the consumer sets it *through DCM* — a real configuration channel across the config lifecycle, not an opaque dead-drop. The provider owns the *schema*.
 
-### 3. Track the config *interface*, not the config *values*, when the provider owns them
+The **values** are stored as provider-namespaced state — `provider_extensions` (`PRV-010`) — across Requested and Realized, governed like any state (audit, provenance, tenancy) and **portability-flagged** (`portability_breaking: true`, consumer notified — relying on a vendor's extra config isn't portable to another provider; silent non-portability is prohibited). So the two tiers are **portable base** (every provider satisfies it) → **provider-specific extra** (this provider, stored as `provider_extensions`), and **DCM stores both** (§3). The concrete *mechanism* never enters the substrate (naturalization, DCM ADR-023); the config *state* always does.
 
-A provider commonly exposes its **own** interface for editing deep or runtime config. In that case UDLM carries a provider-filled **`config_interface`** reference — `{interface_type, endpoint | handle, schema_ref?}`, populated by the provider at realization (realized-side, like an output) — a **pointer to where the config is managed**, not the values. We do **not** store the provider's runtime config: a stored copy would make UDLM a config **system-of-record** and drift against the provider's real state — the same reason ADR-013 keeps hardware components out of the model.
+### 3. DCM stores the config *state* — it is the state system-of-record
 
-So the rule of thumb: capture a **bounded, audit/portability-relevant** slice as `provider_extensions` only when we deliberately want a record; **otherwise track the `config_interface` pointer and let the provider own, fill, and audit the values.** The audit hook is *"config is managed here, by this provider"* — following the pointer reaches the provider's SoR for the content. `config_interface` is itself a graph/audit-bearing element (§1): it is an edge to the managing system and the audit trail of *where* config lives.
+Ownership of the config *schema* is the provider's (§2). Ownership of the config *state* — the values across Requested / Realized / Discovered — is **DCM's**, and the two must not be conflated. *"The provider owns config"* is true of the schema, **not** of the state.
+
+**DCM stores the config values — base *and* provider-specific — because that is what a system-of-record is for: drift is a diff** (Requested vs Realized vs Discovered), and **you cannot diff what you did not store.** This is consistent, not halfway: **if we store one component's config we store every component's, end to end across an application stack** — otherwise the stack's state is un-diffable and DCM is not the SoR. There is no "track the pointer instead of the values" shortcut; a `config_interface` reference (`{interface_type, endpoint | handle, schema_ref?}`) MAY *additionally* record where the provider exposes its edit UI, but it **never replaces** storing the state — it is a navigation/audit convenience only.
+
+Provider-specific config values are stored as provider-namespaced state (`provider_extensions`, §2) — governed like any state (audit, provenance, tenancy) and portability-flagged — but stored. (This is *not* the ADR-013 case: ADR-013 declines to be the SoR for hardware components DCM does **not** manage; config of a resource DCM **does** manage is exactly its to record.)
+
+**Corollary — complete coverage.** Every resource DCM manages has a **resource record type**, so its state (including config) is a stored, diffable record. Nothing DCM manages is a black box.
 
 ### Worked example — container
 - **Model (base):** `image` as a `data_reference` (dependency map + base-image blast-radius); mounts → `Storage.Volume` / `Security.CredentialRef` edges; `ports` → the service graph; the pinned digest (provenance); the `contained_by` / `references` / `depends_on` relationships.
