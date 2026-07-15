@@ -207,3 +207,26 @@ beyond cost:
 Each keeps UDLM **thin** — the substrate that holds identity, lifecycle, relationships, and bindings —
 rather than swelling into a model of every adjacent domain. That is the architectural form of "don't
 reinvent the wheel."
+
+## 8. Changing an adopted standard — the runbook
+
+Adopting, version-bumping, or replacing a standard touches four places. Do them in order; `ADOPT-001`
+gates the register step. This is the end-to-end process the pieces above assume.
+
+**A. Adopt a new standard.**
+1. **Disposition test** (§1): absorb, embed, or adopt? Only *adopt* uses this doc.
+2. **Net-negative test** (§1b): the adoption must remove more bespoke surface than it adds.
+3. **Record the decision** in [`registry/standards-adoption-register.md`](../registry/standards-adoption-register.md) — a DecisionRecord-shaped entry: what, why *including alternatives considered*, where, when (git instant), who, and the license verdict. `ADOPT-001` (`tests/validate_registry.py`) fails CI if a type/provider `adopts[]` a standard string with no entry.
+4. **Reference it:** add the `adopts[]` entry on the type/binding (§3.1) and the provider support matrix (§3.2). Cite the standard by name; never restate its schema (T5 + the single-source rule).
+
+**B. Bump the version of an adopted standard.**
+1. Update the requirement/support ranges (§3.3, §3.2) — the data only declares versions.
+2. **Negotiation is Policy** (§4): DCM resolves requirement ∩ support and Accepts / Translates / Rejects at bind time; the effective version is recorded as provenance. No spec change is needed for a peer to run a different in-range version.
+3. If the *adopted range itself* changes (drop an old major, add a new one), amend the register entry — **append, don't rewrite** (statuses reuse DecisionRecord curation states).
+
+**C. Replace or retire a standard** (e.g. the bespoke error envelope → RFC 9457).
+1. **Record the retirement and the new adoption** in the register — retirements and rejections are first-class rows, so the next reader sees *why* the old one went.
+2. **Change the binding once**, at the standard's single home (the [file index](../docs/file-index.md) says which file owns it), and reference it everywhere else — do not restate it (single-source rule, `SPEC-DESIGN §33`).
+3. The spec change flows through normal versioning ([`VERSIONING.md`](../registry/VERSIONING.md)): a breaking change is a SPEC MAJOR, an additive one a MINOR.
+
+**Rule of thumb.** The *decision* lives in the register (one row, immutable, superseded not edited); the *binding* lives in one spec file (referenced, never restated); *version reconciliation* is Policy at runtime. **If a standard is cited in prose but has no register row, that is the gap to close** — register it (this is exactly how RFC 9457 slipped; it is now registered).
