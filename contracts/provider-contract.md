@@ -133,13 +133,26 @@ provider_base_registration:
   # (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
   # an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
   # is self_asserted and never honored. Claim and accreditation are reconciled, never assumed to agree.
-  sovereignty_declaration:
+  sovereignty_declaration:                       # the SINGLE sovereignty shape — every capability (storage-providers §11.2, etc.) references this, none redefines it
+    # --- REQUIRED core (the matchable base) ---
     operating_jurisdictions: [<country_codes>]   # ISO 3166 — sovereignty regime matched EXACTLY (accreditation-matrix §3.8)
     data_residency_zones: [<zone_ids>]           # ISO 3166 subdivisions — residency SUBSUMES down the hierarchy (US covers US-MN)
     enforcement_plane: both                      # data | control | both — WHICH plane is attested (§3.8). A data-plane
                                                  #   requirement is only satisfied by a data|both attestation; for it DCM conveys
                                                  #   the requirement + execution-slice to the enforcing provider and verifies ITS attestation.
-    sub_processors: []                   # third parties with data access
+    sub_processors: []                           # third parties with data access (name, jurisdiction, data_handled)
+    # --- OPTIONAL detail — carried on EVERY provider for conformity; REQUIRED only where a profile/policy
+    #     demands it (ADR-014 optionality-with-conformity: the field is present for a comparable vocabulary;
+    #     a `sovereign`/`fsi` profile marks which are mandatory, a homelab leaves them null). Available so
+    #     teams can test or use them on genuine need, without forcing them on everyone.
+    data_residency_guarantee: <true|false>       # data never leaves the declared jurisdictions
+    legal_frameworks: []                         # e.g. [eu_gdpr, eu_nis2]; excluded_frameworks: [] for gaps it cannot meet
+    jurisdiction_detail: []                      # per-jurisdiction enrichment: [{country, legal_system, data_center_location}]
+    external_dependencies: {}                    # air_gap_capable, external_services[] (service, jurisdiction, data_shared), opt_out_available
+    government_access_risk: {}                   # jurisdictions_with_compelled_access[], legal_challenge_policy (e.g. US CLOUD Act / FISA 702 exposure)
+    certifications: []                           # [{name, issuer, valid_from, expires_at, scope, certificate_ref}] — ISO-27001, SOC2-Type-II, …
+    audit_rights: {}                             # customer_audit_right, audit_notice_days, third_party_audit_accepted
+    change_notification: {}                      # notification_endpoint + mandatory_notification_events[] + notification_sla — a sovereignty change MUST be notified
 
   # Self-declared standards adherence (Gaia-X self-description / OSCAL SSP lineage). Each framework is a
   # CLAIM — self_asserted until an accreditation attests it (same claim→attestation escalation as sovereignty,
@@ -213,7 +226,7 @@ dcm_registration_verdict:                # DCM-OWNED — references the submissi
     - capability: serve_data/Network           # POLICY (Governance Matrix), not here. Domain granularity is inherent:
       disposition: provisional           # a category IS verb×domain (approve /Storage, deny /Compute independently).
   effective_capabilities: [realize_resources/Storage]   # COMPUTED intersecting CEILING (ADR-PROV-003); starts EMPTY:
-                                         # declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted
+                                         # the default-deny ceiling formula — capability-discovery §2 / PRV-009
                                          # (mirrors effective_accepts_roles). A provider can never exceed this.
                                          # Admission history is IMMUTABLE: every admin change is an explicit forward
                                          # CAPABILITY_ADMIT audit event (actor+reason); current = LIFO-newest.
@@ -592,9 +605,8 @@ information_provider_capabilities:
   data_domains:
     - domain: business_data
       data_types: [business_unit, cost_center, product_owner]
-      # authority_level is NOT self-declared (INF-006) — DCM assigns it from the admin-owned authority
-      # layer. It decides which source wins data conflicts, so a provider naming its own data "primary"
-      # would self-grant precedence over the true system-of-record. A value supplied here is ignored.
+      # authority_level is NOT self-declared — DCM assigns it; a value supplied here is ignored.
+      # Rule defined once in information-providers-advanced.md (the authority/confidence model).
   query_capacity:
     max_queries_per_second: 100
   confidence_model:
@@ -776,7 +788,7 @@ A provider registers with a **capability set** (each `verb × domain`), verified
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
 | `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 | `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the DCM→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
-| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted (mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
+| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in [`capability-discovery.md`](capability-discovery.md) §2 (mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
 | `PRV-010` | **Resource-type extension (ADR-PROV-004, closes #198).** A provider MAY extend a resource type it realizes by ADDING data elements, but MUST NOT override, shadow, or redefine any base element — the base type-spec is closed (`additionalProperties: false`). It **declares** its extensions at registration (which base type + the added elements and their schema), and at realization writes them ONLY into the realized entity's provider-namespaced `provider_extensions` surface; the validator rejects any extension path colliding with a base spec field. Any extension **degrades portability**: DCM computes `portability_breaking: true`, narrows the classification, records the extension keys + bound provider, and **notifies the consumer** before/at realization (silent non-portability prohibited). A genuinely new type is a Tier-2 `Vendor.Type` fork, not an extension; a recurrence across ≥2 providers promotes to a base MINOR. |
 
 ---
