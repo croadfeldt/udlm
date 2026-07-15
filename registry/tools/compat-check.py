@@ -40,13 +40,22 @@ def field_index(spec):
     req = set()
 
     def collect(schema, prefix=""):
+        if not isinstance(schema, dict):
+            return
         for name in (schema.get("required") or []):
             req.add(f"{prefix}.{name}" if prefix else name)
         for name, node in (schema.get("properties") or {}).items():
             path = f"{prefix}.{name}" if prefix else name
             out[path] = node
-            if isinstance(node, dict) and node.get("type") == "object":
-                collect(node, path)
+            collect(node, path)
+        # Schema combinators: index each branch's fields at the SAME path. A field
+        # expressed as "inline shape OR data_reference" (the ADR-012 pattern) keeps its
+        # inner fields addressable, so wrapping an existing shape in a new oneOf branch is
+        # additive (MINOR), not a field removal (MAJOR). Without this, any type adopting a
+        # data_reference oneOf false-fails the compat gate.
+        for key in ("oneOf", "anyOf", "allOf"):
+            for branch in (schema.get(key) or []):
+                collect(branch, prefix)
 
     collect(spec)
     return out, req
