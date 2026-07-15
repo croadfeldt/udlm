@@ -181,10 +181,9 @@ transport-level error codes per the transport's conventions.
 
 ## 6. Audit linkage
 
-Every error envelope MUST include an `audit_uuid` linking to the audit record
-written for the error. The audit record MUST contain:
+Every error envelope carries its audit linkage in **`instance`** — `urn:udlm:audit:<audit_uuid>` (§2) — the URN of the audit record written for the error. (There is no separate top-level `audit_uuid` member; it lives in the `instance` URN, per §2a.) The audit record MUST contain:
 
-- The `request_id` and `audit_uuid` from the envelope (same UUIDs).
+- The `request_id` (envelope extension member) and the `audit_uuid` (from the `instance` URN) — same UUIDs.
 - The originating actor (authenticated identity or `unauthenticated`).
 - The operation attempted.
 - The problem `type`, `title`, and `detail`.
@@ -228,7 +227,7 @@ A conformant realization MUST:
 
 - Emit only error codes in the closed vocabulary (or declared extensions).
 - Set `retryable` correctly per the code semantics.
-- Include `request_id` and `audit_uuid` in every error.
+- Include `request_id` (extension member) and the audit link in `instance` (`urn:udlm:audit:<audit_uuid>`, §2) in every error.
 - Emit the RFC 9457 problem object exactly (§2), with `type` from the closed vocabulary.
 - Reject malformed envelopes from peers with `validation.error_envelope_malformed`.
 

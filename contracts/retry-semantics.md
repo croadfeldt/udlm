@@ -109,7 +109,7 @@ A request being retried stays in its current lifecycle state until terminal:
 Once retries exhaust:
 
 - The request transitions to `FAILED`.
-- The `error_code` from the last attempt is recorded.
+- The problem `type` (`error-model.md` §2) from the last attempt is recorded.
 - Compensation MAY be invoked per the recovery policy (see
   [`operational-models.md`](../lifecycle/operational-models.md)).
 
