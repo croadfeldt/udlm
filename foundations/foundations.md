@@ -218,27 +218,14 @@ These three abstractions serve DCM's core ethos:
 > **Full specification:** See [Design Priorities](../design-principles/design-priorities.md) for the complete priority framework, decision framework, profile scaling table, and DPO-001–006 system policies.
 
 
-Every design decision in DCM is evaluated against this priority order. When priorities conflict, higher priorities win. When there is no conflict, all four apply simultaneously.
+Every design decision is evaluated against a fixed priority order; when priorities conflict, higher wins, and where there is no conflict all four apply. Highest first:
 
-**1. Industry best practices for security**
-Security is not a feature or a profile option. It is the baseline that every other design decision must respect. Where security and convenience conflict, security wins — but the design must find a way to make the secure path the easy path. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability.
+1. **Industry best practices for security** — the baseline every decision respects; where security and convenience conflict, security wins (and the design makes the secure path the easy path).
+2. **Ease of use** — the secure, governed, auditable path must be the path of least resistance, or teams route around it.
+3. **Extensibility and capability grouping** — adapt to arbitrary organizational requirements through profiles / policies / capabilities, not code changes.
+4. **Fit for purpose (always required)** — none of the above matters if the system cannot provision, track drift on, and cleanly decommission real infrastructure.
 
-*In practice:* Security properties — value separation, non-transferable credentials, scoped permissions, rotation, audit, revocation propagation — are architecturally present in every profile. What profiles control is the enforcement strictness, operational automation, and threshold values. A `minimal` profile does not disable security; it implements security with minimal operational overhead.
-
-**2. Ease of use**
-DCM exists to enable self-service for application teams. If the right path is also the hard path, teams will find other paths. The goal is to make secure, governed, auditable infrastructure management the path of least resistance — not the path of compliance obligation.
-
-*In practice:* Profile defaults should eliminate configuration burden for common cases. The standard pipeline should auto-approve ordinary requests without human intervention. Policy authoring should not require Rego expertise for common patterns. The Flow GUI, scoring model, and contribution endpoints all serve this priority.
-
-**3. Extensibility and capability grouping**
-The profile system, compliance domain overlays, policy groups, and registry governance exist to make DCM adaptable to arbitrary organizational requirements without code changes. This priority serves at scale — a platform that can only be configured by modifying source code is not a platform.
-
-*In practice:* New compliance requirements should be expressible as policy additions within the existing framework. New provider types should fit the existing Provider base contract. New deployment contexts should be addressable through profile configuration.
-
-**4. Fit for purpose (always required)**
-DCM must actually manage data center infrastructure lifecycle. All of the above is in service of this purpose — not independent of it. An architecturally beautiful system that cannot provision a VM, track its drift, and decommission it cleanly has failed at its reason for existing.
-
-*In practice:* Design decisions that serve priorities 1–3 but break the end-to-end lifecycle (request → provision → operate → decommission) are not acceptable. Every capability added must have a clear answer to "how does this serve the lifecycle management mission?"
+The full framework — the decision procedure, the profile scaling table, and the `DPO-*` policies — is defined once in [Design Priorities](../design-principles/design-priorities.md) and is not restated here.
 
 ---
 

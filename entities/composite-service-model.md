@@ -206,18 +206,18 @@ The Requested state is fully assembled before any constituent dispatch occurs. C
 
 ### 3.3 Realized State
 
-Realized records the runtime outcome. As constituent dispatches return, their realized states are recorded against the corresponding component_id. The Composite Entity's `lifecycle_state` reflects the aggregate:
+Realized records the runtime outcome. As constituent dispatches return, their realized states are recorded against the corresponding component_id. The Composite Entity's coarse `lifecycle_state` stays the five-value enum (`Intent → Requested → Realized ↔ Discovered → Decommissioned`; data-model-core §3). Its **aggregate operational + compensation status** is carried as `status.conditions` — DEGRADED and the compensation states are condition types, **not** lifecycle states (data-model-core §3):
 
-| Composite lifecycle_state | Meaning |
+| Aggregate status condition | Meaning |
 |---------------------------|---------|
-| `OPERATIONAL` | All `required` constituents are OPERATIONAL. `partial` constituents are OPERATIONAL or accepted-degraded. |
-| `DEGRADED` | All `required` constituents are OPERATIONAL but one or more `partial` constituents failed. Whether this is a valid terminal state depends on profile policy. |
+| `OPERATIONAL` | All `required` constituents are operational. `partial` constituents are operational or accepted-degraded. |
+| `DEGRADED` | All `required` constituents are operational but one or more `partial` constituents failed. Whether this is an acceptable resting condition depends on profile policy. |
 | `FAILED` | One or more `required` constituents failed. Compensation has been triggered. |
 | `COMPENSATING` | Recovery Policy is executing compensation (dependency-reverse decommission of successfully realized constituents). |
 | `COMPENSATION_FAILED` | Compensation itself failed. Orphan detection is active for any constituents not cleanly torn down. |
 | `PARTIALLY_COMPENSATED` | Compensation completed with one or more constituents that could not be torn down cleanly. |
 
-Each constituent's individual `lifecycle_state` is also recorded and queryable via the standard request status endpoint and the SSE stream. The runtime status field surfaces both: top-level composite state plus per-constituent state.
+Each constituent's individual `lifecycle_state` and `status` are also recorded and queryable via the standard request status endpoint and the SSE stream. The runtime status field surfaces both: top-level composite lifecycle_state + aggregate status conditions, plus per-constituent state.
 
 ### 3.4 Discovered State
 

@@ -50,13 +50,13 @@ An **Infrastructure Resource Entity** is a realized physical or virtual infrastr
 **Characteristics:**
 - Persists after provisioning — it continues to exist and consume resources until explicitly decommissioned
 - Owned by exactly one Tenant at any point in time
-- Has a full bidirectional lifecycle including OPERATIONAL and SUSPENDED states
+- Has a full operational lifecycle including operational and suspended *phases* — carried as `status.conditions`; the coarse `lifecycle_state` is the five-value enum (data-model-core §3)
 - Subject to drift detection — its Realized State is continuously compared against Discovered State
 - Subject to TTL management — may declare an expiry after which decommission is triggered
 - May have relationships to other entities — dependencies, attachments, allocations, business data
 - Carries field-level provenance across its full lifecycle
 
-**Lifecycle State Machine:**
+**Operational phase machine** (the `status` overlay — *not* `lifecycle_state`, which is the five-value enum in data-model-core §3). `REQUESTED`/`REALIZED`/`DECOMMISSIONED` below coincide with the `lifecycle_state` values `Requested`/`Realized`/`Decommissioned`; the rest (`PENDING`, `PROVISIONING`, `OPERATIONAL`, `SUSPENDED`, `DECOMMISSIONING`, `PENDING_REVIEW`, `FAILED`) are `status.conditions`:
 
 ```mermaid
 stateDiagram-v2
@@ -103,8 +103,10 @@ infrastructure_resource_entity:
   handle: <string>                      # human-readable stable identifier
   resource_type: <fqn>                  # e.g., Compute.VirtualMachine
   resource_type_spec_version: <semver>
-  lifecycle_state: <REQUESTED|PENDING|PROVISIONING|REALIZED|OPERATIONAL|
-                    SUSPENDED|DECOMMISSIONING|DECOMMISSIONED|FAILED|PENDING_REVIEW>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>
+  # ^ the ONLY lifecycle enum — five values (foundations/data-model-core.md §3, four-states.md §2.5).
+  #   Finer operational phase + health (provisioning, operational, degraded, maintenance, suspended,
+  #   failed, pending_review, decommissioning) are `status.conditions` overlays, NOT lifecycle_state.
   created_at: <ISO 8601>
   updated_at: <ISO 8601>
 
@@ -232,7 +234,8 @@ No SUSPENDED state. No PENDING_REVIEW state. Process Resources are ephemeral —
 process_resource_entity:
   uuid: <uuid>
   resource_type: <fqn>                  # e.g., Automation.AnsiblePlaybook
-  lifecycle_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity
+  execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>  # per-RUN dynamics — separate axis (data-model-core §3 [D7])
   owned_by_tenant_uuid: <uuid>
   created_by_actor_uuid: <uuid>
 

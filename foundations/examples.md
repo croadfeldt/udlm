@@ -406,7 +406,7 @@ A VM discovered by the provider that the realization did not provision is brough
 discovered_entity:
   provider_entity_id: "vm-legacy-0001"
   resource_type: Compute.VirtualMachine
-  lifecycle_state: OPERATIONAL          # it's running
+  lifecycle_state: Discovered           # observed running; operational status is a status.condition
   discovered_at: 2026-03-15T06:00:00Z
   discovery_confidence: low             # no UDLM provenance
   transitional_tenant: __transitional__ # held in transitional Tenant during ingestion
