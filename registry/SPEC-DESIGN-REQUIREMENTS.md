@@ -271,6 +271,17 @@ Each hard constraint cites the UDLM contract it derives from.
     (`tests/check_single_source.py`) To find the home before you write, use the file
     index (`docs/file-index.md`) — it names what each document owns.
 
+34. **A resource type models the graph and the audit trail — not the provider's configuration** (ADR-016).
+    A field earns a place in the base spec **only** if it is **graph-bearing** (forms a dependency edge — a
+    `data_reference`, a relationship, or a network/route/port in the service graph), **audit / provenance /
+    identity-bearing** (the audit chain, sovereignty gate, or tenancy needs it), or **observability / drift-
+    bearing** (a typed output reconciled Discovered-vs-Realized). The review test per field: *does this form
+    an edge, or does audit / drift / sovereignty need it?* If **no**, it is **provider-projected config** —
+    the provider declares it, DCM **projects a configuration interface** for it (`contracts/provider-contract.md`
+    §1a.3), the consumer configures it *through DCM*, and the set values land in provider-namespaced
+    `provider_extensions` (`PRV-010`), audited and **portability-flagged** — never modeled field-by-field in
+    the portable type, and never leaking the mechanism into the substrate (DCM ADR-023).
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
