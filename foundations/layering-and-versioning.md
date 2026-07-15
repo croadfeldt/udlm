@@ -74,21 +74,12 @@ Policies **execute** — they run logic (OPA Rego, DCM native rules, external ev
 
 ### The Flow Is Strictly Unidirectional
 
-```
-Steps 1-4: LAYERS assembled → merged payload produced
-  │  Layers contribute field values
-  │  Higher priority layers override lower priority
-  │  Immutable fields locked at this stage
-  │
-  ▼
-Steps 5-9: POLICIES execute → payload evaluated and acted upon
-  │  Policies read assembled payload
-  │  Transformation: modify/inject derived fields
-  │  Validation: verify correctness
-  │  Validation Policy (compliance-class): approve or reject
-  │
-  ▼
-Provider-ready payload dispatched
+```mermaid
+flowchart TD
+    A["Steps 1-4: LAYERS assembled → merged payload produced<br/>• Layers contribute field values<br/>• Higher priority layers override lower priority<br/>• Immutable fields locked at this stage"]
+    B["Steps 5-9: POLICIES execute → payload evaluated and acted upon<br/>• Policies read assembled payload<br/>• Transformation: modify/inject derived fields<br/>• Validation: verify correctness<br/>• Validation Policy (compliance-class): approve or reject"]
+    C["Provider-ready payload dispatched"]
+    A --> B --> C
 ```
 
 Policies cannot set static configuration — that is a layer's job. A policy that finds itself repeatedly injecting the same static value into every request should be refactored: that value belongs in a layer.
@@ -963,52 +954,28 @@ Conflict detection runs at layer ingestion time — not at request assembly time
 
 When a layer is committed to the Layer Store (Git branch created or updated):
 
-```
-Layer committed to Git branch
-  │
-  ▼
-CI Pipeline fires automatically
-  │
-  ├── 1. Schema validation
-  │      Is the layer well-formed per the layer schema?
-  │      Does it carry required artifact metadata?
-  │      Is the version correctly incremented?
-  │
-  ├── 2. Handle validation
-  │      Is the handle unique in DCM?
-  │      Does the handle match the Git path?
-  │      Does the domain match the submitting actor's authorization?
-  │
-  ├── 3. Scope validation
-  │      If type-scoped: do declared resource types exist in the registry?
-  │      Is the layer type consistent with the domain?
-  │
-  ├── 4. Priority validation
-  │      Is the priority value in valid dotted-notation format?
-  │      Does the priority category match the domain advisory range?
-  │      (Warning only if category/domain mismatch — not a block)
-  │
-  ├── 5. Conflict detection
-  │      For each field in this layer:
-  │        Find all active layers of the same type and overlapping scope
-  │        Check if any declare the same field
-  │        If conflict found:
-  │          → Does the new layer declare a higher priority? → Allowed, documented
-  │          → Does the existing layer declare a higher priority? → Allowed, documented
-  │          → Neither declares priority? → CONFLICT ERROR — PR blocked
-  │          → Both declare equal priority? → CONFLICT ERROR — PR blocked
-  │          → Domain authority violation? → CONFLICT ERROR — PR blocked
-  │
-  │      Conflict notification:
-  │        Posted as PR comment with: conflicting layer UUID, handle, owner
-  │        Both layer owners notified via notification_endpoint
-  │
-  ├── 6. Deprecation reference validation
-  │      If status: deprecated — does replacement UUID exist?
-  │
-  └── 7. Result
-         All checks pass → PR approved for merge
-         Any check fails → PR blocked, detailed error comment posted
+```mermaid
+flowchart TD
+    G["Layer committed to Git branch"]
+    CI["CI Pipeline fires automatically"]
+    S1["1. Schema validation<br/>Is the layer well-formed per the layer schema?<br/>Does it carry required artifact metadata?<br/>Is the version correctly incremented?"]
+    S2["2. Handle validation<br/>Is the handle unique in DCM?<br/>Does the handle match the Git path?<br/>Does the domain match the submitting actor's authorization?"]
+    S3["3. Scope validation<br/>If type-scoped: do declared resource types exist in the registry?<br/>Is the layer type consistent with the domain?"]
+    S4["4. Priority validation<br/>Is the priority value in valid dotted-notation format?<br/>Does the priority category match the domain advisory range?<br/>(Warning only if category/domain mismatch — not a block)"]
+    S5["5. Conflict detection<br/>For each field in this layer:<br/>Find all active layers of the same type and overlapping scope<br/>Check if any declare the same field"]
+    S6["6. Deprecation reference validation<br/>If status: deprecated — does replacement UUID exist?"]
+    S7["7. Result<br/>All checks pass → PR approved for merge<br/>Any check fails → PR blocked, detailed error comment posted"]
+
+    G --> CI --> S1 --> S2 --> S3 --> S4 --> S5
+
+    S5 -->|If conflict found| C1["Does the new layer declare a higher priority?<br/>→ Allowed, documented"]
+    S5 -->|If conflict found| C2["Does the existing layer declare a higher priority?<br/>→ Allowed, documented"]
+    S5 -->|If conflict found| C3["Neither declares priority?<br/>→ CONFLICT ERROR — PR blocked"]
+    S5 -->|If conflict found| C4["Both declare equal priority?<br/>→ CONFLICT ERROR — PR blocked"]
+    S5 -->|If conflict found| C5["Domain authority violation?<br/>→ CONFLICT ERROR — PR blocked"]
+    S5 -.->|Conflict notification| CN["Posted as PR comment with: conflicting layer UUID, handle, owner<br/>Both layer owners notified via notification_endpoint"]
+
+    S5 --> S6 --> S7
 ```
 
 ### 4c.2 Conflict Resolution Rules
@@ -1307,31 +1274,14 @@ Actor expansion follows a strict hierarchy:
 
 Override control is applied during Step 5 (Policy Processing) of the assembly process:
 
-```
-Layer Merge complete (Steps 1-4)
-  │  Fields have values — all fields default to Level 1 (allow)
-  │  Static override declarations from Resource Type and Catalog Item are loaded
-  ▼
-Transformation Policies
-  │  May set override: constrained or override_matrix on fields
-  │  May set baseline_value and basis_for_value metadata
-  │  Records policy UUID, level, and reason in field provenance
-  ▼
-Validation Policies
-  │  Verify existing override declarations are not violated
-  │  Verify actor permissions against current override_matrix
-  │  Pass/fail — no modification to override control
-  ▼
-Compliance-class Validation Policies
-  │  May set override: immutable on fields
-  │  May override field values before locking
-  │  May issue trusted_grants to specific actors
-  │  Records policy UUID, level, lock type, and reason in provenance
-  ▼
-Requested State
-  │  All governed fields carry full override control metadata
-  │  Provenance chain complete — every lock and grant is traceable
-  ▼
+```mermaid
+flowchart TD
+    M["Layer Merge complete (Steps 1-4)<br/>Fields have values — all fields default to Level 1 (allow)<br/>Static override declarations from Resource Type and Catalog Item are loaded"]
+    T["Transformation Policies<br/>May set override: constrained or override_matrix on fields<br/>May set baseline_value and basis_for_value metadata<br/>Records policy UUID, level, and reason in field provenance"]
+    V["Validation Policies<br/>Verify existing override declarations are not violated<br/>Verify actor permissions against current override_matrix<br/>Pass/fail — no modification to override control"]
+    CV["Compliance-class Validation Policies<br/>May set override: immutable on fields<br/>May override field values before locking<br/>May issue trusted_grants to specific actors<br/>Records policy UUID, level, lock type, and reason in provenance"]
+    R["Requested State<br/>All governed fields carry full override control metadata<br/>Provenance chain complete — every lock and grant is traceable"]
+    M --> T --> V --> CV --> R
 ```
 
 ---
