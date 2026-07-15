@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Specification — Automated test framework contract for data model and architecture validation
-**Related Documents:** [Foundations](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Policy Contract](../contracts/policy-contract.md) | [Provider Contract](../contracts/provider-contract.md) | [Infrastructure Requirements](../design-principles/infrastructure-optimization.md)
+**Related Documents:** [Foundations](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Policy Contract](../contracts/policy-contract.md) | [Provider Contract](../contracts/provider-contract.md) | [Data Contracts](../design-principles/data-contracts.md)
 
 > **Purpose:** This document defines the contract for an automated, self-reflecting test framework
 > that validates the DCM data model and architecture by generating random end-to-end use cases,
