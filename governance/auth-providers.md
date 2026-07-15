@@ -376,8 +376,11 @@ credential_provider_registration:
     auth_method: <kubernetes|approle|token|aws_iam|ldap>
     namespace: <vault namespace>
 
-  credential_types: [hmac_secret, api_key, certificate, connection_string,
-                     bearer_token, private_key, username_password, ldap_bind]
+  # Credential types this backend can issue — drawn from the CLOSED substrate vocabulary in
+  # credentials.md §2; this list does NOT redefine it. Backend-flavored names fold into canonical
+  # types (nothing lost): a connection_string / username_password / ldap_bind / hmac_secret is a
+  # `secret`; a bearer token is a `service_account_token`; a raw private key is `ssh_key`/`signing_key`.
+  credential_types: [api_key, x509_certificate, ssh_key, secret, signing_key, service_account_token]
 
   health_check:
     interval_seconds: 60
