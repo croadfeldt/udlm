@@ -123,12 +123,16 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** RFC 2131 defines the protocol concepts; Kea is the estate's operational DHCP implementation and its config vocabulary names the operational objects. Kea is MPL-2.0 → **reference-only** verdict (vocabulary referenced, no text reproduction); RFC — compatible-reference.
 
 ### IETF DNS — RFC 1035 family — CANONICAL
-**Covers:** `IETF DNS` `RFC-1035` · **Since:** 2026-06-26T22:30:12Z · **Where:** Network.AddressService, Network.DNSZone.
+**Covers:** `IETF DNS` `RFC-1035` `RFC-3596` · **Since:** 2026-06-26T22:30:12Z · **Where:** Network.AddressService, Network.DNSZone (RFC 3596 = the AAAA/IPv6 resource record, part of the same DNS-RR family).
 **Why:** name-resolution vocabulary is IETF's; nothing to decide. **License:** IETF Trust — compatible-reference.
 
 ### Kerberos (RFC 4120) + LDAP (RFC 4511) — CANONICAL
-**Covers:** `RFC-4120` `RFC-4511` · **Since:** 2026-06-27T00:38:59Z · **Where:** Security.DirectoryService (the FreeIPA grounding: KDC + Directory).
-**Why:** directory services are these two protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
+**Covers:** `RFC-4120` `RFC-4511` `RFC-4512` · **Since:** 2026-06-27T00:38:59Z · **Where:** Security.DirectoryService (the FreeIPA grounding: KDC + Directory; RFC 4512 = the LDAP directory information models, companion to the 4511 protocol).
+**Why:** directory services are these protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
+
+### OAuth 2.0 Rich Authorization Requests — RFC 9396 — PATTERN
+**Covers:** `RFC 9396` `RFC-9396` · **Body:** IETF · **Since:** registered 2026-07-15 (first referenced in `capability-discovery.md` §2.5). · **Where:** the capability-admission model — RAR is the structured `verb × domain` request shape behind `effective_capabilities` (`contracts/capability-discovery.md` §2.5; SPEC-DESIGN adopt-by-ref §22–23).
+**Why:** the provider-capability model needed a standard shape for "a request for authorization to do specific actions on specific resources"; RAR's typed `authorization_details` *is* our `verb × domain`, and it pairs with the IAM permission-boundary / OAuth-scope intersection semantics already adopted. **Adopt the mechanism (PATTERN), not a specific OAuth server.** *Alternatives:* plain OAuth scopes (flat strings, no resource/action structure), an invented request grammar (rejected on the don't-reinvent rule). **License:** IETF Trust — compatible-reference.
 
 ### NUT (Network UPS Tools) — CANONICAL
 **Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** Facility.PowerFeed (`ups.status` vocabulary).
