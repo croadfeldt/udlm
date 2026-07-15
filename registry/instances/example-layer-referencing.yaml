@@ -22,6 +22,10 @@ contributor:
   review: per_profile
 fields:
   network_zone:
-    ref_uuid: b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50   # -> platform/network-zones/dmz-restricted
+    ref_uuid: b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50   # -> platform/network-zones/dmz-restricted v1.0.0 (immutable)
     ref_name: platform/network-zones/dmz-restricted   # advisory — must match the resolved layer's handle
+    ref_version: 1.0.0                                # advisory — must match the resolved layer's version
     reference_data_type: network_zone                 # must equal the resolved layer's reference_data_type
+    # This is pinned to v1 (immutable). v2.0.0 (example-reference-data-network-zone-v2.yaml) explicitly
+    # `supersedes` this v1 uuid, so `validate.py` impact_report() walks that lineage link and flags this
+    # reference as a potential-impact candidate.

@@ -13,11 +13,16 @@
         "ref_uuid": {
           "type": "string",
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-          "description": "AUTHORITATIVE. RFC 9562 v4 uuid of the reference_data layer. Resolution uses only this. A uuid that resolves to nothing is a dangling reference (hard fail), never a silent rebind onto a same-named record."
+          "description": "AUTHORITATIVE. RFC 9562 v4 uuid of the reference_data layer. Because a layer version is IMMUTABLE (any change mints a new uuid+version, ADR-012), this pins an exact, reproducible version. Resolution uses only this. A uuid that resolves to nothing is a dangling reference (hard fail), never a silent rebind onto a same-named record."
         },
         "ref_name": {
           "type": "string",
           "description": "ADVISORY. The resolved layer's handle or name, carried for human readability. Validated to match the resolved target at authoring time (honesty gate) but never used to resolve."
+        },
+        "ref_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "ADVISORY. The semver of the pinned version, recorded for readability + drift detection. Validated to equal the resolved layer's version (honesty gate). Impact analysis reads it to report when a newer version of the same handle exists (the reference is pinned to a superseded version)."
         },
         "reference_data_type": {
           "type": "string",

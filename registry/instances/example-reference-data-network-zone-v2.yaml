@@ -1,0 +1,28 @@
+# v2.0.0 of the DMZ network zone — a NEW immutable record (new uuid + new version), NOT an edit of v1.
+# Lineage is EXPLICIT and the single mechanism (ADR-012): `supersedes` names the v1 uuid this version
+# replaces. That uuid-based link is what validate.py walks to flag any reference still pinned to v1 as a
+# change-impact candidate. `handle` is advisory display only — it is NOT consulted for lineage.
+record_type: layer
+uuid: b7a3f0c1-3030-4d20-8a40-0f1e2d3c4b70
+handle: platform/network-zones/dmz-restricted          # advisory display; same value as v1 for readability
+conforms_to: udlm/0.1
+name: Network zone — DMZ (restricted)
+description: v2 of the restricted DMZ segment — re-segmented CIDR and a new VLAN after the network refresh.
+version: 2.0.0
+supersedes:
+  - b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50               # explicit lineage link to v1.0.0 (the single mechanism)
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: reference_data
+reference_data_type: network_zone
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+fields:
+  zone_code: dmz-restricted
+  vlan_id: 3021                    # changed from v1's 3020
+  cidr: 192.0.2.128/25            # re-segmented from v1's 192.0.2.0/25 (RFC 5737 range)
+  egress_policy: deny-default
+  ingress_controlled: true

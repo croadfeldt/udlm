@@ -290,9 +290,41 @@ def _reference_data_index():
                 "reference_data_type": doc.get("reference_data_type"),
                 "handle": doc.get("handle"),
                 "name": doc.get("name"),
+                "version": doc.get("version"),
                 "state": (doc.get("status") or {}).get("state"),
+                "supersedes": doc.get("supersedes") or [],
             }
     return index
+
+
+def _ver_tuple(v):
+    """Parse a MAJOR.MINOR.REVISION string into a comparable tuple; unparseable -> (0,0,0)."""
+    try:
+        return tuple(int(p) for p in str(v).split("."))
+    except (ValueError, AttributeError):
+        return (0, 0, 0)
+
+
+def _successor_index(index):
+    """Forward lineage: uuid -> [uuids that DIRECTLY supersede it], derived from the explicit
+    `supersedes` DAG (ADR-012 — the single lineage mechanism; `handle` is not consulted)."""
+    succ = {}
+    for uuid, e in index.items():
+        for prior in e.get("supersedes") or []:
+            succ.setdefault(prior, []).append(uuid)
+    return succ
+
+
+def _descendants(uuid, succ):
+    """All uuids that supersede `uuid` transitively (its newer versions), walking the successor DAG."""
+    out, frontier = set(), list(succ.get(uuid, []))
+    while frontier:
+        u = frontier.pop()
+        if u in out:
+            continue
+        out.add(u)
+        frontier.extend(succ.get(u, []))
+    return out
 
 
 def _find_data_references(obj, path=""):
@@ -325,9 +357,9 @@ def check_data_references(doc):
     index = _reference_data_index()
     errors = []
     for loc, ref in refs:
-        extra = set(ref) - {"ref_uuid", "ref_name", "reference_data_type"}
+        extra = set(ref) - {"ref_uuid", "ref_name", "ref_version", "reference_data_type"}
         if extra:
-            errors.append(f"{loc}: data reference has unexpected key(s) {sorted(extra)} — allowed: ref_uuid, ref_name, reference_data_type")
+            errors.append(f"{loc}: data reference has unexpected key(s) {sorted(extra)} — allowed: ref_uuid, ref_name, ref_version, reference_data_type")
         ru = ref.get("ref_uuid")
         if not ru or not _UUID_V4_RE.match(ru):
             errors.append(f"{loc}: data reference ref_uuid {ru!r} is not a canonical RFC 9562 v4 uuid")
@@ -336,8 +368,11 @@ def check_data_references(doc):
         if target is None:
             errors.append(f"{loc}: data reference ref_uuid {ru} does not resolve to any reference_data layer (dangling reference)")
             continue
-        if target["state"] not in (None, "active"):
-            errors.append(f"{loc}: data reference resolves to reference_data layer {ru} but it is {target['state']}, not active")
+        if target["state"] == "retired":
+            errors.append(f"{loc}: data reference resolves to reference_data layer {ru} but it is RETIRED (withdrawn) — retired data must not be referenced")
+        # NOTE: a deprecated/superseded target is NOT a failure — layer versions are IMMUTABLE, so an
+        # existing reference to an older version stays valid. That a newer version exists is surfaced by
+        # impact_report(), not failed here.
         want = ref.get("reference_data_type")
         if want and target["reference_data_type"] and want != target["reference_data_type"]:
             errors.append(f"{loc}: data reference declares reference_data_type {want!r} but layer {ru} is {target['reference_data_type']!r}")
@@ -345,7 +380,40 @@ def check_data_references(doc):
         if name and name not in (target["handle"], target["name"]):
             errors.append(f"{loc}: data reference ref_name {name!r} does not match the resolved layer "
                           f"(handle {target['handle']!r}, name {target['name']!r}) — advisory name must stay honest; resolution uses ref_uuid")
+        rv = ref.get("ref_version")
+        if rv and target["version"] and rv != target["version"]:
+            errors.append(f"{loc}: data reference ref_version {rv!r} does not match the resolved layer version {target['version']!r} "
+                          f"— advisory version must stay honest; resolution uses ref_uuid (the immutable version)")
     return errors
+
+
+def check_layer_lineage(doc):
+    """Lineage is EXPLICIT and the single mechanism (ADR-012): `supersedes` names the uuid(s) this
+    reference_data version directly supersedes. Absent = a lineage root. When present, each uuid MUST
+    resolve to an existing reference_data layer of the SAME reference_data_type with a strictly LOWER
+    version, and must not point at itself (or form a version cycle). `handle` is advisory and plays no
+    part here — the DAG is uuid-based."""
+    if not (isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data"):
+        return []
+    errors = []
+    index = _reference_data_index()
+    self_uuid, self_type, self_ver = doc.get("uuid"), doc.get("reference_data_type"), _ver_tuple(doc.get("version"))
+    for sid in doc.get("supersedes") or []:
+        if sid == self_uuid:
+            errors.append(f"supersedes: {sid} points at itself"); continue
+        prior = index.get(sid)
+        if prior is None:
+            errors.append(f"supersedes: {sid} does not resolve to a reference_data layer (dangling lineage link)"); continue
+        if self_type and prior["reference_data_type"] and self_type != prior["reference_data_type"]:
+            errors.append(f"supersedes: {sid} is reference_data_type {prior['reference_data_type']!r}, but this layer is {self_type!r} — lineage stays within one type")
+        if _ver_tuple(prior["version"]) >= self_ver:
+            errors.append(f"supersedes: {sid} version {prior['version']} is not lower than this version {doc.get('version')} — a superseding version must be higher")
+    return errors
+
+
+def check_layer(doc):
+    """All semantic checks for a layer record: data-reference integrity + lineage integrity."""
+    return check_data_references(doc) + check_layer_lineage(doc)
 
 
 def check_realized_entity(doc):
@@ -365,7 +433,7 @@ def pick_instance(doc):
     if isinstance(doc, dict) and doc.get("record_type") == "layer":
         return (LAYER_VALIDATOR,
                 lambda d: f"layer {d['name']} ({d['layer_type']}) {d['uuid'][:8]}",
-                check_data_references)
+                check_layer)
     if isinstance(doc, dict) and doc.get("record_type") == "audit_record":
         return AUDIT_RECORD_VALIDATOR, lambda d: f"audit_record {d['action']} {d['record_uuid'][:8]}"
     if isinstance(doc, dict) and doc.get("record_type") == "commit_log_entry":
@@ -385,6 +453,47 @@ def pick_instance(doc):
             check_realized_entity)
 
 
+def impact_report():
+    """Explicit change-impact map (ADR-012): for every data reference, if the pinned (immutable) version
+    has been superseded — some record explicitly `supersedes` it, transitively — report it as a
+    potential-impact candidate. ADVISORY: never fails the build. This is the 'map out the impact of a
+    change to referenced data' surface (e.g. a library version bumped under a container image that
+    references it). Impact is derived from the explicit supersedes DAG + the reverse reference graph;
+    `handle` is not consulted."""
+    index = _reference_data_index()
+    if not index:
+        return
+    succ = _successor_index(index)
+    lines = []
+    for subdir in ("instances", "providers"):
+        base = ROOT / subdir
+        if not base.exists():
+            continue
+        for path in sorted(base.glob("*")):
+            if path.suffix not in (".json", ".yaml", ".yml"):
+                continue
+            doc = load(path)
+            if not isinstance(doc, dict):
+                continue
+            referrer = doc.get("handle") or doc.get("name") or doc.get("uuid") or path.name
+            for loc, ref in _find_data_references(doc):
+                ru = ref.get("ref_uuid")
+                target = index.get(ru)
+                if not target:
+                    continue                                 # dangling — already a hard failure
+                desc = _descendants(ru, succ)
+                if not desc:
+                    continue                                 # this version is a lineage head — nothing newer
+                head = max(desc, key=lambda u: _ver_tuple(index.get(u, {}).get("version")))
+                lines.append(f"   {referrer} → {target['handle']} {target['version']} ({ru[:8]}) "
+                             f"pinned; superseded by {index.get(head, {}).get('version', '?')} ({head[:8]})")
+    print("== change-impact (explicit supersedes DAG; advisory) ==")
+    print(f"{len(lines)} reference(s) pinned to a superseded reference_data version"
+          + (":" if lines else ""))
+    for l in lines:
+        print(l)
+
+
 def main() -> int:
     failures = 0
     print("== resource types ==")
@@ -399,6 +508,7 @@ def main() -> int:
         "providers",
         lambda doc: (PROVIDER_VALIDATOR,
                      lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adopted_standard_support'])}"))
+    impact_report()
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0
 
