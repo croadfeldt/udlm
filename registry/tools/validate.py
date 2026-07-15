@@ -62,6 +62,20 @@ def load(path: pathlib.Path):
     return json.loads(text)
 
 
+def load_all(path: pathlib.Path):
+    """Load one file into a LIST of records. A .yaml/.yml file MAY be a multi-document stream
+    (`---`-separated) — each document is a self-describing record (its own `record_type`) and is
+    validated independently, the k8s multi-object-in-one-file idiom (a base data-layer + its
+    overlays; a provider + its own accreditations). JSON is single-document. Empty documents
+    (trailing `---`, comment-only) are dropped so they don't dispatch as null."""
+    text = path.read_text()
+    if path.suffix in (".yaml", ".yml"):
+        if yaml is None:
+            sys.exit(f"pyyaml required to load {path.name}")
+        return [d for d in yaml.safe_load_all(text) if d is not None]
+    return [json.loads(text)]
+
+
 def validate_dir(subdir: str, pick) -> int:
     """pick(doc) -> (validator, label_fn[, checks_fn]) — per-document dispatch.
     checks_fn(doc) -> [error strings] runs semantic checks JSON Schema cannot express;
@@ -73,22 +87,25 @@ def validate_dir(subdir: str, pick) -> int:
     for path in sorted(base.glob("*")):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
-        doc = load(path)
-        picked = pick(doc)
-        validator, label = picked[0], picked[1]
-        checks = picked[2] if len(picked) > 2 else None
-        errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
-        semantic = checks(doc) if checks and not errors else []
-        if errors or semantic:
-            failures += 1
-            print(f"FAIL {path.name}")
-            for err in errors[:5]:
-                loc = "/".join(str(p) for p in err.path) or "(root)"
-                print(f"   - {loc}: {err.message}")
-            for msg in semantic:
-                print(f"   - {msg}")
-        else:
-            print(f"ok   {path.name}  — {label(doc)}")
+        docs = load_all(path)
+        multi = len(docs) > 1
+        for i, doc in enumerate(docs):
+            tag = f"{path.name}#{i}" if multi else path.name   # k8s-style: one record per doc in a `---` stream
+            picked = pick(doc)
+            validator, label = picked[0], picked[1]
+            checks = picked[2] if len(picked) > 2 else None
+            errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+            semantic = checks(doc) if checks and not errors else []
+            if errors or semantic:
+                failures += 1
+                print(f"FAIL {tag}")
+                for err in errors[:5]:
+                    loc = "/".join(str(p) for p in err.path) or "(root)"
+                    print(f"   - {loc}: {err.message}")
+                for msg in semantic:
+                    print(f"   - {msg}")
+            else:
+                print(f"ok   {tag}  — {label(doc)}")
     return failures
 
 
