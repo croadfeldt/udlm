@@ -31,7 +31,7 @@ This is consistent with DCM's governing framework philosophy: DCM does not presc
 
 ---
 
-## 2. Storage Provider Sub-Types
+## 2. Storage — Store Sub-Profiles
 
 There are no provider *types* in the unified model — a provider declares capabilities (verb × domain) and occupies the **capability categories** they form ([capability-discovery.md](capability-discovery.md) §2.4; ADR-PROV-002). "Storage Provider" is the convenience label for a provider in the `realize_resources/Storage` category. Within storage, four **store sub-profiles** are defined, each optimized for different access patterns and consistency requirements. (The rows below are capability profiles — convenience labels — not mutually-exclusive types; one provider may occupy several.)
 
@@ -385,7 +385,7 @@ A realization MAY maintain internal performance caches in front of the authorita
 |---|----------|--------|--------|
 | 1 | Should Storage Providers support multi-region replication as a declared capability? | Sovereignty | ✅ Resolved — declared capability in registration; Profile determines minimum (STO-001) |
 | 2 | How are Storage Provider failures handled — failover, queuing, or rejection? | Reliability | ✅ Resolved — per store type: Commit Log aborts; GitOps queues; Event Stream queues; Audit accumulates; Search degrades (STO-002) |
-| 3 | Should the Search Index be a separate registered Storage Provider or bundled with the GitOps store? | Architecture | ✅ Resolved — separate sub-type; non-authoritative; rebuildable (STO-003) |
+| 3 | Should the Search Index be a separate registered Storage Provider or bundled with the GitOps store? | Architecture | ✅ Resolved — separate store sub-profile; non-authoritative; rebuildable (STO-003) |
 | 4 | How does the Storage Provider model interact with air-gapped environments? | Sovereignty | ✅ Resolved — sovereignty_declaration on all providers; air_gap_capable flag; offline registry; signed bundles (SOV-001) |
 
 ---
@@ -516,13 +516,13 @@ storage_failure_policy:
 
 **System policy (STO-002):** Storage Provider failure behavior declared per store type and governed by Profile. GitOps unavailability queues writes — does not silently drop. Commit Log quorum loss aborts operation. Audit Store unavailability accumulates in Commit Log. Search Index unavailability degrades queries without impacting writes.
 
-### 10.4 Search Index — Separate Storage Provider Sub-Type (Q82)
+### 10.4 Search Index — a distinct store sub-profile (Q82)
 
-The Search Index is a **separate Storage Provider sub-type** distinct from GitOps stores. Treating them as the same type would obscure the critical distinction: GitOps stores are authoritative and cannot be lost; the Search Index is non-authoritative and rebuildable.
+The Search Index is a **distinct store sub-profile** within the Storage capability (§2 — sub-profiles are convenience labels, not provider types), separate from GitOps stores. Treating them as the same profile would obscure the critical distinction: GitOps stores are authoritative and cannot be lost; the Search Index is non-authoritative and rebuildable.
 
 ```yaml
 search_index_provider:
-  provider_type: search_index              # distinct sub-type of storage_provider
+  store_profile: search_index              # a store sub-profile in the Storage capability (§2) — not a provider type
   implementation: elasticsearch           # or: opensearch
   authoritative: false                    # explicitly non-authoritative
   rebuildable_from: [gitops_store, event_stream]
@@ -535,11 +535,11 @@ search_index_provider:
 
 **API freshness:** Queries may specify `freshness: authoritative` to bypass the index and query the GitOps store directly for guaranteed-current results.
 
-**System policy (STO-003):** Search Index is a separate Storage Provider sub-type — non-authoritative, rebuildable, distinct backend from GitOps. API queries may specify `freshness: authoritative` to bypass the index.
+**System policy (STO-003):** Search Index is a distinct store sub-profile — non-authoritative, rebuildable, distinct backend from GitOps. API queries may specify `freshness: authoritative` to bypass the index.
 
-### 10.5 Audit Store — Specialized Storage Provider Sub-Type (Q83)
+### 10.5 Audit Store — a specialized store sub-profile (Q83)
 
-The Audit Store is a **specialized Storage Provider sub-type** with compliance properties no general Event Stream Store satisfies:
+The Audit Store is a **specialized store sub-profile** with compliance properties no general Event Stream Store satisfies:
 
 - **Append-only with immutability enforcement** — records cannot be modified or deleted while retention obligations apply
 - **Hash chain integrity** — maintains and verifies the per-entity hash chain (AUD-006)
@@ -550,7 +550,7 @@ The Event Stream (Kafka) is the **delivery channel** to the Audit Store — tran
 
 ```yaml
 audit_store_provider:
-  provider_type: audit_store             # specialized sub-type of storage_provider
+  store_profile: audit_store             # a store sub-profile in the Storage capability (§2) — not a provider type
   implementation: elasticsearch          # or: opensearch
   authoritative: true
   append_only_enforced: true
@@ -574,7 +574,7 @@ Commit Log → Audit Forward Service → Event Stream → Audit Store
 (Stage 1)    (enrichment + hash)     (delivery)     (compliance storage)
 ```
 
-**System policy (STO-004):** Audit Store is a specialized Storage Provider sub-type — append-only, hash chain integrity, reference-based retention, compliance-grade queries. Event Stream is the delivery channel only.
+**System policy (STO-004):** Audit Store is a specialized store sub-profile — append-only, hash chain integrity, reference-based retention, compliance-grade queries. Event Stream is the delivery channel only.
 
 ---
 
@@ -762,10 +762,10 @@ Full audit trail: sovereignty_violation_record links to migration request
 |--------|------|
 | `STO-001` | Storage Providers must declare replication capabilities. Active Profile determines minimum replication requirements. Providers not meeting Profile minimum cannot be activated for that Profile's stores. |
 | `STO-002` | Storage Provider failure behavior is declared per store type and governed by the active Profile. GitOps unavailability queues writes locally — does not silently drop. Commit Log quorum loss aborts the triggering operation. Audit Store unavailability accumulates entries in the Commit Log. Search Index unavailability degrades query responses without impacting write operations. |
-| `STO-003` | The Search Index is a separate Storage Provider sub-type — non-authoritative and rebuildable. API queries may specify `freshness: authoritative` to bypass the index. |
+| `STO-003` | The Search Index is a distinct store sub-profile — non-authoritative and rebuildable. API queries may specify `freshness: authoritative` to bypass the index. |
 | `STO-007` | The Realized Store is a write-once snapshot store. Every write requires a non-nullable corresponding_requested_state_uuid. Drift detection, discovery cycles, and unsanctioned provider changes do not write to the Realized Store. Enforcement is at the store API level, not by convention. |
 | `STO-008` | The Intent Store requires a GitOps implementation. The Requested Store requires write-once semantics; GitOps is the reference implementation; write-once document stores are supported for production scale. |
-| `STO-004` | The Audit Store is a specialized Storage Provider sub-type — append-only, hash chain integrity, reference-based retention, compliance-grade queries. The Event Stream is the delivery channel only. |
+| `STO-004` | The Audit Store is a specialized store sub-profile — append-only, hash chain integrity, reference-based retention, compliance-grade queries. The Event Stream is the delivery channel only. |
 | `STO-005` | GitOps stores use a handle-based directory structure. The main branch is authoritative. Minimal and dev profiles may use a monorepo; standard and above should use separate repositories per store type. |
 
 
