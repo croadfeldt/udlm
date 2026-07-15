@@ -393,10 +393,10 @@ Resources already allocated under a now-revoked authorization are NOT immediatel
 
 | Policy | Rule |
 |--------|------|
-| `XTA-001` | Cross-tenant authorizations require explicit creation by the granting Tenant admin, a platform admin, or a pre-authorization policy. They are never implicitly created. |
-| `XTA-002` | Fixed-duration authorizations generate a P30D expiry warning notification. Non-renewal results in EXPIRING then EXPIRED states. |
-| `XTA-003` | Authorization revocation places active allocations and stakes in PENDING_REVIEW with a policy-governed grace period. Resources are not automatically decommissioned on revocation. |
-| `XTA-004` | Automatic decommission of resources on authorization expiry or revocation requires explicit policy declaration. It is not the default behavior. |
+| `GRP-016` | Cross-tenant authorizations require explicit creation by the granting Tenant admin, a platform admin, or a pre-authorization policy. They are never implicitly created. |
+| `GRP-017` | Fixed-duration authorizations generate a P30D expiry warning notification. Non-renewal results in EXPIRING then EXPIRED states. |
+| `GRP-018` | Authorization revocation places active allocations and stakes in PENDING_REVIEW with a policy-governed grace period. Resources are not automatically decommissioned on revocation. |
+| `GRP-019` | Automatic decommission of resources on authorization expiry or revocation requires explicit policy declaration. It is not the default behavior. |
 
 
 ---

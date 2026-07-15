@@ -1075,7 +1075,7 @@ relationship_depth_policy:
 | `fsi` | 10 | Tighter — complex graphs harder to audit |
 | `sovereign` | 10 | Maximum control |
 
-**Note:** Relationship depth differs from dependency depth (ENT-008). Dependency depth counts the provisioning chain. Relationship depth counts the graph traversal distance between any two entities. A VM with 50 IP address relationships has depth 1, not 50.
+**Note:** Relationship depth differs from dependency depth (DEP-015). Dependency depth counts the provisioning chain. Relationship depth counts the graph traversal distance between any two entities. A VM with 50 IP address relationships has depth 1, not 50.
 
 ---
 
