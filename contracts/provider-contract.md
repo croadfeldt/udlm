@@ -557,6 +557,21 @@ instance_size_catalog:                  # per capability/category; the provider'
 
 DCM resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is DCM (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
 
+**Abstract-value channels & the realized audit record (the same bridge, generalized).** `instance_size` is one instance of a broader pattern: intent may carry an **abstract value the provider resolves** — a size class, or an engine **`version` channel** like `latest`/`lts` (`Data.Database`, ADR-014). The same three obligations apply to *any* such abstract value:
+
+1. **Declare the resolution.** The provider **declares** how it resolves the abstract value to concrete — for versions, its channel → concrete-version map per engine — so placement can **compare, conform, and validate** an abstract request against a raw/pinned requirement (and against an adjacent provider's channel) *before* it commits. **Declared, not live-queried** — same reason as the size catalog.
+
+   ```yaml
+   version_channels:                     # per engine; the provider's authoritative channel resolution
+     - engine: postgres   channel: latest   resolves_to: "16.4"   supported: ["14.x","15.x","16.x"]
+     - engine: postgres   channel: lts      resolves_to: "15.8"
+     - engine: mysql      channel: latest   resolves_to: "8.4.2"
+   ```
+
+2. **Resolve at naturalization.** When intent is abstract (or omitted → the provider's default channel), the provider resolves to the concrete value it will actually provision (DCM ADR-023).
+
+3. **Record the concrete on the realized resource — for audit.** The provider **MUST** write the resolved concrete value into realized state (for `Data.Database`, `outputs.applied_version`; §1a.5 read-back). This is the load-bearing half: an abstract request (`latest`) is only auditable if reality records *what `latest` became* (`16.4`) at the moment it was applied. Intent carries the abstract; **realized carries the concrete**; the two together are the audit trail. This obligation holds for every abstract intent value, not just versions.
+
 **Placement (DCM ADR-019) selects from `inventory ∩ capacity-sufficient ∩ policy-eligible`.** A consumer's `*_ref` selection (e.g. `placement.location_ref`, `networks[].network_ref`) MUST resolve to a resource in that eligible set; when `fulfillment: platform` (ADR-009), DCM chooses within it. Consumption debits the selected resource's capacity and any applicable **quota** (the tenant-quota structure — the consumption side, September P7).
 
 **Boundary (ADR-008):** the advertisement *shape* (inventory/capacity/eligibility) is UDLM — a peer must read another provider's advertisement identically or placement disagrees. The placement *algorithm* and how a provider computes free capacity are DCM/provider.
