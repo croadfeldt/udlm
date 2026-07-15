@@ -134,7 +134,7 @@
     {
       "kind": "depends_on",
       "target": "Facility.PowerFeed",
-      "cardinality": "1..n",
+      "cardinality": "0..n",
       "description": "Power source(s) the host draws from; the host stops before the feed in a reverse-topo shutdown."
     }
   ],

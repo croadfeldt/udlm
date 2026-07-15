@@ -205,7 +205,7 @@
     {
       "kind": "references",
       "target": "Hardware.NetworkInterface",
-      "cardinality": "1..n",
+      "cardinality": "0..n",
       "description": "lower_layer \u2014 the MEMBER interfaces this composite is built from (N\u21921): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements \u00a77).",
       "name": "lower_layer",
       "adopted_from": "RFC 8343 lower-layer-if"
