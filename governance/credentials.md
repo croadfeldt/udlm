@@ -667,19 +667,12 @@ credential_capability:        # declared on any provider that issues Credential.
 
 UDLM defers algorithm specifics to the [Standards Catalog](../reference/standards-catalog.md). The substrate enforces the following invariants:
 
-### 10.1 Algorithm Declaration
+### 10.1 Algorithm and key-usage enforcement
 
-The credential record carries two normative cryptographic-metadata fields:
+The `algorithm`, `key_usage`, and `retrieved_count_threshold` fields are declared on the `credential_record` in §3 — not redeclared here. This section fixes the allowed values and the enforcement rule they carry:
 
-```yaml
-credential_record:
-  # ... existing fields ...
-  algorithm: Ed25519 | ECDSA-P-384 | RSA-4096 | HS256 | RS256 | random_256bit | ...
-  key_usage: [authentication, signing, encryption]   # declared at issuance; non-overlapping
-  retrieved_count_threshold: 48           # hours after issuance before idle alert fires
-```
-
-`key_usage` enforces the principle of algorithm agility and purpose separation. A credential issued for `authentication` MUST NOT be used for `signing` even if the underlying algorithm supports both. The Credential Provider MUST validate `key_usage` at the validate endpoint.
+- **Allowed `algorithm` values:** `Ed25519 | ECDSA-P-384 | RSA-4096 | HS256 | RS256 | random_256bit | …`
+- **`key_usage` enforces algorithm agility and purpose separation** — a credential issued for `authentication` MUST NOT be used for `signing` even if the underlying algorithm supports both. The provider (via its declared credential capability) MUST validate `key_usage` at the validate endpoint.
 
 ### 10.2 Profile-Governed Minimums (Substrate Defaults)
 
