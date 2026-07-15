@@ -23,12 +23,21 @@ Use for memory, storage, bandwidth, power (`"650W"`), etc.
 
 ### 2.2 `ComputeResources`  *(the keystone — currently divergent, see §3)*
 ```json
-{ "cpu":    { "count": 8 },
+{ "instance_size": "medium",          // OR provider-neutral size class (see below)
+  "cpu":    { "count": 8 },
   "memory": { "size": "32GB" } }      // Quantity
 ```
 Reused by anything that sizes compute: `Compute.VirtualMachine`, a `Compute.Cluster` node pool, a
 `Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
+
+**`instance_size` — sizing by class (shared, provider-reconciled).** Any resource type that sizes
+compute MAY carry an `instance_size` string — a **provider-neutral size class** (e.g. `small|medium|large`
+or a named profile) — *in place of, or alongside,* explicit `cpu`/`memory`. It is **generic sizing
+intent**: the **provider** reconciles it to concrete resources or its own instance classes at
+naturalization (DCM ADR-023) — *how* `medium` maps to cores/RAM, or to an `db.r5.large`, is the
+**provider's** to own; **UDLM/DCM does not define the mapping**. This lets a type ship sized-by-class
+(the common shape for managed databases, VMs, node pools) without UDLM prescribing a fixed resource math.
 
 ### 2.3 `StorageCapacity` / disk
 ```json

@@ -37,6 +37,10 @@
       "resources": {
         "type": "object",
         "properties": {
+          "instance_size": {
+            "type": "string",
+            "description": "Provider-neutral size class (e.g. small|medium|large, or a named profile). Generic sizing INTENT — usable in place of, or alongside, explicit cpu/memory/storage. The PROVIDER reconciles it to concrete resources / its own instance classes at naturalization (DCM ADR-023, provider-naturalization boundary); UDLM/DCM does NOT define the mapping. A shared sizing option available to any resource type (common-elements §sizing)."
+          },
           "cpu": {
             "type": "number",
             "minimum": 0.25
