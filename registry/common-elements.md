@@ -16,9 +16,15 @@ A type that needs a shared concept references the canonical shape here rather th
 
 ## 2. Canonical common elements
 
+> **Machine source:** these shapes are defined as JSON-Schema `$defs` in
+> [`registry/common-elements.schema.json`](common-elements.schema.json) — the normative, referenceable
+> version. A type `$ref`s a shape (`common-elements.schema.json#/$defs/<Name>`) rather than reinventing
+> it; this section is the prose companion (the §3 normalization plan's step 1 is now done).
+
 ### 2.1 `Quantity`
-A magnitude + explicit unit as one string. Pattern `^[0-9]+(\.[0-9]+)?(m|M|G|T|P|Mi|Gi|Ti|MB|GB|TB)?$`
-(aligns with the existing `compute.virtual-machine` `memory.size` and Kubernetes `resource.Quantity`).
+A magnitude + explicit unit as one string. Pattern `^[0-9]+(\.[0-9]+)?(m|[KMGTPE]i?B?)?$` — the
+Kubernetes `resource.Quantity` form: decimal SI (`K/M/G/T/P/E`), binary (`Ki/Mi/Gi/Ti/Pi/Ei`), optional
+trailing `B` (`MB`/`GiB`), or milli (`m`). Covers every existing type's memory/storage/capacity usage.
 Use for memory, storage, bandwidth, power (`"650W"`), etc.
 
 ### 2.2 `ComputeResources`  *(the keystone — currently divergent, see §3)*
