@@ -17,11 +17,17 @@
   "spec": {
     "type": "object",
     "required": [
-      "vcpu",
-      "memory",
       "guest_os"
     ],
+    "anyOf": [
+      { "required": [ "instance_size" ] },
+      { "required": [ "vcpu", "memory" ] }
+    ],
     "properties": {
+      "instance_size": {
+        "type": "string",
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable \u2014 common-elements \u00a72.2, ADR-014). Size by class IN PLACE OF vcpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
+      },
       "vcpu": {
         "type": "object",
         "required": [

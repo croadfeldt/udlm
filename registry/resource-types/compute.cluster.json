@@ -46,6 +46,10 @@
             "count": {
               "type": "integer",
               "minimum": 1
+            },
+            "instance_size": {
+              "type": "string",
+              "description": "Provider-neutral node size class (small|medium|large) \u2014 sizes each node in the pool; the provider maps it to a concrete node shape at naturalization (common-elements \u00a72.2, ADR-014)."
             }
           }
         }

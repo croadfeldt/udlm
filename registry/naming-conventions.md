@@ -183,10 +183,6 @@ The new types, their category/tier, and the standard each adopts by reference. A
 
 | Type | Category (new?) | Adopts (by reference) | Notes |
 |---|---|---|---|
-| `Hardware.MemoryModule` | Hardware ✚ | Redfish `Memory` | DIMM: capacity, slot (`DeviceLocator`), serial |
-| `Hardware.Processor` | Hardware ✚ | Redfish `Processor` | CPU: cores/threads/model |
-| `Hardware.GraphicsProcessor` | Hardware ✚ | Redfish `Processor` (ProcessorType=GPU) / `PCIeDevice` | GPU; extensible into PCIeDevice |
-| `Hardware.StorageDevice` | Hardware ✚ | Redfish `Drive` (+ SNIA Swordfish) | disk/SSD: wwn, serial, bay |
 | `Hardware.NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
 | `Compute.BareMetalHost` | Compute | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of Hardware.* (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
 | `Storage.Cluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
