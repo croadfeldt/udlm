@@ -177,6 +177,42 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Where:** reservation-hold TTL — `provider-contract.md` §6a (`requested_ttl` / `granted_ttl` / `min_hold_ttl` / `max_hold_ttl`), `reservation.expired` event.
 **Why:** a hold must not leak reserved capacity if reconciliation stalls. DHCP is the near-exact precedent — `DHCPOFFER` = reserve, `DHCPREQUEST`/`ACK` = commit, and **lease expiry = implied release** — which is precisely our TTL semantics (expiry auto-drops the hold and emits `reservation.expired` for audit). **License:** IETF Trust — compatible-reference.
 
+## Attestation, accreditation & sovereignty
+
+*Vocabulary + patterns for the accreditation model (`governance/accreditation-and-authorization-matrix.md`, `registry/accreditation.schema.json`) — adopted after the 2026-07-14 sovereignty-enforcement prior-art review (`docs/research/sovereignty-enforcement-prior-art.md`). The taxonomy cross-walk is matrix §3.10.*
+
+### W3C Verifiable Credentials Data Model 2.0 — CANONICAL (vocabulary)
+**Covers:** `W3C-VC` · **Body:** W3C · **Since:** 2026-07-14 · **Where:** the accreditation record's `proof` (`type`/`verification_method`/`proof_purpose: assertionMethod`/`proof_value`) and `trust_anchor`; the issuer→holder→subject→verifier spine (accreditor→provider→capability→DCM); `validFrom`/`validUntil` ≈ `issued_at`/`expires_at`; `credentialStatus` ≈ the verification/staleness block.
+**Why:** an accreditation *is* a verifiable credential — a signed, independently-verifiable claim by an authority about a subject. Adopting VC's field vocabulary makes our records verifiable by any VC-aware tool and names the parties the way the identity world already does. **Adopt-not-absorb:** we take the data-model vocabulary, not JSON-LD `@context` machinery or a specific proof suite. *Alternatives:* bespoke signature envelope (re-inventing a solved, standardized shape). **License:** W3C Recommendation — compatible-reference.
+
+### IETF RATS Architecture — RFC 9334 — CANONICAL (vocabulary + pattern)
+**Covers:** `RFC 9334` · **Body:** IETF · **Since:** 2026-07-14 · **Where:** the **two-gate** trust decision (matrix §3.7) = RATS's two appraisals (Evidence→Attestation-Result, then Result→policy); Attester/Verifier/Relying-Party ≈ provider/DCM-verifier/placement-gate; the **verification summary** (matrix §3.9) = a RATS **Passport-model** Attestation Result carried forward so each hop need not re-run the raw appraisal; Endorsement ≈ `trust_anchor`.
+**Why:** RATS is the IETF's model for exactly "verify evidence against policy, emit a portable result." Its **separation of verification (is the evidence authentic?) from appraisal (does it satisfy policy?)** is the precise justification for our two-gate split, and Passport-vs-Background-check names our per-hop re-attestation choice. **Pattern + vocabulary**, not wire formats (no EAT/CoRIM tokens). **License:** IETF Trust — compatible-reference.
+
+### NIST OSCAL / FedRAMP authorization model — PATTERN
+**Covers:** `OSCAL` · **Body:** NIST · **Since:** 2026-07-14 · **Where:** conformance-claims → SSP control-implementation self-assertion; accreditation → assessment-result/ATO; the `scope` boundary ≈ OSCAL **authorization-boundary**; delegation (matrix §3.9) ≈ **leveraged-authorization** (inheriting a provider's existing ATO); gap records (matrix §3.5) ≈ **POA&M**.
+**Why:** OSCAL is the government-scale precedent for "declared control implementation vs assessed/authorized," and its authorization-boundary + leveraged-authorization concepts are exactly our scope + delegation shapes. **Pattern:** we adopt the conceptual model (declare→assess→authorize, bounded, leverageable), not the OSCAL JSON/XML catalog format. **License:** NIST (public domain) — compatible-reference.
+
+### Gaia-X Trust Framework — PATTERN
+**Covers:** `Gaia-X` · **Body:** Gaia-X AISBL · **Since:** 2026-07-14 · **Where:** the **conformance_claims** self-declaration = Gaia-X **self-descriptions** (provider-authored VCs); `trust_anchor` = Gaia-X **Trust Anchors** / GXDCH clearing; the layered strictness in profiles (dev→sovereign) ≈ **Label Levels L1/L2/L3**; the "declaration-and-placement layer, not a byte enforcer" framing is Gaia-X's own posture.
+**Why:** Gaia-X is the closest existing system to what this model is — federated, self-described, trust-anchored sovereignty attestation for cloud providers — and validated the architecture (three-party spine, self-description-then-verify, no central byte enforcement). **Pattern:** conceptual alignment; we don't consume the Gaia-X ontology or credential-event service. *Related:* EUCS assurance levels (PRIOR-ART, informed the plane/level axes). **License:** Gaia-X (open) — compatible-reference.
+
+### SLSA + in-toto (per-hop attestation match) — PATTERN
+**Covers:** `SLSA` `in-toto` · **Body:** OpenSSF / CNCF · **Since:** 2026-07-14 · **Where:** per-hop re-attestation down the fulfillment graph (ADR-004 §4, matrix §3.3.1) = in-toto's **layout step MATCH** at each link; delegation (matrix §3.9) ≈ SLSA **VSA** (Verification Summary Attestation — "someone I trust already verified this").
+**Why:** supply-chain attestation independently arrived at the same rule we need — **trust is re-checked at every hop, never inherited**, and a verifier can emit a summary others rely on. Confirms the propagation design and names the delegation dial. **Pattern:** the match/summary shape, not the predicate formats. **License:** Apache-2.0 — compatible-reference.
+
+### ISO 3166 (jurisdiction hierarchy) — CANONICAL (vocabulary)
+**Covers:** `ISO 3166` · **Body:** ISO · **Since:** 2026-07-14 · **Where:** `geographic_scope` / `operating_jurisdictions` (ISO 3166-1 country) and `data_residency_zones` down to ISO 3166-2 subdivisions (US → US-MN); the **residency-subsumes / sovereignty-exact** rule (matrix §3.8) keys off this hierarchy.
+**Why:** residency subsumption ("a US accreditation covers US-MN") requires a standard containment hierarchy of jurisdictions; ISO 3166 is it. **License:** ISO (code lists referenced) — compatible-reference.
+
+### eIDAS / trust-service-provider model — PRIOR-ART
+**Since (evaluated):** 2026-07-14 · **Where:** informed the `trust_anchor.type: eidas_tsp` option and the qualified-vs-non-qualified distinction behind trust-anchor typing.
+**Why:** eIDAS is the EU legal framework for qualified trust services (the TSPs that would issue real sovereignty credentials); referenced as an anchor type, no conformance relationship. Recorded so the `eidas_tsp` anchor option has a provenance. **License:** EU regulation (referenced).
+
+### SPIFFE / SPIRE — PRIOR-ART
+**Since (evaluated):** 2026-07-14 · **Where:** informed TODO #25 (JIT credential mechanism — short-lived SVID-like credentials issued at reserve/commit) and the workload-identity framing of credential-reference passing (TODO #24).
+**Why:** SPIFFE/SPIRE is the deployed model for short-lived, attested workload identity — the reference design for the JIT-credential follow-on, not yet an adoption. Recorded to anchor #24/#25. **License:** Apache-2.0 (referenced).
+
 ## Prior art (informed decisions; no conformance relationship)
 
 **Since (evaluated):** 2026-07-05, relation-vocabulary research (common-elements §9 records the survey):

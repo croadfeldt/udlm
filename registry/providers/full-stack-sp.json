@@ -1,0 +1,66 @@
+{
+  "provider": {
+    "name": "full-stack-sp",
+    "uuid": "ae18b73d-84c9-49ff-add9-d2d5de464967",
+    "kind": "service"
+  },
+  "adopted_standard_support": [
+    { "standard": "Redfish", "supports": ">=1.0", "preferred": "1.18", "direction": "consume" },
+    { "standard": "KubeVirt", "supports": ">=1.0", "direction": "consume" },
+    { "standard": "Kubernetes", "supports": ">=1.28", "direction": "both" }
+  ],
+  "provider_defaults": {
+    "sovereignty": { "operating_jurisdictions": ["US", "CA"], "enforcement_plane": "both" },
+    "conformance_claims": [
+      { "framework": "iso_27001" },
+      { "framework": "soc2_type2" },
+      { "framework": "gdpr", "statement": "GDPR processor obligations for EU personal data" }
+    ]
+  },
+  "capabilities": [
+    {
+      "capability_uuid": "44e7eb3d-2c4c-469a-92cb-50ca48b4628b",
+      "version": "1.0.0",
+      "name": "Virtual Machine Lifecycle",
+      "categories": [
+        {
+          "category": "realize_resources/Compute",
+          "resource_types": ["Compute.VirtualMachine"],
+          "topology_capability": { "kinds_supported": ["region", "zone", "host"], "max_separation": "zone" },
+          "operational_capability": { "drain": true, "online_migrate": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] }
+        },
+        { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress", "Network.VirtualNetwork"] },
+        { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume"] }
+      ]
+    },
+    {
+      "capability_uuid": "a26c91c8-e4ce-4599-bc31-7bd106406512",
+      "version": "1.0.0",
+      "name": "Container Lifecycle",
+      "categories": [
+        {
+          "category": "realize_resources/Container",
+          "resource_types": ["Compute.Container"],
+          "operational_capability": { "drain": true, "rolling_update": true, "online_migrate": true, "rehearsal_support": ["rehearsal"] },
+          "sovereignty": { "operating_jurisdictions": ["US", "CA"], "data_residency_zones": ["us-mn"], "enforcement_plane": "both" }
+        },
+        { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress"] },
+        { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume"] }
+      ]
+    },
+    {
+      "capability_uuid": "31aa387c-71d0-4718-83dc-780b7fce13d3",
+      "version": "1.0.0",
+      "name": "OpenShift Cluster Lifecycle",
+      "categories": [
+        {
+          "category": "realize_resources/Compute",
+          "resource_types": ["Compute.Cluster"],
+          "operational_capability": { "drain": true, "rolling_update": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] }
+        },
+        { "category": "realize_resources/Network", "resource_types": ["Network.VirtualNetwork", "Network.Gateway"] },
+        { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume", "Storage.Cluster"] }
+      ]
+    }
+  ]
+}

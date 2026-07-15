@@ -38,6 +38,7 @@ AUDIT_RECORD_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-record.s
 COMMIT_LOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "commit-log-entry.schema.json").read_text()))
 AUDIT_LEAF_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-leaf.schema.json").read_text()))
 DECISION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "decision-record.schema.json").read_text()))
+ACCREDITATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "accreditation.schema.json").read_text()))
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
 
@@ -62,6 +63,20 @@ def load(path: pathlib.Path):
     return json.loads(text)
 
 
+def load_all(path: pathlib.Path):
+    """Load one file into a LIST of records. A .yaml/.yml file MAY be a multi-document stream
+    (`---`-separated) — each document is a self-describing record (its own `record_type`) and is
+    validated independently, the k8s multi-object-in-one-file idiom (a base data-layer + its
+    overlays; a provider + its own accreditations). JSON is single-document. Empty documents
+    (trailing `---`, comment-only) are dropped so they don't dispatch as null."""
+    text = path.read_text()
+    if path.suffix in (".yaml", ".yml"):
+        if yaml is None:
+            sys.exit(f"pyyaml required to load {path.name}")
+        return [d for d in yaml.safe_load_all(text) if d is not None]
+    return [json.loads(text)]
+
+
 def validate_dir(subdir: str, pick) -> int:
     """pick(doc) -> (validator, label_fn[, checks_fn]) — per-document dispatch.
     checks_fn(doc) -> [error strings] runs semantic checks JSON Schema cannot express;
@@ -73,22 +88,25 @@ def validate_dir(subdir: str, pick) -> int:
     for path in sorted(base.glob("*")):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
-        doc = load(path)
-        picked = pick(doc)
-        validator, label = picked[0], picked[1]
-        checks = picked[2] if len(picked) > 2 else None
-        errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
-        semantic = checks(doc) if checks and not errors else []
-        if errors or semantic:
-            failures += 1
-            print(f"FAIL {path.name}")
-            for err in errors[:5]:
-                loc = "/".join(str(p) for p in err.path) or "(root)"
-                print(f"   - {loc}: {err.message}")
-            for msg in semantic:
-                print(f"   - {msg}")
-        else:
-            print(f"ok   {path.name}  — {label(doc)}")
+        docs = load_all(path)
+        multi = len(docs) > 1
+        for i, doc in enumerate(docs):
+            tag = f"{path.name}#{i}" if multi else path.name   # k8s-style: one record per doc in a `---` stream
+            picked = pick(doc)
+            validator, label = picked[0], picked[1]
+            checks = picked[2] if len(picked) > 2 else None
+            errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+            semantic = checks(doc) if checks and not errors else []
+            if errors or semantic:
+                failures += 1
+                print(f"FAIL {tag}")
+                for err in errors[:5]:
+                    loc = "/".join(str(p) for p in err.path) or "(root)"
+                    print(f"   - {loc}: {err.message}")
+                for msg in semantic:
+                    print(f"   - {msg}")
+            else:
+                print(f"ok   {tag}  — {label(doc)}")
     return failures
 
 
@@ -284,16 +302,16 @@ def _reference_data_index():
     for path in base.glob("*"):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
-        doc = load(path)
-        if isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data":
-            index[doc.get("uuid")] = {
-                "reference_data_type": doc.get("reference_data_type"),
-                "handle": doc.get("handle"),
-                "name": doc.get("name"),
-                "version": doc.get("version"),
-                "state": (doc.get("status") or {}).get("state"),
-                "supersedes": doc.get("supersedes") or [],
-            }
+        for doc in load_all(path):                       # multi-doc aware (`---` streams)
+            if isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data":
+                index[doc.get("uuid")] = {
+                    "reference_data_type": doc.get("reference_data_type"),
+                    "handle": doc.get("handle"),
+                    "name": doc.get("name"),
+                    "version": doc.get("version"),
+                    "state": (doc.get("status") or {}).get("state"),
+                    "supersedes": doc.get("supersedes") or [],
+                }
     return index
 
 
@@ -442,6 +460,8 @@ def pick_instance(doc):
         return AUDIT_LEAF_VALIDATOR, lambda d: f"audit_leaf idx={d['leaf_index']} {d['stage']} {d['leaf_uuid'][:8]}"
     if isinstance(doc, dict) and doc.get("record_type") == "decision_record":
         return DECISION_VALIDATOR, lambda d: f"decision_record {d.get('handle', d['title'][:24])} [{d['state']}] {d['uuid'][:8]}"
+    if isinstance(doc, dict) and doc.get("record_type") == "accreditation":
+        return ACCREDITATION_VALIDATOR, lambda d: f"accreditation {d.get('handle', d['framework'])} [{d['status']}] {d['uuid'][:8]}"
     if isinstance(doc, dict) and (doc.get("term_type") == "TaxonomyTerm" or "terms" in doc):
         return (TAXONOMY_SEED_VALIDATOR,
                 lambda d: f"taxonomy seed '{d.get('root', '?')}' ({len(d.get('terms', []))} terms)",
@@ -467,20 +487,20 @@ def _reverse_reference_graph():
         for path in sorted(base.glob("*")):
             if path.suffix not in (".json", ".yaml", ".yml"):
                 continue
-            doc = load(path)
-            if not isinstance(doc, dict):
-                continue
-            src = doc.get("uuid")
-            if not src:
-                continue
-            nodes[src] = {
-                "label": doc.get("handle") or doc.get("name") or src,
-                "is_refdata": doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data",
-            }
-            for _loc, ref in _find_data_references(doc):
-                tgt = ref.get("ref_uuid")
-                if tgt:
-                    referrers.setdefault(tgt, []).append(src)
+            for doc in load_all(path):                   # multi-doc aware (`---` streams)
+                if not isinstance(doc, dict):
+                    continue
+                src = doc.get("uuid")
+                if not src:
+                    continue
+                nodes[src] = {
+                    "label": doc.get("handle") or doc.get("name") or src,
+                    "is_refdata": doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data",
+                }
+                for _loc, ref in _find_data_references(doc):
+                    tgt = ref.get("ref_uuid")
+                    if tgt:
+                        referrers.setdefault(tgt, []).append(src)
     return nodes, referrers
 
 

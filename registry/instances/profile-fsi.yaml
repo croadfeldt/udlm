@@ -43,4 +43,5 @@ profile:
     - recovery/bounded-convergence
     - audit/merkle-log                          # append-only Merkle tree (audit-leaf.schema.json)
     - accreditation/attestation                 # provider admission gated on resolved accreditation (DCM ADR-022)
+    - accreditation/verifiable                   # accreditation carries a VC proof chaining to a trust anchor; DCM verifies the signature BEFORE appraising scope (two-gate, matrix §3.7)
     - retention/regulatory                       # regulatory-grade audit/data retention
