@@ -89,7 +89,9 @@ The realization **selects** among providers declaring the needed `Credential.*` 
 | `kubeconfig` | — | Access to realized Kubernetes clusters | PT8H–P30D (configurable) | Scheduled or on-demand |
 | `hsm_backed_key` | — | Sovereign/FSI deployments requiring hardware attestation | P30D–P365D | P14D before expiry; HSM-managed |
 
-The `Credential.*` resource types follow standard substrate resource-type contracts; the credential-type identifiers above are also closed substrate vocabulary used in credential records and provider declarations.
+The credential-type identifiers above are closed substrate vocabulary used in credential records and provider declarations.
+
+> **On the `Resource Type` column — deferred for 1.0 (best-practice modeling).** The `Credential.*` names are the credential-kind **discriminator** (and the handle for a *requestable* credential resource, if one is ever needed). For 1.0 they are **not** filed as separate resource types: credential **values never enter UDLM** (held by the provider, §1.1), so a per-kind type would be a metadata shell, and the model is already complete via **`Security.CredentialRef`** — the reference (the Kubernetes `secretKeyRef` pattern, discriminated by `credential_type`) — plus the `credential_record` (§5). This follows how distributed systems actually model this: **Kubernetes** uses one `Secret` + a `type` discriminator; **AWS/GCP** secret managers use one opaque Secret. **If** a *consumer-requests-a-credential* use case ever lands, split by **lifecycle, not by name** — `Credential.Secret` (opaque, `credential_type`-discriminated), `Credential.Certificate` (issuer / subject / validity / renewal), `Credential.Key` (algorithm / usage / rotation) — the **Azure Key Vault / cert-manager** three-way split, never one type per `credential_type` (that is over-modeling the field rejects).
 
 ---
 

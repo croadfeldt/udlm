@@ -118,8 +118,12 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 - **Type completeness polish** — `relationships` blocks **added** to `Software.Service` / `Hardware.BMC` /
   `Hardware.BiosProfile` (#98, 2026-07-15); `Security.CredentialRef` **defined** (#99, closing the
   referenced-but-undefined secrets-as-reference target). **Remaining:** 4 types are `portability: partial`
-  (honesty check pending); the `Credential.*` resource types (`credentials.md §2`) are referenced but not
-  yet filed. Non-blocking for the 21 UCs.
+  (checked: `bmc`/`software.service` promoted to `portable`, `bios-profile` stays `partial` — its
+  attributes are an opaque vendor passthrough). The `Credential.*` resource types (`credentials.md §2`) are
+  **deferred by design, not a gap** — credential values never enter UDLM, so the reference model
+  (`Security.CredentialRef` + `credential_record`) covers 1.0 the way Kubernetes covers it (one `Secret` +
+  a `type` discriminator). A future *requestable-credential* UC would split by **lifecycle** (Secret /
+  Certificate / Key — the Key Vault / cert-manager pattern), never one type per `credential_type`.
 - **Final resource-type quality sweep** (planned, once the type set stabilizes) — a human review pass over
   *every* type/definition/spec for: **adopt-not-invent** (T5 — grounded in a real standard, registered),
   **best-practice** shape, **no duplication** (single-source), and **concise, correctly-scoped docs**
