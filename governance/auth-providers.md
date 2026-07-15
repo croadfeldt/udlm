@@ -55,6 +55,20 @@ Authentication and credential issuance are **capabilities** (yields) a provider 
 
 A Composite Service is not a kind — it is a Service Provider registering a multi-resource definition. There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities a kind exercises.
 
+> **Identity-model authority (UDLM vs a realization's auth architecture).** This document and the
+> `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, ADR-RBAC-001)
+> are the **authoritative data contract** for actors/identities and the actor-type vocabulary (incl. the
+> `provider` actor). A realization's authentication *implementation* — e.g. DCM's IDM/IAM Authentication
+> Layer (`dcm-project/enhancements/.../authentication/authentication.md`: Keycloak/IdP, middleware,
+> OpenAPI security, flows, and its internal `Actor`/`Actor Identity` tables + status enforcement) — is
+> **realization architecture** (ADR-008): it owns *how* actors authenticate and the external-identity
+> binding/session/status state, which are deliberately **not** substrate data. Where the two meet — the
+> actor/identity entity itself — **UDLM is authoritative**: a realization's `Actor` record is the
+> *realized projection* of `Identity.Person`/`ServiceAccount`, and MUST reuse the UDLM identity types and
+> actor-type vocabulary (`person` / `service_account` / `group` / `provider`) rather than define a parallel
+> identity model. UDLM carries the contract that supports authentication; it does not prescribe the
+> implementation.
+
 ---
 
 ## 3. Auth Provider Registration (Wire Contract)
