@@ -213,7 +213,7 @@ Everything genuinely data-model about rehydration reduces to two rules:
 
 ## 6. Drift Detection
 
-Drift is the difference between what the model believes exists (Realized State) and what actually exists (Discovered State). The drift-detection **runtime** — the comparison cycle, the drift-response actions (REVERT / UPDATE_DEFINITION / ALERT / ESCALATE), and their evaluation — is realization concern (see the DCM operational model). The **drift record shape and severity model** are data model:
+Drift is the difference between what the model believes exists (Realized State) and what actually exists (Discovered State). The drift-detection **runtime** — the comparison cycle, the drift-response actions (the closed action vocabulary is defined once in `entities/resource-service-entities.md` §3), and their evaluation — is realization concern (see the DCM operational model). The **drift record shape and severity model** are data model:
 
 A drift record carries `entity_uuid`, `drifted_fields: [{field_path, realized_value, discovered_value}]`, `discovery_timestamp`, and `drift_severity`.
 
