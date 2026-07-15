@@ -31,13 +31,20 @@ Reused by anything that sizes compute: `Compute.VirtualMachine`, a `Compute.Clus
 `Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
 
-**`instance_size` — sizing by class (shared, provider-reconciled).** Any resource type that sizes
-compute MAY carry an `instance_size` string — a **provider-neutral size class** (e.g. `small|medium|large`
-or a named profile) — *in place of, or alongside,* explicit `cpu`/`memory`. It is **generic sizing
-intent**: the **provider** reconciles it to concrete resources or its own instance classes at
-naturalization (DCM ADR-023) — *how* `medium` maps to cores/RAM, or to an `db.r5.large`, is the
-**provider's** to own; **UDLM/DCM does not define the mapping**. This lets a type ship sized-by-class
-(the common shape for managed databases, VMs, node pools) without UDLM prescribing a fixed resource math.
+**`instance_size` — sizing by class (shared vocabulary, provider-mapped).** Any resource type that sizes
+compute MAY carry an `instance_size` string — a **provider-neutral size class** (e.g. `small|medium|large|xlarge`,
+an ordinal scale) — *in place of, or alongside,* explicit `cpu`/`memory`. Two halves, and the split is the
+point:
+- **UDLM owns the conformity.** `instance_size` is a **shared, comparable vocabulary**: `medium` must mean
+  something *comparable* across adjacent compatible providers — the classes are ordinally ordered (a portable
+  "roughly this big"), so consumer intent is portable and a workload can move between compatible providers
+  without re-sizing. This is UDLM providing *conformity between providers*, not a free string.
+- **The provider owns the concrete mapping.** *How* `medium` resolves to cores/RAM, or to a `db.r5.large`, is
+  the **provider's** to define at naturalization (DCM ADR-023) — UDLM does not fix the resource math.
+
+So UDLM carries the comparable *shape* (the class vocabulary + its ordering); the provider fills the concrete
+*definition*. This lets a type ship sized-by-class (the common shape for managed databases, VMs, node pools)
+portably, without UDLM prescribing a fixed resource math.
 
 ### 2.3 `StorageCapacity` / disk
 ```json
