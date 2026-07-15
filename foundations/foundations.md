@@ -11,29 +11,13 @@
 
 DCM is built on three foundational abstractions. Every concept in the architecture is an instance of one of these three — or a combination of them. There is no fourth.
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                          DATA                                    │
-│                                                                  │
-│  Everything that exists, is stored, has a lifecycle, and flows  │
-│  through the system. Entities, layers, policies, accreditations, │
-│  audit records, groups, relationships — all Data.                │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ flows through
-              ┌────────────┴────────────┐
-              ▼                         ▼
-┌─────────────────────┐   ┌─────────────────────────────────────┐
-│      PROVIDER        │   │              POLICY                  │
-│                      │   │                                      │
-│  Every external      │   │  Every rule that fires on Data,      │
-│  component DCM       │   │  decides what happens, transforms    │
-│  calls or that       │   │  values, or enforces constraints.    │
-│  calls DCM.          │   │                                      │
-│  Typed               │   │  Typed output schemas.               │
-│  capability          │   │  One evaluation algorithm.           │
-│  extensions.         │   │  Same lifecycle for all.             │
-│  One base contract.  │   │                                      │
-└─────────────────────┘   └─────────────────────────────────────┘
+```mermaid
+flowchart TD
+    DATA["<b>DATA</b><br/>Everything that exists, is stored, has a lifecycle, and flows through the system. Entities, layers, policies, accreditations, audit records, groups, relationships — all Data."]
+    PROVIDER["<b>PROVIDER</b><br/>Every external component DCM calls or that calls DCM.<br/>Typed capability extensions.<br/>One base contract."]
+    POLICY["<b>POLICY</b><br/>Every rule that fires on Data, decides what happens, transforms values, or enforces constraints.<br/>Typed output schemas.<br/>One evaluation algorithm.<br/>Same lifecycle for all."]
+    DATA -->|flows through| PROVIDER
+    DATA -->|flows through| POLICY
 ```
 
 **The runtime that connects them — a re-entrant convergence loop:**
@@ -74,20 +58,21 @@ This is the complete DCM operational model: **Data · Policy · Provider are pee
 
 Data flows through four lifecycle stages — the same entity observed at four points, not four separate things:
 
-```
-Consumer Intent
-    │ raw consumer declaration
-    ▼
-Intent State ──────────────────────────────────── intent_records (append-only)
-    │ layer assembly + policy evaluation
-    ▼
-Requested State ────────────────────────────────── requested_records (append-only)
-    │ provider execution
-    ▼
-Realized State ─────────────────────────────────── realized_entities (versioned snapshots)
-    │ independent observation
-    ▼
-Discovered State ───────────────────────────────── discovered_records (ephemeral)
+```mermaid
+flowchart TD
+    CI["Consumer Intent"]
+    IS["Intent State"]
+    RS["Requested State"]
+    RLS["Realized State"]
+    DS["Discovered State"]
+    IS -.-> IR["intent_records (append-only)"]
+    RS -.-> RR["requested_records (append-only)"]
+    RLS -.-> RE["realized_entities (versioned snapshots)"]
+    DS -.-> DR["discovered_records (ephemeral)"]
+    CI -->|raw consumer declaration| IS
+    IS -->|layer assembly + policy evaluation| RS
+    RS -->|provider execution| RLS
+    RLS -->|independent observation| DS
 ```
 
 These four stages are defined canonically in **[The Four States](four-states.md)** — this section shows only how Data flows through them, it does not redefine each stage.
@@ -158,16 +143,16 @@ Both levels are evaluated by the same Policy Engine and triggered through the sa
 
 The Request Orchestrator and Policy Engine are the runtime that connects the three abstractions. They are not a fourth abstraction — they are the implementation machinery.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   Request Orchestrator                   │
-│              (event bus — not a sequencer)               │
-│                                                          │
-│  Receives events → routes to Policy Engine               │
-│  Policy Engine evaluates all matching Policies           │
-│  Results: invoke Providers OR produce new Data           │
-│  New Data → new events → new Policy evaluations          │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph RO["Request Orchestrator (event bus — not a sequencer)"]
+        direction TB
+        A["Receives events → routes to Policy Engine"]
+        B["Policy Engine evaluates all matching Policies"]
+        C["Results: invoke Providers OR produce new Data"]
+        D["New Data → new events → new Policy evaluations"]
+        A --> B --> C --> D
+    end
 ```
 
 **Key runtime properties:**

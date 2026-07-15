@@ -58,61 +58,37 @@ An **Infrastructure Resource Entity** is a realized physical or virtual infrastr
 
 **Lifecycle State Machine:**
 
-```
-                    ┌─────────────────────────────────┐
-                    │          REQUESTED               │
-                    │  (Intent State assembled,        │
-                    │   Requested State committed)     │
-                    └───────────────┬─────────────────┘
-                                    │  Provider dispatch
-                                    ▼
-                    ┌─────────────────────────────────┐
-                    │           PENDING                │
-                    │  (Awaiting provider capacity     │
-                    │   or dependency resolution)      │
-                    └───────────────┬─────────────────┘
-                                    │  Provider begins work
-                                    ▼
-                    ┌─────────────────────────────────┐
-                    │         PROVISIONING             │
-                    │  (Provider actively realizing)   │
-                    └───────────────┬─────────────────┘
-                                    │  Provider confirms realization
-                                    ▼
-                    ┌─────────────────────────────────┐
-                    │           REALIZED               │
-                    │  (Provider-confirmed, with a     │
-                    │   full Realized State record)    │
-                    └───────────────┬─────────────────┘
-                                    │  Passes health checks
-                                    ▼
-                    ┌─────────────────────────────────┐   ◄── Primary operational state
-                    │         OPERATIONAL              │   Drift detection active
-                    │  (Active, healthy, in use)       │   Cost analysis active
-                    └───┬───────────────────┬─────────┘   Policy evaluation active
-                        │                   │
-              Suspend   │                   │  Decommission request
-              request   ▼                   ▼
-            ┌──────────────────┐  ┌──────────────────────┐
-            │   SUSPENDED      │  │   DECOMMISSIONING     │
-            │ (Paused, not in  │  │ (Provider removing,   │
-            │  active use,     │  │  dependencies         │
-            │  may be billed   │  │  being released)      │
-            │  at reduced rate)│  └──────────┬───────────┘
-            └────────┬─────────┘             │
-                     │  Resume               │  Provider confirms removal
-                     │  or decommission      ▼
-                     │             ┌──────────────────────┐
-                     └─────────────►   DECOMMISSIONED      │  ◄── Terminal state
-                                   │ (Removed from infra,  │
-                                   │  audit records        │
-                                   │  preserved)           │
-                                   └──────────────────────┘
+```mermaid
+stateDiagram-v2
+    [*] --> REQUESTED
+    REQUESTED --> PENDING: provider dispatch
+    PENDING --> PROVISIONING: provider begins work
+    PROVISIONING --> REALIZED: provider confirms realization
+    REALIZED --> OPERATIONAL: passes health checks
+    OPERATIONAL --> SUSPENDED: suspend request
+    SUSPENDED --> OPERATIONAL: resume
+    OPERATIONAL --> DECOMMISSIONING: decommission request
+    SUSPENDED --> DECOMMISSIONING: decommission
+    DECOMMISSIONING --> DECOMMISSIONED: provider confirms removal
+    DECOMMISSIONED --> [*]
 
-Any state except DECOMMISSIONED:
-  PROVISIONING_FAILED → rolls back to REQUESTED or terminal FAILED
-  PENDING_REVIEW → sovereignty/tenancy conflict during rehydration (see Section 2.1.2)
+    note right of OPERATIONAL
+        Primary operational state —
+        drift detection, cost analysis,
+        and policy evaluation are active.
+    end note
+    note right of DECOMMISSIONED
+        Terminal — removed from infra;
+        audit records preserved.
+    end note
+    note left of REQUESTED
+        From any state except DECOMMISSIONED:
+        • PROVISIONING_FAILED → rolls back to REQUESTED, or terminal FAILED
+        • PENDING_REVIEW → sovereignty/tenancy conflict during rehydration (§2.1.2)
+    end note
 ```
+
+State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record) · **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
 
 **Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet, and all other persistent infrastructure resource types.
 
