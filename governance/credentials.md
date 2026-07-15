@@ -6,7 +6,7 @@
 
 > **Foundation Document Reference**
 >
-> Credentials in UDLM are first-class Data artifacts. A Credential Provider is a substrate-defined Provider type. The Zero Trust model in [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) governs credential scope and lifetime — this document specifies the substrate contract that any conformant realization MUST honor.
+> Credentials in UDLM are first-class Data artifacts. Credential issuance is a **capability** a provider declares (`credential_capability`), not a separate provider kind (§1). The Zero Trust model in [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) governs credential scope and lifetime — this document specifies the substrate contract that any conformant realization MUST honor.
 >
 > **This document maps to: DATA + PROVIDER**
 
