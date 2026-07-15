@@ -24,8 +24,12 @@ Built-in profiles are stable, referenceable, reproducible. **Any modification of
 **4. Profile-governed mechanics are organization-dependent.**
 Mechanisms like the **human-approval / escalation ladder** are defined by the profile (its operational config + policy set), not by a fixed platform ladder. Different organizations/profiles define different ladders. The platform provides the *mechanism*; the profile provides the *definition* — the same pattern as ADR-005 (time-sync) and ADR-004 (capabilities).
 
-**5. Scope.**
-Deployment-scoped / platform-wide today; **group-scopable** (per Tenant / Service / compliance domain, composing over the platform default) later — see the profile-scope note in `foundations.md`.
+**5. Scope — platform-scoped now; finer scopes are mechanism-available but deliberately unpopulated.**
+A profile is scoped to the **platform**: one resolved profile set per DCM instance. Finer scopes — per tenant / service / compliance domain / resource — are **group-scopable later** and the resolution mechanism for them already exists (`profile-resolution.md §1` precedence `resource_type → tenant → group → platform default`), but **below the platform default it is not populated**: an instance carries its one platform profile and no sub-scoped overrides. Available as mechanism, not populated as policy. See the profile-scope note in `foundations.md`.
+
+*Why platform-scope now.* No release use case needs two profiles to coexist inside one platform, and enforcing per-scope floors is not free — every admission, placement, and policy decision would first have to resolve, compose, and verify *which* floor applies to *this* object (the machinery of `profile-resolution.md §2–§3`), and administration would have to reason about overlapping, composing floors. That is real cost in platform administration, implementation, and management for no present return. The precedence mechanism is kept dormant so a finer scope is a later switch-on, not a redesign.
+
+*When a distinct profile is genuinely needed, prefer a separate instance.* Stand up a **separate DCM instance** for it rather than sub-scoping one platform — each instance's floor stays uniform and its conformance is trivially true. A **federated** DCM does *not* serve this: conformance is floor-containment (§2 — A satisfies B iff A's floor ⊇ B's), so when federated instances carry different profiles the looser instance is **non-conformant** to the stricter one, and federation across a profile boundary breaks the very guarantee the profile exists to make. The cost of separate instances (running more of them) is acceptable while distinct-profile needs are rare; revisit finer in-platform scoping only against a concrete multi-profile-in-one-platform need.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
@@ -39,6 +43,11 @@ Deployment-scoped / platform-wide today; **group-scopable** (per Tenant / Servic
 - **(B) Profiles as policy-only.** Rejected: a profile must also ensure the *mechanics and data* exist (attestation, time-sync capability, stores, retention), not just set policy defaults.
 - **(C) Mutable built-in profiles.** Rejected: destroys the stable reference and reproducibility; fork-on-modify preserves both and keeps an audit trail.
 - **(D) [chosen] Composed sets + floors + fork-on-modify custom profiles.**
+
+*On scope granularity (§5):*
+- **(E1) Author finer-scoped profiles now** (per tenant/provider/resource). Rejected for now: no use-case need, and per-scope floor resolution/composition + administration is real cost (§5).
+- **(E2) Federate DCMs to host mixed profiles in one estate.** Rejected: differing floors make the looser instance non-conformant (§2 floor-containment); federation can't honor mixed floors.
+- **(E3) [chosen] Platform-scope now; a separate instance per distinct profile.** Keeps each floor uniform and conformance trivial; the finer-scope precedence stays dormant for a later switch-on.
 
 ## Consequences
 
