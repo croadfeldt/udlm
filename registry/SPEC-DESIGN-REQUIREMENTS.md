@@ -268,7 +268,8 @@ Each hard constraint cites the UDLM contract it derives from.
     that check's baseline and burned down as the dedup PRs land, and a family split across files is
     warned. When a rule must appear elsewhere, cite it by ID with a one-line gist
     (`docs/writing-for-humans.md` — references carry their gist). **[enforced]**
-    (`tests/check_single_source.py`)
+    (`tests/check_single_source.py`) To find the home before you write, use the file
+    index (`docs/file-index.md`) — it names what each document owns.
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
