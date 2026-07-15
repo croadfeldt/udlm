@@ -73,22 +73,23 @@ Example response:
 
 ```json
 {
-  "error_code": "rate_limit.exceeded",
-  "message": "Submission rate exceeded for consumer 'tenant-a'. Retry in 12 seconds.",
+  "type": "rate_limit.exceeded",
+  "status": 429,
+  "title": "Rate limit exceeded",
+  "detail": "Submission rate exceeded for consumer 'tenant-a'. Retry in 12 seconds.",
+  "instance": "urn:udlm:audit:a1b2c3d4-...",
   "request_id": "f3b64dda-...",
-  "audit_uuid": "a1b2c3d4-...",
   "retryable": true,
   "retry_after_seconds": 12,
-  "details": {
-    "surface": "consumer.requests.submit",
-    "scope": "per_consumer",
-    "limit": 100,
-    "window_seconds": 60,
-    "current_count": 100
-  },
-  "timestamp": "2026-05-26T14:32:18.456Z"
+  "timestamp": "2026-05-26T14:32:18.456Z",
+  "surface": "consumer.requests.submit",
+  "scope": "per_consumer",
+  "limit": 100,
+  "window_seconds": 60,
+  "current_count": 100
 }
 ```
+(RFC 9457 problem object per [`error-model.md`](error-model.md) §2 — `type` from the closed vocabulary, audit link in `instance`, context as flat top-level extension members.)
 
 ---
 
