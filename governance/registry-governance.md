@@ -156,17 +156,11 @@ The submitter becomes the **Resource Type Authority** for the submitted specific
 
 ### 4.1 Version Schema
 
-Resource Type Specifications use semantic versioning: `Major.Minor.Revision`
-
-| Component | Meaning | Compatibility |
-|-----------|---------|--------------|
-| **Major** | Breaking change — field removed, type changed, behavior incompatible | Not compatible with previous major |
-| **Minor** | Non-breaking addition — new optional fields, new lifecycle states | Compatible within major |
-| **Revision** | Configuration data change — no structural change | Compatible within minor |
+Resource Type Specifications use the two-axis versioning defined once in [`registry/VERSIONING.md`](../registry/VERSIONING.md) (the SPEC `conforms_to` axis + the ENTITY `Major.Minor.Revision` axis, and the semver change classification). This document does not restate that schema — it governs only **registry request-time resolution** (§4.2) and **profile defaults** (§4.3) below.
 
 ### 4.2 Version Resolution Policy
 
-Version constraints in requests are **strictly enforced** — a conformant realization MUST NEVER silently resolve to a different version than declared. The resolution policy governs how much flexibility a consumer has:
+Version constraints in requests are **strictly enforced** — a conformant realization MUST NEVER silently resolve to a different version than declared. The resolution policy governs how much flexibility a consumer has; its names map onto the constraint grammar in [`VERSIONING.md`](../registry/VERSIONING.md) (`compatible` ≡ `^` same-major, `latest_minor` ≡ `~` same-minor, `exact` ≡ a pinned version) — same concept, this is the request-time selector:
 
 ```yaml
 resource_type_version_constraint:
@@ -198,7 +192,7 @@ resource_type_version_constraint:
 
 ### 5.1 The Default Deprecation Policy
 
-Deprecation lifecycle is governed by **default substrate policies** — not hard-coded values. These defaults can be overridden using the standard policy priority mechanism. Higher-priority organizational policies can shorten, extend, or lock any of these values.
+The base `active → deprecated → retired` lifecycle is the universal deprecation model ([`foundations/layering-and-versioning.md`](../foundations/layering-and-versioning.md)); this section adds only the **registry-specific** timing and sunset policy (`REG-DP-*`). Those are governed by **default substrate policies** — not hard-coded values. These defaults can be overridden using the standard policy priority mechanism. Higher-priority organizational policies can shorten, extend, or lock any of these values.
 
 ```yaml
 # Default deprecation lifecycle policies (platform domain — overridable)

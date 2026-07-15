@@ -371,7 +371,7 @@ auth_provider_chain:
 
 ## 6. Credential Types and Issuance (Data Model)
 
-A **Credential Provider** is a substrate-defined provider type — a cross-cutting dependency that any realization component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the realization; they are always referenced.
+Credential issuance is a **capability** a provider declares (`credential_capability` + `Credential.*` resource types — [credentials.md](credentials.md) §9), **not** a separate provider kind (§2; PROV-002/PROV-003 capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any realization component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the realization; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
 
 ```yaml
 credential_provider_registration:
@@ -390,8 +390,11 @@ credential_provider_registration:
     auth_method: <kubernetes|approle|token|aws_iam|ldap>
     namespace: <vault namespace>
 
-  credential_types: [hmac_secret, api_key, certificate, connection_string,
-                     bearer_token, private_key, username_password, ldap_bind]
+  # Credential types this backend can issue — drawn from the CLOSED substrate vocabulary in
+  # credentials.md §2; this list does NOT redefine it. Backend-flavored names fold into canonical
+  # types (nothing lost): a connection_string / username_password / ldap_bind / hmac_secret is a
+  # `secret`; a bearer token is a `service_account_token`; a raw private key is `ssh_key`/`signing_key`.
+  credential_types: [api_key, x509_certificate, ssh_key, secret, signing_key, service_account_token]
 
   health_check:
     interval_seconds: 60

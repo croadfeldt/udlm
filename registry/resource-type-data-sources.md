@@ -105,6 +105,12 @@ Verdicts: `compatible-vendor` = Apache-2.0-compatible, text may even be vendored
 Because adoption references vocabulary (field names = facts) and never restates a source's schema, even
 `reference-only` sources are safe to adopt — the verdict guards against *copying*.
 
+**Authority note.** The single authoritative home for each source's license verdict is
+[`standards-adoption-register.md`](standards-adoption-register.md) (`ADOPT-001`, normative). The table
+below is **working design input** — a convenience snapshot while the types are defined. Where it and the
+register differ, the **register wins**; a row here that is not yet in the register is a TODO to register
+it, not a second verdict.
+
 | Source | License | Verdict | Note |
 |---|---|---|---|
 | OSAC `fulfillment-service` protos | **verify** (expected Apache-2.0) | compatible-vendor *(pending verify)* | confirm before vendoring any proto text |
