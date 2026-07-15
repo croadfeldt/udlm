@@ -127,8 +127,10 @@ infrastructure_resource_entity:
   handle: <string>                      # human-readable stable identifier
   resource_type: <fqn>                  # e.g., Compute.VirtualMachine
   resource_type_spec_version: <semver>
-  lifecycle_state: <REQUESTED|PENDING|PROVISIONING|REALIZED|OPERATIONAL|
-                    SUSPENDED|DECOMMISSIONING|DECOMMISSIONED|FAILED|PENDING_REVIEW>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>
+  # ^ the ONLY lifecycle enum — five values (foundations/data-model-core.md §3, four-states.md §2.5).
+  #   Finer operational phase + health (provisioning, operational, degraded, maintenance, suspended,
+  #   failed, pending_review, decommissioning) are `status.conditions` overlays, NOT lifecycle_state.
   created_at: <ISO 8601>
   updated_at: <ISO 8601>
 
@@ -256,7 +258,8 @@ No SUSPENDED state. No PENDING_REVIEW state. Process Resources are ephemeral —
 process_resource_entity:
   uuid: <uuid>
   resource_type: <fqn>                  # e.g., Automation.AnsiblePlaybook
-  lifecycle_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity
+  execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>  # per-RUN dynamics — separate axis (data-model-core §3 [D7])
   owned_by_tenant_uuid: <uuid>
   created_by_actor_uuid: <uuid>
 

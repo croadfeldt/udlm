@@ -196,7 +196,7 @@ catalog_item:
 
 ## 5. Resource/Service Entity Lifecycle
 
-Every Resource/Service Entity progresses through a defined lifecycle. The lifecycle states are part of the UDLM substrate vocabulary — peers MUST recognize and propagate them:
+Every Resource/Service Entity carries the five-value `lifecycle_state` (`Intent → Requested → Realized ↔ Discovered → Decommissioned`; data-model-core §3). On top of that coarse lifecycle it exposes finer **operational phase + health as `status.conditions`** — peers MUST recognize and propagate both. The machine below is that `status` overlay (how the operational phases flow); it is **not** a second `lifecycle_state` enum. Three phases coincide with lifecycle_state values (`REQUESTED`→Requested, `REALIZED`→Realized, `DECOMMISSIONED`→Decommissioned); the rest are status conditions on a Realized entity:
 
 ```
 REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL
@@ -213,9 +213,9 @@ REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL
                                                 DECOMMISSIONED
 ```
 
-| State | Description |
+| Operational phase / status | Description |
 |-------|-------------|
-| `REQUESTED` | Request submitted, Intent State captured |
+| `REQUESTED` | Request submitted, Intent State captured *(coincides with lifecycle_state `Requested`)* |
 | `PENDING` | Requested State assembled, awaiting provider dispatch |
 | `PROVISIONING` | Provider is fulfilling the request |
 | `REALIZED` | Provider has fulfilled the request, Entity exists, Realized State captured |
@@ -272,7 +272,8 @@ process_resource_entity:
   process_type: <playbook|workflow|pipeline|automation_job|script|other>
   tenant_uuid: <owning tenant uuid>
   version: <Major.Minor.Revision>
-  lifecycle_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity itself
+  execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>  # per-RUN dynamics — a SEPARATE axis (data-model-core §3 [D7]); each run moves execution_state
   input_payload:
     <the Requested State payload that initiated this process>
   output_payload:
