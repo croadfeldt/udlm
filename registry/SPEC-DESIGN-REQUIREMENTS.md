@@ -259,6 +259,17 @@ Each hard constraint cites the UDLM contract it derives from.
     `foundations/data-model-core.md` §5 [D3]). **[enforced]** (`registry/tools/validate.py`;
     referential existence of the tenant is a store-level check, not a schema one).
 
+33. **One rule, one home, one ID — single-source.** Every normative rule, vocabulary, or
+    wire-shape is *defined* in exactly one file and carries a stable ID (`INF-001`, `ENT-006`,
+    `DPO-003`, …). Other documents **reference the ID; they never restate the rule** — a restated
+    rule is a second definition that drifts. (The 2026-07 sweep found the same rule defined up to
+    four ways, and ID families reused for unrelated meanings across files.) A rule-ID *defined* in
+    more than one file fails CI (`tests/check_single_source.py`); existing debt is grandfathered in
+    that check's baseline and burned down as the dedup PRs land, and a family split across files is
+    warned. When a rule must appear elsewhere, cite it by ID with a one-line gist
+    (`docs/writing-for-humans.md` — references carry their gist). **[enforced]**
+    (`tests/check_single_source.py`)
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
