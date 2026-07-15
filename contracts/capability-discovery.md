@@ -55,11 +55,9 @@ provider:
         - ip_availability
         - subnet_utilization
       query_interface: rest
-      # authority_level and confidence are NOT self-declared here (INF-006). The provider names the
-      # domains it can serve; DCM assigns authority_level from the admin-owned authority layer and the
-      # realization COMPUTES confidence (source authority × freshness × corroboration). authority_level
-      # decides which source wins data conflicts, so a provider stamping its own data "authoritative"
-      # would self-grant precedence over the true system-of-record. A value supplied here is ignored.
+      # authority_level + confidence are NOT self-declared — DCM assigns authority_level, the realization
+      # COMPUTES confidence; a value supplied here is ignored. Rule defined once in
+      # information-providers-advanced.md (the authority/confidence model).
 
   sovereignty:
     zones: [eu-west-1, eu-west-2]

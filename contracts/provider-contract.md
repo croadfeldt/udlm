@@ -566,9 +566,8 @@ information_provider_capabilities:
   data_domains:
     - domain: business_data
       data_types: [business_unit, cost_center, product_owner]
-      # authority_level is NOT self-declared (INF-006) — DCM assigns it from the admin-owned authority
-      # layer. It decides which source wins data conflicts, so a provider naming its own data "primary"
-      # would self-grant precedence over the true system-of-record. A value supplied here is ignored.
+      # authority_level is NOT self-declared — DCM assigns it; a value supplied here is ignored.
+      # Rule defined once in information-providers-advanced.md (the authority/confidence model).
   query_capacity:
     max_queries_per_second: 100
   confidence_model:
