@@ -50,13 +50,13 @@ An **Infrastructure Resource Entity** is a realized physical or virtual infrastr
 **Characteristics:**
 - Persists after provisioning — it continues to exist and consume resources until explicitly decommissioned
 - Owned by exactly one Tenant at any point in time
-- Has a full bidirectional lifecycle including OPERATIONAL and SUSPENDED states
+- Has a full operational lifecycle including operational and suspended *phases* — carried as `status.conditions`; the coarse `lifecycle_state` is the five-value enum (data-model-core §3)
 - Subject to drift detection — its Realized State is continuously compared against Discovered State
 - Subject to TTL management — may declare an expiry after which decommission is triggered
 - May have relationships to other entities — dependencies, attachments, allocations, business data
 - Carries field-level provenance across its full lifecycle
 
-**Lifecycle State Machine:**
+**Operational phase machine** (the `status` overlay — *not* `lifecycle_state`, which is the five-value enum in data-model-core §3). `REQUESTED`/`REALIZED`/`DECOMMISSIONED` below coincide with the `lifecycle_state` values `Requested`/`Realized`/`Decommissioned`; the rest (`PENDING`, `PROVISIONING`, `OPERATIONAL`, `SUSPENDED`, `DECOMMISSIONING`, `PENDING_REVIEW`, `FAILED`) are `status.conditions`:
 
 ```
                     ┌─────────────────────────────────┐
