@@ -12,4 +12,4 @@ states:
       ups: rack UPS B
     outputs: {}
     at: '2026-07-13T00:00:00Z'
-# The second, independent power rail. host-a's PSU2 draws from here so a single-feed loss keeps host-a up.
+# The second, independent power rail. host-a's second power edge draws from here, so a single-feed loss keeps host-a up.

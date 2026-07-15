@@ -13,4 +13,4 @@ states:
       label: server rack
     outputs: {}
     at: '2026-07-13T00:00:00Z'
-# Where host-a sits. Location answers "where is it", never "what powers it" — power is on the PSUs.
+# Where host-a sits. Location answers "where is it", never "what powers it" — power is the host's own feed edges.

@@ -32,12 +32,17 @@ target).
 The same data model expresses dependencies at several granularities. All reduce to typed edges; the
 difference is *how many* edges an implementor authors and *where* they sit.
 
-1. **Direct edge** — a resource names its dependency explicitly. Highest fidelity, per-edge effort.
-   The base case; everything else composes from it.
-2. **Component chain** — model the dependency through the component that carries it, not the whole
-   resource. Canonically **power**: a host contains `Hardware.PowerSupply` units, each `powered_by` a
-   `Facility.PowerFeed` — and the feeds need not match, so redundancy is preserved. A consumer
-   follows `host → PSU → feed` transitively. Same shape for network fabric (NIC → switch port).
+1. **Direct edge (incl. multi-edge redundancy)** — a resource names its dependency explicitly. Highest
+   fidelity, per-edge effort. The base case; everything else composes from it. Redundancy is just
+   *more than one* direct edge: a host declares `depends_on feed-a` **and** `depends_on feed-b`
+   (`Compute.BareMetalHost → Facility.PowerFeed` is `0..n`), so a single feed loss leaves a second
+   path across a distinct fault domain — authored, not inferred.
+2. **Component chain** — where a dependency routes through a *managed* component, model it on the
+   component, not the whole resource. Canonically **network fabric**: a `Hardware.NetworkInterface`
+   `contained_by` a host `connects_to` a switch port, and a consumer follows `host → NIC → port`
+   transitively. This applies only to components DCM actually manages/configures (ADR-013 — DCM is not
+   a hardware system-of-record); inert inventory like a PSU is *not* modeled, so **power** is a direct
+   host dependency instead — see pattern 1 / the multi-edge redundancy case below.
 3. **Bundling (via a node)** — to share a set of dependencies across resources, declare them on a
    node and have each resource `depends_on` that node. The dependents inherit the set as **secondary
    dependencies** through the graph's transitivity — no expansion, no special type. Best for shared
@@ -47,14 +52,15 @@ difference is *how many* edges an implementor authors and *where* they sit.
 4. **Scope** — some memberships are already fields. `tenant_uuid` **is** realm membership; a consumer
    can derive the realm's identity/DNS dependency without an edge. `Facility.Location` gives physical
    scope (site/room/rack) for location-scoped concerns — note it deliberately does **not** own power
-   (PSUs do), because "where a thing is" and "what powers it" are different questions.
+   (the host's own feed edges do), because "where a thing is" and "what powers it" are different questions.
 
 ## Types that enable each pattern
 
 | Pattern | Type(s) |
 |---|---|
 | Direct edge | every resource type (`dependencies[]`) |
-| Component power | `Hardware.PowerSupply` → `Facility.PowerFeed` |
+| Power | `Compute.BareMetalHost` `depends_on` → `Facility.PowerFeed` (`0..n`; one edge per feed) |
+| Managed-component chain | `Hardware.NetworkInterface` `connects_to` → switch port |
 | Bundling | *any* node the members `depends_on` — its deps become theirs transitively (no dedicated type) |
 | Physical scope | `Facility.Location` (adopts Redfish Location) |
 | Realm scope | `Security.DirectoryService` + `Network.AddressService`, keyed by `tenant_uuid` |

@@ -14,8 +14,18 @@ states:
     outputs: {}
     at: '2026-07-13T00:00:00Z'
 dependencies:
-# Where it sits (rack) and whose realm it's in. Power is NOT declared here — it lives on the PSUs,
-# which point at the feeds, so the host's power dependency is the union of both rails.
+# Where it sits (rack) and whose realm it's in.
 - kind: references
   target_uuid: aa5e9540-8e88-466f-9644-fdfea9b257b6
   target_handle: loc-rack
+# Power: the host draws from BOTH rails — two direct depends_on edges (Compute.BareMetalHost →
+# Facility.PowerFeed is 0..n). Losing one feed leaves the host up, so redundancy is authored, not
+# inferred through a component. The host stops before either feed in a reverse-topo shutdown.
+- kind: depends_on
+  relation: powered_by
+  target_uuid: 85722781-fa2b-41b6-bb06-cd897b96d9a9
+  target_handle: feed-a
+- kind: depends_on
+  relation: powered_by
+  target_uuid: 33f2a808-1dff-4f3d-95ed-5fdb46511ff8
+  target_handle: feed-b

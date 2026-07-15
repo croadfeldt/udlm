@@ -14,7 +14,12 @@ states:
     outputs: {}
     at: '2026-07-13T00:00:00Z'
 dependencies:
-# Sits at the bench, same realm as host-a. Single PSU on an unprotected utility outlet (feed-wall).
+# Sits at the bench, same realm as host-a.
 - kind: references
   target_uuid: 38410da1-c12c-42d0-a17d-1d542076a720
   target_handle: loc-bench
+# Power: a single feed (an unprotected utility outlet) — one edge, so host-b has no power redundancy.
+- kind: depends_on
+  relation: powered_by
+  target_uuid: 463b6970-c938-49f3-8333-231be9eb64d8
+  target_handle: feed-wall

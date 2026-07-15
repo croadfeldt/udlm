@@ -113,20 +113,24 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
 
-**The relationship (the keystone):** when components are entities, the parent's rollup is the
-**aggregate of its contained components** — `Compute.BareMetalInstance.memory.size = "64GB"` is the sum
-of two `Hardware.MemoryModule` entities (32GB each), each `contained_by` the host. The rollup is the
-authoritative realized value; the components reconcile against it, and a mismatch (parent reports 65GB,
-modules sum to 64GB) is **drift** — surfaced with provenance, never silently summed away. This is the
-same `transparent` composition that registers sub-resources as DCM entities (service-dependencies §11d),
-applied below the device boundary.
+**The relationship (the keystone):** where a component *is* a kept entity, it is `contained_by` the
+parent and reconciles against the parent's rollup. Post-ADR-013 the only such component is
+`Hardware.NetworkInterface` (DCM configures it — bond/bridge); a host's `nics[]` rollup and its
+`Hardware.NetworkInterface` entities describe the same interfaces, and a mismatch is **drift** —
+surfaced with provenance, never silently reconciled away. This is the same `transparent` composition
+that registers sub-resources as DCM entities (service-dependencies §11d), applied below the device
+boundary. For memory/CPU/disk/GPU there is **no component entity** to reconcile against: capacity is a
+rollup *attribute* of the Compute host (`memory.size: "64GB"`, `cpu.count: 16`), full stop — the sum is
+never re-derived from parts because the parts are out of scope (ADR-013).
 
-**Why both** — it lets a homelab declare `BareMetalInstance` with just a rollup today, and an enterprise
-asset-track every DIMM/GPU as a lifecycle entity tomorrow, **without changing the type** — only its
-`composition_visibility`. It also matches the adopted standards: Redfish exposes
-`ComputerSystem.MemorySummary.TotalSystemMemoryGiB` (rollup) **and** `/Memory/<id>` per-DIMM resources;
-Metal3 exposes `status.hardware.ramMebibytes` (rollup) + `nics[]`/`storage[]` arrays. The `Hardware.*`
-family is a registry addition tracked alongside the other new types.
+**Why the rollup is always present** — it lets a homelab and an enterprise alike declare a host with
+just its aggregate capacity, which is all placement needs. If UDLM ever needs to asset-track every
+DIMM/GPU as a lifecycle entity, that is the **deferred discovery-archetype** path (ADR-013 — a
+discovered-only asset outside the request catalog, or an external DCIM information-provider), *not* a
+`provisioning` component type. The rollup still matches the adopted standards: Redfish exposes
+`ComputerSystem.MemorySummary.TotalSystemMemoryGiB` and Metal3 `status.hardware.ramMebibytes`; the
+per-DIMM `/Memory/<id>` resources those standards also expose stay on the discovery/DCIM side of that
+boundary.
 
 ### 5a. Identity — distinguishing instances of the same type (SPEC-DESIGN-REQUIREMENTS §27)
 
