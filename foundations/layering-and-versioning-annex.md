@@ -106,81 +106,55 @@ layer:
 
 ## 7. Layer Assembly Diagram
 
-```
-Consumer Request
-      │
-      ▼
-┌─────────────────┐
-│  REQUEST LAYER  │  ← Consumer declared intent → stored as INTENT STATE (Step 1)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────────────────────────────────────────┐
-│             LAYER RESOLUTION + MERGE (Steps 2-4)         │
-│                                                          │
-│  Base Layer          (lowest precedence)                 │
-│       ↓                                                  │
-│  Core Layers         (type-agnostic context)             │
-│       ↓                                                  │
-│  Intermediate Layers (organizational context)            │
-│       ↓                                                  │
-│  Service Layers      (type-scoped service config)        │
-│       ↓                                                  │
-│  Request Layer       (consumer intent — highest          │
-│                       data layer precedence)             │
-└────────┬────────────────────────────────────────────────┘
-         │  Merged payload with full provenance
-         ▼
-┌─────────────────────────────────────────────────────────┐
-│          PRE-PLACEMENT POLICY PROCESSING (Step 5)        │
-│                                                          │
-│  Transformation Policies  (enrich / modify)              │
-│       ↓                                                  │
-│  Validation Policies      (pass / fail check)            │
-│       ↓                                                  │
-│  Compliance-class Validation  (override / block)     │
-│       ↓ outputs: placement constraints                   │
-└────────┬────────────────────────────────────────────────┘
-         │  Policy-processed payload + placement constraints
-         ▼
-┌─────────────────────────────────────────────────────────┐
-│              PLACEMENT ENGINE — LOOP (Step 6)            │
-│                                                          │
-│  For each candidate provider (filtered + scored):        │
-│    │                                                     │
-│    ├── Reserve Query (atomic: verify + metadata + hold)  │
-│    │     confirmed / partial → policy phase              │
-│    │     insufficient / refused → next candidate         │
-│    │                                                     │
-│    └── Loop Policy Phase (placement_phase: loop)         │
-│          Field present → evaluate normally               │
-│          Field absent + required_context → if_absent     │
-│          Field absent + no policy → implicit_approval    │
-│          pass/warn → PLACEMENT CONFIRMED                 │
-│          reject_candidate → release hold, next           │
-│          gate → release hold, REJECT REQUEST         │
-│                                                          │
-│  No candidates remain → on_exhaustion behavior           │
-└────────┬────────────────────────────────────────────────┘
-         │  selected_provider_uuid + placement block
-         ▼
-┌─────────────────────────────────────────────────────────┐
-│         POST-PLACEMENT POLICY PROCESSING (Step 7)        │
-│                                                          │
-│  Transformation Policies  (provider-aware enrichment)    │
-│       ↓                                                  │
-│  Validation Policies      (post-placement checks)        │
-│       ↓                                                  │
-│  Compliance-class Validation  (provider-triggered)   │
-└────────┬────────────────────────────────────────────────┘
-         │  Complete, validated, placement-confirmed payload
-         ▼
-┌─────────────────┐
-│ REQUESTED STATE │  ← Stored in Requested Store (Step 8)
-└────────┬────────┘    includes: placement block, hold records,
-         │             policy gap records, enrichment_status
-         ▼
-   Service Provider  (Step 9 — dispatch, hold confirmed)
+```mermaid
+flowchart TD
+    CR["Consumer Request"] --> RL["REQUEST LAYER"]
+    RL -->|"Consumer declared intent → stored as INTENT STATE (Step 1)"| LRM
+
+    subgraph LRM["LAYER RESOLUTION + MERGE (Steps 2-4)"]
+        direction TB
+        BL["Base Layer<br/>(lowest precedence)"] --> COL["Core Layers<br/>(type-agnostic context)"]
+        COL --> IL["Intermediate Layers<br/>(organizational context)"]
+        IL --> SL["Service Layers<br/>(type-scoped service config)"]
+        SL --> RQL["Request Layer<br/>(consumer intent — highest data layer precedence)"]
+    end
+
+    LRM -->|"Merged payload with full provenance"| PRE
+
+    subgraph PRE["PRE-PLACEMENT POLICY PROCESSING (Step 5)"]
+        direction TB
+        PT["Transformation Policies<br/>(enrich / modify)"] --> PV["Validation Policies<br/>(pass / fail check)"]
+        PV --> PC["Compliance-class Validation<br/>(override / block)"]
+        PC --> POUT["outputs: placement constraints"]
+    end
+
+    PRE -->|"Policy-processed payload + placement constraints"| PE
+
+    subgraph PE["PLACEMENT ENGINE — LOOP (Step 6)"]
+        direction TB
+        CAND["For each candidate provider (filtered + scored)"]
+        CAND --> RES["Reserve Query (atomic: verify + metadata + hold)"]
+        RES -->|"confirmed / partial → policy phase"| LPP["Loop Policy Phase (placement_phase: loop)"]
+        RES -->|"insufficient / refused → next candidate"| CAND
+        LPP --> FP["Field present → evaluate normally"]
+        LPP --> FA1["Field absent + required_context → if_absent"]
+        LPP --> FA2["Field absent + no policy → implicit_approval"]
+        LPP -->|"pass/warn"| PCONF["PLACEMENT CONFIRMED"]
+        LPP -->|"reject_candidate → release hold, next"| CAND
+        LPP -->|"gate → release hold"| REJ["REJECT REQUEST"]
+        CAND -->|"No candidates remain → on_exhaustion behavior"| EXH["on_exhaustion behavior"]
+    end
+
+    PE -->|"selected_provider_uuid + placement block"| POST
+
+    subgraph POST["POST-PLACEMENT POLICY PROCESSING (Step 7)"]
+        direction TB
+        PoT["Transformation Policies<br/>(provider-aware enrichment)"] --> PoV["Validation Policies<br/>(post-placement checks)"]
+        PoV --> PoC["Compliance-class Validation<br/>(provider-triggered)"]
+    end
+
+    POST -->|"Complete, validated, placement-confirmed payload"| RSTATE["REQUESTED STATE"]
+    RSTATE -->|"Stored in Requested Store (Step 8) — includes: placement block, hold records,<br/>policy gap records, enrichment_status"| SP["Service Provider (Step 9 — dispatch, hold confirmed)"]
 ```
 
 ---
@@ -189,27 +163,22 @@ Consumer Request
 
 This example illustrates the power of the layering model at scale. 40,000 distinct VM configurations are governed by 36 layer definitions:
 
-```
-Base Entity (3 variants)
-├── CIS Benchmark
-├── Baseline
-└── DMZ / Payments
-
-  └── Layer Entity — OS Family (3 variants per base = 9 total)
-      ├── Common Linux Config / RHEL
-      ├── Common Linux Config / CoreOS
-      └── Common Linux Config / OEL
-
-        └── Layer Entity — OS Version (4 variants per OS layer = 36 total)
-            ├── RHEL 6
-            ├── RHEL 7
-            ├── RHEL 8
-            └── RHEL 9
-
-              └── Realized Entity — one per VM (40,000 total)
-                  Each realized entity carries FK references to its
-                  full layer chain (Base UUID + Layer UUIDs)
-                  and is stored in the CMDB
+```mermaid
+flowchart TD
+    BE["Base Entity (3 variants)"]
+    BE --> CIS["CIS Benchmark"]
+    BE --> BAS["Baseline"]
+    BE --> DMZ["DMZ / Payments"]
+    BE --> OSF["Layer Entity — OS Family<br/>(3 variants per base = 9 total)"]
+    OSF --> LRHEL["Common Linux Config / RHEL"]
+    OSF --> LCOREOS["Common Linux Config / CoreOS"]
+    OSF --> LOEL["Common Linux Config / OEL"]
+    OSF --> OSV["Layer Entity — OS Version<br/>(4 variants per OS layer = 36 total)"]
+    OSV --> R6["RHEL 6"]
+    OSV --> R7["RHEL 7"]
+    OSV --> R8["RHEL 8"]
+    OSV --> R9["RHEL 9"]
+    OSV --> RE["Realized Entity — one per VM (40,000 total)<br/>Each realized entity carries FK references to its<br/>full layer chain (Base UUID + Layer UUIDs)<br/>and is stored in the CMDB"]
 ```
 
 **Result:** 3 × 3 × 4 = **36 layer definitions** govern **40,000 VM configurations**. Each VM's realized entity is a lightweight reference to its layer chain — not a copy of all the configuration data.
@@ -325,26 +294,19 @@ Each service dependency executes its **own independent layer chain** during asse
 - Provider-specific layers (each provider has its own)
 
 **Dependency assembly flow:**
-```
-Parent request: Compute.VirtualMachine
-  │
-  ▼  Steps 1-4: Parent layer chain → parent_assembled_payload
-  │
-  ▼  Step 5: Pre-placement policies on parent
-  │
-  ▼  Step 6: Placement loop — parent provider selected
-  │           Also identifies required dependency providers
-  │
-  ▼  For each dependency (parallel where ordering allows):
-  │  ├── Network.IPAddress → own layer chain (Steps 1-4)
-  │  │     Context: inherits parent resolved placement fields
-  │  ├── Network.Port → own layer chain (Steps 1-4)
-  │  │     Context: inherits parent + IP resolution result
-  │  └── DNS.Record → own layer chain (Steps 1-4)
-  │         Context: inherits parent + IP + Port results
-  │
-  ▼  Steps 7-9: Post-placement, storage, dispatch
-       Parent + all dependency payloads dispatched together
+```mermaid
+flowchart TD
+    P["Parent request: Compute.VirtualMachine"]
+    P --> S14["Steps 1-4: Parent layer chain → parent_assembled_payload"]
+    S14 --> S5["Step 5: Pre-placement policies on parent"]
+    S5 --> S6["Step 6: Placement loop — parent provider selected<br/>Also identifies required dependency providers"]
+    S6 --> DEP{"For each dependency<br/>(parallel where ordering allows)"}
+    DEP --> IP["Network.IPAddress → own layer chain (Steps 1-4)<br/>Context: inherits parent resolved placement fields"]
+    DEP --> PORT["Network.Port → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP resolution result"]
+    DEP --> DNS["DNS.Record → own layer chain (Steps 1-4)<br/>Context: inherits parent + IP + Port results"]
+    IP --> S79["Steps 7-9: Post-placement, storage, dispatch<br/>Parent + all dependency payloads dispatched together"]
+    PORT --> S79
+    DNS --> S79
 ```
 
 **Layer exclusions on dependencies** — consumers may declare per-dependency exclusions:

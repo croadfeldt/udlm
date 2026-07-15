@@ -234,16 +234,12 @@ UDLM tracks the lifecycle of every resource through four distinct states, togeth
 | **Realized** | What a provider actually built (ground truth) | Baseline for drift; source of truth for audit; cost input |
 | **Discovered** | What is independently observed to exist right now | Drift detection; brownfield ingestion |
 
-```
-Intent  ──policy evaluation──▶  Requested  ──provider executes──▶  Realized
-                                                                      ▲
-                                                        Compare ──────┤
-                                                                      │
-                                                                 Discovered
-                                                          (what actually exists)
-                                                                      │
-                                                                      ▼
-                                                               Drift Detection
+```mermaid
+flowchart LR
+    Intent -->|policy evaluation| Requested
+    Requested -->|provider executes| Realized
+    Discovered["Discovered<br/>(what actually exists)"] -->|Compare| Realized
+    Discovered --> DriftDetection["Drift Detection"]
 ```
 
 The four states, their definitions, storage contracts, and the operations across them (drift detection, intent portability, brownfield ingestion, rehydration) are defined canonically in **[The Four States](four-states.md)**. This section is an at-a-glance summary — see that document for the authoritative model.
