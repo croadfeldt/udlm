@@ -10,7 +10,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Storage Volume",
-    "description": "A CONSUMABLE persistent storage volume — the block or file volume a workload attaches, as distinct from the Storage.Cluster that PROVISIONS it (the platform) and the Hardware.StorageDevice that PHYSICALLY backs it (the component). Fills the consumable-storage gap the 2026-07-06 review found on both UDLM and the dcm-project catalog (neither had a consumable storage type — dcm-project's k8s-storage-service-provider is an empty shell; #271). Vendor-neutral Tier-1: provisioners (Ceph RBD/CephFS, cloud CSI drivers, NFS) are the provider, never the type. Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume.",
+    "description": "A CONSUMABLE persistent storage volume — the block or file volume a workload attaches, as distinct from the Storage.Cluster that PROVISIONS it (the platform) and the physical device that backs it. Fills the consumable-storage gap the 2026-07-06 review found on both UDLM and the dcm-project catalog (neither had a consumable storage type — dcm-project's k8s-storage-service-provider is an empty shell; #271). Vendor-neutral Tier-1: provisioners (Ceph RBD/CephFS, cloud CSI drivers, NFS) are the provider, never the type. Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-07T14:35:00Z"
   },

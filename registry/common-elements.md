@@ -92,10 +92,7 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   "64GB"`, `cpu.count: 16`) and MAY carry a structured inline inventory (`memory.modules[]`, `disks[]`).
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
-- **First-class entity (optional).** A `Hardware.*` resource — `Hardware.MemoryModule`,
-  `Hardware.StorageDevice`, `Hardware.NetworkInterface`, `Hardware.GraphicsProcessor`,
-  `Hardware.Processor` — `contained_by` the parent, for organizations that track components
-  **independently** (serial, slot, firmware, RMA, lifecycle, warranty). Whether these exist is governed
+- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — DCM is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
   by **`composition_visibility`** (`opaque|transparent|selective`, `entities/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
@@ -186,8 +183,7 @@ partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr
 | `aggregate` | a **composite of many** interfaces (N→1) | **bond / LACP LAG** (802.1AX) | `lower_layer` → the member NICs |
 | `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
-So a **vGPU** = `Hardware.GraphicsProcessor` `device_class: partition`, `partition_mechanism: mediated`
-(or `mig`), `parent_device` → the physical `Hardware.GraphicsProcessor`; an **SR-IOV VF / vETH** =
+The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, ADR-013): an **SR-IOV VF / vETH** =
 `Hardware.NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
 `parent_device` → the physical NIC. A **bond** = `Hardware.NetworkInterface` `device_class: aggregate`,
 `aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =

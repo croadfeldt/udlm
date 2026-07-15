@@ -3,7 +3,7 @@
 # A physical place — site, building, room, row, rack, shelf, or bench — that resources sit in. The
 # anchor for physical organization and location-scoped environment (cooling, structured cabling,
 # physical uplink). NOTE: power is deliberately NOT owned here — a chassis's PSUs carry that (see
-# Hardware.PowerSupply), possibly to different feeds. Location answers "where is it", which is a
+# power supplies), possibly to different feeds. Location answers "where is it", which is a
 # different question from "what powers it". Locations nest (bench within room within site).
 #
 # ADOPT (not absorb): DMTF Redfish Location (PhysicalLocation / Placement / PostalAddress) already

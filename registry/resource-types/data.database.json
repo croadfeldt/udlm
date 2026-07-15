@@ -43,11 +43,11 @@
           },
           "memory": {
             "type": "string",
-            "pattern": "^[0-9]+(MB|GB)$"
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
           },
           "storage": {
             "type": "string",
-            "pattern": "^[0-9]+(GB|TB)$"
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
           }
         }
       },

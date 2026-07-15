@@ -66,7 +66,7 @@
       },
       "cpu": {
         "type": "object",
-        "description": "Reconciled CPU rollup (§26) — aggregate of contained Hardware.Processor when modeled. Adopts Redfish ProcessorSummary.",
+        "description": "Reconciled CPU rollup (§26) — aggregate host CPU. Adopts Redfish ProcessorSummary.",
         "properties": {
           "sockets": {
             "type": "integer",
@@ -87,7 +87,7 @@
       },
       "memory": {
         "type": "object",
-        "description": "Reconciled memory rollup (§26) — aggregate of contained Hardware.MemoryModule. Adopts Redfish MemorySummary.",
+        "description": "Reconciled memory rollup (§26) — aggregate host memory. Adopts Redfish MemorySummary.",
         "properties": {
           "size": {
             "type": "string",
@@ -98,7 +98,7 @@
       },
       "storage": {
         "type": "object",
-        "description": "Reconciled local-storage rollup (§26) — aggregate of contained Hardware.StorageDevice.",
+        "description": "Reconciled local-storage rollup (§26) — aggregate host local storage.",
         "properties": {
           "capacity": {
             "type": "string",
