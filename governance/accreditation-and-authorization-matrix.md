@@ -150,13 +150,13 @@ accreditation:
     # BINDING GRAIN is org/platform-admin policy (profile-governed — UDLM ADR-004 §4). UDLM carries all
     # three grains; the platform picks the required strictness and whether a capability change EXPIRES it:
     capability_scope:
-      - capability_uuid: <uuid>                 # GRAIN 3 (most deterministic): binds an EXACT capability
-        version: "1.2.0"                        #   version — a NEW version does not inherit this accreditation,
-        category: realize_resources/Compute     #   so a capability change reverts the claim to self_asserted
-        resource_types: [Compute.VirtualMachine]  #   (category/resource_types carried for readability + grain-2 match)
-      # GRAIN 2 — omit capability_uuid/version to cover the whole (verb × domain) category (survives version bumps):
-      #   - category: realize_resources/Storage
-      # GRAIN 1 — a single provider-wide entry (survives capability changes entirely):
+      - capability_uuid: <uuid>                 # binds a specific capability (matches capabilities[].capability_uuid).
+        version: "1.2.0"                        #   + version => GRAIN 3 (deterministic): a NEW capability version is not
+                                                #   covered, so a change reverts the claim to self_asserted until re-attested.
+        category: realize_resources/Compute     #   + category (OPTIONAL) narrows to one (verb × domain) category within it.
+      # GRAIN 2 — capability_uuid WITHOUT version: attests that capability across versions (survives version bumps):
+      #   - capability_uuid: <uuid>
+      # GRAIN 1 — a single provider-wide entry (attests every capability; survives capability changes):
       #   - provider_wide: true
     geographic_scope: [US]                      # residency/jurisdiction this attests — the axis a
                                                 #   sovereignty claim's jurisdictions/residency match against
@@ -184,15 +184,21 @@ accreditation:
 
 ### 3.3.1 The sovereignty 1-1 match key (provider × capability × jurisdiction)
 
-An accreditation must be **explicit about what it attests, in terms of provider *and* capability** — otherwise a per-capability sovereignty claim (UDLM ADR-004 §4) cannot be evaluated. For a claim to be **trusted**, an **active accreditation** must match it **1-1** on three axes, all carried explicitly in §3.3:
+Trust is a **two-gate decision** (§3.7): first the accreditation is **verified** — its `proof` signature, `trust_anchor` chain, currency, and `status` (is it authentic, current, unrevoked, and about this subject?); only a verified accreditation is then **appraised** for scope against the claim. Verification and appraisal are kept separate (W3C VC verification-vs-validation; RATS's two appraisal policies).
+
+For the appraisal, an **active, verified accreditation** must match the claim **1-1** on all of these axes, each carried explicitly in §3.3:
 
 - **provider** — `subject_uuid` == the claiming provider;
-- **capability** — `scope.capability_scope` covers the claim's `(verb × domain)` capability category (or `provider_wide: true`);
-- **jurisdiction / residency** — `scope.geographic_scope` covers the claim's `operating_jurisdictions` / `data_residency_zones`.
+- **capability** — `scope.capability_scope` covers the claim's capability (by `capability_uuid`, optionally pinned to a `version` and/or narrowed to a `category` — or `provider_wide: true`);
+- **jurisdiction** — `scope.geographic_scope` covers the claim's jurisdiction, matched per §3.8: **residency** subsumes *down* the hierarchy; a distinct **sovereignty regime** is matched *exactly*;
+- **data classification** — `scope.data_classifications` covers the claim (a `sovereign`-data claim is not vouched for by an `internal`-scoped accreditation);
+- **plane** — `scope.plane` covers the claim's `enforcement_plane` (§3.8): data-plane residency and control-plane operator-access are attested separately.
 
-No accreditation matching **all three** → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes ADR-004 §4's **pipeline propagation** enforceable: each downstream hop in a capability's realization pipeline must present its **own** 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
+No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes ADR-004 §4's **pipeline propagation** enforceable: each downstream hop in a capability's realization pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
 
-**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (UDLM ADR-004 §4): **grain 1** provider-wide, **grain 2** per capability category, or **grain 3** per exact `(capability_uuid, version)`. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation; whether that change **expires** a binding is decided by the grain the platform requires — so the same event supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
+**This generalizes beyond sovereignty (§3.7).** The same claim→attestation link governs every `conformance_claim` a subject declares: a declared adherence (ISO 27001, SOC 2, FedRAMP-Moderate, SecNumCloud, …) is `self_asserted` until an accreditation whose `framework` matches attests it for the scope.
+
+**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (UDLM ADR-004 §4): **grain 1** provider-wide, **grain 2** a capability across its versions (`capability_uuid`, no `version`), or **grain 3** an exact `(capability_uuid, version)` — any grain optionally narrowed to a single `category` within the capability. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation; whether that change **expires** a binding is decided by the grain the platform requires — so the same event supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
 
 ### 3.4 Accreditation Lifecycle
 
@@ -242,6 +248,13 @@ accreditation_gap_record:
   detected_at: <ISO 8601>
   severity: critical                    # accreditation gaps are always high or critical
   affected_entity_uuids: [<uuid>, ...]  # entities currently hosted at this provider
+  # Which axes of the sovereignty 1-1 match (§3.3.1) had no matching accreditation — so the gap is
+  # diagnosable at the capability grain, not just "provider lacks framework X":
+  unmet_capability:                     # the capability (and optional version/category) with no match
+    capability_uuid: <uuid>
+    version: <semver | null>            # set when the required grain is grain-3 (exact version)
+    category: <verb × domain | null>    # set when the requirement is narrowed to one category
+  unmet_jurisdiction: [<geographic scope required, e.g. US-MN>]
   policy_response: <from Recovery Policy>
   # Default: NOTIFY_AND_WAIT for fsi/sovereign; ESCALATE for standard/prod
 ```
@@ -257,6 +270,52 @@ deployment_accreditation:
   framework: fedramp_high
   # The peer realization itself is accredited, not just the providers it manages
 ```
+
+### 3.7 Verifiability, the two-gate decision, and the declaration→attestation link
+
+An accreditation is a **Verifiable Credential**, not merely a registered row: the accreditor **cryptographically signs it** (`proof`), and its signing key **chains to a `trust_anchor`** the platform recognizes (an accredited CAB, an eIDAS Trust Service Provider, a government sovereignty registry, or a DID/X.509 chain). This is the W3C Verifiable Credentials / VC-JOSE-COSE model — the one Gaia-X uses for provider self-descriptions and conformance credentials — and the anti-substitution + issuer-trust requirement of IETF RATS (RFC 9334 §8.1).
+
+Trust is therefore a **two-gate decision**, and the gates are kept separate:
+1. **Verification** (cryptographic, exact) — the `proof` signature validates, `verification_method` chains to a recognized `trust_anchor`, the record is within validity, and `status` is `active` (not revoked/suspended, §3.4). Fails ⇒ not trusted, full stop.
+2. **Appraisal** (policy) — the verified accreditation's **scope** is matched 1-1 against the claim (§3.3.1), and profile / Governance-Matrix policy decides whether to honor it.
+
+This mirrors W3C VC's **verification-vs-validation** ("verifiability does not imply truth") and RATS's split between the Verifier's Evidence appraisal and the Relying Party's Result appraisal. **An accreditation with no `proof` is `self_asserted`** — usable at dev/eval, never honored for sovereign/fsi.
+
+**Declaration → attestation.** A subject (provider or peer realization) DECLARES the standards it adheres to as `conformance_claims` (provider capability declaration; the Gaia-X self-description / OSCAL SSP model). Each is a **claim**, `self_asserted` until an accreditation whose `framework` matches attests it for the scope. So the estate carries both halves — the subject's self-declaration and the third party's verifiable attestation — linked by `framework` + scope, exactly as sovereignty links a `sovereignty` stance to its accreditation.
+
+### 3.8 Residency vs sovereignty, planes, and the jurisdiction hierarchy
+
+Three refinements keep a claim honest — the industry-wide failure mode is a residency promise that leaks through the control plane.
+
+- **Residency vs sovereignty are different matches.** *Residency* (`data_residency_zones` — physical location of bytes) **subsumes down a declared jurisdiction hierarchy**: an authorization for `US` covers `US-MN` residency. *Sovereignty* (`operating_jurisdictions` — the legal regime the resource is operated under) is matched **exactly**: a `US` authorization does **not** cover `US-MN` as a *state sovereignty regime* (Minnesota's own law is a distinct regime, attested separately). The jurisdiction hierarchy (ISO 3166 country ⊃ 3166-2 subdivision, plus region groupings) is **first-class, org-declared data compiled down to exact membership** — the gate always does exact-match against the *expanded* set; it never infers geography (the enforcement norm across OPA/Kyverno, IAM, OAuth).
+- **The plane axis (the universal leak).** A `sovereignty` stance and an accreditation each carry a `plane` (`data` | `control` | `both`). *Data-plane* residency (bytes at rest / in process) and *control-plane* sovereignty (operator access, support, telemetry) are attested **separately** — because every real commitment (EU Data Boundary, the hyperscaler sovereign clouds) is strong on data-at-rest and carves out exactly the control-plane path. A data-only accreditation does **not** attest operator access stays in-jurisdiction.
+- **UDLM declares + verifies; the provider enforces at the byte level; DCM conveys.** UDLM/DCM is a *declaration + verification + placement-gating* layer (like Gaia-X), **not** a byte-level residency enforcer — only a separate in-jurisdiction control plane or customer-held keys make residency a physical fact, and that is the **provider's** architecture. DCM's job at realization is to **convey the sovereignty requirement + the `role: execution` data slice** (contracts/data-roles.md) to the enforcing provider, and to require the provider's accreditation (matching `plane`) attesting it enforces at the data plane. The requirement travels with the reserve/commit dispatch; the provider attests it can hold it.
+
+### 3.9 Verification summary (attestation result) + delegation
+
+Re-verifying every accreditation's proof + chain on every placement is expensive at scale. DCM MAY record its verified appraisal as a cacheable **attestation result** — the RATS "Passport" model — and, at looser profiles, **delegate**: trust a downstream verifier's prior decision instead of re-walking the chain (the SLSA Verification Summary Attestation / OSCAL leveraged-authorization pattern). Sovereign/fsi profiles require fresh per-hop verification (§3.3.1 pipeline propagation); dev/standard MAY delegate/cache within a bounded freshness window (§3.4). Delegation is a **profile dial**, never the default for a sovereign requirement.
+
+### 3.10 Standards vocabulary (taxonomy mapping — adopt, don't absorb)
+
+This model is a specialization of the industry attestation vocabulary, not a coinage. It **adopts these vocabularies by reference** (registered in `registry/standards-adoption-register.md`); the table maps our terms so the model is legible to anyone who knows them, and so a UDLM accreditation can be **projected onto a W3C VC / RATS artifact** at the wire.
+
+| This model | W3C Verifiable Credentials | IETF RATS (RFC 9334) | NIST OSCAL / FedRAMP | Gaia-X |
+|---|---|---|---|---|
+| provider capability declaration | self-issued credential | Evidence | System Security Plan (declared controls) | Self-Description (VP of VCs) |
+| provider (`subject_uuid`) | `credentialSubject` | Attester / Target Environment | the system (authorization boundary) | Participant / ServiceOffering |
+| accreditor | issuer | Endorser | independent assessor / AO | CAB / Trust Anchor |
+| accreditation record | Verifiable Credential | Endorsement / Attestation Result | Assessment Result / ATO | Conformance Credential |
+| `proof` / `trust_anchor` | `proof` / `verificationMethod` → trust chain | signed Evidence + trust anchor | signature + trust root | VC-JWS + eIDAS/CAB anchor |
+| verification (gate 1) | **verification** | Evidence appraisal | — | signature + anchor check |
+| appraisal / 1-1 match (gate 2) | **validation** | Appraisal Policy for Results | AO risk adjudication | consumer policy |
+| `conformance_claim` | a claim (subject property) | a Claim | control-implementation claim | `gx:` criteria (P-series) |
+| binding grain / determinism | — | Appraisal Policy (relying-party-owned) | — | Label Level (L1/L2/L3) |
+| `status` / `expires_at` | `credentialStatus` / `validUntil` | freshness (nonce / epoch) | ConMon / POA&M currency | Expired / Deprecated / Revoked |
+| override (policy-contract §18) | — | — | POA&M risk acceptance | — |
+| verification summary (§3.9) | — | Attestation Result ("Passport") | leveraged-authorization | — |
+| pipeline propagation (ADR-004 §4) | — | layered attestation | — | (in-toto layout + MATCH) |
+
+Field names retained where they are themselves standard compliance terms (accreditation, accreditor, subject); `proof` / `verification_method` / `proof_purpose` / `trust_anchor` are taken directly from the VC vocabulary; `validFrom`/`validUntil` are carried as `issued_at`/`expires_at` with the VC meaning.
 
 ---
 

@@ -1,0 +1,54 @@
+# Multi-document data-layer stream — the k8s `---` idiom: a STANDARD BASE plus a data-center/rack
+# OVERLAY in ONE file. The DCM assembly engine merges them lowest-authority-first (base → intermediate),
+# and every assembled field records the layer uuid that set it as its provenance source
+# (foundations/layering-and-versioning.md; DCM ADR-012). This is exactly "reuse a common dataset, add/
+# modify what deviates for a data center / rack / segment."
+#
+# It is ALSO the fixture proving registry/tools/validate.py loads multi-document YAML: two `record_type:
+# layer` records validate independently from one file (reported as example-layer-multidoc.yaml#0 / #1).
+record_type: layer
+uuid: a1b2c3d4-1111-4a22-8b33-c4d5e6f70011
+handle: base/rack-network-defaults
+conforms_to: udlm/0.1
+name: Standard rack network defaults
+description: The common baseline every rack starts from — MTU, uplink redundancy, and segment defaults.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: base
+precedence_class: base
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+fields:
+  network_mtu: 1500
+  bonding_mode: "802.3ad"
+  redundant_uplinks: true
+  management_segment: 192.0.2.0/24     # RFC 5737 documentation range
+---
+# OVERLAY — specializes the base for one data center + rack. It sets ONLY what deviates; every other
+# field is inherited from the base at assembly. Higher precedence_class (intermediate > base) wins
+# field-by-field, so network_mtu here overrides the base's 1500.
+record_type: layer
+uuid: a1b2c3d4-2222-4a22-9b33-c4d5e6f70022
+handle: intermediate/dc-alpha/rack-a12
+conforms_to: udlm/0.1
+name: DC-Alpha rack A12 overlay
+description: Data-center / rack deviations over the standard rack base — jumbo frames + a rack-local segment.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: per_profile
+narrow_only: false
+fields:
+  network_mtu: 9000                    # jumbo frames in this DC — overrides the base 1500
+  management_segment: 192.0.2.128/25   # rack-local segment
+  rack_id: dc-alpha/rack-a12

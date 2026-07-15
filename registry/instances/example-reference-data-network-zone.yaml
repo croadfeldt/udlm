@@ -1,0 +1,26 @@
+# A REFERENCE DATA LAYER (layering-and-versioning §3.7) — the shared, governed, versioned source of
+# truth for one network zone. Other records reference it by uuid rather than copying its fields; change
+# it once (a new version) and every referencing record picks it up. reference_data_type is the match
+# axis a data reference declares against (UDLM ADR-012).
+record_type: layer
+uuid: b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50
+handle: platform/network-zones/dmz-restricted
+conforms_to: udlm/0.1
+name: Network zone — DMZ (restricted)
+description: Governed definition of the restricted DMZ segment — the shared source of truth for its VLAN, CIDR, and egress posture.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: reference_data
+reference_data_type: network_zone
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+fields:
+  zone_code: dmz-restricted
+  vlan_id: 3020
+  cidr: 192.0.2.0/25          # RFC 5737 documentation range
+  egress_policy: deny-default
+  ingress_controlled: true

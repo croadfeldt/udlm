@@ -1,0 +1,44 @@
+# Accreditation B — STATE sovereignty (Minnesota), for CONTAINERS only.
+# capability_scope binds the Container capability, narrowed to its realize_resources/Container category
+# (grain 2 + category narrowing); geographic_scope is the state (US-MN). This is the finer sovereignty
+# that lets a container be placed under a Minnesota-residency requirement — which the region (US/CA)
+# accreditation alone does not satisfy. §3.3.1.
+record_type: accreditation
+uuid: f30a142c-c9ee-4b37-b5bf-cea136a25b67
+handle: accreditations/providers/full-stack-sp/state-mn-containers
+conforms_to: udlm/0.1
+version: 1.0.0
+subject_uuid: ae18b73d-84c9-49ff-add9-d2d5de464967    # full-stack-sp — match axis 1 (provider)
+subject_type: service_provider
+accreditation_type: sovereign_authorization
+framework: sovereign
+accreditor:
+  uuid: 43df2bd7-b908-4eae-aae0-03ec0db28546
+  name: Minnesota Data Sovereignty Authority
+  type: government
+issued_at: "2026-07-14T00:00:00Z"
+expires_at: "2027-07-14T00:00:00Z"
+renewal_warning_before: P90D
+last_verified_at: "2026-07-14T00:00:00Z"
+scope:
+  capability_scope:
+    - capability_uuid: a26c91c8-e4ce-4599-bc31-7bd106406512   # Container Lifecycle...
+      category: realize_resources/Container                  # ...narrowed to the container category only
+  geographic_scope: [US-MN]                                  # match axis 3 (state SOVEREIGNTY regime: ISO 3166-2, matched EXACTLY, §3.8)
+  data_classifications: [sovereign]
+  plane: both
+status: active
+verification:
+  tier: document_currency
+  stale_after: P30D
+  stale_action: warn
+  verification_failure_count: 0
+trust_anchor:
+  type: government_registry
+  reference: "mn-data-sovereignty-authority/root"
+proof:
+  type: DataIntegrityProof
+  created: "2026-07-14T00:00:00Z"
+  verification_method: "did:web:mn-data-sovereignty-authority#key-1"
+  proof_purpose: assertionMethod
+  proof_value: "z5Kd…<detached-jws-over-canonical-record>"

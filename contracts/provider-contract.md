@@ -134,14 +134,26 @@ provider_base_registration:
   # an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
   # is self_asserted and never honored. Claim and accreditation are reconciled, never assumed to agree.
   sovereignty_declaration:
-    operating_jurisdictions: [<country_codes>]
-    data_residency_zones: [<zone_ids>]
+    operating_jurisdictions: [<country_codes>]   # ISO 3166 — sovereignty regime matched EXACTLY (accreditation-matrix §3.8)
+    data_residency_zones: [<zone_ids>]           # ISO 3166 subdivisions — residency SUBSUMES down the hierarchy (US covers US-MN)
+    enforcement_plane: both                      # data | control | both — WHICH plane is attested (§3.8). A data-plane
+                                                 #   requirement is only satisfied by a data|both attestation; for it DCM conveys
+                                                 #   the requirement + execution-slice to the enforcing provider and verifies ITS attestation.
     sub_processors: []                   # third parties with data access
+
+  # Self-declared standards adherence (Gaia-X self-description / OSCAL SSP lineage). Each framework is a
+  # CLAIM — self_asserted until an accreditation attests it (same claim→attestation escalation as sovereignty,
+  # accreditation-matrix §3.7). Declarable per capability/category too (UDLM ADR-004 §4a).
+  conformance_claims:
+    - framework: <framework>             # e.g. iso_27001, soc2_type2, gdpr
+      # level / statement optional
 
   accreditations:
     # Reference ONLY. status/expiry are NOT restated here — DCM resolves currency from the registered
     # accreditation record at evaluation time (a provider cannot assert a revoked accreditation is
-    # still active). `framework` is a readability hint.
+    # still active). The record is a VERIFIABLE CREDENTIAL: DCM VERIFIES its proof + trust_anchor and
+    # currency (gate 1) BEFORE appraising the 1-1 scope match (gate 2) — accreditation-matrix §3.7.
+    # `framework` is a readability hint.
     - accreditation_uuid: <uuid>         # reference to registered accreditation
       framework: <framework>
 

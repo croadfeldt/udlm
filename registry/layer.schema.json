@@ -18,6 +18,11 @@
     "name": {"type": "string"},
     "description": {"type": "string"},
     "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "supersedes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+      "description": "LINEAGE — the single, explicit mechanism (UDLM ADR-012; the decision-record 'never edit, supersede' idiom). A layer version is IMMUTABLE: any change mints a NEW record (new uuid + new version), never editing the old one, and this array names the uuid(s) of the version(s) it directly supersedes. Absent = a lineage ROOT (a first version, or a genuinely new entity). Because it is a uuid array it expresses ANY lineage shape — linear (supersedes the one prior), fork (two records each supersede the same prior), merge (one record supersedes several), rename (supersede a prior at a different handle). It is authoritative (uuid-based); `handle` is advisory display only and is NOT a lineage signal. Each uuid MUST resolve to an existing layer of the same reference_data_type with a strictly lower version (validate.py check_layer_lineage). Change-impact is derived from this DAG plus the reverse reference index — which records reference a version that has since been superseded."
+    },
     "tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
@@ -38,6 +43,11 @@
     "layer_type": {
       "enum": ["base", "core", "intermediate", "service", "request", "policy", "reference_data"],
       "description": "The six+ layer types (layering-and-versioning §3): base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization), service (catalog/provider), request (consumer's direct declarations — highest data authority), policy (applied over the merged result), reference_data (shared lookup data)."
+    },
+    "reference_data_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
+      "description": "REQUIRED when layer_type is reference_data (enforced below): the kind of shared dataset this layer governs — e.g. location, os_image, vm_size, network_zone, storage_class, gpu_profile, environment, topology_capability (layering-and-versioning §3.7). A data reference ({ref_uuid, ref_name, reference_data_type}; UDLM ADR-012) is only valid against a reference_data layer of the SAME reference_data_type — the type is the match axis the reference declares. Meaningless on non-reference_data layers."
     },
     "precedence_class": {
       "enum": ["base", "core", "intermediate", "service", "request", "policy"],
@@ -100,6 +110,10 @@
     {
       "if": {"properties": {"domain": {"const": "resource_type"}}},
       "then": {"required": ["resource_type"]}
+    },
+    {
+      "if": {"properties": {"layer_type": {"const": "reference_data"}}, "required": ["layer_type"]},
+      "then": {"required": ["reference_data_type"]}
     }
   ]
 }
