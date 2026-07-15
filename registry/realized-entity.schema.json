@@ -301,6 +301,50 @@
         },
         "classification": {
           "type": "string"
+        },
+        "plane_attestations": {
+          "type": "array",
+          "description": "R2 evidence binding — per-plane attestation that this entity's sovereignty is BACKED, not merely declared. Each ties an enforcement plane to the accreditation that satisfies it plus the verification result — the *why-entitled*, not just the verdict (a `zone`/`classification` alone records the claim, not its authorization). Written by DCM at realization from the resolved accreditation (accreditation-and-authorization-matrix.md §3.7 verify-then-appraise, §3.8 enforcement-plane).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["plane", "verification_result"],
+            "properties": {
+              "plane": {
+                "enum": ["data", "control", "both"],
+                "description": "Which enforcement plane this attestation covers (provider-contract §2 enforcement_plane)."
+              },
+              "accreditation_uuid": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                "description": "The accreditation artifact that satisfies the plane requirement — the authorizing evidence the claim binds to."
+              },
+              "verification_result": {
+                "enum": ["verified", "failed", "unverified"],
+                "description": "The two-gate appraisal outcome (accreditation-and-authorization-matrix.md §3.7). An unattested/failed plane cannot satisfy a regulated-zone requirement on the provider's word."
+              },
+              "verified_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              }
+            }
+          }
+        },
+        "locality": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "R2 evidence binding — the concrete fault-domain / physical locality this entity was placed in (the per-resource anchor the placement grammar keys on — ADR-019 placement, ADR-010 SharedFaultDomain). Written by the provider/DCM at realization; the basis for anti-affinity, blast-radius, and per-resource jurisdiction checks.",
+          "properties": {
+            "topology_ref": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "Reference to the Topology fault-domain / location resource this entity resolved onto."
+            },
+            "fault_domain": {
+              "type": "string",
+              "description": "The named fault domain (e.g. rack / host / zone) — the grouping key for SharedFaultDomain (ADR-010)."
+            }
+          }
         }
       }
     },
