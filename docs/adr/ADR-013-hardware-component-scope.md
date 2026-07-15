@@ -41,6 +41,6 @@ Either path is additive and does not disturb the managed model. Until there's a 
 
 ## Consequences
 - Remove the five component `Hardware.*` type specs and repoint the references in `compute.bare-metal-host`, `storage.volume`, `storage.pool`, and `facility.location` to host aggregate-capacity attributes (or drop the component relationship).
-- The estate (`roadfeldt-dcm`, ~58 files that model components) stops modeling hardware below the host — a coordinated cleanup, tracked separately since it's a different repo.
+- The estate (~58 files that model components in a separate repo) stops modeling hardware below the host — a coordinated cleanup, tracked separately since it's a different repo.
 - Trim the Redfish register "Where" note (Processor/Memory/Drive lines) — Redfish remains adopted for the host + BMC/BIOS vocabulary.
 - Reviewer threads on #40 (Ondra, Noam) resolve to "removed, out of scope — here's the ADR."
