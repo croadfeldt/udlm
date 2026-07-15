@@ -547,11 +547,11 @@ composite_service_registration:
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | How are dependency graphs versioned — does a new version of a catalog item invalidate existing dependency graphs? | Versioning model | ✅ Resolved — versioned as part of catalog item; semver semantics; captured in assembly provenance (ENT-006) |
-| 2 | Should the dependency graph be stored as a separate entity or embedded in the request payload? | Data model structure | ✅ Resolved — embedded in assembly provenance; declared in Resource Type Spec; resolved in placement.yaml (ENT-007) |
+| 1 | How are dependency graphs versioned — does a new version of a catalog item invalidate existing dependency graphs? | Versioning model | ✅ Resolved — versioned as part of catalog item; semver semantics; captured in assembly provenance (DEP-013) |
+| 2 | Should the dependency graph be stored as a separate entity or embedded in the request payload? | Data model structure | ✅ Resolved — embedded in assembly provenance; declared in Resource Type Spec; resolved in placement.yaml (DEP-014) |
 | 3 | How are cross-tenant dependencies handled? | Multi-tenancy | ✅ Resolved — governed by REL-010/011/012 and ERL-D01/D02/D03; see Entity Relationships doc |
-| 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — profile-governed max (10 standard/prod, 7 fsi/sovereign); circular detection always enforced (ENT-008) |
-| 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as DCM entities (ENT-009) |
+| 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — profile-governed max (10 standard/prod, 7 fsi/sovereign); circular detection always enforced (DEP-015) |
+| 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as DCM entities (DEP-016) |
 
 ---
 
@@ -559,10 +559,10 @@ composite_service_registration:
 
 | Policy | Rule |
 |--------|------|
-| `ENT-006` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in a realization is captured in assembly provenance. |
-| `ENT-007` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
-| `ENT-008` | Dependency graph depth is limited to a profile-governed maximum (default: 10 for standard/prod; 7 for fsi/sovereign). Requests exceeding the maximum depth are rejected with a clear error. Circular dependency detection is always enforced regardless of depth configuration. |
-| `ENT-009` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as DCM entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
+| `DEP-013` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in a realization is captured in assembly provenance. |
+| `DEP-014` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
+| `DEP-015` | Dependency graph depth is limited to a profile-governed maximum (default: 10 for standard/prod; 7 for fsi/sovereign). Requests exceeding the maximum depth are rejected with a clear error. Circular dependency detection is always enforced regardless of depth configuration. |
+| `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as DCM entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
 
 ---
 
