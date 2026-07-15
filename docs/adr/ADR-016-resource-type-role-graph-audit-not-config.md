@@ -30,6 +30,12 @@ Everything beyond the §1 subset is the **provider's configuration surface**. UD
 
 So there are three tiers, not two: **portable base** (graph/audit/observability, every provider satisfies it) → **provider-projected config** (declared by the provider, projected + configured through DCM) → **provider extensions** (the captured values, namespaced, audited, portability-flagged). The concrete mechanism never enters the substrate (the naturalization boundary, DCM ADR-023).
 
+### 3. Track the config *interface*, not the config *values*, when the provider owns them
+
+A provider commonly exposes its **own** interface for editing deep or runtime config. In that case UDLM carries a provider-filled **`config_interface`** reference — `{interface_type, endpoint | handle, schema_ref?}`, populated by the provider at realization (realized-side, like an output) — a **pointer to where the config is managed**, not the values. We do **not** store the provider's runtime config: a stored copy would make UDLM a config **system-of-record** and drift against the provider's real state — the same reason ADR-013 keeps hardware components out of the model.
+
+So the rule of thumb: capture a **bounded, audit/portability-relevant** slice as `provider_extensions` only when we deliberately want a record; **otherwise track the `config_interface` pointer and let the provider own, fill, and audit the values.** The audit hook is *"config is managed here, by this provider"* — following the pointer reaches the provider's SoR for the content. `config_interface` is itself a graph/audit-bearing element (§1): it is an edge to the managing system and the audit trail of *where* config lives.
+
 ### Worked example — container
 - **Model (base):** `image` as a `data_reference` (dependency map + base-image blast-radius); mounts → `Storage.Volume` / `Security.CredentialRef` edges; `ports` → the service graph; the pinned digest (provenance); the `contained_by` / `references` / `depends_on` relationships.
 - **Project + configure via DCM, don't model:** command/args, restart policy, replicas, security context, the runtime's remaining knobs — the provider declares them, DCM projects the interface, the consumer sets them, they land in `provider_extensions`, portability-flagged.

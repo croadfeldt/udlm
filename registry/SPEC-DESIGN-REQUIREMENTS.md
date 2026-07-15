@@ -280,7 +280,10 @@ Each hard constraint cites the UDLM contract it derives from.
     the provider declares it, DCM **projects a configuration interface** for it (`contracts/provider-contract.md`
     §1a.3), the consumer configures it *through DCM*, and the set values land in provider-namespaced
     `provider_extensions` (`PRV-010`), audited and **portability-flagged** — never modeled field-by-field in
-    the portable type, and never leaking the mechanism into the substrate (DCM ADR-023).
+    the portable type, and never leaking the mechanism into the substrate (DCM ADR-023). When the provider
+    owns deep/runtime config, **do not store it** — track a provider-filled `config_interface` reference (a
+    pointer to *where* config is managed), not the values; storing a copy makes UDLM a config
+    system-of-record and drifts (ADR-016 §3).
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
