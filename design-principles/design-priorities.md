@@ -41,7 +41,7 @@ Every one of these security properties is present in `minimal`; only its enforce
 
 **When security and convenience conflict, security wins** — but the design must find a way to make the secure option easy. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability. The profile system is the mechanism: the right profile makes secure behavior automatic, not effortful.
 
-**Security properties that are non-negotiable in all profiles:**
+**Security properties that are non-negotiable in all profiles** — this table is the single normative list; the `minimal`-profile narrative above illustrates it, the Profile Scaling Table shows each property's per-profile posture, and the `DPO-*` policies enforce it — none re-defines it:
 
 | Property | Rule | Reference |
 |----------|------|-----------|
