@@ -523,32 +523,9 @@ Interaction attempt
 
 ### 5.3 Credential Model — Scoped, Short-Lived, Non-Transferable
 
-Zero trust requires that credentials are scoped to the minimum necessary operation and expire quickly:
+Zero trust requires that credentials are scoped to the minimum necessary operation and expire quickly. The interaction-credential **record and its `operation_scope` operation vocabulary are defined once in [credentials.md](credentials.md) §5** (`credential_record`, `dcm_interaction` type) — this section does not restate the wire shape or the operation enum. The zero-trust properties that matter here: the credential is scoped to a single operation + entity + provider, is **non-transferable** (never delegated or relayed), MAY be **IP-bound** for `fsi`/`sovereign`, and is **short-lived** (see the profile guidance below).
 
-```yaml
-interaction_credential:
-  credential_uuid: <uuid>
-  issued_to: <component-uuid>
-  issued_at: <ISO 8601>
-  expires_at: <ISO 8601>             # short-lived; typically minutes to hour
-  operation_scope:
-    operation_type: dispatch | discovery | cancel | query | notify
-    entity_uuid: <uuid>               # scoped to specific entity
-    provider_uuid: <uuid>             # scoped to specific provider
-  non_transferable: true              # cannot be delegated or relayed
-  bound_to_ip: <IP|null>              # optional IP binding for fsi/sovereign
-```
-
-**Credential lifetime profile guidance (substrate defaults):**
-
-| Profile | Max credential lifetime | Renewal model |
-|---------|------------------------|---------------|
-| minimal | PT8H | Manual or long-lived |
-| dev | PT4H | Automatic refresh |
-| standard | PT1H | Automatic refresh |
-| prod | PT30M | Automatic refresh |
-| fsi | PT15M | Automatic refresh; dual approval for elevation |
-| sovereign | PT15M + hardware attestation | Hardware-bound; HSM-required |
+**Credential lifetime is profile-governed and single-sourced.** The per-profile `max_lifetime` for the interaction credential (and every credential type) is defined once in the profile config block [`credentials.md`](credentials.md) §12.1 — the `dcm_interaction` row is `minimal PT1H · dev PT30M · standard PT1H · prod PT30M · fsi PT15M · sovereign PT15M`. This section does not restate it. Shorter is the default posture because interaction credentials **auto-refresh**; a compliance overlay may tighten further (§12.3).
 
 ### 5.4 Zero Trust Posture as a Policy Group Concern Type
 
