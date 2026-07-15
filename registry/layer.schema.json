@@ -39,6 +39,11 @@
       "enum": ["base", "core", "intermediate", "service", "request", "policy", "reference_data"],
       "description": "The six+ layer types (layering-and-versioning §3): base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization), service (catalog/provider), request (consumer's direct declarations — highest data authority), policy (applied over the merged result), reference_data (shared lookup data)."
     },
+    "reference_data_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
+      "description": "REQUIRED when layer_type is reference_data (enforced below): the kind of shared dataset this layer governs — e.g. location, os_image, vm_size, network_zone, storage_class, gpu_profile, environment, topology_capability (layering-and-versioning §3.7). A data reference ({ref_uuid, ref_name, reference_data_type}; UDLM ADR-012) is only valid against a reference_data layer of the SAME reference_data_type — the type is the match axis the reference declares. Meaningless on non-reference_data layers."
+    },
     "precedence_class": {
       "enum": ["base", "core", "intermediate", "service", "request", "policy"],
       "description": "Position in the assembly precedence chain, lowest-authority first: base → core → intermediate → service → request, with policy applied over the result. Higher classes override lower field-by-field (narrow-never-widen for constraint profiles, E1). Usually equals layer_type; reference_data layers are looked up, not merged, so they declare their functional class."
@@ -100,6 +105,10 @@
     {
       "if": {"properties": {"domain": {"const": "resource_type"}}},
       "then": {"required": ["resource_type"]}
+    },
+    {
+      "if": {"properties": {"layer_type": {"const": "reference_data"}}, "required": ["layer_type"]},
+      "then": {"required": ["reference_data_type"]}
     }
   ]
 }

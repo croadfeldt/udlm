@@ -13,6 +13,7 @@ DCMGroups). Catalog items additionally get semantic checks JSON Schema cannot ex
 binding⊆depends_on ordering).
 Loads JSON and YAML natively. Exit non-zero if anything is invalid. Wire into CI."""
 import json
+import re
 import sys
 import pathlib
 
@@ -270,9 +271,86 @@ def check_provider_extensions(doc):
     return errors
 
 
+_UUID_V4_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+
+
+def _reference_data_index():
+    """uuid -> the reference_data layer it identifies, for {ref_uuid,ref_name} integrity (ADR-012).
+    Scans instances/ for record_type: layer + layer_type: reference_data."""
+    index = {}
+    base = ROOT / "instances"
+    if not base.exists():
+        return index
+    for path in base.glob("*"):
+        if path.suffix not in (".json", ".yaml", ".yml"):
+            continue
+        doc = load(path)
+        if isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data":
+            index[doc.get("uuid")] = {
+                "reference_data_type": doc.get("reference_data_type"),
+                "handle": doc.get("handle"),
+                "name": doc.get("name"),
+                "state": (doc.get("status") or {}).get("state"),
+            }
+    return index
+
+
+def _find_data_references(obj, path=""):
+    """Yield (dot-path, ref-object) for every data reference embedded in a record — any dict carrying
+    `ref_uuid` (the k8s ObjectReference shape, UDLM ADR-012). A reference is a leaf; its own scalar
+    values are not re-scanned."""
+    out = []
+    if isinstance(obj, dict):
+        if "ref_uuid" in obj:
+            out.append((path or "(root)", obj))
+        else:
+            for k, v in obj.items():
+                out += _find_data_references(v, f"{path}.{k}" if path else k)
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            out += _find_data_references(v, f"{path}[{i}]")
+    return out
+
+
+def check_data_references(doc):
+    """A data reference — {ref_uuid, ref_name?, reference_data_type?} (UDLM ADR-012; k8s ObjectReference
+    shape, ref_uuid AUTHORITATIVE / ref_name ADVISORY) — MUST resolve to an ACTIVE reference_data layer
+    of the declared reference_data_type. Enforced deterministically (minimal-custom-surface findings
+    #1/#2): a dangling ref_uuid, a non-active or non-reference_data target, a reference_data_type
+    mismatch, or a wrong advisory ref_name is a FAIL — the advisory name must stay honest even though
+    resolution uses only the uuid."""
+    refs = _find_data_references(doc)
+    if not refs:
+        return []
+    index = _reference_data_index()
+    errors = []
+    for loc, ref in refs:
+        extra = set(ref) - {"ref_uuid", "ref_name", "reference_data_type"}
+        if extra:
+            errors.append(f"{loc}: data reference has unexpected key(s) {sorted(extra)} — allowed: ref_uuid, ref_name, reference_data_type")
+        ru = ref.get("ref_uuid")
+        if not ru or not _UUID_V4_RE.match(ru):
+            errors.append(f"{loc}: data reference ref_uuid {ru!r} is not a canonical RFC 9562 v4 uuid")
+            continue
+        target = index.get(ru)
+        if target is None:
+            errors.append(f"{loc}: data reference ref_uuid {ru} does not resolve to any reference_data layer (dangling reference)")
+            continue
+        if target["state"] not in (None, "active"):
+            errors.append(f"{loc}: data reference resolves to reference_data layer {ru} but it is {target['state']}, not active")
+        want = ref.get("reference_data_type")
+        if want and target["reference_data_type"] and want != target["reference_data_type"]:
+            errors.append(f"{loc}: data reference declares reference_data_type {want!r} but layer {ru} is {target['reference_data_type']!r}")
+        name = ref.get("ref_name")
+        if name and name not in (target["handle"], target["name"]):
+            errors.append(f"{loc}: data reference ref_name {name!r} does not match the resolved layer "
+                          f"(handle {target['handle']!r}, name {target['name']!r}) — advisory name must stay honest; resolution uses ref_uuid")
+    return errors
+
+
 def check_realized_entity(doc):
     """All semantic checks for a realized entity."""
-    return check_process_entity(doc) + check_provider_extensions(doc)
+    return check_process_entity(doc) + check_provider_extensions(doc) + check_data_references(doc)
 
 
 def pick_instance(doc):
@@ -285,7 +363,9 @@ def pick_instance(doc):
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
     if isinstance(doc, dict) and doc.get("record_type") == "layer":
-        return LAYER_VALIDATOR, lambda d: f"layer {d['name']} ({d['layer_type']}) {d['uuid'][:8]}"
+        return (LAYER_VALIDATOR,
+                lambda d: f"layer {d['name']} ({d['layer_type']}) {d['uuid'][:8]}",
+                check_data_references)
     if isinstance(doc, dict) and doc.get("record_type") == "audit_record":
         return AUDIT_RECORD_VALIDATOR, lambda d: f"audit_record {d['action']} {d['record_uuid'][:8]}"
     if isinstance(doc, dict) and doc.get("record_type") == "commit_log_entry":

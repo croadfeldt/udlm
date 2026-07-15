@@ -1,0 +1,27 @@
+# A consuming layer that BINDS the governed network zone BY REFERENCE, not by copying its fields.
+# The `network_zone` field is a data reference (UDLM ADR-012; k8s ObjectReference shape): ref_uuid is
+# authoritative (resolution uses only it), ref_name is advisory (kept honest but never the resolution
+# key), reference_data_type is the match axis. registry/tools/validate.py (check_data_references) fails
+# this record if ref_uuid does not resolve to an ACTIVE reference_data layer of type network_zone, or if
+# the advisory ref_name drifts from the resolved target.
+record_type: layer
+uuid: b7a3f0c1-2020-4d20-9a40-0f1e2d3c4b60
+handle: intermediate/app-tier/network-binding
+conforms_to: udlm/0.1
+name: App-tier network binding
+description: Intermediate overlay that binds the app tier to a governed network zone by reference, so the zone's definition lives in exactly one place.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: per_profile
+fields:
+  network_zone:
+    ref_uuid: b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50   # -> platform/network-zones/dmz-restricted
+    ref_name: platform/network-zones/dmz-restricted   # advisory — must match the resolved layer's handle
+    reference_data_type: network_zone                 # must equal the resolved layer's reference_data_type

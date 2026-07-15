@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json",
+  "title": "Data reference (object reference to a Reference Data Layer)",
+  "description": "The canonical in-field reference shape (UDLM ADR-012) — a field points at shared, governed data instead of inlining a copy. Modelled on the Kubernetes ObjectReference / ownerReference idiom: ref_uuid is AUTHORITATIVE (resolution uses only the uuid), ref_name is ADVISORY (human-readable, kept honest but never the resolution key). A data reference MUST resolve to an ACTIVE `layer` record with layer_type: reference_data whose reference_data_type equals the reference's declared reference_data_type (foundations/layering-and-versioning.md §3.7). Referential integrity is enforced by registry/tools/validate.py (check_data_references): a dangling ref_uuid, a type mismatch, or a wrong advisory ref_name is a hard failure — invalid edges resolve deterministically, never silently (minimal-custom-surface-and-graph-resilience findings #1/#2). Other schemas that allow a field to be a reference $ref this $defs/data_reference in a oneOf against the inline value.",
+  "type": "object",
+  "$defs": {
+    "data_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_uuid"],
+      "properties": {
+        "ref_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "AUTHORITATIVE. RFC 9562 v4 uuid of the reference_data layer. Resolution uses only this. A uuid that resolves to nothing is a dangling reference (hard fail), never a silent rebind onto a same-named record."
+        },
+        "ref_name": {
+          "type": "string",
+          "description": "ADVISORY. The resolved layer's handle or name, carried for human readability. Validated to match the resolved target at authoring time (honesty gate) but never used to resolve."
+        },
+        "reference_data_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
+          "description": "The kind the reference expects (e.g. network_zone, os_image, location, topology_capability). Must equal the resolved layer's reference_data_type — the match axis that stops a field from binding data of the wrong kind."
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/data_reference"
+}
