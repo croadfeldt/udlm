@@ -99,7 +99,7 @@ The response is selected by Policy Engine evaluation against:
 
 ## 4. Ownership Models
 
-UDLM defines four ownership models for Resource/Service Entities. Every Provider Catalog Item must declare which ownership model(s) it supports. The ownership model is recorded in the Resource/Service Entity's provenance at creation time.
+UDLM defines **three** ownership models, canonically in [`ownership-sharing-allocation.md`](../foundations/ownership-sharing-allocation.md) — `whole_allocation`, `allocation`, and `shareable`. This section illustrates them and defines the **ownership-transfer event** (a change of owner, *not* a fourth model). Every Provider Catalog Item declares which model(s) it supports; the model is recorded in the entity's provenance at creation.
 
 ### 4.1 Allocation Model
 
@@ -131,35 +131,14 @@ The entire physical or logical resource is allocated as a single indivisible uni
 
 ---
 
-### 4.3 Full Transfer Model
+### 4.3 Ownership transfer — a change of owner, not a fourth model
 
-The provider transfers complete ownership of the underlying resource to the consumer's Tenant. The Resource/Service Entity IS the resource — there is no separation between the allocation and the underlying infrastructure from the realization's perspective. The consumer controls the full lifecycle including decommissioning. The provider has no reclaim rights after transfer.
+Ownership can move to a new Tenant. The hardware supply chain is the canonical case: a procurement provider racks and offers hardware; a hosting team consumes it and **takes over ownership *and* lifecycle authority** (the prior owner has no reclaim rights afterward); they then re-offer it — e.g. as VMs — to end customers, who own their own allocations. This is a **change of the owner** on whichever ownership model already applies — **not** a distinct ownership model.
 
-**Characteristics:**
-- Ownership of the underlying resource transfers to the consumer's Tenant
-- The Entity IS the resource — no allocation/infrastructure separation
-- Consumer controls full lifecycle including decommission
-- Provider has no reclaim rights post-transfer
-- Transfer is recorded in provenance — permanent audit record
-- The realization remains authoritative for data and lifecycle regardless of transfer
+A colocation-style split — the allocatee runs the device's business operations while the original owner **retains lifecycle management** — is *not* a transfer at all: it is a standard `allocation`/`shareable`, where ownership and lifecycle stay with the provider and the consumer holds the operating stake.
 
-**Examples:** Transferred Bare Metal server, Licensed software asset, Dedicated hardware appliance transferred to consumer
+Transfer is governed and recorded immutably in the transfer provenance record (the ownership-transfer count is unlimited by default, each recorded with a monotonic `sequence` and a mandatory reason):
 
----
-
-### 4.4 Hybrid Transfer Model
-
-Ownership can transfer multiple times across the lifecycle of the Resource/Service Entity. The current owner is always exactly one Tenant, but ownership can be formally reassigned through a governed ownership transfer process. Every transfer is tracked, auditable, and policy-governed.
-
-**Characteristics:**
-- Ownership is held by exactly one Tenant at any point in time
-- Ownership can be transferred to another Tenant through a formal governed process
-- Every transfer is recorded in the Entity's provenance chain — complete ownership history
-- Transfer requires Policy Engine validation and authorization
-- The receiving Tenant must accept the transfer — it cannot be forced
-- The realization remains authoritative for data and lifecycle through all transfers
-
-**Transfer Provenance Record:**
 ```yaml
 ownership_transfer:
   sequence: <transfer number — 1 for first transfer, 2 for second, etc.>
@@ -171,11 +150,15 @@ ownership_transfer:
   policy_uuid: <uuid of policy that governed this transfer>
 ```
 
-**Examples:** Bare Metal server reallocated between tenants, Hardware asset transferred between business units, Licensed resource reassigned
+- The current owner is always exactly one Tenant; ownership can be reassigned any number of times.
+- Every transfer is Policy-validated and the receiving Tenant must accept it — it cannot be forced.
+- The realization remains authoritative for data and lifecycle through all transfers.
+
+**Examples:** a bare-metal server handed from procurement to a hosting team, then that team offering VMs on it; a hardware asset reassigned between business units.
 
 ---
 
-### 4.5 Ownership Model Declaration
+### 4.4 Ownership Model Declaration
 
 Every Provider Catalog Item must declare the ownership model(s) it supports:
 
@@ -183,13 +166,12 @@ Every Provider Catalog Item must declare the ownership model(s) it supports:
 catalog_item:
   uuid: <uuid>
   ownership_models_supported:
-    - allocation
     - whole_allocation
-    - full_transfer
-    - hybrid_transfer
+    - allocation
+    - shareable
   default_ownership_model: <one of the above>
   transfer_policy_required: <true|false>
-  # If true, a policy must be referenced in any transfer request
+  # If true, a policy must govern any ownership-transfer event (§4.3)
 ```
 
 ---
