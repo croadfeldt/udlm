@@ -1,4 +1,4 @@
-# UDLM — Design Principles
+# UDLM — Design Priorities
 
 **Document Status:** ✅ Stable — UDLM substrate contract
 **Document Type:** Substrate Reference — Design Philosophy
@@ -41,7 +41,7 @@ Every one of these security properties is present in `minimal`; only its enforce
 
 **When security and convenience conflict, security wins** — but the design must find a way to make the secure option easy. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability. The profile system is the mechanism: the right profile makes secure behavior automatic, not effortful.
 
-**Security properties that are non-negotiable in all profiles:**
+**Security properties that are non-negotiable in all profiles** — this table is the single normative list; the `minimal`-profile narrative above illustrates it, the Profile Scaling Table shows each property's per-profile posture, and the `DPO-*` policies enforce it — none re-defines it:
 
 | Property | Rule | Reference |
 |----------|------|-----------|
@@ -173,7 +173,7 @@ UDLM defines the following named profiles as the substrate vocabulary. Realizati
 
 ### Profile Scaling Table (Reference)
 
-The table below illustrates the **shape** of profile scaling. Specific threshold values are realization-defined (a peer realization MAY pick different absolute values). What is invariant is the monotonic ordering: stricter profiles must be at least as strict as looser profiles on every dimension. "Present" means the property is architecturally required — what varies is the configuration.
+The table below illustrates the **shape** of profile scaling — each profile's posture per dimension. Threshold values are realization-defined (a peer MAY pick different absolute values). Profiles are **composed sets, not ordered levels** ([ADR-007](../docs/adr/ADR-007-profile-model.md)): `sovereign` is not "more of" `standard`, and there is **no monotonic total order across profiles**. Read the table *down a column* — one profile's coherent posture — not as a ranking across columns. Each *dimension* has a direction (it runs loose→tight); which point a profile takes on it is that profile's composed choice, and `fsi`/`sovereign` are **overlays** on a base profile, not stricter points on one scale. "Present" means the property is architecturally required — what varies is the configuration.
 
 | Security Property | minimal | dev | standard | prod | fsi | sovereign |
 |------------------|---------|-----|----------|------|-----|-----------|
@@ -199,14 +199,14 @@ UDLM defines an ordered authority tier vocabulary that applies to requests, poli
 
 ### Default Tier Vocabulary
 
-Each tier carries a `decision_gravity` — the governance weight of a decision (`none` / `routine` / `elevated` / `critical`), indicating how much authority it warrants. The term is defined in [GLOSSARY](../GLOSSARY.md) and specified in [Authority Tier Model](../governance/authority-tier-model.md).
+Each tier carries a `decision_gravity` (the governance weight of a decision). The values and the per-tier `tier → decision_gravity` mapping are specified once in [Authority Tier Model](../governance/authority-tier-model.md) (glossed in [GLOSSARY](../GLOSSARY.md)) — not restated here. This document carries only the ordered tier vocabulary and its substrate role:
 
-| Tier | Required authority level | Substrate role |
+| Tier | Required authority | Substrate role |
 |------|-------------------------|-----------------|
-| `auto` | None — `decision_gravity: none`; system confidence sufficient | Validation passes; automatic activation |
-| `reviewed` | Standard authority — `decision_gravity: routine`; one qualified reviewer in the relevant domain | One actor with reviewer role records a decision |
-| `verified` | Elevated authority — `decision_gravity: elevated`; independent confirmation required; separation of duties | Two distinct actors with reviewer role each record a decision |
-| `authorized` | Senior/governing authority — `decision_gravity: critical`; highest organizational weight; most consequential decisions | N members of the declared group record decisions within a window |
+| `auto` | None — system confidence sufficient | Validation passes; automatic activation |
+| `reviewed` | Standard — one qualified reviewer in the relevant domain | One actor with reviewer role records a decision |
+| `verified` | Elevated — independent confirmation required; separation of duties | Two distinct actors with reviewer role each record a decision |
+| `authorized` | Senior/governing — highest organizational weight; most consequential decisions | N members of the declared group record decisions within a window |
 
 ### Tier Extensibility (Vocabulary)
 

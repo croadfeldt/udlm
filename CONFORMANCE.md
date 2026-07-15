@@ -66,7 +66,7 @@ and exchange data; they cannot necessarily swap controllers or share storage.
 
 Requiring a document in [§5](#5-required-contracts) — including
 `design-principles/design-priorities.md` and
-`design-principles/infrastructure-optimization.md` — means requiring its **data
+`design-principles/data-contracts.md` — means requiring its **data
 contracts** (append-only, versioning, tamper-evidence, tenant isolation, the
 four design principles as constraints), **not** certifying storage technology,
 internal APIs, or runtime mechanics. Contracts are certified; mechanics are not.
@@ -265,7 +265,7 @@ them disqualifies the realization from any conformance level.
 
 - `topology/location-topology-layers.md` — required (the layered-topology contract; specific hierarchies are realization choice)
 - `design-principles/design-priorities.md` — required (the four principles as contracts)
-- `design-principles/infrastructure-optimization.md` — required (the data-contract principle; persistence required, technology is realization choice)
+- `design-principles/data-contracts.md` — required (the data-contract principle; persistence required, technology is realization choice)
 
 ### 5.8 Reference
 
@@ -391,7 +391,7 @@ escalation, not "self-signed forever."
 
 ### 9.1 udlm versioning
 
-udlm follows semver:
+udlm follows semver — the two-axis (SPEC / ENTITY) definition is owned by [`registry/VERSIONING.md`](registry/VERSIONING.md); this section states only the **conformance** implication of the SPEC major axis:
 
 - **Major** (1.x → 2.x): backward-incompatible changes to required contracts.
 - **Minor** (1.0 → 1.1): backward-compatible additions (new optional contracts,

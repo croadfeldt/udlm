@@ -38,6 +38,8 @@ udlm/
 └── tests/                   Test framework specification
 ```
 
+For a per-file breakdown — what each document *owns*, so a rule lives in exactly one place — see [`docs/file-index.md`](docs/file-index.md).
+
 ## Conformance
 
 A realization that claims UDLM conformance:
