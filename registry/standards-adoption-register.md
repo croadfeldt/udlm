@@ -71,7 +71,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** 8+ Hardware/Compute/Network/Facility types (ComputerSystem, Processor, Memory, Drive, NetworkAdapter, Switch, Circuit); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); PowerSupply (Hardware.PowerSupply); Location/Placement (Facility.Location).
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Compute/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — ADR-013; the host carries their rollup.)
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL
@@ -83,12 +83,12 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** interface stacking and overlay/underlay topology are *already standardized* by the IETF network-management models; adopting their names makes our records legible to anyone who knows YANG. *Alternatives:* invention (rejected). **License:** IETF Trust — compatible-reference.
 
 ### SNIA Swordfish — CANONICAL
-**Covers:** `SNIA-Swordfish` · **Body:** SNIA · **Since:** 2026-06-27T00:11:51Z · **Where:** Storage.Cluster (StorageSystem), Hardware.StorageDevice, Storage.Pool (StoragePool alignment).
+**Covers:** `SNIA-Swordfish` · **Body:** SNIA · **Since:** 2026-06-27T00:11:51Z · **Where:** Storage.Cluster (StorageSystem), Storage.Pool (StoragePool alignment).
 **Why:** the storage-domain extension of Redfish — same family as our hardware vocabulary. **License:** SNIA — compatible-reference.
 
 ### OpenZFS — CANONICAL
 **Covers:** `OpenZFS` · **Body:** OpenZFS project · **Since:** 2026-07-13 · **Where:** Storage.Pool (zpool/vdev topology, redundancy), Storage.Dataset (dataset/zvol, mountpoint, hierarchy, properties).
-**Why:** the host-local pool/dataset layer between physical drives (Hardware.StorageDevice/Redfish Drive) and cluster-provisioned volumes (Storage.Volume/Swordfish) had no vocabulary; OpenZFS is the one the producers actually speak (`zpool`/`zfs` on the fleet's storage hosts) and the de-facto standard for the pool→vdev→dataset shape. *Alternatives:* model a pool as Storage.Cluster (wrong — "cluster" is multi-node/distributed; a zpool is single-host) and a dataset as Storage.Volume (wrong — a Volume is a cluster-provisioned PVC/CSI claim, not a host-local hierarchy-bearing filesystem); both rejected as semantic overloads. Swordfish StoragePool aligns the capacity/redundancy fields (§storage family). **License:** CDDL-1.0 — compatible-reference (vocabulary referenced, no code).
+**Why:** the host-local pool/dataset layer between physical drives (Redfish Drive, on the discovery/DCIM side per ADR-013) and cluster-provisioned volumes (Storage.Volume/Swordfish) had no vocabulary; OpenZFS is the one the producers actually speak (`zpool`/`zfs` on the fleet's storage hosts) and the de-facto standard for the pool→vdev→dataset shape. *Alternatives:* model a pool as Storage.Cluster (wrong — "cluster" is multi-node/distributed; a zpool is single-host) and a dataset as Storage.Volume (wrong — a Volume is a cluster-provisioned PVC/CSI claim, not a host-local hierarchy-bearing filesystem); both rejected as semantic overloads. Swordfish StoragePool aligns the capacity/redundancy fields (§storage family). **License:** CDDL-1.0 — compatible-reference (vocabulary referenced, no code).
 
 ## Kubernetes / CNCF ecosystem
 
