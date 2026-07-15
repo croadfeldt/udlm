@@ -223,7 +223,7 @@ event_envelope:
 
 ## 5a. Write-once Snapshot Store Contract (Realized Store)
 
-The Realized Store is a **write-once snapshot store** — distinct from the Event Stream Store used for Discovered State. It holds complete entity state snapshots where every record is traceable to an authorized DCM request.
+The Realized Store is a **write-once snapshot store** — distinct from the Event Stream Store used for Discovered State. It holds complete entity state snapshots where every record is traceable to an authorized DCM request. The Realized-domain **invariants** (write-once/versioned snapshots, `is_current`, supersession chain, traceability to a Requested record) are defined once in [`data-store-contracts.md`](data-store-contracts.md) §2.3 — this section adds only the storage-mechanism specifics, it does not redefine them.
 
 ### 5a.1 Store Characteristics
 
