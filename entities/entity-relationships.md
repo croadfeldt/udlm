@@ -349,7 +349,7 @@ allocated_entity:
     parent_tenant_uuid: <Infrastructure Tenant uuid>
     allocation_uuid: <uuid — matches parent's available_allocations entry>
 
-  lifecycle_state: OPERATIONAL
+  lifecycle_state: Realized        # operational status is a status.condition (data-model-core §3)
 
   parent_lifecycle_policy:
     on_parent_destroy: notify_then_detach

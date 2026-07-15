@@ -684,7 +684,7 @@ The substrate carries billing state as a first-class field. A consuming cost-ana
 
 ```yaml
 entity:
-  lifecycle_state: SUSPENDED
+  lifecycle_state: Realized        # operational status "Suspended" is a status.condition (data-model-core §3)
   billing_state: <billable|non_billable|reduced_rate>
   billing_metadata:
     billing_rate_multiplier: 0.3       # 30% of normal rate if reduced_rate
