@@ -55,27 +55,32 @@ Precedence *orders* layers; to actually **resolve** a setting the resolver must 
 
 **(1) A setting declares its override ceiling** (§1). `scope` is the **finest tier at which the setting may be set**: settable from `base` up to and including `scope`, an override at any finer tier is **rejected** (never silently dropped). `scope: platform` is shorthand for ceiling `profile` — platform-wide, no org/tenant/resource override. `override_direction: free | tighten_only` adds the *direction*: a `tighten_only` floor may only be **narrowed** by a finer layer, per the value's comparator (`duration` → shorter; numeric → the tightening bound; `enum` → a declared sub-order), never weakened. Together these are the setting's **precedence-eligibility** (named in §3).
 
-**(2) An overlay bundle declares its scoping value.** A bundle is `(tier, scope_value)` — its tier on the ladder **and which instance of that tier it binds to**. `base` and `profile` are platform singletons; `module`, `org`, `domain`, `tenant`, `resource` each carry the **selector** that says *which* one this overlay is:
+**(2) An overlay bundle declares a scoping filter.** A bundle's `scope` is a **Kubernetes label selector** (adopted CANONICAL — `standards-adoption-register.md` "Kubernetes vocabularies") over the request's **scope coordinates treated as labels** (`profile`, `org`, `domain`, `tenant`, `resource`, `module`): `matchLabels` (equality, AND-ed) + `matchExpressions` with `In | NotIn | Exists | DoesNotExist`, plus an **`except`** list of sub-selectors for compound carve-outs — the Kubernetes **NetworkPolicy `ipBlock.except`** pattern. It is **declarative** by construction, never an expression language (SPEC-DESIGN declarative-constraints tenet). Singletons (`base`, `profile`) need no filter; the general case:
 
 ```yaml
 config_bundle:
-  tier: tenant
-  scope_value: <tenant-uuid>            # THIS tenant — how the resolver knows the overlay applies
+  scope:                                              # a scoping filter over coordinate labels
+    matchExpressions:
+      - { key: domain, operator: In, values: [x, y, z] }   # applies across a set…
+    except:
+      - matchLabels: { domain: z, id: "1" }                # …but NOT this (z,1) tuple (invert)
   settings:
-    credential.max_lifetime: PT15M
+    provider.credentials: { ... }
 ```
 
-Without `scope_value` the resolver can order tiers but cannot select which tenant/module/domain overlay applies. A set value is therefore `{ setting, tier, scope_value, value }` — enough to stack by precedence and record provenance.
+A bundle **applies to a request iff** its coordinates satisfy the selector (all `matchLabels`/`matchExpressions` AND-ed) **and match none of the `except` sub-selectors**. One filter covers all four shapes: a single coordinate (`matchLabels: {tenant: X}`), a compound AND (`{tenant: X, domain: Y}`), a set (`domain In [x,y,z]`), and an exclusion/tuple carve-out (`except`). A bundle's **precedence tier is the finest coordinate its filter constrains** (a `{tenant, domain}` tuple ranks at `tenant`), so multi-scoped overlays still compose deterministically on the one ladder. A set value is `{ setting, scope (the filter), value }`.
 
-**Resolution, for a request in a context** (its coordinates: profile, org, domain, tenant, resource — and the module each setting belongs to):
-1. **Select** every bundle whose `(tier, scope_value)` matches a context coordinate, plus the platform `base`/`profile` singletons.
-2. **Order** the selected bundles by ladder tier.
+Without a filter the resolver can order tiers but cannot select which overlay applies; the filter is what makes multi- and exclusion-scoping expressible without a bespoke syntax.
+
+**Resolution, for a request in a context** (its coordinate labels: profile, org, domain, tenant, resource — and the module each setting belongs to):
+1. **Select** every bundle whose scoping filter the request's coordinates **satisfy** (matchLabels/matchExpressions AND-ed, and no `except` sub-selector matches), plus the platform `base`/`profile` singletons.
+2. **Order** the selected bundles by their precedence tier (the finest coordinate each filter constrains) on the ladder.
 3. **Compose** per setting: take the value from the highest-tier selected bundle that is **≤ the setting's ceiling**; reject any value set above the ceiling; if the setting is `tighten_only`, reject a finer value that weakens the coarser one.
-4. The result is the **effective value** + its provenance (the winning `(tier, scope_value)`).
+4. The result is the **effective value** + its provenance (the winning bundle's filter).
 
 That is what makes precedence *effective* rather than merely ordered: the setting says how far down it may be pushed and in which direction; each overlay says which slice of the estate it is; the resolver matches, orders, and composes.
 
-**Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `(tier, scope_value)` and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given `(tier, scope_value)` — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `contracts/policy-contract.md`), enforced by DCM at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.
+**Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `scope` (the filter's coordinates) and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given scope — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `contracts/policy-contract.md`), enforced by DCM at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.
 
 ### 3. UDLM defines; DCM manages — the four faces of a setting
 
@@ -104,7 +109,7 @@ Each setting is **defined once**, in its owning bundle/module doc; the effective
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the setting definition, the bundle structure, the composition/precedence rule.
-- **Policy (DCM/org):** which optional settings are *required* in a context; the org/tenant overlay bundles; and **RBAC governs *who* may write an overlay at a given `(tier, scope_value)`** (`RBAC-001`) — the data model bounds *what/where*, policy authorizes *who* (§2a).
+- **Policy (DCM/org):** which optional settings are *required* in a context; the org/tenant overlay bundles; and **RBAC governs *who* may write an overlay at a given scope** (`RBAC-001`) — the data model bounds *what/where* (the scoping filter), policy authorizes *who* (§2a).
 - **Provider:** declares which settings it honors and their supported values (like `adopted_standard_support`).
 
 ## Options considered
