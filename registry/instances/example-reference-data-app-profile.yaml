@@ -1,0 +1,26 @@
+# A reference_data layer that ITSELF references another reference_data layer (network_zone v1), forming a
+# multi-hop chain. Because it references the SUPERSEDED v1, it is DIRECTLY impacted; any record that
+# references THIS layer is TRANSITIVELY impacted (ADR-012 #2 — impact cascades up the reference graph).
+record_type: layer
+uuid: a99c0de1-4040-4a10-8b20-1122334455aa
+handle: platform/app-profiles/web-tier
+conforms_to: udlm/0.1
+name: App profile — web tier
+description: Governed web-tier application profile; binds its network zone by reference.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: reference_data
+reference_data_type: app_profile
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+fields:
+  tier: web
+  network_zone:
+    ref_uuid: b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50    # -> network_zone v1.0.0 (superseded by v2.0.0)
+    ref_name: platform/network-zones/dmz-restricted
+    ref_version: 1.0.0
+    reference_data_type: network_zone

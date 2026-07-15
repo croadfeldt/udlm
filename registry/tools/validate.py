@@ -453,18 +453,13 @@ def pick_instance(doc):
             check_realized_entity)
 
 
-def impact_report():
-    """Explicit change-impact map (ADR-012): for every data reference, if the pinned (immutable) version
-    has been superseded — some record explicitly `supersedes` it, transitively — report it as a
-    potential-impact candidate. ADVISORY: never fails the build. This is the 'map out the impact of a
-    change to referenced data' surface (e.g. a library version bumped under a container image that
-    references it). Impact is derived from the explicit supersedes DAG + the reverse reference graph;
-    `handle` is not consulted."""
-    index = _reference_data_index()
-    if not index:
-        return
-    succ = _successor_index(index)
-    lines = []
+def _reverse_reference_graph():
+    """Scan instances + providers for the data-reference graph. Returns:
+      nodes:     uuid -> {"label", "is_refdata"}
+      referrers: target_uuid -> [referrer_uuid]   (who references target)
+    This is what lets change-impact cascade TRANSITIVELY up the graph (ADR-012 #2): a record referencing
+    a reference_data layer that is itself referenced, and so on — e.g. deployment → image → library."""
+    nodes, referrers = {}, {}
     for subdir in ("instances", "providers"):
         base = ROOT / subdir
         if not base.exists():
@@ -475,23 +470,53 @@ def impact_report():
             doc = load(path)
             if not isinstance(doc, dict):
                 continue
-            referrer = doc.get("handle") or doc.get("name") or doc.get("uuid") or path.name
-            for loc, ref in _find_data_references(doc):
-                ru = ref.get("ref_uuid")
-                target = index.get(ru)
-                if not target:
-                    continue                                 # dangling — already a hard failure
-                desc = _descendants(ru, succ)
-                if not desc:
-                    continue                                 # this version is a lineage head — nothing newer
-                head = max(desc, key=lambda u: _ver_tuple(index.get(u, {}).get("version")))
-                lines.append(f"   {referrer} → {target['handle']} {target['version']} ({ru[:8]}) "
-                             f"pinned; superseded by {index.get(head, {}).get('version', '?')} ({head[:8]})")
+            src = doc.get("uuid")
+            if not src:
+                continue
+            nodes[src] = {
+                "label": doc.get("handle") or doc.get("name") or src,
+                "is_refdata": doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data",
+            }
+            for _loc, ref in _find_data_references(doc):
+                tgt = ref.get("ref_uuid")
+                if tgt:
+                    referrers.setdefault(tgt, []).append(src)
+    return nodes, referrers
+
+
+def impact_report():
+    """Change-impact map (ADR-012 #2): for every data reference to a version that has since been
+    superseded (the explicit supersedes DAG has a newer descendant), report it — and CASCADE the impact
+    transitively up the reference graph: whatever references an impacted record is itself impacted (a
+    library bumped under a container image, under a deployment, ...). ADVISORY: never fails the build.
+    Impact is derived data (supersedes DAG + reverse reference graph); the DECISION to act on it — bump
+    dependents — is a DCM cascade policy (ADR-012 §7; DCM ADR-024), never automatic here."""
+    index = _reference_data_index()
+    if not index:
+        return
+    succ = _successor_index(index)
+    nodes, referrers = _reverse_reference_graph()
+    superseded = {u for u in index if _descendants(u, succ)}         # versions with a newer descendant
+    direct = sorted({(s, t) for t in superseded for s in referrers.get(t, [])})
     print("== change-impact (explicit supersedes DAG; advisory) ==")
-    print(f"{len(lines)} reference(s) pinned to a superseded reference_data version"
-          + (":" if lines else ""))
-    for l in lines:
-        print(l)
+    if not direct:
+        print("0 reference(s) pinned to a superseded reference_data version")
+        return
+    print(f"{len(direct)} reference(s) pinned to a superseded reference_data version:")
+    for src, tgt in direct:
+        head = max(_descendants(tgt, succ), key=lambda u: _ver_tuple(index.get(u, {}).get("version")))
+        slabel = nodes.get(src, {}).get("label", src[:8])
+        print(f"   {slabel} → {index[tgt]['handle']} {index[tgt]['version']} ({tgt[:8]}) "
+              f"pinned; superseded by {index.get(head, {}).get('version', '?')} ({head[:8]})")
+        # cascade: whatever references the now-impacted src is transitively impacted — walk up
+        seen, frontier = set(), list(referrers.get(src, []))
+        while frontier:
+            u = frontier.pop()
+            if u in seen:
+                continue
+            seen.add(u)
+            print(f"      ↳ {nodes.get(u, {}).get('label', u[:8])} transitively impacted")
+            frontier.extend(referrers.get(u, []))
 
 
 def main() -> int:

@@ -1,0 +1,25 @@
+# Consumer that references the web-tier app_profile. It does NOT reference the superseded network_zone
+# directly — but the app_profile it references does, so this record is TRANSITIVELY impacted (ADR-012 #2).
+# validate.py impact_report() prints this as a "↳ transitively impacted" line under the app_profile.
+record_type: layer
+uuid: a99c0de1-5050-4a10-9b20-1122334455bb
+handle: intermediate/frontend/profile-binding
+conforms_to: udlm/0.1
+name: Frontend profile binding
+description: Binds the frontend to the governed web-tier app profile by reference.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: per_profile
+fields:
+  app_profile:
+    ref_uuid: a99c0de1-4040-4a10-8b20-1122334455aa    # -> web-tier app_profile (which references superseded network_zone v1)
+    ref_name: platform/app-profiles/web-tier
+    ref_version: 1.0.0
+    reference_data_type: app_profile
