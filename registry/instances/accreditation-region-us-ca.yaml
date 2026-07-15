@@ -1,0 +1,45 @@
+# Accreditation A — REGION sovereignty (US + Canada), covering EVERYTHING full-stack-sp offers
+# EXCEPT OpenShift. capability_scope lists the VM and Container capabilities (grain 2 — the whole
+# capability, any version); the OpenShift capability is deliberately absent, so it has no region
+# attestation. governance/accreditation-and-authorization-matrix.md §3.3/§3.3.1.
+record_type: accreditation
+uuid: ae7b0236-aae3-416c-aa16-8b64a630aa50
+handle: accreditations/providers/full-stack-sp/region-us-ca
+conforms_to: udlm/0.1
+version: 1.0.0
+subject_uuid: ae18b73d-84c9-49ff-add9-d2d5de464967    # full-stack-sp — match axis 1 (provider)
+subject_type: service_provider
+accreditation_type: sovereign_authorization
+framework: sovereign
+accreditor:
+  uuid: 43df2bd7-b908-4eae-aae0-03ec0db28546
+  name: North America Sovereignty Authority
+  type: government
+issued_at: "2026-07-14T00:00:00Z"
+expires_at: "2027-07-14T00:00:00Z"
+renewal_warning_before: P90D
+last_verified_at: "2026-07-14T00:00:00Z"
+scope:
+  capability_scope:
+    - capability_uuid: 44e7eb3d-2c4c-469a-92cb-50ca48b4628b   # Virtual Machine Lifecycle (all categories)
+    - capability_uuid: a26c91c8-e4ce-4599-bc31-7bd106406512   # Container Lifecycle (all categories)
+    # NOTE: OpenShift Cluster Lifecycle (31aa387c-…) is intentionally NOT listed — no region attestation.
+  geographic_scope: [US, CA]                                 # match axis 3 (region: country codes; residency subsumes to US-MN, §3.8)
+  data_classifications: [sovereign]
+  plane: both                                                # attests both data-plane residency AND control-plane operator access
+status: active
+verification:
+  tier: external_registry
+  stale_after: P7D
+  stale_action: suspend
+  verification_failure_count: 0
+# Verifiable Credential proof (§3.7) — DCM verifies this signature + chains to the trust_anchor BEFORE appraising scope.
+trust_anchor:
+  type: government_registry
+  reference: "na-sovereignty-authority/root"
+proof:
+  type: DataIntegrityProof
+  created: "2026-07-14T00:00:00Z"
+  verification_method: "did:web:na-sovereignty-authority#key-1"
+  proof_purpose: assertionMethod
+  proof_value: "z3FXQ…<detached-jws-over-canonical-record>"

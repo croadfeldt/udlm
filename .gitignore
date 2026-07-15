@@ -1,2 +1,6 @@
 # Internal / sensitive docs (blueprints, customer notes)
 docs/internal/
+
+# Python bytecode
+__pycache__/
+*.pyc
