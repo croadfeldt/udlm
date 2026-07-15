@@ -391,7 +391,7 @@ escalation, not "self-signed forever."
 
 ### 9.1 udlm versioning
 
-udlm follows semver:
+udlm follows semver — the two-axis (SPEC / ENTITY) definition is owned by [`registry/VERSIONING.md`](registry/VERSIONING.md); this section states only the **conformance** implication of the SPEC major axis:
 
 - **Major** (1.x → 2.x): backward-incompatible changes to required contracts.
 - **Minor** (1.0 → 1.1): backward-compatible additions (new optional contracts,
