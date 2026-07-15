@@ -28,6 +28,8 @@ Beyond the portable definition, a provider may accept **extra, provider-specific
 
 The **values** are stored as provider-namespaced state — `provider_extensions` (`PRV-010`) — across Requested and Realized, governed like any state (audit, provenance, tenancy) and **portability-flagged** (`portability_breaking: true`, consumer notified — relying on a vendor's extra config isn't portable to another provider; silent non-portability is prohibited). So the two tiers are **portable base** (every provider satisfies it) → **provider-specific extra** (this provider, stored as `provider_extensions`), and **DCM stores both** (§3). The concrete *mechanism* never enters the substrate (naturalization, DCM ADR-023); the config *state* always does.
 
+**Scope — where UDLM stops.** UDLM defines only **(a) the base resource type** and **(b) the extension model** (`provider_extensions`, `PRV-010`) that carries provider non-base data. The config **editor** is **pure DCM**: where a provider has a native editor for a thing (OpenShift's, for an OCP-backed resource), DCM **delegates to it**; where it does not, DCM exposes a **generic text editor and enforces the provider-declared schema** on it. That is the *realization* of config-projection (§1a.3), not the data model — named here only to place the boundary; it is specified DCM-side.
+
 ### 3. DCM stores the config *state* — it is the state system-of-record
 
 Ownership of the config *schema* is the provider's (§2). Ownership of the config *state* — the values across Requested / Realized / Discovered — is **DCM's**, and the two must not be conflated. *"The provider owns config"* is true of the schema, **not** of the state.
