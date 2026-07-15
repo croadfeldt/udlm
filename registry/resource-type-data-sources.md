@@ -135,4 +135,4 @@ it, not a second verdict.
 **TODO when defining the types:** verify the three `**verify**` licenses (OSAC, heatmiser repos) and
 record the confirmed value in each type's `adopts[]` entry.
 
-**Storage.Volume** (2026-07-07, #271) — Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume; the consumable volume distinct from Storage.Cluster (provisioner) and Hardware.StorageDevice (component).
+**Storage.Volume** (2026-07-07, #271) — Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume; the consumable volume distinct from Storage.Cluster (the cluster provisioner) and the host-local Storage.Pool/Dataset layer.

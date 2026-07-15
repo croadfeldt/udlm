@@ -25,7 +25,7 @@ UDLM ships the **base definition** of each foundational resource as **guidance**
 | **`Network.IPAddress`** | IPAM / network provider | `depends_on` (dynamic/static/byo — ADR-009 fulfillment) |
 | **`Storage.Pool` / `Storage.Cluster`** | storage provider | volumes provisioned from — `depends_on` |
 | **`Security.DirectoryService`** (realm/identity) | identity provider | scope-derived from `tenant_uuid` (the pervasive realm edge) |
-| **`Facility.PowerFeed`** | facilities provider | power — `Hardware.PowerSupply references Facility.PowerFeed` |
+| **`Facility.PowerFeed`** | facilities provider | power — `Compute.BareMetalHost depends_on Facility.PowerFeed` (`0..n`; one edge per feed, so redundancy is authored) |
 
 The list is open — the test is the four properties above, not membership on this table.
 

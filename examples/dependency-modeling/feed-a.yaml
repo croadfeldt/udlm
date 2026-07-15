@@ -12,4 +12,4 @@ states:
       ups: rack UPS A
     outputs: {}
     at: '2026-07-13T00:00:00Z'
-# Graph root: a power feed. Nothing here depends on anything — hosts (via their PSUs) depend on it.
+# Graph root: a power feed. Nothing here depends on anything — hosts depend on it directly.
