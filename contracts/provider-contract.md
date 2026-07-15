@@ -133,13 +133,26 @@ provider_base_registration:
   # (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
   # an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
   # is self_asserted and never honored. Claim and accreditation are reconciled, never assumed to agree.
-  sovereignty_declaration:
+  sovereignty_declaration:                       # the SINGLE sovereignty shape — every capability (storage-providers §11.2, etc.) references this, none redefines it
+    # --- REQUIRED core (the matchable base) ---
     operating_jurisdictions: [<country_codes>]   # ISO 3166 — sovereignty regime matched EXACTLY (accreditation-matrix §3.8)
     data_residency_zones: [<zone_ids>]           # ISO 3166 subdivisions — residency SUBSUMES down the hierarchy (US covers US-MN)
     enforcement_plane: both                      # data | control | both — WHICH plane is attested (§3.8). A data-plane
                                                  #   requirement is only satisfied by a data|both attestation; for it DCM conveys
                                                  #   the requirement + execution-slice to the enforcing provider and verifies ITS attestation.
-    sub_processors: []                   # third parties with data access
+    sub_processors: []                           # third parties with data access (name, jurisdiction, data_handled)
+    # --- OPTIONAL detail — carried on EVERY provider for conformity; REQUIRED only where a profile/policy
+    #     demands it (ADR-014 optionality-with-conformity: the field is present for a comparable vocabulary;
+    #     a `sovereign`/`fsi` profile marks which are mandatory, a homelab leaves them null). Available so
+    #     teams can test or use them on genuine need, without forcing them on everyone.
+    data_residency_guarantee: <true|false>       # data never leaves the declared jurisdictions
+    legal_frameworks: []                         # e.g. [eu_gdpr, eu_nis2]; excluded_frameworks: [] for gaps it cannot meet
+    jurisdiction_detail: []                      # per-jurisdiction enrichment: [{country, legal_system, data_center_location}]
+    external_dependencies: {}                    # air_gap_capable, external_services[] (service, jurisdiction, data_shared), opt_out_available
+    government_access_risk: {}                   # jurisdictions_with_compelled_access[], legal_challenge_policy (e.g. US CLOUD Act / FISA 702 exposure)
+    certifications: []                           # [{name, issuer, valid_from, expires_at, scope, certificate_ref}] — ISO-27001, SOC2-Type-II, …
+    audit_rights: {}                             # customer_audit_right, audit_notice_days, third_party_audit_accepted
+    change_notification: {}                      # notification_endpoint + mandatory_notification_events[] + notification_sla — a sovereignty change MUST be notified
 
   # Self-declared standards adherence (Gaia-X self-description / OSCAL SSP lineage). Each framework is a
   # CLAIM — self_asserted until an accreditation attests it (same claim→attestation escalation as sovereignty,

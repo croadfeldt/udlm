@@ -588,87 +588,9 @@ Every provider registration — whatever capabilities it declares (`realize_reso
 
 ### 11.2 Sovereignty Declaration Structure
 
-```yaml
-sovereignty_declaration:
-  # JURISDICTIONAL DATA
-  operating_jurisdictions:
-    - country: DE
-      legal_system: eu_gdpr
-      data_center_location: Frankfurt
-    - country: FR
-      legal_system: eu_gdpr
-      data_center_location: Paris
-  # Does data ever transit through other jurisdictions?
-  data_transit_jurisdictions: []          # empty = data stays in declared jurisdictions
-  data_residency_guarantee: true          # data never leaves declared jurisdictions
-  
-  # LEGAL FRAMEWORKS
-  legal_frameworks: [eu_gdpr, eu_nis2]
-  excluded_frameworks: []                 # frameworks this provider explicitly cannot support
+The `sovereignty_declaration` is the **single base-contract block, defined once in [`provider-contract.md`](provider-contract.md) §2** — a required matchable core (`operating_jurisdictions`, `data_residency_zones`, `enforcement_plane`, `sub_processors`) plus optional detail carried by every provider (`legal_frameworks`, `certifications[]`, `government_access_risk`, `audit_rights`, `external_dependencies`, `change_notification`, per-jurisdiction `jurisdiction_detail`, …). Which of the optional fields are **required is profile-governed** (ADR-014 optionality-with-conformity — a `sovereign`/`fsi` profile marks the ones it mandates; a homelab leaves them null).
 
-  # EXTERNAL DEPENDENCIES — does the provider require external connectivity?
-  external_dependencies:
-    air_gap_capable: false               # true = can operate without external connectivity
-    external_services:
-      - service: licensing_server
-        jurisdiction: US
-        data_shared: [license_key, hostname]
-      - service: telemetry_endpoint
-        jurisdiction: US
-        data_shared: [usage_metrics]
-    opt_out_available:
-      telemetry: true                    # telemetry can be disabled
-
-  # THIRD-PARTY SUB-PROCESSORS
-  sub_processors:
-    - name: "Acme Cloud Storage"
-      jurisdiction: US
-      data_handled: [vm_disk_images]
-      gdpr_dpa_in_place: true
-
-  # GOVERNMENT ACCESS RISK
-  government_access_risk:
-    jurisdictions_with_compelled_access: [US]
-    # US CLOUD Act, FISA Section 702, etc.
-    legal_challenge_policy: notify_customer_where_legally_permitted
-
-  # CERTIFICATIONS — with validity periods
-  certifications:
-    - name: ISO-27001
-      issuer: BSI
-      valid_from: "2024-03-01"
-      expires_at: "2027-03-01"
-      scope: "Cloud Infrastructure Operations"
-      certificate_ref:
-        credential_provider_uuid: <uuid>
-        path: "dcm/providers/kubevirt/certs/iso27001"
-    - name: SOC2-Type-II
-      issuer: Deloitte
-      valid_from: "2025-01-01"
-      expires_at: "2026-01-01"
-      scope: "Infrastructure as a Service"
-
-  # AUDIT RIGHTS
-  audit_rights:
-    customer_audit_right: true
-    audit_notice_days: 30
-    third_party_audit_accepted: true
-
-  # CHANGE NOTIFICATION OBLIGATION
-  change_notification:
-    # Provider MUST notify DCM when any sovereignty data changes
-    notification_endpoint: <provider's DCM notification webhook>
-    # Changes that MUST be notified:
-    mandatory_notification_events:
-      - certification_expiry
-      - new_jurisdiction_added
-      - jurisdiction_removed
-      - new_sub_processor
-      - sub_processor_removed
-      - new_external_dependency
-      - government_access_event
-    notification_sla: PT24H              # must notify within 24 hours of change
-```
+Storage providers use that block **unchanged** — this section does not redefine it. The `SOV-*` policies below and the change-notification response (§11.3) apply to that one shape.
 
 ### 11.3 Change Notification and DCM Response
 
