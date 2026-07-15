@@ -21,5 +21,11 @@
 | `observation.ttl` | `entities/service-dependencies.md` (`OBS-005`) | observed-dependency staleness TTL |
 | `time.sync_tolerance` | `contracts/time-and-clock.md` (per ADR-005) | clock-sync tolerance floor |
 | `storage.failure_policy` | `contracts/storage-providers.md` §10 (`STO-002`) | store-failure behaviour (queue / abort / degrade) tightening for fsi/sovereign |
+| `policy.min_lifecycle_scope` | `contracts/policy-contract.md` (profile minimums) | minimum lifecycle scope a compliance-class policy must cover (fsi/sovereign = `all`, cannot skip) |
+| `policy.block_timeout` / override / escalation | `contracts/policy-contract.md` (timeout-behavior block) | block auto-cancel, override, and override-escalation timeouts (e.g. minimal PT48H … sovereign PT4H) |
+| `relationship.max_depth` | `entities/entity-relationships.md` (`REL-021`) | max relationship-graph traversal depth — **distinct from `dependency.max_depth`** (e.g. 25 minimal … 10 sovereign) |
+| `provenance.default_level` | `foundations/layering-and-versioning.md` (profile defaults) | default provenance / implementation-posture detail (`full` … `hidden`) |
+| `auth.available_modes` | `governance/auth-providers.md` §7–§8 | which authentication modes are available per profile + per-feature availability |
+| `audit.granularity` / verification / overflow | `observability/universal-audit.md` (`AUD-014/015/021`) | audit granularity (`stage`/`field`), inter-stage verification mode, commit-log overflow policy |
 
 *Seeded 2026-07-15; grows as settings are added. When a new profile-governed setting is introduced, add its row here in the same change (SPEC-DESIGN §33). If a setting is not profile-governed, it does not belong here — it lives in its module doc without a per-profile table.*
