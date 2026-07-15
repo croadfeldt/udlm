@@ -27,7 +27,15 @@
         "reference_data_type": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
-          "description": "The kind the reference expects (e.g. network_zone, os_image, location, topology_capability). Must equal the resolved layer's reference_data_type — the match axis that stops a field from binding data of the wrong kind."
+          "description": "The kind the reference expects (e.g. network_zone, os_image, container_image, location, topology_capability). Must equal the resolved layer's reference_data_type — the match axis that stops a field from binding data of the wrong kind."
+        },
+        "residency": {
+          "type": "string",
+          "description": "RESOLUTION PROVENANCE — NOT consumer-authored (a value supplied at authoring time is ignored). DCM records where the resolved target resides (ISO 3166 jurisdiction / sovereignty zone) at resolution, so a reference that resolves ACROSS a jurisdiction is visible and policy-gated by the sovereignty hard-gate (DCM ADR-024 §1)."
+        },
+        "resolving_authority": {
+          "type": "string",
+          "description": "RESOLUTION PROVENANCE — NOT consumer-authored. The identity/authority DCM used to resolve this reference (which registry/authority served the target), recorded so a resolution is auditable and a cross-authority resolve is attributable (DCM ADR-024 §1)."
         }
       }
     }

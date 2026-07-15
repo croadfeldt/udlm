@@ -57,16 +57,28 @@ spec:
   required: [image]
   properties:
     image:
-      type: object
-      required: [reference]
-      properties:
-        reference:
-          type: string
-          description: OCI image reference, e.g. registry.example.com/org/app:1.0
-        digest:
-          type: string
-          pattern: "^sha256:[a-f0-9]{64}$"
-          description: OCI content-addressable digest, pinned at Realized/Discovered for provenance.
+      description: >-
+        The container image — either the inline OCI reference (first branch) OR a data_reference to a
+        governed container_image reference-data layer. The reference form lets DCM compute the
+        change-impact blast radius when a base image or embedded library is bumped (UDLM ADR-012;
+        DCM ADR-024) — an inline OCI string cannot be cascaded.
+      oneOf:
+        - type: object
+          required: [reference]
+          additionalProperties: false
+          properties:
+            reference:
+              type: string
+              description: OCI image reference, e.g. registry.example.com/org/app:1.0
+            digest:
+              type: string
+              pattern: "^sha256:[a-f0-9]{64}$"
+              description: OCI content-addressable digest, pinned at Realized/Discovered for provenance.
+        - allOf:
+            - $ref: ../data-reference.schema.json#/$defs/data_reference
+            - required: [reference_data_type]
+              properties:
+                reference_data_type: { const: container_image }
     command:
       type: array
       items: { type: string }
