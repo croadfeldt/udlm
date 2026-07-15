@@ -546,6 +546,17 @@ Rules:
 - **Refreshed, not static.** Capacity changes are pushed via the `resource.capacity_changed` lifecycle event (§6), so placement reads current free capacity, not registration-time values.
 - **Eligibility is policy, not provider fiat.** The provider *declares* constraints; the **org's policy + Governance-Matrix** resolve which advertised resources a given consumer/zone/tenant may actually select (the "org ratifies" rule). A provider cannot grant itself selection authority by advertising.
 
+**Size-class resolution — `instance_size_catalog` (the abstract↔precise bridge).** When a resource type ships sized-by-class (`instance_size` — ADR-014, `common-elements §2.2`), the class is a *comparable but abstract* vocabulary. To let placement compare an abstract size against a **raw** requirement (or resolve one provider's class against another's), the provider **declares its class → raw mapping** here — the provider is the authority on what *its* `medium` is (ADR-014: the provider owns the concrete mapping):
+
+```yaml
+instance_size_catalog:                  # per capability/category; the provider's authoritative size classes
+  - class: small    resources: { vcpu: { count: 2 }, memory: { size: 8GB } }
+  - class: medium   resources: { vcpu: { count: 4 }, memory: { size: 16GB } }
+  - class: large    resources: { vcpu: { count: 8 }, memory: { size: 32GB } }
+```
+
+DCM resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is DCM (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
+
 **Placement (DCM ADR-019) selects from `inventory ∩ capacity-sufficient ∩ policy-eligible`.** A consumer's `*_ref` selection (e.g. `placement.location_ref`, `networks[].network_ref`) MUST resolve to a resource in that eligible set; when `fulfillment: platform` (ADR-009), DCM chooses within it. Consumption debits the selected resource's capacity and any applicable **quota** (the tenant-quota structure — the consumption side, September P7).
 
 **Boundary (ADR-008):** the advertisement *shape* (inventory/capacity/eligibility) is UDLM — a peer must read another provider's advertisement identically or placement disagrees. The placement *algorithm* and how a provider computes free capacity are DCM/provider.

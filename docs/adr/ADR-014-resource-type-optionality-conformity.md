@@ -37,6 +37,8 @@ This is the portability guarantee UDLM exists for: a consumer authors comparable
 
 The **exact mapping** — `medium` → 4 vCPU / 32 GB / `db.r5.large`, or the precise requirement gate — is the provider's, resolved at **naturalization** (DCM ADR-023). UDLM carries the comparable *shape*; the provider fills the concrete *definition*.
 
+**Comparing the abstract to the precise.** The shared vocabulary gives *ordinal* comparability (`medium < large`), but comparing an abstract size against a **raw** requirement (or one provider's class against another's) needs the raw resolution — which only the provider knows. So the provider **declares its class → raw catalog** in its capability (`provider-contract.md §8.1a` `instance_size_catalog`); DCM resolves a size class to raw through that catalog and applies the same capacity-sufficient test as a raw request. It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive. Vocabulary → portability (UDLM); catalog → precision (provider); resolution/comparison → placement (DCM).
+
 ### The rule of thumb
 
 > **Transport + conformity → UDLM. Requirement choice + concrete mapping → provider/org.**

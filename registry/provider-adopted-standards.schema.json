@@ -182,6 +182,26 @@
             "$ref": "#/$defs/conformance_claim"
           },
           "description": "Standards/frameworks this scope DECLARES adherence to (self-declared; accreditation §3.7). Each is a claim, trusted only when an accreditation attests its framework for this scope."
+        },
+        "instance_size_catalog": {
+          "type": "array",
+          "description": "The provider's size-class → raw-resources mapping for this category (ADR-014; provider-contract.md §8.1a — the abstract↔precise bridge). The class VOCABULARY + ordering is UDLM (comparable/portable across providers); this MAPPING is the provider's (it owns what its 'medium' resolves to); DCM resolves instance_size → raw here for placement + comparison against raw requirements. Declared, not live-queried.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["class"],
+            "properties": {
+              "class": {
+                "type": "string",
+                "description": "Provider-neutral size class (e.g. small|medium|large|xlarge) — the comparable UDLM vocabulary (common-elements §2.2)."
+              },
+              "resources": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "The raw resources this class resolves to FOR THIS PROVIDER (e.g. { vcpu: { count }, memory: { size } })."
+              }
+            }
+          }
         }
       }
     },
