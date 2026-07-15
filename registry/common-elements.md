@@ -23,12 +23,28 @@ Use for memory, storage, bandwidth, power (`"650W"`), etc.
 
 ### 2.2 `ComputeResources`  *(the keystone — currently divergent, see §3)*
 ```json
-{ "cpu":    { "count": 8 },
+{ "instance_size": "medium",          // OR provider-neutral size class (see below)
+  "cpu":    { "count": 8 },
   "memory": { "size": "32GB" } }      // Quantity
 ```
 Reused by anything that sizes compute: `Compute.VirtualMachine`, a `Compute.Cluster` node pool, a
 `Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
+
+**`instance_size` — sizing by class (shared vocabulary, provider-mapped).** Any resource type that sizes
+compute MAY carry an `instance_size` string — a **provider-neutral size class** (e.g. `small|medium|large|xlarge`,
+an ordinal scale) — *in place of, or alongside,* explicit `cpu`/`memory`. Two halves, and the split is the
+point:
+- **UDLM owns the conformity.** `instance_size` is a **shared, comparable vocabulary**: `medium` must mean
+  something *comparable* across adjacent compatible providers — the classes are ordinally ordered (a portable
+  "roughly this big"), so consumer intent is portable and a workload can move between compatible providers
+  without re-sizing. This is UDLM providing *conformity between providers*, not a free string.
+- **The provider owns the concrete mapping.** *How* `medium` resolves to cores/RAM, or to a `db.r5.large`, is
+  the **provider's** to define at naturalization (DCM ADR-023) — UDLM does not fix the resource math.
+
+So UDLM carries the comparable *shape* (the class vocabulary + its ordering); the provider fills the concrete
+*definition*. This lets a type ship sized-by-class (the common shape for managed databases, VMs, node pools)
+portably, without UDLM prescribing a fixed resource math.
 
 ### 2.3 `StorageCapacity` / disk
 ```json
@@ -92,10 +108,7 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   "64GB"`, `cpu.count: 16`) and MAY carry a structured inline inventory (`memory.modules[]`, `disks[]`).
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
-- **First-class entity (optional).** A `Hardware.*` resource — `Hardware.MemoryModule`,
-  `Hardware.StorageDevice`, `Hardware.NetworkInterface`, `Hardware.GraphicsProcessor`,
-  `Hardware.Processor` — `contained_by` the parent, for organizations that track components
-  **independently** (serial, slot, firmware, RMA, lifecycle, warranty). Whether these exist is governed
+- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — DCM is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
   by **`composition_visibility`** (`opaque|transparent|selective`, `entities/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
@@ -186,8 +199,7 @@ partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr
 | `aggregate` | a **composite of many** interfaces (N→1) | **bond / LACP LAG** (802.1AX) | `lower_layer` → the member NICs |
 | `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
-So a **vGPU** = `Hardware.GraphicsProcessor` `device_class: partition`, `partition_mechanism: mediated`
-(or `mig`), `parent_device` → the physical `Hardware.GraphicsProcessor`; an **SR-IOV VF / vETH** =
+The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, ADR-013): an **SR-IOV VF / vETH** =
 `Hardware.NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
 `parent_device` → the physical NIC. A **bond** = `Hardware.NetworkInterface` `device_class: aggregate`,
 `aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =

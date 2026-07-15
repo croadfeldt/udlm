@@ -4,7 +4,7 @@
 # which datasets/volumes are carved — the ZFS zpool (extensible to an LVM VG / btrfs pool). Distinct
 # from Storage.Cluster (a DISTRIBUTED multi-node system, Ceph) and from Storage.Volume (a CONSUMABLE
 # volume a workload attaches): a Pool is the single-host aggregation layer between the drives
-# (Hardware.StorageDevice) and the datasets (Storage.Dataset). It owns the redundancy topology — the
+# (the physical drives) and the datasets (Storage.Dataset). It owns the redundancy topology — the
 # vdev grouping — which a flat "dataset on host" edge would lose, exactly as PSU→feed captures power
 # redundancy the coarse "host on UPS" edge drops.
 #
@@ -24,7 +24,7 @@ status: active
 metadata:
   display_name: Storage Pool
   description: >-
-    A host-local storage pool aggregating physical drives (Hardware.StorageDevice) into a
+    A host-local storage pool aggregating physical drives into a
     redundancy-protected capacity source that datasets/volumes are carved from. The concrete technology
     (ZFS zpool, LVM VG, btrfs) is the PROVIDER, declared on the instance and in adopts[] — never in the
     type name. Owns the vdev/redundancy topology so a derived shutdown honors it: a pool stops after the
@@ -77,7 +77,7 @@ spec:
       description: >-
         The redundancy topology — each vdev groups member drives under a protection scheme. Data-protection
         is per-vdev; the pool's fault tolerance is the vdev's (a raidz2 tolerates 2 lost members). The
-        member drives are ALSO expressed as depends_on Hardware.StorageDevice edges (the graph layer);
+        member drives are recorded by handle/serial;
         this array carries the grouping the edges can't.
       items:
         type: object
@@ -87,7 +87,7 @@ spec:
           members:
             type: array
             items: { type: string }
-            description: handles/serials of the Hardware.StorageDevice members of this vdev.
+            description: handles/serials of the physical drive members of this vdev.
     properties:
       type: object
       additionalProperties: { type: string }
@@ -107,10 +107,3 @@ relationships:
     cardinality: 0..1
     name: host
     description: The host whose drives make up this pool (a pool is host-local).
-  - kind: depends_on
-    target: Hardware.StorageDevice
-    cardinality: 1..n
-    name: member_drive
-    description: >-
-      The physical drives the pool aggregates (grouped into vdevs in spec). The pool cannot outlive its
-      members; a derived shutdown stops the pool before its drives spin down.

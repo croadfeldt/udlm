@@ -18,7 +18,6 @@
     "type": "object",
     "required": [
       "engine",
-      "version",
       "resources"
     ],
     "properties": {
@@ -32,22 +31,28 @@
       },
       "version": {
         "type": "string",
-        "description": "Engine version, e.g. 16. Allowed values are engine-dependent (see registry conditional-constraints, E3)."
+        "default": "latest",
+        "description": "Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints, E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract §8.1a): (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable against a pinned requirement and across compatible providers (declared, not live-queried); (2) the concrete version actually provisioned is recorded in outputs.applied_version for audit. Intent carries the abstract; realized carries the concrete."
       },
       "resources": {
         "type": "object",
         "properties": {
+          "instance_size": {
+            "type": "string",
+            "description": "Provider-neutral size class (e.g. small|medium|large, or a named profile). Generic sizing INTENT — usable in place of, or alongside, explicit cpu/memory/storage. The PROVIDER reconciles it to concrete resources / its own instance classes at naturalization (DCM ADR-023, provider-naturalization boundary); UDLM/DCM does NOT define the mapping. A shared sizing option available to any resource type (common-elements §sizing)."
+          },
           "cpu": {
-            "type": "number",
-            "minimum": 0.25
+            "type": "string",
+            "pattern": "^([0-9]+m|[0-9]+(\\.[0-9]+)?)$",
+            "description": "CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) — Kubernetes-aligned quantity convention (Noam, #40). The provider reconciles to its concrete units at naturalization."
           },
           "memory": {
             "type": "string",
-            "pattern": "^[0-9]+(MB|GB)$"
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
           },
           "storage": {
             "type": "string",
-            "pattern": "^[0-9]+(GB|TB)$"
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
           }
         }
       },
@@ -62,6 +67,10 @@
     }
   },
   "outputs": {
+    "applied_version": {
+      "type": "string",
+      "description": "The concrete engine version the provider actually provisioned (audit record; realized-side). When the requested `version` was abstract (`latest`/`lts`) or omitted, this captures what it resolved to at realization — closing the loop between abstract intent and reality. Populated by the provider on realization (intent→realized; provider-contract §8.1a obligation 3)."
+    },
     "connection_string": {
       "type": "string",
       "description": "Full connection string once Realized.",
