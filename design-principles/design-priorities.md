@@ -173,7 +173,7 @@ UDLM defines the following named profiles as the substrate vocabulary. Realizati
 
 ### Profile Scaling Table (Reference)
 
-The table below illustrates the **shape** of profile scaling. Specific threshold values are realization-defined (a peer realization MAY pick different absolute values). What is invariant is the monotonic ordering: stricter profiles must be at least as strict as looser profiles on every dimension. "Present" means the property is architecturally required — what varies is the configuration.
+The table below illustrates the **shape** of profile scaling — each profile's posture per dimension. Threshold values are realization-defined (a peer MAY pick different absolute values). Profiles are **composed sets, not ordered levels** ([ADR-007](../docs/adr/ADR-007-profile-model.md)): `sovereign` is not "more of" `standard`, and there is **no monotonic total order across profiles**. Read the table *down a column* — one profile's coherent posture — not as a ranking across columns. Each *dimension* has a direction (it runs loose→tight); which point a profile takes on it is that profile's composed choice, and `fsi`/`sovereign` are **overlays** on a base profile, not stricter points on one scale. "Present" means the property is architecturally required — what varies is the configuration.
 
 | Security Property | minimal | dev | standard | prod | fsi | sovereign |
 |------------------|---------|-----|----------|------|-----|-----------|
