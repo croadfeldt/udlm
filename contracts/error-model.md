@@ -103,6 +103,7 @@ namespaces require a udlm spec change.
 | `credential.*` | Credential issuance, revocation, expiration |
 | `federation.*` | Cross-peer federation errors |
 | `provider.*` | Provider interaction errors |
+| `placement.*` | Placement/scheduling failures — no eligible provider, capacity or locality unsatisfiable, capability mismatch (distinct from `rate_limit.*` capacity) |
 | `schema.*` | Schema sharing, version, or compatibility errors |
 | `timeout.*` | Operation deadline exceeded |
 | `conformance.*` | udlm conformance, feature availability, version compatibility (see [`CONFORMANCE.md`](../CONFORMANCE.md)) |
@@ -140,6 +141,10 @@ Every conformant realization MUST recognize and may emit these codes:
 | `federation.peer_version_incompatible` | no | 409 |
 | `provider.callback_invalid` | no | 400 |
 | `provider.unavailable` | yes | 503 |
+| `placement.no_eligible_provider` | no | 409 |
+| `placement.capacity_exhausted` | yes | 503 |
+| `placement.locality_unsatisfiable` | no | 409 |
+| `placement.capability_mismatch` | no | 422 |
 | `conformance.feature_not_implemented` | no | 501 |
 | `conformance.version_unsupported` | no | 409 |
 | `conformance.declaration_unavailable` | yes | 503 |

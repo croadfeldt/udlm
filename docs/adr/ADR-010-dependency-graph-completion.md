@@ -38,10 +38,13 @@ SharedFaultDomain: { anchor: <foundational resource ref>, kind: location|power|h
 
 ### 3. `UnmetDependency` — the first-class sibling of `DependencyCycle`
 
-A dependency edge whose target **does not resolve** (no such resource), **is not yet realized**, or **is decommissioned** is exposed as a diagnostic, so it is caught **before realization** (ADR-006 terminal surface), not discovered mid-dispatch:
+A dependency edge that cannot be satisfied — the target **does not resolve** (no such resource), **is ambiguous** (more than one match, none authoritative), **is not yet realized**, is **decommissioned**, violates a **locality** constraint (wrong fault-domain / jurisdiction / co-residency), fails a **capability or protocol** match, or is **unreachable at runtime** despite being Realized — is exposed as a diagnostic, so it is caught **before realization** where possible (ADR-006 terminal surface), not discovered mid-dispatch. The closed `reason` vocabulary is what makes the failure *attributable* (a peer must name it the same way, or the diagnostic can't be acted on):
 
 ```
-UnmetDependency: { dependent: <ref>, edge: {kind, target|target_ref}, reason: unresolved|unrealized|decommissioned,
+UnmetDependency: { dependent: <ref>, edge: {kind, target|target_ref},
+                   reason: unresolved | ambiguous | unrealized | decommissioned |
+                           locality_violation | capability_mismatch | unreachable,
+                   candidate_targets: [<refs>],   # for `ambiguous`: the >1 matches that could not be disambiguated
                    severity: blocking|degraded,   # blocking = hard edge; degraded = soft edge (remappable)
                    blast_radius: [<refs>] }
 ```
