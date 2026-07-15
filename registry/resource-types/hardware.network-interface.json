@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -83,7 +83,7 @@
         "properties": {
           "stp": {
             "type": "boolean",
-            "description": "Spanning Tree Protocol enabled (802.1D/802.1Q)."
+            "description": "Spanning Tree Protocol enabled (802.1Q bridging)."
           },
           "vlan_filtering": {
             "type": "boolean",
@@ -271,6 +271,15 @@
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
       "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "IEEE 802.1AB",
+      "version": "2016",
+      "standard_name": "Station and Media Access Control Connectivity Discovery (LLDP)",
+      "role": "connects_to peer-discovery vocabulary (host NIC <-> switch port adjacency)",
+      "source": "https://standards.ieee.org/ieee/802.1AB/",
+      "license": "IEEE",
+      "license_compatibility": "reference-only"
     }
   ]
 }
