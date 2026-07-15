@@ -357,7 +357,7 @@ auth_provider_chain:
 
 ## 6. Credential Types and Issuance (Data Model)
 
-A **Credential Provider** is a substrate-defined provider type — a cross-cutting dependency that any realization component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the realization; they are always referenced.
+Credential issuance is a **capability** a provider declares (`credential_capability` + `Credential.*` resource types — [credentials.md](credentials.md) §9), **not** a separate provider kind (§2; PROV-002/PROV-003 capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any realization component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the realization; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
 
 ```yaml
 credential_provider_registration:
