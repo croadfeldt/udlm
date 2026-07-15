@@ -308,6 +308,39 @@
       },
       "description": "The auditable [D1] binding declaration: which conforming store satisfies each lifecycle-store contract FOR THIS TENANT. A deployment binds contract \u2192 store via profile + sovereignty/tenancy policy, and the binding is declared and auditable (data-model-core \u00a76; contracts/data-store-contracts.md)."
     },
+    "key_bindings": {
+      "type": "array",
+      "description": "Per-tenant cryptographic key bindings \u2014 the crypto-shredding / BYOK PRIMITIVE (docs/research/tenancy-model-prior-art.md; GRP-013). Each binds this Tenant to key material BY REFERENCE, making the key ADDRESSABLE so a realization can rotate it, keep it in-boundary (sovereign profile key-material/in-boundary, AUD-012), and CRYPTO-SHRED it on decommission \u2014 destroying the key renders the Tenant's data-at-rest unrecoverable while the immutable audit ledger survives (GDPR Art. 17). UDLM carries the binding (DATA); the realization manages the key lifecycle (DCM ADR-014). May be present on a tenant_boundary group; the required grain (e.g. for store_per_tenant_zone / sovereign) is profile-governed. This is a data primitive, not an implementation.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["purpose", "credential_ref"],
+        "properties": {
+          "purpose": {
+            "enum": ["data_at_rest", "field_encryption", "audit_signing"],
+            "description": "What this key protects for the Tenant."
+          },
+          "role": {
+            "enum": ["dek", "kek", "signing"],
+            "description": "Envelope role \u2014 data-encryption key, key-encryption (wrapping) key, or signing key. Crypto-shredding destroys the KEK (or a standalone DEK) to render the Tenant's data-at-rest unrecoverable."
+          },
+          "credential_ref": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref_uuid"],
+            "description": "Reference to the key material \u2014 a Credential.EncryptionKey / Credential.SigningKey issued by a credential_capability provider (secret_engine: vault | azure_key_vault | aws_secrets_manager | gcp_secret_manager | local_hsm; governance/credentials.md). Resolution uses ref_uuid (authoritative); ref_name advisory (registry/data-reference.schema.json).",
+            "properties": {
+              "ref_uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+              "ref_name": {"type": "string"}
+            }
+          },
+          "in_boundary": {
+            "type": "boolean",
+            "description": "Key material stays within the sovereignty boundary (sovereign profile key-material/in-boundary, AUD-012)."
+          }
+        }
+      }
+    },
     "granting_tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",

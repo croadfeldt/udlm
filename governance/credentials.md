@@ -83,6 +83,7 @@ The realization **selects** among providers declaring the needed `Credential.*` 
 | `ssh_key` | `Credential.SSHKey` | SSH access to realized infrastructure | P30D–P90D (configurable) | Scheduled or on-demand |
 | `secret` | `Credential.Secret` | Arbitrary secret value (password, connection string) | Per type defaults | Scheduled or on-demand |
 | `signing_key` | `Credential.SigningKey` | Cryptographic key for signing operations | Per algorithm defaults | Pre-expiry |
+| `encryption_key` | `Credential.EncryptionKey` | Data-at-rest encryption — per-tenant DEK wrapped by a KEK (envelope encryption); the addressable key a Tenant's `key_bindings` reference and the **crypto-shredding** primitive (destroy the KEK → tenant data unrecoverable; `dcm-group.schema.json` `key_bindings`, GRP-013) | Per algorithm defaults | Pre-expiry, on rotation, or on tenant offboarding |
 | `service_account_token` | — | Workload identity for automated processes | PT1H–PT24H | Automatic; pre-expiry |
 | `database_password` | — | Access credential for realized database resources | PT24H–P7D (configurable) | Scheduled or on-demand |
 | `kubeconfig` | — | Access to realized Kubernetes clusters | PT8H–P30D (configurable) | Scheduled or on-demand |
