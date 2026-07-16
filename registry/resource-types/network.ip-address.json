@@ -65,7 +65,8 @@
       "role": "relation vocabulary \u2014 attaches_to address-on-interface relation name (common-elements \u00a79)",
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "RFC-8344",
@@ -74,7 +75,8 @@
       "role": "address-on-interface shape: `address`/prefix + `origin` (static|dhcp|link-layer|random)",
       "source": "https://www.rfc-editor.org/rfc/rfc8344.html",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "NMstate",
@@ -83,7 +85,8 @@
       "role": "convergent addressing form (address + prefix-length + enabled/dhcp/autoconf) \u2014 NetworkManager declarative desired-state",
       "source": "https://nmstate.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
     }
   ]
 }

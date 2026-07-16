@@ -23,7 +23,8 @@
       "role": "segment id + tagging vocabulary",
       "source": "https://standards.ieee.org/ieee/802.1Q/",
       "license": "IEEE",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "spec": {

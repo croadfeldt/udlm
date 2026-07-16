@@ -20,8 +20,17 @@
       "guest_os"
     ],
     "anyOf": [
-      { "required": [ "instance_size" ] },
-      { "required": [ "vcpu", "memory" ] }
+      {
+        "required": [
+          "instance_size"
+        ]
+      },
+      {
+        "required": [
+          "vcpu",
+          "memory"
+        ]
+      }
     ],
     "properties": {
       "instance_size": {
@@ -190,7 +199,7 @@
     },
     "target_segment": {
       "type": "string",
-      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
+      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb \u2014 the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment \u2014 e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 \u00a73 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
     }
   },
   "immutable": [
@@ -234,7 +243,8 @@
       "role": "vendor-neutral virtual system inventory + power vocabulary (ProcessorSummary, MemorySummary, PowerState) \u2014 same family as Compute.BareMetalHost",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "KubeVirt",
@@ -243,7 +253,8 @@
       "role": "k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power) \u2014 the parallel to Metal3 for bare metal",
       "source": "https://kubevirt.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ]
 }

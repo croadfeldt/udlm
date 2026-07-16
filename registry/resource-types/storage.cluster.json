@@ -117,7 +117,8 @@
       "role": "distributed storage system / capacity / data-protection vocabulary",
       "source": "https://www.snia.org/forums/smi/swordfish",
       "license": "SNIA",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "Rook",
@@ -126,7 +127,8 @@
       "role": "reference realization (Ceph) \u2014 cluster shape, protocols, storage classes",
       "source": "https://rook.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ]
 }

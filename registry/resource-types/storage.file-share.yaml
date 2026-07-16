@@ -30,6 +30,7 @@ adopts:
     license: Microsoft OSP
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 lifecycle:
   states: [Intent, Requested, Realized, Discovered]
   decommission: >-
@@ -59,17 +60,17 @@ spec:
         type: object
         required: [name, path]
         properties:
-          name: { type: string }
-          path: { type: string, description: Exported filesystem path (typically a Storage.Volume mount). }
-          read_only: { type: boolean, default: false }
-          browseable: { type: boolean, default: true }
+          name: {type: string}
+          path: {type: string, description: Exported filesystem path (typically a Storage.Volume mount).}
+          read_only: {type: boolean, default: false}
+          browseable: {type: boolean, default: true}
           valid_principals:
             type: array
-            items: { type: string }
+            items: {type: string}
             description: Users/groups permitted, resolved via the DirectoryService (membership held externally). e.g. "@examplecom", "maintainer".
           options:
             type: object
-            additionalProperties: { type: string }
+            additionalProperties: {type: string}
             description: >-
               Provider-passthrough share knobs NOT lifted into typed fields — the basic-scale text
               passthrough (DCM ADR-023 §6). e.g. {"fruit:time machine": "yes", "inherit acls": "yes"}.

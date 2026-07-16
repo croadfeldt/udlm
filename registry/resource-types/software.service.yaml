@@ -42,6 +42,7 @@ adopts:
     source: https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/
     license: OASIS
     license_compatibility: compatible-reference
+    disposition: tier1_value
   - standard: Open Application Model
     version: ">=0.3"
     standard_name: Application (set of Components)
@@ -49,6 +50,7 @@ adopts:
     source: https://oam.dev/
     license: MIT
     license_compatibility: compatible-reference
+    disposition: tier1_value
   - standard: Kubernetes
     version: ">=1.29"
     standard_name: Workload objects (Deployment/StatefulSet/DaemonSet, KServe InferenceService)
@@ -57,6 +59,7 @@ adopts:
     license: CC-BY-4.0
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 lifecycle:
   states: [Intent, Requested, Realized, Discovered]
   decommission: >-
@@ -97,7 +100,7 @@ spec:
             description: handle of the host/VM the systemd units run on (form=systemd).
           units:
             type: array
-            items: { type: string }
+            items: {type: string}
             description: systemd unit names (form=systemd).
         required: [form]
     endpoints:
@@ -107,9 +110,9 @@ spec:
         type: object
         additionalProperties: false
         properties:
-          name: { type: string }
-          url: { type: string }
-          port: { type: integer }
+          name: {type: string}
+          url: {type: string}
+          port: {type: integer}
     replicas:
       type: integer
       description: Desired/observed instance count (0 = intentionally scaled down).

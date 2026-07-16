@@ -38,6 +38,7 @@ adopts:
     license: CDDL-1.0
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 lifecycle:
   states: [Intent, Requested, Realized, Discovered]
   decommission: >-
@@ -66,7 +67,7 @@ spec:
       description: Configured quota, if any.
     properties:
       type: object
-      additionalProperties: { type: string }
+      additionalProperties: {type: string}
       description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
 
 outputs:
