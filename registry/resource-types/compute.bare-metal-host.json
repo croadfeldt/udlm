@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Bare Metal Host",
-    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, §28), carries the reconciled Hardware.* component rollup (§26), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
+    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, §28), carries aggregate hardware capacity (cpu/memory/storage/gpu) as host attributes (§26; ADR-013 — components are not separate records), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:31:44Z"
   },
@@ -36,7 +36,7 @@
           "selective"
         ],
         "default": "opaque",
-        "description": "Whether the Hardware.* components are modeled as first-class entities (§26, entities/service-dependencies.md §11d). opaque = rollup only."
+        "description": "Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class entities vs a rollup (§26, entities/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate host attributes, not component records (ADR-013). opaque = rollup only."
       },
       "identity": {
         "type": "object",

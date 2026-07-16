@@ -2,17 +2,17 @@
 #
 # A physical place — site, building, room, row, rack, shelf, or bench — that resources sit in. The
 # anchor for physical organization and location-scoped environment (cooling, structured cabling,
-# physical uplink). NOTE: power is deliberately NOT owned here — a chassis's PSUs carry that (see
-# power supplies), possibly to different feeds. Location answers "where is it", which is a
-# different question from "what powers it". Locations nest (bench within room within site).
+# physical uplink). NOTE: power is deliberately NOT owned here — each host carries that via its own
+# `depends_on Facility.PowerFeed` edge (ADR-013), possibly to different feeds. Location answers "where
+# is it", which is a different question from "what powers it". Locations nest (bench within room within site).
 #
 # ADOPT (not absorb): DMTF Redfish Location (PhysicalLocation / Placement / PostalAddress) already
 # models physical placement; UDLM references it and owns only identity + the containment nesting.
-$id: https://udlm.dev/registry/udlm/0.1/Facility.Location/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/Facility.Location/0.1.1
 conforms_to: udlm/0.1
 uuid: ef034d7f-d8ba-484a-9a0a-360c2327c8f2
 resource_type: Facility.Location
-version: 0.1.0
+version: 0.1.1
 family: Resource
 entity_type: Infrastructure Resource
 lifecycle_archetype: curation
@@ -24,8 +24,8 @@ metadata:
     A physical place resources are located in — a site, room, rack, or bench — nesting into a
     containment hierarchy. Resources declare where they sit; DCM uses it for physical organization and
     for location-scoped ambient dependencies (cooling, uplink) via the bundle/scope mechanisms. Power
-    is intentionally out of scope here: it is carried by each chassis's power supplies to their feeds,
-    which may differ even within one rack.
+    is intentionally out of scope here: it is carried by each host's own `depends_on Facility.PowerFeed`
+    edge(s) (ADR-013), which may differ even within one rack.
   maintainer: udlm-registry
   origination_timestamp: "2026-07-13T00:00:00Z"
 
