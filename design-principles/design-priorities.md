@@ -68,6 +68,8 @@ The secure path must also be the easy path. Profile defaults should work for mos
 
 **The design principle:** When implementing a security requirement, simultaneously design the ease-of-use mechanism that makes it effortless to comply with. A scoring model's auto-approval threshold (not making every request require human review) is ease of use in service of security.
 
+**Human-in-the-loop is a last resort, not a design tool.** Every point where a request routes to a human — an approval tier, `route-to-review`, an override — is a **necessary anti-pattern**: sometimes unavoidable (a genuine compliance exception that only an authorized human may grant), but always a cost to minimize, never the default. The goal is automated, policy-driven governance where a *policy* decides; `route-to-review` exists so a governed **exception** has an auditable path, **not** so the common case can defer to a human. A design that reaches for human review where a policy could decide has failed this priority (`DPO-007`).
+
 **Things that should be easy in all profiles:**
 - Requesting a standard resource (auto-approve for clean requests)
 - Authoring a common policy without specialized expertise
@@ -241,6 +243,7 @@ The `on_expiry` action vocabulary (`escalate`, `reject`) is closed at the substr
 | `DPO-004` | Fit for purpose is a precondition, not a priority. All four priorities apply only within the constraint that the system can fulfill its lifecycle management mission. |
 | `DPO-005` | The `minimal` profile is "security with minimal operational overhead" — not "minimal security." Design decisions that disable security properties rather than scaling them violate DPO-001. |
 | `DPO-006` | When security and ease of use conflict, redesign the ease-of-use mechanism — not the security requirement. The secure path must also be the easy path. |
+| `DPO-007` | Human-in-the-loop (approval, `route-to-review`, override) is a last-resort anti-pattern — necessary for genuine authorized exceptions, minimized everywhere else. A decision a policy could make automatically MUST NOT route to a human; `route-to-review` is the exception path, not the common one. The goal is to reduce human-in-the-loop as far as governance allows. |
 
 ---
 
