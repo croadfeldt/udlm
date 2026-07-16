@@ -928,7 +928,7 @@ itsm_action_output:
 
 ## 18. Policy Override Model
 
-When a policy blocks a request and the block needs to be overridden, DCM provides five override mechanisms organized by severity. Every override — regardless of mechanism — produces a Merkle tree audit leaf capturing the override justification, authorizer identity, and the policy that was overridden.
+Overrides and `route-to-review` are a **last-resort path**, not a common one — a human-in-the-loop point is a necessary anti-pattern to minimize (`design-priorities.md` `DPO-007`): the goal is that a policy decides automatically, and a request routes to a human only for a genuine authorized exception. When a block genuinely needs override, five override mechanisms are available, organized by severity. Every override — regardless of mechanism — produces a Merkle tree audit leaf capturing the override justification, authorizer identity, and the policy that was overridden.
 
 ### 18.1 Override Policy (Planned Exceptions)
 
