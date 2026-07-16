@@ -101,14 +101,39 @@ The **Realized State** is the provider-confirmed record of what was actually bui
 
 ### 2.3a Realization is two-phase — validate-and-reserve, then commit
 
-The transition from Requested State to Realized State is **not a single dispatch**. It is **two-phase — reserve, then commit** ([ADR-011](../docs/adr/ADR-011-validate-and-reserve.md); the provider verbs are `contracts/provider-contract.md` §6a). This is a substrate contract, not a realization detail: the guarantee is that **nothing is built until the whole request is validated and reserved.**
+The transition from Requested State to Realized State is **not a single dispatch** — it is **two-phase:
+validate-and-reserve, then commit** ([ADR-011](../docs/adr/ADR-011-validate-and-reserve.md)). What the data
+model fixes is **the guarantee and the artifacts, not the procedure**: nothing is built until the whole
+request is validated and reserved. *How* a realization gets there is DCM runtime (below).
 
-- **RESERVE — a side-effect-free reconciliation loop.** For each target in the request's dependency graph, DCM issues a **reserve**: the provider **validates** the request against its capacity/identity/policy and **holds** the result (capacity, an identity, an allocatable address), returning a **`reservation_hold_uuid`** and its **computed realize-time facts** (a reserved placement's port, a reserved address). Reserve **builds nothing** and writes **no** Realized State. Because reserve returns facts, a dependency whose criteria derive from a parent's realize-time state (`fulfillment: provider`, ADR-009) is computed here: the parent is *reserved* → it yields its facts → the child's criteria are computed → the child is *reserved*. Reservations feed each other, so **reserve is a reconciliation loop, not a single pass** — when a reserve fails or narrows the feasible set (segment exhausted, policy denies), DCM re-reserves and recomputes the dependents, **iterating to a fixed point** (all holds valid and mutually consistent) — a bounded, **multi-round negotiation** that takes real time — or terminating at `RESERVE_QUERY_ALL_EXHAUSTED` (no capacity) or `RESERVATION_RECONCILE_STALEMATE` (no agreement within the reconcile budget; all holds released). The loop is the same re-entrant convergence loop (ADR-006) — but run over **holds**, so every iteration is side-effect-free. Policies that **opt into the loop** (`reconciliation.participates`, policy-contract §7.6) re-evaluate against the enriching reserved graph as facts land; others evaluate once at the commit barrier.
-- **Commit barrier.** DCM commits **nothing** until **every** reservation in the effective graph is held-and-valid **and** all applicable policy (placement, governance-matrix, cycle, quota) is green against the **fully reserved** graph. Validate everything, then pull the trigger.
-- **COMMIT — execute the holds.** On a clean barrier, DCM issues **commit** per target in dependency order; the provider realizes its held reservation and **writes Realized State** (§2.3). Commit is the only phase that mutates infrastructure.
-- **RELEASE — abort / expire.** Any held reservation not committed is **released** — on validation failure, cancellation, or **hold-TTL expiry** (`reserve_query_timeout`, `lifecycle/operational-models.md` §2). Because the reserve phase built nothing, abort is a **hold-drop, not a teardown** — there is no orphaned resource to compensate.
+**The contract (data model):**
+- **A reservation is a first-class, TTL'd artifact.** A reserve validates the request against a provider's
+  capacity/identity/policy and **holds** the result, yielding a **`reservation_hold_uuid`** plus the
+  provider's **computed realize-time facts** (a reserved placement's port, a reserved address) — recorded
+  in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`,
+  `entities/service-dependencies.md` §11), so the whole reserved graph is **auditable before commit**. A
+  reserve **builds nothing** and writes **no** Realized State.
+- **Reserved facts feed dependents.** A dependency whose criteria derive from a parent's realize-time state
+  (`fulfillment: provider`, ADR-009) is satisfiable from the parent's *reserved* facts — nothing is built
+  to resolve the graph.
+- **Commit is all-or-nothing at a barrier.** Nothing commits until **every** reservation in the effective
+  graph is held-and-valid **and** all applicable policy (placement, governance-matrix, cycle, quota) is
+  green against the **fully reserved** graph. Commit is the only phase that mutates infrastructure and
+  writes Realized State (§2.3).
+- **Release is a hold-drop, not a teardown.** Any held reservation not committed is released — on
+  validation failure, cancellation, or hold-TTL expiry — and because reserve built nothing, there is no
+  orphaned resource to compensate.
+- **No sixth lifecycle state.** `lifecycle_state` stays on its five canonical values; an active hold is a
+  `RESERVATION_HELD` **`status.conditions`** overlay (§2.5), not a state.
 
-The reservation hold is a **first-class, TTL'd** object recorded in the Requested-state resolution (`reservation_hold_uuid` in `placement.yaml`, `entities/service-dependencies.md` §11), so the whole reserved graph is auditable **before** commit. **This adds no lifecycle state:** `lifecycle_state` stays on its five canonical values — an active hold is a `RESERVATION_HELD` **`status.conditions`** overlay (§2.5), not a sixth state. Reserve and commit both run inside DCM's re-entrant convergence loop (ADR-006), so a reserve denial re-enters the loop cheaply (re-reserve elsewhere) rather than tearing down built infrastructure.
+**The mechanism (realization / DCM).** *How* a realization reaches a consistent set of holds — the
+reserve→recompute-dependents **reconciliation loop**, its multi-round negotiation and iteration to a fixed
+point, the re-entrant convergence it runs inside, and its terminal conditions
+(`RESERVE_QUERY_ALL_EXHAUSTED`, `RESERVATION_RECONCILE_STALEMATE`) — is realization architecture, specified
+by ADR-011 / [ADR-006](../docs/adr/ADR-006-convergence-control-model.md) and the DCM docs, not by this data
+model. A peer that upholds the guarantee and the artifacts above conforms, however it converges. Policies
+that opt into that loop (`reconciliation.participates`, policy-contract §7.6) re-evaluate as reserved facts
+land; others evaluate once at the commit barrier.
 
 ### 2.4 Discovered State
 
