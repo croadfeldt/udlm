@@ -1,6 +1,6 @@
 # Host networking as data: adapters, IP addresses, and NetworkManager config
 
-**Status:** proposal / mapping (not yet an ADR — I want to react to this before ratifying it).
+**Status:** ✅ Accepted — ratified by [ADR-023](adr/ADR-023-host-networking-as-data-nmstate.md) (2026-07-15). This doc owns the mapping/worked-example detail; ADR-023 owns the decision.
 **Driver:** I want host network facts to be first-class UDLM records so automation reads them from the
 estate instead of from bespoke per-tool lists. The immediate trigger is small and concrete: I swapped the
 motherboard in `vis`, so its NIC has a new MAC, and I want to reassign its reserved IP `10.0.0.91` by
@@ -114,10 +114,13 @@ so "Kea stores its records in UDLM format" is satisfied by construction.
 - **Coverage — DECIDED:** all of Kea's reservation records live in UDLM format (fleet + IoT) — "Kea stores
   its records in UDLM format." `Network.DHCPScope.reservations` becomes a projection of the estate.
 
+## Decided at ratification (2026-07-15, ADR-023)
+
+- **Config type name — DECIDED:** `Network.ConnectionProfile`, attaching to the adapter via
+  `references … relation: configures`.
+
 ## Still open
 
-- **Config type name:** `Network.ConnectionProfile` vs `Config.HostNetwork` vs other; and its exact
-  attachment relation to the adapter (`configures`).
 - **Reservation rendering:** a generator tool in `<estate>-dcm/tools/` that emits Kea reservations (fits
   the repo idiom — `shutdown_order.py`, `provenance.py`), with a byte-for-byte parity check against
   today's `dhcp_servers.yml` before Kea is switched to consume it (this touches live DHCP). Built as its
