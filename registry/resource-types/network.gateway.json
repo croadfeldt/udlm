@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "541766ad-94b8-40db-8886-c42fd85e8bd1",
   "resource_type": "Network.Gateway",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Gateway",
-    "description": "A network edge gateway — routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
+    "description": "A network edge gateway \u2014 routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
@@ -39,18 +39,16 @@
           "type": "object",
           "properties": {
             "cidr": {
-              "type": "string",
-              "description": "Segment CIDR (common-elements: cidr)."
-            },
-            "vlan_id": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 4094,
-              "description": "802.1Q VLAN id, if tagged."
+              "$ref": "common-elements.schema.json#/$defs/cidr",
+              "description": "Segment CIDR (canonical common-elements cidr)."
             },
             "role": {
               "type": "string",
               "description": "Segment role, e.g. wan | lan | dmz | mgmt."
+            },
+            "vlan_ref": {
+              "type": "string",
+              "description": "Reference (handle/uuid) to the Network.VLAN this segment rides \u2014 selected, not invented (foundational-resources). Replaces the inline 802.1Q id (R5)."
             }
           }
         }
@@ -78,6 +76,13 @@
       "target": "Network.DHCPScope",
       "cardinality": "0..n",
       "description": "Segments the gateway routes may have DHCP scopes served elsewhere."
+    },
+    {
+      "kind": "references",
+      "name": "segment_vlan",
+      "target": "Network.VLAN",
+      "cardinality": "0..n",
+      "description": "segment_vlan \u2014 each segment rides a Network.VLAN, referenced (vlan_ref), not an inline 802.1Q id (R5; foundational-resources selected-not-invented)."
     }
   ],
   "adopts": [
