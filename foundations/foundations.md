@@ -158,7 +158,9 @@ All Policy types implement this base contract. What varies is the output schema.
 **Policies as orchestration — two levels that compose:**
 
 *Level 1 — Named Workflow Artifacts (explicit, visible, auditable):* An Orchestration Flow Policy with
-`concern_type: orchestration_flow` and `ordered: true` is a named workflow. It declares steps in explicit
+`concern_type: orchestration_flow` (`concern_type` is a policy's concern category — the typed axis policies
+are grouped and precedence-ordered by; the enumerated categories live in
+[policy-contract.md](../contracts/policy-contract.md)) and `ordered: true` is a named workflow. It declares steps in explicit
 sequence. Named workflows are first-class Data artifacts — versioned, GitOps-managed, profile-bound. Adding
 an explicit pipeline step = adding a step to a workflow Policy artifact.
 
