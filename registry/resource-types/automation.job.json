@@ -10,7 +10,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Automation Job",
-    "description": "A Process Resource Entity (resource-service-entities §6) — an automation job as a first-class node in the dependency graph: playbook, workflow, pipeline, or script. Its depends_on edges are PROCESS dependencies and carry the same weight as infrastructure dependencies: while the job is running, nothing it depends on may be taken down. This is what makes orchestrated lifecycle operations (a UPS-triggered graceful shutdown, a rolling upgrade) derivable from true data — the orchestrator host, the switch fabric the job traverses, and the name service it resolves through are the job's real dependencies, so 'orchestrator stops last' and 'connectivity outlives compute' fall out of the reverse-topological sort with no policy special-casing. Vendor engines (Ansible, Tekton, Argo) are providers, never the type. First registry type with entity_type Process; §6.4 obliges entities modified by this job to cite its uuid in their provenance.",
+    "description": "A Process Resource Entity (resource-service-entities \u00a76) \u2014 an automation job as a first-class node in the dependency graph: playbook, workflow, pipeline, or script. Its depends_on edges are PROCESS dependencies and carry the same weight as infrastructure dependencies: while the job is running, nothing it depends on may be taken down. This is what makes orchestrated lifecycle operations (a UPS-triggered graceful shutdown, a rolling upgrade) derivable from true data \u2014 the orchestrator host, the switch fabric the job traverses, and the name service it resolves through are the job's real dependencies, so 'orchestrator stops last' and 'connectivity outlives compute' fall out of the reverse-topological sort with no policy special-casing. Vendor engines (Ansible, Tekton, Argo) are providers, never the type. First registry type with entity_type Process; \u00a76.4 obliges entities modified by this job to cite its uuid in their provenance.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T03:29:34Z"
   },
@@ -31,7 +31,7 @@
           "script",
           "other"
         ],
-        "description": "Process class (resource-service-entities §6.3). 'other' is the escape hatch — the enum stays closed."
+        "description": "Process class (resource-service-entities \u00a76.3). 'other' is the escape hatch \u2014 the enum stays closed."
       },
       "max_execution_time": {
         "type": "string",
@@ -63,7 +63,7 @@
   "outputs": {
     "last_result": {
       "type": "string",
-      "description": "Terminal state of the most recent execution (COMPLETED|FAILED|CANCELLED, §6.2)."
+      "description": "Terminal state of the most recent execution (COMPLETED|FAILED|CANCELLED, \u00a76.2)."
     }
   },
   "relationships": [
@@ -72,27 +72,27 @@
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
       "name": "executor_host",
-      "description": "Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)."
+      "description": "Executor host(s) \u2014 where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)."
     },
     {
       "kind": "depends_on",
       "target": "Network.Switch",
       "cardinality": "0..n",
       "name": "fabric",
-      "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on."
+      "description": "Fabric the job traverses to reach its targets \u2014 connectivity outlives whatever the job is operating on."
     },
     {
       "kind": "depends_on",
       "target": "Network.AddressService",
       "cardinality": "0..n",
       "name": "resolver",
-      "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)."
+      "description": "Name/address resolution the job uses to reach targets (typically soft \u2014 inventories can pin IPs)."
     },
     {
       "kind": "references",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
-      "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid). NOTE: the declared target is representative — affected entities may be of ANY resource type; this edge is informational and never constrains what a job may touch (the former bare 'Compute' category target was not a registered type)."
+      "description": "affected_entities (\u00a76.3) \u2014 entities this job creates/modifies/decommissions. Informational; \u00a76.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid). NOTE: the declared target is representative \u2014 affected entities may be of ANY resource type; this edge is informational and never constrains what a job may touch (the former bare 'Compute' category target was not a registered type)."
     }
   ],
   "adopts": [
@@ -100,10 +100,11 @@
       "standard": "Kubernetes",
       "version": "batch/v1",
       "standard_name": "Job",
-      "role": "run-to-completion job vocabulary (activeDeadlineSeconds ≈ max_execution_time, terminal states)",
+      "role": "run-to-completion job vocabulary (activeDeadlineSeconds \u2248 max_execution_time, terminal states)",
       "source": "https://kubernetes.io/docs/concepts/workloads/controllers/job/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "Ansible",
@@ -112,7 +113,8 @@
       "role": "playbook process_type vocabulary",
       "source": "https://docs.ansible.com/ansible/latest/playbook_guide/",
       "license": "GPL-3.0",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     }
   ]
 }

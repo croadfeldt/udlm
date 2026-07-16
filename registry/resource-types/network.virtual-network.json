@@ -94,7 +94,8 @@
       "role": "the portable 'attachable secondary network' concept (Multus/CNI)",
       "source": "https://github.com/k8snetworkplumbingwg/multi-net-spec",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "libvirt virtual network",
@@ -103,7 +104,8 @@
       "role": "forward-mode vocabulary (bridge/nat/routed/isolated) and host-scoped network lifecycle",
       "source": "https://libvirt.org/formatnetwork.html",
       "license": "LGPL-2.1+ (libvirt docs)",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     },
     {
       "standard": "RFC 8345",
@@ -112,7 +114,8 @@
       "role": "relation vocabulary \u2014 supporting_node overlay-to-underlay relation name (common-elements \u00a79)",
       "source": "https://www.rfc-editor.org/rfc/rfc8345",
       "license": "IETF-Trust-TLP",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [

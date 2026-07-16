@@ -41,6 +41,7 @@ adopts:
     source: https://openzfs.github.io/openzfs-docs/
     license: CDDL-1.0
     license_compatibility: compatible-reference
+    disposition: tier1_value
   - standard: SNIA-Swordfish
     version: "1.2"
     standard_name: StoragePool
@@ -49,6 +50,7 @@ adopts:
     license: SNIA
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 lifecycle:
   states: [Intent, Requested, Realized, Discovered]
   decommission: >-
@@ -69,9 +71,9 @@ spec:
     capacity:
       type: object
       properties:
-        size: { type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$", description: Total pool size. }
-        allocated: { type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$" }
-        free: { type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$" }
+        size: {type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$", description: Total pool size.}
+        allocated: {type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$"}
+        free: {type: string, pattern: "^[0-9]+(\\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$"}
     vdevs:
       type: array
       description: >-
@@ -83,14 +85,14 @@ spec:
         type: object
         required: [type]
         properties:
-          type: { type: string, enum: [stripe, mirror, raidz1, raidz2, raidz3, draid, cache, log, spare], description: vdev redundancy class. }
+          type: {type: string, enum: [stripe, mirror, raidz1, raidz2, raidz3, draid, cache, log, spare], description: vdev redundancy class.}
           members:
             type: array
-            items: { type: string }
+            items: {type: string}
             description: handles/serials of the physical drive members of this vdev.
     properties:
       type: object
-      additionalProperties: { type: string }
+      additionalProperties: {type: string}
       description: Provider-passthrough pool properties not lifted into typed fields (e.g. compression, recordsize, ashift).
 
 outputs:

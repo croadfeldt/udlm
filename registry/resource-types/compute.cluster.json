@@ -41,7 +41,7 @@
             },
             "host_type": {
               "type": "string",
-              "description": "Resource Type name of the node shape (Compute.HostType — forthcoming)."
+              "description": "Resource Type name of the node shape (Compute.HostType \u2014 forthcoming)."
             },
             "count": {
               "type": "integer",
@@ -117,7 +117,8 @@
       },
       "source": "https://focus.finops.org/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
     },
     {
       "standard": "OpenCost",
@@ -129,7 +130,8 @@
       },
       "source": "https://opencost.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
     }
   ]
 }

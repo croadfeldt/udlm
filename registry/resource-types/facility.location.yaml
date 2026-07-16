@@ -38,6 +38,7 @@ adopts:
     license: DMTF
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 relationships:
   - kind: contained_by
     target: Facility.Location

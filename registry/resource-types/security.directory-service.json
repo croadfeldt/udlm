@@ -97,7 +97,8 @@
       "role": "LDAP protocol + directory information model vocabulary (RFC 4511/4512)",
       "source": "https://www.rfc-editor.org/rfc/rfc4511",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "RFC-4120",
@@ -106,7 +107,8 @@
       "role": "Kerberos realm / KDC vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc4120",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [

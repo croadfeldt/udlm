@@ -37,7 +37,7 @@
       },
       "records": {
         "type": "array",
-        "description": "Resource records (RFC 1035). Optional — a zone may be summarized without enumerating records.",
+        "description": "Resource records (RFC 1035). Optional \u2014 a zone may be summarized without enumerating records.",
         "items": {
           "type": "object",
           "required": [
@@ -89,7 +89,8 @@
       "role": "DNS zone + resource-record vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc1035",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "external-dns",
@@ -98,7 +99,8 @@
       "role": "Kubernetes-native zone/record cross-walk",
       "source": "https://github.com/kubernetes-sigs/external-dns",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [
