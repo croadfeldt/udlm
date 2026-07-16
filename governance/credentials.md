@@ -156,6 +156,14 @@ Authorized consumers retrieve the credential value via `value_retrieval_endpoint
 
 ## 4. Credential Lifecycle
 
+> **Contract vs mechanism (ADR-008).** This section states the credential lifecycle *contract* — what
+> issuance, rotation, and revocation must **produce and guarantee**: the states below, the credential
+> scopes, the transition-window and propagation SLAs, broker-not-issue, and metadata-only return. The
+> step-by-step **routing** and the components that execute it — dependency-resolution and placement
+> sequencing, the revocation registry, cache propagation — are realization runtime (DCM). The ASCII
+> sequences in this section are **illustrative of the contract**, not a required implementation; a peer
+> that upholds the same states, scopes, and SLAs conforms however it routes.
+
 ```
 PENDING → ACTIVE → ROTATING → ACTIVE (new value)
                  → REVOKED
@@ -174,7 +182,7 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../entities/entity-relationships.md)): the dependent declares a `requires` edge to a `Credential.*` resource type, and Dependency Resolution issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
 
-> **Worked example (grounds the use case).** A consumer requests `Compute.VirtualMachine`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the realization — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the realization **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). DCM never issues a credential.
+> **Worked example (grounds the use case).** A consumer requests `Compute.VirtualMachine`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the realization — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the realization **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). A realization never issues a credential itself.
 
 ```
 Consumer requests resource (e.g., Compute.VirtualMachine)
@@ -352,11 +360,11 @@ Revocation makes a credential permanently invalid before its natural expiry. Unl
 | `security_event` | Platform admin or security automation | Immediate; no transition window |
 | `provider_deregistered` | Platform admin | All interaction credentials for the provider revoked |
 | `actor_request` | Consumer | Consumer may revoke their own credentials |
-| `ttl_expired` | Lifecycle Constraint Enforcer | Credential expired; revocation recorded |
+| `ttl_expired` | Lifecycle (TTL enforcement) | Credential expired; revocation recorded |
 
 ### 6.2 Revocation Propagation Contract
 
-The realization MUST maintain a **Credential Revocation Registry** — a fast-queryable store of revoked credential UUIDs. All components that receive interaction credentials MUST check this registry at each use (not just at issuance time).
+The revocation **contract**: a revoked credential MUST be detectable at **each use** (not only at issuance time), and a revocation MUST propagate within the profile-governed SLA (CPX-003). *How* a realization makes revocations fast-queryable — a revocation registry/store, the event-and-cache propagation sequence below — is realization runtime; the propagation SLA, the cache-TTL floors, and the check-at-use obligation (§6.3) are the contract.
 
 ```
 Credential revoked:
@@ -738,7 +746,7 @@ When an idle alert fires:
 - Credential is NOT automatically revoked — it remains valid until its `expires_at`
 - If still idle after 2× the threshold: optional auto-revocation per profile configuration
 
-Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; the detection MUST be present.
+Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; the detection MUST be present. The idle record and its threshold are data (CPX-010); *when and how* the alert fires and is routed to admin/consumer is realization runtime (DCM).
 
 ---
 
@@ -983,7 +991,7 @@ credential_provider_registration:
 |--------|------|
 | `CPX-001` | Credential values are never stored in the realization's data model, artifact stores, Realized State Store, or Audit Store. Only credential metadata (UUID, type, scope, expiry, status) is stored. |
 | `CPX-002` | Every interaction with a provider must present a scoped, short-lived `dcm_interaction` credential. A provider that receives an interaction without a valid scoped credential MUST reject it with `403 Forbidden`. |
-| `CPX-003` | Credential revocation must propagate to the Credential Revocation Registry within the declared `revocation_sla`. Components must refresh their revocation cache no less frequently than the profile-governed cache TTL (PT1M standard; PT30S fsi/sovereign). |
+| `CPX-003` | Credential revocation must propagate within the declared `revocation_sla`, and a revoked credential must be detectable at each use. Components must refresh their revocation cache no less frequently than the profile-governed cache TTL (PT1M standard; PT30S fsi/sovereign). |
 | `CPX-004` | Emergency rotation (security_event trigger) has no transition window. The old credential is revoked immediately. The new credential is delivered via the fastest available notification channel. |
 | `CPX-005` | The first credential value retrieval is audited in ALL profiles (credential_uuid, actor_uuid, retrieved_at, retrieval_uuid). Subsequent retrievals are audited in standard+ profiles. Emergency retrievals (rotation, security event) are always audited regardless of profile. |
 | `CPX-006` | Actor deprovisioning triggers immediate revocation of all credentials issued to that actor. Revocation events are published to the realization's event bus before the deprovisioning event is acknowledged. |
