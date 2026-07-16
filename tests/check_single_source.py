@@ -47,7 +47,6 @@ BASELINE_COLLISIONS = {
     "ENT-003": ["entities/resource-service-entities.md", "foundations/entity-types.md"],
     "ENT-004": ["entities/resource-service-entities.md", "foundations/entity-types.md"],
     "ENT-005": ["entities/resource-service-entities.md", "foundations/entity-types.md"],
-    "ENT-006": ["entities/service-dependencies.md", "foundations/entity-types.md"],
     # INF-* — persistence policies (data-contracts) vs information-provider policies. Same
     # prefix, two unrelated meanings; renumber the information-provider family.
     "INF-001": ["contracts/information-providers-advanced.md", "design-principles/data-contracts.md"],
@@ -58,11 +57,7 @@ BASELINE_COLLISIONS = {
     # OBS-* / STO-* — observability doc reuses IDs owned by service-dependencies / storage.
     "OBS-002": ["entities/service-dependencies.md", "observability/audit-provenance-observability.md"],
     "STO-004": ["contracts/storage-providers.md", "observability/audit-provenance-observability.md"],
-    # XTA-* — cross-tree/aggregation rules defined in both relationship + grouping docs.
-    "XTA-001": ["entities/entity-relationships.md", "entities/resource-grouping.md"],
-    "XTA-002": ["entities/entity-relationships.md", "entities/resource-grouping.md"],
-    "XTA-003": ["entities/entity-relationships.md", "entities/resource-grouping.md"],
-    "XTA-004": ["entities/entity-relationships.md", "entities/resource-grouping.md"],
+    # (XTA-001..004 and ENT-006 pruned 2026-07-15 — no longer collide on main.)
 }
 
 
