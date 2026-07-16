@@ -68,7 +68,7 @@
       "license_compatibility": "compatible-reference"
     },
     {
-      "standard": "RFC 8344",
+      "standard": "RFC-8344",
       "version": "RFC-8344",
       "standard_name": "ietf-ip (IP address on interface)",
       "role": "address-on-interface shape: `address`/prefix + `origin` (static|dhcp|link-layer|random)",
