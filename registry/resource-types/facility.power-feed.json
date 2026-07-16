@@ -10,7 +10,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Power Feed",
-    "description": "A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only).",
+    "description": "A power source feeding equipment \u2014 utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL \u2014 referenced by name only).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
@@ -69,7 +69,7 @@
   "outputs": {
     "status": {
       "type": "string",
-      "description": "Observed feed status — online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger."
+      "description": "Observed feed status \u2014 online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger."
     },
     "battery_charge": {
       "type": "integer",
@@ -89,16 +89,18 @@
       "role": "power-distribution / circuit rating vocabulary (Redfish DCIM PowerDistribution/Circuit)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "NUT",
       "version": "2.8",
       "standard_name": "ups.status",
-      "role": "UPS telemetry variable namespace (status, battery.charge, battery.runtime) — reference-only: NUT is GPL",
+      "role": "UPS telemetry variable namespace (status, battery.charge, battery.runtime) \u2014 reference-only: NUT is GPL",
       "source": "https://networkupstools.org/docs/developer-guide.chunked/apas01.html",
       "license": "GPL-2.0-or-later",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [

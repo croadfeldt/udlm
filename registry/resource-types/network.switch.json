@@ -124,7 +124,8 @@
       "role": "switch-as-asset vocabulary (chassis identity, ports collection)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "IEEE 802.1AB",
@@ -133,7 +134,8 @@
       "role": "discovered chassis identity (Chassis ID / System Name / System Description TLVs) \u2014 how a switch enters as a Discovered resource",
       "source": "https://standards.ieee.org/ieee/802.1AB/",
       "license": "IEEE",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     },
     {
       "standard": "RFC 8345",
@@ -142,7 +144,8 @@
       "role": "topology vocabulary \u2014 a switch is a node whose termination points (ports) anchor links",
       "source": "https://www.rfc-editor.org/rfc/rfc8345",
       "license": "IETF-Trust-TLP",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [

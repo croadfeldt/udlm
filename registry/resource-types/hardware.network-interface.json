@@ -234,7 +234,8 @@
       "role": "network-interface component vocabulary (NetworkAdapter/NetworkPort/NetworkDeviceFunction: MAC, speed, MTU)",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "RFC 8343",
@@ -243,7 +244,8 @@
       "role": "interface-stacking vocabulary \u2014 a composite interface (bond/bridge) references its member interfaces via lower_layer (RFC 8343 lower-layer-if)",
       "source": "https://www.rfc-editor.org/rfc/rfc8343",
       "license": "IETF-Trust-TLP",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "IEEE 802.1AX",
@@ -252,7 +254,8 @@
       "role": "bond / LACP link-aggregation vocabulary (device_class=aggregate, aggregation.mode=802.3ad)",
       "source": "https://standards.ieee.org/ieee/802.1AX/",
       "license": "IEEE",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     },
     {
       "standard": "IEEE 802.1Q",
@@ -261,7 +264,8 @@
       "role": "software L2 bridge + VLAN vocabulary (device_class=bridge, bridge.vlan_filtering, vlan_id)",
       "source": "https://standards.ieee.org/ieee/802.1Q/",
       "license": "IEEE",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     },
     {
       "standard": "OASIS TOSCA",
@@ -270,7 +274,8 @@
       "role": "relation vocabulary \u2014 connects_to peer-adjacency relation name (common-elements \u00a79)",
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "IEEE 802.1AB",
@@ -279,7 +284,8 @@
       "role": "connects_to peer-discovery vocabulary (host NIC <-> switch port adjacency)",
       "source": "https://standards.ieee.org/ieee/802.1AB/",
       "license": "IEEE",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     }
   ]
 }

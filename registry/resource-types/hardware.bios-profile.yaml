@@ -31,10 +31,11 @@ adopts:
     version: ">=2023.1"
     standard_name: Bios (Attributes) + BiosAttributeRegistry
     role: BIOS-settings shape + attribute-registry metadata — the schema/value-types/apply-time UDLM references, never copies
-    identity_join: { local_field: attribute_registry, standard_column: AttributeRegistry }
+    identity_join: {local_field: attribute_registry, standard_column: AttributeRegistry}
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
     license_compatibility: compatible-reference
+    disposition: tier2_record
 lifecycle:
   states: [Intent, Requested, Realized, Discovered]
   decommission: >-

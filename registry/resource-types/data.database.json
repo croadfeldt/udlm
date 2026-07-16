@@ -32,19 +32,19 @@
       "version": {
         "type": "string",
         "default": "latest",
-        "description": "Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints, E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract §8.1a): (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable against a pinned requirement and across compatible providers (declared, not live-queried); (2) the concrete version actually provisioned is recorded in outputs.applied_version for audit. Intent carries the abstract; realized carries the concrete."
+        "description": "Engine version. Concrete (e.g. `16`, engine-dependent \u2014 see registry conditional-constraints, E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract \u00a78.1a): (1) the provider DECLARES its channel\u2192version resolution so an abstract request stays comparable/conformable/validatable against a pinned requirement and across compatible providers (declared, not live-queried); (2) the concrete version actually provisioned is recorded in outputs.applied_version for audit. Intent carries the abstract; realized carries the concrete."
       },
       "resources": {
         "type": "object",
         "properties": {
           "instance_size": {
             "type": "string",
-            "description": "Provider-neutral size class (e.g. small|medium|large, or a named profile). Generic sizing INTENT — usable in place of, or alongside, explicit cpu/memory/storage. The PROVIDER reconciles it to concrete resources / its own instance classes at naturalization (DCM ADR-023, provider-naturalization boundary); UDLM/DCM does NOT define the mapping. A shared sizing option available to any resource type (common-elements §sizing)."
+            "description": "Provider-neutral size class (e.g. small|medium|large, or a named profile). Generic sizing INTENT \u2014 usable in place of, or alongside, explicit cpu/memory/storage. The PROVIDER reconciles it to concrete resources / its own instance classes at naturalization (DCM ADR-023, provider-naturalization boundary); UDLM/DCM does NOT define the mapping. A shared sizing option available to any resource type (common-elements \u00a7sizing)."
           },
           "cpu": {
             "type": "string",
             "pattern": "^([0-9]+m|[0-9]+(\\.[0-9]+)?)$",
-            "description": "CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) — Kubernetes-aligned quantity convention (Noam, #40). The provider reconciles to its concrete units at naturalization."
+            "description": "CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) \u2014 Kubernetes-aligned quantity convention (Noam, #40). The provider reconciles to its concrete units at naturalization."
           },
           "memory": {
             "type": "string",
@@ -69,7 +69,7 @@
   "outputs": {
     "applied_version": {
       "type": "string",
-      "description": "The concrete engine version the provider actually provisioned (audit record; realized-side). When the requested `version` was abstract (`latest`/`lts`) or omitted, this captures what it resolved to at realization — closing the loop between abstract intent and reality. Populated by the provider on realization (intent→realized; provider-contract §8.1a obligation 3)."
+      "description": "The concrete engine version the provider actually provisioned (audit record; realized-side). When the requested `version` was abstract (`latest`/`lts`) or omitted, this captures what it resolved to at realization \u2014 closing the loop between abstract intent and reality. Populated by the provider on realization (intent\u2192realized; provider-contract \u00a78.1a obligation 3)."
     },
     "connection_string": {
       "type": "string",
@@ -124,7 +124,8 @@
       },
       "source": "https://focus.finops.org/",
       "license": "CC-BY-4.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
     }
   ]
 }

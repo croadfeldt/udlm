@@ -112,7 +112,8 @@
       "role": "DHCPv4 scope / pool / lease vocabulary",
       "source": "https://www.rfc-editor.org/rfc/rfc2131",
       "license": "IETF-Trust",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     },
     {
       "standard": "ISC-Kea",
@@ -121,7 +122,8 @@
       "role": "reference realization \u2014 one DHCP provider's subnet/pool/reservation model (MPL-2.0, referenced by name only, not the type's grounding)",
       "source": "https://kea.readthedocs.io/",
       "license": "MPL-2.0",
-      "license_compatibility": "reference-only"
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [

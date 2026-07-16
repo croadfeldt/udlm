@@ -93,7 +93,8 @@
       "role": "the portable 'gateway' (network entry/exit point) concept",
       "source": "https://gateway-api.sigs.k8s.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ],
   "aliases": [

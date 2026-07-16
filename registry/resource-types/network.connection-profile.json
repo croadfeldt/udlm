@@ -69,7 +69,8 @@
       "role": "the whole config body by reference (Tier-2): state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver \u2014 NetworkManager declarative desired-state, 1:1 with OpenShift NNCP",
       "source": "https://nmstate.io/",
       "license": "Apache-2.0",
-      "license_compatibility": "compatible-reference"
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
     }
   ]
 }

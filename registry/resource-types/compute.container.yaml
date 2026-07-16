@@ -27,10 +27,11 @@ adopts:
     version: "1.1"
     standard_name: Image manifest / descriptor
     role: image reference + content-addressable digest vocabulary
-    identity_join: { local_field: image.digest, standard_column: digest }
+    identity_join: {local_field: image.digest, standard_column: digest}
     source: https://github.com/opencontainers/image-spec
     license: Apache-2.0
     license_compatibility: compatible-reference
+    disposition: tier1_value
   - standard: Open Application Model
     version: ">=0.3"
     standard_name: Component (container workload)
@@ -38,6 +39,7 @@ adopts:
     source: https://oam.dev/
     license: MIT
     license_compatibility: compatible-reference
+    disposition: tier1_value
   - standard: Kubernetes Container (core/v1)
     version: ">=1.29"
     standard_name: Container
@@ -46,6 +48,7 @@ adopts:
     license: CC-BY-4.0
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 lifecycle:
   states: [Intent, Requested, Realized, Discovered]
   decommission: >-
@@ -78,20 +81,20 @@ spec:
             - $ref: ../data-reference.schema.json#/$defs/data_reference
             - required: [reference_data_type]
               properties:
-                reference_data_type: { const: container_image }
+                reference_data_type: {const: container_image}
     command:
       type: array
-      items: { type: string }
+      items: {type: string}
       description: Entrypoint override.
     args:
       type: array
-      items: { type: string }
+      items: {type: string}
     resources:
       type: object
       properties:
-        instance_size: { type: string, description: "Provider-neutral size class (small|medium|large) \u2014 size by class in place of cpu/memory; the provider maps it at naturalization (common-elements \u00a72.2, ADR-014)." }
-        cpu: { type: number, minimum: 0.1, description: vCPU request in cores. }
-        memory: { type: string, pattern: "^[0-9]+(Mi|Gi|MB|GB)$" }
+        instance_size: {type: string, description: "Provider-neutral size class (small|medium|large) — size by class in place of cpu/memory; the provider maps it at naturalization (common-elements §2.2, ADR-014)."}
+        cpu: {type: number, minimum: 0.1, description: vCPU request in cores.}
+        memory: {type: string, pattern: "^[0-9]+(Mi|Gi|MB|GB)$"}
     process:
       type: object
       properties:
@@ -101,23 +104,23 @@ spec:
             type: object
             required: [name]
             properties:
-              name: { type: string }
-              value: { type: string, description: Literal value — non-secret only. }
+              name: {type: string}
+              value: {type: string, description: Literal value — non-secret only.}
               value_from:
                 type: object
                 description: Reference to a Security.CredentialRef or config source. Secret material is NEVER inline (DCM ADR-023).
                 properties:
-                  credential_ref: { type: string, description: handle or uuid of a Security.CredentialRef }
-                  key: { type: string }
+                  credential_ref: {type: string, description: handle or uuid of a Security.CredentialRef}
+                  key: {type: string}
         mounts:
           type: array
           items:
             type: object
             required: [mount_path, source_ref]
             properties:
-              mount_path: { type: string }
-              source_ref: { type: string, description: handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets). }
-              read_only: { type: boolean, default: true }
+              mount_path: {type: string}
+              source_ref: {type: string, description: handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets).: null}
+              read_only: {type: boolean, default: true}
     network:
       type: object
       properties:
@@ -127,15 +130,15 @@ spec:
             type: object
             required: [container_port]
             properties:
-              container_port: { type: integer, minimum: 1, maximum: 65535 }
-              published_port: { type: integer, minimum: 1, maximum: 65535 }
-              protocol: { type: string, enum: [tcp, udp], default: tcp }
-              visibility: { type: string, enum: [loopback, internal, external], default: internal }
+              container_port: {type: integer, minimum: 1, maximum: 65535}
+              published_port: {type: integer, minimum: 1, maximum: 65535}
+              protocol: {type: string, enum: [tcp, udp], default: tcp}
+              visibility: {type: string, enum: [loopback, internal, external], default: internal}
     runtime:
       type: object
       properties:
-        restart_policy: { type: string, enum: [always, on-failure, never], default: always }
-        replicas: { type: integer, minimum: 0, default: 1 }
+        restart_policy: {type: string, enum: [always, on-failure, never], default: always}
+        replicas: {type: integer, minimum: 0, default: 1}
 
 outputs:
   endpoint:

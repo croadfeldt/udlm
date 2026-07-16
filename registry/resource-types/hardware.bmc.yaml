@@ -33,11 +33,12 @@ adopts:
     version: ">=2023.1"
     standard_name: Manager + ComputerSystem.Reset (power/reset actions)
     role: management-controller data model + the power-control action vocabulary UDLM references, never restates
-    identity_join: { local_field: management_address, standard_column: Manager.EthernetInterfaces.IPv4Addresses }
+    identity_join: {local_field: management_address, standard_column: Manager.EthernetInterfaces.IPv4Addresses}
     source: https://www.dmtf.org/standards/redfish
     license: DMTF
     license_compatibility: compatible-reference
 
+    disposition: tier1_value
 lifecycle:
   states: [Discovered, Realized, Intent]
   decommission: >-
