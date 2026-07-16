@@ -127,7 +127,7 @@ provider_base_registration:
   # All providers declare these. NOTE (DCM ADR-022): the sovereignty_declaration is a CLAIM, not proof.
   # For sovereign/restricted zones DCM honors it for placement only when backed by a resolved
   # sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
-  # self_asserted tier (see storage-providers.md §11). Drift detection is the backstop, not the gate.
+  # self_asserted tier (see storage-providers.md §6). Drift detection is the backstop, not the gate.
   # SCOPE (UDLM ADR-004 §4): this is the provider-level DEFAULT stance. A capability MAY override it per
   # (verb × domain) category — finest-granularity-wins — because residency differs by what is realized
   # (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
