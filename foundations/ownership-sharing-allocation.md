@@ -76,14 +76,14 @@ resource_type_spec:
 
 **Structural model:**
 ```
-NetworkOps Tenant owns: IPAddressPool 10.0.0.0/16 (pool entity)
+NetworkOps Tenant owns: IPAddressPool 198.51.100.0/24 (pool entity)
   │
-  ├── AppTeam Tenant owns: IPAddress 10.0.1.45/32  ← allocation entity (new UUID, AppTeam's Tenant)
-  ├── DevTeam Tenant owns: IPAddress 10.0.1.46/32  ← allocation entity (new UUID, DevTeam's Tenant)
-  └── OpsTeam Tenant owns: IPAddress 10.0.1.47/32  ← allocation entity (new UUID, OpsTeam's Tenant)
+  ├── AppTeam Tenant owns: IPAddress 198.51.100.45/32  ← allocation entity (new UUID, AppTeam's Tenant)
+  ├── DevTeam Tenant owns: IPAddress 198.51.100.46/32  ← allocation entity (new UUID, DevTeam's Tenant)
+  └── OpsTeam Tenant owns: IPAddress 198.51.100.47/32  ← allocation entity (new UUID, OpsTeam's Tenant)
 ```
 
-The IPAddress entities are not pointers to the pool — they are real entities owned by their Tenants. If AppTeam decommissions 10.0.1.45/32, it is released back to the pool. The pool capacity increases. No other Tenant's allocation is affected.
+The IPAddress entities are not pointers to the pool — they are real entities owned by their Tenants. If AppTeam decommissions 198.51.100.45/32, it is released back to the pool. The pool capacity increases. No other Tenant's allocation is affected.
 
 **Examples:** IPAddress (from IPAddressPool), Subnet (from SubnetPool), VLAN ID (from VLANIDPool), StorageVolume (from StoragePool), PublicCertificate (from CertificateAuthorityPool).
 
@@ -116,8 +116,8 @@ Every allocation entity carries an `allocated_from` relationship to its source p
 relationship:
   relationship_uuid: <uuid>
   type: allocated_from
-  source_entity_uuid: <uuid>       # the allocation (e.g., IPAddress 10.0.1.45/32)
-  target_entity_uuid: <uuid>       # the pool (e.g., IPAddressPool 10.0.0.0/16)
+  source_entity_uuid: <uuid>       # the allocation (e.g., IPAddress 198.51.100.45/32)
+  target_entity_uuid: <uuid>       # the pool (e.g., IPAddressPool 198.51.100.0/24)
   source_tenant_uuid: <uuid>       # AppTeam Tenant
   target_tenant_uuid: <uuid>       # NetworkOps Tenant — cross-tenant relationship
   allocation_ref:
@@ -198,19 +198,19 @@ relationship:
 Some resources combine both patterns. A Subnet Pool is an allocatable pool. Each allocation (a specific /28) is owned by the consumer. But the /28 has a stake relationship to the parent /16 (which is shareable — owned by the network team, referenced by all subnets).
 
 ```
-NetworkOps Tenant owns: SupernetPool 10.0.0.0/8 (allocatable pool)
+NetworkOps Tenant owns: SupernetPool 203.0.113.0/24 (allocatable pool)
   │
-  ├── NetworkOps Tenant owns: 10.0.0.0/16 (allocation from /8 — NetworkOps-owned)
-  │     NetworkOps Tenant owns: 192.0.2.0/24 (allocation from /16 — NetworkOps-owned)
+  ├── NetworkOps Tenant owns: 203.0.113.0/25 (allocation from /24 — NetworkOps-owned)
+  │     NetworkOps Tenant owns: 203.0.113.0/26 (allocation from /25 — NetworkOps-owned)
   │
-  └── NetworkOps Tenant owns: 10.1.0.0/16 (allocation from /8 — NetworkOps-owned, shared)
-        ├── AppTeam Tenant owns: 10.1.0.0/24  ← consumer allocation (owned by AppTeam)
-        │     └── stake: attached to 10.1.0.0/16 (shareable — NetworkOps)
-        └── DevTeam Tenant owns: 10.1.1.0/24  ← consumer allocation (owned by DevTeam)
-              └── stake: attached to 10.1.0.0/16 (shareable — NetworkOps)
+  └── NetworkOps Tenant owns: 203.0.113.128/25 (allocation from /24 — NetworkOps-owned, shared)
+        ├── AppTeam Tenant owns: 203.0.113.128/26  ← consumer allocation (owned by AppTeam)
+        │     └── stake: attached to 203.0.113.128/25 (shareable — NetworkOps)
+        └── DevTeam Tenant owns: 203.0.113.192/26  ← consumer allocation (owned by DevTeam)
+              └── stake: attached to 203.0.113.128/25 (shareable — NetworkOps)
 ```
 
-The consumer-facing 10.1.0.0/24 is an allocation — AppTeam owns it. The parent 10.1.0.0/16 is shareable — NetworkOps owns it, AppTeam and DevTeam both have stakes. The 10.1.0.0/24 has both an `allocated_from` relationship (to the /24 pool that produced it) and an `attached_to` relationship (stake in the parent /16).
+The consumer-facing 203.0.113.128/26 is an allocation — AppTeam owns it. The parent 203.0.113.128/25 is shareable — NetworkOps owns it, AppTeam and DevTeam both have stakes. The 203.0.113.128/26 has both an `allocated_from` relationship (to the /25 pool that produced it) and an `attached_to` relationship (stake in the parent /25).
 
 ---
 

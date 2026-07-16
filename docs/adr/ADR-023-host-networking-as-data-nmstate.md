@@ -3,7 +3,7 @@
 **Status:** Accepted (maintainer decision, 2026-07-15)
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `docs/host-network-and-config-model.md` (the ratified mapping this records — the standards survey, the per-type model, and the `vis` worked case); ADR-013 (hardware component scope — the adapter is a kept component); `design-principles/adopted-standards.md` (Tier-2 adopt-by-reference); the affected types `network.ip-address`, `hardware.network-interface`, `network.dhcp-scope`, `network.address-service`, and the new `network.connection-profile`
+**Related:** `docs/host-network-and-config-model.md` (the ratified mapping this records — the standards survey, the per-type model, and the worked example); ADR-013 (hardware component scope — the adapter is a kept component); `design-principles/adopted-standards.md` (Tier-2 adopt-by-reference); the affected types `network.ip-address`, `hardware.network-interface`, `network.dhcp-scope`, `network.address-service`, and the new `network.connection-profile`
 **Tracking:** the quality-sweep network cluster (R4/R5/R6) — this ADR is the coherent grounding that resolves them together instead of piecemeal.
 
 > This ADR records the **decision + grounding**; the concrete per-type mapping and worked example live in `docs/host-network-and-config-model.md` (single-source, SPEC-DESIGN §33). It ratifies that proposal (previously "not yet an ADR — react before ratifying").
@@ -24,7 +24,7 @@ UDLM models several networking facts — an interface, its IP(s), DHCP reservati
 ## Why
 
 - **Convergence is the strongest adopt signal.** Four independent open standards agreeing on `{address, prefix, origin}` + parent-by-reference means UDLM should adopt the shape, not invent one.
-- **NMstate over nmcli.** nmcli is imperative (commands); NMstate is the **declarative desired-state** API over NetworkManager — the right primitive for a declarative data model. It is **Apache-2.0, a Red Hat project** (RHEL `network`-role backend, OpenShift Kubernetes-NMState operator) — the OSS/RH-aligned choice — and net-negative: it supersedes the bespoke `host_macvlan`/`host_network`/`safe_net_change` Ansible vars.
+- **NMstate over nmcli.** nmcli is imperative (commands); NMstate is the **declarative desired-state** API over NetworkManager — the right primitive for a declarative data model. It is **Apache-2.0, a Red Hat project** (RHEL `network`-role backend, OpenShift Kubernetes-NMState operator) — the OSS/RH-aligned choice — and net-negative: it supersedes bespoke per-tool host-network vars.
 - **Consistency.** One convergent form for every networking fact: the interface (`Hardware.NetworkInterface`), the address (`Network.IPAddress`), the desired config (`Network.ConnectionProfile`), and the DHCP surface — all speak RFC 8344/NMstate, bound by dependency edges.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
