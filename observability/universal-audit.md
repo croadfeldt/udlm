@@ -313,26 +313,17 @@ This cannot happen. While any referenced entity is live, `retention_status: live
 
 ---
 
-## 7. Two-Stage Audit — Synchronous Commit + Async Enrichment
+## 7. The commit-log entry and the synchronous-durability invariant
 
-### 7.1 The Design
-
-DCM uses a **two-stage audit model** that provides synchronous durability guarantees without impacting request processing performance.
-
-```
-Stage 1 — Commit Log (synchronous, in critical path, < 1ms)
-Stage 2 — Audit Store (asynchronous, out of critical path, full record)
-```
-
-**Stage 1** writes a minimal Commit Log entry synchronously to a **consensus-durable store** (Raft-class consensus; **etcd is the reference implementation** — the Commit Log is a store CONTRACT, not a technology, per [data-model-core](../foundations/data-model-core.md) §6 [D1]). The write is confirmed when a quorum of Commit Log replicas acknowledges it. The operation returns success after Stage 1 confirms — not after the Audit Store write.
-
-**Stage 2** runs asynchronously via the Audit Forward Service: enriches the minimal Commit Log entry into a full audit_record, computes the hash chain, and writes to the Audit Store with retry.
-
-### 7.2 Stage 1 — Commit Log Entry (minimal, ultra-fast)
+The contract requires a change's occurrence to be **durably recorded before the operation reports
+success** — no silent, unaudited change. That guarantee is carried by a minimal **commit-log entry** (a
+registered type, `registry/commit-log-entry.schema.json`), written synchronously to a consensus-durable
+store before the operation returns; the full `audit_record` (§3) is enriched from it and hash-chained
+afterwards.
 
 ```yaml
 commit_log_entry:
-  entry_uuid: <uuid>            # links to full audit_record in Stage 2
+  entry_uuid: <uuid>            # links to the full audit_record
   sequence: <integer>           # monotonically increasing — global ordering
   timestamp: <RFC 3339 UTC 'Z', microsecond precision>   # authoritative audit timestamp (common-elements §8.1)
   entity_uuid: <uuid>
@@ -341,68 +332,22 @@ commit_log_entry:
   actor_uuid: <uuid>            # immediate actor only
   request_uuid: <uuid>          # if applicable
   tenant_uuid: <uuid>
-  change_fingerprint: <SHA-256 of change payload>
-  # change_fingerprint enables Stage 2 to verify full record matches Stage 1
-
+  change_fingerprint: <SHA-256 of change payload>   # lets enrichment verify the full record matches
   status: <pending_forward|forwarded|forward_failed>
-  forwarded_at: <RFC 3339 UTC 'Z'> # populated by Audit Forward Service
-  audit_record_uuid: <uuid>     # UUID of full audit_record in Audit Store
+  forwarded_at: <RFC 3339 UTC 'Z'>
+  audit_record_uuid: <uuid>     # UUID of the full audit_record
 ```
 
-**Stage 1 guarantees:** the change happened, at this exact time, this actor performed it, this entity was affected, this action was taken. Full detail follows in Stage 2.
+**Contract invariants:**
+- The entry is **durable before success is returned**; if the durable store cannot confirm the write, the
+  operation **aborts** — never a silent change (AUD-001).
+- The entry's **timestamp is the authoritative audit timestamp** (AUD-013) — not the later enrichment time.
+- Every entry is **eventually enriched** into a full `audit_record` whose hash chain covers it, and any
+  un-forwarded entries are replayed on restart before new operations proceed (AUD-009/011).
 
-**Commit Log quorum write** (distributed deployment):
-```
-Write confirmed when quorum acknowledges:
-  ├── Replica 1 (local node)     → ACK ─┐
-  ├── Replica 2 (different node) → ACK ─┤ quorum (2/3) — write confirmed
-  └── Replica 3 (different zone) → (async best-effort)
-```
-
-### 7.3 Stage 2 — Audit Forward Service
-
-```
-Audit Forward Service reads pending_forward Commit Log entries
-  │
-  ├── Retrieve full change context from DCM internal state
-  │   (field values before/after, complete actor chain, relationship detail)
-  │
-  ├── Construct complete audit_record (full structure per Section 3)
-  │   - Compute record_hash + previous_record_hash (hash chain)
-  │   - Set retention.referenced_entities
-  │
-  ├── Write to Audit Store
-  │   → Success: mark commit_log_entry status: forwarded
-  │   → Failure: retry with exponential backoff
-  │              N retries exhausted → status: forward_failed, alert admin
-  │
-  └── Commit Log entry eligible for cleanup after:
-      status: forwarded AND entry age > Commit Log retention window
-```
-
-### 7.4 Recoverability
-
-| Failure Scenario | Recovery |
-|-----------------|---------|
-| DCM crashes after Stage 1, before Stage 2 | On restart, Audit Forward Service replays all `pending_forward` entries |
-| Audit Store unavailable | Commit Log accumulates; Audit Forward Service retries when Audit Store recovers |
-| Stage 2 fails mid-enrichment | Commit Log entry remains `pending_forward`; retried from committed Stage 1 data |
-| Commit Log quorum unavailable | Stage 1 fails → operation aborted → no silent change |
-| All Commit Log replicas lost | Recovery from replica backup; forward_failed entries investigated |
-
-### 7.5 Performance Characteristics
-
-| Component | Latency | In Critical Path? |
-|-----------|---------|-----------------|
-| Stage 1 — Commit Log quorum write | < 1ms (local NVMe + Raft-class consensus) | Yes |
-| Stage 2 — Audit Store write | 5–50ms (network + indexing) | No |
-| Full audit record visible | Seconds to minutes after Stage 1 | No |
-
-**The Stage 1 timestamp is the authoritative audit timestamp.** Stage 2 write time is when the full record became queryable — not when the change occurred.
-
----
-
----
+*How* a realization implements this — the two-stage synchronous-commit / asynchronous-forward pipeline, the
+quorum/consensus store (e.g. a Raft-class store such as etcd), the forward-service retry and recovery
+handling, and the latency budget — is realization architecture, specified in the DCM architecture docs.
 
 ## 8. Tamper-Evidence and Payload Integrity — Merkle Tree
 
@@ -500,7 +445,7 @@ At **field** granularity, both are populated. Full forensic detail.
 
 ### 8.3 Signed Tree Heads
 
-The Audit Service periodically computes a new Merkle root and signs it:
+The audit tree's root of trust is a signed Merkle root, recomputed and signed periodically (the interval is profile-governed; the computing component is a realization concern):
 
 ```yaml
 signed_tree_head:
@@ -514,36 +459,23 @@ Signed Tree Heads are computed every N leaves or every T seconds (configurable).
 
 ### 8.4 Verification
 
-**Inclusion proof** — prove a specific record exists in the tree:
-```
-POST /api/v1/audit/tree/inclusion-proof
-Input: leaf_hash, tree_size
-Output: proof path (O(log n) hashes from leaf to root)
-```
+Three proofs are the verification contract (RFC 9162). A conforming realization MUST be able to produce
+them; how it exposes them (the API surface) is realization control-plane, not fixed here.
 
-**Consistency proof** — prove the current tree is a strict superset of a previous tree:
-```
-POST /api/v1/audit/tree/consistency-proof
-Input: old_tree_size, new_tree_size
-Output: proof path (O(log n) hashes)
-```
-
-**Request chain verification** — prove a specific request's full pipeline integrity:
-```
-POST /api/v1/audit/tree/verify-request/{request_uuid}
-Output: all leaves for the request + inclusion proofs + payload hash chain verification
-  - Verifies each leaf is in the tree (inclusion proofs)
-  - Verifies output_payload_hash[N] == input_payload_hash[N+1] (chain of custody)
-  - Verifies all signatures against known signing keys
-  - Verifies timestamps are monotonically increasing
-  - Returns: VERIFIED | CHAIN_BREAK (with break location) | SIGNATURE_INVALID
-```
+- **Inclusion proof** — proves a specific record exists in the tree: an O(log n) proof path from leaf to
+  root, checkable against a signed tree head without database access.
+- **Consistency proof** — proves the current tree is a strict superset of an earlier tree (an O(log n)
+  path), so any modification of already-logged records is detectable.
+- **Request-chain verification** — proves a request's full pipeline integrity: every leaf is in the tree
+  (inclusion), `output_payload_hash[N] == input_payload_hash[N+1]` (chain of custody), signatures verify
+  against known keys, and timestamps are monotonic. Result: `VERIFIED | CHAIN_BREAK (with location) |
+  SIGNATURE_INVALID`.
 
 ### 8.5 Applicable Standards
 
-| Standard | Control | How DCM satisfies it |
+| Standard | Control | How the model satisfies it |
 |----------|---------|---------------------|
-| RFC 9162 | Certificate Transparency v2.0 — Merkle tree, inclusion/consistency proofs, signed tree heads | Structural model for DCM's audit tree |
+| RFC 9162 | Certificate Transparency v2.0 — Merkle tree, inclusion/consistency proofs, signed tree heads | Structural model for the audit tree |
 | NIST 800-53 AU-9(3) | Cryptographic protection of audit information | Merkle tree + signed tree heads |
 | NIST 800-53 AU-10(2) | Validate binding of information producer identity | Each leaf signed by producing service |
 | NIST 800-53 AU-10(3) | Chain of custody | input/output payload hash linking across leaves |
@@ -557,7 +489,7 @@ Output: all leaves for the request + inclusion proofs + payload hash chain verif
 
 ---
 
-## 9. DCM System Policies
+## 9. System policies (audit)
 
 | Policy | Rule |
 |--------|------|
@@ -569,9 +501,9 @@ Output: all leaves for the request + inclusion proofs + payload hash chain verif
 | `AUD-006` | Audit records form a Merkle tree (RFC 9162 pattern). Each leaf carries a signature from the producing service and a payload hash linking it to adjacent leaves in the request chain. |
 | `AUD-007` | The action field must use the closed vocabulary — free-text action fields are invalid and must be rejected at write time. |
 | `AUD-008` | Audit Store implementations must support queries by: entity_uuid, actor_uuid, action, timestamp range, tenant_uuid, request_uuid, leaf_index, and retention_status. |
-| `AUD-009` | The Audit Forward Service must deliver all Commit Log entries to the Audit Store with exponential backoff retry. Commit Log entries may only be cleared after both: (a) Audit Store confirms receipt AND (b) entry has aged beyond the Commit Log retention window. |
-| `AUD-010` | Merkle tree verification (inclusion proofs, consistency proofs, request chain verification) must be available as first-class DCM operations. Verification failures trigger immediate security alerts. |
-| `AUD-011` | On DCM restart, the Audit Forward Service must replay all `status: pending_forward` Commit Log entries before accepting new operations. |
+| `AUD-009` | Every commit-log entry must be delivered to the audit store with retry; an entry may only be cleared after both (a) the audit store confirms receipt AND (b) the entry has aged beyond the commit-log retention window. (The delivery/forward process is a realization concern.) |
+| `AUD-010` | Merkle-tree verification (inclusion, consistency, request-chain proofs) must be available as a first-class operation; verification failures trigger immediate security alerts. |
+| `AUD-011` | On restart, a realization must replay all `status: pending_forward` commit-log entries before accepting new operations. |
 | `AUD-012` | Signed Tree Heads must be computed at the interval configured by the deployment profile. The STH signing key is held by a **Credential Provider** ([governance/credentials.md](../governance/credentials.md) — a capability-declaring provider selected against the profile's assurance/attestation floor); key values are NEVER stored in realization stores (CPX-001). The substrate carries only the key reference and signature. |
 | `AUD-013` | The Stage 1 timestamp in the Commit Log is the authoritative audit timestamp. Stage 2 enrichment timestamps record when the full audit record became queryable — not when the change occurred. |
 | `AUD-014` | Audit granularity level is configured per deployment profile. `fsi` and `sovereign` profiles require `field` granularity — this cannot be downgraded. |
