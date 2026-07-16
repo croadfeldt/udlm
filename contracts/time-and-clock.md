@@ -45,6 +45,12 @@ A conformant realization MUST:
   wire timestamps).
 - NEVER use Unix epoch seconds, fractional days, or other non-ISO encodings on the wire.
 
+A **UUIDv7** identifier is itself a conformant time source at millisecond resolution: per RFC 9562 it embeds
+a Unix-epoch **millisecond** UTC timestamp. Where an artifact's identity and its creation time are the same
+fact (e.g. `sequence_uuid`, §4), the UUIDv7 carries the time — no separate wire timestamp is needed for it.
+It does not replace an ISO 8601 field where finer human-readable time is required, and it is a millisecond
+source (not sub-millisecond — §4).
+
 ### 2.1 Required precision and format
 
 | Field type | Required precision | Wire format example |
@@ -86,10 +92,13 @@ orders as follows:
    ([`universal-audit.md`](../observability/universal-audit.md)) is hash-linked:
    each entry references the hash of its predecessor. Ties (entries appended in
    the same millisecond) break on `sequence_uuid`, a **UUIDv7** generated at
-   append time — a millisecond Unix timestamp plus, per RFC 9562, a monotonic
-   counter in its sub-millisecond bits, so same-millisecond appends stay ordered.
-   A conformant peer MUST reconstruct the total order of any contiguous segment
-   from the hash links + `sequence_uuid` alone.
+   append time. A UUIDv7 carries a **millisecond**-resolution Unix timestamp (not
+   sub-millisecond); the same-millisecond tie-break is **structural, not
+   temporal** — a **monotonic counter** seeded into its random field (RFC 9562
+   §6.2 monotonicity), *not* finer-grained time. A conformant peer MUST
+   reconstruct the total order of any contiguous segment from the hash links +
+   `sequence_uuid` **alone** — the wall-clock timestamp (§3) is never transmitted
+   or compared for ordering; it is for correlation and display only.
 2. **Across streams — a causal partial order.** Every event carries **causal
    references** (the events/entities it depends on — already present as the audit
    record's references). A conformant peer MUST preserve *happened-after* order:
@@ -175,17 +184,23 @@ Provider callbacks include timestamps. A conformant peer:
 
 ## 8. Leap seconds
 
-A conformant realization MUST keep time **monotonic and UTC-traceable** through a
-leap-second event (time never steps backward). It:
+**Audit order is not at risk during a leap second**, because ordering is **structural** (§4): the hash
+chain and the `sequence_uuid` monotonic counter are unaffected by any wall-clock adjustment. So this
+section is about **clock accuracy**, not order — and it deliberately does **not** require a specific
+leap-handling strategy, because there is no interoperable standard for one (smearing schemes differ across
+public-cloud providers) and a peer's choice is not observable on the wire (timestamps are millisecond UTC
+either way, §2).
 
-- **SHOULD** smear the leap second (a gradual adjustment over a window) — the
-  approach taken by major time services, and forward-compatible with the CGPM's
-  decision to abandon leap seconds by 2035.
-- **MAY** instead use a leap-aware strategy (e.g. a repeated or `:60` second) that
-  remains monotonic and UTC-traceable.
-- MUST declare its strategy in its conformance declaration.
+A conformant realization MUST:
+- Keep its clock **UTC-traceable** across a leap-second event — it stays within its profile's
+  `max_divergence` bound (§6); the leap does not push it out of tolerance.
+- **Declare its leap-handling strategy** in its conformance declaration.
 
-Ordering is unaffected either way, because it is structural (§4), not clock-derived.
+It **MAY** use any strategy that preserves that traceability — smearing (a gradual adjustment over a window,
+the common public-cloud approach, forward-compatible with the CGPM's decision to retire leap seconds by
+2035) or a leap-aware representation (a repeated or `:60` second). Note that "monotonic" applies to **audit
+ordering** (guaranteed structurally, §4), **not** to the wall-clock timestamp — a smeared or repeated second
+is fine precisely because order never comes from the clock.
 
 ---
 
@@ -207,7 +222,8 @@ A conformant realization MUST:
 - Truncate or reject sub-millisecond precision on the wire.
 - Reconstruct total order from hash links + `sequence_uuid` **without** relying on
   wall-clock comparison (§4).
-- Keep time monotonic and UTC-traceable through leap events (§8).
+- Keep the clock UTC-traceable (within the profile bound) through leap events, and declare its
+  leap-handling strategy (§8); audit order is structural (§4), never clock-derived.
 
 ---
 
