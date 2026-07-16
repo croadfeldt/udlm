@@ -210,7 +210,7 @@ composite_resource_entity:
 
 ### 2.3 Process Resource Entity
 
-A **Process Resource Entity** represents an ephemeral execution — an automation job, playbook, pipeline, workflow, or script execution. It does not persist after completion. Its lifecycle is terminal-focused: every Process Resource Entity ends in either COMPLETED, FAILED, or CANCELLED.
+A **Process Resource Entity** represents a short-lived (transient) execution — an automation job, playbook, pipeline, workflow, or script execution. It does not persist after completion. Its lifecycle is terminal-focused: every Process Resource Entity ends in either COMPLETED, FAILED, or CANCELLED.
 
 **Characteristics:**
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
@@ -228,7 +228,7 @@ REQUESTED → INITIATED → EXECUTING → COMPLETED (terminal)
                                   → CANCELLED  (terminal — requires explicit cancel request)
 ```
 
-No SUSPENDED state. No PENDING_REVIEW state. Process Resources are ephemeral — they do not enter states that require ongoing management.
+No SUSPENDED state. No PENDING_REVIEW state. Process Resources are transient — they do not enter states that require ongoing management.
 
 ```yaml
 process_resource_entity:

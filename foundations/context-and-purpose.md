@@ -69,7 +69,7 @@ At any point in a realization's pipeline, for any field in any data object, it m
 
 ### 4.2 Why Field-Level Lineage Matters
 
-Document-level versioning alone is insufficient for DCM's requirements. Consider a resource request flowing through the pipeline:
+Document-level versioning alone is insufficient for the model's requirements. Consider a resource request flowing through the lifecycle:
 
 1. Consumer selects a catalog item — catalog item UUID recorded
 2. Base resource definition layer applied — base layer UUID recorded, fields established
@@ -93,7 +93,7 @@ What is **normative** is that a field's evolution is *reconstructable*: for any 
 
 ### 4.4 Provenance Metadata Structure
 
-Every field that can be created or modified by any DCM process carries provenance metadata alongside its value. The conceptual structure is:
+Every field that can be created or modified by any process carries provenance metadata alongside its value. The conceptual structure is:
 
 ```yaml
 field_name:
@@ -159,7 +159,7 @@ UDLM is governed by three foundational constraints that apply universally and wi
 
 ### 5.1 Declarative
 
-Data in DCM describes **what something is or should be**, not how to achieve it. Every entity in the data model is a complete, self-describing statement of state. The procedures required to achieve that state are the concern of the Service Provider, not the data model.
+Data in the model describes **what something is or should be**, not how to achieve it. Every entity in the data model is a complete, self-describing statement of state. The procedures required to achieve that state are the concern of the Service Provider, not the data model.
 
 This means:
 - A resource definition declares its desired configuration, not the steps to configure it
@@ -168,7 +168,7 @@ This means:
 
 ### 5.2 Idempotent in Operation
 
-Applying the same data to the same system multiple times must always produce the same result. No operation on DCM data should have different outcomes based on how many times it has been applied.
+Applying the same data to the same system multiple times must always produce the same result. No operation on the model's data should have different outcomes based on how many times it has been applied.
 
 This is critical for:
 - **Drift reconciliation** — reapplying desired state to a drifted resource must produce correct results
