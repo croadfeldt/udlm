@@ -1,16 +1,16 @@
 # UDLM — Subscription Lifecycle Management
 
 **Document Status:** 📋 Draft — Ready for Review
-**Document Type:** Architecture Specification — Subscription as First-Class Data
+**Document Type:** Data model — Subscription as First-Class Data
 **Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md) | [Scheduled Requests](scheduled-requests.md) | [Event Catalog](../contracts/event-catalog.md)
 
 ---
 
 ## 1. What a Subscription Is
 
-A **Subscription** is a first-class DCM Data artifact representing an ongoing, managed relationship between a Tenant and a set of capabilities delivered by one or more Providers. Unlike a one-time request that produces a resource and completes, a subscription persists — it has terms, renewal cycles, tier levels, and ongoing obligations that both DCM and the Provider must honor.
+A **Subscription** is a first-class Data artifact representing an ongoing, managed relationship between a Tenant and a set of capabilities delivered by one or more Providers. Unlike a one-time request that produces a resource and completes, a subscription persists — it has terms, renewal cycles, tier levels, and ongoing obligations that both the platform and the Provider must honor.
 
-A subscription manages the lifecycle of the **binding** — what the consumer is entitled to receive, under what terms, for how long. The **resources** that the subscription produces and maintains are standard DCM entities (infrastructure_resource, process_resource, composite_resource) with their own lifecycles. The subscription governs them; it is not them.
+A subscription manages the lifecycle of the **binding** — what the consumer is entitled to receive, under what terms, for how long. The **resources** that the subscription produces and maintains are standard entities (infrastructure_resource, process_resource, composite_resource) with their own lifecycles. The subscription governs them; it is not them.
 
 **Examples of subscriptions:**
 - A managed database service — ongoing provisioning, patching, backup, scaling within subscription tier
@@ -100,7 +100,7 @@ subscription:
 
 ### 2.2 Relationship to Existing Entity Types
 
-A Subscription is **not** a new entity type alongside infrastructure_resource, process_resource, and composite_resource. It is a **binding artifact** — a Data object that governs the lifecycle of entities. The entities it manages are standard DCM entities with their own types, states, and lifecycles.
+A Subscription is **not** a new entity type alongside infrastructure_resource, process_resource, and composite_resource. It is a **binding artifact** — a Data object that governs the lifecycle of entities. The entities it manages are standard entities with their own types, states, and lifecycles.
 
 ```
 Subscription (binding — terms, entitlements, renewal)
@@ -231,7 +231,7 @@ ACTIVE ───────────── Ongoing — provider fulfills sub
 
 ### 4.1 State Transitions and Policy Triggers
 
-Every state transition fires a subscription lifecycle event (see Section 7) and triggers Policy Engine evaluation. Policies govern:
+Every state transition fires a subscription lifecycle event (see Section 7) and triggers policy evaluation. Policies govern:
 
 - Whether auto-renewal is permitted for this tenant/tier/resource type
 - Whether tier upgrades require approval (compliance-class Validation Policy)
@@ -243,38 +243,18 @@ Every state transition fires a subscription lifecycle event (see Section 7) and 
 
 ## 5. Provider-Originated Changes Through Subscriptions
 
-This is the critical integration point. When a provider has updates to deliver under a subscription — a software patch, a version upgrade, a configuration change, a capacity adjustment — those changes flow through DCM as **provider-originated updates**, following the standard flow documented in [provider-contract.md](../contracts/provider-contract.md).
+This is the critical integration point. When a provider has updates to deliver under a subscription — a software patch, a version upgrade, a configuration change, a capacity adjustment — those changes flow through the platform as **provider-originated updates**, following the standard flow documented in [provider-contract.md](../contracts/provider-contract.md).
 
-### 5.1 The Standard Provider-Originated Update Flow
+### 5.1 The provider-originated update flow (contract vs mechanism)
 
-Subscriptions do not introduce a new flow — they create a **context** in which the existing flow fires more frequently and with pre-negotiated terms.
-
-```
-Provider has an update for a managed entity
-    │
-    ▼
-POST /api/v1/provider/entities/{entity_uuid}/update-notification
-    │
-    ▼
-DCM validates: Is this entity managed by an active subscription?
-    │
-    ├── Yes → Check subscription entitlements:
-    │         Is this update type within the subscription's capabilities?
-    │         Is this update channel auto_apply for this subscription?
-    │         │
-    │         ├── Auto-apply enabled → Pre-authorized update flow
-    │         │   → Policy Engine evaluates (pre-authorization compliance-class Validation Policy)
-    │         │   → If within declared bounds → write Realized State snapshot
-    │         │   → Audit record: source_type = subscription_update
-    │         │   → Events: entity.modified, subscription.update_applied
-    │         │
-    │         └── Auto-apply disabled → Consumer approval required
-    │             → Consumer notification with update details
-    │             → Consumer approves/rejects via API or GitOps
-    │             → Standard provider_update approval flow
-    │
-    └── No → Standard provider-originated update (non-subscription context)
-```
+Subscriptions do not introduce a new flow — they create a **context** in which the standard
+provider-originated-update flow ([provider-contract.md](../contracts/provider-contract.md)) fires more
+often and with pre-negotiated terms. The contract: a provider pushes an update through the standard callback
+(never directly to a managed entity); if the entity is under an active subscription and the update's channel
+is `auto_apply` within its declared bounds (§5.2), the update is applied without consumer intervention,
+otherwise it requires consumer approval; either way it is policy-evaluated and audited
+(`source_type: subscription_update`) and emits the subscription update events (§7). The concrete routing —
+the callback endpoint and the evaluation/dispatch steps — is realization runtime (DCM).
 
 ### 5.2 Pre-Authorization via Subscription Terms
 
@@ -306,94 +286,32 @@ If all checks pass, the update is applied without consumer intervention. This is
 When a provider accepts a subscription (by acknowledging the subscription dispatch), it takes on contractual obligations:
 
 - **Delivery:** Provide the capabilities declared in the subscription tier
-- **Update delivery:** Push updates through DCM's standard callback API — never directly to managed entities
+- **Update delivery:** Push updates through the standard callback API — never directly to managed entities
 - **Health reporting:** Report health of managed entities through the standard health endpoint
 - **Capacity honoring:** Stay within the resource limits declared in subscription entitlements
-- **Discovery:** Include managed entities in discovery responses so DCM can detect drift
+- **Discovery:** Include managed entities in discovery responses so the platform can detect drift
 - **Decommission compliance:** Clean up managed entities when subscription is cancelled/expired after grace period
 
 These obligations are enforced by the existing Provider Contract mechanisms — health monitoring, drift detection, and the Governance Matrix. The subscription doesn't create new enforcement — it creates a context that existing enforcement applies to.
 
 ---
 
-## 6. Subscription Request Pipeline
+## 6. Subscription request pipeline
 
-A subscription request follows the standard DCM request pipeline with subscription-specific Transformation and Validation policies:
-
-### 6.1 Consumer Submits Subscription Request
-
-Via API:
-```
-POST /api/v1/requests
-{
-  "catalog_item_uuid": "<managed-postgres-uuid>",
-  "fields": {
-    "consumption_model": "subscription",
-    "subscription_tier": "standard",
-    "auto_renew": true,
-    "display_name": "prod-postgres",
-    "vcpus": 8,
-    "memory_gb": 32
-  }
-}
-```
-
-Via GitOps:
-```yaml
-# intent-store/{tenant_uuid}/Database/PostgreSQL/{entity_uuid}/intent.yaml
-apiVersion: dcm/v1
-kind: SubscriptionRequest
-metadata:
-  handle: "team-alpha/prod-postgres"
-spec:
-  catalog_item: "managed-postgres"
-  consumption_model: subscription
-  subscription_tier: standard
-  auto_renew: true
-  fields:
-    vcpus: 8
-    memory_gb: 32
-```
-
-### 6.2 Pipeline Processing
-
-```
-Intent captured
-    │
-    ▼
-Layer Assembly (Request Processor)
-    │  ── Core layers (profile defaults)
-    │  ── Service layers (subscription tier defaults)
-    │  ── Consumer fields (overrides)
-    │  ── Subscription terms injected by Transformation Policy
-    ▼
-Policy Evaluation
-    │  ── Validation: tier exists, entitlements valid, resource limits within tier
-    │  ── Compliance-class Validation Policy: tenant authorized for subscription model, budget approval
-    │  ── Transformation: inject subscription_uuid, terms, renewal schedule
-    │  ── Scoring: aggregate risk score for approval routing
-    ▼
-Placement (if applicable — select provider)
-    ▼
-Subscription Created (PENDING → PROVISIONING)
-    │  ── Subscription artifact written to Subscription Store
-    │  ── Provider dispatched to create initial managed entities
-    ▼
-Provider Realizes Initial Entities
-    │  ── Standard realization flow for each managed entity
-    │  ── Each entity linked to subscription via subscription_binding relationship
-    ▼
-Subscription ACTIVE
-    │  ── Ongoing: provider pushes updates via callback
-    │  ── DCM applies updates per subscription terms
-    │  ── Discovery monitors managed entities for drift
-```
+A subscription request is an ordinary request whose fields carry the subscription intent
+(`consumption_model: subscription`, `subscription_tier`, `auto_renew` — §2, §3), submitted through the
+standard request channel. A realization then assembles layers (profile → tier defaults → consumer overrides
+→ subscription terms), evaluates the subscription Validation/Transformation policies (§8), places a provider
+if needed, writes the subscription artifact, and dispatches the provider to create the initial managed
+entities — each linked back by the `subscription_binding` relationship (§2.2). That **pipeline is
+realization architecture**: the intent-store layout, the assembly/evaluation/placement/dispatch steps, and
+the request API are specified in the DCM architecture docs, not here.
 
 ---
 
 ## 7. Subscription Events
 
-All subscription events use the standard DCM event envelope (doc 33) and are published to the `dcm-events` Kafka topic.
+All subscription events use the standard event envelope ([event-catalog.md](../contracts/event-catalog.md)); the transport (event bus / topic) is a realization concern.
 
 | Event Type | Fires When | Urgency |
 |------------|-----------|---------|
@@ -417,7 +335,7 @@ All subscription events use the standard DCM event envelope (doc 33) and are pub
 
 ## 8. Subscription Policies
 
-Subscriptions are governed by the same Policy Engine as all other DCM operations. No new policy types are needed — existing types apply:
+Subscriptions are governed by the same policy contract as all other operations. No new policy types are needed — existing types apply:
 
 ### 8.1 Compliance-class Validation Policies
 
@@ -451,124 +369,24 @@ Subscriptions are governed by the same Policy Engine as all other DCM operations
 
 ---
 
-## 9. Consumer API Endpoints
+## 9. Consumer and Admin API
 
-Subscription management is exposed through the Consumer API:
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/v1/subscriptions` | Create a subscription (via request pipeline) |
-| `GET` | `/api/v1/subscriptions` | List tenant's subscriptions (paginated) |
-| `GET` | `/api/v1/subscriptions/{uuid}` | Get subscription details |
-| `PATCH` | `/api/v1/subscriptions/{uuid}` | Update subscription (tier change, auto_renew toggle) |
-| `POST` | `/api/v1/subscriptions/{uuid}:cancel` | Cancel subscription (starts grace period) |
-| `POST` | `/api/v1/subscriptions/{uuid}:renew` | Manually renew subscription |
-| `POST` | `/api/v1/subscriptions/{uuid}:suspend` | Suspend subscription |
-| `POST` | `/api/v1/subscriptions/{uuid}:resume` | Resume suspended subscription |
-| `GET` | `/api/v1/subscriptions/{uuid}/entities` | List managed entities under this subscription |
-| `GET` | `/api/v1/subscriptions/{uuid}/updates` | List pending and applied updates |
-| `POST` | `/api/v1/subscriptions/{uuid}/updates/{update_uuid}:approve` | Approve a pending update |
-| `POST` | `/api/v1/subscriptions/{uuid}/updates/{update_uuid}:reject` | Reject a pending update |
-
-Admin API extensions:
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/admin/subscriptions` | List all subscriptions across tenants |
-| `GET` | `/api/v1/admin/subscriptions/expiring` | Subscriptions approaching expiry |
-| `POST` | `/api/v1/admin/subscriptions/{uuid}:force-cancel` | Admin force cancellation |
+Subscription management (create, list, get, change tier, cancel, renew, suspend, resume, list managed
+entities, approve/reject updates) and the admin extensions (list-all, expiring, force-cancel) are exposed
+through a realization's Consumer/Admin API. That API surface is control-plane, specified in the DCM
+architecture docs — the data it operates over (the subscription artifact, its states, its updates) is
+defined in §2–§4 and §7.
 
 ---
 
-## 10. Subscription Store
+## 10. Subscription storage
 
-Subscriptions are stored in the DCM operational store alongside other first-class artifacts. The store implementation follows the data store contract (doc 11).
-
-```sql
-CREATE TABLE subscriptions (
-    subscription_uuid       UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    tenant_uuid             UUID NOT NULL REFERENCES tenants(tenant_uuid),
-    handle                  VARCHAR(256) NOT NULL,
-    display_name            VARCHAR(256) NOT NULL,
-    catalog_item_uuid       UUID NOT NULL,
-    resource_type           VARCHAR(256) NOT NULL,
-    provider_uuid           UUID NOT NULL,
-    lifecycle_state         VARCHAR(32) NOT NULL DEFAULT 'PENDING'
-                                CHECK (lifecycle_state IN (
-                                    'PENDING', 'PROVISIONING', 'ACTIVE',
-                                    'SUSPENDED', 'RENEWAL_PENDING', 'TIER_CHANGE_PENDING',
-                                    'EXPIRED', 'CANCELLED', 'DECOMMISSIONING', 'DECOMMISSIONED'
-                                )),
-    terms                   JSONB NOT NULL DEFAULT '{}',
-    entitlements            JSONB NOT NULL DEFAULT '{}',
-    update_channels         JSONB NOT NULL DEFAULT '[]',
-    terms_version           VARCHAR(32) NOT NULL DEFAULT '1.0.0',
-    started_at              TIMESTAMPTZ,
-    expires_at              TIMESTAMPTZ,
-    grace_period            INTERVAL NOT NULL DEFAULT '30 days',
-    auto_renew              BOOLEAN NOT NULL DEFAULT true,
-    created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE(tenant_uuid, handle)
-);
-
-CREATE INDEX idx_subscriptions_tenant ON subscriptions(tenant_uuid, lifecycle_state);
-CREATE INDEX idx_subscriptions_provider ON subscriptions(provider_uuid);
-CREATE INDEX idx_subscriptions_expiry ON subscriptions(expires_at) WHERE lifecycle_state = 'ACTIVE';
-
--- Managed entity bindings
-CREATE TABLE subscription_entities (
-    subscription_uuid       UUID NOT NULL REFERENCES subscriptions(subscription_uuid),
-    entity_uuid             UUID NOT NULL,
-    role                    VARCHAR(64) NOT NULL DEFAULT 'managed',
-    bound_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (subscription_uuid, entity_uuid)
-);
-
--- Update tracking
-CREATE TABLE subscription_updates (
-    update_uuid             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    subscription_uuid       UUID NOT NULL REFERENCES subscriptions(subscription_uuid),
-    entity_uuid             UUID NOT NULL,
-    provider_uuid           UUID NOT NULL,
-    channel                 VARCHAR(64) NOT NULL,
-    status                  VARCHAR(32) NOT NULL DEFAULT 'PENDING'
-                                CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED',
-                                                  'APPLIED', 'FAILED', 'EXPIRED')),
-    update_payload          JSONB NOT NULL DEFAULT '{}',
-    submitted_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    decided_at              TIMESTAMPTZ,
-    decided_by              UUID,
-    applied_at              TIMESTAMPTZ,
-    auto_applied            BOOLEAN NOT NULL DEFAULT false
-);
-
-CREATE INDEX idx_sub_updates_subscription ON subscription_updates(subscription_uuid, status);
-CREATE INDEX idx_sub_updates_pending ON subscription_updates(status, submitted_at) WHERE status = 'PENDING';
-
--- RLS
-ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE subscription_entities ENABLE ROW LEVEL SECURITY;
-ALTER TABLE subscription_updates ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY tenant_isolation_subscriptions
-    ON subscriptions FOR ALL TO dcm_app
-    USING (tenant_uuid = current_setting('dcm.current_tenant_uuid')::uuid);
-
-CREATE POLICY tenant_isolation_sub_entities
-    ON subscription_entities FOR ALL TO dcm_app
-    USING (subscription_uuid IN (
-        SELECT subscription_uuid FROM subscriptions
-        WHERE tenant_uuid = current_setting('dcm.current_tenant_uuid')::uuid
-    ));
-
-CREATE POLICY tenant_isolation_sub_updates
-    ON subscription_updates FOR ALL TO dcm_app
-    USING (subscription_uuid IN (
-        SELECT subscription_uuid FROM subscriptions
-        WHERE tenant_uuid = current_setting('dcm.current_tenant_uuid')::uuid
-    ));
-```
+The subscription artifact, its managed-entity bindings, and its update records are first-class Data,
+persisted like any other artifact under the store-by-contract rule
+([data-store-contracts.md](../contracts/data-store-contracts.md)). The **data shapes** are defined in §2
+(artifact), §2.2 (`subscription_binding`), §4 (states), and §5.2 (update channels); the concrete
+operational-store schema (tables, indexes, row-level tenant isolation) is realization architecture,
+specified in the DCM architecture docs.
 
 ---
 
@@ -599,4 +417,4 @@ CREATE POLICY tenant_isolation_sub_updates
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For questions or contributions see [GitHub](https://github.com/dcm-project).*
