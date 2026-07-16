@@ -1,0 +1,75 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "ddd255c1-c9d8-44cd-86b8-f3e9ee073f6d",
+  "resource_type": "Network.ConnectionProfile",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "lifecycle_archetype": "provisioning",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Connection Profile (host network config)",
+    "description": "The declarative NetworkManager desired-state for a host interface \u2014 addressing method, routes, DNS, and bond/bridge/VLAN membership \u2014 as a first-class estate record (ADR-023). The body conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned conformance pointer, NMstate owns the config body. Realized onto the host by NetworkManager (Ansible today, Kubernetes-NMState later); maps 1:1 to OpenShift NodeNetworkConfigurationPolicy.spec.desiredState. Supersedes the bespoke host_macvlan/host_network/safe_net_change vars.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-15T00:00:00Z"
+  },
+  "lifecycle": {
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
+    "decommission": "NetworkManager reverts/removes the connection; Discovered reflects absent. Non-destructive to data; may drop host connectivity, so ordering is host-network-sensitive."
+  },
+  "spec": {
+    "type": "object",
+    "required": [
+      "nmstate_schema_version",
+      "desired_state"
+    ],
+    "properties": {
+      "nmstate_schema_version": {
+        "type": "string",
+        "description": "The pinned NMstate interface-schema version the `desired_state` body conforms to (the conformance pointer; NMstate releasing a new version does NOT force a UDLM schema change \u2014 the Tier-2 litmus)."
+      },
+      "desired_state": {
+        "type": "object",
+        "additionalProperties": true,
+        "description": "Opaque NMstate desired-state body \u2014 `state`, `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`), the type sub-objects (`vlan`/`link-aggregation`/`bridge`/`mac-vlan`), `routes.config[]`, `dns-resolver.config`. NOT restated field-by-field (adopt-by-reference); interpreted against `nmstate_schema_version`. 1:1 with NNCP.spec.desiredState."
+      }
+    }
+  },
+  "outputs": {
+    "applied": {
+      "type": "boolean",
+      "description": "Whether the desired state is applied and matches on the host (Realized)."
+    },
+    "discovered_state": {
+      "type": "object",
+      "description": "The NMstate current-state read back from the host; a diff vs desired_state is drift (OBS-001)."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "references",
+      "name": "configures",
+      "target": "Hardware.NetworkInterface",
+      "cardinality": "1..1",
+      "description": "configures \u2014 the adapter/port this profile applies to. Host-side declaration (dependent-side rule)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "NMstate",
+      "version": "2.x",
+      "standard_name": "Interface / NetworkState desired-state schema",
+      "role": "the whole config body by reference (Tier-2): state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver \u2014 NetworkManager declarative desired-state, 1:1 with OpenShift NNCP",
+      "source": "https://nmstate.io/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference"
+    }
+  ]
+}
