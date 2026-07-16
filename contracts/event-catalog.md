@@ -17,7 +17,7 @@
 Every DCM event shares a common envelope. Event-specific fields are in the `payload` object.
 
 ```yaml
-# DCM Event Envelope — all events
+# UDLM Event Envelope — all events
 event_uuid: <uuid>                  # RFC 9562 v7 (time-ordered — identifier-scheme §2.1); idempotency key; stable across retries
 event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
