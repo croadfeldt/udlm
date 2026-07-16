@@ -38,10 +38,15 @@ flowchart TD
   A["Assemble — fill in defaults<br/>from the data layers"] --> P
   P["Place — narrow to the providers that fit,<br/>pick one (→ OpenShift)"] --> E
   E["Enrich — add what this provider needs<br/>(→ namespace) into provider_extensions"] --> R
-  R{"Reserve — is it complete?<br/>check against the provider's requirements"}
-  R -- yes --> C["Commit — build it (Realized)"]
-  R -- no --> F["Stop here — clear error<br/>(never reaches the provider's API)"]
+  R{"Reserve — check + converge<br/>validate against the provider's requirements"}
+  R -. "not yet stable — new reserved facts re-evaluate policies" .-> P
+  R -- converged --> C["Commit — build it (Realized)"]
+  R -- unsatisfied --> F["Stop here — clear error<br/>(never reaches the provider's API)"]
 ```
+
+> This is the readable on-ramp — a six-step view. The **authoritative** assembly process (nine steps, with
+> the exact layer-resolution and policy phases) is [`foundations/layering-and-versioning.md`](../../foundations/layering-and-versioning.md)
+> §6. Where the two differ, the spec wins.
 
 Step by step, with `namespace` threaded through:
 
@@ -68,7 +73,9 @@ the request already has, and fills the difference — here, `namespace`. The val
 [Where the value comes from](#where-the-value-comes-from).
 
 **5. Reserve — check before building.** The provider validates the filled-in request against its own
-requirements, without creating anything. Complete → it holds a spot and the flow commits. Still missing
+requirements, without creating anything. This is a loop, not a single check — reserving lands facts that can
+re-trigger enrichment and policy evaluation, converging before commit ([see below](#it-converges--the-flow-isnt-one-straight-pass)).
+Complete → it holds a spot and the flow commits. Still missing
 something → the request stops here with a clear, field-level error. An incomplete VM never reaches
 OpenShift's API; the gap surfaces as a plain validation failure, not a runtime crash.
 
@@ -76,28 +83,37 @@ OpenShift's API; the gap surfaces as a plain validation failure, not a runtime c
 UDLM record to the provider's native one, and DCM records the result. What was *asked* and what was *built*
 are both stored, so they can be compared later.
 
+## It converges — the flow isn't one straight pass
+
+The line above is the *shape*, not a promise of a single pass. The policy and assembly engines are
+**re-entrant**: once a provider is chosen, the provider-specific data enrichment adds can change what the
+policies see, so they re-evaluate — and reserve is a **reconciliation loop** of its own, landing reserved
+facts (a placement, an address, a hold) and re-running the participating policies until the whole picture is
+stable. The engine loops around *place → enrich → evaluate → reserve* until it reaches a fixed point, then
+commits once. Re-evaluation is idempotent by contract, so it converges rather than thrashes.
+([ADR-006](../adr/ADR-006-convergence-control-model.md) — re-entrant policy and convergence;
+[ADR-011](../adr/ADR-011-validate-and-reserve.md) — validate-and-reserve; and the placement loop /
+reserve-phase participation in [`layering-and-versioning.md`](../../foundations/layering-and-versioning.md).)
+
 ## Where the value comes from
 
-Step 4 fills a field the request didn't *already* carry — `namespace`. (If the user supplied it themselves
-at intent time, it's already set — and flagged non-portable — so this step leaves it alone.) **The model
-doesn't dictate where the value comes from.** There are a few valid ways, and the organization picks:
+Step 4 fills a field the request didn't *already* carry — `namespace`. (If the user supplied it at intent
+time, it's already set — flagged non-portable — so this step leaves it alone.)
 
-- **A data layer for the requestor** — a tenant (or profile) layer carries a default, e.g. the tenant's
-  standing namespace. The value is simply *there*; nothing computes it. Good when the mapping is simple and
-  standard.
-- **A policy** — an enrichment policy derives it, e.g. `namespace = f(tenant)`. Good when the value depends
-  on context or needs a rule.
-- **A plain default** — a fixed fallback, when neither of the above applies.
+The value lives in **data**, and a **policy selects it** — the model's original split at work: *layers set
+the stage for data; policies refine and validate it* ([ADR-024](../adr/ADR-024-filling-provider-required-inputs.md)).
+A governed layer holds the values — the tenant's namespace, or a small table of provider → value — and a
+post-placement enrichment policy looks up the right one for the chosen provider and injects it. The value
+stays data; the only logic is the lookup.
 
-They aren't competing options the system guesses between — they compose in a defined precedence: the data
-layers set defaults (a tenant or provider layer can carry one), the consumer's own value overrides those
-defaults if they gave one, an enrichment policy fills or derives whatever is still missing, and a
-compliance policy can override *anything* — even the consumer's value — for sovereignty or security. The
-authoritative order is the merge rules in
-[`layering-and-versioning.md`](../../foundations/layering-and-versioning.md) §5, with §5a governing what a
-consumer is allowed to override. Whichever wins is recorded, so *"why this namespace"* always has an answer.
-What the model insists on is only the outcome: **every field the provider requires has a value, with a
-recorded origin, before reserve** — however it got there.
+If the data has no entry for the chosen provider, the policy stops with a clear reason ("no namespace mapping
+for OpenShift VMs") — caught at reserve, never a silent gap. A plain layer default still covers fields that
+aren't provider-conditional and need no selecting.
+
+Whichever value wins is recorded in provenance, and a compliance policy can still override it for sovereignty
+or security (the merge precedence, [`layering-and-versioning.md`](../../foundations/layering-and-versioning.md)
+§5–§5a). What the model insists on is only the outcome: **every field the provider requires has a value, with
+a recorded origin, before reserve.**
 
 ## The specificity scale
 
