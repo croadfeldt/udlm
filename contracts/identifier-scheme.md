@@ -23,6 +23,11 @@ A peer realization that consumes data emitted by another peer must be able to:
 - Resolve cross-references between artifacts without prior knowledge of the
   emitting system's internals.
 
+*Worked example.* Peer A emits a VM entity that references a `Network.VirtualNetwork` by handle. Peer B,
+receiving it, must recognize the reference *kind* (a network), determine its *scope* (a global, portable
+handle — not A's realization-local uuid), resolve it to B's own copy of that network, and reject it if the
+scope doesn't match — all without knowing A's internals. The rules below make that mechanical.
+
 This document defines the rules every conformant realization MUST follow when
 generating, formatting, scoping, and referencing identifiers.
 
