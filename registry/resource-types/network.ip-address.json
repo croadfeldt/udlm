@@ -1,45 +1,45 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "616fd540-4908-4e96-a149-c9494be0c76e",
   "resource_type": "Network.IPAddress",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "IP Address",
-    "description": "An allocated IP address, dynamic or static, that other resources may consume.",
+    "description": "A single IP address as its own record (RFC 8344 / NMstate form) \u2014 `address` + `allocation` origin \u2014 bound to the interface it is configured on. A static DHCP reservation is just `allocation: static` on this record (ADR-023).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
   "spec": {
     "type": "object",
-    "required": [
-      "family"
-    ],
     "properties": {
-      "family": {
-        "type": "string",
-        "enum": [
-          "ipv4",
-          "ipv6"
-        ],
-        "description": "Address family."
+      "address": {
+        "$ref": "common-elements.schema.json#/$defs/cidr",
+        "description": "The address with prefix as CIDR (RFC 8344/NMstate), e.g. 10.0.0.91/24. Intent for a static reservation; populated at Realized for a dhcp/auto address."
+      },
+      "ip_family": {
+        "$ref": "common-elements.schema.json#/$defs/ip_family",
+        "description": "Address family (canonical `ip_family` \u2014 renamed from `family`, common-elements \u00a72.4)."
       },
       "allocation": {
         "type": "string",
         "enum": [
-          "dynamic",
-          "static"
+          "static",
+          "dhcp",
+          "link-layer",
+          "random"
         ],
-        "default": "dynamic"
+        "default": "dhcp",
+        "description": "Origin discriminator (RFC 8344 `origin` = NMstate). `static` = a fixed reservation bound to the interface (== a static DHCP reservation); `dhcp` = leased; `link-layer`/`random` = SLAAC/privacy."
       }
     }
   },
   "immutable": [
-    "family"
+    "ip_family"
   ],
   "outputs": {
     "address": {
@@ -54,7 +54,7 @@
       "adopted_from": "OASIS TOSCA AttachesTo",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "attaches_to — the interface this address is configured on. Previously carried as an estate-invented 'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements §9)."
+      "description": "attaches_to \u2014 the interface this address is configured on. Previously carried as an estate-invented 'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements \u00a79)."
     }
   ],
   "adopts": [
@@ -62,9 +62,27 @@
       "standard": "OASIS TOSCA",
       "version": "2.0",
       "standard_name": "AttachesTo",
-      "role": "relation vocabulary — attaches_to address-on-interface relation name (common-elements §9)",
+      "role": "relation vocabulary \u2014 attaches_to address-on-interface relation name (common-elements \u00a79)",
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
+      "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "RFC 8344",
+      "version": "RFC-8344",
+      "standard_name": "ietf-ip (IP address on interface)",
+      "role": "address-on-interface shape: `address`/prefix + `origin` (static|dhcp|link-layer|random)",
+      "source": "https://www.rfc-editor.org/rfc/rfc8344.html",
+      "license": "IETF-Trust",
+      "license_compatibility": "compatible-reference"
+    },
+    {
+      "standard": "NMstate",
+      "version": "2.x",
+      "standard_name": "ipv4/ipv6.address",
+      "role": "convergent addressing form (address + prefix-length + enabled/dhcp/autoconf) \u2014 NetworkManager declarative desired-state",
+      "source": "https://nmstate.io/",
+      "license": "Apache-2.0",
       "license_compatibility": "compatible-reference"
     }
   ]
