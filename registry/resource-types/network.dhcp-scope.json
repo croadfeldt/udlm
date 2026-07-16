@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "bb2b301f-b5d9-4d5e-b9bf-7d9a4bb6c1ff",
   "resource_type": "Network.DHCPScope",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -22,7 +22,7 @@
     "properties": {
       "subnet": {
         "type": "string",
-        "description": "Scope subnet in CIDR (common-elements: cidr), e.g. 10.0.90.0/24."
+        "description": "Scope subnet in CIDR (common-elements: cidr), e.g. 192.0.2.0/24."
       },
       "ip_family": {
         "type": "string",

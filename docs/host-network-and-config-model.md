@@ -2,12 +2,12 @@
 
 **Status:** ✅ Accepted — ratified by [ADR-023](adr/ADR-023-host-networking-as-data-nmstate.md) (2026-07-15). This doc owns the mapping/worked-example detail; ADR-023 owns the decision.
 **Driver:** I want host network facts to be first-class UDLM records so automation reads them from the
-estate instead of from bespoke per-tool lists. The immediate trigger is small and concrete: I swapped the
-motherboard in `vis`, so its NIC has a new MAC, and I want to reassign its reserved IP `10.0.0.91` by
-editing an estate record — then have Kea render its DHCP reservation *from* that record rather than from a
-hand-maintained list in Ansible. The general goal is bigger: model the adapter, its MAC, its IP, and its
-NetworkManager settings once, and let Kea, `configure_host_macvlans`, `safe_net_change`, and OpenShift all
-consume the same source of truth.
+estate instead of from bespoke per-tool lists. The immediate trigger is small and concrete: when a host's
+motherboard is swapped its NIC gets a new MAC, and its reserved IP (say `192.0.2.91`) should be
+reassignable by editing one estate record — then have a DHCP provider render its reservation *from* that
+record rather than from a hand-maintained list. The general goal is bigger: model the adapter, its MAC, its
+IP, and its NetworkManager settings once, and let the DHCP provider, the host-network automation, and
+OpenShift all consume the same source of truth.
 
 ## What has to be modeled
 
@@ -69,14 +69,14 @@ whose body **conforms to the NMstate interface schema** rather than re-inventing
 and `dns-resolver.config`. It attaches to an adapter by handle (`references … relation: configures`).
 Per the adoption litmus ("if the standard shipping a new version forces a UDLM schema change, you
 absorbed it") this is a **Tier 2 adopt**: UDLM owns identity + the conformance pointer, NMstate owns the
-body. It is net-negative — it supersedes the bespoke `host_macvlan`/`host_network`/`safe_net_change`
-Ansible vars — and it maps 1:1 to OpenShift `NodeNetworkConfigurationPolicy.spec.desiredState` for free.
+body. It is net-negative — it supersedes bespoke per-tool host-network vars — and it maps 1:1 to
+OpenShift `NodeNetworkConfigurationPolicy.spec.desiredState` for free.
 
 ### 4. DHCP reservations → a projection, not a hand-list
-Today `Network.DHCPScope.reservations` is an inline array and the truth lives in Ansible
-`group_vars/dhcp_servers.yml`. Instead: **a reservation is derived** from every `Network.IPAddress` with
+Today `Network.DHCPScope.reservations` is an inline array and the truth lives in a hand-maintained
+Ansible reservation list. Instead: **a reservation is derived** from every `Network.IPAddress` with
 `allocation: static` that is bound to a `Hardware.NetworkInterface` (which carries the MAC), contained by a
-host (which gives the hostname). A DHCP provider (e.g. Kea, in this estate) realizing `Network.AddressService`
+host (which gives the hostname). A DHCP provider (e.g. Kea) realizing `Network.AddressService`
 renders its reservations from that set. `Network.DHCPScope.reservations` becomes a computed projection of the
 estate, so "the DHCP provider's records live in UDLM format" is satisfied by construction — whichever provider.
 
@@ -88,20 +88,20 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 - **Policy** — which addresses are static vs pool; which pool an address allocates from
   (`ownership-sharing-allocation.md` IPAddressPool→IPAddress); reservation constraints (never hand out a
   reserved IP); who may own/allocate an address (tenant).
-- **Provider** — Kea (`Network.AddressService`) realizes reservations + leases from the Data under Policy;
-  NetworkManager (via Ansible/`safe_net_change`, later Kubernetes-NMState) realizes `ConnectionProfile`
-  onto the host and reports back discovered MAC/address; the DHCP generator is the read-side provider that
-  renders Kea config from the estate.
+- **Provider** — a DHCP address service (e.g. Kea, `Network.AddressService`) realizes reservations + leases
+  from the Data under Policy; NetworkManager (via Ansible, later Kubernetes-NMState) realizes
+  `ConnectionProfile` onto the host and reports back discovered MAC/address; the DHCP generator is the
+  read-side provider that renders provider config from the estate.
 
-## Applied to `vis` (the concrete case)
+## Applied to a host (worked example)
 
-1. `vis` — a `Compute.BareMetalHost` record (workstation role). *Not modeled yet.*
-2. `vis-eth0` — a `Hardware.NetworkInterface`, `contained_by: vis`, `mac_address: <new MAC>`.
-3. `vis-ip-10-0-0-91` — a `Network.IPAddress`, `allocation: static`, `address: 10.0.0.91/24`,
-   `depends_on: vis-eth0`. **This record is the reservation.**
-4. (optional now) `vis-eth0-profile` — a `Network.ConnectionProfile` (NMstate body) `configures: vis-eth0`.
-5. Kea renders `{mac: <new>, ip: 10.0.0.91, hostname: vis}` from #2–#3; the old MAC disappears when the
-   record changes. Same edit reassigns the IP on any future motherboard swap.
+1. `host-a` — a `Compute.BareMetalHost` record (workstation role).
+2. `host-a-eth0` — a `Hardware.NetworkInterface`, `contained_by: host-a`, `mac_address: <new MAC>`.
+3. `host-a-ip` — a `Network.IPAddress`, `allocation: static`, `address: 192.0.2.91/24`,
+   `depends_on: host-a-eth0`. **This record is the reservation.**
+4. (optional now) `host-a-eth0-profile` — a `Network.ConnectionProfile` (NMstate body) `configures: host-a-eth0`.
+5. The DHCP provider renders `{mac: <new>, ip: 192.0.2.91, hostname: host-a}` from #2–#3; the old MAC
+   disappears when the record changes. Same edit reassigns the IP on any future motherboard swap.
 
 ## Decisions taken (2026-07-09)
 
@@ -121,13 +121,13 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 
 ## Still open
 
-- **Reservation rendering:** a generator tool in `<estate>-dcm/tools/` that emits Kea reservations (fits
-  the repo idiom — `shutdown_order.py`, `provenance.py`), with a byte-for-byte parity check against
-  today's `dhcp_servers.yml` before Kea is switched to consume it (this touches live DHCP). Built as its
+- **Reservation rendering:** a generator tool in the estate's DCM tooling that emits DHCP-provider
+  reservations from the estate, with a byte-for-byte parity check against the existing hand-maintained
+  reservation list before the provider is switched to consume it (this touches live DHCP). Built as its
   own reviewed PR after this proposal is ratified.
 
 ## Ties
 #267 (host-network model: `parent_device`/`lower_layer`, `device_class`), `Network.IPAddress` +
 `Network.DHCPScope` + `Network.AddressService` (existing types), `ownership-sharing-allocation.md`
 (IPAddressPool→IPAddress allocation), `design-principles/adopted-standards.md` (Tier-2 adopt-by-reference),
-and the Kea DHCP estate in `<estate>-ansible` + `<estate>-dcm`.
+and the DHCP estate in the estate's Ansible + DCM repos.
