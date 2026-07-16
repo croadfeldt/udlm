@@ -2,11 +2,16 @@
 """Estate-token guard: no personal-infrastructure identifiers in the public specs.
 
 The specs are estate-neutral by policy — personal host/site names belong only in the private
-estate-data repo. This gate scans every tracked text file, tokenizes on [a-z0-9]+ (lowercased),
-and compares each token's sha256 against a denylist of HASHES (so the denylist itself leaks
-nothing). A hit fails CI with the file/line; the plaintext token is NOT printed.
+estate-data repo. This gate scans every tracked text file in two passes:
+  1. hostname tokens — tokenize on [a-z0-9]+ (lowercased), compare each token's sha256 against a
+     denylist of HASHES (so the denylist itself leaks nothing);
+  2. estate IP literals — regex for the estate's private subnets (10.0.x / 10.10.x); docs must use
+     RFC 5737 documentation ranges (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) instead.
+A hit fails CI with the file/line; the plaintext hostname token is NOT printed.
 
-Wired into .github/workflows/validate.yml. Purge performed + gate added 2026-07-05.
+Wired into .github/workflows/validate.yml. Purge performed + gate added 2026-07-05;
+hardened 2026-07-15 (hostname coverage + IP-literal pass — the tokenizer split IPs on '.' and
+missed them entirely).
 """
 import hashlib
 import re
@@ -30,8 +35,14 @@ DENY = {
     "b1bf957a6f16444d406d7ff4e261dec297850777e865298822a19a7c9a78d4a3",
     "bb44bf07cf9a2db0554bba63a03d822c927deae77df101874496df5a6a3e896d",
     "d5a747cf10fc537e7b8ca64306fab4203f3c652b00ffab7cdb610e7ee6d5e63c",
+    "ddbbfd66eec42b0d82772b00f74186578d1c4632adf5d44046445895d4bd7b7b",
     "e2284dc3b5535645288cde2bad818404be728fb8c9f70b055c0b52023b0ff0a0",
+    "2afbb13c6c8ed0c7652ea59befd99074c4ce4d1bc3d94bb90364235c0aea0b1a",
 }
+
+# Estate private subnets. The hostname tokenizer splits IPs on '.', so IP literals need their own
+# pass. Match 10.0.x.y and 10.10.x.y (the estate's ranges); docs use RFC 5737 ranges instead.
+ESTATE_IP = re.compile(r"\b10\.(?:0|10)\.\d{1,3}\.\d{1,3}\b")
 
 def main() -> int:
     files = subprocess.run(["git", "ls-files"], capture_output=True, text=True).stdout.splitlines()
@@ -46,6 +57,9 @@ def main() -> int:
                 if hashlib.sha256(tok.encode()).hexdigest() in DENY:
                     print(f"FAIL [PII-001] {f}:{i}: contains a denylisted estate token (redacted)")
                     hits += 1
+            if ESTATE_IP.search(line):
+                print(f"FAIL [PII-002] {f}:{i}: contains an estate IP literal (10.0.x/10.10.x) — use RFC 5737")
+                hits += 1
     print(f"\n{len(files)} files scanned, {hits} estate-token hit(s)")
     return 1 if hits else 0
 

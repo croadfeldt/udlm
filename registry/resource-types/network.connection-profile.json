@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "ddd255c1-c9d8-44cd-86b8-f3e9ee073f6d",
   "resource_type": "Network.ConnectionProfile",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "lifecycle_archetype": "provisioning",
@@ -11,7 +11,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Connection Profile (host network config)",
-    "description": "The declarative NetworkManager desired-state for a host interface \u2014 addressing method, routes, DNS, and bond/bridge/VLAN membership \u2014 as a first-class estate record (ADR-023). The body conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned conformance pointer, NMstate owns the config body. Realized onto the host by NetworkManager (Ansible today, Kubernetes-NMState later); maps 1:1 to OpenShift NodeNetworkConfigurationPolicy.spec.desiredState. Supersedes the bespoke host_macvlan/host_network/safe_net_change vars.",
+    "description": "The declarative NetworkManager desired-state for a host interface \u2014 addressing method, routes, DNS, and bond/bridge/VLAN membership \u2014 as a first-class estate record (ADR-023). The body conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned conformance pointer, NMstate owns the config body. Realized onto the host by a NetworkManager provider (e.g. Ansible, Kubernetes-NMState); maps 1:1 to OpenShift NodeNetworkConfigurationPolicy.spec.desiredState. Supersedes bespoke per-tool host-network variables.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-15T00:00:00Z"
   },

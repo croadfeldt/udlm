@@ -683,7 +683,7 @@ layer:
   # FIELDS — with per-field override metadata
   fields:
     dns_servers:
-      value: [10.0.0.53, 10.0.0.54]
+      value: [192.0.2.53, 192.0.2.54]
       metadata:
         override: allow             # allow | constrained | immutable
         basis_for_value: "Platform DNS infrastructure — primary and secondary"
@@ -1572,7 +1572,7 @@ Layer fields declare override intent using three values. The Request Payload Pro
 ```yaml
 fields:
   dns_servers:
-    value: [10.0.0.53, 10.0.0.54]
+    value: [192.0.2.53, 192.0.2.54]
     metadata:
       override: allow          # lower layers and consumers may change this
 
