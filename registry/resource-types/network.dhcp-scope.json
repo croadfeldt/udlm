@@ -1,16 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "bb2b301f-b5d9-4d5e-b9bf-7d9a4bb6c1ff",
   "resource_type": "Network.DHCPScope",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "DHCP Scope",
-    "description": "A DHCP address scope — a subnet's dynamic pool(s), options, and reservations. Grounded in RFC 2131 (DHCPv4) / RFC 8415 (DHCPv6) and the ISC Kea subnet model. ISC Kea is MPL-2.0, so its vocabulary is referenced by name only, never vendored.",
+    "description": "A DHCP address scope \u2014 a subnet's dynamic pool(s), options, and reservations. Grounded in the DHCP protocol concepts (RFC 2131 / RFC 8415). The concrete pool/option/lease model is provider config (any DHCP provider \u2014 Kea, dnsmasq, ISC DHCP, a cloud DHCP), projected not dictated; UDLM carries the neutral subnet + the graph edges. UDLM does not prescribe DHCP as the way to serve addresses \u2014 an address's origin is a field on Network.IPAddress (static/dhcp/link-layer/random).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
@@ -35,7 +35,7 @@
       },
       "pools": {
         "type": "array",
-        "description": "Dynamic allocation ranges within the subnet (Kea subnet pools).",
+        "description": "Dynamic allocation ranges within the subnet (DHCP).",
         "items": {
           "type": "object",
           "required": [
@@ -79,34 +79,15 @@
         "type": "integer",
         "minimum": 1,
         "description": "Default lease time in seconds."
-      },
-      "reservations": {
-        "type": "array",
-        "description": "Static host reservations (MAC -> address).",
-        "items": {
-          "type": "object",
-          "required": [
-            "mac_address",
-            "address"
-          ],
-          "properties": {
-            "mac_address": {
-              "type": "string",
-              "description": "Client hardware address."
-            },
-            "address": {
-              "type": "string",
-              "description": "Reserved IP."
-            },
-            "hostname": {
-              "type": "string"
-            }
-          }
-        }
       }
     }
   },
-  "outputs": {},
+  "outputs": {
+    "reservations": {
+      "type": "array",
+      "description": "DERIVED \u2014 not authored here. A projection of every Network.IPAddress(allocation: static) bound to a Hardware.NetworkInterface (its MAC) contained by a host (its hostname), within this scope. The reservation truth lives on the IPAddress records (ADR-023); a DHCP provider renders its reservations/leases from this set."
+    }
+  },
   "relationships": [
     {
       "kind": "depends_on",
@@ -137,7 +118,7 @@
       "standard": "ISC-Kea",
       "version": "2.x",
       "standard_name": "subnet4",
-      "role": "concrete subnet/pool/reservation model (reference-only: Kea is MPL-2.0)",
+      "role": "reference realization \u2014 one DHCP provider's subnet/pool/reservation model (MPL-2.0, referenced by name only, not the type's grounding)",
       "source": "https://kea.readthedocs.io/",
       "license": "MPL-2.0",
       "license_compatibility": "reference-only"
