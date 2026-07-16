@@ -31,13 +31,13 @@ UDLM models several networking facts — an interface, its IP(s), DHCP reservati
 
 - **Data (UDLM):** the four record types above; bindings are dependency edges; identity is uuid/handle.
 - **Policy (DCM):** which addresses are static vs pool; reservation constraints (never hand out a reserved IP); who may own/allocate an address (tenant).
-- **Provider:** Kea (`Network.AddressService`) renders reservations/leases from the Data under Policy; NetworkManager (via Ansible today, Kubernetes-NMState later) realizes `ConnectionProfile` and reports back discovered MAC/address; the DHCP generator is the read-side provider rendering Kea config from the estate.
+- **Provider:** a DHCP/address provider (Kea, dnsmasq, ISC-DHCP, a cloud service — the estate's choice) realizing `Network.AddressService` renders reservations/leases from the Data under Policy; a NetworkManager provider (via Ansible today, Kubernetes-NMState later) realizes `ConnectionProfile` and reports back discovered MAC/address; a read-side generator renders the provider's config from the estate. UDLM names no provider as *the* way.
 
 ## Consequences
 
 - The network family is grounded on one convergent standard set — resolves quality-sweep R4 (dhcp/dns server surface over standard records), R5 (parent/VLAN-by-reference is the convergent form), and reframes R6c (`ipam`-as-a-service stays the odd one out → drop; addressing rides RFC 8344/NMstate).
 - One net-new type (`Network.ConnectionProfile`); `Network.IPAddress` reshaped additively; `DHCPScope.reservations` becomes a computed projection.
-- A Kea-reservation generator (byte-for-byte parity-checked against today's `dhcp_servers.yml` before cutover — it touches live DHCP) is a separate reviewed PR, downstream of this.
+- A reservation generator for the estate's chosen DHCP provider (parity-checked against the current hand-maintained config before cutover — it touches live DHCP) is a separate reviewed PR in the estate's own repo, downstream of this.
 
 ## Options considered
 
