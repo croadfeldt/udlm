@@ -76,9 +76,9 @@ Ansible vars — and it maps 1:1 to OpenShift `NodeNetworkConfigurationPolicy.sp
 Today `Network.DHCPScope.reservations` is an inline array and the truth lives in Ansible
 `group_vars/dhcp_servers.yml`. Instead: **a reservation is derived** from every `Network.IPAddress` with
 `allocation: static` that is bound to a `Hardware.NetworkInterface` (which carries the MAC), contained by a
-host (which gives the hostname). Kea — which *is* a `Network.AddressService` in the model — renders its
-reservations from that set. `Network.DHCPScope.reservations` becomes a computed projection of the estate,
-so "Kea stores its records in UDLM format" is satisfied by construction.
+host (which gives the hostname). A DHCP provider (e.g. Kea, in this estate) realizing `Network.AddressService`
+renders its reservations from that set. `Network.DHCPScope.reservations` becomes a computed projection of the
+estate, so "the DHCP provider's records live in UDLM format" is satisfied by construction — whichever provider.
 
 ## Data · Policy · Provider
 
