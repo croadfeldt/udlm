@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.3.2",
   "conforms_to": "udlm/0.1",
   "uuid": "616fd540-4908-4e96-a149-c9494be0c76e",
   "resource_type": "Network.IPAddress",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -18,11 +18,11 @@
     "type": "object",
     "properties": {
       "address": {
-        "$ref": "common-elements.schema.json#/$defs/cidr",
+        "$ref": "../common-elements.schema.json#/$defs/cidr",
         "description": "The address with prefix as CIDR (RFC 8344/NMstate), e.g. 192.0.2.10/24. Intent for a static reservation; populated at Realized for a dhcp/auto address."
       },
       "ip_family": {
-        "$ref": "common-elements.schema.json#/$defs/ip_family",
+        "$ref": "../common-elements.schema.json#/$defs/ip_family",
         "description": "Address family (canonical `ip_family` \u2014 renamed from `family`, common-elements \u00a72.4)."
       },
       "allocation": {

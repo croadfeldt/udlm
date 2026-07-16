@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "541766ad-94b8-40db-8886-c42fd85e8bd1",
   "resource_type": "Network.Gateway",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -39,7 +39,7 @@
           "type": "object",
           "properties": {
             "cidr": {
-              "$ref": "common-elements.schema.json#/$defs/cidr",
+              "$ref": "../common-elements.schema.json#/$defs/cidr",
               "description": "Segment CIDR (canonical common-elements cidr)."
             },
             "role": {
