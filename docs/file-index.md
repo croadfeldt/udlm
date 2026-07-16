@@ -2,7 +2,7 @@
 
 **Purpose.** One home per concept. This index says, for every normative document, *what it is* and *what it canonically owns* — so before you write a rule, vocabulary, or wire-shape, you can find the file that already owns it and **reference it** rather than restate it. This is the human-readable companion to the single-source rule (`registry/SPEC-DESIGN-REQUIREMENTS.md` §33) and its check (`tests/check_single_source.py`).
 
-**How to use it.** Look up the concept you're about to write. If a file below already *owns* it, put your rule there (or reference its ID). If nothing owns it, the file whose purpose is the closest fit is the home — add it there and note the new ownership here. Never define the same rule in two files; cite the owning file's ID with a one-line gist (`docs/writing-for-humans.md` — references carry their gist).
+**How to use it.** Look up the concept you're about to write. If a file below already *owns* it, put your rule there (or reference its ID). If nothing owns it, the file whose purpose is the closest fit is the home — add it there and note the new ownership here. Never define the same rule in two files; cite the owning file's ID with a one-line gist — the reference carries its own gist (e.g. `ADR-008 — the UDLM/DCM boundary test`), never a bare pointer.
 
 Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one file — the "Owns" line names them.
 
@@ -104,7 +104,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `docs/` and `docs/adr/`
 
 - **`docs/adr/`** — Architecture Decision Records. A ratified ADR is the authority for the decision it records; spec prose conforms to it, never contradicts it (e.g. ADR-007 owns "profiles are composed sets, not levels").
-- **`docs/`** — narrative/vision/design notes (non-normative unless they state otherwise). `docs/writing-for-humans.md` is the standard every human-facing artifact honors.
+- **`docs/`** — narrative/vision/design notes (non-normative unless they state otherwise).
 - **`docs/internal/`** — working notes (gitignored); not part of the published spec.
 
 ---

@@ -267,7 +267,7 @@ Each hard constraint cites the UDLM contract it derives from.
     more than one file fails CI (`tests/check_single_source.py`); existing debt is grandfathered in
     that check's baseline and burned down as the dedup PRs land, and a family split across files is
     warned. When a rule must appear elsewhere, cite it by ID with a one-line gist
-    (`docs/writing-for-humans.md` — references carry their gist). **[enforced]**
+    — the reference carries its own gist (e.g. `ADR-008 — the UDLM/DCM boundary test`), never a bare number. **[enforced]**
     (`tests/check_single_source.py`) To find the home before you write, use the file
     index (`docs/file-index.md`) — it names what each document owns.
 
