@@ -47,14 +47,14 @@
         "description": "The namespace name within the cluster (e.g. 'tenant-alpha-prod'). Unique within the containing cluster."
       },
       "cluster_ref": {
-        "description": "The cluster this namespace exists within. Uses the canonical data-reference shape (ADR-012).",
+        "description": "Resource reference to a Compute.Cluster (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
         "oneOf": [
           {
             "type": "string",
-            "description": "Short form — handle or UUID of a Compute.Cluster."
+            "description": "Short form — the handle of an existing Compute.Cluster."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json"
+            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
           }
         ]
       },

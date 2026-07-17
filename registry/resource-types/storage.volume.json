@@ -16,11 +16,11 @@
       "Realized",
       "Discovered"
     ],
-    "decommission": "Provider releases/deletes the volume; Discovered reflects released/absent. Deleting a volume destroys its data \u2014 so decommission is DATA-DESTRUCTIVE and must follow the workloads that attach it."
+    "decommission": "Provider releases/deletes the volume; Discovered reflects released/absent. Deleting a volume destroys its data — so decommission is DATA-DESTRUCTIVE and must follow the workloads that attach it."
   },
   "metadata": {
     "display_name": "Storage Volume",
-    "description": "A CONSUMABLE persistent storage volume \u2014 the block or file volume a workload attaches, as distinct from the Storage.Cluster that PROVISIONS it (the platform) and the physical device that backs it. Vendor-neutral Tier-1: provisioners (Ceph RBD/CephFS, cloud CSI drivers, NFS) are the provider, never the type. Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume.",
+    "description": "A CONSUMABLE persistent storage volume — the block or file volume a workload attaches, as distinct from the Storage.Cluster that PROVISIONS it (the platform) and the physical device that backs it. Vendor-neutral Tier-1: provisioners (Ceph RBD/CephFS, cloud CSI drivers, NFS) are the provider, never the type. Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-07T14:35:00Z"
   },
@@ -56,10 +56,15 @@
         "description": "Filesystem-mounted vs raw block device (Kubernetes PVC volumeMode)."
       },
       "storage_class": {
-        "description": "The storage class / profile the volume is provisioned from. Prefer a reference to an existing Platform.StorageClass resource (ADR-012 data-reference shape); a plain string is accepted for backward compatibility but is opaque to placement policies.",
+        "description": "Resource reference to a Platform.StorageClass (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
         "oneOf": [
-          { "type": "string", "description": "Plain class name (e.g. 'ceph-rbd-fast') — backward-compatible but not queryable by policies." },
-          { "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json", "description": "Reference to a Platform.StorageClass resource — queryable, version-tracked, drift-detectable." }
+          {
+            "type": "string",
+            "description": "Short form — the handle of an existing Platform.StorageClass."
+          },
+          {
+            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+          }
         ]
       },
       "retain_on_release": {
@@ -94,7 +99,7 @@
       "adopted_from": "OASIS TOSCA AttachesTo",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
-      "description": "The consumer(s) this volume is attached to (RWX volumes attach to many). attaches_to is the same relation IPAddress uses for interface attachment \u2014 the consumable-resource-to-consumer edge."
+      "description": "The consumer(s) this volume is attached to (RWX volumes attach to many). attaches_to is the same relation IPAddress uses for interface attachment — the consumable-resource-to-consumer edge."
     }
   ],
   "adopts": [
@@ -112,7 +117,7 @@
       "standard": "SNIA-Swordfish",
       "version": "1.2",
       "standard_name": "Volume",
-      "role": "storage-volume-as-asset vocabulary (CapacityBytes, AccessCapabilities) \u2014 same family as Storage.Cluster",
+      "role": "storage-volume-as-asset vocabulary (CapacityBytes, AccessCapabilities) — same family as Storage.Cluster",
       "source": "https://www.snia.org/forums/smi/swordfish",
       "license": "SNIA",
       "license_compatibility": "compatible-reference",
