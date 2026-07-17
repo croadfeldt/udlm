@@ -1,7 +1,8 @@
-# UDLM ADR-025: Resource references — handle-authored, uuid-resolved (the kube route)
+# UDLM ADR-025: Resource references — AEP-124 resource association, resolved at reserve
 
 **Status:** Proposed (2026-07-17)
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Adopts (T5):** **AEP-124 Resource association** (aep.dev/124) — reference another resource by its **resource path** (AEP-122); Apache-2.0, `compatible-reference`. UDLM adopts the AEP path-reference convention and adds only what AEP does not model: a resolved `target_uuid` as provenance (see §5). Concrete lineage: the Kubernetes `ObjectReference`/`ownerReference` idiom AEP generalizes (already cited by ADR-012).
 **Related:** ADR-012 (data references — the *sibling* mechanism for reference-**data**, deliberately uuid-authoritative; this ADR does **not** change it); `registry/common-elements.md` §2.5 `Reference` (the resource-reference shape this ADR gives resolution semantics); `contracts/identifier-scheme.md` (handles + uuids); ADR-011 (validate-and-reserve — the execution-time gate this leans on); ADR-024 (post-placement enrichment fills provider-required inputs — many of which are resource references); `foundations/four-state-lifecycle.md` (Intent→Requested→Realized→Discovered); the four-state model this maps onto.
 
 ## Context
@@ -26,13 +27,13 @@ This is the "are we overdoing the references?" instinct made precise: **referenc
 
 ## Decision
 
-**Resource references resolve the kube way: authored by handle, the uuid resolved and recorded by the system at reserve. Reference-data (ADR-012) is untouched.**
+**Resource references adopt AEP-124 resource association: authored by resource path/handle, the uuid resolved and recorded by the system at reserve. Reference-data (ADR-012) is untouched.**
 
 ### 1. Two kinds, cleanly separated
 `Reference` (§2.5) is the **only** shape for a pointer to another **resource**; `data_reference` (ADR-012) is the **only** shape for a pointer to **reference-data**. A field picks by what it points at — a live entity vs an immutable governed dataset. They are never interchanged. (This ADR moves the Platform.* resource pointers off `data_reference` onto `Reference`; see Reconciliation.)
 
 ### 2. Author by handle; the system resolves and pins the uuid at reserve
-A resource reference is written as `{target_handle, resource_type}` — a stable **handle**, not a uuid. `target_uuid` is **resolution provenance**: populated by DCM when the reference resolves, frozen into the record for audit. **An author never types a uuid.** This is the K8s `objectReference`/name idiom, and it's what the DCM realization already expects.
+A resource reference is written as `{target_handle, resource_type}` — a stable **resource path/handle**, not a uuid (AEP-124: reference by resource path; the `_id` suffix is reserved for "the ID component alone"). `target_uuid` is **resolution provenance**: populated by DCM when the reference resolves, frozen into the record for audit. **An author never types a uuid.** This is **AEP-124 resource association** — the standard the DCM realization already uses — generalizing the Kubernetes `ObjectReference` idiom. AEP-124's "embedded resource" variant (the field carries the referenced resource with only its path populated) is exactly this object-shaped `Reference`.
 
 ### 3. Two resolution modes; deferred is the default for live resources
 - **`resolved`** — `target_uuid` already present and valid (the target exists now).

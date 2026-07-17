@@ -76,7 +76,7 @@
     "Reference": {
       "$comment": "common-elements.md §2.5 (contracts/identifier-scheme.md); resolution model in ADR-025",
       "type": "object",
-      "description": "A typed cross-entity pointer to another RESOURCE — distinct from a data_reference (ADR-012), which points at immutable reference-data. Authored by target_handle; DCM resolves and pins target_uuid at reserve (ADR-025, the kube route). The only cross-type binding surface besides typed outputs (E2). Never a provider-native id.",
+      "description": "A typed cross-entity pointer to another RESOURCE — distinct from a data_reference (ADR-012), which points at immutable reference-data. Authored by target_handle (AEP-124 resource association — reference by resource path); DCM resolves and pins target_uuid at reserve (ADR-025). The only cross-type binding surface besides typed outputs (E2). Never a provider-native id.",
       "properties": {
         "target_handle": { "type": "string", "description": "AUTHORING KEY. The stable handle of the target resource (e.g. tenant-alpha-prod) — what an author or policy writes. A uuid is never hand-authored for a resource reference (ADR-025 §2)." },
         "target_uuid": { "type": "string", "format": "uuid", "description": "RESOLUTION PROVENANCE — system-populated. DCM resolves the handle to this uuid at reserve and freezes it for deterministic replay, change-impact, and cross-boundary identity (ADR-025 §5). Guaranteed present only from the Realized state onward; when present it is honesty-gated + integrity-checked, a deferred reference may omit it until it resolves." },
