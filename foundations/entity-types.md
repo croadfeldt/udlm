@@ -90,7 +90,7 @@ stateDiagram-v2
 
 State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record) · **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
 
-**Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet, and all other persistent infrastructure resource types.
+**Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet, and all other long-lived resources with a full operational lifecycle (the §2.1 test).
 
 #### 2.1.1 Infrastructure Resource Entity Data Model
 
