@@ -35,14 +35,14 @@
         "description": "The node pool name within the cluster (e.g. 'gpu-a100', 'general-purpose', 'infra')."
       },
       "cluster_ref": {
-        "description": "The cluster this node pool belongs to.",
+        "description": "Resource reference to a Compute.Cluster (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
         "oneOf": [
           {
             "type": "string",
-            "description": "Short form — handle or UUID of a Compute.Cluster."
+            "description": "Short form — the handle of an existing Compute.Cluster."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json"
+            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
           }
         ]
       },

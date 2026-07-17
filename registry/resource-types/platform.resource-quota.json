@@ -44,14 +44,14 @@
     ],
     "properties": {
       "namespace_ref": {
-        "description": "The namespace this quota is scoped to. Uses the canonical data-reference shape (ADR-012).",
+        "description": "Resource reference to a Platform.Namespace (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
         "oneOf": [
           {
             "type": "string",
-            "description": "Short form — handle or UUID of a Platform.Namespace."
+            "description": "Short form — the handle of an existing Platform.Namespace."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json"
+            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
           }
         ]
       },
