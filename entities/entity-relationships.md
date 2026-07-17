@@ -57,19 +57,24 @@ relationship:
   this_entity_uuid: <uuid of the entity carrying this relationship record>
   this_role: <role this entity plays in the relationship>
   
-  # The related entity
-  related_entity_uuid: <uuid of the related entity>
+  # The related entity — authored by handle, resolved to uuid at reserve (AEP-124)
+  target_handle: <handle of the related entity — how the edge is authored, before uuids exist>
+  related_entity_uuid: <uuid — resolved from target_handle at reserve; empty until then>
   related_entity_type: <internal|external>
   related_entity_role: <role the related entity plays>
+  direction: <outbound|inbound — the same edge is recorded on both sides; direction, not a separate type>
   
   # For external entities only
   information_provider_uuid: <uuid of Information Provider — if external>
   information_type: <e.g., Business.BusinessUnit — if external>
   lookup_method: <primary_key|fallback — how to resolve the external reference>
   
-  # Relationship semantics
-  relationship_type: <see Section 4>
-  nature: <constituent|operational|informational>
+  # Edge semantics — authoritative two-tier model (data-model-core §4, common-elements §9)
+  kind: <depends_on|contained_by|binds_to|references>   # closed universal tier
+  strength: <hard|soft>                                 # depends_on only — soft orders, never blocks (DEP-006)
+  relation: <declared relation name>                    # domain tier — DECLARED by the pinned type (REL-001)
+  target_field: <field consumed>                        # binds_to only
+  # nature (constituent|operational|informational) is DERIVED from kind, not stored — see §6
   
   # Lifecycle policy — for constituent and operational relationships only
   lifecycle_policy:
@@ -87,72 +92,83 @@ relationship:
     <standard field-level provenance>
 ```
 
-### 3.2 Bidirectional Recording
+### 3.2 Authoring by handle, recording by uuid
 
-Every relationship is recorded on both participating entities. The `relationship_uuid` is identical on both sides — it identifies the relationship itself, not one side of it.
+A relationship is **authored by handle** and **recorded by uuid**. At authoring time the related entity may not be realized yet, so the edge names it by `target_handle`; the substrate resolves the handle to `related_entity_uuid` at reserve (AEP-124 — author by handle, resolve at reserve). The uuid never has to be known in advance. Every relationship is then recorded on **both** participating entities under one shared `relationship_uuid`; the two records differ only in `direction` — there is no separate inverse *type*.
 
-**Example — VM requires Storage:**
+**Authored — a VM's intent, by handle (no uuids yet). One example, three kinds:**
 
 ```yaml
-# On the VM Entity
+# On the VM's requested intent
 relationships:
-  - relationship_uuid: "rel-uuid-001"
-    this_entity_uuid: "vm-uuid-001"
+  - target_handle: "storage/primary"          # its boot disk
     this_role: compute
-    related_entity_uuid: "storage-uuid-001"
-    related_entity_type: internal
     related_entity_role: storage
-    relationship_type: requires
-    nature: constituent
-    lifecycle_policy:
-      on_related_destroy: destroy
-      on_related_suspend: suspend
-      on_related_modify: notify
+    kind: depends_on
+    strength: hard                             # cannot function without it → constituent (derived)
+    relation: disk                             # declared by Compute.VirtualMachine
+    lifecycle_policy: { on_related_destroy: destroy }
 
-# On the Storage Entity
-relationships:
-  - relationship_uuid: "rel-uuid-001"
-    this_entity_uuid: "storage-uuid-001"
-    this_role: storage
-    related_entity_uuid: "vm-uuid-001"
-    related_entity_type: internal
-    related_entity_role: compute
-    relationship_type: required_by
-    nature: constituent
-    lifecycle_policy:
-      on_related_destroy: destroy
-      on_related_suspend: suspend
-      on_related_modify: notify
+  - target_handle: "business-units/payments"   # non-owning business context
+    kind: references
+    relation: business_unit                    # informational (derived) — no lifecycle coupling
+
+  - target_handle: "vm/db-replica-b"           # equal HA partner
+    kind: depends_on
+    strength: soft                             # orders but never blocks (DEP-006) → operational (derived)
+    relation: cluster_peer
 ```
+
+**Recorded — realized, bidirectional (uuids resolved at reserve):**
+
+```yaml
+# On the VM Entity — the disk edge, resolved
+relationships:
+  - relationship_uuid: "rel-...-001"
+    this_entity_uuid: "<vm uuid>"
+    related_entity_uuid: "<storage uuid>"      # resolved from handle "storage/primary"
+    kind: depends_on
+    strength: hard
+    relation: disk
+    direction: outbound
+
+# On the Storage Entity — the SAME edge, inbound. Same relationship_uuid and kind;
+# direction expresses the inverse — there is no `required_by` type.
+relationships:
+  - relationship_uuid: "rel-...-001"
+    this_entity_uuid: "<storage uuid>"
+    related_entity_uuid: "<vm uuid>"
+    kind: depends_on
+    strength: hard
+    relation: disk
+    direction: inbound
+```
+
+This single example does what the old one-edge example never did: it exercises `depends_on` (hard and soft), `references`, and declared `relation` names — the kind and the derived nature both doing visible work.
 
 ---
 
-## 4. Relationship Types
+## 4. Edge Model — kind + relation (authoritative)
 
-> **SUPERSEDED by [data-model-core](../foundations/data-model-core.md) §4 (kind + relation).** The
-> authoritative relationship data model is two-tier: a closed universal `kind`
-> (`depends_on` (strength: hard|soft) | `contained_by` | `binds_to` | `references`) plus a
-> type-declared domain `relation` name (`registry/common-elements.md` §9). The six-type table
-> below maps as: `requires` → `depends_on (hard)`; `contains` → the inverse reading of
-> `contained_by` (declared child-side only); `peer` and `manages` → declared relation names
-> (under `references` and `depends_on` respectively). The table is retained for the inverse
-> vocabulary and historical context only.
+Every edge carries two tiers, one authoritative field each (data-model-core §4, common-elements §9):
 
-Relationship types form a fixed standard vocabulary. Every type has an inverse — when you record the relationship on both entities, the type is expressed from each entity's perspective.
+- **`kind`** — closed, universal: `depends_on` (`strength: hard|soft`), `contained_by`, `binds_to` (`target_field`), `references`. Ordering, traversal, and lifecycle projection consume ONLY `kind` + `strength`. Aligned with OASIS TOSCA root relationship types and ECMA-424 CycloneDX `dependsOn`.
+- **`relation`** — domain tier: a name DECLARED by the pinned Resource Type (`relationships[].name`), adopted from a standard where one names the concept (RFC 8343/8345, TOSCA). A relation **refines** its kind and never overrides the kind's ordering semantics (REL-003); a consumer that does not understand a relation falls back to kind behaviour — the dependency graph is always a strict projection of the data.
 
-| Type | Inverse | Meaning |
-|------|---------|---------|
-| `requires` | `required_by` | This entity cannot function without the related entity |
-| `depends_on` | `dependency_of` | This entity uses the related entity but can degrade without it |
-| `contains` | `contained_by` | This entity is a logical container for the related entity |
-| `references` | `referenced_by` | This entity references the related entity without owning or requiring it |
-| `peer` | `peer` | Equal relationship — neither owns, requires, or contains the other |
-| `manages` | `managed_by` | This entity has lifecycle management authority over the related entity |
+**Direction expresses the inverse** (§3.2): one edge, recorded on both sides, `direction: outbound|inbound`. There is no separate inverse *type* — an old `required_by` is just the inbound reading of a `depends_on`.
 
-**`references` and `peer` exist so `requires`/`depends_on` are not overloaded** — they capture associations that carry *no* lifecycle coupling, which the dependency types must never imply:
+`references` and a declared peer `relation` exist so `depends_on` is never overloaded to mean "just points at" — they carry **no** lifecycle coupling, which ordering kinds must never imply. *Example:* a VM `references` its **Business Unit** / Cost Center / Product Owner so cost rollup, ownership, and reporting work — but destroying or suspending the Business Unit must **not** touch the VM. *Example (peer):* the members of a cluster (two database replicas, two firewall HA partners) each declare a `cluster_peer` relation — equal entities where neither owns or contains the other, so lifecycle authority sits on each side independently.
 
-- **`references`** — a non-owning, non-dependent cross-link for context and reporting. *Use case:* a VM `references` its **Business Unit** / Cost Center / Product Owner so cost rollup, ownership, and reporting work — but destroying or suspending the Business Unit must **not** touch the VM. If you used `requires` here, deleting an org record would cascade into infrastructure.
-- **`peer`** — an equal association where **neither** side owns or depends on the other. *Use case:* the **members of a cluster** (two database replicas, two firewall HA partners) are peers — they are aware of and coordinate with each other, but neither is the other's component or owner, so lifecycle authority sits on each independently rather than cascading one-way.
+**Legacy six-type mapping** — earlier drafts used a six-type vocabulary; it maps onto the model above and is retained only for reading older records:
+
+| Legacy type | → kind + relation |
+|---|---|
+| `requires` | `depends_on` (`strength: hard`) |
+| `depends_on` | `depends_on` (`strength: soft`) |
+| `contains` | `contained_by` (declared child-side only) |
+| `references` | `references` |
+| `peer` | a declared `relation` under `references` (informational) or `depends_on` (operational) |
+| `manages` | a declared `relation` under `depends_on` |
 
 ---
 
@@ -198,7 +214,9 @@ custom_role_registration:
 
 ---
 
-## 6. Relationship Nature
+## 6. Relationship Nature (a derived axis)
+
+**Nature is derived from the edge model, not stored as a field** (data-model-core §4). It is a reading of `kind`: `constituent` = `contained_by` / `constituents[]` membership; `operational` = an ordering kind (`depends_on` / `binds_to`); `informational` = `references`. It is retained as a vocabulary because the cross-tenant, matrix, and lifecycle rules below are stated in terms of it — but it is computed from `kind`, never authored independently.
 
 Nature describes the **structural character** of a relationship — what it means for the entities involved.
 
@@ -363,8 +381,8 @@ allocated_entity:
       related_entity_uuid: <parent resource uuid>
       related_entity_type: internal
       related_entity_tenant_uuid: <Infrastructure Tenant uuid>
-      relationship_type: depends_on
-      nature: operational
+      kind: depends_on
+      strength: soft                    # operational allocation (nature derived)
       cross_tenant: true
       allocation_uuid: <uuid — links to parent's allocation record>
       authorized_by:
@@ -625,10 +643,14 @@ deferred_destruction_record:
   remaining_relationships:
     - relationship_uuid: <uuid>
       related_entity_uuid: <VM-B uuid>
-      relationship_type: required_by
+      kind: depends_on
+      strength: hard
+      direction: inbound            # was required_by
     - relationship_uuid: <uuid>
       related_entity_uuid: <VM-C uuid>
-      relationship_type: dependency_of
+      kind: depends_on
+      strength: soft
+      direction: inbound            # was dependency_of
   recorded_at: <ISO 8601>
 ```
 
@@ -670,8 +692,9 @@ Declares what relationships are **possible** for a resource type. Sets the ceili
 resource_type: Compute.VirtualMachine
 possible_relationships:
   - role: storage
-    relationship_type: requires
-    nature: constituent
+    kind: depends_on
+    strength: hard
+    relation: disk
     permitted_related_types:
       - Storage.Block
       - Storage.File
@@ -683,8 +706,9 @@ possible_relationships:
     # Consumer can declare binding_type and lifecycle_policy override
 
   - role: networking
-    relationship_type: requires
-    nature: constituent
+    kind: depends_on
+    strength: hard
+    relation: network_attachment
     permitted_related_types:
       - Network.IPAddress
     default_lifecycle_policy:
@@ -701,8 +725,9 @@ Declares the **actual relationships** for a specific curated offering. Can only 
 catalog_item: Production VM
 relationships:
   - role: storage
-    relationship_type: requires
-    nature: constituent
+    kind: depends_on
+    strength: hard
+    relation: disk
     related_catalog_item_uuid: <uuid of Standard Block Storage catalog item>
     lifecycle_policy:
       on_related_destroy: retain
@@ -722,7 +747,9 @@ request:
   # ... other fields ...
   relationships:
     - role: storage
-      relationship_type: requires
+      kind: depends_on
+      strength: hard
+      relation: disk
       binding_type: referenced
       related_entity_uuid: <uuid of existing Storage Entity>
       # Consumer referencing existing storage — not creating new
@@ -752,9 +779,9 @@ relationships:
     related_entity_type: external
     information_provider_uuid: <uuid of HR Information Provider>
     information_type: Business.BusinessUnit
-    relationship_type: references
+    kind: references
+    relation: business_unit
     role: business_unit
-    nature: informational
     lookup_method: primary_key
 ```
 
@@ -1033,16 +1060,16 @@ resource_type_spec:
   fully_qualified_name: Compute.VirtualMachine
   permitted_relationship_roles:
     - role: storage
-      relationship_types: [requires]
+      kinds: [depends_on]        # hard
       permitted_related_types: [Storage.Block, Storage.File]
     - role: networking
-      relationship_types: [requires]
+      kinds: [depends_on]        # hard
       permitted_related_types: [Network.IPAddress, Network.Port]
     - role: dns
-      relationship_types: [depends_on]
+      kinds: [depends_on]        # soft
       permitted_related_types: [DNS.Record]
     - role: load_balancer
-      relationship_types: [depends_on]
+      kinds: [depends_on]        # soft
       permitted_related_types: [Network.LoadBalancer]
   role_validation: advisory   # advisory | enforced
   # advisory: unknown roles produce a warning in assembly provenance

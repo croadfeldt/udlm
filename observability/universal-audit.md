@@ -119,8 +119,8 @@ audit_record:
     relationship_detail:
       related_entity_uuid: <uuid>
       related_entity_type: <type>
-      relationship_type: <type from standard vocabulary>
-      relationship_nature: <constituent|operational|informational>
+      kind: <depends_on|contained_by|binds_to|references>
+      relation: <declared relation name — refines kind (common-elements §9)>
       cross_tenant: <true|false>
 
     # For MEMBER_ADD, MEMBER_REMOVE, MEMBERSHIP_EXPIRE
