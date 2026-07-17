@@ -63,8 +63,11 @@ portably, without UDLM prescribing a fixed resource math.
 - `address`: an IP string (an `outputs` value, per existing `network.ip-address`).
 
 ### 2.5 `Reference`
-A typed cross-entity pointer — UUID + the target `resource_type` (`contracts/identifier-scheme.md`).
-The only cross-type binding surface besides typed `outputs` (E2). Never a provider-native id.
+A typed cross-entity pointer to another **resource** — `resource_type` + a **handle** (`target_handle`),
+which is the authoring key. DCM resolves the handle and pins `target_uuid` at reserve (ADR-025, the kube
+route); a `deferred` reference tolerates a not-yet-existing target (claim-before-define). Distinct from a
+`data_reference` (ADR-012), which points at immutable reference-**data** by uuid. The only cross-type
+binding surface besides typed `outputs` (E2). Never a provider-native id.
 
 ### 2.6 `Condition` (status)  *(adopt OSAC/K8s vocabulary)*
 ```json
