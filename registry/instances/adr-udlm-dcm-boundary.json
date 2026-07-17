@@ -9,7 +9,7 @@
   "rationale": "pkliczewski's review across dcm-project/udlm #15-#18 repeatedly flags UDLM specification prose that describes DCM's RUNTIME — the layer-assembly engine, the Policy Engine, provider interfaces/protocols, processing and drift-detection mechanics, storage TECHNOLOGY choices, and deployment — as belonging in DCM, not in the data model ('this is DCM architecture not UDLM', 'part of implementation not data model', 'UDLM must define formats, structure of json to describe infrastructure'). He is not asking for schemas to move OUT of UDLM — the opposite: he asks repeatedly 'where are the types defined?' and wants MORE formal schema in UDLM. The governing boundary this record ratifies: UDLM defines the DATA — the JSON formats, structures, record schemas, entity/type/state vocabularies, and typed relationships — and NOTHING about how a realization assembles, evaluates, stores, or deploys it. A UDLM spec MAY carry at most a one-line 'consumed by DCM's X' reference where it makes the UDLM-carries / realization-does boundary legible (the discipline already baked into the D8 registry schemas: 'UDLM carries the record; DCM's Policy Engine evaluates it'), but the HOW-prose moves to DCM's architecture docs. This preserves UDLM's implementation-agnosticism (a conformant realization need not be DCM) and its adopt-by-reference posture, and it makes the specs reviewable by a data-model audience rather than a DCM-internals audience.",
   "options_considered": [
     {
-      "option": "UDLM names zero consumers — strip every reference to DCM entirely (Piotr's strictest read, e.g. CONFORMANCE:113, context:26)",
+      "option": "UDLM names zero consumers — strip every reference to DCM entirely (the strictest read, e.g. CONFORMANCE:113, context:26)",
       "pros": "maximally implementation-agnostic; no coupling to any realization",
       "cons": "a data model that names no consumer is harder to review, not cleaner — the UDLM-carries / realization-does boundary becomes invisible; reviewers cannot see intent",
       "rejected_because": "sterility harms reviewability without serving agnosticism; the real objection is DCM-INTERNALS prose, not a one-line consumer reference"
@@ -17,7 +17,7 @@
     {
       "option": "Keep runtime-architecture prose in the UDLM foundations/contracts docs as-is",
       "pros": "no migration work; single place to read model + runtime together",
-      "cons": "couples the normative data model to one realization; exactly Piotr's objection; makes UDLM un-adoptable by a non-DCM realization",
+      "cons": "couples the normative data model to one realization; exactly that objection; makes UDLM un-adoptable by a non-DCM realization",
       "rejected_because": "violates UDLM's core purpose as an implementation-agnostic data model"
     },
     {
