@@ -7,7 +7,7 @@
 
 ## Context
 
-UDLM has **two distinct reference concepts**, and today's Platform.* work conflated them (a trailing `?` below marks an **optional** field):
+UDLM has **two distinct reference concepts**, and the Platform.* resource types conflate them — they point at live resources using the reference-data shape (a trailing `?` below marks an **optional** field):
 
 1. **Reference** (`common-elements.md` §2.5) — a typed cross-entity pointer to another **resource**: `{resource_type, target_handle, target_uuid?}` — `target_handle` is the authoring key; `target_uuid` is optional (system-resolved at reserve); at least one of the two is present. A VM pointing at a `Platform.Namespace`, a `Network.VirtualNetwork`, a `Compute.Cluster`.
 2. **Data reference** (ADR-012) — a pointer to an immutable **reference-data layer**: `{ref_uuid, ref_name?, reference_data_type}` — here `ref_uuid` is authoritative and `ref_name` is advisory. A field pointing at `os_image` v1, `vm_size` medium, `network_zone`.
@@ -21,7 +21,7 @@ The Platform.* types (and `provider-lifecycle.md`) authored their resource point
 
 - **forbids claim-before-define** (you can't reference a namespace you'll create in the same batch),
 - **forbids out-of-order authoring**, and
-- **mismatches how the realization and Kubernetes actually work.** The DCM control-plane carries these as bare **name** strings today; the DCM enhancements catalog wires resources by **name** + CEL; Kubernetes references by **name** and sits *Pending* until the target exists. This string-vs-reference gap was flagged in review on `dcm-project/dcm` #69 and is unresolved.
+- **mismatches how the realization and Kubernetes actually work.** The DCM control-plane currently carries these as bare **name** strings; the DCM enhancements catalog wires resources by **name** + CEL; Kubernetes references by **name** and sits *Pending* until the target exists. This string-vs-reference gap was flagged in review on `dcm-project/dcm` #69 and is unresolved.
 
 The question this settles is not *whether* to use references but **which resolution process is situationally appropriate for the desired outcome**: a typed reference edge is always right, but *how* it resolves — a uuid pinned at authoring versus a handle resolved at reserve — must be chosen for what the reference points at (an immutable dataset versus a live resource) and the guarantee that outcome requires (reproducibility versus claim-before-define).
 
