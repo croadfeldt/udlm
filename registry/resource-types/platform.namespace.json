@@ -1,0 +1,84 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "f4a19c72-8e3d-4b1a-95d6-7c2e8f0b3d41",
+  "resource_type": "Platform.Namespace",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "provider_specific",
+  "lifecycle_archetype": "provisioning",
+  "status": "active",
+  "metadata": {
+    "display_name": "Namespace",
+    "description": "A platform namespace — the isolation and scheduling boundary within a cluster that workloads (VMs, containers, pods) are placed into. Models the construct that Kubernetes calls a Namespace, OpenShift calls a Project, and other platforms express as a tenant-scoped partition of cluster resources. Provider-specific because namespace semantics vary across platforms, but the role — tenant-scoped resource boundary within a cluster — is universal. A provider declares required_inputs that reference this type so placement and enrichment policies can select the right namespace for a request.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-17T00:00:00Z"
+  },
+  "adopts": [
+    {
+      "standard": "Kubernetes",
+      "version": "core/v1",
+      "standard_name": "Namespace",
+      "role": "cluster-scoped isolation boundary for workloads and resource quotas",
+      "source": "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+      "license": "CC-BY-4.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "lifecycle": {
+    "states": ["Intent", "Requested", "Realized", "Discovered"],
+    "decommission": "Provider deletes the namespace and all resources within it. Decommission is cascading — all contained resources must be decommissioned first or decommissioned as part of the namespace teardown."
+  },
+  "spec": {
+    "type": "object",
+    "required": ["name"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The namespace name within the cluster (e.g. 'tenant-alpha-prod'). Unique within the containing cluster."
+      },
+      "cluster_ref": {
+        "description": "The cluster this namespace exists within. Uses the canonical data-reference shape (ADR-012).",
+        "oneOf": [
+          { "type": "string", "description": "Short form — handle or UUID of a Compute.Cluster." },
+          { "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json" }
+        ]
+      },
+      "tenant_uuid": {
+        "type": "string",
+        "description": "The tenant this namespace is bound to. Resources placed into this namespace inherit this tenant binding."
+      },
+      "labels": {
+        "type": "object",
+        "additionalProperties": { "type": "string" },
+        "description": "Key-value labels (Kubernetes label semantics)."
+      },
+      "annotations": {
+        "type": "object",
+        "additionalProperties": { "type": "string" },
+        "description": "Key-value annotations (Kubernetes annotation semantics)."
+      }
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "description": "The realized namespace name — the string value that provider_extensions fields reference."
+    },
+    "uid": {
+      "type": "string",
+      "description": "The platform-native UID of the namespace (e.g., Kubernetes metadata.uid)."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "contained_by",
+      "target": "Compute.Cluster",
+      "cardinality": "1",
+      "name": "cluster",
+      "description": "The cluster this namespace exists within. A namespace cannot outlive its cluster."
+    }
+  ]
+}

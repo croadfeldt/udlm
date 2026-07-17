@@ -1,0 +1,108 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "c5d36e28-9a14-4f7b-8b3c-1e4d6a8f5c97",
+  "resource_type": "Platform.NodePool",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "provider_specific",
+  "lifecycle_archetype": "provisioning",
+  "status": "active",
+  "metadata": {
+    "display_name": "Node Pool",
+    "description": "A group of compute nodes within a cluster that share capabilities, labels, and scheduling constraints. Models the construct that cloud platforms call a node pool or machine set — a homogeneous slice of cluster capacity with specific hardware characteristics (GPU, architecture, memory tier). Placement policies query node pool capabilities to match workload requirements to available capacity.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-17T00:00:00Z"
+  },
+  "lifecycle": {
+    "states": ["Intent", "Requested", "Realized", "Discovered"],
+    "decommission": "Provider drains and removes the node pool. Workloads on the pool must be rescheduled or decommissioned first."
+  },
+  "spec": {
+    "type": "object",
+    "required": ["name"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The node pool name within the cluster (e.g. 'gpu-a100', 'general-purpose', 'infra')."
+      },
+      "cluster_ref": {
+        "description": "The cluster this node pool belongs to.",
+        "oneOf": [
+          { "type": "string", "description": "Short form — handle or UUID of a Compute.Cluster." },
+          { "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json" }
+        ]
+      },
+      "node_count": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Target number of nodes in this pool."
+      },
+      "capabilities": {
+        "type": "object",
+        "description": "Queryable capability advertisements — placement policies select pools by capability.",
+        "properties": {
+          "gpu": {
+            "type": "object",
+            "properties": {
+              "available": { "type": "boolean" },
+              "models": { "type": "array", "items": { "type": "string" }, "description": "GPU model names (e.g., A100, H100, MI300X)." },
+              "count_per_node": { "type": "integer" }
+            }
+          },
+          "architecture": {
+            "type": "string",
+            "description": "CPU architecture (e.g., x86_64, aarch64)."
+          },
+          "memory_tier": {
+            "type": "string",
+            "description": "Memory class (e.g., standard, high-memory)."
+          }
+        }
+      },
+      "labels": {
+        "type": "object",
+        "additionalProperties": { "type": "string" },
+        "description": "Labels applied to all nodes in this pool (Kubernetes label semantics)."
+      },
+      "taints": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["key", "effect"],
+          "properties": {
+            "key": { "type": "string" },
+            "value": { "type": "string" },
+            "effect": { "type": "string", "enum": ["NoSchedule", "PreferNoSchedule", "NoExecute"] }
+          }
+        },
+        "description": "Taints applied to all nodes — workloads must tolerate these to be scheduled on the pool."
+      }
+    }
+  },
+  "outputs": {
+    "pool_name": {
+      "type": "string",
+      "description": "The realized pool name."
+    },
+    "available_capacity": {
+      "type": "object",
+      "description": "Current available capacity (discovered state).",
+      "properties": {
+        "cpu_millicores": { "type": "integer" },
+        "memory_mib": { "type": "integer" },
+        "gpu_count": { "type": "integer" }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "kind": "part_of",
+      "target": "Compute.Cluster",
+      "cardinality": "1",
+      "name": "cluster",
+      "description": "The cluster this node pool belongs to."
+    }
+  ]
+}

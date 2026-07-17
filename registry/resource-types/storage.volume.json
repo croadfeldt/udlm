@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "5a34ffac-9232-4a62-a8fd-0a0c49811e78",
   "resource_type": "Storage.Volume",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
   "portability": "portable",
@@ -56,8 +56,11 @@
         "description": "Filesystem-mounted vs raw block device (Kubernetes PVC volumeMode)."
       },
       "storage_class": {
-        "type": "string",
-        "description": "The provider's storage class / profile the volume is provisioned from (e.g. an rbd class). The class name is provider data; the reference to the providing cluster is the depends_on relationship."
+        "description": "The storage class / profile the volume is provisioned from. Prefer a reference to an existing Platform.StorageClass resource (ADR-012 data-reference shape); a plain string is accepted for backward compatibility but is opaque to placement policies.",
+        "oneOf": [
+          { "type": "string", "description": "Plain class name (e.g. 'ceph-rbd-fast') — backward-compatible but not queryable by policies." },
+          { "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json", "description": "Reference to a Platform.StorageClass resource — queryable, version-tracked, drift-detectable." }
+        ]
       },
       "retain_on_release": {
         "type": "boolean",
