@@ -285,27 +285,201 @@ by the same policy-driven enrichment as a simple request.
 
 ---
 
+## Single-stage vs two-stage intent
+
+Provider-specific fields (namespace, storage class, node pool) can reach the request at two different
+moments. Both are valid; the consumer's situation and the organization's policy determine which
+applies.
+
+### Single-stage intent
+
+The consumer supplies everything — portable fields and provider-specific fields — in one submission.
+The catalog UI shows all fields upfront, with provider-specific fields clearly marked as optional
+and as narrowing placement. This works for power users who know their environment, scripted/API
+consumers, and IaC pipelines where the provider is already known.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Request a VM                                               │
+│                                                             │
+│  ── Portable fields ──────────────────────────────────────  │
+│  CPU        [ 4        ]                                    │
+│  Memory     [ 16 GiB   ]                                    │
+│  Guest OS   [ RHEL 9   ▼]                                   │
+│  Network    [ prod-vlan-40 ▼]                                │
+│  Disk       [ 100 GB SSD   ]                                │
+│                                                             │
+│  ── Provider-specific (optional) ─────────────────────────  │
+│  ⚠ Specifying these narrows placement and may break         │
+│    portability                                              │
+│                                                             │
+│  ▸ OpenShift                                                │
+│    Namespace      [ tenant-alpha-prod ▼]                     │
+│    Storage class  [ ceph-rbd-fast     ▼]                     │
+│                                                             │
+│  ▸ VMware                                                   │
+│    Cluster        [                   ▼]                     │
+│    Datastore      [                   ▼]                     │
+│    Resource pool  [                   ▼]                     │
+│                                                             │
+│  ▸ Libvirt                                                  │
+│    Host           [                   ▼]                     │
+│    Storage pool   [                   ▼]                     │
+│                                                             │
+│                                    [ Submit ]               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+The provider-specific sections are **grouped by provider** and collapsed by default (the ▸
+disclosure). Expanding a provider group and filling a field narrows placement to that provider.
+Filling fields in two provider groups is a contradiction — the UI prevents it (expanding one
+collapses the others, or a radio-select at the group level picks the target provider). Drop-downs
+are populated from the provider's registered resources — namespaces from `Platform.Namespace`
+records the consumer's tenant has access to, storage classes from `Platform.StorageClass` records
+on the selected cluster.
+
+### Two-stage intent
+
+The consumer submits portable intent only. The system runs placement and selects a provider. Then
+the system comes back with the provider-specific fields that still need values, pre-populated with
+valid options the consumer can choose from (or accept defaults). This is the natural model for GUI
+portal users, first-time users, and compliance-heavy environments where the system should show what's
+allowed.
+
+**Stage 1 — portable intent:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Request a VM                                               │
+│                                                             │
+│  CPU        [ 4        ]                                    │
+│  Memory     [ 16 GiB   ]                                    │
+│  Guest OS   [ RHEL 9   ▼]                                   │
+│  Network    [ prod-vlan-40 ▼]                                │
+│  Disk       [ 100 GB SSD   ]                                │
+│                                                             │
+│                                    [ Continue → ]           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**System runs placement → selects OpenShift (ocp-prod-east)**
+
+**Stage 2 — provider-specific refinement:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Provider selected: OpenShift (ocp-prod-east)               │
+│  Region: us-east-1 · Profile: fsi                           │
+│                                                             │
+│  The following fields are needed to complete your request.   │
+│  Defaults have been selected by policy — change if needed.  │
+│                                                             │
+│  Namespace      [ tenant-alpha-prod ▼]  ← policy default    │
+│                   tenant-alpha-prod                          │
+│                   tenant-alpha-staging                       │
+│                   shared-workloads                           │
+│                                                             │
+│  Storage class  [ ceph-rbd-fast     ▼]  ← policy default    │
+│                   ceph-rbd-fast (block, 10K IOPS, encrypted) │
+│                   ceph-fs-standard (file, 1K IOPS)          │
+│                   local-nvme (local, 50K IOPS, no repl)     │
+│                                                             │
+│  Node pool      [ general-purpose   ▼]  ← auto (no GPU req) │
+│                   general-purpose (x86_64, 340 vCPU avail)  │
+│                   gpu-a100 (x86_64, 8×A100, 12 vCPU avail) │
+│                                                             │
+│                          [ ← Back ]  [ Submit ]             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Key UX principles for Stage 2:
+
+- **Drop-downs, not free text.** Every provider-specific field is populated from the provider's
+  registered resources (Platform.Namespace, Platform.StorageClass, Platform.NodePool) filtered to
+  what the consumer's tenant has access to. The consumer picks from valid options, not from memory.
+- **Policy defaults pre-selected.** The enrichment policy selects a default before the consumer
+  sees the form. The consumer can change it, but the happy path is "accept and submit."
+- **Context on each option.** Drop-down items show relevant attributes — storage class shows IOPS,
+  encryption, replication; node pool shows architecture, GPU, available capacity; namespace shows
+  tenant binding. The consumer makes an informed choice without looking it up elsewhere.
+- **Provider grouping.** If multiple providers were eligible and the system picked one, the Stage 2
+  form shows which provider was selected and why (cost, sovereignty, capacity). A "choose a
+  different provider" link re-runs placement with the consumer's override.
+- **Back button preserves intent.** Going back to Stage 1 keeps the portable fields and re-runs
+  placement (the consumer can change constraints and get a different provider).
+
+### Fill strategy per field
+
+The provider declares `required_inputs` at registration. Each field's fill behavior is governed by
+policy — not hardcoded in the provider. The catalog item or the enrichment policy declares the fill
+strategy:
+
+| Strategy | Behavior | When to use |
+|----------|----------|-------------|
+| `auto` | Policy fills silently; consumer never sees the field | Deterministic, no meaningful choice (e.g., single namespace per tenant) |
+| `prompt` | System presents valid options; waits for consumer selection | Multiple valid options, consumer preference matters |
+| `auto_with_override` | Policy fills a default; consumer can change before reserve | Sensible default exists but consumer may have a reason to override |
+
+The fill strategy is data about data — declared per field in the catalog item's `consumer_fields`
+or in the enrichment policy configuration. It is not a new architectural primitive.
+
+```yaml
+# Example: catalog item declaring fill strategies for provider-specific fields
+consumer_fields:
+  # Portable fields — always shown
+  - name: vcpu
+    type: integer
+    required: false
+    default: 2
+  - name: environment
+    type: enum
+    required: true
+    enum_values: [dev, staging, prod]
+
+  # Provider-specific fields — fill strategy governs UX
+  - name: namespace
+    type: reference
+    reference_type: Platform.Namespace
+    required: false
+    fill_strategy: auto_with_override
+    description: "OpenShift namespace — defaulted by policy, overridable"
+  - name: storage_class
+    type: reference
+    reference_type: Platform.StorageClass
+    required: false
+    fill_strategy: prompt
+    description: "Storage class — choose based on performance/cost needs"
+  - name: node_pool
+    type: reference
+    reference_type: Platform.NodePool
+    required: false
+    fill_strategy: auto
+    description: "Node pool — selected automatically from workload requirements"
+```
+
+---
+
 ## Phase 3 — Wait: the system does the matching
 
 The provider does nothing in this phase. The system handles:
 
-1. **Intent** — a consumer asks for a VM (or a three-tier app, or a database). The consumer MAY
-   include provider-specific fields (e.g., a specific `namespace`) — these are honored and narrow
-   the placement. Or the consumer may leave them to the system — the request is as vague or exact
-   as the consumer chooses.
+1. **Intent** — a consumer submits a request. In single-stage, it may include provider-specific
+   fields. In two-stage, it contains only portable fields. Either way, the flow proceeds the same.
 2. **Assembly** — data layers fill in defaults (profile, tenant, platform layers)
 3. **Placement** — policies narrow to eligible providers based on capability match, sovereignty,
    cost, capacity, and consumer constraints. If the consumer pinned provider-specific fields, only
    providers that accept those values are eligible.
 4. **Enrichment** — policies determine how to fill any of the provider's `required_inputs` the
-   consumer did not already supply. The fill strategy is policy-driven per field — a value may come
-   from a tenant layer, a platform default, a governed mapping keyed by provider, or be computed
-   from the placement result. The provider declares *what* it needs; policies decide *where* each
-   value comes from and *whether* the consumer was required to supply it.
-5. **Validation** — the complete request (consumer-supplied + policy-enriched) is checked against
-   the provider's `extension_schema`. The provider's reserve step (Phase 4) is the final
-   validation — if anything is wrong regardless of who supplied it, reserve rejects with a
-   field-level error.
+   consumer did not already supply. Per field, the fill strategy determines the behavior:
+   - `auto` — policy fills silently from governed data
+   - `prompt` — system pauses and presents valid options to the consumer (two-stage, Stage 2)
+   - `auto_with_override` — policy fills a default; consumer may change it (two-stage, Stage 2)
+   If any field's strategy is `prompt` or `auto_with_override`, the system pauses after enrichment
+   and presents the Stage 2 form before proceeding to validation.
+5. **Validation** — the complete request (consumer-supplied + policy-enriched + consumer-refined)
+   is checked against the provider's `extension_schema`. The provider's reserve step (Phase 4) is
+   the final validation — if anything is wrong regardless of who supplied it, reserve rejects with
+   a field-level error.
 
 The provider's registration (Phase 1) and catalog items (Phase 2) are the inputs the system uses. The
 provider is passive until dispatch.
