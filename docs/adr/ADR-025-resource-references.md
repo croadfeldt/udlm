@@ -7,10 +7,10 @@
 
 ## Context
 
-UDLM has **two distinct reference concepts**, and today's Platform.* work conflated them:
+UDLM has **two distinct reference concepts**, and today's Platform.* work conflated them (a trailing `?` below marks an **optional** field):
 
-1. **Reference** (`common-elements.md` §2.5) — a typed cross-entity pointer to another **resource**: `{target_uuid, target_handle?, resource_type}`. A VM pointing at a `Platform.Namespace`, a `Network.VirtualNetwork`, a `Compute.Cluster`.
-2. **Data reference** (ADR-012) — a pointer to an immutable **reference-data layer**: `{ref_uuid, ref_name?, reference_data_type}`. A field pointing at `os_image` v1, `vm_size` medium, `network_zone`.
+1. **Reference** (`common-elements.md` §2.5) — a typed cross-entity pointer to another **resource**: `{resource_type, target_handle, target_uuid?}` — `target_handle` is the authoring key; `target_uuid` is optional (system-resolved at reserve); at least one of the two is present. A VM pointing at a `Platform.Namespace`, a `Network.VirtualNetwork`, a `Compute.Cluster`.
+2. **Data reference** (ADR-012) — a pointer to an immutable **reference-data layer**: `{ref_uuid, ref_name?, reference_data_type}` — here `ref_uuid` is authoritative and `ref_name` is advisory. A field pointing at `os_image` v1, `vm_size` medium, `network_zone`.
 
 These have **opposite requirements** and the difference is load-bearing:
 
