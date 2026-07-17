@@ -204,13 +204,15 @@ consumer_fields:
     required: false
     default: 8192
   - name: namespace
-    type: string
+    type: reference                 # a reference to a Platform.Namespace, not a free-form string
+    reference_type: Platform.Namespace
     required: false
-    description: "OpenShift namespace — optional; resolved by policy if omitted"
+    description: "OpenShift namespace — optional; a reference to an existing Platform.Namespace, resolved by policy if omitted"
   - name: storage_class
-    type: string
+    type: reference
+    reference_type: Platform.StorageClass
     required: false
-    description: "Storage class — optional; resolved by policy if omitted"
+    description: "Storage class — optional; a reference to an existing Platform.StorageClass, resolved by policy if omitted"
 ```
 
 The consumer sees `environment`, `vcpu`, `memory` as the primary choices. `namespace` and
@@ -218,6 +220,13 @@ The consumer sees `environment`, `vcpu`, `memory` as the primary choices. `names
 (honored, validated, flagged as non-portable per `PRV-010`). If omitted, policies resolve them
 post-placement. The provider declares *what* it needs at registration (Phase 1); the catalog item
 exposes *whether* the consumer can supply it directly.
+
+Note the **field definition itself is a reference**, not free-form text: `namespace` and `storage_class`
+are `type: reference` pointing at `Platform.Namespace` / `Platform.StorageClass` records — the same shape
+used in the fill-strategy example below, the dispatch payload (Phase 4), and the "References, not strings"
+principle. That is what lets the field be presented as a drop-down of real, tenant-visible records and
+validated as a graph edge, rather than a string typed from memory. A field is defined as free-form text
+only when its value is *not* a resource with identity and lifecycle (e.g. `environment`, a plain enum).
 
 ### Composite catalog item — a three-tier application
 
