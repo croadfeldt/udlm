@@ -21,9 +21,9 @@ The Platform.* types (and `provider-lifecycle.md`) authored their resource point
 
 - **forbids claim-before-define** (you can't reference a namespace you'll create in the same batch),
 - **forbids out-of-order authoring**, and
-- **mismatches how the realization and Kubernetes actually work.** The DCM control-plane carries these as bare **name** strings today; the DCM enhancements catalog wires resources by **name** + CEL; Kubernetes references by **name** and sits *Pending* until the target exists. machacekondra flagged exactly this string-vs-reference gap on `dcm-project/dcm` #69, unresolved.
+- **mismatches how the realization and Kubernetes actually work.** The DCM control-plane carries these as bare **name** strings today; the DCM enhancements catalog wires resources by **name** + CEL; Kubernetes references by **name** and sits *Pending* until the target exists. This string-vs-reference gap was flagged in review on `dcm-project/dcm` #69 and is unresolved.
 
-This is the "are we overdoing the references?" instinct made precise: **references (typed edges) are right; requiring authors to supply resolved uuids for live resources is not.**
+The question this settles is not *whether* to use references but **which resolution process is situationally appropriate for the desired outcome**: a typed reference edge is always right, but *how* it resolves — a uuid pinned at authoring versus a handle resolved at reserve — must be chosen for what the reference points at (an immutable dataset versus a live resource) and the guarantee that outcome requires (reproducibility versus claim-before-define).
 
 ## Decision
 
