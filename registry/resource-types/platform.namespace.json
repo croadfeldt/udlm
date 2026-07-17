@@ -6,7 +6,7 @@
   "version": "0.1.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
-  "portability": "provider_specific",
+  "portability": "provider-specific",
   "lifecycle_archetype": "provisioning",
   "status": "active",
   "metadata": {
@@ -28,12 +28,19 @@
     }
   ],
   "lifecycle": {
-    "states": ["Intent", "Requested", "Realized", "Discovered"],
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
     "decommission": "Provider deletes the namespace and all resources within it. Decommission is cascading — all contained resources must be decommissioned first or decommissioned as part of the namespace teardown."
   },
   "spec": {
     "type": "object",
-    "required": ["name"],
+    "required": [
+      "name"
+    ],
     "properties": {
       "name": {
         "type": "string",
@@ -42,8 +49,13 @@
       "cluster_ref": {
         "description": "The cluster this namespace exists within. Uses the canonical data-reference shape (ADR-012).",
         "oneOf": [
-          { "type": "string", "description": "Short form — handle or UUID of a Compute.Cluster." },
-          { "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json" }
+          {
+            "type": "string",
+            "description": "Short form — handle or UUID of a Compute.Cluster."
+          },
+          {
+            "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json"
+          }
         ]
       },
       "tenant_uuid": {
@@ -52,12 +64,16 @@
       },
       "labels": {
         "type": "object",
-        "additionalProperties": { "type": "string" },
+        "additionalProperties": {
+          "type": "string"
+        },
         "description": "Key-value labels (Kubernetes label semantics)."
       },
       "annotations": {
         "type": "object",
-        "additionalProperties": { "type": "string" },
+        "additionalProperties": {
+          "type": "string"
+        },
         "description": "Key-value annotations (Kubernetes annotation semantics)."
       }
     }
@@ -76,7 +92,7 @@
     {
       "kind": "contained_by",
       "target": "Compute.Cluster",
-      "cardinality": "1",
+      "cardinality": "1..1",
       "name": "cluster",
       "description": "The cluster this namespace exists within. A namespace cannot outlive its cluster."
     }

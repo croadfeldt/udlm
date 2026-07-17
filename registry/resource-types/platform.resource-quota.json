@@ -6,7 +6,7 @@
   "version": "0.1.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
-  "portability": "provider_specific",
+  "portability": "provider-specific",
   "lifecycle_archetype": "provisioning",
   "status": "active",
   "metadata": {
@@ -28,46 +28,75 @@
     }
   ],
   "lifecycle": {
-    "states": ["Intent", "Requested", "Realized", "Discovered"],
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
     "decommission": "Provider removes the quota. Resources in the namespace are no longer constrained by this quota (other quotas may still apply)."
   },
   "spec": {
     "type": "object",
-    "required": ["namespace_ref", "hard"],
+    "required": [
+      "namespace_ref",
+      "hard"
+    ],
     "properties": {
       "namespace_ref": {
         "description": "The namespace this quota is scoped to. Uses the canonical data-reference shape (ADR-012).",
         "oneOf": [
-          { "type": "string", "description": "Short form — handle or UUID of a Platform.Namespace." },
-          { "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json" }
+          {
+            "type": "string",
+            "description": "Short form — handle or UUID of a Platform.Namespace."
+          },
+          {
+            "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json"
+          }
         ]
       },
       "hard": {
         "type": "object",
         "description": "Hard resource limits. Any key is a Kubernetes resource name.",
         "properties": {
-          "cpu": { "type": "string", "description": "Aggregate CPU limit (e.g., '32', '16000m')." },
-          "memory": { "type": "string", "description": "Aggregate memory limit (e.g., '64Gi')." },
-          "pods": { "type": "integer", "description": "Maximum number of pods." },
-          "requests.storage": { "type": "string", "description": "Aggregate storage request limit." },
-          "persistentvolumeclaims": { "type": "integer", "description": "Maximum number of PVCs." }
+          "cpu": {
+            "type": "string",
+            "description": "Aggregate CPU limit (e.g., '32', '16000m')."
+          },
+          "memory": {
+            "type": "string",
+            "description": "Aggregate memory limit (e.g., '64Gi')."
+          },
+          "pods": {
+            "type": "integer",
+            "description": "Maximum number of pods."
+          },
+          "requests.storage": {
+            "type": "string",
+            "description": "Aggregate storage request limit."
+          },
+          "persistentvolumeclaims": {
+            "type": "integer",
+            "description": "Maximum number of PVCs."
+          }
         },
-        "additionalProperties": { "type": "string" }
+        "additionalProperties": {
+          "type": "string"
+        }
       }
     }
   },
   "outputs": {
     "used": {
       "type": "object",
-      "description": "Current resource usage against the hard limits (discovered state). Same keys as hard limits.",
-      "additionalProperties": { "type": "string" }
+      "description": "Current resource usage against the hard limits (discovered state). Same keys as hard limits."
     }
   },
   "relationships": [
     {
-      "kind": "scoped_to",
+      "kind": "contained_by",
       "target": "Platform.Namespace",
-      "cardinality": "1",
+      "cardinality": "1..1",
       "name": "namespace",
       "description": "The namespace this quota constrains."
     }

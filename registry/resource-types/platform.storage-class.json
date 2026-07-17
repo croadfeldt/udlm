@@ -6,7 +6,7 @@
   "version": "0.1.0",
   "family": "Resource",
   "entity_type": "Infrastructure Resource",
-  "portability": "provider_specific",
+  "portability": "provider-specific",
   "lifecycle_archetype": "provisioning",
   "status": "active",
   "metadata": {
@@ -28,12 +28,20 @@
     }
   ],
   "lifecycle": {
-    "states": ["Intent", "Requested", "Realized", "Discovered"],
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
     "decommission": "Provider deletes the storage class. Existing volumes provisioned by this class are not affected — they retain their storage; new provisioning against this class is no longer possible."
   },
   "spec": {
     "type": "object",
-    "required": ["name", "provisioner"],
+    "required": [
+      "name",
+      "provisioner"
+    ],
     "properties": {
       "name": {
         "type": "string",
@@ -45,13 +53,20 @@
       },
       "reclaim_policy": {
         "type": "string",
-        "enum": ["Retain", "Delete", "Recycle"],
+        "enum": [
+          "Retain",
+          "Delete",
+          "Recycle"
+        ],
         "default": "Delete",
         "description": "What happens to the underlying storage when a volume is released."
       },
       "volume_binding_mode": {
         "type": "string",
-        "enum": ["Immediate", "WaitForFirstConsumer"],
+        "enum": [
+          "Immediate",
+          "WaitForFirstConsumer"
+        ],
         "default": "Immediate",
         "description": "When volume binding and provisioning occur — immediately at PVC creation or deferred until a consumer is scheduled."
       },
@@ -64,16 +79,33 @@
         "type": "object",
         "description": "Queryable capability advertisements for placement policies.",
         "properties": {
-          "iops": { "type": "integer", "description": "Advertised IOPS capability." },
-          "throughput_mbps": { "type": "integer", "description": "Advertised throughput in MB/s." },
-          "encryption": { "type": "boolean", "description": "Whether data-at-rest encryption is enabled." },
-          "replication_factor": { "type": "integer", "description": "Number of data replicas maintained." },
-          "snapshot_support": { "type": "boolean", "description": "Whether volume snapshots are supported." }
+          "iops": {
+            "type": "integer",
+            "description": "Advertised IOPS capability."
+          },
+          "throughput_mbps": {
+            "type": "integer",
+            "description": "Advertised throughput in MB/s."
+          },
+          "encryption": {
+            "type": "boolean",
+            "description": "Whether data-at-rest encryption is enabled."
+          },
+          "replication_factor": {
+            "type": "integer",
+            "description": "Number of data replicas maintained."
+          },
+          "snapshot_support": {
+            "type": "boolean",
+            "description": "Whether volume snapshots are supported."
+          }
         }
       },
       "parameters": {
         "type": "object",
-        "additionalProperties": { "type": "string" },
+        "additionalProperties": {
+          "type": "string"
+        },
         "description": "Provider-specific parameters passed to the provisioner (e.g., pool name, fsType, compression). Opaque to UDLM — the provisioner interprets them."
       }
     }
@@ -86,7 +118,7 @@
   },
   "relationships": [
     {
-      "kind": "provided_by",
+      "kind": "depends_on",
       "target": "Storage.Cluster",
       "cardinality": "0..1",
       "name": "storage_backend",
