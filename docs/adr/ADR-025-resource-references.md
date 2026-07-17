@@ -49,9 +49,19 @@ Name-only (pure K8s) would lose three things UDLM exists to provide and a single
 ### 6. Strictness is Policy, not a data field
 Resolve-at-reserve is the single behavior; requiring a reference to *already* resolve to an existing target at intent time (no claim-before-define for this edge) is a **Policy** decision, not a declared mode. A sovereignty- or audit-critical placement can be gated by a policy that checks "does this reference resolve to an existing, pinned target now?" — Policy can ask that of any reference without the data carrying a `resolution_mode`. Keeping strictness in Policy is what lets the data stay one shape with one behavior.
 
+### 7. A named reference is live — a changed target is drift
+Because a resource reference resolves to the *current* target, name resolution takes on an obligation a pinned uuid avoids: **when the resolved target changes, DCM must notice — and it treats that as drift.** No new alerting primitive; it rides the existing `Realized`↔`Discovered` drift path and the existing drift-policy spectrum.
+
+What DCM watches is the divergence between the **recorded** resolved `target_uuid` (what the edge resolved to at reserve, §5) and the **current** resolution of the handle:
+- **New version of the same target** — the handle now resolves to a new `target_uuid`; recorded ≠ current. **A reference uuid change is drift**, handled by the referrer's drift policy like any other drift.
+- **Handle rebind** — the handle resolves to a *different* resource lineage than recorded. This is the silent-rebind risk ADR-012 refused name-keying over; here the recorded uuid makes it **detectable** and it is a hard drift finding, never a silent swap.
+- **Target attribute drift** — the target's own `Realized`↔`Discovered` drift; a referrer that depends on a target attribute is flagged through the edge.
+
+**Data (UDLM)** carries what makes this detectable: the recorded resolved `target_uuid` plus the typed reverse reference graph (who references whom) — the same reverse-index machinery ADR-012 uses for reference-data, enough for DCM to compare current-vs-recorded and enumerate affected referrers. **Policy (DCM)** treats the change as a **drift alert** and reacts with the standard drift spectrum — **notify → re-validate/re-reserve → re-converge → hold** — profile-governed (a sovereign/fsi profile may hold or require re-approval; a permissive one may auto-re-resolve). Never a silent rebind. This is the resource-reference sibling of ADR-012 §7 (change-impact on reference-data is Policy).
+
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the `Reference` shape (`target_handle` authoring key, `resource_type`, `target_uuid` as resolved provenance); the four-state guarantee about when `target_uuid` is present.
-- **Policy (DCM):** resolves `target_handle` → `target_uuid` at reserve; runs the convergence loop until an as-yet-unresolved reference resolves; enforces any strictness policy (edges that must already resolve at intent); records residency/resolving-authority provenance.
+- **Policy (DCM):** resolves `target_handle` → `target_uuid` at reserve; runs the convergence loop until an as-yet-unresolved reference resolves; enforces any strictness policy (edges that must already resolve at intent); **treats a changed resolved target as drift and reacts with the drift-policy spectrum (§7)**; records residency/resolving-authority provenance.
 - **Provider:** validates the resolved reference at reserve (target exists and is usable); reports the realized target uuid back.
 
 ## Options considered
@@ -67,5 +77,6 @@ Resolve-at-reserve is the single behavior; requiring a reference to *already* re
 - **Platform.* types** (`platform.namespace/storage-class/node-pool/resource-quota`, and any resource pointer on other types): `*_ref` fields move from the `data-reference.schema.json` shape to the `Reference` shape; `oneOf: [string-handle, Reference]` (short form = the handle). Claim-before-define enabled.
 - **`provider-lifecycle.md`:** authoring/catalog examples reference by **handle**; the Phase-4 dispatch payload (post-reserve) legitimately shows resolved `target_uuid`s — that is the resolved end of the same reference.
 - **`validate.py`:** resource-reference integrity is checked at the appropriate lifecycle state (a reference is not required to resolve until `Requested`→`Realized`); reference-data integrity (`check_data_references`) is unchanged.
+- **Change awareness (§7):** a resource reference is live, so DCM detects a changed resolved target — a new version (reference uuid change), a handle rebind, or the target's own attribute drift — by comparing the recorded resolved `target_uuid` against the current resolution over the typed reverse reference graph, and **treats it as drift**. This reuses the existing `Realized`↔`Discovered` drift path and drift policy — no new mechanism — and emits on the same drift/event surface.
 - **Compatibility:** converges with the DCM control-plane (name strings) and enhancements (name + CEL), and answers the open `dcm-project/dcm` #69 review gap — the reconciliation is "author by name, the substrate pins the uuid," not "pick strings or ids."
 - **ADR-012 is untouched.** Reference-data stays uuid-authoritative and version-pinned; this ADR governs only resource→resource references.
