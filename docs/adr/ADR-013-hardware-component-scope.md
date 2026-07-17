@@ -2,7 +2,7 @@
 
 **Status:** Accepted (maintainer decision, 2026-07-15)
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-008 (UDLM/DCM boundary); DCM ADR-017 (brownfield/discovered ingestion); the DMTF Redfish adoption (`registry/standards-adoption-register.md`); reviewer feedback on `dcm-project/udlm` #40 (Ondra Macháček / `machacekondra`, Noam `NoamNakash`).
+**Related:** ADR-008 (UDLM/DCM boundary); DCM ADR-017 (brownfield/discovered ingestion); the DMTF Redfish adoption (`registry/standards-adoption-register.md`); reviewer feedback on `dcm-project/udlm` #40.
 
 ## Context
 
@@ -43,4 +43,4 @@ Either path is additive and does not disturb the managed model. Until there's a 
 - Remove the five component `Hardware.*` type specs and repoint the references in `compute.bare-metal-host`, `storage.volume`, `storage.pool`, and `facility.location` to host aggregate-capacity attributes (or drop the component relationship).
 - The estate (~58 files that model components in a separate repo) stops modeling hardware below the host — a coordinated cleanup, tracked separately since it's a different repo.
 - Trim the Redfish register "Where" note (Processor/Memory/Drive lines) — Redfish remains adopted for the host + BMC/BIOS vocabulary.
-- Reviewer threads on #40 (Ondra, Noam) resolve to "removed, out of scope — here's the ADR."
+- Reviewer threads on #40 resolve to "removed, out of scope — here's the ADR."

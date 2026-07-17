@@ -11,7 +11,7 @@ are data, policies are logic), §5 (precedence), Step 7 (post-placement policy);
 
 **This ADR validates and documents the original layers/policies model; it introduces no new mechanism.** The
 split — *layers are data, policies are logic* (`layering-and-versioning.md` §1a) — already answers how a
-provider-required field gets filled. Ondra's namespace question surfaced the need to state that answer plainly
+provider-required field gets filled. The namespace question surfaced the need to state that answer plainly
 and to confirm no new primitive is required. Recording it here settles the question and gives the team one
 place to point to.
 
