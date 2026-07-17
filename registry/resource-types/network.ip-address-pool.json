@@ -1,0 +1,96 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "004b97cf-ccdc-4d0c-9910-dddba05a48d2",
+  "resource_type": "Network.IPAddressPool",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "IP Address Pool",
+    "description": "A first-class allocatable range of IP addresses that Network.IPAddress records are carved from — the DHCP subnet pool (RFC 2131 subnet4 pools/ranges) as its own record, so allocation OWNERSHIP is expressible: which addresses are in play, which tenant/resource holds each, and whether the pool is exhausted. Same allocatable-pool pattern as Storage.Pool→Storage.Dataset (a pool is the source; the carved record depends_on it). Distinct from Network.DHCPScope (the SERVICE-side subnet config a DHCP provider realizes) and Network.IPAddress (a single CONSUMED address): the Pool is the intent-side inventory the addresses are allocated FROM.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-16T06:00:00Z"
+  },
+  "adopts": [
+    {
+      "standard": "RFC-2131",
+      "version": "RFC-2131",
+      "standard_name": "DHCP address pool (subnet4 pools / ranges)",
+      "role": "allocatable-range shape: a pool is one or more contiguous address ranges within a subnet from which addresses are handed out (dynamic) or reserved (static)",
+      "source": "https://www.rfc-editor.org/rfc/rfc2131.html",
+      "license": "IETF-Trust",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "RFC-8344",
+      "version": "RFC-8344",
+      "standard_name": "ietf-ip (address family / prefix)",
+      "role": "prefix + ip_family shape reused from Network.IPAddress (same family, ADR-023)",
+      "source": "https://www.rfc-editor.org/rfc/rfc8344.html",
+      "license": "IETF-Trust",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
+    }
+  ],
+  "lifecycle": {
+    "states": ["Intent", "Requested", "Realized", "Discovered"],
+    "decommission": "A pool is retired only after every address allocated_from it is released; retiring a pool with live allocations must be blocked or cascade (mirrors Storage.Pool: destroying a pool destroys what was carved from it)."
+  },
+  "spec": {
+    "type": "object",
+    "required": ["prefix"],
+    "properties": {
+      "prefix": {
+        "$ref": "../common-elements.schema.json#/$defs/cidr",
+        "description": "The subnet the pool draws from, as CIDR (RFC 8344), e.g. 192.0.2.0/24."
+      },
+      "ip_family": {
+        "$ref": "../common-elements.schema.json#/$defs/ip_family",
+        "description": "Address family (canonical ip_family, common-elements §2.4)."
+      },
+      "ranges": {
+        "type": "array",
+        "description": "The allocatable ranges within the prefix (RFC 2131 subnet4 pools). Absent = the whole prefix minus exclusions is allocatable.",
+        "items": {
+          "type": "object",
+          "required": ["start", "end"],
+          "properties": {
+            "start": {"$ref": "../common-elements.schema.json#/$defs/ip_address", "description": "First address of the range (inclusive)."},
+            "end": {"$ref": "../common-elements.schema.json#/$defs/ip_address", "description": "Last address of the range (inclusive)."}
+          }
+        }
+      },
+      "allocation_mode": {
+        "type": "string",
+        "enum": ["dynamic", "static", "mixed"],
+        "default": "dynamic",
+        "description": "How addresses leave the pool: dynamic = leased on request (DHCP), static = fixed reservations bound ahead of time, mixed = both. Aligns with Network.IPAddress.allocation on the carved record."
+      },
+      "exclusions": {
+        "type": "array",
+        "items": {"$ref": "../common-elements.schema.json#/$defs/ip_address"},
+        "description": "Addresses withheld from allocation (gateway, broadcast, known-static, avoid-buggy). Not carved even if inside a range."
+      }
+    }
+  },
+  "immutable": ["ip_family"],
+  "outputs": {
+    "total_addresses": {"type": "integer", "description": "Count of allocatable addresses (ranges minus exclusions), once Realized."},
+    "allocated_count": {"type": "integer", "description": "Addresses currently allocated_from this pool (a realized fact the provider populates)."},
+    "free_count": {"type": "integer", "description": "Remaining allocatable addresses."},
+    "exhausted": {"type": "boolean", "description": "True when free_count == 0 — the pool-exhaustion signal capacity/placement and quota policies read."}
+  },
+  "relationships": [
+    {
+      "kind": "contained_by",
+      "name": "network",
+      "target": "Network.VirtualNetwork",
+      "cardinality": "0..1",
+      "description": "The network segment this pool serves. A pool is scoped to one L2/L3 segment (VirtualNetwork/VLAN); addresses carved from it are reachable on that segment."
+    }
+  ]
+}
