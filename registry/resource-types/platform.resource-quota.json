@@ -1,0 +1,104 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "d7e48f39-2b56-4a8c-9c1d-5f6a0b7e3d12",
+  "resource_type": "Platform.ResourceQuota",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "provider-specific",
+  "lifecycle_archetype": "provisioning",
+  "status": "active",
+  "metadata": {
+    "display_name": "Resource Quota",
+    "description": "A resource quota scoped to a namespace — hard limits on aggregate resource consumption (CPU, memory, pods, storage, object counts) within a single namespace. Models the Kubernetes ResourceQuota construct. Placement and enrichment policies query quotas to determine whether a namespace has capacity for a new workload before dispatching. Discovered-state reporting surfaces actual usage against the hard limits for capacity planning and drift detection.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-17T00:00:00Z"
+  },
+  "adopts": [
+    {
+      "standard": "Kubernetes",
+      "version": "core/v1",
+      "standard_name": "ResourceQuota",
+      "role": "namespace-scoped aggregate resource limits and usage tracking",
+      "source": "https://kubernetes.io/docs/concepts/policy/resource-quotas/",
+      "license": "CC-BY-4.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "lifecycle": {
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
+    "decommission": "Provider removes the quota. Resources in the namespace are no longer constrained by this quota (other quotas may still apply)."
+  },
+  "spec": {
+    "type": "object",
+    "required": [
+      "namespace_ref",
+      "hard"
+    ],
+    "properties": {
+      "namespace_ref": {
+        "description": "The namespace this quota is scoped to. Uses the canonical data-reference shape (ADR-012).",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — handle or UUID of a Platform.Namespace."
+          },
+          {
+            "$ref": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json"
+          }
+        ]
+      },
+      "hard": {
+        "type": "object",
+        "description": "Hard resource limits. Any key is a Kubernetes resource name.",
+        "properties": {
+          "cpu": {
+            "type": "string",
+            "description": "Aggregate CPU limit (e.g., '32', '16000m')."
+          },
+          "memory": {
+            "type": "string",
+            "description": "Aggregate memory limit (e.g., '64Gi')."
+          },
+          "pods": {
+            "type": "integer",
+            "description": "Maximum number of pods."
+          },
+          "requests.storage": {
+            "type": "string",
+            "description": "Aggregate storage request limit."
+          },
+          "persistentvolumeclaims": {
+            "type": "integer",
+            "description": "Maximum number of PVCs."
+          }
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "outputs": {
+    "used": {
+      "type": "object",
+      "description": "Current resource usage against the hard limits (discovered state). Same keys as hard limits."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "contained_by",
+      "target": "Platform.Namespace",
+      "cardinality": "1..1",
+      "name": "namespace",
+      "description": "The namespace this quota constrains."
+    }
+  ]
+}

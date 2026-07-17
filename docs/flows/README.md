@@ -27,6 +27,7 @@ made true*. Each UDLM flow links its DCM counterpart and vice versa.
 | Flow | What it stages | DCM counterpart |
 |---|---|---|
 | [Request realization](request-realization.md) | An abstract, portable request becomes a provider-ready one — filled and validated before anything is created | `docs/flows/request-realization.md` |
+| [Provider lifecycle](provider-lifecycle.md) | The provider's side of the same story — register, declare the inputs it needs (namespaces, storage classes, …), get dispatched, report realized state — so placement and enrichment have the data to fill a request | `docs/flows/provider-lifecycle.md` |
 
 **[request-realization](request-realization.md) is the foundational flow** — it walks the whole model end
 to end. Every other flow is intentionally **lighter and uses it as its base**: it assumes request-realization

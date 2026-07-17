@@ -1,0 +1,128 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "a8b23d15-6f47-4c9e-b0a1-3d5e7f9c2b84",
+  "resource_type": "Platform.StorageClass",
+  "version": "0.1.0",
+  "family": "Resource",
+  "entity_type": "Infrastructure Resource",
+  "portability": "provider-specific",
+  "lifecycle_archetype": "provisioning",
+  "status": "active",
+  "metadata": {
+    "display_name": "Storage Class",
+    "description": "A storage class — the named policy by which a platform provisions storage volumes. Models the construct that Kubernetes calls a StorageClass: a provisioner, a reclaim policy, volume binding mode, and provider-specific parameters (IOPS, encryption, replication). Storage.Volume references this type to declare what kind of storage it needs; placement and enrichment policies select the right storage class for a request based on its capabilities. Provider-specific because storage class semantics and parameters vary across provisioners.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-17T00:00:00Z"
+  },
+  "adopts": [
+    {
+      "standard": "Kubernetes",
+      "version": "storage/v1",
+      "standard_name": "StorageClass",
+      "role": "named storage provisioning policy (provisioner, reclaimPolicy, volumeBindingMode, parameters)",
+      "source": "https://kubernetes.io/docs/concepts/storage/storage-classes/",
+      "license": "CC-BY-4.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "lifecycle": {
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
+    "decommission": "Provider deletes the storage class. Existing volumes provisioned by this class are not affected — they retain their storage; new provisioning against this class is no longer possible."
+  },
+  "spec": {
+    "type": "object",
+    "required": [
+      "name",
+      "provisioner"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The storage class name (e.g. 'ceph-rbd-fast', 'gp3-encrypted'). Unique within the cluster."
+      },
+      "provisioner": {
+        "type": "string",
+        "description": "The storage provisioner that handles volumes of this class (e.g. 'rbd.csi.ceph.com', 'ebs.csi.aws.com')."
+      },
+      "reclaim_policy": {
+        "type": "string",
+        "enum": [
+          "Retain",
+          "Delete",
+          "Recycle"
+        ],
+        "default": "Delete",
+        "description": "What happens to the underlying storage when a volume is released."
+      },
+      "volume_binding_mode": {
+        "type": "string",
+        "enum": [
+          "Immediate",
+          "WaitForFirstConsumer"
+        ],
+        "default": "Immediate",
+        "description": "When volume binding and provisioning occur — immediately at PVC creation or deferred until a consumer is scheduled."
+      },
+      "allow_volume_expansion": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether volumes of this class can be expanded after creation."
+      },
+      "capabilities": {
+        "type": "object",
+        "description": "Queryable capability advertisements for placement policies.",
+        "properties": {
+          "iops": {
+            "type": "integer",
+            "description": "Advertised IOPS capability."
+          },
+          "throughput_mbps": {
+            "type": "integer",
+            "description": "Advertised throughput in MB/s."
+          },
+          "encryption": {
+            "type": "boolean",
+            "description": "Whether data-at-rest encryption is enabled."
+          },
+          "replication_factor": {
+            "type": "integer",
+            "description": "Number of data replicas maintained."
+          },
+          "snapshot_support": {
+            "type": "boolean",
+            "description": "Whether volume snapshots are supported."
+          }
+        }
+      },
+      "parameters": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "Provider-specific parameters passed to the provisioner (e.g., pool name, fsType, compression). Opaque to UDLM — the provisioner interprets them."
+      }
+    }
+  },
+  "outputs": {
+    "name": {
+      "type": "string",
+      "description": "The realized storage class name — the string value that Storage.Volume.storage_class references."
+    }
+  },
+  "relationships": [
+    {
+      "kind": "depends_on",
+      "target": "Storage.Cluster",
+      "cardinality": "0..1",
+      "name": "storage_backend",
+      "description": "The storage cluster that backs this class (e.g., a Ceph cluster, a NetApp filer)."
+    }
+  ]
+}
