@@ -1,4 +1,4 @@
-# UDLM — Authentication and Auth Providers
+# UDLM — Auth Capability and Identity Contract
 
 **Document Status:** ✅ Stable — UDLM substrate contract
 **Related Documents:** [Provider Contract](../contracts/provider-contract.md) | [Credentials](credentials.md) | [Authority Tier Model](authority-tier-model.md)
@@ -24,7 +24,9 @@ UDLM defines a unified **auth capability**. Authentication/authorization is a **
 1. **Authentication** — is this identity who they claim to be?
 2. **Authorization** — what is this identity permitted to do?
 
-Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The realization **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (DCM `DCM ADR-022`).
+Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The realization **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (`DCM ADR-022`).
+
+**UDLM defines the contract authentication resolves against — the capability, the mode vocabulary, the registration shape, and the identity types. It never performs authentication; the realization does (`DCM ADR-022`).** This is the substrate/realization boundary (ADR-008): the vocabulary two independent realizations must share to federate, not the act of authenticating an actor.
 
 **Authentication is always required — there is no anonymous access in any UDLM profile.** The difference between profiles is how much effort authentication setup requires, not whether it exists.
 
