@@ -13,7 +13,7 @@
   ],
   "options_considered": [
     {
-      "option": "Model cost types natively in UDLM 1.0 core (Piotr ownership:274 — 'define cost types in UDLM')",
+      "option": "Model cost types natively in UDLM 1.0 core (review #274 — 'define cost types in UDLM')",
       "pros": "cost data travels with the resource; single model",
       "cons": "cost has an independent lifecycle (per-customer pricing, contract cycles); no standard exists to anchor it; bloats the core model for a concern many realizations don't use",
       "rejected_because": "couples two lifecycles that the meeting agreed are separate; violates adopt-or-reference (there is nothing to adopt, so REFERENCE, don't embed)"

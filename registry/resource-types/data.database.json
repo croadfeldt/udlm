@@ -44,7 +44,7 @@
           "cpu": {
             "type": "string",
             "pattern": "^([0-9]+m|[0-9]+(\\.[0-9]+)?)$",
-            "description": "CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) \u2014 Kubernetes-aligned quantity convention (Noam, #40). The provider reconciles to its concrete units at naturalization."
+            "description": "CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) \u2014 Kubernetes-aligned quantity convention (#40 review). The provider reconciles to its concrete units at naturalization."
           },
           "memory": {
             "type": "string",
