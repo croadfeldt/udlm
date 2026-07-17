@@ -65,8 +65,8 @@ portably, without UDLM prescribing a fixed resource math.
 ### 2.5 `Reference`
 A typed cross-entity pointer to another **resource** — `resource_type` + a **handle** (`target_handle`),
 which is the authoring key. DCM resolves the handle and pins `target_uuid` at reserve (ADR-025, adopting
-**AEP-124 resource association**); a `deferred` reference tolerates a not-yet-existing target
-(claim-before-define). Distinct from a
+**AEP-124 resource association**); resolution tolerates a not-yet-existing target — the resource stays
+`Requested` until it resolves (claim-before-define). Distinct from a
 `data_reference` (ADR-012), which points at immutable reference-**data** by uuid. The only cross-type
 binding surface besides typed `outputs` (E2). Never a provider-native id.
 

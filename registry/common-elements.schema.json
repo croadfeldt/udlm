@@ -79,9 +79,8 @@
       "description": "A typed cross-entity pointer to another RESOURCE — distinct from a data_reference (ADR-012), which points at immutable reference-data. Authored by target_handle (AEP-124 resource association — reference by resource path); DCM resolves and pins target_uuid at reserve (ADR-025). The only cross-type binding surface besides typed outputs (E2). Never a provider-native id.",
       "properties": {
         "target_handle": { "type": "string", "description": "AUTHORING KEY. The stable handle of the target resource (e.g. tenant-alpha-prod) — what an author or policy writes. A uuid is never hand-authored for a resource reference (ADR-025 §2)." },
-        "target_uuid": { "type": "string", "format": "uuid", "description": "RESOLUTION PROVENANCE — system-populated. DCM resolves the handle to this uuid at reserve and freezes it for deterministic replay, change-impact, and cross-boundary identity (ADR-025 §5). Guaranteed present only from the Realized state onward; when present it is honesty-gated + integrity-checked, a deferred reference may omit it until it resolves." },
-        "resource_type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*\\.[A-Z][A-Za-z0-9]*$", "description": "Target Category.Type." },
-        "resolution_mode": { "type": "string", "enum": ["resolved", "deferred"], "default": "deferred", "description": "resolved = target_uuid pinned now (the target exists); deferred = resolved by handle at reserve, tolerating a not-yet-existing target (claim-before-define — holds the resource in Requested until it resolves). Where deferred is disallowed is Policy (ADR-025 §6)." }
+        "target_uuid": { "type": "string", "format": "uuid", "description": "RESOLUTION PROVENANCE — system-populated. DCM resolves the handle to this uuid at reserve and freezes it for deterministic replay, change-impact, and cross-boundary identity (ADR-025 §5). Guaranteed present only from the Realized state onward; before then the handle has not yet resolved (claim-before-define). When present it is honesty-gated + integrity-checked." },
+        "resource_type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*\\.[A-Z][A-Za-z0-9]*$", "description": "Target Category.Type." }
       },
       "required": ["resource_type"],
       "anyOf": [
