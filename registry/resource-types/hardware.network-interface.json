@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "family": "Resource",
-  "entity_type": "Infrastructure Resource",
+  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
@@ -174,28 +174,28 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
       "name": "host",
       "description": "The host the physical NIC is installed in."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
       "name": "guest",
       "description": "For virtual / passthrough / partition, the guest the interface is presented to."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Network.Switch",
       "cardinality": "0..1",
       "name": "switch",
       "description": "For a switch port: the switch it belongs to. Same type serves host NICs and switch ports \u2014 the \u00a727 Identity block (location = the port designation, e.g. 'Port 14') distinguishes instances."
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
       "description": "parent_device \u2014 the ONE physical NIC this passthrough/partition (SR-IOV VF, VLAN/macvlan sub-interface) is derived from (1\u2192N). REQUIRED when device_class is passthrough or partition (common-elements \u00a77).",
@@ -203,7 +203,7 @@
       "adopted_from": "RFC 8343 lower-layer-if (declared refinement: the 1-to-N slice direction)"
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..n",
       "description": "lower_layer \u2014 the MEMBER interfaces this composite is built from (N\u21921): a bond's aggregated NICs (802.1AX) or a bridge's ports (802.1Q). The inverse of parent_device; RFC 8343 lower-layer-if. REQUIRED when device_class is aggregate or bridge (common-elements \u00a77).",
@@ -211,7 +211,7 @@
       "adopted_from": "RFC 8343 lower-layer-if"
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
       "description": "connects_to (renamed from connected_to when relation names were adopted from standards, common-elements \u00a79) \u2014 the PEER termination point this physical interface is linked to (host NIC \u2194 switch port; switch \u2194 switch uplink). Symmetric adjacency, declared once (either end). Discovered via IEEE 802.1AB LLDP (Chassis ID + Port ID name the peer); a mismatch between declared cabling and the LLDP-observed neighbor is drift (OBS-001). RFC 8345 models this as a link between two termination-points \u2014 promote to a first-class link entity only if links ever need their own attributes (cable id, patch panel); until then the reference keeps surface area minimal (common-elements \u00a77a).",
@@ -219,7 +219,7 @@
       "adopted_from": "OASIS TOSCA ConnectsTo"
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Network.VLAN",
       "name": "vlan_membership",
       "cardinality": "0..n",

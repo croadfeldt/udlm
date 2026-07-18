@@ -1,12 +1,12 @@
 # UDLM Resource Type Specification — authored in YAML (semantically identical to a JSON
 # document; validated against the same registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.4.0
 conforms_to: udlm/0.1
 uuid: ba999aa2-7b4d-468f-9f70-20216cd2e3b1
 resource_type: Compute.Container
-version: 0.3.0
+version: 0.4.0
 family: Resource
-entity_type: Infrastructure Resource
+entity_type: Atomic
 lifecycle_archetype: provisioning
 portability: portable
 status: active
@@ -149,19 +149,19 @@ outputs:
     description: In-cluster / on-host DNS name.
 
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.Cluster
     cardinality: 0..1
     description: Runs on a cluster (exactly one of Compute.Cluster / Compute.BareMetalHost).
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: Or runs directly on a host (e.g. rootless podman).
-  - kind: references
+  - edge_type: references
     target: Security.CredentialRef
     cardinality: 0..n
     description: Env/mounts that resolve secrets reference a CredentialRef; no secret material inline (DCM ADR-023).
-  - kind: depends_on
+  - edge_type: depends_on
     target: Data.Database
     target_field: connection_string
     cardinality: 0..n

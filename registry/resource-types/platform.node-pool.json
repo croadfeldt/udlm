@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "c5d36e28-9a14-4f7b-8b3c-1e4d6a8f5c97",
   "resource_type": "Platform.NodePool",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
-  "entity_type": "Infrastructure Resource",
+  "entity_type": "Atomic",
   "portability": "provider-specific",
   "lifecycle_archetype": "provisioning",
   "status": "active",
@@ -131,7 +131,7 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.Cluster",
       "cardinality": "1..1",
       "name": "cluster",

@@ -6,7 +6,7 @@
 
 ## Context
 
-During estate **discovery**, hardware was mapped all the way down to the component level — individual memory modules, processors, storage devices, GPUs, power supplies — as `Hardware.*` resource types, in order to **validate the dependency graph** end to end. Those component types were then carried into the registry as first-class `Infrastructure Resource` types with the default **`provisioning`** lifecycle archetype (Intent→Requested→Realized→Discovered via a provider).
+During estate **discovery**, hardware was mapped all the way down to the component level — individual memory modules, processors, storage devices, GPUs, power supplies — as `Hardware.*` resource types, in order to **validate the dependency graph** end to end. Those component types were then carried into the registry as first-class `Resource` types with the default **`provisioning`** lifecycle archetype (Intent→Requested→Realized→Discovered via a provider).
 
 Reviewers rightly flagged this (#40): *"how would DCM manage a bare-metal memory module? These are physical things."* Modeling a DIMM as a provisioning-archetype resource implies a managed lifecycle it does not have — DCM never requests, places, or provisions a memory module. It only ever **discovers** one, as a component of a host.
 

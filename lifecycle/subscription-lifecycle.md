@@ -10,7 +10,7 @@
 
 A **Subscription** is a first-class Data artifact representing an ongoing, managed relationship between a Tenant and a set of capabilities delivered by one or more Providers. Unlike a one-time request that produces a resource and completes, a subscription persists — it has terms, renewal cycles, tier levels, and ongoing obligations that both the platform and the Provider must honor.
 
-A subscription manages the lifecycle of the **binding** — what the consumer is entitled to receive, under what terms, for how long. The **resources** that the subscription produces and maintains are standard entities (infrastructure_resource, process_resource, composite_resource) with their own lifecycles. The subscription governs them; it is not them.
+A subscription manages the lifecycle of the **binding** — what the consumer is entitled to receive, under what terms, for how long. The **resources** that the subscription produces and maintains are standard entities (resource, process, composite) with their own lifecycles. The subscription governs them; it is not them.
 
 **Examples of subscriptions:**
 - A managed database service — ongoing provisioning, patching, backup, scaling within subscription tier
@@ -100,15 +100,15 @@ subscription:
 
 ### 2.2 Relationship to Existing Entity Types
 
-A Subscription is **not** a new entity type alongside infrastructure_resource, process_resource, and composite_resource. It is a **binding artifact** — a Data object that governs the lifecycle of entities. The entities it manages are standard entities with their own types, states, and lifecycles.
+A Subscription is **not** a new entity type alongside resource, process, and composite. It is a **binding artifact** — a Data object that governs the lifecycle of entities. The entities it manages are standard entities with their own types, states, and lifecycles.
 
 ```
 Subscription (binding — terms, entitlements, renewal)
     │
-    ├── manages → Entity A (infrastructure_resource — the database primary)
-    ├── manages → Entity B (infrastructure_resource — the database replica)
-    ├── manages → Entity C (process_resource — nightly backup job)
-    └── manages → Entity D (process_resource — monthly patching job)
+    ├── manages → Entity A (resource — the database primary)
+    ├── manages → Entity B (resource — the database replica)
+    ├── manages → Entity C (process — nightly backup job)
+    └── manages → Entity D (process — monthly patching job)
 ```
 
 The `manages` relationship uses the standard Entity Relationship model (doc 09) with relationship nature `subscription_binding`:

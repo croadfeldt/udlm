@@ -71,7 +71,7 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "TaxonomyTerm",
       "target_field": "term_handle",
       "cardinality": "0..1",

@@ -20,7 +20,7 @@
 
 UDLM is a realization-neutral substrate whose universal contracts (identifier, four-state
 lifecycle, provenance, classification, events) are domain-independent. Its **entity-type
-definitions** are not domain-independent in *meaning* — an `Infrastructure Resource` is
+definitions** are not domain-independent in *meaning* — an `Resource` is
 about the infrastructure domain, a `Capability` about the architecture/knowledge domain —
 so as UDLM is used across domains, the set of definitions grows and benefits from logical
 organization.
@@ -92,7 +92,8 @@ Families name the domain a set of definitions was organized under; usage is open
 
 | Family | Domain (organizing context) | Example realization (non-normative) | Entity-type definitions | Lifecycle archetype |
 |--------|------------------------------|-------------|-------------------------|---------------------|
-| **Resource** | Infrastructure resources (provisioned, operated) | DCM | Infrastructure Resource, Composite, Process (+ sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
+| **Resource** | Maintained-state resources (provisioned, reconciled) | DCM | `entity_type`: Atomic \| Composite (+ ownership sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
+| **Process** | Bounded executions (automation runs) | DCM | `entity_type`: Atomic \| Composite — [Entity Types](entity-types.md) §2.3 | Provisioning (terminal): REQUESTED → INITIATED → EXECUTING → COMPLETED / FAILED / CANCELLED |
 | **Knowledge** | Architecture / capability knowledge (curated) | DAV | Capability, TaxonomyTerm, Alias, Antipattern (+ future UseCase, Gap, Assessment, Finding) — [Knowledge Family](../entities/knowledge-family.md) | Curation: PROPOSED → UNDER_REVIEW → CANONICAL (+ OBSERVED, DEPRECATED) |
 
 The **Resource** family is the founding set (UDLM's original definitions, retroactively
@@ -128,7 +129,7 @@ data substrate cannot rely on context, so it must make the meaning-context **exp
 Every definition therefore carries a **`family` tag** recording the family (domain
 context) whose vocabulary defines it. Overlapping terms become unambiguous by
 qualification — `Drive [Computing]` vs `Drive [Automotive]`; within our own stack,
-`Process [Resource]` (a Process Resource Entity) vs `Process [People/Process]` (a business
+`Process [Resource]` (a Process) vs `Process [People/Process]` (a business
 process); and `Policy`, `Service`, `Provider`, `Capability` are all collision-prone across
 domains.
 

@@ -225,7 +225,7 @@ not the model's) or a genuinely novel concept that should be explicitly identifi
 
 ## 7. The Core Ethos
 
-These three abstractions serve one core ethos — managing the lifecycle of infrastructure resources across a
+These three abstractions serve one core ethos — managing the lifecycle of resources across a
 sovereign private cloud — expressed as four qualities the data model is shaped to enable:
 
 **Effective at the core mission.** The Data abstraction ensures every resource is tracked, versioned, and

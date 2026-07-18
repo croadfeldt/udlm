@@ -474,7 +474,7 @@ A provider declares its capabilities once; the **capability categories** (verb �
 
 ### 8.1 `realize_resources` — Service / Resource profile
 
-**What it does:** Realizes infrastructure resources. Receives assembled payloads, provisions the resource, returns realized state. The same provider also **declares** other capabilities by declaring their resource types: credential issuance (`Credential.*` — see [Credentials](../governance/credentials.md)), notification delivery (`Notification.*`), and ITSM integration (`ITSM.*`). These are **capabilities declared on a provider, not separate provider types** — a provider that declares `Credential.*` *is* a credential-issuing provider for those types.
+**What it does:** Realizes resources. Receives assembled payloads, provisions the resource, returns realized state. The same provider also **declares** other capabilities by declaring their resource types: credential issuance (`Credential.*` — see [Credentials](../governance/credentials.md)), notification delivery (`Notification.*`), and ITSM integration (`ITSM.*`). These are **capabilities declared on a provider, not separate provider types** — a provider that declares `Credential.*` *is* a credential-issuing provider for those types.
 
 **Additional endpoints:**
 ```

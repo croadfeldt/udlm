@@ -14,16 +14,17 @@
 >
 > **This document maps to: DATA**
 >
-> The Data abstraction — typed entity extensions (Infrastructure Resource, Composite, Process)
+> The Data abstraction — typed entity extensions (Resource, Process; each Atomic or Composite)
 
 
 **Related Documents:** [Entity-Type Families](entity-type-families.md) | [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
 
-> **Note (2026-06-08):** the three primary entity types below are now grouped as the
-> **Resource family** — see [Entity-Type Families](entity-type-families.md). A family is a
-> *logical grouping* of entity-type definitions, **not** a usage boundary; definitions are
-> universal and free to use across realizations. The **Knowledge family** (Capability,
-> TaxonomyTerm, …), anchored by DAV, is in [../entities/knowledge-family.md](../entities/knowledge-family.md).
+> **Families & shape.** The entity kinds below split by **family**: **Resource** (maintained states) and
+> **Process** (bounded executions) — see [Entity-Type Families](entity-type-families.md). A family is a
+> *logical grouping*, **not** a usage boundary. Within a family, `entity_type` records the **shape** —
+> **Atomic** (owns no constituents) or **Composite** (owns constituents) — so "Composite" is a shape a
+> Resource *or* Process can take, not a separate family. The **Knowledge family** (Capability, TaxonomyTerm,
+> …), anchored by DAV, is in [../entities/knowledge-family.md](../entities/knowledge-family.md).
 
 ---
 
@@ -39,13 +40,18 @@ Understanding entity types is prerequisite to understanding:
 
 ---
 
-## 2. The Three Primary Entity Types
+## 2. The Two Primary Entity Kinds
 
-UDLM defines three primary entity types. Every entity is exactly one of these.
+The primary split is by **family**, on one axis — is the entity a *maintained state* or a *bounded execution*?
 
-### 2.1 Infrastructure Resource Entity
+- **Resource** (`family: Resource`) — a maintained state the system holds and continuously reconciles.
+- **Process** (`family: Process`) — a bounded execution that runs to a terminal outcome.
 
-An **Infrastructure Resource Entity** is a realized physical or virtual infrastructure resource that persists across time and has a full operational lifecycle.
+Duration is *not* the discriminator: a Resource that lives one hour and one that lives a year are the same kind. Within either family, `entity_type` records the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is a shape, not a third kind: a composite Resource owns more than one constituent resource; a composite Process is one DCM itself sequences across more than one constituent process call (§2.2).
+
+### 2.1 Resource — a maintained state
+
+A **Resource** is a realized physical or virtual entity that exists as a **maintained state**: the system records its desired/realized state and continuously reconciles observed reality against it. What makes something a Resource is that it is *kept and reconciled* — drift-detected, suspendable, explicitly decommissioned — not how long it lasts.
 
 **Characteristics:**
 - Persists after provisioning — it continues to exist and consume resources until explicitly decommissioned
@@ -90,14 +96,14 @@ stateDiagram-v2
 
 State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record) · **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
 
-**Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet, and all other persistent infrastructure resource types.
+**Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet — and every other entity the system maintains as a reconciled state.
 
-#### 2.1.1 Infrastructure Resource Entity Data Model
+#### 2.1.1 Resource Data Model
 
 The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. A realization that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
 
 ```yaml
-infrastructure_resource_entity:
+resource_entity:
   # Universal artifact metadata
   uuid: <uuid>                          # stable across full lifecycle including rehydration
   handle: <string>                      # human-readable stable identifier
@@ -157,7 +163,7 @@ infrastructure_resource_entity:
 
 #### 2.1.2 PENDING_REVIEW State
 
-`PENDING_REVIEW` is a formal lifecycle state for Infrastructure Resource Entities (not Process Resources). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed. **Why a distinct state rather than FAILED:** the underlying resource is unchanged and healthy — the conflict is a *governance* question (sovereignty/authorization), not a provisioning fault. `FAILED` would imply the resource is broken and invite teardown; `PENDING_REVIEW` preserves the resource intact while a human or policy resolves the conflict, and it is never auto-resolved.
+`PENDING_REVIEW` is a formal lifecycle state for Resources (not Processes). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed. **Why a distinct state rather than FAILED:** the underlying resource is unchanged and healthy — the conflict is a *governance* question (sovereignty/authorization), not a provisioning fault. `FAILED` would imply the resource is broken and invite teardown; `PENDING_REVIEW` preserves the resource intact while a human or policy resolves the conflict, and it is never auto-resolved.
 
 | Trigger | Description |
 |---------|-------------|
@@ -172,9 +178,9 @@ An entity in `PENDING_REVIEW`:
 - Remains in `PENDING_REVIEW` until a resolution action is taken (re_authorize, release, escalate, or manual override)
 - Is never automatically resolved — all resolutions require explicit human or policy authorization
 
-### 2.2 Composite Resource Entity
+### 2.2 Atomic and Composite — the shape (`entity_type`)
 
-A **Composite Resource Entity** is produced by a composite resource type specification that orchestrates multiple constituent Infrastructure Resource Entities to deliver a higher-order service. The composite is a first-class entity — it has its own UUID, Tenant ownership, and lifecycle. Its constituents each retain their own entity identity.
+Within the **Resource** and **Process** families, `entity_type` records the **shape**: **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. `entity_type` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `entity_type: Composite`. (The specific type — `Compute.VirtualMachine`, `Automation.Workflow` — is `resource_type`, a finer gate.)
 
 **Characteristics:**
 - Represents the logical aggregate, not a physical resource
@@ -183,12 +189,12 @@ A **Composite Resource Entity** is produced by a composite resource type specifi
 - Drift detection operates at two levels: the composite level (is the composite healthy as a whole?) and the constituent level (is each underlying resource still in its expected state?)
 - Decommission is staged: composite decommissioned first, then constituents in reverse dependency order
 
-**Lifecycle state machine:** Same as Infrastructure Resource Entity — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational, and **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
+**Lifecycle state machine:** Same as Resource — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational, and **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
 
 **Constituent relationship:** Each constituent is recorded as a `constituent_of` relationship from the constituent to the composite. The composite holds `has_constituent` relationships to each constituent. The composite UUID is the correlation key across all constituent audit records.
 
 ```yaml
-composite_resource_entity:
+composite_entity:
   uuid: <uuid>
   resource_type: <fqn>                  # e.g., ApplicationStack.WebApp
   lifecycle_state: <same as Infrastructure>
@@ -208,15 +214,17 @@ composite_resource_entity:
   composite_health: <healthy|degraded|failed>   # health axis (status overlay) — separate from lifecycle_state
 ```
 
-### 2.3 Process Resource Entity
+### 2.3 Process — a bounded execution (family: Process)
 
-A **Process Resource Entity** represents a short-lived (transient) execution — an automation job, playbook, pipeline, workflow, or script execution. It does not persist after completion. Its lifecycle is terminal-focused: every Process Resource Entity ends in either COMPLETED, FAILED, or CANCELLED.
+A **Process** is a bounded execution — an automation job, playbook, pipeline, workflow, or script run. It is defined by its *form*, not its effect: it runs to a terminal outcome (COMPLETED, FAILED, or CANCELLED) and is never a maintained state — no drift, no suspend, no reconciliation. It may read or change Resources (and records which entity UUIDs it affected), but a Process itself is not kept. Automation is the archetype.
+
+Like a Resource, a Process carries a shape in `entity_type` — and the line is drawn from the **realization's (DCM's) perspective**, its orchestration scope, *not* the process's internal complexity: **Atomic** is a *single call DCM makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; DCM made a single call, so it is still Atomic). **Composite** is when *DCM itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Automation.Job`) — vendor-specifics like "playbook" live there, at the finer gate.
 
 **Characteristics:**
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
 - Must declare `max_execution_time` — mandatory, not optional
 - If max_execution_time is exceeded, the process enters FAILED state and a `PROCESS_TIMEOUT` event is generated (catalogued as `process.timeout` — contracts/event-catalog.md §17a)
-- If the process modifies any Infrastructure Resource Entity, it must record the modified entity UUIDs in its provenance
+- If the process modifies any Resource, it must record the modified entity UUIDs in its provenance
 - Owned by the Tenant that initiated the execution
 - Subject to audit — every process execution produces a full audit trail
 
@@ -228,10 +236,10 @@ REQUESTED → INITIATED → EXECUTING → COMPLETED (terminal)
                                   → CANCELLED  (terminal — requires explicit cancel request)
 ```
 
-No SUSPENDED state. No PENDING_REVIEW state. Process Resources are transient — they do not enter states that require ongoing management.
+No SUSPENDED state. No PENDING_REVIEW state. Processes are transient — they do not enter states that require ongoing management.
 
 ```yaml
-process_resource_entity:
+process_entity:
   uuid: <uuid>
   resource_type: <fqn>                  # e.g., Automation.AnsiblePlaybook
   lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity
@@ -260,9 +268,9 @@ process_resource_entity:
 
 ## 3. Sub-Types and Specializations
 
-### 3.1 Shared Resource Entity (Infrastructure Resource sub-type)
+### 3.1 Shared Resource Entity (Resource sub-type)
 
-A **Shared Resource Entity** is an Infrastructure Resource Entity where multiple consumers hold stakes — references, attachments, or dependencies — without any consumer owning an allocation of the resource. The resource has a single owner (typically a platform or network operations Tenant). Consumers reference it through relationships.
+A **Shared Resource Entity** is an Resource where multiple consumers hold stakes — references, attachments, or dependencies — without any consumer owning an allocation of the resource. The resource has a single owner (typically a platform or network operations Tenant). Consumers reference it through relationships.
 
 See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for the complete model.
 
@@ -272,9 +280,9 @@ See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for th
 
 Decommission is deferred while any active stakeholder relationships exist. The `minimum_relationship_count` on the resource type spec declares the safe minimum — typically 0 (can be decommissioned when all stakes are released) but may be higher for infrastructure that must always have at least one consumer.
 
-### 3.2 Allocatable Pool Resource (Infrastructure Resource sub-type)
+### 3.2 Allocatable Pool Resource (Resource sub-type)
 
-An **Allocatable Pool Resource** is an Infrastructure Resource Entity that serves as a pool from which consumers receive owned allocations. The pool itself is owned by a platform Tenant. Each allocation request produces a new, independently owned Infrastructure Resource Entity carved from the pool.
+An **Allocatable Pool Resource** is an Resource that serves as a pool from which consumers receive owned allocations. The pool itself is owned by a platform Tenant. Each allocation request produces a new, independently owned Resource carved from the pool.
 
 See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for the complete model.
 
@@ -293,8 +301,8 @@ These invariants apply to all entity types without exception:
 | Invariant | Rule |
 |-----------|------|
 | UUID stability | An entity's UUID never changes across its full lifecycle, including rehydration and provider migration |
-| Single Tenant ownership | Every Infrastructure Resource Entity and Process Resource Entity is owned by exactly one Tenant at all times |
-| Composite constituent ownership | A Composite Resource Entity's constituents are owned individually — the composite UUID does not override constituent Tenant ownership |
+| Single Tenant ownership | Every Resource and Process is owned by exactly one Tenant at all times |
+| Composite constituent ownership | A Composite's constituents are owned individually — the composite UUID does not override constituent Tenant ownership |
 | Immutable Realized State | Realized State events are append-only; a new event is created for every state change |
 | Audit trail preservation | Audit records for an entity are never destroyed while any related entity is active; preservation policy governs post-terminal retention |
 | Provider ID separation | The entity UUID is the UDLM stable identity; the provider entity ID is the provider's own reference. These are separate and the provider ID may change on rehydration |
@@ -308,7 +316,7 @@ Not all resource types produce the same entity type. The entity type is declared
 ```yaml
 resource_type_spec:
   fqn: Compute.VirtualMachine
-  entity_type: infrastructure_resource   # infrastructure_resource | composite_resource | process_resource
+  entity_type: resource   # resource | composite | process
   ownership_model: whole_allocation       # whole_allocation | allocation | shareable
   allocatable_from_pool_type: null        # if allocation: the pool resource type this comes from
   pool_resource_type: null                # if pool: declare this is a pool resource
@@ -324,11 +332,11 @@ conformant realization guarantees, not runtime governance policy.
 
 | Invariant | Rule |
 |--------|------|
-| `ENT-001` | Every Infrastructure Resource Entity must be owned by exactly one Tenant at all times |
-| `ENT-002` | Process Resource Entities must declare max_execution_time — this field has no default and is not optional |
-| `ENT-003` | Process Resource Entities must record all affected entity UUIDs if any infrastructure modifications are made during execution |
-| `ENT-004` | Composite Resource Entity aggregate constituent health is carried on the `composite_health` axis (a status/conditions overlay — data-model-core §3): healthy only when all required constituents are operational. DEGRADED/degraded is a health-axis value, never a lifecycle_state — the lifecycle enum is unchanged for composites |
-| `ENT-005` | PENDING_REVIEW is a valid Infrastructure Resource Entity state requiring human resolution — it is never an error state and never automatically resolved |
+| `ENT-001` | Every Resource must be owned by exactly one Tenant at all times |
+| `ENT-002` | Processes must declare max_execution_time — this field has no default and is not optional |
+| `ENT-003` | Processes must record all affected entity UUIDs if any infrastructure modifications are made during execution |
+| `ENT-004` | Composite aggregate constituent health is carried on the `composite_health` axis (a status/conditions overlay — data-model-core §3): healthy only when all required constituents are operational. DEGRADED/degraded is a health-axis value, never a lifecycle_state — the lifecycle enum is unchanged for composites |
+| `ENT-005` | PENDING_REVIEW is a valid Resource state requiring human resolution — it is never an error state and never automatically resolved |
 | `ENT-006` | The entity UUID is immutable across the full entity lifecycle including rehydration, provider migration, and ownership transfer |
 
 ---

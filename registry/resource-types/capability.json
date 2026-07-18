@@ -59,14 +59,14 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "TaxonomyTerm",
       "target_field": "termHandle",
       "cardinality": "0..n",
       "description": "normalized_to — this capability is mapped to one or more canonical taxonomy terms (e.g. the DCM capability taxonomy). A declarative typed reference; the mapping act is Policy."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Capability",
       "cardinality": "0..n",
       "description": "This capability depends on another capability (capability-map edge). Forms an acyclic capability DAG; traversal/ordering is Policy."

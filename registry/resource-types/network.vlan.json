@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "4a1178f7-4da9-47cd-97f6-8d864adcb031",
   "resource_type": "Network.VLAN",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
-  "entity_type": "Infrastructure Resource",
+  "entity_type": "Atomic",
   "lifecycle_archetype": "provisioning",
   "portability": "portable",
   "status": "active",
@@ -63,14 +63,14 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Network.Switch",
       "name": "fabric",
       "cardinality": "0..n",
       "description": "The switch(es)/fabric that carry this segment (where the provider manages it)."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.Cluster",
       "name": "scope",
       "cardinality": "0..1",
