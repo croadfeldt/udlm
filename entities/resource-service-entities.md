@@ -541,10 +541,10 @@ resource_service_entity:
       this_role: <role this entity plays>
       related_entity_uuid: <uuid of related entity or external reference>
       related_entity_type: <internal|external>
-      kind: <depends_on|contained_by|binds_to|references>
+      edge_type: <depends_on|contained_by|binds_to|references>
       strength: <hard|soft>          # depends_on only
       relation: <declared relation name (common-elements §9)>
-      # nature (constituent|operational|informational) is derived from kind — see entity-relationships.md §6
+      # nature (constituent|operational|informational) is derived from edge_type — see entity-relationships.md §6
       lifecycle_policy:
         on_related_destroy: <destroy|retain|detach|notify>
         on_related_suspend: <suspend|retain|detach|notify>

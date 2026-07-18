@@ -70,11 +70,11 @@ relationship:
   lookup_method: <primary_key|fallback — how to resolve the external reference>
   
   # Edge semantics — authoritative two-tier model (data-model-core §4, common-elements §9)
-  kind: <depends_on|contained_by|binds_to|references>   # closed universal tier
+  edge_type: <depends_on|contained_by|binds_to|references>   # closed universal tier
   strength: <hard|soft>                                 # depends_on only — soft orders, never blocks (DEP-006)
   relation: <declared relation name>                    # domain tier — DECLARED by the pinned type (REL-001)
   target_field: <field consumed>                        # binds_to only
-  # nature (constituent|operational|informational) is DERIVED from kind, not stored — see §6
+  # nature (constituent|operational|informational) is DERIVED from edge_type, not stored — see §6
   
   # Lifecycle policy — for constituent and operational relationships only
   lifecycle_policy:
@@ -96,7 +96,7 @@ relationship:
 
 A relationship is **authored by handle** and **recorded by uuid**. At authoring time the related entity may not be realized yet, so the edge names it by `target_handle`; the substrate resolves the handle to `related_entity_uuid` at reserve (AEP-124 — author by handle, resolve at reserve). The uuid never has to be known in advance. Every relationship is then recorded on **both** participating entities under one shared `relationship_uuid`; the two records differ only in `direction` — there is no separate inverse *type*.
 
-**Authored — a VM's intent, by handle (no uuids yet). One example, three kinds:**
+**Authored — a VM's intent, by handle (no uuids yet). One example, three edge_types:**
 
 ```yaml
 # On the VM's requested intent
@@ -104,17 +104,17 @@ relationships:
   - target_handle: "storage/primary"          # its boot disk
     this_role: compute
     related_entity_role: storage
-    kind: depends_on
+    edge_type: depends_on
     strength: hard                             # cannot function without it → constituent (derived)
     relation: disk                             # declared by Compute.VirtualMachine
     lifecycle_policy: { on_related_destroy: destroy }
 
   - target_handle: "business-units/payments"   # non-owning business context
-    kind: references
+    edge_type: references
     relation: business_unit                    # informational (derived) — no lifecycle coupling
 
   - target_handle: "vm/db-replica-b"           # equal HA partner
-    kind: depends_on
+    edge_type: depends_on
     strength: soft                             # orders but never blocks (DEP-006) → operational (derived)
     relation: cluster_peer
 ```
@@ -127,41 +127,41 @@ relationships:
   - relationship_uuid: "rel-...-001"
     this_entity_uuid: "<vm uuid>"
     related_entity_uuid: "<storage uuid>"      # resolved from handle "storage/primary"
-    kind: depends_on
+    edge_type: depends_on
     strength: hard
     relation: disk
     direction: outbound
 
-# On the Storage Entity — the SAME edge, inbound. Same relationship_uuid and kind;
+# On the Storage Entity — the SAME edge, inbound. Same relationship_uuid and edge_type;
 # direction expresses the inverse — there is no `required_by` type.
 relationships:
   - relationship_uuid: "rel-...-001"
     this_entity_uuid: "<storage uuid>"
     related_entity_uuid: "<vm uuid>"
-    kind: depends_on
+    edge_type: depends_on
     strength: hard
     relation: disk
     direction: inbound
 ```
 
-This single example does what the old one-edge example never did: it exercises `depends_on` (hard and soft), `references`, and declared `relation` names — the kind and the derived nature both doing visible work.
+This single example does what the old one-edge example never did: it exercises `depends_on` (hard and soft), `references`, and declared `relation` names — the edge_type and the derived nature both doing visible work.
 
 ---
 
-## 4. Edge Model — kind + relation (authoritative)
+## 4. Edge Model — edge_type + relation (authoritative)
 
 Every edge carries two tiers, one authoritative field each (data-model-core §4, common-elements §9):
 
-- **`kind`** — closed, universal: `depends_on` (`strength: hard|soft`), `contained_by`, `binds_to` (`target_field`), `references`. Ordering, traversal, and lifecycle projection consume ONLY `kind` + `strength`. Aligned with OASIS TOSCA root relationship types and ECMA-424 CycloneDX `dependsOn`.
-- **`relation`** — domain tier: a name DECLARED by the pinned Resource Type (`relationships[].name`), adopted from a standard where one names the concept (RFC 8343/8345, TOSCA). A relation **refines** its kind and never overrides the kind's ordering semantics (REL-003); a consumer that does not understand a relation falls back to kind behaviour — the dependency graph is always a strict projection of the data.
+- **`edge_type`** — closed, universal: `depends_on` (`strength: hard|soft`), `contained_by`, `binds_to` (`target_field`), `references`. Ordering, traversal, and lifecycle projection consume ONLY `edge_type` + `strength`. Aligned with OASIS TOSCA root relationship types and ECMA-424 CycloneDX `dependsOn`.
+- **`relation`** — domain tier: a name DECLARED by the pinned Resource Type (`relationships[].name`), adopted from a standard where one names the concept (RFC 8343/8345, TOSCA). A relation **refines** its edge_type and never overrides the edge_type's ordering semantics (REL-003); a consumer that does not understand a relation falls back to edge_type behaviour — the dependency graph is always a strict projection of the data.
 
 **Direction expresses the inverse** (§3.2): one edge, recorded on both sides, `direction: outbound|inbound`. There is no separate inverse *type* — an old `required_by` is just the inbound reading of a `depends_on`.
 
-`references` and a declared peer `relation` exist so `depends_on` is never overloaded to mean "just points at" — they carry **no** lifecycle coupling, which ordering kinds must never imply. *Example:* a VM `references` its **Business Unit** / Cost Center / Product Owner so cost rollup, ownership, and reporting work — but destroying or suspending the Business Unit must **not** touch the VM. *Example (peer):* the members of a cluster (two database replicas, two firewall HA partners) each declare a `cluster_peer` relation — equal entities where neither owns or contains the other, so lifecycle authority sits on each side independently.
+`references` and a declared peer `relation` exist so `depends_on` is never overloaded to mean "just points at" — they carry **no** lifecycle coupling, which ordering edge_types must never imply. *Example:* a VM `references` its **Business Unit** / Cost Center / Product Owner so cost rollup, ownership, and reporting work — but destroying or suspending the Business Unit must **not** touch the VM. *Example (peer):* the members of a cluster (two database replicas, two firewall HA partners) each declare a `cluster_peer` relation — equal entities where neither owns or contains the other, so lifecycle authority sits on each side independently.
 
 **Legacy six-type mapping** — earlier drafts used a six-type vocabulary; it maps onto the model above and is retained only for reading older records:
 
-| Legacy type | → kind + relation |
+| Legacy type | → edge_type + relation |
 |---|---|
 | `requires` | `depends_on` (`strength: hard`) |
 | `depends_on` | `depends_on` (`strength: soft`) |
@@ -216,7 +216,7 @@ custom_role_registration:
 
 ## 6. Relationship Nature (a derived axis)
 
-**Nature is derived from the edge model, not stored as a field** (data-model-core §4). It is a reading of `kind`: `constituent` = `contained_by` / `constituents[]` membership; `operational` = an ordering kind (`depends_on` / `binds_to`); `informational` = `references`. It is retained as a vocabulary because the cross-tenant, matrix, and lifecycle rules below are stated in terms of it — but it is computed from `kind`, never authored independently.
+**Nature is derived from the edge model, not stored as a field** (data-model-core §4). It is a reading of `edge_type`: `constituent` = `contained_by` / `constituents[]` membership; `operational` = an ordering edge_type (`depends_on` / `binds_to`); `informational` = `references`. It is retained as a vocabulary because the cross-tenant, matrix, and lifecycle rules below are stated in terms of it — but it is computed from `edge_type`, never authored independently.
 
 Nature describes the **structural character** of a relationship — what it means for the entities involved.
 
@@ -381,7 +381,7 @@ allocated_entity:
       related_entity_uuid: <parent resource uuid>
       related_entity_type: internal
       related_entity_tenant_uuid: <Infrastructure Tenant uuid>
-      kind: depends_on
+      edge_type: depends_on
       strength: soft                    # operational allocation (nature derived)
       cross_tenant: true
       allocation_uuid: <uuid — links to parent's allocation record>
@@ -643,12 +643,12 @@ deferred_destruction_record:
   remaining_relationships:
     - relationship_uuid: <uuid>
       related_entity_uuid: <VM-B uuid>
-      kind: depends_on
+      edge_type: depends_on
       strength: hard
       direction: inbound            # was required_by
     - relationship_uuid: <uuid>
       related_entity_uuid: <VM-C uuid>
-      kind: depends_on
+      edge_type: depends_on
       strength: soft
       direction: inbound            # was dependency_of
   recorded_at: <ISO 8601>
@@ -692,7 +692,7 @@ Declares what relationships are **possible** for a resource type. Sets the ceili
 resource_type: Compute.VirtualMachine
 possible_relationships:
   - role: storage
-    kind: depends_on
+    edge_type: depends_on
     strength: hard
     relation: disk
     permitted_related_types:
@@ -706,7 +706,7 @@ possible_relationships:
     # Consumer can declare binding_type and lifecycle_policy override
 
   - role: networking
-    kind: depends_on
+    edge_type: depends_on
     strength: hard
     relation: network_attachment
     permitted_related_types:
@@ -725,7 +725,7 @@ Declares the **actual relationships** for a specific curated offering. Can only 
 catalog_item: Production VM
 relationships:
   - role: storage
-    kind: depends_on
+    edge_type: depends_on
     strength: hard
     relation: disk
     related_catalog_item_uuid: <uuid of Standard Block Storage catalog item>
@@ -747,7 +747,7 @@ request:
   # ... other fields ...
   relationships:
     - role: storage
-      kind: depends_on
+      edge_type: depends_on
       strength: hard
       relation: disk
       binding_type: referenced
@@ -779,7 +779,7 @@ relationships:
     related_entity_type: external
     information_provider_uuid: <uuid of HR Information Provider>
     information_type: Business.BusinessUnit
-    kind: references
+    edge_type: references
     relation: business_unit
     role: business_unit
     lookup_method: primary_key
@@ -1060,16 +1060,16 @@ resource_type_spec:
   fully_qualified_name: Compute.VirtualMachine
   permitted_relationship_roles:
     - role: storage
-      kinds: [depends_on]        # hard
+      edge_types: [depends_on]        # hard
       permitted_related_types: [Storage.Block, Storage.File]
     - role: networking
-      kinds: [depends_on]        # hard
+      edge_types: [depends_on]        # hard
       permitted_related_types: [Network.IPAddress, Network.Port]
     - role: dns
-      kinds: [depends_on]        # soft
+      edge_types: [depends_on]        # soft
       permitted_related_types: [DNS.Record]
     - role: load_balancer
-      kinds: [depends_on]        # soft
+      edge_types: [depends_on]        # soft
       permitted_related_types: [Network.LoadBalancer]
   role_validation: advisory   # advisory | enforced
   # advisory: unknown roles produce a warning in assembly provenance

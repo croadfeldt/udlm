@@ -15,12 +15,12 @@ states:
 dependencies:
 # Runs on host-a, in the realm, and needs the database service directly (a plain depends_on edge).
 # So svc-app stops before svc-db, host-a, and the realm's identity/DNS.
-- kind: references
+- edge_type: references
   target_uuid: a266ce49-e7a8-47b4-9a84-e50fa37d556c
   target_handle: host-a
-- kind: depends_on
+- edge_type: depends_on
   target_uuid: dd974906-ef2d-4313-85ca-9a82c4aeeb48
   target_handle: svc-db
-- kind: depends_on
+- edge_type: depends_on
   target_uuid: 30fe47cb-e61b-490d-8657-a56c76581a4f
   target_handle: core-services
