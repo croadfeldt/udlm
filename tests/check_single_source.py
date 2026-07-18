@@ -54,10 +54,9 @@ BASELINE_COLLISIONS = {
     "INF-004": ["contracts/information-providers-advanced.md", "design-principles/data-contracts.md"],
     "INF-006": ["contracts/information-providers-advanced.md", "design-principles/data-contracts.md"],
     "INF-007": ["contracts/information-providers-advanced.md", "design-principles/data-contracts.md"],
-    # OBS-* / STO-* — observability doc reuses IDs owned by service-dependencies / storage.
+    # OBS-* — observability doc reuses IDs owned by service-dependencies.
     "OBS-002": ["entities/service-dependencies.md", "observability/audit-provenance-observability.md"],
-    "STO-004": ["contracts/storage-providers.md", "observability/audit-provenance-observability.md"],
-    # (XTA-001..004 and ENT-006 pruned 2026-07-15 — no longer collide on main.)
+    # (XTA-001..004 and ENT-006 pruned 2026-07-15; STO-004 pruned 2026-07-18 — no longer collide on main.)
 }
 
 
