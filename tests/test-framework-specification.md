@@ -70,9 +70,9 @@ Every request flows through these stages in order:
 
 | Type | Has persistent resources? | Lifecycle |
 |------|--------------------------|-----------|
-| `infrastructure_resource` | Yes | Full CRUD lifecycle |
-| `composite_resource` | Yes (composed of children) | Parent lifecycle governs children |
-| `process_resource` | No — ephemeral | PENDING → EXECUTING → terminal |
+| `resource` | Yes | Full CRUD lifecycle |
+| `composite` | Yes (composed of children) | Parent lifecycle governs children |
+| `process` | No — ephemeral | PENDING → EXECUTING → terminal |
 | `shared_resource` | Yes — multi-tenant | Stakeholder management |
 | `allocatable_pool` | Yes — capacity tracking | Allocation/release |
 
@@ -358,7 +358,7 @@ dcm_architecture:
 
   provider_types: [service, information, meta, auth, peer_dcm, process]
 
-  entity_types: [infrastructure_resource, composite_resource, process_resource, shared_resource, allocatable_pool]
+  entity_types: [resource, composite, process, shared_resource, allocatable_pool]
 
   data_domains:
     - name: intent

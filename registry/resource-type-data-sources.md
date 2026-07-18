@@ -82,7 +82,7 @@ UDLM has the hooks to encode this without new machinery:
 ## 6. New entries proposed for `reference/standards-catalog.md`
 
 These resource-domain standards are not yet in the catalog. Proposed additions (all **Tier 2** record
-schemas unless noted), to be merged into a new "Infrastructure Resource Domain Standards" section:
+schemas unless noted), to be merged into a new "Resource Domain Standards" section:
 
 | Standard | Use in UDLM | Obligation |
 |---|---|---|

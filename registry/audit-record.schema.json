@@ -236,7 +236,7 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Explicit, self-describing relationship-edge event (SPEC-DESIGN §Relationships 18a-e). Records the RESULTING edge state, not a differential — enabling audit-based, LIFO rebuild/confirm of relationships (18c). An undo/revert resolves to one of these explicit results (18e).",
-      "required": ["source_uuid", "target_uuid", "kind", "resulting_state"],
+      "required": ["source_uuid", "target_uuid", "edge_type", "resulting_state"],
       "properties": {
         "source_uuid": {
           "type": "string",
@@ -252,9 +252,9 @@
           "type": "string",
           "description": "Advisory only; target_uuid is authoritative (never name alone)."
         },
-        "kind": {
+        "edge_type": {
           "enum": ["depends_on", "binds_to", "references", "contained_by"],
-          "description": "Typed relationship kind (§18)."
+          "description": "Typed relationship edge_type (§18)."
         },
         "resulting_state": {
           "enum": ["present", "absent"],

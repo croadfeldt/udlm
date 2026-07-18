@@ -95,7 +95,9 @@ def classify(old, new):
     reasons["minor"] += [f"added output '{o}'" for o in (n_out - o_out)]
 
     def rels(d):
-        return {(r["kind"], r["target"]) for r in d.get("relationships", [])}
+        # edge_type is the current field (ADR-026); `kind` is the pre-rename name, tolerated
+        # so an old-vs-new compare across the rename doesn't read every edge as removed+added.
+        return {(r.get("edge_type", r.get("kind")), r["target"]) for r in d.get("relationships", [])}
     reasons["major"] += [f"removed relationship {r}" for r in (rels(old) - rels(new))]
     reasons["minor"] += [f"added relationship {r}" for r in (rels(new) - rels(old))]
 

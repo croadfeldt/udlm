@@ -39,7 +39,7 @@ Both emit UDLM-conformant Data. The capability catalog maps onto UDLM's four sta
 **Discovered** = capabilities an assessment observes in the field; **Intent** = a
 proposed capability/term; **Realized** = the curated canonical entry; the **gap** between
 them = DAV's analysis. UDLM needs a new entity-type family for this knowledge domain
-(current types — Infrastructure Resource, Composite, Process — are infra-oriented); that
+(current types — Resource, Composite, Process — are infra-oriented); that
 type-family definition is the prereq for DAV's UDLM-conformant schema. See
 `dav/docs/capability-catalog-design.md` (UDLM CONFORMANCE).
 

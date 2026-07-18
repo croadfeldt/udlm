@@ -3,14 +3,14 @@
 _Status: proposal / vision. References public specifications from
 [FINOS CALM](https://calm.finos.org/) and [LikeC4](https://likec4.dev/),
 alongside UDLM's own model. This documents why architecture-as-code tools
-are natural ingestion sources for UDLM Composite Resource Entities and how
+are natural ingestion sources for UDLM Composites and how
 the mapping would work under T5._
 
 ## The one-line story
 
 **Architecture-as-code tools describe topology. UDLM manages its lifecycle.**
 A CALM architecture or a LikeC4 model declares "these components compose into
-this service" — which is what a Composite Resource Entity already represents.
+this service" — which is what a Composite already represents.
 UDLM wraps that topology with lifecycle, governance, provenance, and drift
 detection — without re-expressing the topology language itself.
 
@@ -60,7 +60,7 @@ Architecture-as-code tool
 Information Provider (topology ingestion)
   │  naturalize: nodes → entities, edges → relationships
   ▼
-UDLM: Composite Resource Entity
+UDLM: Composite
   ├── constituent entities (one per node)
   ├── relationships (typed, with nature + lifecycle policy)
   ├── four-state tracking begins
@@ -80,8 +80,8 @@ the previous Realized state and the new topology.
 
 | Source concept | UDLM target | Notes |
 |----------------|-------------|-------|
-| CALM node (service, database, network, actor, webclient) | Infrastructure Resource Entity or Composite Resource Entity | Node type informs UDLM entity type; a CALM node with `composed-of` children becomes a Composite whose children are constituents |
-| LikeC4 element (system, container, component) | Infrastructure Resource Entity or Composite Resource Entity | C4 abstraction level maps to entity type: systems and containers with children → Composite; leaf components → Infrastructure Resource |
+| CALM node (service, database, network, actor, webclient) | Resource or Composite | Node type informs UDLM entity type; a CALM node with `composed-of` children becomes a Composite whose children are constituents |
+| LikeC4 element (system, container, component) | Resource or Composite | C4 abstraction level maps to entity type: systems and containers with children → Composite; leaf components → Resource |
 | CALM actor / LikeC4 person | Not ingested as an entity | Actors/people are external to the managed topology; they become context on the request or contributor identity |
 
 ### Relationships → UDLM Relationships
@@ -121,7 +121,7 @@ assembled at the appropriate layer level (typically Core or Intermediate).
   tracking, drift detection, governance, audit, and provenance for the
   topologies they describe — without changing their own specification.
 - **UDLM gains:** a structured, validated, machine-readable topology source
-  that populates Composite Resource Entities without hand-authoring
+  that populates Composites without hand-authoring
   relationships — the topology tool has already validated the graph.
 - **Users gain:** draw or code the architecture in the tool they prefer;
   the lifecycle platform picks it up automatically.

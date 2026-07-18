@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7c8fe45c-8a77-4ab2-9743-e779cd1c5401",
   "resource_type": "Network.AddressService",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Infrastructure Resource",
+  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
@@ -44,14 +44,14 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "name": "served_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
       "description": "served_by \u2014 a host running this DHCP/DNS provider. The service stops before its host in a reverse-topo shutdown."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "name": "served_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
