@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/rule-id-registry.schema.json",
+  "title": "UDLM Rule-ID Registry",
+  "description": "The single source of truth for normative rule-ID prefixes: one prefix = one rule family = one home file. See registry/rule-id-naming.md and ADR-028.",
+  "type": "object",
+  "required": ["version", "prefixes"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "prefixes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": ["prefix", "name", "home", "domain", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "prefix": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9]{1,5}$",
+          "description": "2-6 chars, leading letter. The rule family; IDs are `<prefix>-NNN` (hyphen-segmented sub-series like REG-DP resolve to their leading prefix)."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Short human-readable family name."
+        },
+        "home": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._/-]+\\.md$",
+          "description": "The single repo-relative doc where this prefix's rules are defined."
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 8,
+          "description": "One line: what this family of rules governs."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "retired"]
+        },
+        "baseline_spread": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+\\.md$" },
+          "minItems": 1,
+          "description": "Grandfathered non-home files where this prefix is still defined (dedup debt). Burned down in the renumber PR; an entry that no longer spreads is reported stale."
+        }
+      }
+    }
+  }
+}

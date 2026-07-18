@@ -1,0 +1,219 @@
+# UDLM Rule-ID Registry — the single source of truth for normative rule-ID prefixes.
+#
+# Convention: registry/rule-id-naming.md (normative). Enforced by tests/check_single_source.py
+# (CI). ADR-028 records the decision.
+#
+# One prefix = one rule family = one home file. A rule DEFINITION (a `| `PFX-NNN` | … |` table
+# row) may appear ONLY in that prefix's `home`; every other mention is a citation. To add a
+# rule family, register its prefix here first — an unregistered prefix fails CI.
+#
+# `baseline_spread` grandfathers a prefix that today is still defined in more than its home
+# (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
+# follow-up renumber PR; a baseline that no longer spreads is reported stale.
+
+version: "1.0.0"
+
+prefixes:
+  - prefix: ACC
+    name: Accreditation & authorization
+    home: governance/accreditation-and-authorization-matrix.md
+    domain: Accreditation frameworks and the data-authorization matrix
+    status: active
+  - prefix: ATM
+    name: Authority tier model
+    home: governance/authority-tier-model.md
+    domain: Authority tiers and their escalation semantics
+    status: active
+  - prefix: AUD
+    name: Universal audit
+    home: observability/universal-audit.md
+    domain: The universal audit model (Merkle log, leaf signatures, log head)
+    status: active
+    baseline_spread: [observability/audit-provenance-observability.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
+  - prefix: AUTH
+    name: Auth capability & identity contract
+    home: governance/auth-providers.md
+    domain: The authentication capability and Identity contract (UDLM carries the contract, never authenticates)
+    status: active
+  - prefix: CMP
+    name: Composite service composition
+    home: entities/composite-service-model.md
+    domain: Composite Service registration and constituent composition rules
+    status: active
+  - prefix: CPX
+    name: Credential handling
+    home: governance/credentials.md
+    domain: Credential referencing, custody, and exchange rules
+    status: active
+  - prefix: CTX
+    name: Group context
+    home: observability/universal-groups.md
+    domain: Universal-group context and scoping rules
+    status: active
+  - prefix: DEP
+    name: Service dependencies
+    home: entities/service-dependencies.md
+    domain: Service-dependency declaration, ordering, and strength (hard/soft)
+    status: active
+  - prefix: DISC
+    name: Capability discovery
+    home: contracts/capability-discovery.md
+    domain: Capability discovery and the unified provider model
+    status: active
+  - prefix: DPO
+    name: Design priority order
+    home: design-principles/design-priorities.md
+    domain: The Design Priority Order framework
+    status: active
+  - prefix: ENT
+    name: Entity invariants
+    home: foundations/entity-types.md
+    domain: Core entity lifecycle invariants (ownership, UUID immutability, PENDING_REVIEW, composite health)
+    status: active
+    baseline_spread: [entities/resource-service-entities.md]   # DEBT(id-collision ENT-001..005): resolve in renumber PR — fold the resource-service-entities set into RSE-*
+  - prefix: ERL
+    name: Entity-relationship (legacy-renumbered)
+    home: entities/entity-relationships.md
+    domain: Entity-relationship rules renumbered off REL-* to a disjoint prefix (single-source precedent)
+    status: active
+  - prefix: EVT
+    name: Event catalog
+    home: contracts/event-catalog.md
+    domain: The event catalog and event-emission rules
+    status: active
+  - prefix: FCM
+    name: Federated contribution model
+    home: governance/federated-contribution-model.md
+    domain: Federated contribution and upstream/downstream flow rules
+    status: active
+  - prefix: GMX
+    name: Governance matrix
+    home: governance/governance-matrix.md
+    domain: The unified governance matrix
+    status: active
+  - prefix: GRP
+    name: Resource grouping
+    home: entities/resource-grouping.md
+    domain: Resource-group classes, membership, and nesting rules
+    status: active
+    baseline_spread: [observability/universal-groups.md]   # DEBT(id-collision GRP-001..005): resolve in renumber PR — universal-groups reuses GRP-001..005
+  - prefix: INF
+    name: Information providers
+    home: contracts/information-providers-advanced.md
+    domain: Information-Provider confidence, authority, and schema-versioning rules
+    status: active
+    baseline_spread: [design-principles/data-contracts.md]   # DEBT(id-collision INF-001/003/004/006/007): resolve in renumber PR — data-contracts persistence rules move to DSC-*
+  - prefix: ING
+    name: Ingestion model
+    home: lifecycle/ingestion-model.md
+    domain: Brownfield/observed ingestion rules
+    status: active
+  - prefix: LAY
+    name: Data layering & versioning
+    home: foundations/layering-and-versioning.md
+    domain: Data-layer assembly and precedence rules
+    status: active
+  - prefix: LOC
+    name: Layered topology
+    home: topology/location-topology-layers.md
+    domain: Location/topology layering contract
+    status: active
+  - prefix: LTC
+    name: Lifecycle constraint
+    home: entities/resource-service-entities.md
+    domain: Lifecycle Constraint Enforcer rules
+    status: active
+  - prefix: OBS
+    name: Observability (dependencies)
+    home: entities/service-dependencies.md
+    domain: Observability rules carried on the service-dependency graph
+    status: active
+    baseline_spread: [observability/audit-provenance-observability.md]   # DEBT(id-collision OBS-002): resolve in renumber PR
+  - prefix: OPS
+    name: Operational models
+    home: lifecycle/operational-models.md
+    domain: Operational-model (ingest/process/egress) rules
+    status: active
+    baseline_spread: [foundations/layering-and-versioning.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
+  - prefix: OWN
+    name: Ownership, sharing & allocation
+    home: foundations/ownership-sharing-allocation.md
+    domain: Ownership models, sharing, and allocation rules
+    status: active
+  - prefix: PCA
+    name: Provider callback auth
+    home: contracts/provider-callback-auth.md
+    domain: Provider callback authentication contract
+    status: active
+  - prefix: POL
+    name: Policy contract
+    home: contracts/policy-contract.md
+    domain: The unified policy contract
+    status: active
+  - prefix: PRV
+    name: Provider contract
+    home: contracts/provider-contract.md
+    domain: The unified provider contract and provider profiles
+    status: active
+  - prefix: RDG
+    name: Request dependency graph
+    home: lifecycle/request-dependency-graph.md
+    domain: Consumer request dependency-graph rules
+    status: active
+  - prefix: REG
+    name: Registry governance
+    home: governance/registry-governance.md
+    domain: Registry governance, tiers, and deprecation policy (incl. REG-DP sub-series)
+    status: active
+  - prefix: REL
+    name: Entity relationships
+    home: entities/entity-relationships.md
+    domain: Entity-relationship model rules (edge_type, relation, nature-derivation)
+    status: active
+    baseline_spread: [registry/common-elements.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
+  - prefix: RHY
+    name: Rehydration / four-states
+    home: foundations/four-states.md
+    domain: Four-state lifecycle and rehydration rules
+    status: active
+  - prefix: RSE
+    name: Resource/service entity
+    home: entities/resource-service-entities.md
+    domain: Resource/Service entity rules (ownership transfer, allocation, capacity confidence, billing_state)
+    status: active
+  - prefix: SCH
+    name: Scheduled requests
+    home: lifecycle/scheduled-requests.md
+    domain: Scheduled and deferred request rules
+    status: active
+  - prefix: SOV
+    name: Sovereignty
+    home: contracts/storage-providers.md
+    domain: Sovereignty rules carried on the storage-provider contract
+    status: active
+  - prefix: STO
+    name: Storage providers
+    home: contracts/storage-providers.md
+    domain: Storage-provider contract rules
+    status: active
+    baseline_spread: [observability/audit-provenance-observability.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
+  - prefix: SUB
+    name: Subscription lifecycle
+    home: lifecycle/subscription-lifecycle.md
+    domain: Subscription-as-data lifecycle rules
+    status: active
+  - prefix: TEN
+    name: Tenancy
+    home: entities/resource-grouping.md
+    domain: Tenant-boundary group rules
+    status: active
+  - prefix: XTA
+    name: Cross-tenant authorization
+    home: entities/entity-relationships.md
+    domain: Cross-tenant authorization (XTA) rules
+    status: active
+  - prefix: ZT
+    name: Zero trust
+    home: governance/accreditation-and-authorization-matrix.md
+    domain: Zero-trust posture rules
+    status: active
