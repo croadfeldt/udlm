@@ -18,6 +18,7 @@ jobs:
       - run: python3 tests/check_estate_tokens.py
       - run: python3 tests/check_session_narration.py
       - run: python3 tests/check_model_vocabulary.py
+      - run: python3 tests/check_definition_single_source.py
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump
       # vs origin/main (compat-check old-vs-new). New types are skipped.
