@@ -38,5 +38,22 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [006](ADR-006-convergence-control-model.md) | Convergence control model — Data·Policy·Provider are peers in an event-condition-action loop where **policy is re-entrant** (re-triggered by provider change/denial/drift); soundness rules = bounded convergence, idempotent re-entry, causal audit of triggers | Proposed |
 | [007](ADR-007-profile-model.md) | Profile model — profiles are composed **sets** (policies + operational config + required mechanics), not levels; they set floors; built-in profiles are immutable and modification **forks a custom profile**; org-defined mechanics (e.g. approval ladder); platform-scoped now, group-scopable later | Proposed |
 | [008](ADR-008-udlm-dcm-boundary.md) | The UDLM/DCM boundary — the peer test (could an independent peer do this differently and still be valid? yes→DCM, no→UDLM); UDLM = wire-compatible substrate, DCM = one realization; wire-compatibility not implementation portability (K8s precedent); decision home for enh #58 | Proposed |
+| [009](ADR-009-dependency-fulfillment.md) | Dependency fulfillment — who procures a dependent resource, and how a type accommodates a broker | Proposed |
+| [010](ADR-010-dependency-graph-completion.md) | Dependency-graph completion — fault domains, blast radius, and the unmet-dependency diagnostic | Proposed |
+| [011](ADR-011-validate-and-reserve.md) | Validate-and-reserve — two-phase realization | Proposed |
+| [012](ADR-012-data-references.md) | Data references — the object-reference shape for shared reference data (uuid-authoritative, version-pinned) | Proposed |
+| [013](ADR-013-hardware-component-scope.md) | UDLM/DCM is not a hardware component system-of-record (for now) — control plane, not DCIM | Accepted |
+| [014](ADR-014-resource-type-optionality-conformity.md) | Resource-type data — optionality with conformity (transport, not policy) | Accepted |
+| [015](ADR-015-settings-and-config-bundles.md) | Settings and configuration bundles | Proposed |
+| [016](ADR-016-resource-type-role-graph-audit-not-config.md) | What a Resource Type models — the portable definition; provider-specific config stored extra; DCM is the state system-of-record | Proposed |
+| [017](ADR-017-profile-homelab.md) | The Homelab profile — the single-operator on-ramp | Accepted |
+| [018](ADR-018-profile-dev.md) | The Dev profile — the evaluation / co-engineering target | Accepted |
+| [019](ADR-019-profile-standard.md) | The Standard profile — baseline production | Accepted |
+| [020](ADR-020-profile-prod.md) | The Prod profile — hardened production | Accepted |
+| [021](ADR-021-profile-fsi.md) | The FSI profile — regulated (financial-services) production | Accepted |
+| [022](ADR-022-profile-sovereign.md) | The Sovereign profile — data sovereignty (strictest floor) | Accepted |
+| [023](ADR-023-host-networking-as-data-nmstate.md) | Host networking as data — adopt NMstate + RFC 8344 for the addressing family | Accepted |
+| [024](ADR-024-filling-provider-required-inputs.md) | Filling provider-required inputs — layers stage data, policies refine and validate | Proposed |
+| [025](ADR-025-resource-references.md) | Resource references — AEP-124 resource association, resolved at reserve | Proposed |
 | [026](ADR-026-typed-classification-naming.md) | Typed-classification naming — `<noun>_type` convention (`resource_type`/`entity_type`/`edge_type`); `type` namespaced by noun, not synonyms; `kind` retired for edges (non-standard + k8s object-`kind` collision), may remain for source discriminators | Accepted |
 | [027](ADR-027-entity-family-model.md) | Entity family model — `family` = state vs execution (Resource/Process/Knowledge/Access); `entity_type` = Atomic/Composite shape from DCM's orchestration perspective; retire infrastructure/persistent/durable; `resource_type` = specific tier | Accepted |

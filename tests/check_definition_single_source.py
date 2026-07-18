@@ -35,11 +35,7 @@ CANONICAL = [
 
 # Known restatements, grandfathered so the check is green today and ratchets on anything NEW.
 # Burn these down as the fixing PRs land; a stale entry (no longer restating) is reported.
-BASELINE = {
-    # foundations.md restated the DPO framework as a numbered list. Cleared by croadfeldt/udlm#147
-    # (collapsed to a one-line pointer). Remove this entry once #147 is on main.
-    ("Design Priority Order", "foundations/foundations.md"),
-}
+BASELINE = set()  # no grandfathered restatements — the DPO entry was cleared by #147 (concede to a pointer)
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*\S)\s*$")
 NUMBERED_ITEM = re.compile(r"^\s*\d+\.\s+\S")
