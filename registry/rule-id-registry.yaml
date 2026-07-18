@@ -65,12 +65,16 @@ prefixes:
     home: design-principles/design-priorities.md
     domain: The Design Priority Order framework
     status: active
+  - prefix: DSC
+    name: Data-store contract (persistence)
+    home: design-principles/data-contracts.md
+    domain: Persistence contract for the data domains (append-only, versioned snapshots, retention, tamper-evidence, tenant isolation at the storage interface)
+    status: active
   - prefix: ENT
     name: Entity invariants
     home: foundations/entity-types.md
     domain: Core entity lifecycle invariants (ownership, UUID immutability, PENDING_REVIEW, composite health)
     status: active
-    baseline_spread: [entities/resource-service-entities.md]   # DEBT(id-collision ENT-001..005): resolve in renumber PR — fold the resource-service-entities set into RSE-*
   - prefix: ERL
     name: Entity-relationship (legacy-renumbered)
     home: entities/entity-relationships.md
@@ -102,7 +106,6 @@ prefixes:
     home: contracts/information-providers-advanced.md
     domain: Information-Provider confidence, authority, and schema-versioning rules
     status: active
-    baseline_spread: [design-principles/data-contracts.md]   # DEBT(id-collision INF-001/003/004/006/007): resolve in renumber PR — data-contracts persistence rules move to DSC-*
   - prefix: ING
     name: Ingestion model
     home: lifecycle/ingestion-model.md
