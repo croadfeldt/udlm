@@ -51,7 +51,13 @@
           "type": "array",
           "items": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+\\.md$" },
           "minItems": 1,
-          "description": "Grandfathered non-home files where this prefix is still defined (dedup debt). Burned down in the renumber PR; an entry that no longer spreads is reported stale."
+          "description": "Grandfathered non-home files where this prefix is still defined (dedup DEBT to burn down). An entry that no longer spreads is reported stale."
+        },
+        "additional_homes": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+\\.md$" },
+          "minItems": 1,
+          "description": "SANCTIONED co-definition files: a family that deliberately spans more than one doc with a coordinated number space and no duplicate ID number (e.g. GRP across resource-grouping + universal-groups). Permanent, not debt. The duplicate-ID-number invariant is still enforced."
         }
       }
     }
