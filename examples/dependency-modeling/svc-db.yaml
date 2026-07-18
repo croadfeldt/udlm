@@ -14,9 +14,9 @@ states:
     at: '2026-07-13T00:00:00Z'
 dependencies:
 # Runs on host-b, in the realm. svc-app depends on it, so it stops after svc-app but before host-b.
-- kind: references
+- edge_type: references
   target_uuid: 75364bd7-3861-4028-a46c-078c35712a28
   target_handle: host-b
-- kind: depends_on
+- edge_type: depends_on
   target_uuid: 30fe47cb-e61b-490d-8657-a56c76581a4f
   target_handle: core-services
