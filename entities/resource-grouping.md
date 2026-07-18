@@ -40,7 +40,7 @@ Two concepts are defined here:
 
 ### 2.1 Definition
 
-A **DCM Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in DCM. Every Resource/Service Entity — including Process Resources — must belong to exactly one DCM Tenant at any point in time.
+A **DCM Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in DCM. Every Resource/Service Entity — including Processes — must belong to exactly one DCM Tenant at any point in time.
 
 Tenant membership is the answer to the question: **who owns this resource?**
 
@@ -260,9 +260,9 @@ Resource Groups enable the following DCM capabilities at the group scope:
 
 ---
 
-## 6. Process Resources and Grouping
+## 6. Processes and Grouping
 
-Process Resource Entities follow the same grouping rules as Infrastructure Resource Entities:
+Processes follow the same grouping rules as Resources:
 
 - Must belong to exactly one DCM Tenant — non-overridable
 - Can optionally belong to Resource Groups

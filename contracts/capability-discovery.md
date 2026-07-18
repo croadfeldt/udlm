@@ -70,7 +70,7 @@ This single registration replaces what previously required two separate registra
 
 | Capability | What it means | Legacy type label |
 |-----------|--------------|----------|
-| `realize_resources` | Provider provisions, updates, and decommissions infrastructure resources | service_provider |
+| `realize_resources` | Provider provisions, updates, and decommissions resources | service_provider |
 | `serve_data` | Provider responds to queries with authoritative external data | information_provider |
 | `authenticate` | Provider authenticates identities and returns tokens/roles/groups | auth_provider |
 | `federate` | Provider is another UDLM-conformant peer — mTLS mandatory, dual audit, sovereignty pre-check | peer_realization |
@@ -135,7 +135,7 @@ The response shape is normative:
   "version": "1.0.0",
   "capabilities": {
     "lifecycle_management": {
-      "description": "Full lifecycle management of infrastructure resources",
+      "description": "Full lifecycle management of resources",
       "operations": ["create", "update", "scale", "decommission", "rehydrate"],
       "resource_types": ["Compute.VirtualMachine", "Network.IPAddress", "..."],
       "api_endpoint": "/api/v1/requests"

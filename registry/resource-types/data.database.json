@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "9c3488aa-00cb-40fa-b02d-fbf2c47acce9",
   "resource_type": "Data.Database",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Infrastructure Resource",
+  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
@@ -91,7 +91,7 @@
   },
   "relationships": [
     {
-      "kind": "binds_to",
+      "edge_type": "binds_to",
       "name": "data_volume",
       "adopted_from": "Kubernetes PersistentVolumeClaim",
       "target": "Storage.Volume",
@@ -99,14 +99,14 @@
       "description": "The persistent volume backing the database's data directory (binds its volume_handle output). Ordering: the volume is realized before the database that stores on it."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "name": "host",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
       "description": "The compute host/guest the database runs on, when self-hosted (vs a managed DBaaS provider)."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "name": "cluster",
       "target": "Compute.Cluster",
       "cardinality": "0..1",

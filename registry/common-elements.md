@@ -304,9 +304,9 @@ conform in any profile.
 
 Edges carry two tiers of meaning, and each tier has one authoritative field:
 
-- **`kind`** (universal, closed: `depends_on` | `contained_by` | `binds_to` | `references`) — the
+- **`edge_type`** (universal, closed: `depends_on` | `contained_by` | `binds_to` | `references`) — the
   **dependency-graph tier**. Generic enough to apply to every resource type, specific enough to
-  act on: ordering, traversal, DEP rules, and lifecycle projections consume ONLY kind + strength.
+  act on: ordering, traversal, DEP rules, and lifecycle projections consume ONLY edge_type + strength.
   Aligned with OASIS TOSCA root relationship types (`DependsOn`, `HostedOn`, `BindsTo`) and with
   ECMA-424 CycloneDX's minimal `dependsOn` graph.
 - **`name`** (type layer) / **`relation`** (instance layer) — the **domain tier**. Each Resource
@@ -318,7 +318,7 @@ Edges carry two tiers of meaning, and each tier has one authoritative field:
 |---|---|
 | `REL-001` | An instance edge's `relation` MUST be a relationship `name` declared by the entity's pinned Resource Type. Undeclared relation strings are invalid. |
 | `REL-002` | Relationship cardinalities declared by the type are enforceable on instances — a type-required relationship (cardinality `1..`) with no matching instance edge is a completeness failure. Conditional requirements (e.g. `lower_layer` required only for `device_class: aggregate\|bridge`) are enforced per the type's stated condition. |
-| `REL-003` | A relation **refines** its declared kind and MUST NOT alter the kind's ordering semantics (the TOSCA derivation rule). A consumer that does not understand a relation falls back to kind behavior — the dependency graph is always a strict projection of the data. |
+| `REL-003` | A relation **refines** its declared edge_type and MUST NOT alter the edge_type's ordering semantics (the TOSCA derivation rule). A consumer that does not understand a relation falls back to edge_type behavior — the dependency graph is always a strict projection of the data. |
 | `REL-004` | Relation names are **adopted, not invented**: where a standard names the concept, the relationship declares it in `adopted_from` (and the type's `adopts[]` carries the source + license verdict). Invented names are permitted only where no standard names the concept, and follow naming-conventions. |
 
 **Adopted relation names (current):** `lower_layer`, `parent_device` (RFC 8343

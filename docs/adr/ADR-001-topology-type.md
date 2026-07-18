@@ -14,7 +14,7 @@ DCM's Placement Engine tie-breaks on `affinity`/`cost`/`load`, but nothing **aut
 
 Introduce **`Topology`** — a UDLM data type that is the **abstract graph of failure/locality domains** placement, residency, fault-domain gating, and ordering resolve against.
 
-1. **Cross-cutting, single-segment type.** `resource_type: "Topology"`, `family: Resource`, `entity_type: Infrastructure Resource`. Single-segment (not `Category.Type`) because it is **not owned by any single domain** — resources across Compute/Network/Storage/Facility reference it (`naming-conventions.md` §1; the meta-schema pattern already permits single-segment).
+1. **Cross-cutting, single-segment type.** `resource_type: "Topology"`, `family: Resource`, `entity_type: Resource`. Single-segment (not `Category.Type`) because it is **not owned by any single domain** — resources across Compute/Network/Storage/Facility reference it (`naming-conventions.md` §1; the meta-schema pattern already permits single-segment).
 2. **Failure domains are addressable *data within* `Topology`, not their own type** — `spec.domains[]`, each keyed by a stable `id`, with `parent` forming an acyclic hierarchy. This applies §26 (data-element-by-default; entity only when independently tracked) and §27 (key by stable discriminator). The §26 escape hatch remains: a deployment may elevate domains to first-class entities if it genuinely needs independent lifecycle — not the default.
 3. **Abstract `kind` vs concrete `id` (the portability discipline, §17 applied to topology):**
    - Each domain carries an **abstract `kind`** (`region`/`zone`/`rack`/`host`/`power-domain`/`network-segment`) — the dimension a constraint targets — and a **concrete `id`** (`ups-a`, `host-01`).

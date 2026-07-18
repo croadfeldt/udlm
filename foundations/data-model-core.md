@@ -28,7 +28,7 @@ it governs.
 
 ## 2. Entities, types, instances
 
-- Two families: **Resource** (entity_type: Infrastructure Resource | Composite | Process) and
+- Two families: **Resource** (entity_type: Resource | Composite | Process) and
   **Knowledge** (Capability | TaxonomyTerm | Alias | Antipattern | UseCase | DecisionRecord).
 - A **Resource Type Specification** (validates against `registry/resource-type-spec.schema.json`)
   is the portable contract; an **instance** is a realized-entity record (validates against
@@ -58,7 +58,7 @@ it governs.
   observes) and brownfield greening (reverse: Discovered-first/unclaimed → provider
   claim/adoption writes Realized, uuid preserved → Requested/Intent backfilled with
   `origin: backfilled|discovered-derived`).
-- **[D7] Process Resources do not overload lifecycle_state.** Their run dynamics are a separate
+- **[D7] Processes do not overload lifecycle_state.** Their run dynamics are a separate
   **`execution_state`** axis (`REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED`); a
   Process entity still carries the universal lifecycle_state (a playbook that exists and is
   adopted is `Realized`/`Discovered` like anything else; each RUN moves execution_state).
@@ -78,20 +78,20 @@ it governs.
 
 ## 4. Relationships — typed data model, projectable to execution DAGs
 
-- **Two tiers, one authoritative field each.** `kind` (closed, universal): `depends_on`
+- **Two tiers, one authoritative field each.** `edge_type` (closed, universal): `depends_on`
   (`strength: hard|soft`), `contained_by`, `binds_to` (consumes a typed output;
   `target_field`), `references` (informational). `relation` (domain tier): a name DECLARED by
   the pinned type (`relationships[].name`), adopted from standards (RFC 8343/8345, TOSCA),
-  refining but never overriding its kind (REL rules, common-elements §9).
+  refining but never overriding its edge_type (REL rules, common-elements §9).
 - **This supersedes the entity-relationships §4 six-type table.** Mapping: `requires` →
   `depends_on (hard)`; `contains` → the inverse reading of `contained_by` (declared child-side
   only); `peer` and `manages` → declared relation names (under `references` and `depends_on`
   respectively). The `nature` axis (constituent|operational|informational) is expressed by:
-  constituents[] (constituent), kind ordering semantics (operational), `references`
+  constituents[] (constituent), edge_type ordering semantics (operational), `references`
   (informational).
 - **Composites** declare `constituents[]` (membership, ordering-neutral) and explicit
   `depends_on` edges (ordering). Ordering is always explicit, never inferred from membership.
-- **Graphs are emergent and acyclic** over ordering kinds (depends_on/contained_by/binds_to);
+- **Graphs are emergent and acyclic** over ordering edge_types (depends_on/contained_by/binds_to);
   forward topological order = provision/startup, **reverse = teardown/shutdown** — teardown is
   a first-class projection of the same edges. `soft` edges order but never block
   (degrade-don't-break, DEP-006).
@@ -165,7 +165,7 @@ One definition each; everything else defers here:
 | lifecycle_state | Intent, Requested, Realized, Discovered, Decommissioned | §3 |
 | execution_state (Process) | REQUESTED, INITIATED, EXECUTING, COMPLETED, FAILED, CANCELLED | §3 [D7] |
 | drift severity | minor, significant, critical | §3 [D6] |
-| edge kind | depends_on, contained_by, binds_to, references | §4 |
+| edge_type | depends_on, contained_by, binds_to, references | §4 |
 | depends_on strength | hard, soft | §4 |
 | snapshot origin | declared, discovered-derived, backfilled | §6 |
 | provenance source.kind | layer, policy, actor, provider, discovery, rehydration, override | §6 |

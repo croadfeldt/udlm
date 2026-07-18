@@ -104,7 +104,7 @@ outputs:
     description: Whether the pool is currently degraded (a member vdev is not fully redundant).
 
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     name: host

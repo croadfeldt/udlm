@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aa9b102d-ce5f-4921-82ba-ada25f44c6ea",
   "resource_type": "Compute.Cluster",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "family": "Resource",
-  "entity_type": "Infrastructure Resource",
+  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
@@ -94,13 +94,13 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Network.VirtualNetwork",
       "cardinality": "0..1",
       "description": "Realized onto a virtual network."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Platform.Hub",
       "cardinality": "0..1",
       "description": "Provisioned and managed by a hub (ACM / Hosted Control Planes)."

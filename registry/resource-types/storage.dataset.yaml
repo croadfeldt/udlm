@@ -8,13 +8,13 @@
 # filesystem a pool carves, not a cluster-provisioned claim.
 #
 # ADOPT (not absorb): the dataset/property vocabulary is OpenZFS's; a provider (zfs) naturalizes it.
-$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.2.0
 conforms_to: udlm/0.1
 uuid: a87f8bfa-e544-4e64-8b5e-24c9c581ad64
 resource_type: Storage.Dataset
-version: 0.1.0
+version: 0.2.0
 family: Resource
-entity_type: Infrastructure Resource
+entity_type: Atomic
 lifecycle_archetype: provisioning
 portability: portable
 status: active
@@ -76,17 +76,17 @@ outputs:
     description: The realized mountpoint (filesystem) or /dev/zvol path (volume).
 
 relationships:
-  - kind: depends_on
+  - edge_type: depends_on
     target: Storage.Pool
     cardinality: 1..1
     name: pool
     description: The pool this dataset is carved from; the dataset cannot outlive its pool.
-  - kind: references
+  - edge_type: references
     target: Storage.Dataset
     cardinality: 0..1
     name: parent_dataset
     description: The parent dataset in the hierarchy (e.g. aspen/nc/data → aspen/nc), when nested.
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     name: host

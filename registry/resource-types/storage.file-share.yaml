@@ -1,11 +1,11 @@
 # UDLM Resource Type Specification (YAML; validated against registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.2.0
 conforms_to: udlm/0.1
 uuid: c63f6d8c-8d1c-44c3-b996-62a7fe62b48a
 resource_type: Storage.FileShare
-version: 0.1.0
+version: 0.2.0
 family: Resource
-entity_type: Infrastructure Resource
+entity_type: Atomic
 lifecycle_archetype: provisioning
 portability: portable
 status: active
@@ -81,23 +81,23 @@ outputs:
     description: Reachable share URI once Realized, e.g. //fileserver.example.com/export.
 
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: Runs on a host as a native service — or (below) as a container / on a cluster.
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.Container
     cardinality: 0..1
     description: Or runs as a containerized service.
-  - kind: references
+  - edge_type: references
     target: Security.DirectoryService
     cardinality: 0..1
     description: Authenticates principals against this directory (auth data external — PDP/PIP).
-  - kind: references
+  - edge_type: references
     target: Security.CredentialRef
     cardinality: 0..n
     description: Service credentials (e.g. the Samba keytab) — referenced, never inline.
-  - kind: depends_on
+  - edge_type: depends_on
     target: Storage.Volume
     cardinality: 0..n
     description: The underlying storage the shares expose.

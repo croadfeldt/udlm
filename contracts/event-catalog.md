@@ -818,7 +818,7 @@ payload:
 
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
-| `process.timeout` | high | A Process Resource Entity exceeded its mandatory `max_execution_time`; execution_state moved to FAILED. This is the `PROCESS_TIMEOUT` event declared in [entity-types](../foundations/entity-types.md) §2.3 (ENT-004). |
+| `process.timeout` | high | A Process exceeded its mandatory `max_execution_time`; execution_state moved to FAILED. This is the `PROCESS_TIMEOUT` event declared in [entity-types](../foundations/entity-types.md) §2.3 (ENT-004). |
 
 ### 17a.1 Payload Schema
 

@@ -5,13 +5,13 @@
 # Litmus (§1): Redfish releasing a new version must NOT force a change here. So this type carries
 # no attribute value-typing and no apply-time semantics (those are Redfish's, referenced); the
 # desired settings ride as an OPAQUE passthrough interpreted via the pinned attribute_registry.
-$id: https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.3.0
 conforms_to: udlm/0.1
 uuid: c1a483e0-f52a-4e0f-b58d-1b8425884afe
 resource_type: Hardware.BiosProfile
-version: 0.2.0
+version: 0.3.0
 family: Resource
-entity_type: Infrastructure Resource
+entity_type: Atomic
 lifecycle_archetype: curation
 portability: partial
 status: active
@@ -71,7 +71,7 @@ outputs:
     description: The profile generation the host's Realized BIOS reflects (drift = live != profile).
 
 relationships:
-  - kind: references
+  - edge_type: references
     target: Hardware.BiosProfile
     cardinality: 0..1
     description: An optional base profile this one derives from (attribute inheritance). Hosts that converge to this profile declare the edge host-side (Compute.BareMetalHost references Hardware.BiosProfile).

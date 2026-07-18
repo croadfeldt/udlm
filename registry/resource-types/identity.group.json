@@ -35,8 +35,8 @@
     "group_ref": { "type": "string", "description": "Referenced by a DCMGroup (access_grouping) membership source and by auth-providers role_mapping." }
   },
   "relationships": [
-    { "kind": "references", "target": "Identity.Person", "cardinality": "0..n", "description": "Members (for built_in groups)." },
-    { "kind": "references", "target": "Identity.ServiceAccount", "cardinality": "0..n", "description": "Members (for built_in groups)." },
-    { "kind": "references", "target": "Security.DirectoryService", "cardinality": "0..1", "description": "The directory this group is sourced from (for source=external)." }
+    { "edge_type": "references", "target": "Identity.Person", "cardinality": "0..n", "description": "Members (for built_in groups)." },
+    { "edge_type": "references", "target": "Identity.ServiceAccount", "cardinality": "0..n", "description": "Members (for built_in groups)." },
+    { "edge_type": "references", "target": "Security.DirectoryService", "cardinality": "0..1", "description": "The directory this group is sourced from (for source=external)." }
   ]
 }
