@@ -63,14 +63,14 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Network.Switch",
       "name": "fabric",
       "cardinality": "0..n",
       "description": "The switch(es)/fabric that carry this segment (where the provider manages it)."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.Cluster",
       "name": "scope",
       "cardinality": "0..1",

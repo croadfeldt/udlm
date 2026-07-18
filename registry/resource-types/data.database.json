@@ -91,7 +91,7 @@
   },
   "relationships": [
     {
-      "kind": "binds_to",
+      "edge_type": "binds_to",
       "name": "data_volume",
       "adopted_from": "Kubernetes PersistentVolumeClaim",
       "target": "Storage.Volume",
@@ -99,14 +99,14 @@
       "description": "The persistent volume backing the database's data directory (binds its volume_handle output). Ordering: the volume is realized before the database that stores on it."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "name": "host",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
       "description": "The compute host/guest the database runs on, when self-hosted (vs a managed DBaaS provider)."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "name": "cluster",
       "target": "Compute.Cluster",
       "cardinality": "0..1",

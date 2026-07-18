@@ -81,23 +81,23 @@ outputs:
     description: Reachable share URI once Realized, e.g. //fileserver.example.com/export.
 
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: Runs on a host as a native service — or (below) as a container / on a cluster.
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.Container
     cardinality: 0..1
     description: Or runs as a containerized service.
-  - kind: references
+  - edge_type: references
     target: Security.DirectoryService
     cardinality: 0..1
     description: Authenticates principals against this directory (auth data external — PDP/PIP).
-  - kind: references
+  - edge_type: references
     target: Security.CredentialRef
     cardinality: 0..n
     description: Service credentials (e.g. the Samba keytab) — referenced, never inline.
-  - kind: depends_on
+  - edge_type: depends_on
     target: Storage.Volume
     cardinality: 0..n
     description: The underlying storage the shares expose.

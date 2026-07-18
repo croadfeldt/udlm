@@ -95,14 +95,14 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
       "name": "node_vm",
       "description": "Storage nodes/OSDs hosted on VMs (the cluster needs a quorum of these up)."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
       "name": "node_host",

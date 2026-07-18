@@ -72,13 +72,13 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Network.DHCPScope",
       "cardinality": "0..n",
       "description": "Segments the gateway routes may have DHCP scopes served elsewhere."
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "name": "segment_vlan",
       "target": "Network.VLAN",
       "cardinality": "0..n",

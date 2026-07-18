@@ -208,11 +208,11 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "kind",
+          "edge_type",
           "target"
         ],
         "properties": {
-          "kind": {
+          "edge_type": {
             "enum": [
               "depends_on",
               "references",

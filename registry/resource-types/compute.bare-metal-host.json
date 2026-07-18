@@ -132,13 +132,13 @@
   ],
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Facility.PowerFeed",
       "cardinality": "0..n",
       "description": "Power source(s) the host draws from; the host stops before the feed in a reverse-topo shutdown."
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Hardware.BiosProfile",
       "cardinality": "0..1",
       "description": "The desired BIOS/firmware profile this host converges to (drift = live BIOS != profile). Host-side declaration per the dependent-side rule."

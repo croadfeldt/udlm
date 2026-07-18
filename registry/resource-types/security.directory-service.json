@@ -68,21 +68,21 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..1",
       "name": "vm_host",
       "description": "The VM the directory server runs on."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
       "name": "metal_host",
       "description": "The bare-metal host the directory server runs on."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Security.DirectoryService",
       "cardinality": "0..n",
       "name": "replication_peer",

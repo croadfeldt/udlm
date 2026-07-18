@@ -90,14 +90,14 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
       "name": "dhcp_server_host",
       "description": "Host(s) running the DHCP server(s) serving this scope (e.g. an HA pair)."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
       "name": "dhcp_server_vm",

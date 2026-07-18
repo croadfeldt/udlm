@@ -69,10 +69,10 @@ lifecycle:
 
 # Instance dependency edges (the point of this type — expressed with the estate-wide edge kinds,
 # aligned to TOSCA root relationships; not restated in spec):
-#   runs_on     kind: references, relation: runs_on     -> Compute.Cluster | Compute.BareMetalHost | Compute.VirtualMachine   (TOSCA HostedOn)
-#   uses_storage kind: references, relation: uses_storage -> Storage.Cluster | Storage.FileShare | Storage.Volume            (TOSCA DependsOn)
-#   requires    kind: depends_on, relation: requires, strength: hard|soft -> Security.DirectoryService | Network.AddressService | Software.Service
-#   binds_to    kind: binds_to,   -> Data.Database                                                                           (TOSCA BindsTo)
+#   runs_on     edge_type: references, relation: runs_on     -> Compute.Cluster | Compute.BareMetalHost | Compute.VirtualMachine   (TOSCA HostedOn)
+#   uses_storage edge_type: references, relation: uses_storage -> Storage.Cluster | Storage.FileShare | Storage.Volume            (TOSCA DependsOn)
+#   requires    edge_type: depends_on, relation: requires, strength: hard|soft -> Security.DirectoryService | Network.AddressService | Software.Service
+#   binds_to    edge_type: binds_to,   -> Data.Database                                                                           (TOSCA BindsTo)
 spec:
   type: object
   required: [service_kind]
@@ -122,46 +122,46 @@ outputs:
     description: Whether the service's constituents are up and serving (Realized/Discovered).
 
 relationships:
-  - kind: references
+  - edge_type: references
     name: runs_on
     target: Compute.Cluster
     cardinality: 0..1
     description: Runs on a cluster (its container constituents are scheduled there). TOSCA HostedOn.
-  - kind: references
+  - edge_type: references
     name: runs_on
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: Or runs directly on a host (native systemd units / rootless containers).
-  - kind: references
+  - edge_type: references
     name: runs_on
     target: Compute.VirtualMachine
     cardinality: 0..1
     description: Or runs inside a VM.
-  - kind: references
+  - edge_type: references
     name: uses_storage
     target: Storage.Volume
     cardinality: 0..n
     description: External storage the service uses (also Storage.Cluster / Storage.FileShare). TOSCA DependsOn.
-  - kind: depends_on
+  - edge_type: depends_on
     name: requires
     target: Software.Service
     cardinality: 0..n
     description: Service-to-service dependency (strength hard|soft) — e.g. an app requiring an auth service.
-  - kind: depends_on
+  - edge_type: depends_on
     name: requires
     target: Security.DirectoryService
     cardinality: 0..n
     description: Requires a directory/identity service (e.g. FreeIPA) — strength hard|soft.
-  - kind: depends_on
+  - edge_type: depends_on
     name: requires
     target: Network.AddressService
     cardinality: 0..n
     description: Requires a DNS/DHCP address service — strength hard|soft.
-  - kind: binds_to
+  - edge_type: binds_to
     target: Data.Database
     cardinality: 0..n
     description: Binds to a database's connection outputs. TOSCA BindsTo.
-  - kind: references
+  - edge_type: references
     target: Security.CredentialRef
     cardinality: 0..n
     description: Secrets consumed by the service's constituents — no secret material inline (DCM ADR-023).

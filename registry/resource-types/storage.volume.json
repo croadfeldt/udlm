@@ -86,7 +86,7 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "name": "provisioned_by",
       "adopted_from": "SNIA Swordfish (StoragePool/StorageService)",
       "target": "Storage.Cluster",
@@ -94,7 +94,7 @@
       "description": "The Storage.Cluster that provisions this volume (binds its block_storage_class / file_storage_class output). A volume cannot outlive its provisioning cluster."
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "name": "attaches_to",
       "adopted_from": "OASIS TOSCA AttachesTo",
       "target": "Compute.VirtualMachine",

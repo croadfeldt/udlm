@@ -54,7 +54,7 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "name": "configures",
       "target": "Hardware.NetworkInterface",
       "cardinality": "1..1",

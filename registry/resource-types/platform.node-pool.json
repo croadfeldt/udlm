@@ -131,7 +131,7 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.Cluster",
       "cardinality": "1..1",
       "name": "cluster",

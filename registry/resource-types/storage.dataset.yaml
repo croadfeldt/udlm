@@ -76,17 +76,17 @@ outputs:
     description: The realized mountpoint (filesystem) or /dev/zvol path (volume).
 
 relationships:
-  - kind: depends_on
+  - edge_type: depends_on
     target: Storage.Pool
     cardinality: 1..1
     name: pool
     description: The pool this dataset is carved from; the dataset cannot outlive its pool.
-  - kind: references
+  - edge_type: references
     target: Storage.Dataset
     cardinality: 0..1
     name: parent_dataset
     description: The parent dataset in the hierarchy (e.g. aspen/nc/data → aspen/nc), when nested.
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     name: host

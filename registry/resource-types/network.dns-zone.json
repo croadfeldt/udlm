@@ -75,7 +75,7 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Security.DirectoryService",
       "cardinality": "0..1",
       "description": "When DNS is integrated with the directory (e.g. FreeIPA serves this zone)."

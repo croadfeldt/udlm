@@ -49,7 +49,7 @@
   },
   "relationships": [
     {
-      "kind": "references",
+      "edge_type": "references",
       "name": "attaches_to",
       "adopted_from": "OASIS TOSCA AttachesTo",
       "target": "Hardware.NetworkInterface",
@@ -57,7 +57,7 @@
       "description": "attaches_to \u2014 the interface this address is configured on. Previously carried as an estate-invented 'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements \u00a79)."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "name": "allocated_from",
       "target": "Network.IPAddressPool",
       "cardinality": "0..1",

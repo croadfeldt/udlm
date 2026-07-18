@@ -94,13 +94,13 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Network.VirtualNetwork",
       "cardinality": "0..1",
       "description": "Realized onto a virtual network."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Platform.Hub",
       "cardinality": "0..1",
       "description": "Provisioned and managed by a hub (ACM / Hosted Control Planes)."

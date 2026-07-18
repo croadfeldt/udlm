@@ -149,19 +149,19 @@ outputs:
     description: In-cluster / on-host DNS name.
 
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.Cluster
     cardinality: 0..1
     description: Runs on a cluster (exactly one of Compute.Cluster / Compute.BareMetalHost).
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: Or runs directly on a host (e.g. rootless podman).
-  - kind: references
+  - edge_type: references
     target: Security.CredentialRef
     cardinality: 0..n
     description: Env/mounts that resolve secrets reference a CredentialRef; no secret material inline (DCM ADR-023).
-  - kind: depends_on
+  - edge_type: depends_on
     target: Data.Database
     target_field: connection_string
     cardinality: 0..n

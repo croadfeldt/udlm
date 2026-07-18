@@ -86,7 +86,7 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "name": "network",
       "target": "Network.VirtualNetwork",
       "cardinality": "0..1",

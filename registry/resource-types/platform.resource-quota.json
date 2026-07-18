@@ -94,7 +94,7 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Platform.Namespace",
       "cardinality": "1..1",
       "name": "namespace",

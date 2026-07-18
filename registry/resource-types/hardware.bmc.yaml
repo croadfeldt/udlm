@@ -73,7 +73,7 @@ outputs:
     description: Last-observed chassis power state (On/Off) from Redfish ComputerSystem.PowerState.
 
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: The host this BMC is the out-of-band controller for — its power/reset surface. A BMC controls exactly one host when assigned.

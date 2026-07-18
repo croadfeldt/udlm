@@ -44,14 +44,14 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "name": "served_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
       "description": "served_by \u2014 a host running this DHCP/DNS provider. The service stops before its host in a reverse-topo shutdown."
     },
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "name": "served_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",

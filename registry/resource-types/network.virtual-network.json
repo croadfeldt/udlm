@@ -57,21 +57,21 @@
   },
   "relationships": [
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..1",
       "name": "host",
       "description": "The host providing a host-scoped virtual network (libvirt case). Guests stop before the host regardless; this scopes the network's lifecycle to its host."
     },
     {
-      "kind": "contained_by",
+      "edge_type": "contained_by",
       "target": "Compute.Cluster",
       "cardinality": "0..1",
       "name": "cluster",
       "description": "Cluster-scoped virtual networks (NetworkAttachmentDefinition / OVN logical networks)."
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
       "description": "supporting_node (RFC 8345; renamed from underlying_device when relation names were adopted from standards, common-elements \u00a79) \u2014 the bridge (or uplink) interface a forward_mode=bridge network forwards onto. The hop that joins the guest-attachment layer to the physical L2 stack (common-elements \u00a77/\u00a77a).",
@@ -79,7 +79,7 @@
       "adopted_from": "RFC 8345 supporting-node"
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "target": "Network.VLAN",
       "name": "segment",
       "cardinality": "0..1",

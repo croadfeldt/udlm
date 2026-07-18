@@ -71,7 +71,7 @@ outputs:
     description: The profile generation the host's Realized BIOS reflects (drift = live != profile).
 
 relationships:
-  - kind: references
+  - edge_type: references
     target: Hardware.BiosProfile
     cardinality: 0..1
     description: An optional base profile this one derives from (attribute inheritance). Hosts that converge to this profile declare the edge host-side (Compute.BareMetalHost references Hardware.BiosProfile).

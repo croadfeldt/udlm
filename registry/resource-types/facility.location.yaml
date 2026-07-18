@@ -40,7 +40,7 @@ adopts:
 
     disposition: tier1_value
 relationships:
-  - kind: contained_by
+  - edge_type: contained_by
     target: Facility.Location
     cardinality: "0..1"
     name: within

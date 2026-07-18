@@ -118,7 +118,7 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Storage.Cluster",
       "cardinality": "0..1",
       "name": "storage_backend",

@@ -103,13 +103,13 @@
   },
   "relationships": [
     {
-      "kind": "depends_on",
+      "edge_type": "depends_on",
       "target": "Facility.PowerFeed",
       "cardinality": "0..n",
       "description": "Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo shutdown (connectivity goes last)."
     },
     {
-      "kind": "references",
+      "edge_type": "references",
       "name": "management_vlan",
       "target": "Network.VLAN",
       "cardinality": "0..1",
