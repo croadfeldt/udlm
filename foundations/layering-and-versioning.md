@@ -40,6 +40,38 @@ The layering model enables:
 
 ---
 
+## 1b. At a glance — one field, end to end
+
+Before the full contract, here is the whole mechanism on a single field. A VM request resolves `backup_retention_days` by merging the ordered layers, lowest authority first; each layer may set the value and declare whether lower or higher authorities can override it (`LAY-005`: `allow` | `constrained` | `immutable`). The final value carries provenance — which layer set it (`OPS-002`).
+
+| # | Layer (rising authority) | Owner | Contributes | Value after |
+|---|---|---|---|---|
+| 1 | Base | platform | `backup_retention_days: 7` (`allow`) | `7` |
+| 2 | Core | platform / standards | raises the floor — `constrained`, min `30` | `30` |
+| 3 | Intermediate / Customization | org / tenant | (no change) | `30` |
+| 4 | Service | service provider | (no change) | `30` |
+| 5 | Request | consumer | requests `90` — within the constraint → **wins** | `90` |
+| ⟂ | Policy (applied over the merged result) | policy owners | compliance validation passes | `90` — **provenance: Request; constrained by Core** |
+
+Two edges the same rules produce:
+- Consumer requests `10` → **rejected** at assembly Step 3: below the Core `constrained` floor of `30` (`LAY-005`).
+- On the `sovereign` profile a compliance-class Validation Policy sets `disk_encryption: true` as `immutable` at runtime → a consumer `false` is **overridden**, not merged — compliance-class policy overrides everything, including consumer input (§3.6, `LAY-005`).
+
+**The precedence chain, and the rule that governs each step:**
+
+| Precedence (low → high) | Layer type | Owner | Governing rule |
+|---|---|---|---|
+| 1 | Base | platform | §3.1 |
+| 2 | Core | platform / standards | §3.2 |
+| 3 | Intermediate / Customization | org / tenant | §3.3 |
+| 4 | Service | service provider | §3.4 · `LAY-002` (versioning) · `LAY-003` (activation) |
+| 5 | Request | consumer | §3.5 — consumer values override all data layers; exclusions per `LAY-001` |
+| over all | Policy layers | policy owners | §3.6 — compliance-class Validation overrides everything, incl. consumer (`LAY-005`) |
+
+Field-level override intent is `LAY-005`; provenance is always reconstructable per `OPS-002`. Everything below is the formal contract for this table — skim by heading and return for the specific layer or rule you need.
+
+---
+
 ## 1a. Layers vs Policies — The Clear Distinction
 
 Layers and policies are the two foundational mechanisms of DCM's assembly process. They are complementary and distinct — understanding the difference is critical to using DCM correctly.

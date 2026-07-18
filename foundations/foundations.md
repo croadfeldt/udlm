@@ -250,19 +250,7 @@ type by defining an output schema; a new data type by defining a schema. No core
 
 ## Design Priority Order
 
-> **Full specification:** See [Design Priorities](../design-principles/design-priorities.md) for the
-> complete priority framework, decision framework, profile scaling table, and DPO-001–006 system policies.
-
-Every design decision is evaluated against a fixed priority order; when priorities conflict, higher wins,
-and where there is no conflict all four apply. Highest first:
-
-1. **Industry best practices for security** — the baseline every decision respects; where security and convenience conflict, security wins (and the design makes the secure path the easy path).
-2. **Ease of use** — the secure, governed, auditable path must be the path of least resistance, or teams route around it.
-3. **Extensibility and capability grouping** — adapt to arbitrary organizational requirements through profiles / policies / capabilities, not code changes.
-4. **Fit for purpose (always required)** — none of the above matters if the system cannot provision, track drift on, and cleanly decommission real infrastructure.
-
-The full framework — the decision procedure, the profile scaling table, and the `DPO-*` policies — is
-defined once in [Design Priorities](../design-principles/design-priorities.md) and is not restated here.
+The priority order that governs every design decision — **security → ease of use → extensibility → fit-for-purpose** (higher wins on conflict; all apply where none conflicts) — is defined once, with its decision procedure, profile scaling table, and `DPO-001–006` policies, in [Design Priorities](../design-principles/design-priorities.md). It is not restated here.
 
 ---
 
