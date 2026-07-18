@@ -12,7 +12,7 @@ hold when a system in a domain UDLM was **not** designed around adopts it? Writt
 
 UDLM claims to be a **realization-neutral** substrate: "any system conformant to UDLM
 produces data that any other conformant system can read, interpret, and exchange." The
-reference realization — **DCM** — manages **infrastructure resources** (VMs, IPs, VLANs)
+reference realization — **DCM** — manages **resources** (VMs, IPs, VLANs)
 through a provisioning lifecycle. That is UDLM's home turf, so DCM conforming proves
 little about *universality*.
 
@@ -62,7 +62,7 @@ deliverable.
 
 ## 4. The key finding — the four states map onto knowledge curation
 
-UDLM's four states were designed to track an infrastructure resource: **Intent** (what
+UDLM's four states were designed to track an resource: **Intent** (what
 was asked), **Requested** (what was approved/dispatched), **Realized** (what was built),
 **Discovered** (what is observed now). The surprise is how cleanly they describe a
 capability catalog that has nothing to do with provisioning:
@@ -99,7 +99,7 @@ infrastructure — they are about **intent vs reality with provenance**, which i
   infrastructure-physical. Knowledge artifacts have a thinner post-Realized life
   (deprecation ≈ decommission); there is no "SUSPENDED capability consuming resources."
 - The biggest gap is **entity types, not the substrate.** UDLM's three primary types
-  (Infrastructure Resource, Composite, Process) are infra-oriented; none fit a Capability
+  (Resource, Composite, Process) are infra-oriented; none fit a Capability
   or a TaxonomyTerm. **DAV needs a new knowledge entity-type family.**
 
 This last point is the most useful finding for UDLM itself: **the universality lives in

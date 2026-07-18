@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "f34ce0a0-d1a3-4693-9e05-11fb1a05600a",
   "resource_type": "Automation.Job",
-  "version": "0.2.0",
-  "family": "Resource",
-  "entity_type": "Process",
+  "version": "0.3.0",
+  "family": "Process",
+  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {

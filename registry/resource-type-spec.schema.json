@@ -48,14 +48,15 @@
     "family": {
       "enum": [
         "Resource",
+        "Process",
         "Knowledge",
         "Access"
       ],
-      "description": "Entity-type family (foundations/entity-type-families.md) \u2014 a logical grouping for discovery, NOT a usage boundary."
+      "description": "Entity-type family (foundations/entity-type-families.md) \u2014 a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
     },
     "entity_type": {
       "type": "string",
-      "description": "The entity type within its family. Resource: Infrastructure Resource | Composite | Process. Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Constrained by `family` (see allOf). (foundations/entity-types.md, entities/knowledge-family.md.)"
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents \u2014 a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Access: Identity. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.)"
     },
     "lifecycle_archetype": {
       "enum": [
@@ -433,9 +434,27 @@
         "properties": {
           "entity_type": {
             "enum": [
-              "Infrastructure Resource",
-              "Composite",
-              "Process"
+              "Atomic",
+              "Composite"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "family": {
+            "const": "Process"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entity_type": {
+            "enum": [
+              "Atomic",
+              "Composite"
             ]
           }
         }

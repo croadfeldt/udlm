@@ -28,7 +28,7 @@ it governs.
 
 ## 2. Entities, types, instances
 
-- Two families: **Resource** (entity_type: Infrastructure Resource | Composite | Process) and
+- Two families: **Resource** (entity_type: Resource | Composite | Process) and
   **Knowledge** (Capability | TaxonomyTerm | Alias | Antipattern | UseCase | DecisionRecord).
 - A **Resource Type Specification** (validates against `registry/resource-type-spec.schema.json`)
   is the portable contract; an **instance** is a realized-entity record (validates against
@@ -58,7 +58,7 @@ it governs.
   observes) and brownfield greening (reverse: Discovered-first/unclaimed → provider
   claim/adoption writes Realized, uuid preserved → Requested/Intent backfilled with
   `origin: backfilled|discovered-derived`).
-- **[D7] Process Resources do not overload lifecycle_state.** Their run dynamics are a separate
+- **[D7] Processes do not overload lifecycle_state.** Their run dynamics are a separate
   **`execution_state`** axis (`REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED`); a
   Process entity still carries the universal lifecycle_state (a playbook that exists and is
   adopted is `Realized`/`Discovered` like anything else; each RUN moves execution_state).

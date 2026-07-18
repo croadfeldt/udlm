@@ -1,11 +1,11 @@
 # UDLM Resource Type Specification (YAML; validated against registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.2.0
 conforms_to: udlm/0.1
 uuid: c63f6d8c-8d1c-44c3-b996-62a7fe62b48a
 resource_type: Storage.FileShare
-version: 0.1.0
+version: 0.2.0
 family: Resource
-entity_type: Infrastructure Resource
+entity_type: Atomic
 lifecycle_archetype: provisioning
 portability: portable
 status: active

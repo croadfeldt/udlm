@@ -212,9 +212,9 @@ REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL
 
 ---
 
-## 6. Process Resource Entities
+## 6. Processes
 
-A **Process Resource Entity** is a distinct class of Resource/Service Entity representing ephemeral execution resources — automation jobs, playbooks, pipelines, workflows, and similar process-oriented resources.
+A **Process** is a distinct class of Resource/Service Entity representing ephemeral execution resources — automation jobs, playbooks, pipelines, workflows, and similar process-oriented resources.
 
 ### 6.1 Characteristics
 
@@ -243,12 +243,12 @@ REQUESTED → INITIATED → EXECUTING → COMPLETED
 
 All terminal states are permanent. The execution record is immutable after reaching a terminal state.
 
-### 6.3 Process Resource Entity Data Model
+### 6.3 Process Data Model
 
 > **Machine-validatable:** the Process execution axis is the `process` block on `registry/realized-entity.schema.json` (execution_state + process_type + affected_entities + execution_record). It is a SEPARATE axis from the four-state `lifecycle_state` (data-model-core §3 [D7]); `registry/tools/validate.py` requires it on entity_type: Process instances and forbids it elsewhere.
 
 ```yaml
-process_resource_entity:
+process_entity:
   uuid: <uuid>
   entity_class: process
   process_type: <playbook|workflow|pipeline|automation_job|script|other>
@@ -273,9 +273,9 @@ process_resource_entity:
     <standard provenance metadata>
 ```
 
-### 6.4 Provenance Obligation for Process Resources
+### 6.4 Provenance Obligation for Processes
 
-If a Process Resource modifies the state of a Resource/Service Entity, that Entity's realized state provenance MUST reference the Process Resource Entity UUID as the source of the modification. This ensures that every change to an Infrastructure Entity can be traced back to the Process that caused it.
+If a Process Resource modifies the state of a Resource/Service Entity, that Entity's realized state provenance MUST reference the Process UUID as the source of the modification. This ensures that every change to an Infrastructure Entity can be traced back to the Process that caused it.
 
 ---
 
@@ -567,7 +567,7 @@ The following are **non-overridable UDLM substrate policies** that apply to all 
 | `RSE-005` | Decommissioned Entity records are immutable and permanent. |
 | `RSE-006` | Provider lifecycle events must be recorded in Entity provenance. |
 | `RSE-007` | Ownership transfers must be authorized by policy. |
-| `RSE-008` | Process Resource Entities must reference all affected Entity UUIDs. |
+| `RSE-008` | Processes must reference all affected Entity UUIDs. |
 
 ---
 
@@ -636,12 +636,12 @@ The substrate requires that a conformant realization provide a Lifecycle Constra
 
 ---
 
-## 9a-process. Lifecycle Time Constraints — Process Resources
+## 9a-process. Lifecycle Time Constraints — Processes
 
 Process Resource entities must declare a maximum execution time. This is a mandatory field — not optional. A Process Resource with no execution time limit creates operational blindness (the realization cannot know if it is hung).
 
 ```yaml
-process_resource_entity:
+process_entity:
   resource_type: Process.AnsiblePlaybook
   execution_constraints:
     max_execution_time: PT2H          # mandatory — ISO 8601 duration
