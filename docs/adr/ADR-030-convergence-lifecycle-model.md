@@ -12,16 +12,16 @@ ADR-027 named four entity families — Resource, Process, Knowledge, Access — 
 **One state, one act, two triggers. Everything else is that, parameterized.**
 
 ### The three primitives
-- **Intent** — the declared desired state (mutable; values include *exists-as-X* and *gone*).
+- **Intent** — the declared desired state (mutable; values include *exists-as-X* and *absent* (decommission)).
 - **Realized** — the actual state. `Realized` = reality with an intent behind it; `Discovered` = observed reality with **no** intent.
 - **Converge** — the one act (the Data·Policy·Provider loop of ADR-006) that drives Realized toward Intent. The thing it closes is a **gap** (Intent ≠ Realized).
 
 ### One act, two trigger-classes
 A gap opens exactly two ways, and Converge closes it without caring which side moved:
-- **intent moved** — a new / changed / withdrawn desired state (request, reconfigure, decommission);
+- **intent moved** — a new / changed / withdrawn desired state (request, reconfigure, decommission-to-*absent*);
 - **target moved** — reality diverged (drift, loss).
 
-The events we name — Realize, Reconcile, Reconfigure, Rehydrate — are **the same act at different triggers**. `Realize` is the first firing (intent ∅→X); `Reconcile` is a later firing (target moved *or* intent moved). **`Decommissioned` is not an act — it is an intent value** ("gone"); you reach it by moving intent there and letting Converge drive reality to absent. Same for every state: you don't *do* a state, you set the intent and the act closes the gap.
+The events we name — Realize, Reconcile, Reconfigure, Rehydrate — are **the same act at different triggers**. `Realize` is the first firing (intent ∅→X); `Reconcile` is a later firing (target moved *or* intent moved). **Decommission is not an act — it is the result of setting intent to *absent***; Converge drives reality to nothing, and the entity settles into the `Decommissioned` state. The realized resource is reclaimed; the entity **record is retained** (immutable, for audit) — the record does not vanish. Same for every state: you don't *do* a state, you set the intent and the act closes the gap.
 
 ### Nature is the durable axis; timeline / terminal / provenance are parameters
 - **Nature** — *maintained-state* (a thing that is, reconciled while it lives), *work-product* (a bounded execution that completes), or *curated* (understanding, no fulfillment arc). This is ADR-027's real, surviving distinction.

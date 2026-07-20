@@ -4,7 +4,7 @@
 
 The three primitives:
 
-- **Intent** — the declared desired state. Mutable; its values include *exists-as-X* and *gone*.
+- **Intent** — the declared desired state. Mutable; its values include *exists-as-X* and *absent* (decommission). *(Intent = `absent` reclaims the realized resource; the entity record is retained as `Decommissioned` for audit — the record does not vanish.)*
 - **Realized** — the actual state. `Realized` = reality with an intent behind it; `Discovered` = observed reality with *no* intent.
 - **Converge** — the one act (a Data · Policy · Provider loop) that drives Realized toward Intent. A **gap** (Intent ≠ Realized) is what it closes.
 
@@ -12,7 +12,7 @@ The three primitives:
 
 ## 1 · Flow of lifecycles — one loop, walked by any entity
 
-An entity's whole life is Converge firing on a gap. `Realize` and `Reconcile` are the **same act** at different triggers; `Decommissioned` is not an act but an *intent value* ("gone") that Converge drives reality to.
+An entity's whole life is Converge firing on a gap. `Realize` and `Reconcile` are the **same act** at different triggers; `Decommissioned` is the state reached when intent is set to *absent* that Converge drives reality to.
 
 ```mermaid
 stateDiagram-v2
@@ -20,7 +20,7 @@ stateDiagram-v2
     [*] --> Intent: intent declared (∅→X)
     Intent --> Realized: Converge · Realize
     Realized --> Realized: Converge · Reconcile
-    Realized --> Decommissioned: Converge · (intent → gone)
+    Realized --> Decommissioned: Converge · (intent → absent)
     Decommissioned --> [*]
     state "Discovered" as Disc
     [*] --> Disc: observed · no intent
@@ -58,7 +58,7 @@ flowchart LR
     subgraph MI [intent moved]
         RQ[request · ∅→X]
         RCF[reconfigure · X→Y]
-        DEC[decommission · X→gone]
+        DEC[decommission · X→absent]
     end
     subgraph MT [target moved]
         DRI[drift]
