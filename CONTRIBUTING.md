@@ -38,6 +38,12 @@ are caught once, not re-litigated per PR.
 **Automated (CI).**
 - **Valid by construction** — `registry/tools/validate.py` + `tests/validate_registry.py` (`ADOPT-001`,
   `$id`↔version). Every type/instance/provider matrix passes with a worked example.
+- **Rule-IDs — naming + registry (ADR-028)** — every normative rule carries a `PREFIX-NNN` ID;
+  **one prefix = one family = one home file**, and the prefix is **registered in
+  `registry/rule-id-registry.yaml` before use**; IDs are immutable once published (retire + supersede,
+  never repoint); a family that legitimately spans files uses `additional_homes` (sanctioned
+  co-definition), never a duplicate ID. `check_single_source.py` (registry-backed, CI-wired) fails on an
+  unregistered prefix, a definition outside its home, or a colliding ID.
 - **Single source** — `check_single_source.py` + `check_definition_single_source.py`: one rule / one
   definition, **one home, one ID; reference, never restate** (`SPEC-DESIGN §33`). A duplicate definition is
   a build failure, not a style note.
