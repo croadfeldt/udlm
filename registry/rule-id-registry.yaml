@@ -104,7 +104,11 @@ prefixes:
     home: entities/resource-grouping.md
     domain: Resource-group classes, membership, and nesting rules
     status: active
-    baseline_spread: [observability/universal-groups.md]   # DEBT(prefix-spread): universal-groups defines GRP-007..015 (disjoint from resource-grouping's 001-005/016-019) — fold home in PR-D
+    # SANCTIONED co-ownership, not debt: the Universal Group Model doc deliberately co-defines
+    # the GRP family with a coordinated number space (GRP-007..015 + GRP-INV-* there;
+    # 001-005/016-019 here) and states the invariant itself — "every GRP-* id has exactly one
+    # definition" (universal-groups §2.3). No duplicate ID; the check still enforces that.
+    additional_homes: [observability/universal-groups.md]
   - prefix: INF
     name: Information providers
     home: contracts/information-providers-advanced.md
@@ -175,7 +179,10 @@ prefixes:
     home: entities/entity-relationships.md
     domain: Entity-relationship model rules (edge_type, relation, nature-derivation)
     status: active
-    baseline_spread: [registry/common-elements.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
+    # SANCTIONED co-ownership: common-elements §9 "Relation vocabulary (normative)" owns the
+    # relation-naming rules REL-001..004; this doc owns the graph/lifecycle rules REL-010..024.
+    # One coordinated, disjoint number space; no duplicate ID (enforced).
+    additional_homes: [registry/common-elements.md]
   - prefix: RHY
     name: Rehydration / four-states
     home: foundations/four-states.md

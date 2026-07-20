@@ -68,9 +68,10 @@ def load_registry():
         home = e.get("home")
         if home and not os.path.exists(os.path.join(REPO, home)):
             errors.append(f"registry: prefix '{pfx}' home '{home}' does not exist")
-        for f in e.get("baseline_spread", []):
-            if not os.path.exists(os.path.join(REPO, f)):
-                errors.append(f"registry: prefix '{pfx}' baseline_spread '{f}' does not exist")
+        for field in ("baseline_spread", "additional_homes"):
+            for f in e.get(field, []):
+                if not os.path.exists(os.path.join(REPO, f)):
+                    errors.append(f"registry: prefix '{pfx}' {field} '{f}' does not exist")
     return entries, errors
 
 
@@ -93,6 +94,12 @@ def main():
 
     home = {e["prefix"]: e["home"] for e in entries}
     baseline = {e["prefix"]: set(e.get("baseline_spread", [])) for e in entries}
+    # additional_homes: SANCTIONED co-definition files (a family deliberately spans >1 doc
+    # with a coordinated number space and no duplicate ID — see rule-id-naming.md). Unlike
+    # baseline_spread (debt to burn down), these are permanent and not reported as debt. The
+    # duplicate-ID-number invariant is still enforced (a full ID in >1 file always fails
+    # unless grandfathered in baseline_spread), so a genuine clash is still caught.
+    sanctioned = {e["prefix"]: set(e.get("additional_homes", [])) for e in entries}
 
     # full_id -> set(files); prefix -> file -> set(numbers)
     defined = {}
@@ -115,14 +122,17 @@ def main():
     unregistered = sorted(p for p in prefix_files if p not in home)
 
     out_of_home = []          # (prefix, file)
-    used_baseline = set()     # (prefix, file) baselines that actually matched
+    used_baseline = set()      # (prefix, file) baseline_spread that actually matched
+    used_sanctioned = set()    # (prefix, file) additional_homes that actually matched
     for pfx, files in prefix_files.items():
         if pfx not in home:
             continue
         for f in sorted(files):
             if f == home[pfx]:
                 continue
-            if f in baseline.get(pfx, set()):
+            if f in sanctioned.get(pfx, set()):
+                used_sanctioned.add((pfx, f))
+            elif f in baseline.get(pfx, set()):
                 used_baseline.add((pfx, f))
             else:
                 out_of_home.append((pfx, f))
@@ -136,17 +146,23 @@ def main():
         if any(f not in allowed for f in fs):
             new_collisions[i] = fs
 
-    stale = sorted((pfx, f) for pfx, bs in baseline.items() for f in bs
-                   if (pfx, f) not in used_baseline)
+    stale = sorted(
+        [(pfx, f, "baseline_spread") for pfx, bs in baseline.items() for f in bs
+         if (pfx, f) not in used_baseline]
+        + [(pfx, f, "additional_homes") for pfx, ah in sanctioned.items() for f in ah
+           if (pfx, f) not in used_sanctioned])
 
+    n_sanctioned = sum(len(v) for v in sanctioned.values())
+    n_debt = sum(len(v) for v in baseline.values())
     print(f"rule-id single-source: {len(home)} registered prefix(es); "
           f"{len(defined)} rule IDs across the normative surface; "
-          f"{len(collisions)} collide ({len(collisions) - len(new_collisions)} baselined).")
+          f"{len(collisions)} collide ({len(collisions) - len(new_collisions)} baselined); "
+          f"{n_sanctioned} sanctioned co-home(s), {n_debt} spread-debt entr(y/ies).")
 
     if stale:
-        print("\nSTALE baseline_spread (no definition there anymore — remove from the registry):")
-        for pfx, f in stale:
-            print(f"  - {pfx}: {f}")
+        print("\nSTALE registry entries (no definition there anymore — remove from the registry):")
+        for pfx, f, field in stale:
+            print(f"  - {pfx}: {f} ({field})")
 
     fail = False
     for e in reg_errors:
@@ -173,7 +189,7 @@ def main():
               "disjoint prefix (REL-* -> ERL- precedent). See registry/rule-id-naming.md.")
         return 1
 
-    print("OK — every rule-ID prefix is registered and single-homed.")
+    print("OK — every rule-ID prefix is registered; every ID has a single definition.")
     return 0
 
 

@@ -23,7 +23,14 @@ PREFIX-SUB-NNN        REG-DP-002        (a hyphen-segmented sub-series; leading 
 
 ## 2. Rules
 
-1. **One prefix = one rule family = one home file.** A prefix is globally unique.
+1. **One prefix = one rule family, with one designated home file.** A prefix is globally unique.
+   The invariant the model actually enforces is **every full ID has exactly one definition** (no
+   duplicate `PFX-NNN`). A family normally lives entirely in its `home`; it MAY span additional
+   docs *only* when the split is deliberate, the number space is coordinated across them, and no
+   ID is defined twice — declared as `additional_homes` in the registry (e.g. `GRP` across
+   resource-grouping + the Universal Group Model, which itself states "every GRP-* id has exactly
+   one definition"). `additional_homes` is a sanctioned permanent arrangement; `baseline_spread`
+   is temporary dedup **debt** to burn down. Both are checked; neither permits a duplicate ID.
 2. **Definitions live only in the home.** A rule *definition* is a Markdown table row whose first
    cell is the ID (`| `PFX-NNN` | … |`). Those rows may appear **only** in the prefix's registered
    `home`. Everywhere else the ID is a **citation** (`see PFX-NNN`) — never a redefinition.
