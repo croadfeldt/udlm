@@ -13,7 +13,7 @@ ADR-027 named four entity families — Resource, Process, Knowledge, Access — 
 
 ### The three primitives
 - **Intent** — the declared desired state (mutable; values include *exists-as-X* and *absent* (decommission)).
-- **Realized** — the actual state. `Realized` = reality with an intent behind it; `Discovered` = observed reality with **no** intent.
+- **Realized** — the actual state: the **policy-resolved intent combined with the provider's specific output**. `Realized` = reality with an intent behind it; `Discovered` = observed reality with **no** intent.
 - **Converge** — the one act (the Data·Policy·Provider loop of ADR-006) that drives Realized toward Intent. The thing it closes is a **gap** (Intent ≠ Realized).
 
 ### One act, two trigger-classes
@@ -38,7 +38,7 @@ Intent is the one root, and reality is its expression.
 
 - **Nature is rooted in intent.** Maintained-state / work-product / curated is *declared*, at the type level (a type spec is design-time intent) and inherited by instances — you don't discover a thing's nature, you intend it.
 - **Lifecycle and change are rooted in intent by necessity.** No change — reconfigure, decommission, even "hold steady" — can be expressed without a desired state to converge toward.
-- **`Realized` is intent's validated expression, never a second source of truth.** Intent may be authored at any detail up to fully-specified; a complete intent leaves enrichment with no gaps (enrichment still fires — it is a no-op). Drift, rehydration, audit, and portability all require an intent to compare against, replay, attribute, and carry. There is no "realized-as-root".
+- **`Realized` is the policy-resolved intent combined with the provider's specific output.** The intent runs the full policy pipeline — enrich → validate → transform → place (the `Requested` state) — and the provider then fulfils it and reports its actual work (assigned IDs, addresses, metadata). It is not a second source of truth: intent is the *target*, the provider the *actuator*. A complete authored intent leaves *enrichment* with nothing to fill, but validation / transformation / placement still run and the provider still supplies actuals — so realized is never the raw authored intent. Drift, rehydration, audit, and portability all require an intent to compare against, replay, attribute, and carry; there is no "realized-as-root".
 
 **`Discovered` is the sole exception** — observed reality with no intent, read-only; it carries only the classification of the type it maps to. It joins the root by **adoption**.
 
@@ -54,7 +54,7 @@ The same loop *builds* the intent in simulation, then *executes* it. Two policie
 - **Approval** — because step 5 can decommission running infrastructure, the target intent is **approved** before convergence acts (the approval ladder profiles already model). No silent auto-destruction.
 
 Two further intent-mediated writes complete the picture, neither a second root:
-- **Validate-only** — a fully-detailed authored intent; realized = its validated expression (enrichment no-op).
+- **Validate-only** — a fully-detailed authored intent leaves *enrichment* with nothing to fill; the intent is still validated, transformed, and placed, and realized = that policy-resolved intent + the provider's specific output (never the raw authored intent).
 - **Absorb** — legitimize an out-of-band change by snapping intent to the new realized (the `UPDATE_DEFINITION` path: accept, don't revert).
 
 This reframes "intent vs realized": not two co-equal tracks, but **one root (intent) + one expression (realized)**, with `Discovered` as the read-only inlet that adoption turns into intent.
