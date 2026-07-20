@@ -87,3 +87,14 @@ the justification for storing the flag — the flag should not be stored "just i
   addendum is adopted, #167 is replaced by "derive `has_constituents`, drop the stored shape value."
 - Meta-schema: `entity_type` is currently **required**; deriving the shape makes it optional/removed on the
   Resource/Process branch (the Knowledge/Access branch — `Capability`/`Identity`/… — stays).
+
+### Second finding — `lifecycle_archetype`: same disposition
+
+`lifecycle_archetype` (`provisioning` / `curation`) is the identical pattern and is bundled here:
+- Its **own schema description** says *"inferred from `family` if absent."*
+- Set explicitly on **22 types**, but **0 behavioral consumers** — nothing branches on it.
+- Fully **derivable** (from `family` → `nature`).
+
+**Proposal:** derive it, don't store it. It is already optional; make it a derived predicate and drop it from
+authored specs. Zero migration risk (no consumer). Same reasoning, same disposition as the shape above — a
+stored classifier with no consumer that its own description marks as inferable earns nothing beyond filtering.
