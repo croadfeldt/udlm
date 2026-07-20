@@ -251,7 +251,7 @@ All terminal states are permanent. The execution record is immutable after reach
 process_entity:
   uuid: <uuid>
   family: Process           # ADR-027 family (bounded execution)
-  entity_type: Atomic       # Atomic | Composite — the shape
+  entity_type: single       # single | multi — the shape
   process_type: <playbook|workflow|pipeline|automation_job|script|other>
   tenant_uuid: <owning tenant uuid>
   version: <Major.Minor.Revision>

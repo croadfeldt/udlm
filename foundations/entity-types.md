@@ -14,7 +14,7 @@
 >
 > **This document maps to: DATA**
 >
-> The Data abstraction — typed entity extensions (Resource, Process; each Atomic or Composite)
+> The Data abstraction — typed entity extensions (Resource, Process; each single or multi)
 
 
 **Related Documents:** [Entity-Type Families](entity-type-families.md) | [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](../entities/resource-type-hierarchy.md) | [Resource/Service Entities](../entities/resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
@@ -22,7 +22,7 @@
 > **Families & shape.** The entity kinds below split by **family**: **Resource** (maintained states) and
 > **Process** (bounded executions) — see [Entity-Type Families](entity-type-families.md). A family is a
 > *logical grouping*, **not** a usage boundary. Within a family, `entity_type` records the **shape** —
-> **Atomic** (owns no constituents) or **Composite** (owns constituents) — so "Composite" is a shape a
+> **single** (owns no constituents) or **multi** (owns constituents) — so "multi" is a shape a
 > Resource *or* Process can take, not a separate family. The **Knowledge family** (Capability, TaxonomyTerm,
 > …), anchored by DAV, is in [../entities/knowledge-family.md](../entities/knowledge-family.md).
 
@@ -47,7 +47,7 @@ The primary split is by **family**, on one axis — is the entity a *maintained 
 - **Resource** (`family: Resource`) — a maintained state the system holds and continuously reconciles.
 - **Process** (`family: Process`) — a bounded execution that runs to a terminal outcome.
 
-Duration is *not* the discriminator: a Resource that lives one hour and one that lives a year are the same kind. Within either family, `entity_type` records the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is a shape, not a third kind: a composite Resource owns more than one constituent resource; a composite Process is one DCM itself sequences across more than one constituent process call (§2.2).
+Duration is *not* the discriminator: a Resource that lives one hour and one that lives a year are the same kind. Within either family, `entity_type` records the **shape** — **single** (owns no constituents) or **multi** (owns constituents). `multi` is a shape, not a third kind: a `multi` Resource owns more than one constituent resource; a `multi` Process is one DCM itself sequences across more than one constituent process call (§2.2).
 
 ### 2.1 Resource — a maintained state
 
@@ -178,9 +178,9 @@ An entity in `PENDING_REVIEW`:
 - Remains in `PENDING_REVIEW` until a resolution action is taken (re_authorize, release, escalate, or manual override)
 - Is never automatically resolved — all resolutions require explicit human or policy authorization
 
-### 2.2 Atomic and Composite — the shape (`entity_type`)
+### 2.2 single and multi — the shape (`entity_type`)
 
-Within the **Resource** and **Process** families, `entity_type` records the **shape**: **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. `entity_type` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `entity_type: Composite`. (The specific type — `Compute.VirtualMachine`, `Automation.Workflow` — is `resource_type`, a finer gate.)
+Within the **Resource** and **Process** families, `entity_type` records the **shape**: **single** (owns no constituents) or **multi** (owns constituents). `multi` is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as a `single` one; it additionally declares constituents and a `composite_health` axis. A `multi` Resource is produced by a `multi` resource type specification that orchestrates multiple constituent Resources into a higher-order service (a `multi` Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is `single`). The `multi` entity is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. `entity_type` is queryable and policy-gateable at the catalog and instance layers; "find all multi-constituent types" = `entity_type: multi`. (The specific type — `Compute.VirtualMachine`, `Automation.Workflow` — is `resource_type`, a finer gate.)
 
 **Characteristics:**
 - Represents the logical aggregate, not a physical resource
@@ -218,7 +218,7 @@ composite_entity:
 
 A **Process** is a bounded execution — an automation job, playbook, pipeline, workflow, or script run. It is defined by its *form*, not its effect: it runs to a terminal outcome (COMPLETED, FAILED, or CANCELLED) and is never a maintained state — no drift, no suspend, no reconciliation. It may read or change Resources (and records which entity UUIDs it affected), but a Process itself is not kept. Automation is the archetype.
 
-Like a Resource, a Process carries a shape in `entity_type` — and the line is drawn from the **realization's (DCM's) perspective**, its orchestration scope, *not* the process's internal complexity: **Atomic** is a *single call DCM makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; DCM made a single call, so it is still Atomic). **Composite** is when *DCM itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Automation.Job`) — vendor-specifics like "playbook" live there, at the finer gate.
+Like a Resource, a Process carries a shape in `entity_type` — and the line is drawn from the **realization's (DCM's) perspective**, its orchestration scope, *not* the process's internal complexity: **single** is a *single call DCM makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; DCM made a single call, so it is still `single`). **multi** is when *DCM itself* sequences more than one distinct process call, tracking them as constituents. A `multi` Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a `multi` Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Automation.Job`) — vendor-specifics like "playbook" live there, at the finer gate.
 
 **Characteristics:**
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
@@ -302,7 +302,7 @@ These invariants apply to all entity types without exception:
 |-----------|------|
 | UUID stability | An entity's UUID never changes across its full lifecycle, including rehydration and provider migration |
 | Single Tenant ownership | Every Resource and Process is owned by exactly one Tenant at all times |
-| Composite constituent ownership | A Composite's constituents are owned individually — the composite UUID does not override constituent Tenant ownership |
+| `multi` constituent ownership | A `multi` type's constituents are owned individually — the composite UUID does not override constituent Tenant ownership |
 | Immutable Realized State | Realized State events are append-only; a new event is created for every state change |
 | Audit trail preservation | Audit records for an entity are never destroyed while any related entity is active; preservation policy governs post-terminal retention |
 | Provider ID separation | The entity UUID is the UDLM stable identity; the provider entity ID is the provider's own reference. These are separate and the provider ID may change on rehydration |
@@ -317,7 +317,7 @@ Not all resource types produce the same entity type. The entity type is declared
 resource_type_spec:
   fqn: Compute.VirtualMachine
   family: Resource        # ADR-027 family (state vs execution)
-  entity_type: Atomic     # Atomic | Composite — the shape
+  entity_type: single     # single | multi — the shape
   ownership_model: whole_allocation       # whole_allocation | allocation | shareable
   allocatable_from_pool_type: null        # if allocation: the pool resource type this comes from
   pool_resource_type: null                # if pool: declare this is a pool resource

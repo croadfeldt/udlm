@@ -12,13 +12,13 @@
 # the OCP realization vocabulary is Kubernetes'; the provider naturalizes them. (Design also informed
 # by CNCF Backstage Component/System catalog entities and systemd ordering-vs-dependency semantics —
 # referenced, not adopted, to keep the register surface minimal.)
-$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.0
 conforms_to: udlm/0.1
 uuid: 94762c84-a096-4e54-a4f7-95123807fc95
 resource_type: Software.Service
-version: 0.3.0
+version: 0.4.0
 family: Resource
-entity_type: Atomic
+entity_type: single
 lifecycle_archetype: provisioning
 portability: portable
 status: active

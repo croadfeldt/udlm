@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
-  "entity_type": "Atomic",
+  "entity_type": "single",
   "portability": "portable",
   "status": "active",
   "metadata": {

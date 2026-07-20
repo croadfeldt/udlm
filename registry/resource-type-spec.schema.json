@@ -56,7 +56,7 @@
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents \u2014 a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Access: Identity. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.)"
+      "description": "The coarse sub-type within the family. Resource & Process: single (owns no constituents) | multi (owns constituents \u2014 a multi type declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Access: Identity. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.)"
     },
     "lifecycle_archetype": {
       "enum": [
@@ -434,8 +434,8 @@
         "properties": {
           "entity_type": {
             "enum": [
-              "Atomic",
-              "Composite"
+              "single",
+              "multi"
             ]
           }
         }
@@ -453,8 +453,8 @@
         "properties": {
           "entity_type": {
             "enum": [
-              "Atomic",
-              "Composite"
+              "single",
+              "multi"
             ]
           }
         }

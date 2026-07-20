@@ -353,7 +353,7 @@ When a consuming Tenant claims an available allocation, DCM creates a first-clas
 ```yaml
 allocated_entity:
   uuid: <uuid — consuming Tenant's own entity>
-  entity_type: Atomic  # ownership_model: allocation (ADR-027 shape; family: Resource)
+  entity_type: single  # ownership_model: allocation (ADR-027 shape; family: Resource)
   resource_type_uuid: <uuid of the allocated resource type>
   tenant_uuid: <Tenant A uuid>  # Belongs to the consuming Tenant
 

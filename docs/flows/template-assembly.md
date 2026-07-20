@@ -57,14 +57,14 @@ flowchart TD
 
 ---
 
-## 3 · What a Template is made of — a Composite plus bound processes
+## 3 · What a Template is made of — a `multi` Resource plus bound processes
 
-A Template composes **consumables** (resources and processes are both consumables; ADR-030). Its resources are a **`Composite`** (structural constituents, `contained_by` — the `entity_type` value being renamed `single | multi`, task #58); its processes are **bound** (operational binding — the subscription `manages` model), **not** contained. Both a Composite's constituents and a Template's resources stay **same-family** (Resources) — cross-family combination (Resources + Processes) is what *binding* is for.
+A Template composes **consumables** (resources and processes are both consumables; ADR-030). Its resources are a **`multi`** Resource (structural constituents, `contained_by`); its processes are **bound** (operational binding — the subscription `manages` model), **not** contained. Both a `multi` type's constituents and a Template's resources stay **same-family** (Resources) — cross-family combination (Resources + Processes) is what *binding* is for.
 
 ```mermaid
 flowchart TD
     TMP["Template · FSI/prod"]:::t
-    TMP --> COMP["Composite (resources)<br/>web VM · app VM · Postgres<br/>contained_by"]:::c
+    TMP --> COMP["multi Resource<br/>web VM · app VM · Postgres<br/>contained_by"]:::c
     TMP -.->|bound · not contained| PR1["Process · provision"]:::pr
     TMP -.->|bound| PR2["Process · nightly backup"]:::pr
     TMP -.->|bound| PR3["Process · monthly patch"]:::pr
@@ -73,7 +73,7 @@ flowchart TD
     classDef pr fill:#fff2e0,stroke:#d97706,color:#111
 ```
 
-*A backup is not a **part** of the stack the way a VM is — it **operates on** it. Each bound activity fires on a **trigger** (lifecycle hook / schedule / event); **Day 0/1/2 is a lens over those triggers, not a field** ([lifecycle-convergence §5](lifecycle-convergence.md)). This is why a Template does not widen `Composite` to hold mixed-family constituents — binding stays binding.*
+*A backup is not a **part** of the stack the way a VM is — it **operates on** it. Each bound activity fires on a **trigger** (lifecycle hook / schedule / event); **Day 0/1/2 is a lens over those triggers, not a field** ([lifecycle-convergence §5](lifecycle-convergence.md)). This is why a Template does not widen `multi` to hold mixed-family constituents — binding stays binding.*
 
 ---
 
@@ -97,7 +97,7 @@ flowchart LR
 
 ## What UDLM decides, and what it hands to DCM
 
-- **UDLM (the stage):** the three tiers, the edges (`contained_by` for the Composite, `binds_to` for the bound processes), and the invariant that a System is a Template Realized — nothing more, nothing less than its intent plus the provider's output.
+- **UDLM (the stage):** the three tiers, the edges (`contained_by` for the `multi` constituents, `binds_to` for the bound processes), and the invariant that a System is a Template Realized — nothing more, nothing less than its intent plus the provider's output.
 - **DCM (the actors):** *how* a Pattern resolves into a Template (profile + placement + enrichment — the Intent → Requested policy), and *how* a Template converges into a System (the provider mechanism). Both are realization; a conformant peer may do either differently.
 
 ## Data · Policy · Provider
@@ -112,7 +112,7 @@ flowchart LR
 | Intent / Requested / Realized, Converge, adoption | ADR-030 · [lifecycle-convergence](lifecycle-convergence.md) |
 | The shared pipeline (assemble → place → enrich → reserve → converge) | [request-realization](request-realization.md) |
 | Consumables, binding, `lifecycle_policy` triggers | `lifecycle/subscription-lifecycle.md`; ADR-006 |
-| `Composite` (structural constituents) | ADR-027 |
+| `multi` (structural constituents) | ADR-027 |
 
 ## The whole story in one line
 

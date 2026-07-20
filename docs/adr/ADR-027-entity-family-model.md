@@ -1,4 +1,4 @@
-# ADR-027: Entity family model — Resource | Process, and the Atomic/Composite shape
+# ADR-027: Entity family model — Resource | Process, and the single/multi shape
 
 **Status:** Accepted (2026-07-17)
 **Related:** [ADR-026 — typed-classification naming](ADR-026-typed-classification-naming.md); `foundations/entity-types.md`; `foundations/entity-type-families.md`; ADR-013 (hardware component scope)
@@ -8,7 +8,7 @@
 The entity taxonomy previously named its primary Resource-family types `Infrastructure Resource | Composite | Process`, with `Infrastructure Resource` defined as a resource that "persists across time." Review exposed several problems:
 - **`Infrastructure`** carried no model meaning — the model never branches on "infrastructure vs something else"; Infrastructure Resource and Composite were managed identically.
 - **Persistence/duration is not the discriminator** — a one-hour VM and a multi-year cluster are the same kind; "persistent"/"durable" imply a longevity the model never tests, and "persistent" collides with container-storage usage.
-- **`Composite` as a peer type** overstated it — a composite is managed exactly like any other resource, it merely owns constituents.
+- **`Composite` as a peer type** overstated it — a multi-constituent resource is managed exactly like any other resource, it merely owns constituents.
 - **`Process` sat inside the Resource family** although a process is not a maintained state at all.
 
 ## Decision
@@ -24,25 +24,27 @@ The entity taxonomy previously named its primary Resource-family types `Infrastr
 
 `Infrastructure` / `persistent` / `durable` are retired: an entity is simply a **Resource** (a maintained state).
 
-### Shape — `entity_type ∈ { Atomic, Composite }` for Resource and Process
-`entity_type` records the coarse shape: **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is *not* a separate kind or family — it is a shape either a Resource or a Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery, plus a `composite_health` axis and declared constituents.
+### Shape — `entity_type ∈ { single, multi }` for Resource and Process
+`entity_type` records the coarse shape: **single** (owns no constituents) or **multi** (owns constituents). `multi` is *not* a separate kind or family — it is a shape either a Resource or a Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery, plus a `composite_health` axis and declared constituents.
 
-**The Atomic/Composite line is drawn from the realization's (DCM's) perspective — its orchestration scope — not the entity's internal complexity:**
-- **Atomic** = a single thing DCM manages / a single call DCM makes. A VM is Atomic; an Ansible/AWX workflow *invoked as one call* is Atomic (the provider orchestrates its internal jobs, opaque to DCM).
-- **Composite** = DCM owns/orchestrates more than one constituent — several managed resources, or several process calls DCM itself sequences.
+> **Naming update (2026-07-20).** The values were originally `Atomic | Composite`; they are renamed **`single | multi`** to name what they *assert* — single- vs multi-constituent orchestration scope — instead of borrowing a loaded word (`Composite` collided with the separate *Composite Service* catalog model, the *composable-infrastructure* provider capability, and the general notion of composition). The meaning is unchanged; only the label. The `composite_health` field keeps its name (it describes health aggregation across constituents, independent of the value). (task #58)
 
-A composite Resource's constituents are its owned resources; a composite Process's constituents are the sub-process calls DCM sequences — recorded via the **same constituent-relationship model** in both cases.
+**The single/multi line is drawn from the realization's (DCM's) perspective — its orchestration scope — not the entity's internal complexity:**
+- **single** = a single thing DCM manages / a single call DCM makes. A VM is `single`; an Ansible/AWX workflow *invoked as one call* is `single` (the provider orchestrates its internal jobs, opaque to DCM).
+- **multi** = DCM owns/orchestrates more than one constituent — several managed resources, or several process calls DCM itself sequences.
+
+A `multi` Resource's constituents are its owned resources; a `multi` Process's constituents are the sub-process calls DCM sequences — recorded via the **same constituent-relationship model** in both cases.
 
 ### Tiers
-`family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VirtualMachine`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`Atomic`/`Composite`) lives in `entity_type`. Both tiers are queryable and gateable.
+`family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VirtualMachine`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`single`/`multi`) lives in `entity_type`. Both tiers are queryable and gateable.
 
 ## Consequences
 
 - Every qualifier that carried no model meaning (infrastructure/persistent/durable) is gone; the axis is state vs execution.
 - `entity_type` is meaningful in every family — no `family == entity_type` redundancy — and needs no separate `flavor` field.
-- Composite is `entity_type: Composite`, queryable at the catalog **and** instance layers (structure alone can't classify a catalog item — `constituents[]` is realized-only).
-- A registry migration: `family` enum +`Process`; `family: Resource` and `family: Process` → `entity_type ∈ {Atomic, Composite}`; existing specs `Infrastructure Resource → Atomic`, `automation.job → family: Process`.
-- **Follow-up:** classify which existing specs are genuinely `Composite` (a real OpenShift VM owns its disks/pod) and model their `constituents[]`.
+- A `multi` type carries `entity_type: multi`, queryable at the catalog **and** instance layers (structure alone can't classify a catalog item — `constituents[]` is realized-only).
+- A registry migration: `family` enum +`Process`; `family: Resource` and `family: Process` → `entity_type ∈ { single, multi }`; existing specs `Infrastructure Resource → single`, `automation.job → family: Process`.
+- **Follow-up:** classify which existing specs are genuinely `multi` (a real OpenShift VM owns its disks/pod) and model their `constituents[]`.
 - Opens a clean correlation between AAP/AWX workflows and DCM-naturalized composite-process orchestration (constituents = job templates).
 
 ## Alternatives considered

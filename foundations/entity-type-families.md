@@ -92,8 +92,8 @@ Families name the domain a set of definitions was organized under; usage is open
 
 | Family | Domain (organizing context) | Example realization (non-normative) | Entity-type definitions | Lifecycle archetype |
 |--------|------------------------------|-------------|-------------------------|---------------------|
-| **Resource** | Maintained-state resources (provisioned, reconciled) | DCM | `entity_type`: Atomic \| Composite (+ ownership sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
-| **Process** | Bounded executions (automation runs) | DCM | `entity_type`: Atomic \| Composite — [Entity Types](entity-types.md) §2.3 | Provisioning (terminal): REQUESTED → INITIATED → EXECUTING → COMPLETED / FAILED / CANCELLED |
+| **Resource** | Maintained-state resources (provisioned, reconciled) | DCM | `entity_type`: single \| multi (+ ownership sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
+| **Process** | Bounded executions (automation runs) | DCM | `entity_type`: single \| multi — [Entity Types](entity-types.md) §2.3 | Provisioning (terminal): REQUESTED → INITIATED → EXECUTING → COMPLETED / FAILED / CANCELLED |
 | **Knowledge** | Architecture / capability knowledge (curated) | DAV | Capability, TaxonomyTerm, Alias, Antipattern, DecisionRecord (+ future UseCase, Gap, Assessment, Finding) — [Knowledge Family](../entities/knowledge-family.md) | Curation: PROPOSED → UNDER_REVIEW → CANONICAL (+ OBSERVED, DEPRECATED) |
 | **Access** | Identity — who/what a request acts as | DCM | `Identity` (+ future identity-contract types) — [Auth Providers & Identity Contract](../governance/auth-providers.md) | Contract: identity is resolved/verified by DCM, never held as a maintained state |
 

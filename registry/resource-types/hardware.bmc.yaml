@@ -7,13 +7,13 @@
 # ADOPT (not absorb), core-tenets T5: the BMC's data model and power/reset actions are DMTF Redfish's
 # (Manager + ComputerSystem.Reset); UDLM carries identity + a version-pinned pointer + which host it
 # manages. IPMI is the legacy fallback protocol, named not modeled.
-$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.4.0
 conforms_to: udlm/0.1
 uuid: e5e97d76-ab1c-4286-8ca4-db6aaeb08eb2
 resource_type: Hardware.BMC
-version: 0.3.0
+version: 0.4.0
 family: Resource
-entity_type: Atomic
+entity_type: single
 lifecycle_archetype: curation
 portability: portable
 status: active

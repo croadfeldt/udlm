@@ -1,11 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "b7e4c1a2-9d3f-4a6b-8c5e-1f2a3b4c5d6e",
   "resource_type": "Topology",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Atomic",
+  "entity_type": "single",
   "portability": "portable",
   "status": "active",
   "metadata": {

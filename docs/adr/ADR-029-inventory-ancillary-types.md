@@ -29,7 +29,7 @@ The ancillary types are grouped only by their shared `classification: ancillary`
 Ancillary records attach **inbound** (`contained_by` the host) — no substrate type (`BareMetalHost`, etc.) gains a required field, and nobody is forced to enumerate hardware. Adopting Inventory changes *nothing* for a non-adopter.
 
 ### 4. First members
-Revive `Hardware.Processor`, `Hardware.StorageDevice`, `Hardware.GraphicsProcessor`, modernized to the current model (`family: Resource` + `entity_type: Atomic` per ADR-027; `edge_type` per ADR-026), classified `ancillary`. **`Hardware.BMC` / `NetworkInterface` / `BiosProfile` remain substrate** — they are control-plane-*actionable* (Redfish power, NMstate config, SUM), which is the line that separates substrate from ancillary.
+Revive `Hardware.Processor`, `Hardware.StorageDevice`, `Hardware.GraphicsProcessor`, modernized to the current model (`family: Resource` + `entity_type: single` per ADR-027; `edge_type` per ADR-026), classified `ancillary`. **`Hardware.BMC` / `NetworkInterface` / `BiosProfile` remain substrate** — they are control-plane-*actionable* (Redfish power, NMstate config, SUM), which is the line that separates substrate from ancillary.
 
 ### The refined ADR-013 boundary
 > DCM is **always the system-of-record for the resources whose lifecycle it owns** (what it provisions and manages). It is **not currently designed to be a *complete* inventory system-of-record** for everything observed — carrying ancillary/observed inventory beyond what it manages is optional. It is **never a hardware authoring/provisioning surface**: ancillary items are populated by discovery or reported by providers at realize, never authored. ADR-013's real boundary stands, sharpened.
