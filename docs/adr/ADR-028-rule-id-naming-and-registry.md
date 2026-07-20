@@ -26,8 +26,12 @@ single source of truth; a CI check enforces it.**
    (retire + supersede, never repoint); collisions are resolved by renumbering to a disjoint
    prefix (the `REL-* → ERL-*` precedent), not coexistence.
 2. **Registry** (`registry/rule-id-registry.yaml`, validated by `rule-id-registry.schema.json`):
-   one record per prefix — `prefix`, `name`, `home`, `domain`, `status`, and an optional
-   `baseline_spread` grandfathering the known dedup debt until it is renumbered.
+   one record per prefix — `prefix`, `name`, `home`, `domain`, `status`, and optionally
+   `baseline_spread` (temporary dedup **debt** to burn down) or `additional_homes` (a
+   **sanctioned** permanent co-definition: a family that deliberately spans more than one doc
+   with a coordinated number space and no duplicate ID — e.g. `GRP` across resource-grouping and
+   the Universal Group Model, which itself asserts "every GRP-* id has exactly one definition").
+   The enforced invariant is *one definition per ID*, not literally one file per prefix.
 3. **Enforcement** (`tests/check_single_source.py`, now CI-wired): fails on an unregistered prefix,
    a definition outside its home, an ungrandfathered id-collision, or a malformed registry;
    reports a stale baseline so the debt ratchets to zero.

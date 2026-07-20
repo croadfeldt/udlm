@@ -42,7 +42,7 @@ The layering model enables:
 
 ## 1b. At a glance — one field, end to end
 
-Before the full contract, here is the whole mechanism on a single field. A VM request resolves `backup_retention_days` by merging the ordered layers, lowest authority first; each layer may set the value and declare whether lower or higher authorities can override it (`LAY-005`: `allow` | `constrained` | `immutable`). The final value carries provenance — which layer set it (`OPS-002`).
+Before the full contract, here is the whole mechanism on a single field. A VM request resolves `backup_retention_days` by merging the ordered layers, lowest authority first; each layer may set the value and declare whether lower or higher authorities can override it (`LAY-005`: `allow` | `constrained` | `immutable`). The final value carries provenance — which layer set it (`LAY-008`).
 
 | # | Layer (rising authority) | Owner | Contributes | Value after |
 |---|---|---|---|---|
@@ -68,7 +68,7 @@ Two edges the same rules produce:
 | 5 | Request | consumer | §3.5 — consumer values override all data layers; exclusions per `LAY-001` |
 | over all | Policy layers | policy owners | §3.6 — compliance-class Validation overrides everything, incl. consumer (`LAY-005`) |
 
-Field-level override intent is `LAY-005`; provenance is always reconstructable per `OPS-002`. Everything below is the formal contract for this table — skim by heading and return for the specific layer or rule you need.
+Field-level override intent is `LAY-005`; provenance is always reconstructable per `LAY-008`. Everything below is the formal contract for this table — skim by heading and return for the specific layer or rule you need.
 
 ---
 
@@ -267,7 +267,7 @@ tenant_config:
 Regardless of provenance model, full provenance must always be reconstructable:
 
 ```
-OPS-002  Regardless of provenance model, full provenance must always be
+LAY-008  Regardless of provenance model, full provenance must always be
          reconstructable for any entity from the combination of: entity
          record, layer chain store, and Audit Store. The provenance model
          governs where data is stored and how it is accessed — not whether
@@ -282,8 +282,8 @@ For Model A: entity record alone is sufficient
 
 | Policy | Rule |
 |--------|------|
-| `OPS-001` | Field-level provenance model is configurable: full_inline, layer_chain_ref (deduplicated), tiered, or layer_chain_ref_tiered. Profile activates the appropriate Policy Group as default. Organizations override by replacing the active provenance group. Model B (layer_chain_ref) is the recommended default for standard+ profiles. |
-| `OPS-002` | Regardless of provenance model, full provenance must always be reconstructable from the combination of entity record, layer chain store, and Audit Store. The provenance model governs storage location and access pattern — not data availability. |
+| `LAY-007` | Field-level provenance model is configurable: full_inline, layer_chain_ref (deduplicated), tiered, or layer_chain_ref_tiered. Profile activates the appropriate Policy Group as default. Organizations override by replacing the active provenance group. Model B (layer_chain_ref) is the recommended default for standard+ profiles. |
+| `LAY-008` | Regardless of provenance model, full provenance must always be reconstructable from the combination of entity record, layer chain store, and Audit Store. The provenance model governs storage location and access pattern — not data availability. |
 
 ---
 

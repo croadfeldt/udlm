@@ -89,7 +89,7 @@ What is **normative** is that a field's evolution is *reconstructable*: for any 
 - Provenance survives data export, migration, and portability scenarios
 - The audit capability reads lineage that was recorded at the point of change, not reconstructed from logs
 
-**Where** provenance is stored is a realization choice. It MAY be carried inline with the field, or content-addressed/tiered so the object is not bloated — `layering-and-versioning.md` §3a defines the deduplicated and tiered storage models, and OPS-002 guarantees full reconstruction regardless of model. The obligation is reconstructability; inline co-location is not required.
+**Where** provenance is stored is a realization choice. It MAY be carried inline with the field, or content-addressed/tiered so the object is not bloated — `layering-and-versioning.md` §3a defines the deduplicated and tiered storage models, and LAY-008 guarantees full reconstruction regardless of model. The obligation is reconstructability; inline co-location is not required.
 
 ### 4.4 Provenance Metadata Structure
 
@@ -266,7 +266,7 @@ This separation of concerns is what makes a realization technology-agnostic whil
 The prior-state "open questions" for this document are all resolved, and each
 outcome now lives where it is normative: the store-contract model in
 [data-model-core](data-model-core.md) §6 (ruling D1), `native_passthrough`
-(DATA-001), and the provenance models (OPS-001/OPS-002) in
+(DATA-001), and the provenance models (LAY-007/LAY-008) in
 [layering-and-versioning.md](layering-and-versioning.md). The resolved-questions
 table has been removed so those decisions are not duplicated here.
 
