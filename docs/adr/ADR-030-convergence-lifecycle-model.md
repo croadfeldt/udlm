@@ -32,6 +32,33 @@ The events we name — Realize, Reconcile, Reconfigure, Rehydrate — are **the 
 ### Archetypes are presets, not species
 Resource / Process / Credential / Inventory / Knowledge are named `(nature + parameters)` **presets** over the one spine — the way profiles are composed sets, not fundamental levels. Critically, **Credential and Inventory are Resource-nature variants** (maintained-state, reconciled), differing only in timeline / terminal / provenance — not their own kinds. The full projection is in the [flow doc §4](../flows/lifecycle-convergence.md).
 
+### Intent is the single root — of nature, lifecycle, and change
+
+Intent is the one root, and reality is its expression.
+
+- **Nature is rooted in intent.** Maintained-state / work-product / curated is *declared*, at the type level (a type spec is design-time intent) and inherited by instances — you don't discover a thing's nature, you intend it.
+- **Lifecycle and change are rooted in intent by necessity.** No change — reconfigure, decommission, even "hold steady" — can be expressed without a desired state to converge toward.
+- **`Realized` is intent's validated expression, never a second source of truth.** Intent may be authored at any detail up to fully-specified; a complete intent leaves enrichment with no gaps (enrichment still fires — it is a no-op). Drift, rehydration, audit, and portability all require an intent to compare against, replay, attribute, and carry. There is no "realized-as-root".
+
+**`Discovered` is the sole exception** — observed reality with no intent, read-only; it carries only the classification of the type it maps to. It joins the root by **adoption**.
+
+**Adoption (greening the brownfield) is convergence with a *backported* intent — and the backport is itself convergence, run dry:**
+1. **Build** a candidate intent from the discovered state + provider criteria.
+2. **Run convergence in no-op (dry-run)** — the full policy pipeline fires (enrichment, validation, transformation, placement); nothing is acted on.
+3. **Compare** the projected realization to the discovered state; **tweak the intent** and repeat until the projection is exact, or close, per the **faithfulness knob**.
+4. **Approve** the resulting target intent.
+5. **Converge for real** — reality is driven to the approved intent; the discovered parts that don't fit are **decommissioned**.
+
+The same loop *builds* the intent in simulation, then *executes* it. Two policies steer it:
+- **Faithfulness** — a policy/profile axis from "accept discovered as-is" to "conform to the nearest compliant variant, decommission deviations" — the same knob as rehydration's faithfulness modes, on a different trigger.
+- **Approval** — because step 5 can decommission running infrastructure, the target intent is **approved** before convergence acts (the approval ladder profiles already model). No silent auto-destruction.
+
+Two further intent-mediated writes complete the picture, neither a second root:
+- **Validate-only** — a fully-detailed authored intent; realized = its validated expression (enrichment no-op).
+- **Absorb** — legitimize an out-of-band change by snapping intent to the new realized (the `UPDATE_DEFINITION` path: accept, don't revert).
+
+This reframes "intent vs realized": not two co-equal tracks, but **one root (intent) + one expression (realized)**, with `Discovered` as the read-only inlet that adoption turns into intent.
+
 ### Relationship to what exists
 - **This completes ADR-006.** The re-entrant Data·Policy·Provider loop *is* the lifecycle; realize, reconcile, rehydrate, and teardown are one pipeline fired by different triggers, and `request-realization` is its first firing.
 - **This refines ADR-027 — as direction, not a 1.0 change.** The four families' durable core is *nature*; the model is nature + parameters + archetypes. For 1.0 the four families stay verbatim (they *are* the archetype vocabulary); nothing in the schema or estate changes now. Per ADR-031/032, the only pre-1.0 obligation is to **avoid the one contradiction**: do not harden Resource/Process into closed *species* with behaviour branching on the family — the model makes them archetypes over one loop. Leaving them as today's labels contradicts nothing and costs nothing. Promotion (nature-first, convergence-primitive, archetypes) is a post-1.0 superseding ADR with migration.
@@ -46,6 +73,9 @@ Resource / Process / Credential / Inventory / Knowledge are named `(nature + par
 - 1.0 is untouched — four families, current schema, current estate. The model is *recorded*, not *rebuilt*.
 - The requested / observed / curated provenance split lands ADR-029 coherently: inventory is Resource-nature entered by observation or creation, not a new family.
 - Post-1.0, a superseding ADR can promote convergence + nature + archetypes and migrate; ADR-027's family axis becomes the archetype layer.
+
+- **Adoption needs a simulation mode.** The dry-run backport step means convergence must run as a **no-op (rehearsal — ADR-003)** as well as for real; the same pipeline serves build-time intent-fitting and run-time execution.
+- Recasts the intent-vs-realized question as **root + expression**, not two co-equal tracks — with `Discovered` the read-only inlet that adoption turns into intent.
 
 ## Alternatives considered
 - **Leave the four families as unexamined peers** — rejected: the inventory + Blueprint + credential work each needs the shared spine visible, or every family gets modelled (and special-cased) separately.
