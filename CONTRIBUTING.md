@@ -28,6 +28,41 @@ Every registry entry MUST validate against its meta-schema — run `python3 regi
 or provider matrix includes a worked example that passes the gate. Version per `registry/VERSIONING.md`;
 `registry/tools/compat-check.py` enforces that the declared bump matches the change.
 
+## The review sweep — what every PR is checked against
+
+Before a PR merges it is swept against the standing checks below. The **automated** ones run in CI
+(`.github/workflows/validate.yml` → `tests/check_*.py`); the **judgment** ones are the reviewer's, and a
+good PR self-checks them in its *Why*. These are the recurring findings distilled into a checklist so they
+are caught once, not re-litigated per PR.
+
+**Automated (CI).**
+- **Valid by construction** — `registry/tools/validate.py` + `tests/validate_registry.py` (`ADOPT-001`,
+  `$id`↔version). Every type/instance/provider matrix passes with a worked example.
+- **Single source** — `check_single_source.py` + `check_definition_single_source.py`: one rule / one
+  definition, **one home, one ID; reference, never restate** (`SPEC-DESIGN §33`). A duplicate definition is
+  a build failure, not a style note.
+- **Settled vocabulary** — `check_model_vocabulary.py`: the agreed terms only; retired synonyms fail.
+- **Registered standards** — `check_standards_registered.py`: a standard cited in prose has a register row
+  (`adopted-standards.md` §8).
+
+**Judgment (reviewer + author self-check).**
+- **Scope — DCM vs UDLM (the peer test, `docs/adr/ADR-008`):** *could an independent conformant peer decide
+  this differently and still be valid?* **Yes → DCM** (Policy / realization); **No → UDLM** (the portable
+  substrate). Portable data and *declarative* constraints are UDLM; anything computed, negotiated, or
+  executed is DCM. Putting realization mechanism into the portable model is a finding.
+- **Reduce to existing (tenet T7):** does this coin a net-new mechanism (a "module", a new envelope, a
+  parallel type)? If so, the *Why* must show that no existing mechanism — classification, profiles,
+  capability declaration, conformance tier, references, edges — composes to cover it.
+- **Adopt by reference (tenet T5):** does this re-express a concept a credible external standard already
+  solves (API versioning, identity, RTO/RPO, health probes)? Adopt it, or justify why not.
+- **Written for engineers, not for us (`docs/writing-for-humans.md`):** the audience is engineering teams
+  and common human personas. Strip internal working-context — session/working-set labels, private
+  enhancement/ticket numbers, colleague names, or internal tool artifacts. Every reference **carries its
+  gist in one line** (what it *decided*), never a bare number. Concise; no duplication; cut anything that
+  does not move a decision.
+- **Document the why:** the rationale lives in the repo (design note / tenet / ADR pointer), not just the
+  diff.
+
 ## Licensing
 
 By contributing to UDLM you agree your contributions are licensed under Apache License 2.0, matching the
