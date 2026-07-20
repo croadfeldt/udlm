@@ -6,7 +6,7 @@ rebuild proceeds from intent alone. A **lighter** flow — it **builds on
 [request-realization](request-realization.md)**; the trigger is a provider failure, and the new twist is
 rewriting naturalized references.
 
-> **Use Case:** `cross-domain/provider-portable-rebuild` — set 29 (FF Extended Target). **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `cross-domain/provider-portable-rebuild`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** A provider goes away — health check fails, or it is deregistered — while resources depend on
 it. Placement re-resolves the affected resources onto an alternate eligible provider, the provider-specific

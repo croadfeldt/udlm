@@ -2,7 +2,7 @@
 
 **What this settles:** a `depends_on` edge is honored *across provider boundaries* — a VM is realized only after the host bridge/bond/pool it needs is realized by *its* owning provider, and teardown runs in reverse. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `libvirt-vm-provider/standard/cross-provider-dependency-ordering` — set 29 (FF Extended Target). **Persona:** platform-operator · **Profile:** standard.
+> **Use Case:** `libvirt-vm-provider/standard/cross-provider-dependency-ordering`. **Persona:** platform-operator · **Profile:** standard.
 
 **In one breath.** request-realization builds one resource; UC-07 made the `depends_on` edges data. This case makes DCM *converge in topological order* over those edges even when the prerequisite lives in another provider. The libvirt VM depends on a host bridge owned by a network/host provider — the VM waits until the bridge is Realized, then builds; teardown reverses. A prerequisite that isn't realized yet **blocks**, it never silently skips.
 

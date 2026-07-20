@@ -2,7 +2,7 @@
 
 **What this settles:** the dependency graph is *modeled data* in UDLM, not something DCM infers at runtime — three named edge kinds (containment, requirement, shared-fault-domain) that DCM can query for ordering and impact. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `dcm-core/standard/udlm-dependency-graph-data-model` — set 29 (FF Extended Target). **Persona:** platform-operator · **Profile:** standard.
+> **Use Case:** `dcm-core/standard/udlm-dependency-graph-data-model`. **Persona:** platform-operator · **Profile:** standard.
 
 **In one breath.** request-realization builds one resource. Real estates are graphs of them. This case says the edges between resources are first-class, queryable UDLM data: **parent/child containment**, **depends_on requirement**, and **shares-fault-domain**. Because the graph is data, DCM *derives* safe ordering and blast-radius from it — the ordering isn't bolted on after the fact.
 

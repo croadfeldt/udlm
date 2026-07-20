@@ -5,7 +5,7 @@ destruction — the plan *derived* from the dependency graph, not replayed from 
 policies re-evaluated and providers re-chosen as if fresh. A **lighter** flow — it **builds on
 [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `cross-domain/dynamic-rehydration` — set 29 (FF Extended Target). **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `cross-domain/dynamic-rehydration`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** Everything realized is gone; the intent states and the dependency graph survive. The system
 reads that graph, computes a rebuild order on the spot, and runs request-realization for each resource in
