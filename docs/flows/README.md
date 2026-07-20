@@ -41,6 +41,16 @@ request-realization first.
 labeled by its Use Case number and built on request-realization. Grouped by persona in
 **[by-persona.md](by-persona.md)** — the usage-by-role view.
 
+## Worked examples (WIP, non-normative)
+
+Illustrative mappings of real scenarios onto the model — **not conformance flows**. They show how the
+model would carry a scenario and surface gaps.
+
+- [FSI software supply chain](example-fsi-software-supply-chain.md) — a regulated software-supply-chain
+  golden path as a **policy-driven pipeline**: the pipeline is a Pattern, Policy resolves it into an
+  input-specific Template (source / package / container), the run is a System. Post-1.0 direction; flags
+  the gaps (SLSA/SPDX adoption, external event ingestion, graph-gated retirement, policy-composed constituents).
+
 **Planned** (same shape): decommission & teardown ordering · drift detection → reconcile · rehydration
 (faithful / provider-portable) · dependency brokering (fulfillment: provider).
 
