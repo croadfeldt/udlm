@@ -40,7 +40,7 @@ Understanding entity types is prerequisite to understanding:
 
 ---
 
-## 2. The Two Primary Entity Kinds
+## 2. The Primary Entity Families — Resource and Process
 
 The primary split is by **family**, on one axis — is the entity a *maintained state* or a *bounded execution*?
 
@@ -316,7 +316,8 @@ Not all resource types produce the same entity type. The entity type is declared
 ```yaml
 resource_type_spec:
   fqn: Compute.VirtualMachine
-  entity_type: resource   # resource | composite | process
+  family: Resource        # ADR-027 family (state vs execution)
+  entity_type: Atomic     # Atomic | Composite — the shape
   ownership_model: whole_allocation       # whole_allocation | allocation | shareable
   allocatable_from_pool_type: null        # if allocation: the pool resource type this comes from
   pool_resource_type: null                # if pool: declare this is a pool resource

@@ -28,8 +28,12 @@ it governs.
 
 ## 2. Entities, types, instances
 
-- Two families: **Resource** (entity_type: Resource | Composite | Process) and
-  **Knowledge** (Capability | TaxonomyTerm | Alias | Antipattern | UseCase | DecisionRecord).
+- Four families (ADR-027): **Resource** and **Process** — maintained state vs bounded
+  execution — each carrying `entity_type: Atomic | Composite` (the coarse shape from DCM's
+  orchestration perspective); plus **Knowledge** (Capability, TaxonomyTerm, Alias, Antipattern,
+  DecisionRecord; UseCase/Gap/Assessment/Finding future — members defined in
+  `entities/knowledge-family.md` §4) and **Access** (`Identity`), which do not carry the
+  Atomic/Composite shape axis.
 - A **Resource Type Specification** (validates against `registry/resource-type-spec.schema.json`)
   is the portable contract; an **instance** is a realized-entity record (validates against
   `registry/realized-entity.schema.json`). Type names are Tier-1 vendor-neutral
@@ -162,6 +166,8 @@ One definition each; everything else defers here:
 
 | Enum | Canonical values | Home |
 |---|---|---|
+| family | Resource, Process, Knowledge, Access | entity-type-families §4 (ADR-027) |
+| entity_type (shape) | Atomic, Composite — Resource & Process only | entity-types §2.2 (ADR-027) |
 | lifecycle_state | Intent, Requested, Realized, Discovered, Decommissioned | §3 |
 | execution_state (Process) | REQUESTED, INITIATED, EXECUTING, COMPLETED, FAILED, CANCELLED | §3 [D7] |
 | drift severity | minor, significant, critical | §3 [D6] |
