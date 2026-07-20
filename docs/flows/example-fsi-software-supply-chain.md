@@ -187,7 +187,40 @@ The **blue-green invariant** is the useful part: because green is a *fully reali
 cutover, the deployment is a **gated Converge over two realizations**, not a risky in-place mutation — the same
 reserve-then-commit shape as `validate-and-reserve`, at deployment scale.
 
-## 4 · Where it fits, and where the gaps are
+## 4 · Overlaying the Twelve-Factor methodology
+
+Twelve-Factor is **not re-expressed** in the model — it is **adopted as a conformance policy set** (T5): a
+consumer app's Template *declares conformance*, the pipeline's gates *validate* it, and a profile (FSI) can
+*require* it. Strikingly, **three of the twelve are already core model relationships** — a good sign the model
+and Twelve-Factor agree.
+
+| Factor | Model construct | Where in the flow |
+|---|---|---|
+| 1 · Codebase (one codebase, many deploys) | **= Pattern → Template → System** (one design, many Systems) | *native* |
+| 2 · Dependencies (declare + isolate) | dependency graph (ADR-010) + SBOM | Validate Sources; rebuild-from-source |
+| 3 · Config (in the environment) | config is a layer/Policy input, not baked in (ADR-015) | Release/Template; deploy |
+| 4 · Backing services (attached resources) | typed **references** resolved at reserve (ADR-012/025) | Template; deploy |
+| 5 · Build, release, run (strict separation) | **= Intent → Requested → Realized** (build→artifact, release→Requested, run→Realized) | the pipeline itself |
+| 6 · Processes (stateless) | process/entity model; statelessness = a conformance gate | Validate; deploy |
+| 7 · Port binding | service/address model (a realized attribute) | deploy |
+| 8 · Concurrency (scale via processes) | replicas = multiple realizations; placement/scale Policy + provider capability (ADR-004) | deploy |
+| 9 · Disposability (fast start, graceful stop) | fast Converge + graceful decommission — **what makes the blue-green cutover/drain safe** | deploy (blue-green) |
+| 10 · Dev/prod parity | **= one Pattern, profile-differentiated Templates** (ADR-007); minimize the delta | dev → staging → prod |
+| 11 · Logs (event streams) | observability (`audit-provenance-observability`) | run |
+| 12 · Admin processes (one-off) | a one-shot **Process** (work-product nature) bound to the System | run |
+
+**The three that are native** — Codebase (1) = Pattern → Template → System, Build/release/run (5) = Intent →
+Requested → Realized, and Dev/prod parity (10) = one Pattern resolved per profile — mean Twelve-Factor's core
+discipline *is* the lifecycle model, one scale down. The rest are **declared conformance + pipeline gates**,
+not new mechanism.
+
+**How to wire it:** add `twelve-factor` as an **adopted-standard conformance reference** (like FOCUS / OSCAL)
+that a Template declares; the Validate-Sources/Binaries gates check the machine-checkable factors (declared
+deps, no baked config, stateless, port-binding), and the FSI profile can set "12-factor required" as a floor.
+It also leans on two open items — factors 9 and 12 depend on the **work-product Process nature** question and
+the disposability lifecycle (see gaps below).
+
+## 5 · Where it fits, and where the gaps are
 
 **Fits the model as-is** (the parts worth leading with): the estate *is* the "CMDB" — attestation writes
 **Realized** state into it; "calculate all projects consuming the old version" is a **dependency-graph
@@ -206,6 +239,7 @@ rollback; and the per-input mechanism/gate variance is the **Provider + Policy**
 | 6 | Attestation subjects wired end-to-end (realization / capability / operations) | Known open work |
 | 7 | Work-product Process nature + `<1hr` end-to-end SLA | The open post-1.0 "does *work-product* survive as a nature?" question; a composite-process SLA is not yet modeled |
 | 8 | Blue-green: two concurrent realizations of one intent (blue live + green validated) + atomic cutover | Extends `validate-and-reserve` (ADR-011) to a *dual-realized, gated-swap* deployment; not yet a modeled pattern |
+| 9 | Twelve-Factor conformance | **Adopt** as a declared conformance reference + pipeline gates + a profile floor (§4); 3 of 12 are already native |
 
 **The one modeling question to settle with engineering:** can a composite Process's **constituent set be
 policy-composed** — policy assembles which providers and which gates fire, from the input — rather than a
@@ -218,6 +252,8 @@ and it is the crux of "policy-driven pipeline."
 | Intent / Requested / Realized · Converge | ADR-030 · [lifecycle-convergence](lifecycle-convergence.md) |
 | Pattern → Template → System (assembly) | ADR-033 · [template-assembly](template-assembly.md) |
 | Validate-and-reserve (green before cutover) | ADR-011 |
+| Profiles / floors (dev-prod parity) · config bundles | ADR-007 · ADR-015 |
+| Adopt external standards by reference (Twelve-Factor, SLSA, …) | T5 · `adopted-standards.md` |
 | Provider capability match; naturalization | ADR-004 · DCM ADR-023 |
 | Process validation evidence + freshness | ADR-003 |
 | Dependency-graph completion | ADR-010 |
