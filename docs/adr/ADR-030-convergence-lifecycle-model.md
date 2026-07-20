@@ -1,7 +1,7 @@
 # ADR-030: The convergence lifecycle — one model beneath the entity families
 
 **Status:** Proposed (2026-07-19) — records the unified model as the **post-1.0 direction**; 1.0 keeps the four families verbatim as its archetype vocabulary (see ADR-031 focus, ADR-032 direction).
-**Related:** ADR-006 (convergence control — this *completes* it); ADR-027 (entity family model — this *refines* it, post-1.0); ADR-011 (validate-and-reserve = the first firing); ADR-029 (inventory / observed provenance); ADR-031 (1.0 focus); ADR-032 (post-1.0 direction). Pictures: [lifecycle-convergence flow](../flows/lifecycle-convergence.md).
+**Related:** ADR-006 (convergence control — this *completes* it); ADR-027 (entity family model — this *refines* it, post-1.0); ADR-011 (validate-and-reserve — identity mint + reserve, at intent declaration); ADR-029 (inventory / observed provenance); ADR-031 (1.0 focus); ADR-032 (post-1.0 direction). Pictures: [lifecycle-convergence flow](../flows/lifecycle-convergence.md).
 
 ## Context
 
@@ -21,7 +21,7 @@ A gap opens exactly two ways, and Converge closes it without caring which side m
 - **intent moved** — a new / changed / withdrawn desired state (request, reconfigure, decommission-to-*absent*);
 - **target moved** — reality diverged (drift, loss).
 
-The events we name — Realize, Reconcile, Reconfigure, Rehydrate — are **the same act at different triggers**. `Realize` is the first firing (intent ∅→X); `Reconcile` is a later firing (target moved *or* intent moved). **Decommission is not an act — it is the result of setting intent to *absent***; Converge drives reality to nothing, and the entity settles into the `Decommissioned` state. The realized resource is reclaimed; the entity **record is retained** (immutable, for audit) — the record does not vanish. Same for every state: you don't *do* a state, you set the intent and the act closes the gap.
+The events we name — Realize, Reconcile, Reconfigure, Rehydrate — are **not distinct acts; they are colloquial shortcuts for the one act** (Converge), each a handy name for a *scenario* by its **trigger** (intent-moved vs target-moved) and its **gap shape** (`∅→X` create, `X→Y` modify, `X→∅` remove, `lost→X` restore). They help you say which situation you are in — they are not different mechanisms, and **not** first-vs-later: a rehydrate is a `∅→X` (recreate) long after the first realize. ("Realize" tends to mean create-from-a-request; "reconcile", restore-to-target-after-drift.) **Decommission** likewise names the scenario where intent is set to *absent* — not an act but a target the one act converges to: Converge drives reality to nothing, the entity settles into the `Decommissioned` state, its realized resource reclaimed while the **record is retained** (immutable, for audit). You don't *do* a state; you set the intent and the act closes the gap.
 
 ### Nature is the durable axis; timeline / terminal / provenance are parameters
 - **Nature** — *maintained-state* (a thing that is, reconciled while it lives), *work-product* (a bounded execution that completes), or *curated* (understanding, no fulfillment arc). This is ADR-027's real, surviving distinction.
@@ -60,7 +60,7 @@ Two further intent-mediated writes complete the picture, neither a second root:
 This reframes "intent vs realized": not two co-equal tracks, but **one root (intent) + one expression (realized)**, with `Discovered` as the read-only inlet that adoption turns into intent.
 
 ### Relationship to what exists
-- **This completes ADR-006.** The re-entrant Data·Policy·Provider loop *is* the lifecycle; realize, reconcile, rehydrate, and teardown are one pipeline fired by different triggers, and `request-realization` is its first firing.
+- **This completes ADR-006.** The re-entrant Data·Policy·Provider loop *is* the lifecycle; realize, reconcile, rehydrate, and teardown are one pipeline fired by different triggers; `request-realization` is one firing of it (the create scenario).
 - **This refines ADR-027 — as direction, not a 1.0 change.** The four families' durable core is *nature*; the model is nature + parameters + archetypes. For 1.0 the four families stay verbatim (they *are* the archetype vocabulary); nothing in the schema or estate changes now. Per ADR-031/032, the only pre-1.0 obligation is to **avoid the one contradiction**: do not harden Resource/Process into closed *species* with behaviour branching on the family — the model makes them archetypes over one loop. Leaving them as today's labels contradicts nothing and costs nothing. Promotion (nature-first, convergence-primitive, archetypes) is a post-1.0 superseding ADR with migration.
 
 ## Data · Policy · Provider

@@ -12,7 +12,7 @@ The three primitives:
 
 ## 1 · Flow of lifecycles — one loop, walked by any entity
 
-An entity's whole life is Converge firing on a gap. `Realize` and `Reconcile` are the **same act** at different triggers; `Decommissioned` is the state reached when intent is set to *absent* that Converge drives reality to.
+An entity's whole life is Converge firing on a gap. `Realize` / `Reconcile` / `Rehydrate` are **not distinct acts** — they are colloquial shortcuts for the one act, naming a scenario by its *trigger* and *gap shape* (not by first-vs-later). `Decommissioned` is the state reached when intent is set to *absent* that Converge drives reality to.
 
 ```mermaid
 stateDiagram-v2
