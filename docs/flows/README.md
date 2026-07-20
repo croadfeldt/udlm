@@ -29,6 +29,7 @@ made true*. Each UDLM flow links its DCM counterpart and vice versa.
 | [Lifecycle convergence](lifecycle-convergence.md) | The one loop beneath every entity — Intent vs Realized, a gap, and Converge closing it; realize/reconcile/rehydrate/teardown as one act, archetypes and day-0/1/2 as parameters | `docs/flows/lifecycle-convergence.md` |
 | [Request realization](request-realization.md) | An abstract, portable request becomes a provider-ready one — filled and validated before anything is created | `docs/flows/request-realization.md` |
 | [Provider lifecycle](provider-lifecycle.md) | The provider's side of the same story — register, declare the inputs it needs (namespaces, storage classes, …), get dispatched, report realized state — so placement and enrichment have the data to fill a request | `docs/flows/provider-lifecycle.md` |
+| [Template assembly](template-assembly.md) | Pattern → Template → System — a reusable design becomes an orderable definition becomes a running instance; the assembly-scale projection of Intent → Requested → Realized (ADR-033) | `docs/flows/template-assembly.md` |
 
 **[request-realization](request-realization.md) is the foundational flow** — it walks the whole model end
 to end. Every other flow is intentionally **lighter and uses it as its base**: it assumes request-realization
