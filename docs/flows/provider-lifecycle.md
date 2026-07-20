@@ -110,7 +110,7 @@ this provider for placement.
 | Required inputs per resource type — the fields you need beyond the portable base (e.g., `namespace`, `storage_class`) | The system and policies need to know what must be present before dispatching to you — policies determine where each value comes from | `provider-contract.md` §1a.2 |
 | Extension schema — the JSON Schema for your provider-specific fields | The system validates the enriched request before dispatch; consumers who pin provider-specific fields get validation at intent time | `provider-contract.md` §1a.3, PRV-010 |
 | Sovereignty zones | The system enforces sovereignty constraints at placement | `capability-discovery.md` §2.1 |
-| Capacity (optional but recommended) | The system uses capacity data for placement decisions — without it, placement is capability-match only | UC-10 |
+| Capacity (optional but recommended) | The system uses capacity data for placement decisions — without it, placement is capability-match only | UC-17 |
 
 **Example — an OpenShift VM provider registering:**
 
@@ -718,4 +718,4 @@ Provider                          System                           Consumer
 - Catalog item schema: `registry/catalog-item.schema.json`
 - Resource type extension rules: `contracts/provider-contract.md` PRV-010
 - Realized entity schema: `registry/realized-entity.schema.json`
-- Provider registration UC: [UC-10](uc-10-provider-registration-capability.md)
+- Provider registration UC: [UC-17](uc-17-provider-registration-capability.md)

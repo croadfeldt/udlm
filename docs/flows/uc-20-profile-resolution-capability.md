@@ -1,4 +1,4 @@
-# UC-17 · Profile resolution & atomic onboarding — the stage
+# UC-20 · Profile resolution and tenant onboarding (DR-B) — the stage
 
 **What this settles:** where a request's profile *comes from* — an instance declares an **approved list plus a
 default**, and (near-term) the default applies instance-wide — and how a tenant is **onboarded atomically**
@@ -50,4 +50,4 @@ Requests from this tenant then run request-realization under the bound profile.
 - **Provider:** the auth provider is configured with the tenant's claims-mapping reference as part of the atomic step.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Companion policy-resolution UC: [UC-16](uc-16-policy-resolution-capability.md). UC source: `cross-domain/profile-resolution-capability`.
+- Base flow: [request-realization](request-realization.md). Companion policy-resolution UC: [UC-19](uc-19-policy-resolution-capability.md). UC source: `cross-domain/profile-resolution-capability`.

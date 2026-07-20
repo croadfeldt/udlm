@@ -1,4 +1,4 @@
-# UC-03 · Persistent volume with attach — the stage
+# UC-06 · Persistent volume provision and attach — the stage
 
 **What this settles:** the first case with a **dependency in the payload** — a block volume that must attach
 to an existing VM — plus tenant-plane isolation, data residency, and quota accounting. A **lighter** flow —

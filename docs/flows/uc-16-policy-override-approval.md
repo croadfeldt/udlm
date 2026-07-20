@@ -1,4 +1,4 @@
-# UC-11 · Policy override approval — the stage
+# UC-16 · Policy override approval workflow — the stage
 
 **What this settles:** how a governance policy that is *blocking* a request gets a **time-bounded, scoped
 override** — evaluated against that policy's own override rules, routed to an authorized approver, and

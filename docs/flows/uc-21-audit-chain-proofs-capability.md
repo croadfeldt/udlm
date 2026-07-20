@@ -1,10 +1,10 @@
-# UC-20 · Transparency-log capability validation — the stage
+# UC-21 · Audit chain — signed Merkle proofs (DR-D) — the stage
 
-**What this settles:** validation for **DR-D** — that DCM actually *provides* the transparency-log capability: it can produce signed tree heads, inclusion proofs, and consistency proofs, with signing-key material in-boundary under a sovereign profile. Where [UC-19](uc-19-audit-merkle-tree-verification.md) is an auditor *performing* a verification, this is confirming the capability *exists to be used*. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
+**What this settles:** validation for **DR-D** — that DCM actually *provides* the transparency-log capability: it can produce signed tree heads, inclusion proofs, and consistency proofs, with signing-key material in-boundary under a sovereign profile. Where [UC-15](uc-15-audit-merkle-tree-verification.md) is an auditor *performing* a verification, this is confirming the capability *exists to be used*. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
 > **Use Case:** `governance/audit-chain-proofs-capability`. **Persona:** compliance-auditor · **Profile:** sovereign.
 
-**In one breath.** UC-19 assumes the audit provider is there and asks it to prove a specific range. This case is one step behind: it validates that an **information provider advertising the transparency-log capability** is registered, is selected by placement for an audit-proof request, and returns the three proof kinds with the key kept in-boundary. It's a capability check — the same proof machinery as UC-19, but the thing under test is *DCM's coverage of DR-D*, not a particular auditor's range. **v1 is single-signer**; split-view / equivocation defense (external witnesses) is a tracked limitation, not a gap this UC claims to close.
+**In one breath.** UC-15 assumes the audit provider is there and asks it to prove a specific range. This case is one step behind: it validates that an **information provider advertising the transparency-log capability** is registered, is selected by placement for an audit-proof request, and returns the three proof kinds with the key kept in-boundary. It's a capability check — the same proof machinery as UC-15, but the thing under test is *DCM's coverage of DR-D*, not a particular auditor's range. **v1 is single-signer**; split-view / equivocation defense (external witnesses) is a tracked limitation, not a gap this UC claims to close.
 
 ## What this adds over request-realization
 
@@ -45,4 +45,4 @@ Assemble and place are request-realization; capability match and proof-serving a
 ## Pointers
 
 - Base flow: [request-realization](request-realization.md). UC source: `governance/audit-chain-proofs-capability`.
-- The verification act (auditor proves a specific range): [uc-19-audit-merkle-tree-verification](uc-19-audit-merkle-tree-verification.md).
+- The verification act (auditor proves a specific range): [uc-15-audit-merkle-tree-verification](uc-15-audit-merkle-tree-verification.md).

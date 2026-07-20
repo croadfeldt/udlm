@@ -1,4 +1,4 @@
-# UC-09 · Broken dependency, surfaced — the stage
+# UC-09 · Dependency failure surfaced — the stage
 
 **What this settles:** a missing or misconfigured dependency is made **explicit and blocking** before realization — the macvtap-vs-bridge class of failure surfaces as a named unmet edge, not a silent blackhole. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 

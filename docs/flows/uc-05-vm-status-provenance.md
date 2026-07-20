@@ -1,4 +1,4 @@
-# UC-18 · Realized status with field-level provenance — the stage
+# UC-05 · VM status provenance — the stage
 
 **What this settles:** what happens *after* commit — the provider's reported status (state, host, ip, mac, disk paths) lands on the realized resource, and **every realized field carries who produced it, in which run, and when**. Drift re-runs this and updates both the value and its provenance. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 

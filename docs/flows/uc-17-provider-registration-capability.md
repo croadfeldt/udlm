@@ -1,4 +1,4 @@
-# UC-10 · Provider registration + capability — the stage
+# UC-17 · Provider registration and capability advertisement — the stage
 
 **What this settles:** how a compute provider becomes *eligible* — it registers, advertises the `compute/virtual-machine` capability, and publishes per-host capacity — so placement has real capability and capacity to choose from. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
