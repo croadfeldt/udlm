@@ -50,3 +50,40 @@ A composite Resource's constituents are its owned resources; a composite Process
 - **Keep `entity_type: {Resource, Composite}`** (atomic = "Resource") — rejected: leaves `family: Resource / entity_type: Resource` redundant.
 - **A separate `flavor` field** for atomic/composite — rejected: a third classification tier when `entity_type` already carries the shape; `flavor` couldn't be queried at the catalog layer without duplicating the signal.
 - **Naming the persistent kind `Durable` / `Managed`** — rejected: `durable` implies longevity (not the discriminator); `managed` reserves a word better kept for a future managed-vs-unmanaged (observed/brownfield) axis.
+
+## Addendum (Proposed, 2026-07-20) — derive the shape; don't store it as source of truth
+
+**Status:** Proposed — for the same engineering review as the naming charter and ADR-034. Reconsiders whether
+the Resource/Process shape (`Atomic`/`Composite`, being renamed `single`/`multi`) earns a **stored** field.
+
+**The question.** The shape asserts *"owns constituents?"* Does storing that flag add value beyond
+filtering, or does the **constituent list already carry it**?
+
+**Evidence (registry + spec scan, 2026-07-20).**
+- **Distribution:** of the Resource/Process types, **33 are `Atomic`, 2 are `Composite`** (`storage.pool`,
+  `storage.cluster`). *(The other `entity_type` values — `Capability` / `TaxonomyTerm` / `Identity` — are the
+  Knowledge/Access **discriminators**, genuinely needed and out of scope here; this addendum concerns only the
+  Resource/Process shape.)*
+- **Behavioral consumers: none.** No policy, contract, validator, or lifecycle rule branches on
+  `single`-vs-`multi`. It is used only for filtering / classification.
+- **Derivability:** `multi ≡ has constituents`. For Templates / Composite Services (which **declare**
+  constituents at catalog time) and for any realized entity (`constituents[]`), the shape is derivable.
+  `storage.pool` declares its constituents; `storage.cluster` does not — the lone realized-only case, and
+  nothing consumes its shape at catalog time.
+- **Dependencies are NOT the signal.** `depends_on` is *"needs,"* the shape is *"owns."* An `Atomic` resource
+  has dependencies; deriving the shape from dependency count would mislabel nearly every atomic resource.
+
+**Proposal.** Treat the Resource/Process shape as a **derived predicate (`has_constituents`)** — computed
+from the constituent list (declared for composites/Templates; realized for instances) — **not** a stored,
+required source-of-truth field. This removes a duplicated data point (**T7**) and keeps derivation as
+Policy/query (**T2**). The Knowledge/Access `entity_type` values are unaffected.
+
+**The one thing that would reverse this:** a concrete use case that must **gate or query catalog-time
+multi-ness for a type whose constituents are realized-only**. None exists today. If one appears, it carries
+the justification for storing the flag — the flag should not be stored "just in case."
+
+**Implications.**
+- The in-flight `single`/`multi` rename (PR #167) is **held** — don't rename a field we may retire. If this
+  addendum is adopted, #167 is replaced by "derive `has_constituents`, drop the stored shape value."
+- Meta-schema: `entity_type` is currently **required**; deriving the shape makes it optional/removed on the
+  Resource/Process branch (the Knowledge/Access branch — `Capability`/`Identity`/… — stays).
