@@ -1,7 +1,7 @@
 # UDLM — Data Contracts and the Four Persistent Domains
 
 **Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Specification — data contracts and persistence requirements (the data-contract *principle* is stated once here; the enforceable form is the `INF-*` policies in §4)
+**Document Type:** Substrate Specification — data contracts and persistence requirements (the data-contract *principle* is stated once here; the enforceable form is the `DSC-*` policies in §4)
 **Related Documents:** [design-principles index](README.md) | [Foundational Abstractions](../foundations/foundations.md) | [Four States](../foundations/four-states.md) | [Conformance](../CONFORMANCE.md) | [Provider Contract](../contracts/provider-contract.md)
 
 ---
@@ -12,7 +12,7 @@ UDLM prescribes **data contracts** (schemas, immutability rules, versioning, has
 
 Abstraction layers earn their place when the underlying implementations have genuinely different interaction contracts — different APIs, different lifecycle semantics, different operational models. When the implementations share a standard protocol (SQL, OIDC, AMQP), the protocol is the abstraction. Adding a substrate-specific abstraction on top of a standard protocol is unnecessary indirection.
 
-This is a substrate-level principle: any UDLM-conformant realization MUST follow it. A realization SHOULD NOT introduce abstraction layers between the data contracts defined in this document and the storage technology it chooses; it SHOULD enforce the contracts directly at the storage interface. (Enforceable form: `INF-002`.)
+This is a substrate-level principle: any UDLM-conformant realization MUST follow it. A realization SHOULD NOT introduce abstraction layers between the data contracts defined in this document and the storage technology it chooses; it SHOULD enforce the contracts directly at the storage interface. (Enforceable form: `DSC-002`.)
 
 ---
 
@@ -31,7 +31,7 @@ UDLM tracks every resource through four lifecycle domains. The domains themselve
 
 ### 2.2 Substrate Invariants for the Four Domains
 
-These are the invariants the substrate places on the domains, **stated once here** and enforced by the `INF-*` policies in §4. They hold regardless of storage technology:
+These are the invariants the substrate places on the domains, **stated once here** and enforced by the `DSC-*` policies in §4. They hold regardless of storage technology:
 
 - **Distinct domain identity:** Intent, Requested, Realized, and Discovered are addressable separately. Implementations MAY co-locate them in one store; physical separation is not required.
 - **Append-only for Intent, Requested, and Audit:** once written, records in these domains are never updated or deleted. Supersession is a new record that supersedes the prior one.
@@ -54,17 +54,17 @@ These are the invariants the substrate places on the domains, **stated once here
 
 ## 4. System Policies (the enforceable form of §1–§3)
 
-The `INF-*` policies below are the **normative, enforceable encoding** of the principle (§1) and invariants (§2.2). They read as a restatement by design — a reviewer or a conformance test cites the policy ID, not the prose. The prose explains; the policy IDs gate.
+The `DSC-*` policies below are the **normative, enforceable encoding** of the principle (§1) and invariants (§2.2). They read as a restatement by design — a reviewer or a conformance test cites the policy ID, not the prose. The prose explains; the policy IDs gate.
 
 | Policy | Rule |
 |--------|------|
-| `INF-001` | A UDLM-conformant realization MUST provide persistent, queryable storage for the four data domains (Intent, Requested, Realized, Discovered) and the Audit chain. Storage technology is a realization decision; the §2.2 contracts are substrate-required. |
-| `INF-002` | The substrate prescribes data contracts, not infrastructure products. Realizations MUST NOT introduce abstraction layers between UDLM data contracts and the chosen storage technology that obscure or weaken those contracts. |
-| `INF-003` | Intent, Requested, and Audit records MUST be append-only — never modified or deleted after write; supersession is a new record. |
-| `INF-004` | Realized records MUST be versioned snapshots with an identifiable current snapshot; each state change produces a new snapshot. |
-| `INF-005` | Discovered records MUST be retained per the realization's declared retention policy and MUST NOT be conflated with Realized records. |
-| `INF-006` | Audit records MUST carry tamper-evidence (hash chain or equivalent). Any modification of the audit chain MUST be detectable. |
-| `INF-007` | Tenant isolation MUST be enforced at the storage interface. Cross-tenant data access requires explicit substrate-defined authorization. |
+| `DSC-001` | A UDLM-conformant realization MUST provide persistent, queryable storage for the four data domains (Intent, Requested, Realized, Discovered) and the Audit chain. Storage technology is a realization decision; the §2.2 contracts are substrate-required. |
+| `DSC-002` | The substrate prescribes data contracts, not infrastructure products. Realizations MUST NOT introduce abstraction layers between UDLM data contracts and the chosen storage technology that obscure or weaken those contracts. |
+| `DSC-003` | Intent, Requested, and Audit records MUST be append-only — never modified or deleted after write; supersession is a new record. |
+| `DSC-004` | Realized records MUST be versioned snapshots with an identifiable current snapshot; each state change produces a new snapshot. |
+| `DSC-005` | Discovered records MUST be retained per the realization's declared retention policy and MUST NOT be conflated with Realized records. |
+| `DSC-006` | Audit records MUST carry tamper-evidence (hash chain or equivalent). Any modification of the audit chain MUST be detectable. |
+| `DSC-007` | Tenant isolation MUST be enforced at the storage interface. Cross-tenant data access requires explicit substrate-defined authorization. |
 
 ---
 
