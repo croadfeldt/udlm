@@ -19,6 +19,10 @@ jobs:
       - run: python3 tests/check_session_narration.py
       - run: python3 tests/check_model_vocabulary.py
       - run: python3 tests/check_definition_single_source.py
+      # Rule-ID single-source: every normative rule-ID prefix must be registered in
+      # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,
+      # registry/rule-id-naming.md). Was authored but never CI-wired.
+      - run: python3 tests/check_single_source.py
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump
       # vs origin/main (compat-check old-vs-new). New types are skipped.

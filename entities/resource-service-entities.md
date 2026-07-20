@@ -767,11 +767,11 @@ policy:
 
 | Policy | Rule |
 |--------|------|
-| `ENT-001` | Ownership transfer count is unlimited by default. Policy may declare a maximum transfer count per resource type. Each transfer is immutably recorded with a monotonically incrementing transfer_number and mandatory reason field. |
-| `ENT-002` | Bare metal resources declare `allocation_model: whole_unit` and `shareability.allowed: false`. Placement holds are exclusive. Providers must report the server's physical identity in the realized payload and notify of any sharing attempt. |
-| `ENT-003` | Capacity confidence ratings trigger policy-governed automatic actions. LOW confidence triggers a Mode 1 Information Provider query by default in standard+ profiles. Profile determines the default action per confidence level. |
-| `ENT-004` | Process Resource entities must declare `max_execution_time`. This field is mandatory. Execution time is enforced by the substrate-required Lifecycle Constraint Enforcer. Profile governs the default `on_max_exceeded` action. |
-| `ENT-005` | Entity `billing_state` (billable, non_billable, or reduced_rate) is a first-class field injected by policy during state transitions. A consuming cost-analysis component reads `billing_state` for cost attribution. The substrate does not decide billing policy — it carries the billing signal. |
+| `RSE-014` | Ownership transfer count is unlimited by default. Policy may declare a maximum transfer count per resource type. Each transfer is immutably recorded with a monotonically incrementing transfer_number and mandatory reason field. |
+| `RSE-015` | Bare metal resources declare `allocation_model: whole_unit` and `shareability.allowed: false`. Placement holds are exclusive. Providers must report the server's physical identity in the realized payload and notify of any sharing attempt. |
+| `RSE-016` | Capacity confidence ratings trigger policy-governed automatic actions. LOW confidence triggers a Mode 1 Information Provider query by default in standard+ profiles. Profile determines the default action per confidence level. |
+| `RSE-017` | Process Resource entities must declare `max_execution_time`. This field is mandatory. Execution time is enforced by the substrate-required Lifecycle Constraint Enforcer. Profile governs the default `on_max_exceeded` action. |
+| `RSE-018` | Entity `billing_state` (billable, non_billable, or reduced_rate) is a first-class field injected by policy during state transitions. A consuming cost-analysis component reads `billing_state` for cost attribution. The substrate does not decide billing policy — it carries the billing signal. |
 
 ---
 
