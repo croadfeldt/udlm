@@ -131,7 +131,63 @@ flowchart TD
     classDef gap fill:#ffe4e4,stroke:#dc2626,color:#111
 ```
 
-## 3 · Where it fits, and where the gaps are
+## 3 · All the way to deployment — automated QA + blue-green
+
+The consumer fan-out ends in a real deployment per app. This is where the convergence model is most direct:
+a dependency bump is a **new Intent** (`library → vN+1`); **Converge** stands up the new version, and the
+**cutover is the convergence act**, gated on automated QA. Blue-green makes the gate safe — the new version
+(**green**) is fully realized and validated *before* it takes traffic, so an incident is never the first test
+(the T6 tenet: pre-validated outcomes, not testing during incidents).
+
+```mermaid
+flowchart TD
+    INT([Consumer app: new Intent<br/>bump library → vN+1]):::fit
+    CI[CI · build + unit tests]
+    RES[Reserve + deploy GREEN<br/>new realization, alongside live BLUE]:::fit
+
+    subgraph QA[Automated QA vs GREEN · pre-cutover gates]
+        direction LR
+        Q1[Integration] ~~~ Q2[E2E] ~~~ Q3[Performance] ~~~ Q4[Security / DAST] ~~~ Q5[Smoke]
+    end
+
+    CAN[Canary · shift small % → GREEN<br/>observe SLOs]
+    GATE{QA + canary<br/>healthy?}
+    CUT[Cutover · shift 100% BLUE → GREEN<br/>= Converge, the traffic swap]:::fit
+    RETIRE[Retire BLUE<br/>old realization decommissioned]:::fit
+    OK([✅ Realized at vN+1]):::fit
+    RBK[Rollback · keep BLUE live,<br/>tear down GREEN — intent reverts]:::fit
+
+    INT --> CI --> RES --> QA --> CAN --> GATE
+    GATE -->|pass| CUT --> RETIRE --> OK
+    GATE -->|fail| RBK
+
+    RES -.-> M1[["GREEN = a second realization of one intent;<br/>validate-and-reserve before it serves (ADR-011)"]]:::fit
+    QA -.-> M2[["automated QA = process-validation evidence (ADR-003 / T6)<br/>— validated BEFORE traffic, not during an incident"]]:::fit
+    CAN -.-> M3[["canary / blue-green = provider operational_capability (ADR-004)"]]:::fit
+    CUT -.-> M4[["cutover = Converge; a health-fail is a gap → rollback (loss handling, ADR-030)"]]:::fit
+    GAP2[["GAP · two concurrent realizations of one intent (BLUE live + GREEN validated)<br/>and an atomic traffic cutover — the dual-realized / swap pattern is not yet modeled"]]:::gap
+
+    classDef fit fill:#e8ffe8,stroke:#16a34a,color:#111
+    classDef gap fill:#ffe4e4,stroke:#dc2626,color:#111
+```
+
+**How each step maps:**
+
+| Deployment step | UDLM/DCM construct |
+|---|---|
+| Bump library → vN+1 | a new **Intent** on the consumer System |
+| Deploy **green** (alongside blue) | a **second Realization** of the same intent — **validate-and-reserve** (ADR-011): reserved + validated before it serves |
+| Automated QA (integration / e2e / perf / security / smoke) | **process-validation evidence** (ADR-003 / T6) — the cutover gate reads pass + freshness |
+| Canary (small %, observe SLOs) | provider **operational_capability** (ADR-004); a graduated Converge |
+| **Cutover** (100% → green) | the **Converge** act — the traffic swap that makes green the live Realized |
+| Retire blue | the old realization → intent `absent` → **decommissioned** (ADR-030) |
+| **Rollback** (keep blue, tear down green) | health-fail = a gap; Converge reverts — blue stays Realized, green is released |
+
+The **blue-green invariant** is the useful part: because green is a *fully realized, validated* System before
+cutover, the deployment is a **gated Converge over two realizations**, not a risky in-place mutation — the same
+reserve-then-commit shape as `validate-and-reserve`, at deployment scale.
+
+## 4 · Where it fits, and where the gaps are
 
 **Fits the model as-is** (the parts worth leading with): the estate *is* the "CMDB" — attestation writes
 **Realized** state into it; "calculate all projects consuming the old version" is a **dependency-graph
@@ -149,6 +205,7 @@ rollback; and the per-input mechanism/gate variance is the **Provider + Policy**
 | 5 | Consumer fan-out orchestration (N consuming projects, each its own CI/CD convergence) | A Template-of-Templates / governed process fan-out |
 | 6 | Attestation subjects wired end-to-end (realization / capability / operations) | Known open work |
 | 7 | Work-product Process nature + `<1hr` end-to-end SLA | The open post-1.0 "does *work-product* survive as a nature?" question; a composite-process SLA is not yet modeled |
+| 8 | Blue-green: two concurrent realizations of one intent (blue live + green validated) + atomic cutover | Extends `validate-and-reserve` (ADR-011) to a *dual-realized, gated-swap* deployment; not yet a modeled pattern |
 
 **The one modeling question to settle with engineering:** can a composite Process's **constituent set be
 policy-composed** — policy assembles which providers and which gates fire, from the input — rather than a
@@ -160,6 +217,7 @@ and it is the crux of "policy-driven pipeline."
 |---|---|
 | Intent / Requested / Realized · Converge | ADR-030 · [lifecycle-convergence](lifecycle-convergence.md) |
 | Pattern → Template → System (assembly) | ADR-033 · [template-assembly](template-assembly.md) |
+| Validate-and-reserve (green before cutover) | ADR-011 |
 | Provider capability match; naturalization | ADR-004 · DCM ADR-023 |
 | Process validation evidence + freshness | ADR-003 |
 | Dependency-graph completion | ADR-010 |
