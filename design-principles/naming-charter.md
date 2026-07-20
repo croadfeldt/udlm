@@ -93,6 +93,23 @@ These land together, then the freeze applies:
 - **`family` → `nature` reconciliation** — this charter (gated on the work-product decision above).
 - *(already landed: Blueprint → Template · Atomic/Composite → `single`/`multi` · edge `kind` → `edge_type`.)*
 
+## Known term conventions to reconcile
+
+Real-world usage of these words varies by group — the charter should map onto it, not ignore it.
+
+- **"Blueprint."** *This group* uses "blueprint" ≈ a **reusable design** — i.e. our **Pattern**. vRealize /
+  Aria and Azure use "blueprint" ≈ a **deployable definition** — i.e. our **Template**. The word spans *both*
+  tiers, which is exactly why it is retired here: adopting it for either tier collides with the other group's
+  meaning. **Open question for eng:** do we adopt **"Blueprint" for the Pattern tier** (rename `Pattern →
+  Blueprint`, matching this group's usage), or keep `Pattern` and treat team-"blueprint" as an informal alias
+  mapped in conversation? We *cannot* use "Blueprint" for the Template tier without re-colliding with the
+  vRA/Azure sense.
+- **"Validated Pattern"** (Red Hat) — a *deployable, tested* composite ≈ our **Template**, **not** our
+  (abstract) Pattern. When citing it, map it to Template.
+
+These are the vocabulary the eng review reconciles alongside the `family`/`nature` collapse — the point of the
+charter is to land on names that match how teams already speak, then freeze.
+
 ## The freeze
 
 **At the 1.0 tag the vocabulary is frozen.** After that, a new term or a rename is a **breaking change**
