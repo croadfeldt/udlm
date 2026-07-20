@@ -5,7 +5,7 @@ new dispatch, no provider calls, no duplicate resources, stable UUIDs — and th
 **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only the
 short-circuit this case adds.
 
-> **Use Case:** `compute/idempotent-reconvergence` — set 29 (FF Extended Target). **Persona:** application-team-member · **Profile:** standard.
+> **Use Case:** `compute/idempotent-reconvergence`. **Persona:** application-team-member · **Profile:** standard.
 
 **In one breath.** An application team re-applies an intent that matches what's already realized. The pipeline
 accepts and processes it, sees that realized state already equals the intent, and stops before dispatch — the

@@ -4,7 +4,7 @@
 to an existing VM — plus tenant-plane isolation, data residency, and quota accounting. A **lighter** flow —
 it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `data/persistent-volume-provision` — set 29 (FF Extended Target). **Persona:** application-team-member · **Profile:** dev.
+> **Use Case:** `data/persistent-volume-provision`. **Persona:** application-team-member · **Profile:** dev.
 
 **In one breath.** A dev team asks for a persistent block volume attached to a VM they already own. The
 storage provider allocates it from a storage class the tenant is authorized to use, attaches it to the target

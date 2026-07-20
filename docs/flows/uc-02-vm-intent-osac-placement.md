@@ -5,7 +5,7 @@ plane, OSAC is chosen at placement and dispatched to like any other, and the rea
 provenance naming OSAC. A **lighter** flow — it **builds on [request-realization](request-realization.md)**
 and documents only what this case adds.
 
-> **Use Case:** `compute/vm-intent-osac-placement` — set 29 (FF Extended Target). **Persona:** application-team-member · **Profile:** standard.
+> **Use Case:** `compute/vm-intent-osac-placement`. **Persona:** application-team-member · **Profile:** standard.
 
 **In one breath.** A consumer submits a VM intent through the DCM API; validation policies run; the placement
 engine selects the OSAC-backed provider; the request is dispatched to OSAC for realization; and the `Realized`

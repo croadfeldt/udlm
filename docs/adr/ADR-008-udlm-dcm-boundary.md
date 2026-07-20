@@ -3,9 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `dcm-project/enhancements` #58 (the split proposal — this ADR is its decision-of-record home); `CONFORMANCE.md`; ADR-002 (adopt-by-reference); `design-principles/core-tenets.md` (T5); ADR-005 §5 (cross-peer federation)
-**Tracking:** enh #58 review feedback: "this reads as a decision from a PM perspective; it should be a doc of the udlm itself rather than an enhancement"
-
+**Related:** the UDLM/DCM split (this ADR is its decision-of-record home); `CONFORMANCE.md`; ADR-002 (adopt-by-reference); `design-principles/core-tenets.md` (T5); ADR-005 §5 (cross-peer federation)
 ## Context
 
 DCM has kept two things that change for different reasons, and at different rates, in one repository:

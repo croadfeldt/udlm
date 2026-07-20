@@ -5,7 +5,7 @@ policy check — and the two guarantees that ride along with it: an **audit reco
 what happened, and **idempotency** (re-asking doesn't build a second VM). A **lighter** flow — it **builds on
 [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `compute/vm-standard-provision` — set 29 (FF Extended Target). **Persona:** application-team-member · **Profile:** standard.
+> **Use Case:** `compute/vm-standard-provision`. **Persona:** application-team-member · **Profile:** standard.
 
 **In one breath.** An application team asks for a VM in the standard profile. The system runs the profile's
 policy check, allocates through the one eligible provider, and writes an audit record carrying actor, intent,
