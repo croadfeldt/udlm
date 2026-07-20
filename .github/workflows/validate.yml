@@ -15,6 +15,12 @@ jobs:
           python-version: "3.12"
       - run: pip install jsonschema pyyaml
       - run: python3 tests/validate_registry.py
+      # Instance/catalog valid-by-construction gate (realized entities, DCMGroups, catalog
+      # items) + semantic checks JSON Schema can't express (process-axis family match,
+      # component_id uniqueness, depends_on cycles, binding⊆depends_on). Was authored to be
+      # CI-wired ("Exit non-zero if anything is invalid") but never added — so a stale check
+      # false-failed unnoticed. Now enforced.
+      - run: python3 registry/tools/validate.py
       - run: python3 tests/check_estate_tokens.py
       - run: python3 tests/check_session_narration.py
       - run: python3 tests/check_model_vocabulary.py

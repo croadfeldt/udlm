@@ -188,30 +188,35 @@ def check_catalog_item(doc):
 
 
 
-def _type_entity_index():
-    """resource_type -> entity_type (Infrastructure Resource | Composite | Process | ...)."""
+def _type_family_index():
+    """resource_type -> family (Resource | Process | Knowledge | Access — ADR-027)."""
     index = {}
     for path in (ROOT / "resource-types").glob("*"):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         doc = load(path)
-        index[doc["resource_type"]] = doc.get("entity_type")
+        index[doc["resource_type"]] = doc.get("family")
     return index
 
 
 def check_process_entity(doc):
-    """A realized entity whose Resource Type is entity_type: Process MUST carry the `process`
+    """A realized entity whose Resource Type is family: Process MUST carry the `process`
     execution axis with an execution_state (resource-service-entities §6.3; data-model-core §3
-    [D7]). Non-Process entities must NOT carry it."""
+    [D7]). Non-Process entities must NOT carry it.
+
+    Keys on `family`, not `entity_type` — ADR-027 moved the state-vs-execution distinction to
+    the family tier; `entity_type` is now the Atomic/Composite shape (a Process is
+    family: Process, entity_type: Atomic|Composite). The prior `entity_type == "Process"` test
+    was dead — it never matched, and false-failed the correct example-process instance."""
     errors = []
     rt = doc.get("resource_type")
-    et = _type_entity_index().get(rt)
+    fam = _type_family_index().get(rt)
     has_proc = isinstance(doc.get("process"), dict)
-    if et == "Process" and not has_proc:
-        errors.append(f"{rt} is entity_type: Process but the instance has no `process` block "
+    if fam == "Process" and not has_proc:
+        errors.append(f"{rt} is family: Process but the instance has no `process` block "
                       f"(execution_state required; §6.3 / D7)")
-    if et and et != "Process" and has_proc:
-        errors.append(f"{rt} is entity_type: {et}, not Process — it must not carry a `process` "
+    if fam and fam != "Process" and has_proc:
+        errors.append(f"{rt} is family: {fam}, not Process — it must not carry a `process` "
                       f"execution axis")
     return errors
 
