@@ -1,4 +1,4 @@
-# UC-01 · Standard VM provision — the stage
+# UC-03 · Standard VM provision — the stage
 
 **What this settles:** the plainest realization there is — a standard-profile VM, one eligible provider, one
 policy check — and the two guarantees that ride along with it: an **audit record** of who asked for what and
@@ -19,7 +19,7 @@ and outcome — and if the same request comes again, it converges onto the exist
 - **Audit is a first-class outcome** — the realization event is recorded with **actor · intent · outcome**,
   not just the resulting `Realized` record. This is a success criterion, not a side effect.
 - **Idempotency is required** — repeating the request matches the existing resource and is a no-op. The
-  mechanics of that match live in [UC-05](uc-05-idempotent-reconvergence.md); here it's just a stated guarantee.
+  mechanics of that match live in [UC-13](uc-13-idempotent-reconvergence.md); here it's just a stated guarantee.
 
 ## The flow — only what's different
 ```mermaid
@@ -44,5 +44,5 @@ Everything else (assemble, place, enrich, reserve, commit, converge) is request-
 - **Provider:** the one eligible service provider allocates the VM and reports its native id back.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Idempotency detail: [UC-05](uc-05-idempotent-reconvergence.md).
+- Base flow: [request-realization](request-realization.md). Idempotency detail: [UC-13](uc-13-idempotent-reconvergence.md).
 - UC source: `compute/vm-standard-provision`.

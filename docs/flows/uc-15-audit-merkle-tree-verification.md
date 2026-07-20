@@ -1,4 +1,4 @@
-# UC-19 · Cryptographic audit verification — the stage
+# UC-15 · Merkle-tree audit verification — the stage
 
 **What this settles:** how an auditor proves a named range of past audit events has not been tampered with — signed tree heads, inclusion proofs per event, and consistency proofs across epochs — with the signing key kept inside the sovereignty boundary. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
@@ -47,4 +47,4 @@ Assemble and place are request-realization; from the audit provider onward is th
 ## Pointers
 
 - Base flow: [request-realization](request-realization.md). UC source: `governance/audit-merkle-tree-verification`.
-- Capability-validation sibling (does DCM *provide* this): [uc-20-audit-chain-proofs-capability](uc-20-audit-chain-proofs-capability.md).
+- Capability-validation sibling (does DCM *provide* this): [uc-21-audit-chain-proofs-capability](uc-21-audit-chain-proofs-capability.md).

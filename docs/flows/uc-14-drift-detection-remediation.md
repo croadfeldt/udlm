@@ -1,4 +1,4 @@
-# UC-14 · Drift detection & remediation — the stage
+# UC-14 · Drift detection and remediation — the stage
 
 **What this settles:** the steady-state loop that keeps *realized* honest — compare what the provider actually
 has (**discovered** state) against what DCM provisioned (**realized** state), record any divergence as a

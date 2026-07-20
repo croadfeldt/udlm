@@ -1,4 +1,4 @@
-# UC-15 · Provider-portable rebuild — the stage
+# UC-18 · Workload portability across providers — the stage
 
 **What this settles:** how resources survive **losing their provider** — the placement engine re-resolves them
 onto an alternate eligible provider, the provider-specific references are rewritten for the new home, and the
@@ -51,4 +51,4 @@ The re-realize step is request-realization, run with the failed provider exclude
 - **Provider:** the original is detected unavailable; an alternate eligible provider re-realizes the resources.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Whole-environment rebuild: [UC-12](uc-12-dynamic-rehydration.md). UC source: `cross-domain/provider-portable-rebuild`.
+- Base flow: [request-realization](request-realization.md). Whole-environment rebuild: [UC-10](uc-10-dynamic-rehydration.md). UC source: `cross-domain/provider-portable-rebuild`.

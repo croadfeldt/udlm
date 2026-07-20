@@ -1,4 +1,4 @@
-# UC-08 · Cross-provider ordering — the stage
+# UC-08 · Cross-provider dependency ordering — the stage
 
 **What this settles:** a `depends_on` edge is honored *across provider boundaries* — a VM is realized only after the host bridge/bond/pool it needs is realized by *its* owning provider, and teardown runs in reverse. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
