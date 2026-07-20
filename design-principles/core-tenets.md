@@ -84,6 +84,19 @@ rehearsal *mechanism* is the **provider**; the gating is **Policy**. (UDLM ADR-0
 validation layer — **valid spec** (CONFORMANCE) + **valid data** (valid-by-construction + provenance) +
 **valid process** (this) — over the same evidence/freshness machinery, never a parallel one.
 
+## T7 — Reach for an existing mechanism before coining a new one
+Before introducing a new primitive — a "module", a new field family, a new envelope, a parallel type —
+first try to **compose it from mechanisms the model already has**: classification tags, profiles
+(ADR-007), provider capability declaration (ADR-004), conformance tiers, must-ignore-unknown, object
+references, and typed edges. Most "we need a new X" is an existing mechanism under a new name, and a
+coined primitive is permanent surface — every peer must implement it and every reader must learn it.
+**This is an active review gate, not advice:** a PR that introduces a net-new mechanism must show, in its
+*Why*, that no existing mechanism (or composition of them) covers the need — otherwise the finding is
+"reduce to existing." (This is exactly how ADR-029 dropped a proposed "inventory module" in favor of a
+`classification` tag + profile inclusion + capability declaration + an optional conformance tier.) T5 is
+this tenet aimed **outward** — don't re-express an external standard; T7 aims it **inward** — don't
+multiply internal primitives. Occam's razor as a contract obligation.
+
 ---
 
 **Consequence — what a UDLM spec contains and doesn't.**
