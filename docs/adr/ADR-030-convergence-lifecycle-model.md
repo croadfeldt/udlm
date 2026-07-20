@@ -5,7 +5,7 @@
 
 ## Context
 
-ADR-027 named four entity families — Resource, Process, Knowledge, Access — on a "state vs execution" axis. Working three things at once — the estate as system inventory (ADR-029), combining Day-0/1/2 activities into one unit (Blueprints), and JIT / short-lived credentials — showed the four aren't four peers. They share one lifecycle, and the distinctions we kept reaching for (Resource vs Process, long vs short, provision vs day-2) collapse into *parameters* of it. This ADR records that lifecycle so the model is understood as one thing, and so 1.0 decisions are made with the whole shape visible (ADR-032).
+ADR-027 named four entity families — Resource, Process, Knowledge, Access — on a "state vs execution" axis. Working three things at once — the estate as system inventory (ADR-029), combining Day-0/1/2 activities into one unit (Templates), and JIT / short-lived credentials — showed the four aren't four peers. They share one lifecycle, and the distinctions we kept reaching for (Resource vs Process, long vs short, provision vs day-2) collapse into *parameters* of it. This ADR records that lifecycle so the model is understood as one thing, and so 1.0 decisions are made with the whole shape visible (ADR-032).
 
 ## Decision
 
@@ -76,7 +76,7 @@ This model was derived **independently** — from the estate and the convergence
 - the manager driving **active-state → wanted-state** (with `Restart=`) ↔ Converge / reconcile;
 - `Wants` / `Requires` / `After` / `Before` + the computed transaction ↔ edges + derived ordering;
 - **timer / socket / path** activation and device appearance ↔ triggers; `daemon-reload` ↔ an intent-moved trigger;
-- **target** (a set brought up together) ↔ Blueprint / composite;
+- **target** (a set brought up together) ↔ Template / composite;
 - **device** units (udev-populated, unwanted) ↔ `Discovered` / observed inventory (no intent).
 
 Most usefully, **`Type=oneshot` is a *service* that runs once and completes** (`RemainAfterExit` even keeps the record "active") — systemd already models "process" as a **service variant with a one-shot intent + completion terminal**, not a separate kind. That is concrete precedent for the post-1.0 question of whether "work-product" survives as a distinct nature (it feeds that follow-up).
@@ -84,7 +84,7 @@ Most usefully, **`Type=oneshot` is a *service* that runs once and completes** (`
 **Scope of the analogy:** systemd is single-host init; UDLM generalizes the same spine to a portable, multi-provider, policy-governed, federated, audited control plane. Convergent prior art.
 
 ## Consequences
-- One mental model, one pipeline: DCM has no separate "provision" and "day-2" subsystems — only triggers into one convergence loop. This is what makes Blueprints and Day-0/1/2 fall out as parameters, not subsystems.
+- One mental model, one pipeline: DCM has no separate "provision" and "day-2" subsystems — only triggers into one convergence loop. This is what makes Templates and Day-0/1/2 fall out as parameters, not subsystems.
 - 1.0 is untouched — four families, current schema, current estate. The model is *recorded*, not *rebuilt*.
 - The requested / observed / curated provenance split lands ADR-029 coherently: inventory is Resource-nature entered by observation or creation, not a new family.
 - **Post-1.0 follow-up — process reconcilability.** The archetype table marks Process `reconcilable: no`, which is DCM's **1.0 orchestration** view (a process runs to a terminal outcome). Given enough observability and control levers, a running process could be reconciled mid-flight (steer / re-drive / checkpoint-resume to a target progress state). Taken further, a Process looks like a **maintained-state with a one-shot intent and a completion terminal** (short-lived, self-terminating, never decommissioned) — in which case "work-product" is not a distinct *nature* but the **intent-shape** parameter (standing vs one-shot), leaving Curated (Knowledge) the sole non-fulfillment kind. The open question: **does "work-product" survive as a nature?** (Note: the knob is intent-shape, not duration — timeline stays orthogonal.) Flagged for post-1.0 discussion, not decided here.
@@ -94,6 +94,6 @@ Most usefully, **`Type=oneshot` is a *service* that runs once and completes** (`
 - Recasts the intent-vs-realized question as **root + expression**, not two co-equal tracks — with `Discovered` the read-only inlet that adoption turns into intent.
 
 ## Alternatives considered
-- **Leave the four families as unexamined peers** — rejected: the inventory + Blueprint + credential work each needs the shared spine visible, or every family gets modelled (and special-cased) separately.
+- **Leave the four families as unexamined peers** — rejected: the inventory + Template + credential work each needs the shared spine visible, or every family gets modelled (and special-cased) separately.
 - **Adopt the unified model now** (nature-first, archetypes, convergence-primitive in the schema) — rejected: violates 1.0 scope (ADR-031) and forces a migration pre-tag; it's a superseding change, post-1.0.
 - **Collapse nature too** (everything is "an entity on a timeline") — rejected, and corrected during design: timeline is orthogonal to nature; a credential is a *short maintained-state*, reconciled — not a work-product. Maintained-state vs work-product vs curated is real and survives.

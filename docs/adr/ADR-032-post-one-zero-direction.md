@@ -13,7 +13,7 @@ The model has a visible post-1.0 shape (ADR-030): one convergence lifecycle — 
 
 - The future model is a **lens, not a deliverable**. The only pre-1.0 work it justifies is ensuring a 1.0 decision doesn't *contradict* it — which is cheap, usually just not over-committing. Building any of it is the needless work to avoid.
 - **The one contradiction to actively avoid:** hardening Resource/Process into permanent, closed *species* with behaviour branching on the family. Leaving them as today's labels contradicts nothing and costs nothing; they become archetypes over the one model later (ADR-030).
-- **Cards on the table are Proposed ADRs.** Each encodes a direction in a page of prose and binds nothing — the ADR *is* the groundwork. ADR-030 is the first; the Blueprints ADR and a future "consumable / nature-first" refinement are the rest.
+- **Cards on the table are Proposed ADRs.** Each encodes a direction in a page of prose and binds nothing — the ADR *is* the groundwork. ADR-030 is the first; the Templates ADR (ADR-033) and a future "consumable / nature-first" refinement are the rest.
 - **The direction, recorded for future-us:** one convergence lifecycle (ADR-030); nature (maintained-state / work-product / curated) is fundamental; timeline, terminal-condition, and provenance (requested / observed / curated) are orthogonal parameters; Resource / Process / Credential / Inventory / Knowledge are archetype presets; Knowledge and Inventory are *provenances* of the one realized-state model, not separate ontologies.
 
 ## Data · Policy · Provider

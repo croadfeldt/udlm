@@ -111,7 +111,7 @@ flowchart LR
 
 ## 5 · Day-N is a projection, not a field
 
-Day 0 / 1 / 2 never appears in the data. The model stores the **trigger**; "which day" is derived by filtering triggers by lifecycle phase. Blueprints (see the Blueprints ADR) compose consumables + their triggers into one unit — and a "Day-2 view" is just a lens over the operate-time triggers.
+Day 0 / 1 / 2 never appears in the data. The model stores the **trigger**; "which day" is derived by filtering triggers by lifecycle phase. Templates (see ADR-033) compose consumables + their triggers into one unit — and a "Day-2 view" is just a lens over the operate-time triggers.
 
 ```mermaid
 flowchart LR
