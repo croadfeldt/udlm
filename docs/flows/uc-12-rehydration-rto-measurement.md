@@ -1,8 +1,8 @@
-# UC-13 · Rehydration RTO measurement — the stage
+# UC-12 · Resilience posture rehydration test — the stage
 
 **What this settles:** how a rehydration is *scored* — the recovery-time objective (RTO) measured end to end,
 and completeness checked field by field against the original intent. A **lighter** flow — it **builds on
-[request-realization](request-realization.md)** and layers on top of [UC-12](uc-12-dynamic-rehydration.md);
+[request-realization](request-realization.md)** and layers on top of [UC-10](uc-10-dynamic-rehydration.md);
 it changes nothing about how resources are built, only how the rebuild is observed.
 
 > **Use Case:** `observability/rehydration-rto-measurement`. **Persona:** platform-engineer · **Profile:** standard.
@@ -14,7 +14,7 @@ and the completeness result go into the audit trail.
 
 ## What this adds over request-realization
 - **A pure observation layer** — no policy, no placement, no provider work of its own. It wraps
-  [UC-12](uc-12-dynamic-rehydration.md) and only reads.
+  [UC-10](uc-10-dynamic-rehydration.md) and only reads.
 - **RTO is a single, defined clock** — start at the destroy trigger, stop when the *last* resource reaches
   `OPERATIONAL`. One number for the whole environment, not per-resource timings.
 - **Completeness is intent-vs-realized, not a status roll-up** — every resource in the original intent must
@@ -26,13 +26,13 @@ and the completeness result go into the audit trail.
 ## The flow — only what's different
 ```mermaid
 flowchart TD
-  T["Destroy trigger — start RTO clock"] --> RH["UC-12 dynamic rehydration runs"]
+  T["Destroy trigger — start RTO clock"] --> RH["UC-10 dynamic rehydration runs"]
   RH --> L["Last resource reaches OPERATIONAL<br/>— stop RTO clock"]
   L --> C["Compare intent vs rebuilt realized<br/>field by field (tolerance for<br/>provider-assigned fields)"]
   C --> P["Completeness percentage"]
   P --> A["Record RTO + completeness in audit"]
 ```
-The rebuild itself is [UC-12](uc-12-dynamic-rehydration.md); each resource build is request-realization.
+The rebuild itself is [UC-10](uc-10-dynamic-rehydration.md); each resource build is request-realization.
 
 ## Success criteria (from the UC)
 - RTO is measured from the destroy trigger to the last resource reaching `OPERATIONAL`.
@@ -49,4 +49,4 @@ The rebuild itself is [UC-12](uc-12-dynamic-rehydration.md); each resource build
 - **Provider:** none of its own; provider-assigned fields are simply granted a tolerance in the comparison.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Measures [UC-12](uc-12-dynamic-rehydration.md). UC source: `observability/rehydration-rto-measurement`.
+- Base flow: [request-realization](request-realization.md). Measures [UC-10](uc-10-dynamic-rehydration.md). UC source: `observability/rehydration-rto-measurement`.

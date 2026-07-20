@@ -1,4 +1,4 @@
-# UC-04 · VM provision, provider fails mid-realization — the stage
+# UC-11 · Provider-failure recovery — the stage
 
 **What this settles:** what happens when reserve and commit both start but the provider **goes unreachable
 partway through** — how the partial state is classified, decided on (requeue / hold / fail), and never left

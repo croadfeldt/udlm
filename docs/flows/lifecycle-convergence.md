@@ -45,7 +45,7 @@ flowchart TD
     R -->|gap closed| X([converged])
 ```
 
-*This is the re-entrant Data·Policy·Provider loop of ADR-006. The `request-realization` flow is this pipeline's **first** firing (Realize); drift-remediation (uc-14), rehydration (uc-12), and idempotent reconvergence (uc-05) are **later** firings of the identical pipeline.*
+*This is the re-entrant Data·Policy·Provider loop of ADR-006. The `request-realization` flow is this pipeline's **first** firing (Realize); drift-remediation (uc-14), rehydration (uc-10), and idempotent reconvergence (uc-13) are **later** firings of the identical pipeline.*
 
 ---
 

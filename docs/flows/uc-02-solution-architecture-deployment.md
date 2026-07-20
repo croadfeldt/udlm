@@ -1,4 +1,4 @@
-# UC-21 · Solution architecture deployment — the stage
+# UC-02 · Architectural pattern to composite request — the stage
 
 **What this settles:** how a whole **solution** — a multi-component architecture written in a code-first DSL — becomes many resource requests that deploy in dependency order, each enriched and placed on its own, with cross-component references captured in one realized receipt. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds: the **decompose-and-orchestrate** wrapper around it.
 

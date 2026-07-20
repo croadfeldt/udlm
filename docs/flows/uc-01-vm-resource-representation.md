@@ -1,4 +1,4 @@
-# UC-06 · VM as a first-class resource — the stage
+# UC-01 · VM as a first-class UDLM resource — the stage
 
 **What this settles:** what the `Compute.VirtualMachine` *type itself* is made of — the spec a user submits, the lifecycle intent, and the realized status the provider hands back — so a VM is a typed, retrievable resource, not a bag of provider fields. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 

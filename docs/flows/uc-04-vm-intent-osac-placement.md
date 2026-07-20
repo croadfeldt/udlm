@@ -1,4 +1,4 @@
-# UC-02 · VM intent onto OSAC — the stage
+# UC-04 · Intent to VM placement on OSAC — the stage
 
 **What this settles:** that an OSAC-backed provider is *just a provider* — DCM stays the governing control
 plane, OSAC is chosen at placement and dispatched to like any other, and the realized record carries

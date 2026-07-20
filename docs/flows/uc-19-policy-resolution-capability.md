@@ -1,4 +1,4 @@
-# UC-16 · Policy resolution by profile — the stage
+# UC-19 · Policy resolution by profile (DR-E) — the stage
 
 **What this settles:** policy applicability is decided **by resolved-profile membership** — the request's
 profile is resolved, only that profile's policies are evaluated, and the audit says *evaluated-pass*,
@@ -51,4 +51,4 @@ Where these evaluations sit in the build is request-realization.
 - **Provider:** unaffected; this UC governs which policies gate the build, not how it is built.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Companion profile-resolution UC: [UC-17](uc-17-profile-resolution-capability.md). UC source: `governance/policy-resolution-capability`.
+- Base flow: [request-realization](request-realization.md). Companion profile-resolution UC: [UC-20](uc-20-profile-resolution-capability.md). UC source: `governance/policy-resolution-capability`.

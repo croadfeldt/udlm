@@ -1,4 +1,4 @@
-# UC-12 · Dynamic rehydration — the stage
+# UC-10 · Full rehydration from intent — the stage
 
 **What this settles:** how a whole environment is rebuilt from **stored intent alone** after total
 destruction — the plan *derived* from the dependency graph, not replayed from a recorded sequence, with
@@ -57,4 +57,4 @@ Everything inside each rebuild step is request-realization.
 - **Provider:** the standard placement engine re-resolves each resource; providers re-realize in dependency order.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Measured and validated by [UC-13](uc-13-rehydration-rto-measurement.md). UC source: `cross-domain/dynamic-rehydration`.
+- Base flow: [request-realization](request-realization.md). Measured and validated by [UC-12](uc-12-rehydration-rto-measurement.md). UC source: `cross-domain/dynamic-rehydration`.

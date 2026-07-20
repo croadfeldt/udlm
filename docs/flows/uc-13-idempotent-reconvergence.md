@@ -1,4 +1,4 @@
-# UC-05 · Idempotent reconvergence — the stage
+# UC-13 · VM lifecycle reconciliation — the stage
 
 **What this settles:** re-applying an **unchanged** intent to an already-realized resource is a **no-op** — no
 new dispatch, no provider calls, no duplicate resources, stable UUIDs — and that no-op is itself recorded. A
