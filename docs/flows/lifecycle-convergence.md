@@ -105,7 +105,7 @@ flowchart LR
 | **Process** (backup) | work-product | no | requested | Realized (executed) | completion | bounded |
 | **Knowledge** (Capability) | curated | — | curated | Canonical | deprecation | — |
 
-*The blue rows are one nature (maintained-state) at three timelines — Credential and Inventory are Resource-nature, not their own species. `reconcile` hangs off `nature = maintained-state`, never off duration.*
+*The blue rows are one nature (maintained-state) at three timelines — Credential and Inventory are Resource-nature, not their own species. `reconcile` hangs off `nature = maintained-state`, never off duration. (Process `no` is DCM's **1.0 orchestration** view — given enough observability and control levers a running process could be reconciled mid-flight, which softens the work-product/maintained-state line; **post-1.0 follow-up**.)*
 
 ---
 
