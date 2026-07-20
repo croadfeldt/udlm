@@ -1,6 +1,6 @@
 # Flows by persona — how each role uses the system
 
-**What this settles:** the 21 September-release use cases (DAV set 29, *FF Extended Target*), grouped by the
+**What this settles:** the 21 September-release use cases, grouped by the
 **persona** who drives them — a usage view of the system, one role at a time. Every entry is a **lighter**
 flow that builds on [request-realization](request-realization.md); read that first. Each flow has a
 **stage** (in croadfeldt/udlm — the model's telling) and a **play** (in croadfeldt/dcm — the engine's

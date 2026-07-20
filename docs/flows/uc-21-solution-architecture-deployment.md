@@ -2,7 +2,7 @@
 
 **What this settles:** how a whole **solution** — a multi-component architecture written in a code-first DSL — becomes many resource requests that deploy in dependency order, each enriched and placed on its own, with cross-component references captured in one realized receipt. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds: the **decompose-and-orchestrate** wrapper around it.
 
-> **Use Case:** `cross-domain/solution-architecture-deployment` — set 29 (FF Extended Target). **Persona:** solution-architect · **Profile:** prod.
+> **Use Case:** `cross-domain/solution-architecture-deployment`. **Persona:** solution-architect · **Profile:** prod.
 
 **In one breath.** request-realization builds *one* resource. A solution architecture describes *many* — a database, an app tier, a load balancer, the links between them. This case decomposes that DSL into per-component requests, resolves the dependency graph, and runs each component through request-realization **in order** — a component that depends on another waits for the reference it needs (the database's address, the network's id). Providers can differ per component (`multiple_eligible`). When the graph is fully realized, one receipt records every component, its realized state, and the cross-component references that wire them together.
 

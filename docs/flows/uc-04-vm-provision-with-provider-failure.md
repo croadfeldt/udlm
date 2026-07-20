@@ -5,7 +5,7 @@ partway through** — how the partial state is classified, decided on (requeue /
 orphaned. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents
 only the recovery this case adds after commit.
 
-> **Use Case:** `compute/vm-provision-with-provider-failure` — set 29 (FF Extended Target). **Persona:** application-team-member · **Profile:** standard.
+> **Use Case:** `compute/vm-provision-with-provider-failure`. **Persona:** application-team-member · **Profile:** standard.
 
 **In one breath.** Policy passes and the provider accepts the dispatch, but mid-realization the provider
 becomes unreachable. A recovery policy detects it within the dispatch timeout, classifies the partial state,

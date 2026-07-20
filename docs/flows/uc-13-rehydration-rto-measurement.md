@@ -5,7 +5,7 @@ and completeness checked field by field against the original intent. A **lighter
 [request-realization](request-realization.md)** and layers on top of [UC-12](uc-12-dynamic-rehydration.md);
 it changes nothing about how resources are built, only how the rebuild is observed.
 
-> **Use Case:** `observability/rehydration-rto-measurement` — set 29 (FF Extended Target). **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `observability/rehydration-rto-measurement`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** After a dynamic rehydration, the system measures how long recovery took — from the destroy
 trigger to the last resource reaching `OPERATIONAL` — and then checks the rebuilt realized state against the

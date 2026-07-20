@@ -6,7 +6,7 @@ profile is resolved, only that profile's policies are evaluated, and the audit s
 flow — it **builds on [request-realization](request-realization.md)** and makes explicit the "resolved-profile
 policies" step that flow assumes. Validation UC for **DR-E**.
 
-> **Use Case:** `governance/policy-resolution-capability` — set 29 (FF Extended Target). **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `governance/policy-resolution-capability`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** Which policies apply is not a global sweep. DCM resolves the request's profile (an approved-list
 selection, or the platform default) and evaluates *only* the policies in that profile, by construction. Policies

@@ -6,7 +6,7 @@ against it: identity boundary, profile binding, quotas, and auth claims all pers
 **lighter** flow — it **builds on [request-realization](request-realization.md)** by supplying the profile
 that flow later resolves policies from. Validation UC for **DR-B**.
 
-> **Use Case:** `cross-domain/profile-resolution-capability` — set 29 (FF Extended Target). **Persona:** platform-engineer · **Profile:** fsi.
+> **Use Case:** `cross-domain/profile-resolution-capability`. **Persona:** platform-engineer · **Profile:** fsi.
 
 **In one breath.** The instance publishes an approved list of profiles and a default; profile resolution picks
 from that list (near-term, the default applies instance-wide). Onboarding a tenant binds it to the resolved

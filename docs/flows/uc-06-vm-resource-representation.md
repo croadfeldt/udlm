@@ -2,7 +2,7 @@
 
 **What this settles:** what the `Compute.VirtualMachine` *type itself* is made of — the spec a user submits, the lifecycle intent, and the realized status the provider hands back — so a VM is a typed, retrievable resource, not a bag of provider fields. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `libvirt-vm-provider/standard/vm-resource-representation` — set 29 (FF Extended Target). **Persona:** platform-operator · **Profile:** standard.
+> **Use Case:** `libvirt-vm-provider/standard/vm-resource-representation`. **Persona:** platform-operator · **Profile:** standard.
 
 **In one breath.** request-realization shows how a VM *request* gets built. This case is one level earlier: it defines the VM type that request is an instance of. A `VirtualMachine` carries a portable **spec** (placement, resources, storage, networks) and a **lifecycle intent**; once realized, the libvirt provider's **status** is reconciled back onto the same resource — so intent and reality live in one record.
 
