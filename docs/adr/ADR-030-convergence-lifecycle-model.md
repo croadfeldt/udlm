@@ -81,7 +81,7 @@ This model was derived **independently** — from the estate and the convergence
 
 Most usefully, **`Type=oneshot` is a *service* that runs once and completes** (`RemainAfterExit` even keeps the record "active") — systemd already models "process" as a **service variant with a one-shot intent + completion terminal**, not a separate kind. That is concrete precedent for the post-1.0 question of whether "work-product" survives as a distinct nature (it feeds that follow-up).
 
-**Scope of the analogy:** systemd is single-host init; UDLM generalizes the same spine to a portable, multi-provider, policy-governed, federated, audited control plane. Convergent prior art — arrived at separately, not copied.
+**Scope of the analogy:** systemd is single-host init; UDLM generalizes the same spine to a portable, multi-provider, policy-governed, federated, audited control plane. Convergent prior art.
 
 ## Consequences
 - One mental model, one pipeline: DCM has no separate "provision" and "day-2" subsystems — only triggers into one convergence loop. This is what makes Blueprints and Day-0/1/2 fall out as parameters, not subsystems.
