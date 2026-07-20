@@ -68,6 +68,21 @@ This reframes "intent vs realized": not two co-equal tracks, but **one root (int
 - **Policy** — Policy is a peer *inside* Converge (ADR-006): it validates, transforms, gates, and places on every firing; the trigger-class selects the policy path, not a different mechanism.
 - **Provider** — the Provider executes each firing (naturalize → act → denaturalize → report); observed provenance is provider-populated (discovery); curated is DAV.
 
+## Prior art — systemd
+
+The model is convergent with **systemd**, a deployed-at-scale instance of the same *convergence-over-uniform-units* pattern:
+
+- one **unit** model with many unit *types* ↔ one lifecycle with archetypes as presets;
+- the manager driving **active-state → wanted-state** (with `Restart=`) ↔ Converge / reconcile;
+- `Wants` / `Requires` / `After` / `Before` + the computed transaction ↔ edges + derived ordering;
+- **timer / socket / path** activation and device appearance ↔ triggers; `daemon-reload` ↔ an intent-moved trigger;
+- **target** (a set brought up together) ↔ Blueprint / composite;
+- **device** units (udev-populated, unwanted) ↔ `Discovered` / observed inventory (no intent).
+
+Most usefully, **`Type=oneshot` is a *service* that runs once and completes** (`RemainAfterExit` even keeps the record "active") — systemd already models "process" as a **service variant with a one-shot intent + completion terminal**, not a separate kind. That is concrete precedent for the post-1.0 question of whether "work-product" survives as a distinct nature (it feeds that follow-up).
+
+**Scope of the analogy:** systemd is single-host init; UDLM generalizes the same spine to a portable, multi-provider, policy-governed, federated, audited control plane. Prior art and validation — not a source to copy.
+
 ## Consequences
 - One mental model, one pipeline: DCM has no separate "provision" and "day-2" subsystems — only triggers into one convergence loop. This is what makes Blueprints and Day-0/1/2 fall out as parameters, not subsystems.
 - 1.0 is untouched — four families, current schema, current estate. The model is *recorded*, not *rebuilt*.
