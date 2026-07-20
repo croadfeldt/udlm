@@ -29,7 +29,7 @@ A resource type's data provides the **data transport plus a conformity contract*
 Delegating optionality does **not** make the data a free-for-all. **UDLM provides enough conformity that intent is comparable and portable across adjacent compatible providers.** The *vocabulary and shape* are shared contracts:
 
 - A size class (`instance_size`) is an **ordered, comparable vocabulary**: `medium` must mean something *comparable* across compatible providers, so a workload can move between them without re-sizing (`common-elements §2.2`).
-- A relationship `kind`/`target` is a shared, adopted vocabulary (TOSCA-aligned) — an edge means the same thing everywhere.
+- A relationship `edge_type`/`target` is a shared, adopted vocabulary (TOSCA-aligned) — an edge means the same thing everywhere. (ADR-026 renamed the edge discriminator `kind`→`edge_type`.)
 
 This is the portability guarantee UDLM exists for: a consumer authors comparable intent once and it moves.
 
