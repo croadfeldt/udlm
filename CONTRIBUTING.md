@@ -61,6 +61,9 @@ are caught once, not re-litigated per PR.
   capability declaration, conformance tier, references, edges — composes to cover it.
 - **Adopt by reference (tenet T5):** does this re-express a concept a credible external standard already
   solves (API versioning, identity, RTO/RPO, health probes)? Adopt it, or justify why not.
+- **Adopt tools by reference (tenet T8):** does this have the control plane *directly* build / scan / sign /
+  deploy where a mature tool already owns the mechanism? Wrap the tool as a Provider (the naturalization
+  boundary), don't reimplement it — the control plane owns the cross-tool intent + the estate graph.
 - **Written for engineers, not for us (`docs/writing-for-humans.md`):** the audience is engineering teams
   and common human personas. Strip internal working-context — session/working-set labels, private
   enhancement/ticket numbers, colleague names, or internal tool artifacts. Every reference **carries its
