@@ -1,260 +1,196 @@
-# Example (WIP) — an FSI software supply chain as a policy-driven pipeline
+# Example (WIP) — an FSI software supply chain, managed by UDLM/DCM over existing tools
 
-> **Status: work-in-progress example, non-normative.** This is not a conformance flow — it is a worked
-> example mapping a real-world scenario onto the **post-1.0** UDLM/DCM direction (the convergence lifecycle
-> ADR-030, Pattern → Template → System ADR-033, Data · Policy · Provider). Its purpose is to show *how the
-> model would carry this* and to surface **what is missing**. Concepts marked *post-1.0* or *gap* are not
-> in 1.0.
+> **Status: work-in-progress example, non-normative.** A worked example mapping a real scenario onto the
+> **post-1.0** UDLM/DCM direction (convergence lifecycle ADR-030, Pattern → Template → System ADR-033,
+> Data · Policy · Provider). Concepts marked *post-1.0* / *gap* are not in 1.0. Tool names are **illustrative
+> examples** of Providers, not requirements.
 
-**What this settles:** whether the model can express a regulated (FSI) software-supply-chain "golden path"
-— and what it would take. The short answer: the pipeline is a **Pattern**, **Policy** resolves it into an
-input-specific **Template**, and the run is a **System**; most of the machinery already exists, and the
-remaining gaps are mostly *adopt-a-standard* plus one genuine modeling question.
+**The thesis.** UDLM/DCM is a **management / control plane**, not an execution engine. The build, scan, sign,
+and deploy work is already owned by mature, best-of-breed tools — **Konflux/RHTAP, Tekton (+ Chains), Trivy,
+Syft, Sigstore/cosign, Enterprise Contract, Quay, OpenShift GitOps (Argo CD / Rollouts)**. DCM does **not**
+reimplement them; it **orchestrates them as Providers** and owns the layer none of them own: the **intent**
+across the whole flow and the **estate graph** (who consumes what, blast radius, ordered fan-out, version
+lifecycle). *Manage the pipeline; don't drive the work.*
 
 ## The scenario
 
 *A new version of an upstream open-source library is available. Validate it, rebuild it **from source**
-(vendor packages are not trusted), attest it, and roll it out to every consuming application — **event-driven,
-FSI-only, in under an hour.***
+(vendor packages are not trusted), attest it, and roll it out to every consuming application — event-driven,
+FSI-only, in under an hour.*
 
-The pipeline: `Package Available` → **Intake** (sandbox) → **Validate Sources** → **Rebuild** →
-**Validate Binaries** → **Attest** (sign, push, update the CMDB) → **Find & PR all consumers** →
-**per-consumer CI/CD** → health-gated prod (rollback on failure).
+## 1 · The management picture — two planes
 
-## 1 · The pipeline, mapped to the model
-
-The backbone is the supply-chain flow; each stage's note is the UDLM/DCM construct it maps to, colored by
-fit — 🟩 the model covers it · 🟨 adopt an external standard · 🟥 a real gap.
+DCM/UDLM declares intent, selects a Provider per stage (by capability + policy), gates on evidence, and
+**records realized state + attestation back into the estate**. The tools do the work.
 
 ```mermaid
 flowchart TD
-    EVT([📦 Package Available<br/>upstream new version · event-driven]):::gap
-
-    subgraph INTAKE[Intake]
+    subgraph MGMT["🟦 UDLM / DCM — management plane (owns intent · policy · the estate graph)"]
         direction LR
-        I1[Notification] --> I2[Download source → sandbox]
+        MI["Intent / Template<br/>propagate library · FSI floor · blue-green · &lt;1hr"]
+        MP["Policy<br/>select Provider per stage · activate gates · require attestation"]
+        ME["Estate graph = CMDB<br/>consumers · blast radius · ordered fan-out · version lifecycle"]
     end
 
-    subgraph VS[Validate Sources]
+    subgraph TOOLS["⚙️ Provider tools — execution (do the work)"]
         direction LR
-        VS1[API compat] ~~~ VS2[Vuln scan] ~~~ VS3[Dependency analysis] ~~~ VS4[Provenance] ~~~ VS5[License]
+        T1["Intake<br/>Renovate / Dependabot"] --> T2["Validate sources<br/>Trivy · Syft · ScanCode · in-toto"] --> T3["Rebuild from source<br/>Konflux / Tekton"] --> T4["Validate binaries<br/>Tekton tests · Trivy · Syft"] --> T5["Attest + publish<br/>Tekton Chains · cosign · Enterprise Contract · Quay"] --> T6["Deploy per consumer<br/>OpenShift GitOps · Argo Rollouts"]
     end
 
-    RB[Rebuild — compiled from source<br/>= trust anchor]:::fit
+    MGMT ==>|"declare intent · select Provider · gate on policy"| TOOLS
+    TOOLS ==>|"report realized + attestation"| ME
 
-    subgraph VB[Validate Binaries]
-        direction LR
-        VB1[ABI compat] ~~~ VB2[Upstream tests] ~~~ VB3[Internal tests] ~~~ VB4[Reproducibility] ~~~ VB5[SBOM gen] ~~~ VB6[Vuln scan]
-    end
-
-    subgraph ATT[Attestation]
-        direction LR
-        A1[Generate] --> A2[Sign] --> A3[Push to repo] --> A4[Update CMDB<br/>version + lifecycle]
-    end
-
-    subgraph CONS[Rebuild consumers]
-        direction LR
-        C1[Calc consumers<br/>of old version] --> C2[Generate PRs] --> C3[Track upgrades] --> C4[Retire old ver<br/>when all upgraded]
-    end
-
-    subgraph CICD[Per-consumer CI/CD · fan-out]
-        direction LR
-        P1[CI + merge] --> P2[Dev + test] --> P3[Staging + integration] --> P4[Prod canary/BG] --> P5{Health?}
-        P5 -->|healthy| OK([✅ success]):::fit
-        P5 -->|bad| RBK([↩ rollback]):::fit
-    end
-
-    EVT --> INTAKE --> VS --> RB --> VB
-    VB -->|event → pipeline| ATT --> CONS --> CICD
-
-    EVT -.-> ME[["▸ external event-source Provider — GAP"]]:::gap
-    INTAKE -.-> MI[["▸ event trigger + sandbox isolation Policy (FSI floor)"]]:::fit
-    VS -.-> MVS[["▸ process-validation evidence (ADR-003) + provenance<br/>ADOPT · SLSA / OSCAL for gate vocab"]]:::adopt
-    VB -.-> MVB[["▸ validation evidence + SBOM output<br/>ADOPT · SPDX / CycloneDX"]]:::adopt
-    ATT -.-> MA[["▸ attestation (ADR-022 / ADR-005) — wire subjects<br/>+ provider writes REALIZED (intent ↔ realized)"]]:::fit
-    CONS -.-> MC[["▸ dependency-graph traversal (ADR-010)<br/>GAP · graph-gated retirement · fan-out orchestration"]]:::gap
-    CICD -.-> MCD[["▸ each consumer = a System · dep bump = Intent → Converge → Realized<br/>health-gate + rollback = the convergence loop"]]:::fit
-
-    NOTE[["Whole flow = an event-triggered COMPOSITE PROCESS (entity_type: multi Process)<br/>work-product nature = an open post-1.0 question · &lt;1hr end-to-end = a composite-process SLA (not yet modeled)"]]:::note
-
-    classDef fit fill:#e8ffe8,stroke:#16a34a,color:#111
-    classDef gap fill:#ffe4e4,stroke:#dc2626,color:#111
-    classDef adopt fill:#fff2cc,stroke:#d97706,color:#111
-    classDef note fill:#eef2ff,stroke:#6366f1,color:#111
+    classDef mgmt fill:#dbeafe,stroke:#2563eb,color:#111
+    classDef tool fill:#f3f4f6,stroke:#6b7280,color:#111
+    class MGMT mgmt
+    class TOOLS tool
 ```
 
-## 2 · The insight — it is a *policy-driven* pipeline
+DCM never builds, scans, or deploys. It declares *what* (the Template intent), picks *who* (the Provider tool,
+by capability match — ADR-004, DCM ADR-023), enforces *the gates* (policy/profile), and records *the result*
+(realized + attestation) into the estate. Its unique value is the thing no single tool owns: **"a library
+changed — who's affected, in what dependency order do I roll it, and is every consumer conformant before I
+retire the old version?"**
 
-The build mechanisms change with the input (source code vs a package vs a container), and the checkpoints
-that apply change too — but the **pipeline and its checkpoints are the same shape**. That is exactly the
-**Data · Policy · Provider** triad and the **Pattern → Template → System** resolution:
+## 2 · Stage → tool (delegated) → what DCM manages
 
-- **The pipeline + checkpoints = a Pattern** — the invariant design.
-- **The input + its type = the Intent (Data).**
-- **Policy resolves the Pattern into a Template** for that input: it **selects the Provider at each stage by
-  capability match** (ADR-004) — `compile-from-source`, `verify-signed-package`, `rebuild-container-layer`
-  all satisfy the *same* stage intent with different mechanisms (the naturalization boundary, DCM ADR-023) —
-  and it **activates the gates that apply** (ABI-compat for a compiled binary, layer-scan for a container,
-  provenance for everything). The FSI profile sets the floor.
-- **The run = a System / Process instance (Realized).**
+| Stage | Provider tool (example) | What UDLM/DCM manages |
+|---|---|---|
+| Package Available | Renovate / registry watcher | the **event → trigger**; records the new version as intent |
+| Validate sources | Trivy · Syft · ScanCode · in-toto | **requires** the gates (policy floor); records evidence |
+| Rebuild from source | **Konflux / Tekton** | declares "rebuild from source" intent; selects the build Provider |
+| Validate binaries | Tekton tests · Trivy · Syft | gate thresholds (policy); records SBOM + verdicts |
+| Attest · sign · publish | **Tekton Chains · cosign · Enterprise Contract · Quay** | **requires** attestation (not the signing); records it to the estate = "update CMDB" |
+| Find & PR consumers | Renovate PR bots | **owns** this — the consumer **dependency-graph traversal** (ADR-010) + fan-out order |
+| Per-consumer CI/CD + deploy | **Tekton · Argo CD · Argo Rollouts** | declares each consumer's new intent; gates cutover; records realized |
+| Retire old version | — | **owns** this — retire once the graph shows *all* consumers converged |
 
-So *"mechanisms change by input"* is the **Provider** abstraction working as designed, and *"policy-driven"*
-is the **Policy** abstraction selecting providers and gates. "Same pipeline, different components" is simply
-**one Pattern → many Templates**.
+The pattern: tools own the **mechanism**; DCM owns **intent, policy, and the graph**.
+
+## 3 · It is a *policy-driven* pipeline — DCM selects the tool per input
+
+The build mechanism changes with the input (source / package / container), and the gates that apply change
+too — but the pipeline shape is the same. That's **Data · Policy · Provider** + **Pattern → Template → System**:
+the pipeline is a **Pattern**; **Policy** resolves it into an input-specific **Template** by **selecting the
+Provider tool** at each stage and **activating the applicable gates**; the run is a **System**.
 
 ```mermaid
 flowchart TD
     subgraph IN[Input = Intent · Data]
         direction LR
-        IN1[Source code] ~~~ IN2[Package] ~~~ IN3[Container] ~~~ IN4[…]
+        IN1[Source code] ~~~ IN2[Package] ~~~ IN3[Container image]
     end
 
-    POL{{"Policy resolves the pipeline<br/>▸ select provider per stage by capability (ADR-004)<br/>▸ activate the gates that apply<br/>▸ FSI profile floor"}}:::pol
+    POL{{"DCM Policy resolves the pipeline<br/>▸ pick the Provider tool per stage (capability match)<br/>▸ activate the gates that apply<br/>▸ FSI profile floor"}}:::pol
     IN --> POL
 
-    subgraph SPINE["Invariant pipeline + checkpoints = the PATTERN"]
+    subgraph SPINE["Invariant pipeline = the PATTERN (DCM-managed)"]
         direction LR
-        S1[[Intake]] --> S2[[Validate<br/>Sources]] --> S3[[Rebuild]] --> S4[[Validate<br/>Binaries]] --> S5[[Attest +<br/>update CMDB]] --> S6[[Rebuild<br/>consumers]] --> S7[[Per-consumer<br/>CI/CD]]
+        S1[[Intake]] --> S2[[Validate]] --> S3[[Rebuild]] --> S4[[Validate]] --> S5[[Attest]] --> S6[[Deploy consumers]]
     end
     POL ==>|"resolves → Template"| SPINE
 
-    S3 -. "mechanism varies by input" .-> RBP[["Rebuild provider:<br/>compile-from-source · verify-signed-package · rebuild-container-layer<br/>same intent, different naturalization (DCM ADR-023)"]]:::fit
-    S2 -. "gates vary by input" .-> VSG[["Active gates: provenance (all) · license · vuln<br/>· ABI (compiled) · layer-scan (container)"]]:::fit
+    S3 -. "Provider varies by input" .-> RBP[["compile-from-source → Konflux · verify-signed-package → cosign<br/>· rebuild-container-layer → buildah — same intent, different tool (ADR-023)"]]:::tool
+    S2 -. "gates vary by input" .-> VSG[["provenance (all) · license · vuln · ABI (compiled) · layer-scan (container)"]]:::tool
 
-    RUN([Run = System / Process instance · Realized]):::fit
+    RUN([Run = System · Realized · recorded in the estate]):::mgmt
     SPINE ==>|Converge| RUN
 
-    GAP[["Open question: policy-COMPOSED constituent set<br/>(policy assembles which providers + gates fire, vs a static constituents[] list)"]]:::gap
-
     classDef pol fill:#ede9fe,stroke:#7c3aed,color:#111
-    classDef fit fill:#e8ffe8,stroke:#16a34a,color:#111
-    classDef gap fill:#ffe4e4,stroke:#dc2626,color:#111
+    classDef tool fill:#f3f4f6,stroke:#6b7280,color:#111
+    classDef mgmt fill:#dbeafe,stroke:#2563eb,color:#111
 ```
 
-## 3 · All the way to deployment — automated QA + blue-green
+## 4 · Deployment — DCM gates, Argo Rollouts drives the blue-green
 
-The consumer fan-out ends in a real deployment per app. This is where the convergence model is most direct:
-a dependency bump is a **new Intent** (`library → vN+1`); **Converge** stands up the new version, and the
-**cutover is the convergence act**, gated on automated QA. Blue-green makes the gate safe — the new version
-(**green**) is fully realized and validated *before* it takes traffic, so an incident is never the first test
-(the T6 tenet: pre-validated outcomes, not testing during incidents).
+Per consumer, a dependency bump is a **new Intent** (`library → vN+1`). **Argo Rollouts** (or Flagger) executes
+the blue-green; **DCM gates the cutover** on automated-QA evidence and **records the realized state**. Blue-green
+is a *gated Converge over two realizations* — green is fully realized and validated before it takes traffic (the
+T6 tenet: pre-validated outcomes, not testing during incidents).
 
 ```mermaid
 flowchart TD
-    INT([Consumer app: new Intent<br/>bump library → vN+1]):::fit
-    CI[CI · build + unit tests]
-    RES[Reserve + deploy GREEN<br/>new realization, alongside live BLUE]:::fit
+    INT([New Intent · bump library → vN+1]):::mgmt
+    CI[CI · Tekton / GH Actions]:::tool
+    RES[Deploy GREEN alongside live BLUE<br/>Argo Rollouts]:::tool
 
-    subgraph QA[Automated QA vs GREEN · pre-cutover gates]
+    subgraph QA[Automated QA vs GREEN · gates the cutover]
         direction LR
         Q1[Integration] ~~~ Q2[E2E] ~~~ Q3[Performance] ~~~ Q4[Security / DAST] ~~~ Q5[Smoke]
     end
 
-    CAN[Canary · shift small % → GREEN<br/>observe SLOs]
-    GATE{QA + canary<br/>healthy?}
-    CUT[Cutover · shift 100% BLUE → GREEN<br/>= Converge, the traffic swap]:::fit
-    RETIRE[Retire BLUE<br/>old realization decommissioned]:::fit
-    OK([✅ Realized at vN+1]):::fit
-    RBK[Rollback · keep BLUE live,<br/>tear down GREEN — intent reverts]:::fit
+    CAN[Canary · shift small % → GREEN · observe SLOs<br/>Argo Rollouts / Flagger]:::tool
+    GATE{DCM gate:<br/>QA + canary healthy?}:::mgmt
+    CUT[Cutover · 100% BLUE → GREEN = Converge]:::mgmt
+    RETIRE[Retire BLUE · intent absent]:::mgmt
+    OK([✅ Realized at vN+1 · recorded in estate]):::mgmt
+    RBK[Rollback · keep BLUE, tear down GREEN]:::mgmt
 
     INT --> CI --> RES --> QA --> CAN --> GATE
     GATE -->|pass| CUT --> RETIRE --> OK
     GATE -->|fail| RBK
 
-    RES -.-> M1[["GREEN = a second realization of one intent;<br/>validate-and-reserve before it serves (ADR-011)"]]:::fit
-    QA -.-> M2[["automated QA = process-validation evidence (ADR-003 / T6)<br/>— validated BEFORE traffic, not during an incident"]]:::fit
-    CAN -.-> M3[["canary / blue-green = provider operational_capability (ADR-004)"]]:::fit
-    CUT -.-> M4[["cutover = Converge; a health-fail is a gap → rollback (loss handling, ADR-030)"]]:::fit
-    GAP2[["GAP · two concurrent realizations of one intent (BLUE live + GREEN validated)<br/>and an atomic traffic cutover — the dual-realized / swap pattern is not yet modeled"]]:::gap
+    RES -.-> M1[["GREEN = a 2nd realization of one intent · validate-and-reserve before serving (ADR-011)"]]:::mgmt
+    QA -.-> M2[["QA = process-validation evidence (ADR-003/T6) · the gate reads pass + freshness"]]:::mgmt
 
-    classDef fit fill:#e8ffe8,stroke:#16a34a,color:#111
-    classDef gap fill:#ffe4e4,stroke:#dc2626,color:#111
+    classDef tool fill:#f3f4f6,stroke:#6b7280,color:#111
+    classDef mgmt fill:#dbeafe,stroke:#2563eb,color:#111
 ```
 
-**How each step maps:**
+The tools (Argo Rollouts) own the *mechanism* of the swap; DCM owns the *decision* — gate on evidence, record
+realized, order the fan-out across consumers.
 
-| Deployment step | UDLM/DCM construct |
+## 5 · Twelve-Factor as a conformance overlay
+
+Twelve-Factor is **adopted as a conformance policy set** (T5), not re-expressed: a consumer app's Template
+*declares* conformance, the Validate gates *check* the machine-checkable factors, and the FSI profile can
+*require* it. Three of the twelve are already native model relationships:
+
+- **1 Codebase** (one codebase → many deploys) = **Pattern → Template → System**
+- **5 Build / release / run** = **Intent → Requested → Realized**
+- **10 Dev/prod parity** = one Pattern, profile-differentiated Templates (ADR-007)
+
+The rest map to model constructs (deps = dependency graph; config = layers; backing services = references;
+disposability = the lifecycle that makes blue-green drain safe; admin tasks = one-shot Processes) and are
+enforced as **declared conformance + pipeline gates**, not new mechanism.
+
+## 6 · The boundary — what DCM delegates vs what it owns
+
+The litmus: *does a mature tool already own this mechanism?* → **Provider-wrap it**. *Does anyone own the
+cross-tool intent + estate graph?* → no → **that's DCM**.
+
+| Delegate (a tool owns the mechanism) | Own (nobody owns it well — DCM's product) |
 |---|---|
-| Bump library → vN+1 | a new **Intent** on the consumer System |
-| Deploy **green** (alongside blue) | a **second Realization** of the same intent — **validate-and-reserve** (ADR-011): reserved + validated before it serves |
-| Automated QA (integration / e2e / perf / security / smoke) | **process-validation evidence** (ADR-003 / T6) — the cutover gate reads pass + freshness |
-| Canary (small %, observe SLOs) | provider **operational_capability** (ADR-004); a graduated Converge |
-| **Cutover** (100% → green) | the **Converge** act — the traffic swap that makes green the live Realized |
-| Retire blue | the old realization → intent `absent` → **decommissioned** (ADR-030) |
-| **Rollback** (keep blue, tear down green) | health-fail = a gap; Converge reverts — blue stays Realized, green is released |
+| build · CI/QA · SBOM · vuln · sign · deploy · blue-green | the **cross-tool intent**, end to end |
+| Konflux/RHTAP · Tekton (+ Chains) · Trivy · Syft · cosign · Enterprise Contract · Argo CD / Rollouts · Quay | the **estate graph / CMDB** — consumers, blast radius, **ordered fan-out**, version lifecycle |
+|  | **policy / conformance** (require attestation, require 12-factor) — not the signing |
+|  | the **orchestration decision** — which consumers, in what order, gated on what |
 
-The **blue-green invariant** is the useful part: because green is a *fully realized, validated* System before
-cutover, the deployment is a **gated Converge over two realizations**, not a risky in-place mutation — the same
-reserve-then-commit shape as `validate-and-reserve`, at deployment scale.
+> **Tenet (proposed):** *adopt-by-reference for tools, not just standards* — if a mature tool owns a mechanism,
+> DCM orchestrates it as a Provider and never reimplements it. The tool-level twin of T5/T7.
 
-## 4 · Overlaying the Twelve-Factor methodology
+## 7 · Gaps — which are DCM's actual value
 
-Twelve-Factor is **not re-expressed** in the model — it is **adopted as a conformance policy set** (T5): a
-consumer app's Template *declares conformance*, the pipeline's gates *validate* it, and a profile (FSI) can
-*require* it. Strikingly, **three of the twelve are already core model relationships** — a good sign the model
-and Twelve-Factor agree.
+Tellingly, the "gaps" are exactly DCM's unique layer (not the delegated tool work):
 
-| Factor | Model construct | Where in the flow |
-|---|---|---|
-| 1 · Codebase (one codebase, many deploys) | **= Pattern → Template → System** (one design, many Systems) | *native* |
-| 2 · Dependencies (declare + isolate) | dependency graph (ADR-010) + SBOM | Validate Sources; rebuild-from-source |
-| 3 · Config (in the environment) | config is a layer/Policy input, not baked in (ADR-015) | Release/Template; deploy |
-| 4 · Backing services (attached resources) | typed **references** resolved at reserve (ADR-012/025) | Template; deploy |
-| 5 · Build, release, run (strict separation) | **= Intent → Requested → Realized** (build→artifact, release→Requested, run→Realized) | the pipeline itself |
-| 6 · Processes (stateless) | process/entity model; statelessness = a conformance gate | Validate; deploy |
-| 7 · Port binding | service/address model (a realized attribute) | deploy |
-| 8 · Concurrency (scale via processes) | replicas = multiple realizations; placement/scale Policy + provider capability (ADR-004) | deploy |
-| 9 · Disposability (fast start, graceful stop) | fast Converge + graceful decommission — **what makes the blue-green cutover/drain safe** | deploy (blue-green) |
-| 10 · Dev/prod parity | **= one Pattern, profile-differentiated Templates** (ADR-007); minimize the delta | dev → staging → prod |
-| 11 · Logs (event streams) | observability (`audit-provenance-observability`) | run |
-| 12 · Admin processes (one-off) | a one-shot **Process** (work-product nature) bound to the System | run |
-
-**The three that are native** — Codebase (1) = Pattern → Template → System, Build/release/run (5) = Intent →
-Requested → Realized, and Dev/prod parity (10) = one Pattern resolved per profile — mean Twelve-Factor's core
-discipline *is* the lifecycle model, one scale down. The rest are **declared conformance + pipeline gates**,
-not new mechanism.
-
-**How to wire it:** add `twelve-factor` as an **adopted-standard conformance reference** (like FOCUS / OSCAL)
-that a Template declares; the Validate-Sources/Binaries gates check the machine-checkable factors (declared
-deps, no baked config, stateless, port-binding), and the FSI profile can set "12-factor required" as a floor.
-It also leans on two open items — factors 9 and 12 depend on the **work-product Process nature** question and
-the disposability lifecycle (see gaps below).
-
-## 5 · Where it fits, and where the gaps are
-
-**Fits the model as-is** (the parts worth leading with): the estate *is* the "CMDB" — attestation writes
-**Realized** state into it; "calculate all projects consuming the old version" is a **dependency-graph
-traversal** (ADR-010); each consumer upgrade is a new **Intent → Converge → Realized** with a health gate and
-rollback; and the per-input mechanism/gate variance is the **Provider + Policy** model doing its job.
-
-**Gaps — what it would take:**
-
-| # | Gap | Disposition |
-|---|-----|-------------|
-| 1 | Supply-chain artifact type (version, SBOM, attestation, provenance) | **Adopt** SPDX/CycloneDX (SBOM) + in-toto/**SLSA** (attestation) — don't invent (T5) |
-| 2 | External event ingestion ("watch upstream → emit *Package Available*") | Model an Information-Provider / event source; the external-world → trigger edge |
-| 3 | Validation gates as declared Policy (vuln thresholds, license allowlist, reproducibility) | **Adopt** SLSA levels / OSCAL for the gate vocabulary |
-| 4 | Graph-gated retirement ("retire old version once *all* consumers converged") | A lifecycle policy gated on a dependency-graph predicate |
-| 5 | Consumer fan-out orchestration (N consuming projects, each its own CI/CD convergence) | A Template-of-Templates / governed process fan-out |
-| 6 | Attestation subjects wired end-to-end (realization / capability / operations) | Known open work |
-| 7 | Work-product Process nature + `<1hr` end-to-end SLA | The open post-1.0 "does *work-product* survive as a nature?" question; a composite-process SLA is not yet modeled |
-| 8 | Blue-green: two concurrent realizations of one intent (blue live + green validated) + atomic cutover | Extends `validate-and-reserve` (ADR-011) to a *dual-realized, gated-swap* deployment; not yet a modeled pattern |
-| 9 | Twelve-Factor conformance | **Adopt** as a declared conformance reference + pipeline gates + a profile floor (§4); 3 of 12 are already native |
-
-**The one modeling question to settle with engineering:** can a composite Process's **constituent set be
-policy-composed** — policy assembles which providers and which gates fire, from the input — rather than a
-static `constituents[]` list? This is the Intent → Requested resolution extended to *process composition*,
-and it is the crux of "policy-driven pipeline."
+| Gap | Disposition |
+|---|---|
+| Supply-chain artifact type (version, SBOM, attestation, provenance) | **Adopt** SPDX/CycloneDX + in-toto/SLSA (T5) |
+| External event ingestion (watch upstream → trigger) | model an event-source Information Provider |
+| **Consumer-graph-gated retirement** (retire when all consumers converged) | **DCM-owned** — a lifecycle policy over a graph predicate |
+| **Consumer fan-out orchestration** (N apps, each its own convergence) | **DCM-owned** — a governed process fan-out |
+| **Policy-composed constituent set** (policy picks which providers + gates fire) | the crux of "policy-driven pipeline"; the one real modeling question for eng |
+| Blue-green: two realizations of one intent + atomic cutover | extends validate-and-reserve (ADR-011) to a dual-realized swap |
+| Work-product Process nature + `<1hr` SLA | the open post-1.0 nature question (task #55) |
 
 ## Where each piece is specified
 | Piece | Home |
 |---|---|
 | Intent / Requested / Realized · Converge | ADR-030 · [lifecycle-convergence](lifecycle-convergence.md) |
-| Pattern → Template → System (assembly) | ADR-033 · [template-assembly](template-assembly.md) |
+| Pattern → Template → System | ADR-033 · [template-assembly](template-assembly.md) |
+| Provider capability match · naturalization boundary (wrap tools) | ADR-004 · DCM ADR-023 |
 | Validate-and-reserve (green before cutover) | ADR-011 |
-| Profiles / floors (dev-prod parity) · config bundles | ADR-007 · ADR-015 |
-| Adopt external standards by reference (Twelve-Factor, SLSA, …) | T5 · `adopted-standards.md` |
-| Provider capability match; naturalization | ADR-004 · DCM ADR-023 |
-| Process validation evidence + freshness | ADR-003 |
-| Dependency-graph completion | ADR-010 |
+| Dependency-graph completion (consumer graph / fan-out) | ADR-010 |
 | Attestation / trust | ADR-005 · DCM ADR-022 |
+| Profiles / floors · config bundles | ADR-007 · ADR-015 |
+| Adopt external standards **and tools** by reference | T5 · `adopted-standards.md` |
