@@ -1,7 +1,7 @@
 # ADR-031: 1.0 scope and focus — the 21 use cases as the gravity well
 
 **Status:** Accepted (2026-07-19)
-**Related:** the 21 September-release use cases (DAV set 29, *FF-Extended target*); enh #19 (lock Sept 1.0 scope + tag); ADR-030 (the model beneath — a *post-1.0* direction); ADR-032 (how we hold the future while shipping); ADR-007 (profiles).
+**Related:** the 21 September-release use cases; ADR-030 (the model beneath — a *post-1.0* direction); ADR-032 (how we hold the future while shipping); ADR-007 (profiles).
 
 ## Context
 
@@ -15,7 +15,7 @@ UDLM 1.0 (September) is surface-complete on `main`, and its concrete deliverable
 - Everything else is one of exactly two things:
   - an **operational unblock** — justified on its own operational merit and kept *minimal* (e.g. reviving the inventory types, ADR-029, to unstrand the estate — the types + the optional module, nothing more), or
   - a **Proposed ADR** — a card on the table that records a direction and **binds nothing** (ADR-030, ADR-032, and the Blueprints ADR are these).
-- **Remaining to tag 1.0** (per #19): ratify the ready ADRs, meet conformance Tier-1 (or deliberately soften the bar), and restamp `0.1 → 1.0`. **No new model surface.**
+- **Remaining to tag 1.0:** ratify the ready ADRs, meet conformance Tier-1 (or deliberately soften the bar), and restamp `0.1 → 1.0`. **No new model surface.**
 
 ## Data · Policy · Provider
 

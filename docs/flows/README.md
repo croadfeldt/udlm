@@ -36,7 +36,7 @@ and *references* the shared steps (assemble, place, enrich, reserve, converge) r
 them, so each use-case flow stays short and specific to what makes that case different. Read
 request-realization first.
 
-**The 21 September-release use cases** (DAV set 29 — *FF Extended Target*) are documented as flows here, each
+**The 21 September-release use cases** are documented as flows here, each
 labeled by its Use Case number and built on request-realization. Grouped by persona in
 **[by-persona.md](by-persona.md)** — the usage-by-role view.
 
