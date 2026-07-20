@@ -156,10 +156,11 @@ in the DCM architecture docs.
 
 | ID | Policy |
 |----|--------|
-| `STO-004` | The audit store is a specialized store contract — append-only, hash-chain integrity, reference-based retention, compliance-grade queries. The event stream is the delivery channel only, not the compliance destination. |
-| `AUD-018` | Audit records are replicated by live sync (regional peers) or signed-bundle export (sovereign peers); sovereignty checks are required before any replication, and hash-chain integrity is preserved across transport. A fully isolated sovereign peer keeps a local-only audit store with manual export. |
-| `AUD-019` | Store failures are themselves recorded via the synchronous commit-log entry (a consensus-durable store independent of all data stores); an audit-store self-failure produces `pending_forward` records, and on recovery a gap record (`AUDIT_STORE_UNAVAILABLE`) with the outage window is inserted, so the hash-chain gap is explicit and auditable. |
-| `OBS-002` | A realization ships a default observability dashboard (e.g. Grafana-based) for minimal/dev/standard profiles; standard+ may substitute enterprise platforms, FSI requires enterprise observability, and a sovereign peer uses a local dashboard only with no external connections. |
+| `APO-001` | The audit store is a specialized store contract — append-only, hash-chain integrity, reference-based retention, compliance-grade queries. The event stream is the delivery channel only, not the compliance destination. |
+| `APO-002` | Audit records are replicated by live sync (regional peers) or signed-bundle export (sovereign peers); sovereignty checks are required before any replication, and hash-chain integrity is preserved across transport. A fully isolated sovereign peer keeps a local-only audit store with manual export. |
+| `APO-003` | Store failures are themselves recorded via the synchronous commit-log entry (a consensus-durable store independent of all data stores); an audit-store self-failure produces `pending_forward` records, and on recovery a gap record (`AUDIT_STORE_UNAVAILABLE`) with the outage window is inserted, so the hash-chain gap is explicit and auditable. |
+| `APO-004` | A realization ships a default observability dashboard (e.g. Grafana-based) for minimal/dev/standard profiles; standard+ may substitute enterprise platforms, FSI requires enterprise observability, and a sovereign peer uses a local dashboard only with no external connections. |
+| `APO-005` | Observability artifacts — dashboards, reporting, alerting, and their management — are scoped to the appropriate business/operational groups (DCMGroup) by entity attribution alone, with no side-channel scoping configuration. |
 
 ---
 

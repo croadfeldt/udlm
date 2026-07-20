@@ -19,6 +19,11 @@ prefixes:
     home: governance/accreditation-and-authorization-matrix.md
     domain: Accreditation frameworks and the data-authorization matrix
     status: active
+  - prefix: APO
+    name: Audit / provenance / observability
+    home: observability/audit-provenance-observability.md
+    domain: Cross-cutting audit-store, audit-replication, provenance, and observability-scoping rules
+    status: active
   - prefix: ATM
     name: Authority tier model
     home: governance/authority-tier-model.md
@@ -29,7 +34,6 @@ prefixes:
     home: observability/universal-audit.md
     domain: The universal audit model (Merkle log, leaf signatures, log head)
     status: active
-    baseline_spread: [observability/audit-provenance-observability.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
   - prefix: AUTH
     name: Auth capability & identity contract
     home: governance/auth-providers.md
@@ -100,7 +104,11 @@ prefixes:
     home: entities/resource-grouping.md
     domain: Resource-group classes, membership, and nesting rules
     status: active
-    baseline_spread: [observability/universal-groups.md]   # DEBT(id-collision GRP-001..005): resolve in renumber PR — universal-groups reuses GRP-001..005
+    # SANCTIONED co-ownership, not debt: the Universal Group Model doc deliberately co-defines
+    # the GRP family with a coordinated number space (GRP-007..015 + GRP-INV-* there;
+    # 001-005/016-019 here) and states the invariant itself — "every GRP-* id has exactly one
+    # definition" (universal-groups §2.3). No duplicate ID; the check still enforces that.
+    additional_homes: [observability/universal-groups.md]
   - prefix: INF
     name: Information providers
     home: contracts/information-providers-advanced.md
@@ -131,13 +139,11 @@ prefixes:
     home: entities/service-dependencies.md
     domain: Observability rules carried on the service-dependency graph
     status: active
-    baseline_spread: [observability/audit-provenance-observability.md]   # DEBT(id-collision OBS-002): resolve in renumber PR
   - prefix: OPS
     name: Operational models
     home: lifecycle/operational-models.md
     domain: Operational-model (ingest/process/egress) rules
     status: active
-    baseline_spread: [foundations/layering-and-versioning.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
   - prefix: OWN
     name: Ownership, sharing & allocation
     home: foundations/ownership-sharing-allocation.md
@@ -173,7 +179,10 @@ prefixes:
     home: entities/entity-relationships.md
     domain: Entity-relationship model rules (edge_type, relation, nature-derivation)
     status: active
-    baseline_spread: [registry/common-elements.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
+    # SANCTIONED co-ownership: common-elements §9 "Relation vocabulary (normative)" owns the
+    # relation-naming rules REL-001..004; this doc owns the graph/lifecycle rules REL-010..024.
+    # One coordinated, disjoint number space; no duplicate ID (enforced).
+    additional_homes: [registry/common-elements.md]
   - prefix: RHY
     name: Rehydration / four-states
     home: foundations/four-states.md
@@ -199,7 +208,6 @@ prefixes:
     home: contracts/storage-providers.md
     domain: Storage-provider contract rules
     status: active
-    baseline_spread: [observability/audit-provenance-observability.md]   # DEBT(prefix-spread): fold or disjoin in renumber PR
   - prefix: SUB
     name: Subscription lifecycle
     home: lifecycle/subscription-lifecycle.md
