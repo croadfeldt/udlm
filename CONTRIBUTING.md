@@ -35,6 +35,9 @@ Before a PR merges it is swept against the standing checks below. The **automate
 good PR self-checks them in its *Why*. These are the recurring findings distilled into a checklist so they
 are caught once, not re-litigated per PR.
 
+**Before you open a PR or publish content, run the signoff:** `./scripts/signoff.sh` runs every automated
+gate below and prints the judgment checklist. The full procedure is in [`docs/signoff.md`](docs/signoff.md).
+
 **Automated (CI).**
 - **Valid by construction** — `registry/tools/validate.py` + `tests/validate_registry.py` (`ADOPT-001`,
   `$id`↔version). Every type/instance/provider matrix passes with a worked example.
