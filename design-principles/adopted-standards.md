@@ -149,6 +149,48 @@ provider may emit, consume, or both (`direction`).
 A consumer (or a type) expresses what it needs as an `adopts` reference with a `version` range — e.g. a
 report that needs FOCUS allocation columns requires `FOCUS >=1.3`. Also pure data.
 
+### 3.4 Where a standard lives, and what `direction` means (Proposed)
+
+Two rules govern *where* a standard is declared and *how* its data crosses the boundary. Both follow from
+the naturalization boundary (ADR-023): **native touches the edge, and nothing else** — internally the model
+is always UDLM.
+
+**(a) Substrate adopts neutral; providers declare native.**
+- A **type's `adopts[]`** (§3.1) carries the *vendor-neutral* standard the type maps to — the shared
+  join-key / conformance reference (Redfish `ComputerSystem` for `Compute.*`, FOCUS for cost). It must be a
+  credible vendor-neutral standard, because it sits on the portable substrate.
+- A **provider's `adopted_standard_support`** (§3.2) carries the *native* standards **that provider** can
+  emit/consume (KubeVirt, vSphere, EC2, Metal3). Provider-specific, declared on the provider.
+- **Why:** the adopt is a join-key, not the portable shape — the spec is UDLM-generic and the provider
+  naturalizes it either way, so a provider-native standard on the *type* buys no portability and biases the
+  substrate toward one ecosystem. This is T5 sharpened by *where*.
+- **Review finding + audit:** a type adopting a single-ecosystem standard as tier1 (as
+  `Compute.VirtualMachine` did with KubeVirt) moves it to the provider surface; sweep all types for
+  provider-native `adopts[]`.
+
+**(b) `direction` is edge translation, never a bypass.** `emit` / `consume` describe translation *at the
+boundary*, one direction each:
+- **`consume` (in)** = the provider **ingests a native artifact and naturalizes it INTO UDLM** — the
+  **greening-the-brownfield** ingress: a discovered/imported KubeVirt VM, an OVA, or existing state becomes a
+  generic `Compute.VirtualMachine` (Discovered → adopted to intent), then managed through the full machinery
+  (policy, placement, dependency graph, provenance, the four states). *Adoption is convergence-based — see
+  ADR-030 (adopt discovered state) and DCM brownfield ingestion.*
+- **`emit` (out)** = the provider **denaturalizes UDLM → native** for a downstream consumer (FOCUS cost data,
+  an OVA export).
+- **`consume` ≠ accept-and-run.** A provider that *applied a native spec without naturalizing it to UDLM*
+  would bypass the control plane — a **review finding**, not a supported mode. Greening-the-brownfield is the
+  only sanctioned way native input enters, and it always lands as UDLM.
+
+**So what `adopted_standard_support` is *for*.** It is the provider's **edge-translation menu** — which native
+standards it can naturalize **in** (import/discovery/greening) and **out** (emit/export), at which versions.
+DCM uses it to (1) route **brownfield ingestion** (which provider can green a KubeVirt or vSphere estate),
+(2) route **emit/export** (which provider can produce FOCUS / an OVA), and (3) run **version negotiation**
+(§4). It is **not** the provider's internal realization mechanism — how a provider *provisions* from UDLM
+intent is opaque naturalization and is never declared. **Earn-its-keep:** an `adopted_standard_support` entry
+is warranted only where it is a real *edge* capability a consumer or the greening flow uses; an entry that
+merely restates "this is how I internally realize" is opaque and does not belong (same test we apply to
+fields and data points).
+
 ## 4. Version negotiation, enforcement, translation (Policy)
 
 Given a **requirement** (range) and a provider's **support matrix** (range), Policy resolves the
