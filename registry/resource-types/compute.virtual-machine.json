@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "family": "Resource",
   "entity_type": "single",
   "portability": "portable",
@@ -19,23 +19,10 @@
     "required": [
       "guest_os"
     ],
-    "anyOf": [
-      {
-        "required": [
-          "instance_size"
-        ]
-      },
-      {
-        "required": [
-          "vcpu",
-          "memory"
-        ]
-      }
-    ],
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable \u2014 common-elements \u00a72.2, ADR-014). Size by class IN PLACE OF vcpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable \u2014 common-elements \u00a72.2, ADR-014). Size by class IN PLACE OF vcpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). oneOf enforces sizing by class XOR raw (exactly one)."
       },
       "vcpu": {
         "type": "object",
@@ -46,7 +33,17 @@
           "count": {
             "type": "integer",
             "minimum": 1,
-            "description": "Number of virtual CPUs."
+            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (k8s/kubevirt domain cpu, vSphere sockets*cores, EC2 vCPUs) at realization (ADR-023)."
+          },
+          "sockets": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable."
+          },
+          "cores_per_socket": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint: cores per socket. Provider-support-dependent."
           }
         }
       },
@@ -60,20 +57,60 @@
             "type": "string",
             "pattern": "^[0-9]+(MB|GB|TB)$",
             "description": "Memory allocation, e.g. 16GB."
+          },
+          "hugepages": {
+            "type": "object",
+            "description": "Optional huge-page backing (provider-support-dependent; validated against provider capability).",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "page_size": {
+                "type": "string",
+                "description": "e.g. 2Mi, 1Gi."
+              }
+            }
           }
         }
       },
       "guest_os": {
-        "type": "object",
-        "required": [
-          "type"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "Guest OS image identifier, e.g. rhel-9."
+        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (ADR-012; layering \u00a73.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Inline OS identifier (e.g. rhel-9). portability_breaking: a value with no os_image vocabulary entry \u2014 a review finding."
+              },
+              "version": {
+                "type": "string",
+                "description": "Inline OS version (e.g. 9.4)."
+              }
+            }
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "../data-reference.schema.json#/$defs/data_reference"
+              },
+              {
+                "required": [
+                  "reference_data_type"
+                ],
+                "properties": {
+                  "reference_data_type": {
+                    "const": "os_image"
+                  }
+                }
+              }
+            ]
           }
-        }
+        ]
       },
       "disks": {
         "type": "array",
@@ -87,8 +124,47 @@
               "type": "string",
               "pattern": "^[0-9]+(GB|TB)$"
             },
-            "storage_class": {
-              "type": "string"
+            "storage": {
+              "type": "object",
+              "description": "Storage REQUIREMENTS for this disk \u2014 the portable, capability-based intent the provider MATCHES to a native backing (a k8s StorageClass, a vSphere datastore, an oVirt storage domain, a ZFS/LVM pool, a cloud volume type). Requirements-only by design: a named provider class is vendor-native and does not port across bare-metal / VM / k8s, so the chosen class is the provider's REALIZED fact (recorded in outputs), never portable intent (ADR-035). Fields mirror the capabilities a provider advertises (Platform.StorageClass.capabilities), so request and advertisement speak one language; the provider selects a class whose advertised capabilities satisfy these minima.",
+              "properties": {
+                "tier": {
+                  "enum": [
+                    "standard",
+                    "performance",
+                    "archive"
+                  ],
+                  "description": "Optional neutral tier hint (bounded codelist)."
+                },
+                "min_iops": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Minimum required IOPS (vs advertised capabilities.iops)."
+                },
+                "min_throughput_mbps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Minimum required throughput, MB/s."
+                },
+                "min_replication": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Minimum data replicas required."
+                },
+                "encryption": {
+                  "type": "boolean",
+                  "description": "Require data-at-rest encryption."
+                },
+                "snapshot": {
+                  "type": "boolean",
+                  "description": "Require volume snapshot support."
+                }
+              }
+            },
+            "boot_order": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Optional boot order (0 = first). Absent = provider default."
             }
           }
         }
@@ -103,11 +179,11 @@
           },
           "zone": {
             "type": "string",
-            "description": "Sovereignty/availability zone constraint (resolved against the selected location's zone)."
+            "description": "Availability/sovereignty zone constraint, selected from the zones the provider advertises for the chosen location; resolved against that location."
           },
           "affinity": {
             "type": "array",
-            "description": "Co-location / separation intent relative to OTHER existing resources.",
+            "description": "Co-location / separation intent relative to OTHER named resources (not nodes). Each target is resolved at reserve, so a pre-known UUID is not required.",
             "items": {
               "type": "object",
               "required": [
@@ -117,13 +193,20 @@
               "properties": {
                 "target": {
                   "type": "string",
-                  "description": "handle/uuid of an existing resource to co-locate with or avoid."
+                  "description": "Handle OR label-selector of an existing resource to co-locate with / avoid, resolved at reserve (ADR-025/AEP-124) - you do not need its UUID in advance."
                 },
                 "rule": {
                   "enum": [
                     "affinity",
                     "anti_affinity"
                   ]
+                },
+                "selector": {
+                  "type": "object",
+                  "description": "Alternative to a handle: match target(s) by labels (key/value).",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -147,29 +230,20 @@
               "type": "string",
               "description": "handle/uuid of an existing Network.VirtualNetwork the NIC attaches to (selected from the eligible set). Carried as a references->Network.VirtualNetwork relationship."
             },
-            "ip_mode": {
-              "enum": [
-                "dynamic",
-                "static",
-                "byo"
-              ],
-              "default": "dynamic",
-              "description": "How the address is procured (ADR-009 fulfillment): dynamic=allocate, static=a specific requested address, byo=a consumer-supplied existing Network.IPAddress reference."
-            },
-            "requested_address": {
-              "type": "string",
-              "description": "For ip_mode=static/byo: the desired/existing address (byo references an existing Network.IPAddress)."
-            },
             "mac": {
               "type": "string",
               "description": "Optional requested MAC address."
+            },
+            "ip_address_ref": {
+              "type": "string",
+              "description": "Optional handle/uuid of an existing Network.IPAddress to bind to this NIC (an ADR-025 resource reference, like network_ref). The referenced record carries HOW the address was selected and WHAT it is \u2014 its `allocation` origin (static | dhcp | link-layer | random) and `address` CIDR, the RFC 8344 / NMstate convergent form (ADR-023); a static reservation is simply `allocation: static`. ABSENT = the provider allocates an address on `target_segment` at reserve (ADR-009 \u00a73 fulfillment). Host L3 config (routes, DNS, bond/bridge/VLAN) lives in Network.ConnectionProfile (NMstate), not restated here. Carried as a references->Network.IPAddress relationship."
             }
           }
         }
       },
-      "power": {
+      "run_state": {
         "type": "object",
-        "description": "Desired guest power state the provider drives to (KubeVirt runStrategy / Redfish PowerState). Distinct from the four-state lifecycle_state.",
+        "description": "Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from the four-state lifecycle_state; snapshot/restore are separate operations, not run states.",
         "properties": {
           "desired_state": {
             "enum": [
@@ -178,11 +252,24 @@
               "suspended"
             ],
             "default": "running",
-            "description": "Target guest power state."
+            "description": "Target guest run state."
           }
         }
       }
-    }
+    },
+    "oneOf": [
+      {
+        "required": [
+          "instance_size"
+        ]
+      },
+      {
+        "required": [
+          "vcpu",
+          "memory"
+        ]
+      }
+    ]
   },
   "outputs": {
     "ip_address": {
@@ -200,6 +287,14 @@
     "target_segment": {
       "type": "string",
       "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb \u2014 the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment \u2014 e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 \u00a73 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
+    },
+    "run_state": {
+      "type": "string",
+      "description": "Observed guest run state reported by the provider (running/stopped/...), the realized counterpart of spec.run_state."
+    },
+    "storage_backing": {
+      "type": "string",
+      "description": "Realized: the native storage backing the provider selected per disk to satisfy spec.disks[].storage (e.g. a k8s StorageClass name, a datastore, a ZFS dataset). Provider-reported, vendor-specific \u2014 a realized fact, not portable intent."
     }
   },
   "immutable": [
@@ -211,7 +306,7 @@
       "target": "Network.IPAddress",
       "target_field": "address",
       "cardinality": "0..n",
-      "description": "May consume one or more pre-allocated addresses."
+      "description": "May consume zero or more pre-allocated Network.IPAddress addresses (optional dependency)."
     },
     {
       "edge_type": "references",
@@ -240,19 +335,9 @@
       "standard": "Redfish",
       "version": "2024.4",
       "standard_name": "ComputerSystem",
-      "role": "vendor-neutral virtual system inventory + power vocabulary (ProcessorSummary, MemorySummary, PowerState) \u2014 same family as Compute.BareMetalHost",
+      "role": "Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for the Compute.* family (shared with Compute.BareMetalHost). Provider-NATIVE realizations (KubeVirt, vSphere, EC2, ...) are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
-      "license_compatibility": "compatible-reference",
-      "disposition": "tier1_value"
-    },
-    {
-      "standard": "KubeVirt",
-      "version": ">=1.2",
-      "standard_name": "VirtualMachine / VirtualMachineInstance",
-      "role": "k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power) \u2014 the parallel to Metal3 for bare metal",
-      "source": "https://kubevirt.io/",
-      "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
