@@ -106,6 +106,15 @@ Real-world usage of these words varies by group — the charter should map onto 
   vRA/Azure sense.
 - **"Validated Pattern"** (Red Hat) — a *deployable, tested* composite ≈ our **Template**, **not** our
   (abstract) Pattern. When citing it, map it to Template.
+- **"Consumer" — three roles under one word.** The term is used for (1) the **requester** — the party that
+  submits a Request and owns the resulting entity in its Tenant (the "consumer side of the transaction", anchored
+  on the formal **Tenant** + **Identity**; a role, not a type — may be a person, an agent, or a peer control
+  plane); (2) the **dependent** — a resource that requires/references another in the dependency graph (a VM
+  "consuming" a Volume; a project "consuming" a library); (3) the **data-consumer** — a downstream tool ingesting
+  *emitted* data at a boundary (a FinOps tool consuming FOCUS). Plus unrelated technical uses (`information-consumer`
+  in the IP contract, `consumer_profile` in DAV). **Open question for eng:** disambiguate into distinct terms —
+  e.g. **requester** (submits intent, owns the entity), **dependent** (graph edge), **data-consumer** (boundary) —
+  and reserve "consumer" for at most one; or keep "consumer" as the umbrella with the three always qualified.
 
 These are the vocabulary the eng review reconciles alongside the `family`/`nature` collapse — the point of the
 charter is to land on names that match how teams already speak, then freeze.
