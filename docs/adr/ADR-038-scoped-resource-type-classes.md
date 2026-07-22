@@ -76,6 +76,27 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    (break-glass, attested for compliance), and the re-port is recorded. So provider commitment is never a
    dead-end: it is a function of requirements, and requirements are updatable.
 
+   **Operational expectations — enablement, not execution.** A re-port across providers (a VMware VM →
+   `Compute.VM.OCPVirt`) is a "cast" at the *intent* level; realization is a separate, bounded effort:
+   - **Enablement over execution.** UDLM supplies the *data framework* that makes a re-port **expressible and
+     analysable** — the requirements, the dependency set (networking / storage / compute), and the eligible
+     target providers. It does **not** perform the migration. Execution is DCM + the provider + **third-party
+     automation**: moving data requires a mover (e.g. **MTV** for VMware→OCPVirt); DCM does not migrate a disk.
+   - **A re-port is a rebuild, not a lift-and-shift.** Moving to a different provider **rebuilds** the resource
+     from its requirements + dependencies on the target's *native* services — equivalent to redeploying to a new
+     cloud. The substrate carries the **intent to rebuild**, never a copy of the source's native form (T1/T2,
+     naturalization boundary ADR-023): a VMware VM on NSX becomes an OCPVirt VM on OVN by *re-realizing the
+     requirements*, not by translating NSX.
+   - **Portability is bounded.** Source-specific features with no target equivalent **cannot** re-port; a
+     partial/assisted re-port is the expected outcome. The model makes the *achievable* portion explicit and
+     **surfaces the non-portable remainder**.
+   - **The data is the lever.** Minimal Base/Type classes + scoped `SharedDataElement`s carry the data to
+     (a) evaluate vendor-lock-in vs flexibility and (b) drive the **downstream automation** for the complex cases
+     (the NSX→OVN class). Scoping an element higher extends portability wherever a target can honour it.
+   - **`how` is the realization's concern.** The migration/rebuild mechanics, per-source/target limitations, and
+     automation live in **DCM ADR-025** (engine), migration **ADR-003**, and naturalization **ADR-023**. This
+     section defines what re-porting *means*; the realization docs carry the concrete process and its limits.
+
 5. **Policy-fill completes the blanks (ADR-024).** Type/provider-specific elements left blank at instantiation
    are filled by policy for the resolved Class — precedence **consumer-set ≻ policy-fill ≻ provider-default**,
    `source_type: policy`, audited. The fill is Policy (computed, recorded), never embedded in the portable data
