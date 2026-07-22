@@ -1,16 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "541766ad-94b8-40db-8886-c42fd85e8bd1",
   "resource_type": "Network.Gateway",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Network Gateway",
-    "description": "A network edge gateway \u2014 routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
+    "description": "A network edge gateway — routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
@@ -48,7 +46,7 @@
             },
             "vlan_ref": {
               "type": "string",
-              "description": "Reference (handle/uuid) to the Network.VLAN this segment rides \u2014 selected, not invented (foundational-resources). Replaces the inline 802.1Q id (R5)."
+              "description": "Reference (handle/uuid) to the Network.VLAN this segment rides — selected, not invented (foundational-resources). Replaces the inline 802.1Q id (R5)."
             }
           }
         }
@@ -82,7 +80,7 @@
       "name": "segment_vlan",
       "target": "Network.VLAN",
       "cardinality": "0..n",
-      "description": "segment_vlan \u2014 each segment rides a Network.VLAN, referenced (vlan_ref), not an inline 802.1Q id (R5; foundational-resources selected-not-invented)."
+      "description": "segment_vlan — each segment rides a Network.VLAN, referenced (vlan_ref), not an inline 802.1Q id (R5; foundational-resources selected-not-invented)."
     }
   ],
   "adopts": [

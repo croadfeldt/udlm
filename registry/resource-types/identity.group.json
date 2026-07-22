@@ -1,13 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "a3e9c6f1-5d84-4b20-9c37-4f80ae2d9153",
   "resource_type": "Identity.Group",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Access",
   "entity_type": "Identity",
-  "lifecycle_archetype": "provisioning",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Identity Group",
@@ -18,25 +16,62 @@
   "spec": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["handle", "source"],
+    "required": [
+      "handle",
+      "source"
+    ],
     "properties": {
-      "handle": { "type": "string", "description": "Group name." },
-      "display_name": { "type": "string" },
-      "source": { "enum": ["built_in", "external"], "description": "built_in = a native group of local identities; external = mirrors a directory/IdP group (referenced, not custodied)." },
-      "external_group_ref": { "type": "string", "description": "For source=external: the directory group DN / IdP group id (a PIP reference)." },
+      "handle": {
+        "type": "string",
+        "description": "Group name."
+      },
+      "display_name": {
+        "type": "string"
+      },
+      "source": {
+        "enum": [
+          "built_in",
+          "external"
+        ],
+        "description": "built_in = a native group of local identities; external = mirrors a directory/IdP group (referenced, not custodied)."
+      },
+      "external_group_ref": {
+        "type": "string",
+        "description": "For source=external: the directory group DN / IdP group id (a PIP reference)."
+      },
       "members": {
         "type": "array",
-        "items": { "type": "string" },
+        "items": {
+          "type": "string"
+        },
         "description": "For source=built_in: actor_uuids of Identity.Person / Identity.ServiceAccount members. For source=external: resolved from the directory (referenced)."
       }
     }
   },
   "outputs": {
-    "group_ref": { "type": "string", "description": "Referenced by a DCMGroup (access_grouping) membership source and by auth-providers role_mapping." }
+    "group_ref": {
+      "type": "string",
+      "description": "Referenced by a DCMGroup (access_grouping) membership source and by auth-providers role_mapping."
+    }
   },
   "relationships": [
-    { "edge_type": "references", "target": "Identity.Person", "cardinality": "0..n", "description": "Members (for built_in groups)." },
-    { "edge_type": "references", "target": "Identity.ServiceAccount", "cardinality": "0..n", "description": "Members (for built_in groups)." },
-    { "edge_type": "references", "target": "Security.DirectoryService", "cardinality": "0..1", "description": "The directory this group is sourced from (for source=external)." }
+    {
+      "edge_type": "references",
+      "target": "Identity.Person",
+      "cardinality": "0..n",
+      "description": "Members (for built_in groups)."
+    },
+    {
+      "edge_type": "references",
+      "target": "Identity.ServiceAccount",
+      "cardinality": "0..n",
+      "description": "Members (for built_in groups)."
+    },
+    {
+      "edge_type": "references",
+      "target": "Security.DirectoryService",
+      "cardinality": "0..1",
+      "description": "The directory this group is sourced from (for source=external)."
+    }
   ]
 }

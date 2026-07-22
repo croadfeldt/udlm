@@ -1,13 +1,10 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "f4a19c72-8e3d-4b1a-95d6-7c2e8f0b3d41",
   "resource_type": "Platform.Namespace",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "portability": "provider-specific",
-  "lifecycle_archetype": "provisioning",
   "status": "active",
   "metadata": {
     "display_name": "Namespace",

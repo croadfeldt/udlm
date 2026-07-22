@@ -239,7 +239,7 @@ realization choice — Policy/Provider). This determines the repo each piece lan
 |---|---|---|
 | **Class hierarchy** | **canonical** Base/Type definitions; the Class **spec** for all layers (`extends`, Liskov invariant, flattening, `SharedDataElement` scoping) | org/provider-authored **class definitions** (any layer) — one register/validate/promote lifecycle, policy/profile-driven; optional example/default classes |
 | **`SharedDataElement`** | the unit `{scope, element, schema, values, state}`, value vocabularies | promotion / canonicalization, ≥2-adopter promotion, upward-contribution gating |
-| **Portability** | the `portable / partial / provider-specific` classification (declared) | computing the eligible set; grading an instance; re-derivation |
+| **Portability** | the `portable / partial / provider-specific` classification — **derived** from scope × advertised capabilities, not stored (ADR-027 addendum, 3rd finding) | computing the eligible set; grading an instance; re-derivation |
 | **Addressing** | the coordinate grammar (dotted/URL, `$id`, dual-anchor shape, `covers`/`skip` declarations, notation convention) | resolution, the governed resolver, routing, the federation resolver, sovereignty gate at the wire |
 | **References** | `data_reference`, the references-context **classified edge**, dual anchor | reference resolution, blast-radius computation (`impact_report` run), repoint enforcement |
 | **Layers** | the layer **contract** — `covers`/`skip`/precedence/`narrow_only` grammar | the layer **definitions** (org-level) + assembly engine (gather-by-`covers`, precedence, override), group/request binding, skip authorization, optional example/default layers |

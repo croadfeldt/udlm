@@ -1,16 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7c8fe45c-8a77-4ab2-9743-e779cd1c5401",
   "resource_type": "Network.AddressService",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Address Service",
-    "description": "The network address-assignment and name-resolution SERVICE for a site \u2014 DHCP and/or DNS as one operated capability (two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (Kea, dnsmasq, BIND, FreeIPA, UniFi, a cloud service) are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations from the estate's Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces. Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.",
+    "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (Kea, dnsmasq, BIND, FreeIPA, UniFi, a cloud service) are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations from the estate's Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces. Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:58:43Z"
   },
@@ -28,7 +26,7 @@
           ],
           "x-extensible-enum": true
         },
-        "description": "Which address capabilities this service provides. (IPAM-as-a-distinct-service dropped \u2014 addressing is modeled as Network.IPAddress records per ADR-023; there is no adopted IPAM vocabulary and its substance is covered by dhcp-scope + the IPAddress records.)"
+        "description": "Which address capabilities this service provides. (IPAM-as-a-distinct-service dropped — addressing is modeled as Network.IPAddress records per ADR-023; there is no adopted IPAM vocabulary and its substance is covered by dhcp-scope + the IPAddress records.)"
       },
       "ha": {
         "type": "boolean",
@@ -48,14 +46,14 @@
       "name": "served_by",
       "target": "Compute.BareMetalHost",
       "cardinality": "0..n",
-      "description": "served_by \u2014 a host running this DHCP/DNS provider. The service stops before its host in a reverse-topo shutdown."
+      "description": "served_by — a host running this DHCP/DNS provider. The service stops before its host in a reverse-topo shutdown."
     },
     {
       "edge_type": "depends_on",
       "name": "served_by",
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
-      "description": "served_by \u2014 a VM running this DHCP/DNS provider. (One of BareMetalHost / VirtualMachine per instance.)"
+      "description": "served_by — a VM running this DHCP/DNS provider. (One of BareMetalHost / VirtualMachine per instance.)"
     }
   ],
   "adopts": [
@@ -63,7 +61,7 @@
       "standard": "RFC-2131",
       "version": "2.x",
       "standard_name": "DHCPv4",
-      "role": "DHCP protocol concepts (lease/scope) \u2014 the neutral vocabulary; concrete servers (Kea/dnsmasq/...) are providers",
+      "role": "DHCP protocol concepts (lease/scope) — the neutral vocabulary; concrete servers (Kea/dnsmasq/...) are providers",
       "source": "https://www.rfc-editor.org/rfc/rfc2131",
       "license": "IETF-Trust",
       "license_compatibility": "compatible-reference",

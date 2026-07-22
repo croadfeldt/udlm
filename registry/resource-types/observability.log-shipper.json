@@ -1,12 +1,10 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "0aa66fc7-f17c-4a34-b053-824c16570022",
   "resource_type": "Observability.LogShipper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Log Shipper",

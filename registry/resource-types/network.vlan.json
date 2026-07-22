@@ -1,17 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "4a1178f7-4da9-47cd-97f6-8d864adcb031",
   "resource_type": "Network.VLAN",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "lifecycle_archetype": "provisioning",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "VLAN / Network Segment ID",
-    "description": "A foundational network segment identifier \u2014 a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve) \u2014 owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED by reference from the resources that ride it (a Network.VirtualNetwork, a Hardware.NetworkInterface). A root resource (docs/foundational-resources.md): dependents reference an existing VLAN, they do not invent one. The concrete encapsulation is provider data; a provider may offer a variant (e.g. Network.Port) that the org ratifies.",
+    "description": "A foundational network segment identifier — a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve) — owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED by reference from the resources that ride it (a Network.VirtualNetwork, a Hardware.NetworkInterface). A root resource (docs/foundational-resources.md): dependents reference an existing VLAN, they do not invent one. The concrete encapsulation is provider data; a provider may offer a variant (e.g. Network.Port) that the org ratifies.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z"
   },
