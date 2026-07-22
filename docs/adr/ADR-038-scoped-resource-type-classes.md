@@ -220,7 +220,7 @@ realization choice — Policy/Provider). This determines the repo each piece lan
 | **`SharedDataElement`** | the unit `{scope, element, schema, values, state}`, value vocabularies | promotion / canonicalization, ≥2-adopter promotion, upward-contribution gating |
 | **Portability** | the `portable / partial / provider-specific` classification (declared) | computing the eligible set; grading an instance; re-derivation |
 | **Addressing** | the coordinate grammar (dotted/URL, `$id`, dual-anchor shape, `covers`/`skip` declarations, notation convention) | resolution, the governed resolver, routing, the federation resolver, sovereignty gate at the wire |
-| **References** | `data_reference`, `reference_data` layers, references-context edge, dual anchor | reference resolution, blast-radius computation (`impact_report` run), repoint enforcement |
+| **References** | `data_reference`, the references-context **classified edge**, dual anchor | reference resolution, blast-radius computation (`impact_report` run), repoint enforcement |
 | **Layers** | the layer **contract** — `covers`/`skip`/precedence/`narrow_only` grammar | the layer **definitions** (org-level) + assembly engine (gather-by-`covers`, precedence, override), group/request binding, skip authorization, optional example/default layers |
 | **Instantiation** | the intent (Class + requirements) + the four-state shape | Placement (pick Type/Provider/instance, ADR-019), policy-fill (ADR-024), requirements↔capability matching |
 | **Composite (`multi`)** | the `catalog-item` constituent / edge / binding declaration | expansion into a Composite Entity, orchestration |
@@ -413,24 +413,26 @@ Class name + version and *orchestrates* them. **Classes for the parts (*is-a*), 
 ## Orthogonal data — the references-context axis
 Beyond *is-a* (Class inheritance) and *has-a* (Composite), a resource carries **orthogonal context** — data
 *about* it that isn't part of its own definition: a Data-Center info bundle, an app profile, a compliance bundle.
-This is the **third relationship axis — references-context** — and it uses the **reference model**
-(`data_reference` → a `reference_data` layer), *not* an assembly layer.
+This is the **third relationship axis — references-context** — modeled as a **classified, dereferenceable edge**
+in the relationship/dependency graph (relation nature + strength, dual anchor, §10 coordinate), **not** an
+assembly layer and **not** a bare untyped pointer. (**`reference_data` is retired from `layer_type`**: orthogonal
+context is never merged into the assembly, so it was never a layer — it is a **linked entity**, reached by an edge.)
 
-- **Precedent already in the registry:** `app_profile` is a `reference_data` layer (a governed bundle) a resource
-  attaches to via a `data_reference`; the bundle can reference further bundles (app_profile → network_zone) with
-  transitive impact (ADR-012). A **Data-Center info bundle** is the same shape (`reference_data_type: data_center`)
-  — one bundle, referenced by every resource in the DC.
-- **Reference, not assembly.** The `layer_type` enum splits two kinds: **assembly** layers
-  (`base`/`core`/`intermediate`/`service`/`request`/`policy`) build the resource's *own* effective spec;
-  **`reference_data`** is a *shared bundle the resource references*, resolved separately, never merged in.
-  Orthogonal context is the second — DC power/cooling/zone data isn't part of the VM's spec; the VM *points at*
-  it. Reference (one bundle, many referrers) avoids the duplication an assembly-stack would copy into every VM.
+- **Precedent, reframed:** `app_profile` is a governed **entity** a resource links to by a **classified edge**
+  (`references-context`, nature = context); the bundle can link further bundles (app_profile → network_zone) with
+  transitive impact (ADR-012). A **Data-Center info bundle** is the same shape — one entity, linked by every
+  resource in the DC via a `located-in` (context) edge.
+- **Edge, not layer.** `layer_type` is now **assembly-only** (`base`/`core`/`intermediate`/`service`/`request`/
+  `policy`) — layers build the resource's *own* effective spec. Orthogonal context is **not** a layer: DC
+  power/cooling/zone data isn't part of the VM's spec; the VM **links** to the DC entity by a classified edge and
+  **projects** the fields it needs (§*Projecting a related entity's field*). One entity, many linkers — no
+  duplication — and the edge carries a **classified nature** (context vs dependency) a bare reference could not.
 - **Same coordinate + dual anchor.** The reference rides the §10 coordinate (`<dc>.power.capacity`), resolved on
   demand, governed (T4 / sovereignty; address ≠ dereference), addressable/filterable (`…[.data_center = dc-east]`,
   the `state.mn` pattern one axis over). And it carries the **dual anchor** (§10): the immutable pin (the DC state
   at placement — reproducible/audit) **and** the named head (`dc-east-info` — the current DC state).
-- **Layers declare their coverage as a filterable selector list.** A layer — *assembly or `reference_data`* —
-  declares **`covers`**: a **list of §10 selectors** in the standard dotted language (authority +
+- **Layers declare their coverage as a filterable selector list.** A layer declares **`covers`**: a **list of
+  §10 selectors** in the standard dotted language (authority +
   `Category.Type.Provider` + attribute predicates, with wildcards). A `core` encryption standard covers
   `Compute.*`; an org layer covers `Compute.VM.*` + `Storage.*`; a DC-info bundle covers
   `Compute.*[.residency = dc-east]` (or `peer.dcm.east/*`). DCM applies the layer to any resource matching **any**
@@ -459,7 +461,7 @@ This is the **third relationship axis — references-context** — and it uses t
 |---|---|---|
 | **is-a** | a Class specializes a definition | `extends` (Base → Type → Provider) |
 | **has-a** | a Composite orchestrates constituents | `catalog-item` constituents (`entity_type: multi`) |
-| **references-context** | a resource references orthogonal data | `data_reference` → `reference_data` layer (dual-anchor, §10 coordinate) |
+| **references-context** | a resource links to orthogonal data / entities | a **classified edge** in the relationship graph (relation nature + strength, dual-anchor, §10 coordinate); dereferenceable, projectable |
 
 ### Projecting a related entity's field into the pipeline — the navigational coordinate
 Referencing a bundle keeps the record **concise** (carry the linkage, don't inline the data). But often the
@@ -513,6 +515,56 @@ value*, so policy-over-the-merged-result sees the concrete value (`residency = s
 3. **Mandatory provenance** — source + edge + anchor recorded for every projected value; nothing enters the spec "from nowhere."
 4. **Re-run policy on replay** — rehydration/re-realization re-evaluates *current* policy; a pin reproduces data, never exempts it from today's rules.
 5. **Governed edge nature** — the relation's nature is validated, not self-asserted; no downgrading a dependency to `context` to escape gating.
+
+## Layer → request data injection — two-sided scoping
+A layer **injects data into a resource request** during assembly — a **static value** (`encryption: required`) or
+an **edge-projected value** (`self.located-in.network.fabric_id`, §*Projecting…*). Which layer reaches which
+request is a **two-sided handshake**, and both sides speak the one §10 selector language (no new construct):
+
+**Target scoping — which requests receive the injection (the *layer* declares):**
+- **Entity scope — `covers`** (§above): the §10 selector list over authority + `Category.Type.Provider` +
+  attribute predicates. *Which entities.*
+- **Process scope — `applies_on`**: the lifecycle operations the layer injects during (`provision`, `migrate`,
+  `rehydrate`, `day2`, …) — the same lifecycle-scope vocabulary policies use. *Which processes.* A DC-binding layer
+  injects on `provision` + `rehydrate`, not on a `label-update`.
+
+**Source scoping — which layers feed a given request (the *request/profile* declares):**
+- **Source selector — `from_layers`**: a §10 selector over the **layer graph** naming the layers a request draws
+  from — usually inherited from the request's **profile** (the org/tenant layer stack), occasionally set
+  explicitly. *Which sources.* This **bounds** the assembly: a tenant-A request draws tenant-A's layers even if a
+  tenant-B layer's `covers` would match — the source selector, not `covers`, holds the boundary.
+- **`skip`** (§above): the negative form — bypass named layers, governed (break-glass for constraint/compliance).
+
+**Injection = the intersection.** A layer `L` injects into request `R` iff `R.target ∈ L.covers` (entity) **and**
+`R.operation ∈ L.applies_on` (process) **and** `L ∈ R.from_layers` (source) **and not** `L ∈ R.skip`. Layers
+*advertise* applicability (covers + applies_on); requests *select* sources (from_layers) — publish ⋈ subscribe,
+one selector mechanism on both ends. Because injection lands data *into the spec*, it is an **ingress crossing**:
+`PROJ-P6` admission applies, and source-selection is itself an ingress-policy surface (ADR-041).
+
+**Example A — static injection, two-sided.**
+```yaml
+# the layer (source) declares its target scope
+layer: core/compliance-encryption
+covers:     [ Compute.*, Storage.* ]         # target: entity
+applies_on: [ provision, migrate ]           # target: process
+fields: { encryption: { value: required, authority: immutable } }   # static injected value
+
+# the request declares its source scope (here, inherited from its profile)
+request: Compute.VM  web-01   operation: provision
+profile: acme/sovereign        # → from_layers: [ core/compliance-*, org/acme/* ]
+# web-01 ∈ Compute.* (covers) ∧ provision ∈ applies_on ∧ core/compliance-encryption ∈ from_layers
+#   → encryption: required (immutable) merged into web-01's effective spec, with provenance
+```
+
+**Example B — projected injection is the same mechanism.** The `core/baremetal-dc-binding` layer (§*Projecting…*)
+carries `covers: [Compute.BareMetalHost.*]` + `applies_on: [provision, rehydrate]`; its `fields` are
+edge-projected (`self.located-in.…`). Static and projected injection differ only in whether a field's value is a
+literal or a navigational coordinate — the two-sided scoping is identical.
+
+**Example C — source scoping holds a tenant boundary.** `tenant-a/net-defaults` and `tenant-b/net-defaults` both
+`cover: [Compute.VM.*]`. A `tenant-a` request's `from_layers` (from its profile) includes only `tenant-a/*`, so it
+receives A's defaults, **never** B's — even though B's `covers` matches. `covers` says *who may*; `from_layers`
+says *who does*. Both are required; neither alone is the boundary.
 
 ## Worked illustrations
 - **`encryption` ramp** — a Provider Class element (`Compute.VM.OCPVirt` offers `encryption: sev-snp`) recurs at
