@@ -223,6 +223,11 @@ prefixes:
     home: entities/entity-relationships.md
     domain: Cross-tenant authorization (XTA) rules
     status: active
+  - prefix: PVD
+    name: Portable-value discipline
+    home: design-principles/portable-values.md
+    domain: Portable-value discipline (reference / codelist / requirement, not free string; no inline re-expression)
+    status: active
   - prefix: ZT
     name: Zero trust
     home: governance/accreditation-and-authorization-matrix.md
