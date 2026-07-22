@@ -1,12 +1,10 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "68db84ec-3f4f-4810-b083-0cb30b42d368",
   "resource_type": "Network.DNSZone",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "DNS Zone",
@@ -37,7 +35,7 @@
       },
       "records": {
         "type": "array",
-        "description": "Resource records (RFC 1035). Optional \u2014 a zone may be summarized without enumerating records.",
+        "description": "Resource records (RFC 1035). Optional — a zone may be summarized without enumerating records.",
         "items": {
           "type": "object",
           "required": [

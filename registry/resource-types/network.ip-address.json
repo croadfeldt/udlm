@@ -1,16 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "616fd540-4908-4e96-a149-c9494be0c76e",
   "resource_type": "Network.IPAddress",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "family": "Resource",
-  "entity_type": "Atomic",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "IP Address",
-    "description": "A single IP address as its own record (RFC 8344 / NMstate form) \u2014 `address` + `allocation` origin \u2014 bound to the interface it is configured on. A static DHCP reservation is just `allocation: static` on this record (ADR-023).",
+    "description": "A single IP address as its own record (RFC 8344 / NMstate form) — `address` + `allocation` origin — bound to the interface it is configured on. A static DHCP reservation is just `allocation: static` on this record (ADR-023).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
@@ -23,7 +21,7 @@
       },
       "ip_family": {
         "$ref": "../common-elements.schema.json#/$defs/ip_family",
-        "description": "Address family (canonical `ip_family` \u2014 renamed from `family`, common-elements \u00a72.4)."
+        "description": "Address family (canonical `ip_family` — renamed from `family`, common-elements §2.4)."
       },
       "allocation": {
         "type": "string",
@@ -54,14 +52,14 @@
       "adopted_from": "OASIS TOSCA AttachesTo",
       "target": "Hardware.NetworkInterface",
       "cardinality": "0..1",
-      "description": "attaches_to \u2014 the interface this address is configured on. Previously carried as an estate-invented 'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements \u00a79)."
+      "description": "attaches_to — the interface this address is configured on. Previously carried as an estate-invented 'assigned_to' note; named from TOSCA AttachesTo when relation names were adopted from standards (common-elements §9)."
     },
     {
       "edge_type": "depends_on",
       "name": "allocated_from",
       "target": "Network.IPAddressPool",
       "cardinality": "0..1",
-      "description": "The pool this address was carved from (mirrors Storage.Dataset.pool \u2192 Storage.Pool). Present when the address is allocated from a Network.IPAddressPool rather than statically authored; a realized fact the provider populates, completing allocation-ownership."
+      "description": "The pool this address was carved from (mirrors Storage.Dataset.pool → Storage.Pool). Present when the address is allocated from a Network.IPAddressPool rather than statically authored; a realized fact the provider populates, completing allocation-ownership."
     }
   ],
   "adopts": [
@@ -69,7 +67,7 @@
       "standard": "OASIS TOSCA",
       "version": "2.0",
       "standard_name": "AttachesTo",
-      "role": "relation vocabulary \u2014 attaches_to address-on-interface relation name (common-elements \u00a79)",
+      "role": "relation vocabulary — attaches_to address-on-interface relation name (common-elements §9)",
       "source": "https://docs.oasis-open.org/tosca/TOSCA/v2.0/TOSCA-v2.0.html",
       "license": "OASIS",
       "license_compatibility": "compatible-reference",
@@ -89,7 +87,7 @@
       "standard": "NMstate",
       "version": "2.x",
       "standard_name": "ipv4/ipv6.address",
-      "role": "convergent addressing form (address + prefix-length + enabled/dhcp/autoconf) \u2014 NetworkManager declarative desired-state",
+      "role": "convergent addressing form (address + prefix-length + enabled/dhcp/autoconf) — NetworkManager declarative desired-state",
       "source": "https://nmstate.io/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",

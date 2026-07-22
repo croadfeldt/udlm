@@ -1,13 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "6f097f82-9ed7-4be5-ae20-eca1b8e30051",
   "resource_type": "Capability",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Knowledge",
   "entity_type": "Capability",
-  "lifecycle_archetype": "curation",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Capability",

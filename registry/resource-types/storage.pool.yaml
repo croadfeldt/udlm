@@ -11,15 +11,12 @@
 # ADOPT (not absorb), core-tenets T5: schemas are not restated — only an identity join + version-pinned
 # pointer. The pool/vdev vocabulary is OpenZFS's; the capacity/redundancy alignment is SNIA Swordfish
 # StoragePool's; a provider (zfs) naturalizes the concrete zpool.
-$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.2.0
 conforms_to: udlm/0.1
 uuid: 91b18748-7f03-461a-9ee1-6cd77e8367c7
 resource_type: Storage.Pool
-version: 0.1.0
+version: 0.2.0
 family: Resource
-entity_type: Composite
-lifecycle_archetype: provisioning
-portability: portable
 status: active
 metadata:
   display_name: Storage Pool

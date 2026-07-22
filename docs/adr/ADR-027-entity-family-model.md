@@ -53,8 +53,12 @@ A composite Resource's constituents are its owned resources; a composite Process
 
 ## Addendum (Proposed, 2026-07-20) — derive the shape; don't store it as source of truth
 
-**Status:** Proposed — for the same engineering review as the naming charter and ADR-034. Reconsiders whether
-the Resource/Process shape (`Atomic`/`Composite`, being renamed `single`/`multi`) earns a **stored** field.
+**Status:** **Accepted & implemented** (2026-07-22) — the shape, `lifecycle_archetype`, **and `portability`** are
+now **derived**, not stored. Meta-schema: `entity_type` dropped from `required` (required only on the
+Knowledge/Access branches); `lifecycle_archetype` and `portability` dropped from `required`, derived. Registry:
+all three fields removed from the specs they appeared on, each MINOR-bumped (pre-1.0 incubation). The in-flight
+`Atomic|Composite → single|multi` **rename is superseded** — a field being derived is not renamed. (`portability`
+= the third finding, §below: not a provider's to self-declare — decided by whoever supports the element.)
 
 **The question.** The shape asserts *"owns constituents?"* Does storing that flag add value beyond
 filtering, or does the **constituent list already carry it**?
@@ -82,11 +86,13 @@ Policy/query (**T2**). The Knowledge/Access `entity_type` values are unaffected.
 multi-ness for a type whose constituents are realized-only**. None exists today. If one appears, it carries
 the justification for storing the flag — the flag should not be stored "just in case."
 
-**Implications.**
-- The in-flight `single`/`multi` rename (PR #167) is **held** — don't rename a field we may retire. If this
-  addendum is adopted, #167 is replaced by "derive `has_constituents`, drop the stored shape value."
-- Meta-schema: `entity_type` is currently **required**; deriving the shape makes it optional/removed on the
-  Resource/Process branch (the Knowledge/Access branch — `Capability`/`Identity`/… — stays).
+**Implications (now realized).**
+- The `single`/`multi` rename branch (`feat/entity-type-single-multi`) is **superseded** — retired in favour of
+  deriving `has_constituents`; the stored shape value is gone, so there is nothing to rename.
+- Meta-schema: `entity_type` removed from top-level `required`; required only on the Knowledge/Access `allOf`
+  branches (`Capability`/`Identity`/… **stay** — genuine discriminators). `lifecycle_archetype` optional/derived.
+- `has_constituents` is the derived predicate: `true` iff the type/instance declares/holds `constituents[]`
+  (Templates/Composite Services declare them at catalog time; realized entities carry them). No stored field.
 
 ### Second finding — `lifecycle_archetype`: same disposition
 
@@ -98,3 +104,24 @@ the justification for storing the flag — the flag should not be stored "just i
 **Proposal:** derive it, don't store it. It is already optional; make it a derived predicate and drop it from
 authored specs. Zero migration risk (no consumer). Same reasoning, same disposition as the shape above — a
 stored classifier with no consumer that its own description marks as inferable earns nothing beyond filtering.
+
+### Third finding — `portability`: not the provider's to declare (derive it too)
+
+`portability` (`portable` / `partial` / `provider-specific`) is the same pattern, with a sharper reason to drop
+the stored field: **portability is not a property a provider self-declares — it is decided by whoever chooses to
+*support* the element.** A type asserting "this is portable" binds nothing; portability is realized only when a
+*target* provider advertises a capability that satisfies the element (ADR-004), or an org adopts it.
+
+- **Already derivable — and ADR-038 §3 already says so:** *"an element's Class **is** its portability … read off
+  scope"* (Base = portable; lower = narrower, never zero). The stored classification just restates the scope.
+- **It drifts:** a `provider-specific` element becomes portable the moment a second provider advertises the
+  capability; the stored label never updates. The informative answer is **relative to the target set** — the
+  eligible providers — which ADR-038 already assigns to DCM (*"computing the eligible set; grading an instance;
+  re-derivation"*).
+- **`partial` is the tell:** partial across *which* providers? A static label carries almost no information.
+
+**Proposal:** derive portability from **scope × advertised capabilities** (DCM's eligible-set computation); remove
+the stored `portability` field from the meta-schema (drop from `required`) and from authored specs. This resolves
+ADR-038's internal contradiction — §3 says *read off scope* (derived) while the peer-test table + meta-schema said
+*declared* — in favour of derived. Same discipline as the two findings above; removing the field is the
+implementation.
