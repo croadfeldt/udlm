@@ -216,7 +216,7 @@ realization choice — Policy/Provider). This determines the repo each piece lan
 
 | Piece | **UDLM** — model / grammar / data (a peer MUST honor) | **DCM** — engine / decision (a peer MAY differ) |
 |---|---|---|
-| **Class hierarchy** | Base/Type **definitions**; the Provider-Class **grammar** (`extends`, Liskov invariant, effective-schema flattening) | Provider Class **definitions** (provider-authored) — registration, validation-against-grammar, optional example/default classes |
+| **Class hierarchy** | **canonical** Base/Type definitions; the Class **spec** for all layers (`extends`, Liskov invariant, flattening, `SharedDataElement` scoping) | org/provider-authored **class definitions** (any layer) — one register/validate/promote lifecycle, policy/profile-driven; optional example/default classes |
 | **`SharedDataElement`** | the unit `{scope, element, schema, values, state}`, value vocabularies | promotion / canonicalization, ≥2-adopter promotion, upward-contribution gating |
 | **Portability** | the `portable / partial / provider-specific` classification (declared) | computing the eligible set; grading an instance; re-derivation |
 | **Addressing** | the coordinate grammar (dotted/URL, `$id`, dual-anchor shape, `covers`/`skip` declarations, notation convention) | resolution, the governed resolver, routing, the federation resolver, sovereignty gate at the wire |
@@ -234,30 +234,40 @@ substrate; DCM owns the **engine** — placement, policy-fill, assembly, resolut
 migration, and governance. The coordinate *grammar* is UDLM; the `Compute.VM.OCPVirt` *definition* — and every
 *decision* about it — is provider/DCM (next).
 
-## Authorship & domain — UDLM defines the format; the definitions are provider/org (DCM domain)
+## Authorship & domain — UDLM defines the specs; DCM runs one contribution lifecycle over them
 The three Class layers are **not** authored in the same place, and neither are data layers. Sharpening the peer
 test (ADR-008) along the **authorship** axis:
 
-- **UDLM owns the format & spec — the grammar.** The Base and Type Class **definitions** (`Compute`,
-  `Compute.VM`), *and* the normative **rules** for the layers below: how a Provider Class `extends` a Type Class
-  under the Liskov invariant, how `SharedDataElement`s are scoped, how data layers declare `covers`/`skip` and
-  compose (precedence, override, `narrow_only`). This is the portable, wire-compatible part a peer MUST honor.
-- **Provider Classes are provider-authored.** A Provider Class definition (`Compute.VM.OCPVirt`) is **by its
-  nature a provider-created artifact** — the provider declares its realization surface as scoped
-  `SharedDataElement`s under the UDLM grammar. UDLM ships **no** concrete Provider Class; the `Compute.VM.OCPVirt`
-  used throughout this ADR is **illustrative of the grammar**, not a UDLM-owned definition.
-- **Data-layer definitions are organization-level.** The layer *contract* (above) is UDLM; a specific layer — an
-  org encryption `core` standard, a `Compute.VM.*` org overlay, a Data-Center info bundle — is an **org (or
-  provider) implementation detail**. UDLM defines the shape; the org defines which layers exist and what they hold.
-- **DCM is the domain for both.** Provider Classes and data layers live in DCM: it **registers** the
-  provider-contributed Class, **validates** it against the UDLM Type-class grammar (the gate),
-  **resolves/binds** layers to groups and requests, **matches** requirements to advertised capabilities, and
-  **promotes** scoped elements upward when gated. **DCM MAY ship examples or defaults** (a starter Provider
-  Class, a default compliance layer) — as conveniences, never as canon; they stay implementation details an org
-  overrides. (DCM's side of this is modeled in DCM ADR-025.)
+- **UDLM owns the specs and ships the canonical library.** The normative **spec** for each contributable kind —
+  a Class (Base/Type/Provider: `extends`, the Liskov invariant, effective-schema flattening, `SharedDataElement`
+  scoping) and a data layer (`covers`/`skip`, precedence, override, `narrow_only`) — *and* a **canonical set of
+  Base/Type classes** (`Compute`, `Compute.VM`, …) as the shared, portable baseline. UDLM defines the spec and
+  **instructs DCM what to do with instances of it**; it does not itself author org/provider content.
+- **Provider Classes are provider-authored.** A `Compute.VM.OCPVirt` definition is **by its nature a
+  provider-created artifact** — the provider declares its realization surface as scoped `SharedDataElement`s
+  under the Class spec. UDLM ships **no** concrete Provider Class; the `Compute.VM.OCPVirt` used throughout this
+  ADR is **illustrative of the spec**, not a UDLM-owned definition.
+- **Organizations may author their own Base, Type, and Provider classes — a DCM policy/profile feature.** When
+  the canonical library lacks a type, an org authors its own class (any layer) **under its own authority**
+  (`acme.example/Compute.VM` — a distinct identity that never shadows canonical `Compute.VM`; portability is
+  authority-scoped — narrower, never zero). This is **not a UDLM meta-model act**: UDLM defines the spec the
+  class conforms to and instructs DCM; **DCM implements class-authoring as a policy/profile-driven feature**,
+  governed by org policy (same family as *Org standards*). Standardizing an *existing* class stays Policy/Profile
+  (a constraint profile); authoring a *new* one your library lacks is this feature — told apart by **authority**,
+  both Policy/DCM.
+- **Data-layer definitions are organization-level** — the layer *contract* is UDLM; *which* layers exist and what
+  they hold (an org compliance overlay, a Data-Center info bundle) are org implementation details.
+- **DCM runs one contribution lifecycle over all of them.** Provider/org classes, data layers, and
+  `SharedDataElement`/vocabularies share **one** pipeline — **register → validate against the UDLM spec for that
+  kind → bind/resolve → promote (`proposed → canonical`)** — the same process, differing only in the **data spec**
+  validated against (Class spec, layer contract, element spec). This **subsumes vocab ingest (ADR-039) and
+  Provider-Class registration into one engine**; who may contribute/promote is policy/profile + trust (ADR-022).
+  **DCM MAY ship examples or defaults** (a starter class, a default compliance layer) — conveniences, never
+  canon. (DCM's side: DCM ADR-025.)
 
-In one line: **format & spec = UDLM; the Provider-Class and data-layer definitions that fill it = provider/org,
-modeled and governed in DCM.** Base and Type are the model; Provider Classes and data layers are implementation.
+In one line: **specs + canonical library = UDLM; anyone may author classes and layers under those specs,
+authority-scoped and promotable, run through one DCM register/validate/promote lifecycle governed by
+policy/profile.**
 
 ## Options considered
 - **(A) Status quo** — independent per-type definitions + `provider_extensions` + Vendor.Type fork. *Rejected*:
@@ -310,7 +320,8 @@ modeled and governed in DCM.** Base and Type are the model; Provider Classes and
      examples**.) Both are review-sweep judgment checks *and* wired data checks.
 
 ## Org standards & tenancy — Policy over the classes, not a fork of them
-An organization's standards are **Policy over the shared classes**, not new classes. The peer test (ADR-008)
+An organization's standards are **Policy over the shared classes**, not a fork of the shared ones (authoring your
+*own* classes under your own authority is a separate, allowed capability — see the end of this section). The peer test (ADR-008)
 routes it: *could another org do this differently and still be valid?* — yes, every org differs → **Policy
 (DCM)**, not substrate. This is what keeps the classes valuable: Acme's and Globex's VMs are both `Compute.VM`
 — *interoperable* — each governed by its own policy. Forking a class per org would destroy the portability the
@@ -323,11 +334,15 @@ paradigm exists to provide.
 | **Standards / constraints** ("MUST be encrypted, approved OS images only, size ≤ X") | **constraint profile** (E1) — *narrows* class fields (required / tighter enum / bounds), never widens or redefines | a class |
 | **Genuinely-new org data** (`cost_center`, `compliance_id`) | an org-scoped `SharedDataElement` — additive, portability-degrading, must-ignore-unknown; usually **cross-category** (a tenancy overlay), not Compute-specific | a Compute class |
 
-**Never redefine** a standard class (Liskov / no-shadow). **`Compute.ORG.VM`-style custom classes are avoided** —
-they fragment portability (per-org class = no interop), couple governance into the wire contract (T1/T2), and are
-the wrong shape (org concerns are cross-category, so a Compute-scoped org layer splits the overlay per category).
-The one exception: a genuinely-novel org *type* with no standard equivalent — a **leaf fork**, rare, never a
-mid-layer rewrite of the standard hierarchy. **Org = a governance/tenancy overlay on the shared portable classes.**
+**Never *shadow* a canonical class** (Liskov / no-shadow): inserting `Compute.ORG.VM` *into the canonical
+hierarchy* to change what `Compute.VM` means fragments the shared type (per-org redefinition = no interop) and
+couples governance into the wire contract (T1/T2) — that is what the Policy mechanisms above are for. **Authoring
+your *own* classes under your *own* authority is different, and allowed** — `acme.example/Compute.VM` is a
+distinct identity in the org's namespace, canon untouched, portability authority-scoped, promotable to canon when
+proven; it runs through **DCM's policy/profile class-authoring feature** and the one contribution lifecycle (see
+*Authorship & domain*). The line is **authority, not permission**: standardize a *shared* class → Policy/Profile;
+author a type the library lacks → your own class under your authority. **Org = a governance/tenancy overlay on the
+shared classes and, where the library falls short, an authority-scoped author of its own.**
 
 ## Naming depth — unbounded, but governed
 `Category.Type.Provider` is not a hard three-level cap — the notation is **unbounded** (the grammar recurses to
