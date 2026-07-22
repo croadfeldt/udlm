@@ -461,6 +461,59 @@ This is the **third relationship axis — references-context** — and it uses t
 | **has-a** | a Composite orchestrates constituents | `catalog-item` constituents (`entity_type: multi`) |
 | **references-context** | a resource references orthogonal data | `data_reference` → `reference_data` layer (dual-anchor, §10 coordinate) |
 
+### Projecting a related entity's field into the pipeline — the navigational coordinate
+Referencing a bundle keeps the record **concise** (carry the linkage, don't inline the data). But often the
+source needs **one specific value from the target in its own realized spec** — a bare-metal's network config
+needs its Data Center's `network.fabric_id`; its power config needs the DC's `power.feed`. The linkage (edge),
+the addressing (§10 coordinate), and the assembly (layers) all exist, but nothing yet **projects a target field
+*along the edge* into the source's pipeline**. That is a **navigational coordinate** — the §10 coordinate reaching
+its anchor by **traversing a classified edge from self**:
+
+```
+self.located-in.network.fabric_id
+└ self   └ the located-in edge   └ field-path on the DataCenter at its far end
+```
+
+This is the shape of OData navigation properties / RDF property paths (both in the prior-art set) — a graph hop
+in the address. It is **not a new construct**: edge (linkage) + coordinate (which field, now edge-traversing) +
+layer (where it lands, with provenance) + dual anchor (reproducibility) + governed dereference. Resolving it
+yields a **derived layer value** — computed by following the edge, landed in the effective spec with provenance
+(LAY-008) and the dual anchor (the immutable pin captures the target field *at realization*; the named head
+follows current).
+
+**Worked example — DC info into a bare-metal request.**
+```yaml
+# ① DataCenter entity (rev-42), referenced by many        # ② concise bare-metal request (intent)
+$id: acme.example/DataCenter#dc-east                       class: Compute.BareMetalHost
+network:  { fabric_id: fab-7, mtu: 9000 }                  name: bm-genomics-01
+power:    { feed: "A+B" }                                  requirements: { cpu: {min_cores: 64}, … }
+location: { residency: state.mn }                          relationships:
+                                                             - relation: located-in     # classified edge
+# ③ a layer projects DC fields via the edge                    target: acme.example/DataCenter#dc-east
+layer: core/baremetal-dc-binding                               nature: context          # not a lifecycle dep
+covers: [ Compute.BareMetalHost.* ]
+fields:
+  network.uplink_fabric: { value: self.located-in.network.fabric_id }
+  power.feed:            { value: self.located-in.power.feed }
+  placement.residency:   { value: self.located-in.location.residency }   # sovereignty flows in
+
+# ④ assembly resolves → realized spec, with provenance + pinned anchor
+network:   { uplink_fabric: fab-7 }     # ⟵ dc-east.network.fabric_id (via located-in) [pin: dc-east@rev-42]
+placement: { residency: state.mn }      # ⟵ dc-east.location.residency (via located-in) [head: dc-east]
+```
+On a later DC change (`fab-7 → fab-9`): **rehydrate** replays the pin (`fab-7`, reproducible); **`impact_report`**
+surfaces `bm-genomics-01` as affected (the projection recorded a *data*-dependency); **governed re-resolve**
+repoints to `fab-9` and re-pins. `nature: context` means it never gated the bare-metal's *lifecycle* — only its data.
+
+**Policy safety — a projection must not let data bypass or hide from policy.** A projection is a *layer-contributed
+value*, so policy-over-the-merged-result sees the concrete value (`residency = state.mn`) exactly as if typed — it
+**feeds** policy, never skirts it. That holds under five invariants (to be formalized with the mechanism):
+1. **Resolve-before-policy** — projections resolve *within the merge*; policy sees concrete values, never unresolved coordinates.
+2. **Target-egress gate** — the dereference runs the *target's* egress/sovereignty policy (address ≠ dereference), not only the source's — the anti-exfil guarantee.
+3. **Mandatory provenance** — source + edge + anchor recorded for every projected value; nothing enters the spec "from nowhere."
+4. **Re-run policy on replay** — rehydration/re-realization re-evaluates *current* policy; a pin reproduces data, never exempts it from today's rules.
+5. **Governed edge nature** — the relation's nature is validated, not self-asserted; no downgrading a dependency to `context` to escape gating.
+
 ## Worked illustrations
 - **`encryption` ramp** — a Provider Class element (`Compute.VM.OCPVirt` offers `encryption: sev-snp`) recurs at
   a second provider, is contributed/promoted **up** to the `Compute.VM` Type Class, and — with enough adoption —
