@@ -23,7 +23,8 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    - **Base Class** — *Category* scope (`Compute`): `SharedDataElement`s common to the category.
    - **Type Class** — *Type* scope (`Compute.VM`): extends the Base Class with type-specific elements.
    - **Provider Class** — *Provider* scope (`Compute.VM.OCPVirt`): extends the Type Class with provider-specific
-     elements.
+     elements. UDLM defines the *grammar* for this layer; the definition itself is **provider-authored** (see
+     *Authorship & domain*) — `Compute.VM.OCPVirt` here is illustrative of the grammar, not a UDLM-shipped class.
    Each **extends** the one above under the **Liskov invariant — add or refine, never contradict** (a Provider
    Class *is-a* Type Class *is-a* Base Class). This **subsumes** `provider_extensions` *and* the Vendor.Type
    fork into one uniform mechanism: a provider-specific element is just a `SharedDataElement` at the Provider
@@ -215,12 +216,12 @@ realization choice — Policy/Provider). This determines the repo each piece lan
 
 | Piece | **UDLM** — model / grammar / data (a peer MUST honor) | **DCM** — engine / decision (a peer MAY differ) |
 |---|---|---|
-| **Class hierarchy** | Base/Type/Provider structure, `extends`, Liskov invariant, effective-schema flattening rule | — |
+| **Class hierarchy** | Base/Type **definitions**; the Provider-Class **grammar** (`extends`, Liskov invariant, effective-schema flattening) | Provider Class **definitions** (provider-authored) — registration, validation-against-grammar, optional example/default classes |
 | **`SharedDataElement`** | the unit `{scope, element, schema, values, state}`, value vocabularies | promotion / canonicalization, ≥2-adopter promotion, upward-contribution gating |
 | **Portability** | the `portable / partial / provider-specific` classification (declared) | computing the eligible set; grading an instance; re-derivation |
 | **Addressing** | the coordinate grammar (dotted/URL, `$id`, dual-anchor shape, `covers`/`skip` declarations, notation convention) | resolution, the governed resolver, routing, the federation resolver, sovereignty gate at the wire |
 | **References** | `data_reference`, `reference_data` layers, references-context edge, dual anchor | reference resolution, blast-radius computation (`impact_report` run), repoint enforcement |
-| **Layers** | the layer records + `covers`/`skip` **as data** | the assembly engine (gather-by-`covers`, precedence, override, `narrow_only`), skip authorization |
+| **Layers** | the layer **contract** — `covers`/`skip`/precedence/`narrow_only` grammar | the layer **definitions** (org-level) + assembly engine (gather-by-`covers`, precedence, override), group/request binding, skip authorization, optional example/default layers |
 | **Instantiation** | the intent (Class + requirements) + the four-state shape | Placement (pick Type/Provider/instance, ADR-019), policy-fill (ADR-024), requirements↔capability matching |
 | **Composite (`multi`)** | the `catalog-item` constituent / edge / binding declaration | expansion into a Composite Entity, orchestration |
 | **Re-porting** | the requirements (updatable intent) | migration / rehydration, re-placement (ADR-003) |
@@ -230,8 +231,33 @@ realization choice — Policy/Provider). This determines the repo each piece lan
 
 **One line:** UDLM owns the **model, grammar, classification, and data** — the portable, wire-compatible
 substrate; DCM owns the **engine** — placement, policy-fill, assembly, resolution, promotion, matching,
-migration, and governance. The name `Compute.VM.OCPVirt` and the coordinate are UDLM; every *decision* about
-them is DCM.
+migration, and governance. The coordinate *grammar* is UDLM; the `Compute.VM.OCPVirt` *definition* — and every
+*decision* about it — is provider/DCM (next).
+
+## Authorship & domain — UDLM defines the format; the definitions are provider/org (DCM domain)
+The three Class layers are **not** authored in the same place, and neither are data layers. Sharpening the peer
+test (ADR-008) along the **authorship** axis:
+
+- **UDLM owns the format & spec — the grammar.** The Base and Type Class **definitions** (`Compute`,
+  `Compute.VM`), *and* the normative **rules** for the layers below: how a Provider Class `extends` a Type Class
+  under the Liskov invariant, how `SharedDataElement`s are scoped, how data layers declare `covers`/`skip` and
+  compose (precedence, override, `narrow_only`). This is the portable, wire-compatible part a peer MUST honor.
+- **Provider Classes are provider-authored.** A Provider Class definition (`Compute.VM.OCPVirt`) is **by its
+  nature a provider-created artifact** — the provider declares its realization surface as scoped
+  `SharedDataElement`s under the UDLM grammar. UDLM ships **no** concrete Provider Class; the `Compute.VM.OCPVirt`
+  used throughout this ADR is **illustrative of the grammar**, not a UDLM-owned definition.
+- **Data-layer definitions are organization-level.** The layer *contract* (above) is UDLM; a specific layer — an
+  org encryption `core` standard, a `Compute.VM.*` org overlay, a Data-Center info bundle — is an **org (or
+  provider) implementation detail**. UDLM defines the shape; the org defines which layers exist and what they hold.
+- **DCM is the domain for both.** Provider Classes and data layers live in DCM: it **registers** the
+  provider-contributed Class, **validates** it against the UDLM Type-class grammar (the gate),
+  **resolves/binds** layers to groups and requests, **matches** requirements to advertised capabilities, and
+  **promotes** scoped elements upward when gated. **DCM MAY ship examples or defaults** (a starter Provider
+  Class, a default compliance layer) — as conveniences, never as canon; they stay implementation details an org
+  overrides. (DCM's side of this is modeled in DCM ADR-025.)
+
+In one line: **format & spec = UDLM; the Provider-Class and data-layer definitions that fill it = provider/org,
+modeled and governed in DCM.** Base and Type are the model; Provider Classes and data layers are implementation.
 
 ## Options considered
 - **(A) Status quo** — independent per-type definitions + `provider_extensions` + Vendor.Type fork. *Rejected*:
@@ -409,6 +435,9 @@ This is the **third relationship axis — references-context** — and it uses t
   constraint layer still gates its own skip, so skipping the compliance layers is full, attested break-glass. How
   the stack itself assembles (precedence, override field-by-field, `narrow_only`, provenance) is the existing
   layering model (`foundations/layering-and-versioning.md`); this adds only `covers` and `skip`.
+- **The contract is UDLM; the layer *definitions* are org-level.** Everything above (`covers`/`skip`/precedence/
+  `narrow_only`) is the UDLM layer **contract**; *which* layers exist and what they hold (the DC-info bundle, the
+  org compliance overlay) are **organization implementation details** in DCM's domain — see *Authorship & domain*.
 
 **The three relationship axes — all existing mechanisms:**
 | Axis | Relationship | Mechanism |
