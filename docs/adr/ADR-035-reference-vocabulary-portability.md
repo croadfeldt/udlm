@@ -8,6 +8,8 @@ ADR-023 (host networking as data / naturalization); ADR-024 (filling provider-re
 family this applies); core-tenets **T5** (adopt standards by reference); layering-and-versioning §3.7
 (reference-data kinds)
 
+**Settles:** how a *referenced* vocabulary (`os_image`, `storage_class`, …) is made portable across providers — adopted identity + advertised eligibility + validated membership.
+
 ## Context
 `data_reference` (ADR-012) lets a field point at a governed `reference_data` layer instead of inlining a value,
 and §3.7 pre-enumerates the reference kinds — `os_image`, `storage_class`, `vm_size`, `network_zone`,
