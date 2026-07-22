@@ -17,7 +17,6 @@ uuid: 91b18748-7f03-461a-9ee1-6cd77e8367c7
 resource_type: Storage.Pool
 version: 0.2.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: Storage Pool

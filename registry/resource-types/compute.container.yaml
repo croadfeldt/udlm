@@ -6,7 +6,6 @@ uuid: ba999aa2-7b4d-468f-9f70-20216cd2e3b1
 resource_type: Compute.Container
 version: 0.5.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: Container

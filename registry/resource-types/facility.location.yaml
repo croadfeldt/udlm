@@ -14,7 +14,6 @@ uuid: ef034d7f-d8ba-484a-9a0a-360c2327c8f2
 resource_type: Facility.Location
 version: 0.3.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: Location

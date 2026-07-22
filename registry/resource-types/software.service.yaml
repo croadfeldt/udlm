@@ -18,7 +18,6 @@ uuid: 94762c84-a096-4e54-a4f7-95123807fc95
 resource_type: Software.Service
 version: 0.4.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: Service

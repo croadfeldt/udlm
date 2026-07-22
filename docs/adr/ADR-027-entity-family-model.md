@@ -53,11 +53,12 @@ A composite Resource's constituents are its owned resources; a composite Process
 
 ## Addendum (Proposed, 2026-07-20) — derive the shape; don't store it as source of truth
 
-**Status:** **Accepted & implemented** (2026-07-22) — the shape and `lifecycle_archetype` are now **derived**, not
-stored. Meta-schema: `entity_type` dropped from `required` and required only on the Knowledge/Access branches;
-`lifecycle_archetype` optional/derived. Registry: both fields removed from the 34 Resource + 1 Process specs
-(`entity_type`) and from every spec that carried `lifecycle_archetype`, each MINOR-bumped (pre-1.0 incubation).
-The in-flight `Atomic|Composite → single|multi` **rename is superseded** — a field being derived is not renamed.
+**Status:** **Accepted & implemented** (2026-07-22) — the shape, `lifecycle_archetype`, **and `portability`** are
+now **derived**, not stored. Meta-schema: `entity_type` dropped from `required` (required only on the
+Knowledge/Access branches); `lifecycle_archetype` and `portability` dropped from `required`, derived. Registry:
+all three fields removed from the specs they appeared on, each MINOR-bumped (pre-1.0 incubation). The in-flight
+`Atomic|Composite → single|multi` **rename is superseded** — a field being derived is not renamed. (`portability`
+= the third finding, §below: not a provider's to self-declare — decided by whoever supports the element.)
 
 **The question.** The shape asserts *"owns constituents?"* Does storing that flag add value beyond
 filtering, or does the **constituent list already carry it**?
@@ -103,3 +104,24 @@ the justification for storing the flag — the flag should not be stored "just i
 **Proposal:** derive it, don't store it. It is already optional; make it a derived predicate and drop it from
 authored specs. Zero migration risk (no consumer). Same reasoning, same disposition as the shape above — a
 stored classifier with no consumer that its own description marks as inferable earns nothing beyond filtering.
+
+### Third finding — `portability`: not the provider's to declare (derive it too)
+
+`portability` (`portable` / `partial` / `provider-specific`) is the same pattern, with a sharper reason to drop
+the stored field: **portability is not a property a provider self-declares — it is decided by whoever chooses to
+*support* the element.** A type asserting "this is portable" binds nothing; portability is realized only when a
+*target* provider advertises a capability that satisfies the element (ADR-004), or an org adopts it.
+
+- **Already derivable — and ADR-038 §3 already says so:** *"an element's Class **is** its portability … read off
+  scope"* (Base = portable; lower = narrower, never zero). The stored classification just restates the scope.
+- **It drifts:** a `provider-specific` element becomes portable the moment a second provider advertises the
+  capability; the stored label never updates. The informative answer is **relative to the target set** — the
+  eligible providers — which ADR-038 already assigns to DCM (*"computing the eligible set; grading an instance;
+  re-derivation"*).
+- **`partial` is the tell:** partial across *which* providers? A static label carries almost no information.
+
+**Proposal:** derive portability from **scope × advertised capabilities** (DCM's eligible-set computation); remove
+the stored `portability` field from the meta-schema (drop from `required`) and from authored specs. This resolves
+ADR-038's internal contradiction — §3 says *read off scope* (derived) while the peer-test table + meta-schema said
+*declared* — in favour of derived. Same discipline as the two findings above; removing the field is the
+implementation.

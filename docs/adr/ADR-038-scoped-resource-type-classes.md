@@ -217,7 +217,7 @@ realization choice — Policy/Provider). This determines the repo each piece lan
 |---|---|---|
 | **Class hierarchy** | Base/Type/Provider structure, `extends`, Liskov invariant, effective-schema flattening rule | — |
 | **`SharedDataElement`** | the unit `{scope, element, schema, values, state}`, value vocabularies | promotion / canonicalization, ≥2-adopter promotion, upward-contribution gating |
-| **Portability** | the `portable / partial / provider-specific` classification (declared) | computing the eligible set; grading an instance; re-derivation |
+| **Portability** | the `portable / partial / provider-specific` classification — **derived** from scope × advertised capabilities, not stored (ADR-027 addendum, 3rd finding) | computing the eligible set; grading an instance; re-derivation |
 | **Addressing** | the coordinate grammar (dotted/URL, `$id`, dual-anchor shape, `covers`/`skip` declarations, notation convention) | resolution, the governed resolver, routing, the federation resolver, sovereignty gate at the wire |
 | **References** | `data_reference`, `reference_data` layers, references-context edge, dual anchor | reference resolution, blast-radius computation (`impact_report` run), repoint enforcement |
 | **Layers** | the layer records + `covers`/`skip` **as data** | the assembly engine (gather-by-`covers`, precedence, override, `narrow_only`), skip authorization |

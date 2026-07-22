@@ -13,7 +13,6 @@ uuid: e5e97d76-ab1c-4286-8ca4-db6aaeb08eb2
 resource_type: Hardware.BMC
 version: 0.4.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: BMC

@@ -5,7 +5,6 @@
   "resource_type": "Platform.ResourceQuota",
   "version": "0.3.0",
   "family": "Resource",
-  "portability": "provider-specific",
   "status": "active",
   "metadata": {
     "display_name": "Resource Quota",

@@ -5,7 +5,6 @@
   "resource_type": "Network.IPAddress",
   "version": "0.6.0",
   "family": "Resource",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "IP Address",

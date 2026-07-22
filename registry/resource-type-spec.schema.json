@@ -12,7 +12,6 @@
     "resource_type",
     "version",
     "family",
-    "portability",
     "status",
     "metadata",
     "spec",
@@ -70,7 +69,7 @@
         "partial",
         "provider-specific"
       ],
-      "description": "Portability classification (entities/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared."
+      "description": "Portability classification (entities/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (DCM's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
     },
     "status": {
       "enum": [

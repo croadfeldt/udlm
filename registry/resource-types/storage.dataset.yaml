@@ -14,7 +14,6 @@ uuid: a87f8bfa-e544-4e64-8b5e-24c9c581ad64
 resource_type: Storage.Dataset
 version: 0.3.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: Storage Dataset

@@ -5,7 +5,6 @@ uuid: c63f6d8c-8d1c-44c3-b996-62a7fe62b48a
 resource_type: Storage.FileShare
 version: 0.3.0
 family: Resource
-portability: portable
 status: active
 metadata:
   display_name: File Share

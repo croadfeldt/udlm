@@ -11,7 +11,6 @@ uuid: c1a483e0-f52a-4e0f-b58d-1b8425884afe
 resource_type: Hardware.BiosProfile
 version: 0.4.0
 family: Resource
-portability: partial
 status: active
 metadata:
   display_name: BIOS Profile

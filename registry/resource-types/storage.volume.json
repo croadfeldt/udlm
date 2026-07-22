@@ -5,7 +5,6 @@
   "resource_type": "Storage.Volume",
   "version": "0.5.0",
   "family": "Resource",
-  "portability": "portable",
   "status": "active",
   "lifecycle": {
     "states": [
