@@ -6,8 +6,6 @@
   "version": "0.1.0",
   "family": "Knowledge",
   "entity_type": "SoftwarePackage",
-  "lifecycle_archetype": "curation",
-  "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Software Package",
