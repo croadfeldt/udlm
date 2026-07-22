@@ -99,6 +99,16 @@ These land together, then the freeze applies:
 
 Real-world usage of these words varies by group — the charter should map onto it, not ignore it.
 
+- **`family` vs `kind` / `type`** (review feedback — *"why `family` and not `kind` or even `type`?"*). A fair
+  poke, and it lands on a term this charter is already reconsidering. **Not `kind`** — it collides head-on with
+  Kubernetes' object `kind` (`kind: Pod`); ADR-026 *retired* `kind` for exactly this reason (edges became
+  `edge_type`), and since DCM naturalizes **to** Kubernetes, reusing `kind` for our own top classification
+  re-introduces the collision at the provider edge. **Not bare `type`** — `type` is deliberately noun-namespaced
+  (`resource_type` / `entity_type` / `edge_type`, ADR-026's `<noun>_type` convention); bare `type` is ambiguous
+  (*type of what?*) and overloads those fields. `family` names a **different tier** — the coarse
+  `Resource / Process / Knowledge / Access` grouping. **Resolution:** the reviewer's instinct is right that
+  `family` earns scrutiny — but the answer is not `kind` or `type`, it is **collapse `family` into `nature`** (the
+  one classification axis, §"The classification axes"), with `family` surviving only as a derived view/alias.
 - **"Blueprint."** *This group* uses "blueprint" ≈ a **reusable design** — i.e. our **Pattern**. vRealize /
   Aria and Azure use "blueprint" ≈ a **deployable definition** — i.e. our **Template**. The word spans *both*
   tiers, which is exactly why it is retired here: adopting it for either tier collides with the other group's
