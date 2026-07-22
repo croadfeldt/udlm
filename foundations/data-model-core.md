@@ -29,8 +29,8 @@ it governs.
 ## 2. Entities, types, instances
 
 - Four families (ADR-027): **Resource** and **Process** — maintained state vs bounded
-  execution — each carrying `entity_type: Atomic | Composite` (the coarse shape from DCM's
-  orchestration perspective); plus **Knowledge** (Capability, TaxonomyTerm, Alias, Antipattern,
+  execution — each with a **derived** Atomic/Composite shape (`has_constituents`, the coarse shape from DCM's
+  orchestration perspective, not a stored field); plus **Knowledge** (Capability, TaxonomyTerm, Alias, Antipattern,
   DecisionRecord; UseCase/Gap/Assessment/Finding future — members defined in
   `entities/knowledge-family.md` §4) and **Access** (`Identity`), which do not carry the
   Atomic/Composite shape axis.
@@ -167,7 +167,8 @@ One definition each; everything else defers here:
 | Enum | Canonical values | Home |
 |---|---|---|
 | family | Resource, Process, Knowledge, Access | entity-type-families §4 (ADR-027) |
-| entity_type (shape) | Atomic, Composite — Resource & Process only | entity-types §2.2 (ADR-027) |
+| entity_type (Knowledge/Access discriminator) | Knowledge: Capability, TaxonomyTerm, Alias, Antipattern, UseCase, SoftwareImage, SoftwarePackage, Vulnerability · Access: Identity | knowledge-family §4 / schema `family` allOf |
+| has_constituents (derived shape) | Atomic, Composite — Resource & Process only, *derived* not stored | entity-types §2.2 (ADR-027) |
 | lifecycle_state | Intent, Requested, Realized, Discovered, Decommissioned | §3 |
 | execution_state (Process) | REQUESTED, INITIATED, EXECUTING, COMPLETED, FAILED, CANCELLED | §3 [D7] |
 | drift severity | minor, significant, critical | §3 [D6] |
