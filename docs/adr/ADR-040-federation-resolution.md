@@ -5,6 +5,8 @@
 **Type:** Architecture Decision Record (foundational — federation)
 **Related:** ADR-038 **§10** (the addressing coordinate + routing authority this resolves); ADR-008 (peer wire-compatibility); ADR-005 §5 (cross-peer federation); **ADR-024 §1** (sovereignty hard-gate); ADR-012 (`data_reference` — `resolving_authority` + `residency`); ADR-010 (dependency-graph completion); URI (RFC 3986); DNS; JSON Pointer (RFC 6901)
 
+**Settles (stub):** how rooted addresses *resolve* across peers / tenants / sovereignty borders — deferred, demand-driven, `peer` root first.
+
 ## Context
 The scoped-Class ADR §10 defines a fully-qualifiable address — **`[<authority>/]<anchor>.<field-path>`** — with an
 extensible routing-root registry (`peer`, `tenant`, `jurisdiction`, …), a dotted/filterable authority, and a

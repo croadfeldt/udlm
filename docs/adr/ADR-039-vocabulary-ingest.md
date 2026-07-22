@@ -8,6 +8,8 @@
 declaration); ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
 machine-readable reference graph this consumes); provenance `source_type` (context-and-purpose §4.4)
 
+**Settles:** how reference vocabularies get *populated* — staged (`proposed → canonical`), cleaned as lineage, ingested with minimal toil.
+
 ## Context
 PVD-001 turned selectable values into references to Knowledge / reference-data vocabularies (`guest_os` →
 `os_image`, `storage_class` → Platform.StorageClass). That **relocates** toil — from typing a string inline to

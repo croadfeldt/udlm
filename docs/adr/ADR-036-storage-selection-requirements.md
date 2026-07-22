@@ -7,9 +7,11 @@
 core-tenets **T2** (transformation is Policy) / **T5** (adopt, don't re-express); ADR-008 (naturalization
 boundary); ADR-037 (PVD)
 
+**Settles:** storage selection is **requirements-based**, not a reference to a (Kubernetes-native) storage class.
+
 ## Context
-The first draft made `disks[].storage_class` a reference to `Platform.StorageClass`. Pressed on it — *is that
-spec portable across bare-metal / VMs?* — the answer is **no**. `Platform.StorageClass` `adopts: Kubernetes` and
+A reference to `Platform.StorageClass` is the obvious first move — but pressed on portability (*is that
+spec portable across bare-metal / VMs?*), the answer is **no**. `Platform.StorageClass` `adopts: Kubernetes` and
 carries `provisioner` (a CSI driver id), `volume_binding_mode` (PVC binding), `parameters` (CSI params),
 `reclaim_policy` — all k8s/CSI-native; only its `capabilities` block (`iops`, `throughput_mbps`, `encryption`,
 `replication_factor`, `snapshot_support`) is vendor-neutral. Bare-metal (LVM/ZFS/SAN/NFS) has no CSI provisioner;

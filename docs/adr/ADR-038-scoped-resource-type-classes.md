@@ -6,6 +6,8 @@
 **Type:** Architecture Decision Record (foundational — meta-model)
 **Related:** ADR-027 (entity-family model — this extends it); ADR-024 (filling provider-required inputs — the policy-fill); ADR-004 (provider capability declaration); ADR-019 (Placement); ADR-012 (data-references + lineage); ADR-008 (wire-compatibility); ADR-010 (dependency-graph completion — the governed cross-entity surface §10 must not bypass); **T4** (cross-entity flow is edge, not address); **PRV-010** (provider extensions + Vendor.Type fork — *subsumed*); core-tenets **T1/T2/T3** (data is not logic), **T5** (adopt, don't re-express), **T7** (reduce to existing); the reference-discipline set (PVD-001 / ADR-035–037 — *recast as applications*)
 
+**Settles:** resource types are layered **Base / Type / Provider Classes** of scoped `SharedDataElement`s — one meta-model that unifies base fields, shared vocabularies, and provider extensions, and makes portability legible from the name.
+
 ## Context
 The reference-discipline work (PVD-001: reference over restate; requirements over vendor-native) kept running
 into the same seam. Pushing on it revealed that **"base field," "shared vocabulary," and "provider extension"
