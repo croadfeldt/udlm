@@ -1,16 +1,15 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
-  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Bare Metal Host",
-    "description": "A physical machine as a managed ASSET (the box itself) \u2014 the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, \u00a728), carries aggregate hardware capacity (cpu/memory/storage/gpu) as host attributes (\u00a726; ADR-013 \u2014 components are not separate records), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type \u2014 it is the Ownership/Allocation model (foundations/ownership-sharing-allocation.md \u00a72.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
+    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, §28), carries aggregate hardware capacity (cpu/memory/storage/gpu) as host attributes (§26; ADR-013 — components are not separate records), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:31:44Z"
   },
@@ -26,7 +25,7 @@
           "retired"
         ],
         "default": "available",
-        "description": "Allocation state (common-elements \u00a76, \u00a728). available = inventoried/unallocated raw asset; allocated = adopted into the managed lifecycle. Adopts Metal3 BareMetalHost.status.provisioning.state."
+        "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated raw asset; allocated = adopted into the managed lifecycle. Adopts Metal3 BareMetalHost.status.provisioning.state."
       },
       "composition_visibility": {
         "type": "string",
@@ -36,11 +35,11 @@
           "selective"
         ],
         "default": "opaque",
-        "description": "Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class entities vs a rollup (\u00a726, entities/service-dependencies.md \u00a711d); memory/CPU/disk/GPU are aggregate host attributes, not component records (ADR-013). opaque = rollup only."
+        "description": "Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class entities vs a rollup (§26, entities/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate host attributes, not component records (ADR-013). opaque = rollup only."
       },
       "identity": {
         "type": "object",
-        "description": "Chassis/system identity (SPEC-DESIGN-REQUIREMENTS \u00a727).",
+        "description": "Chassis/system identity (SPEC-DESIGN-REQUIREMENTS §27).",
         "properties": {
           "serial_number": {
             "type": "string",
@@ -66,7 +65,7 @@
       },
       "cpu": {
         "type": "object",
-        "description": "Reconciled CPU rollup (\u00a726) \u2014 aggregate host CPU. Adopts Redfish ProcessorSummary.",
+        "description": "Reconciled CPU rollup (§26) — aggregate host CPU. Adopts Redfish ProcessorSummary.",
         "properties": {
           "sockets": {
             "type": "integer",
@@ -87,7 +86,7 @@
       },
       "memory": {
         "type": "object",
-        "description": "Reconciled memory rollup (\u00a726) \u2014 aggregate host memory. Adopts Redfish MemorySummary.",
+        "description": "Reconciled memory rollup (§26) — aggregate host memory. Adopts Redfish MemorySummary.",
         "properties": {
           "size": {
             "type": "string",
@@ -98,7 +97,7 @@
       },
       "storage": {
         "type": "object",
-        "description": "Reconciled local-storage rollup (\u00a726) \u2014 aggregate host local storage.",
+        "description": "Reconciled local-storage rollup (§26) — aggregate host local storage.",
         "properties": {
           "capacity": {
             "type": "string",
@@ -120,7 +119,7 @@
   "outputs": {
     "power_state": {
       "type": "string",
-      "description": "Observed power state \u2014 On | Off | PoweringOn | PoweringOff (Redfish ComputerSystem.PowerState). Drives shutdown/startup ordering for the dependency graph."
+      "description": "Observed power state — On | Off | PoweringOn | PoweringOff (Redfish ComputerSystem.PowerState). Drives shutdown/startup ordering for the dependency graph."
     },
     "management_address": {
       "type": "string",

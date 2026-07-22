@@ -1,12 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "a4d21f7e-3c85-4b09-8e16-2f9c0a7d5b34",
   "resource_type": "TaxonomyTerm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Knowledge",
   "entity_type": "TaxonomyTerm",
-  "lifecycle_archetype": "curation",
   "portability": "portable",
   "status": "active",
   "metadata": {

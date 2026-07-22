@@ -1,13 +1,11 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "21b5da18-94c1-44af-a09b-ecd1e1a38a65",
   "resource_type": "Storage.Cluster",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Resource",
-  "entity_type": "Composite",
   "portability": "portable",
-  "lifecycle_archetype": "provisioning",
   "status": "active",
   "lifecycle": {
     "states": [
@@ -16,11 +14,11 @@
       "Realized",
       "Discovered"
     ],
-    "decommission": "Provider tears down the storage cluster; Discovered reflects absent. Destroying a cluster destroys every pool/volume provisioned from it \u2014 so decommission is DATA-DESTRUCTIVE and must follow its volumes/pools in order."
+    "decommission": "Provider tears down the storage cluster; Discovered reflects absent. Destroying a cluster destroys every pool/volume provisioned from it — so decommission is DATA-DESTRUCTIVE and must follow its volumes/pools in order."
   },
   "metadata": {
     "display_name": "Storage Cluster",
-    "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] \u2014 never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference realization.",
+    "description": "A vendor-neutral distributed storage cluster that serves block, file, and/or object storage. The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference realization.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
@@ -124,7 +122,7 @@
       "standard": "Rook",
       "version": "1.x",
       "standard_name": "CephCluster",
-      "role": "reference realization (Ceph) \u2014 cluster shape, protocols, storage classes",
+      "role": "reference realization (Ceph) — cluster shape, protocols, storage classes",
       "source": "https://rook.io/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",

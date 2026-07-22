@@ -1,11 +1,10 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
-  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
@@ -35,7 +34,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable \u2014 common-elements \u00a72.2, ADR-014). Size by class IN PLACE OF vcpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF vcpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
       },
       "vcpu": {
         "type": "object",
@@ -95,11 +94,11 @@
       },
       "placement": {
         "type": "object",
-        "description": "Placement INTENT expressed as a SELECTION of an existing Facility.Location (populated by a platform data layer and/or a Facility.Location provider), plus affinity relative to other existing resources. Policy governs which locations a given consumer may select; the VM only references one \u2014 it does not define locations itself (ADR-009 \u00a74: guidance, not a gate).",
+        "description": "Placement INTENT expressed as a SELECTION of an existing Facility.Location (populated by a platform data layer and/or a Facility.Location provider), plus affinity relative to other existing resources. Policy governs which locations a given consumer may select; the VM only references one — it does not define locations itself (ADR-009 §4: guidance, not a gate).",
         "properties": {
           "location_ref": {
             "type": "string",
-            "description": "handle/uuid of an existing Facility.Location the VM is placed in \u2014 chosen from the eligible set (platform-layer + provider-advertised, policy-filtered). Also carried as a references->Facility.Location relationship."
+            "description": "handle/uuid of an existing Facility.Location the VM is placed in — chosen from the eligible set (platform-layer + provider-advertised, policy-filtered). Also carried as a references->Facility.Location relationship."
           },
           "zone": {
             "type": "string",
@@ -132,7 +131,7 @@
       },
       "networks": {
         "type": "array",
-        "description": "Network attachment INTENT \u2014 each entry SELECTS an existing Network.VirtualNetwork (platform-layer and/or provider-advertised) the NIC attaches to; the responsible network provider + policy decide eligibility. The VM references existing networks, it does not define network segments itself.",
+        "description": "Network attachment INTENT — each entry SELECTS an existing Network.VirtualNetwork (platform-layer and/or provider-advertised) the NIC attaches to; the responsible network provider + policy decide eligibility. The VM references existing networks, it does not define network segments itself.",
         "items": {
           "type": "object",
           "required": [
@@ -199,7 +198,7 @@
     },
     "target_segment": {
       "type": "string",
-      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb \u2014 the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment \u2014 e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 \u00a73 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
+      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
     }
   },
   "immutable": [
@@ -218,14 +217,14 @@
       "target": "Facility.Location",
       "name": "placement",
       "cardinality": "0..1",
-      "description": "Placed in an existing Facility.Location (selected, policy-governed) \u2014 see spec.placement.location_ref."
+      "description": "Placed in an existing Facility.Location (selected, policy-governed) — see spec.placement.location_ref."
     },
     {
       "edge_type": "references",
       "target": "Network.VirtualNetwork",
       "name": "network_attachment",
       "cardinality": "0..n",
-      "description": "Attaches to existing Network.VirtualNetwork(s) \u2014 see spec.networks[].network_ref."
+      "description": "Attaches to existing Network.VirtualNetwork(s) — see spec.networks[].network_ref."
     },
     {
       "edge_type": "depends_on",
@@ -240,7 +239,7 @@
       "standard": "Redfish",
       "version": "2024.4",
       "standard_name": "ComputerSystem",
-      "role": "vendor-neutral virtual system inventory + power vocabulary (ProcessorSummary, MemorySummary, PowerState) \u2014 same family as Compute.BareMetalHost",
+      "role": "vendor-neutral virtual system inventory + power vocabulary (ProcessorSummary, MemorySummary, PowerState) — same family as Compute.BareMetalHost",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
       "license_compatibility": "compatible-reference",
@@ -250,7 +249,7 @@
       "standard": "KubeVirt",
       "version": ">=1.2",
       "standard_name": "VirtualMachine / VirtualMachineInstance",
-      "role": "k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power) \u2014 the parallel to Metal3 for bare metal",
+      "role": "k8s-native VM realization vocabulary (domain cpu/memory, interfaces->networks, volumes, runStrategy/power) — the parallel to Metal3 for bare metal",
       "source": "https://kubevirt.io/",
       "license": "Apache-2.0",
       "license_compatibility": "compatible-reference",

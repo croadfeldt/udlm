@@ -12,7 +12,6 @@
     "resource_type",
     "version",
     "family",
-    "entity_type",
     "portability",
     "status",
     "metadata",
@@ -28,17 +27,17 @@
     "conforms_to": {
       "type": "string",
       "pattern": "^udlm/[0-9]+\\.[0-9]+$",
-      "description": "SPEC-axis binding: the UDLM spec major.minor this type is written against (its apiVersion). Peers conformant to the same MAJOR are wire-compatible (CONFORMANCE.md \u00a79)."
+      "description": "SPEC-axis binding: the UDLM spec major.minor this type is written against (its apiVersion). Peers conformant to the same MAJOR are wire-compatible (CONFORMANCE.md §9)."
     },
     "uuid": {
       "type": "string",
       "format": "uuid",
-      "description": "RFC 9562 UUIDv4 identity of this type specification (contracts/identifier-scheme.md \u00a72.1 \u2014 the normative UUID standard: v4 identity / v7 time-ordered / others prohibited). Immutable for the life of the type."
+      "description": "RFC 9562 UUIDv4 identity of this type specification (contracts/identifier-scheme.md §2.1 — the normative UUID standard: v4 identity / v7 time-ordered / others prohibited). Immutable for the life of the type."
     },
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) \u2014 disambiguated by `family` (registry/naming-conventions.md \u00a71, entities/knowledge-family.md)."
+      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, entities/knowledge-family.md)."
     },
     "version": {
       "type": "string",
@@ -52,18 +51,18 @@
         "Knowledge",
         "Access"
       ],
-      "description": "Entity-type family (foundations/entity-type-families.md) \u2014 a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
+      "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents \u2014 a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Access: Identity. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.)"
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Antipattern | UseCase. Access: Identity. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
     },
     "lifecycle_archetype": {
       "enum": [
         "provisioning",
         "curation"
       ],
-      "description": "How this type interprets the universal four states: `provisioning` (Resource \u2014 Intent\u2192Requested\u2192Realized\u2192Discovered via a provider) or `curation` (Knowledge \u2014 proposed\u2192under-review\u2192canonical\u2192deprecated). Optional; inferred from `family` if absent."
+      "description": "How this type interprets the universal four states: `provisioning` (Resource — Intent→Requested→Realized→Discovered via a provider) or `curation` (Knowledge — proposed→under-review→canonical→deprecated). Optional; inferred from `family` if absent. DERIVED from `family` (ADR-027 addendum) — optional; authored specs may omit it."
     },
     "portability": {
       "enum": [
@@ -93,7 +92,7 @@
         "date": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps). The producing clock is attributed via the nearest time_source."
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
         },
         "reason": {
           "type": "string"
@@ -108,7 +107,7 @@
         "deprecated_in_version": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-          "description": "ENTITY version at which deprecation was declared (Redfish 'versionDeprecated' analog) \u2014 lets consumers know how long an element has been deprecated relative to the version they consume."
+          "description": "ENTITY version at which deprecation was declared (Redfish 'versionDeprecated' analog) — lets consumers know how long an element has been deprecated relative to the version they consume."
         }
       },
       "description": "REQUIRED when status is deprecated or retired. A breaking (MAJOR) successor MUST supply migration_guidance."
@@ -135,7 +134,7 @@
         "origination_timestamp": {
           "type": "string",
           "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-          "description": "When this type was originated \u2014 RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md \u00a7Timestamps). The producing clock is attributed via the nearest time_source. Backfilled 2026-07-05 from each file's first git commit instant (the auditable carrier)."
+          "description": "When this type was originated — RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source. Backfilled 2026-07-05 from each file's first git commit instant (the auditable carrier)."
         }
       }
     },
@@ -145,7 +144,7 @@
         "type",
         "properties"
       ],
-      "description": "The field schema for the Intent/Requested state \u2014 the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): a provider EXTENDS an instance additively via the realized entity's provider-namespaced `provider_extensions` surface, never by widening this base \u2014 no-override is structural (ADR-PROV-004, closes #198).",
+      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): a provider EXTENDS an instance additively via the realized entity's provider-namespaced `provider_extensions` surface, never by widening this base — no-override is structural (ADR-PROV-004, closes #198).",
       "properties": {
         "type": {
           "const": "object"
@@ -166,11 +165,11 @@
       "items": {
         "type": "string"
       },
-      "description": "Dot-paths into `spec` that are createOnly \u2014 set at Intent, never changed post-realization; a change forces replace \u2192 supersession. Use for sovereignty-determining fields (zone / classification). Declarative noun; DCM enforces it (R3 / cross-cutting P4)."
+      "description": "Dot-paths into `spec` that are createOnly — set at Intent, never changed post-realization; a change forces replace → supersession. Use for sovereignty-determining fields (zone / classification). Declarative noun; DCM enforces it (R3 / cross-cutting P4)."
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern) \u2014 they are the referenceable, typed binding surface: a catalog-item binding names a producer output by this key, and the validator resolves it against this list (data-model-core \u00a72 [D8.3] typed outputs).",
+      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern) — they are the referenceable, typed binding surface: a catalog-item binding names a producer output by this key, and the validator resolves it against this list (data-model-core §2 [D8.3] typed outputs).",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -203,7 +202,7 @@
     },
     "relationships": {
       "type": "array",
-      "description": "Relationship TEMPLATES this resource illustrates \u2014 guidance and placement hints, NOT a closed allowlist (UDLM ADR-009 \u00a74). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). entities/entity-relationships.md, service-dependencies.md.",
+      "description": "Relationship TEMPLATES this resource illustrates — guidance and placement hints, NOT a closed allowlist (UDLM ADR-009 §4). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). entities/entity-relationships.md, service-dependencies.md.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -230,11 +229,11 @@
               "structural"
             ],
             "default": "example",
-            "description": "example (default) = an illustrative/placement-hint relationship a provider may satisfy, override, or ignore (REL-001 advisory). structural = an invariant true by the nature of the resource (a dataset cannot exist without its pool) \u2014 required and validated (REL-002). UDLM ADR-009 \u00a74."
+            "description": "example (default) = an illustrative/placement-hint relationship a provider may satisfy, override, or ignore (REL-001 advisory). structural = an invariant true by the nature of the resource (a dataset cannot exist without its pool) — required and validated (REL-002). UDLM ADR-009 §4."
           },
           "target_field": {
             "type": "string",
-            "description": "An `outputs` key on the target this edge binds to (e.g. a database's `connection_string`). The binding is a typed reference resolved at dispatch \u2014 data movement, not transformation (T4)."
+            "description": "An `outputs` key on the target this edge binds to (e.g. a database's `connection_string`). The binding is a typed reference resolved at dispatch — data movement, not transformation (T4)."
           },
           "cardinality": {
             "enum": [
@@ -251,11 +250,11 @@
           "name": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$",
-            "description": "Machine-readable relation identity \u2014 the type's declared relation vocabulary (common-elements \u00a79). Instance edges cite it via dependencies[].relation and MUST use a declared name (REL-001). A relation refines its kind's semantics and never overrides them (REL-003) \u2014 graph consumers that ignore relation still act correctly on kind. REQUIRED when a type declares more than one relationship of the same kind whose instance edges would otherwise be ambiguous."
+            "description": "Machine-readable relation identity — the type's declared relation vocabulary (common-elements §9). Instance edges cite it via dependencies[].relation and MUST use a declared name (REL-001). A relation refines its kind's semantics and never overrides them (REL-003) — graph consumers that ignore relation still act correctly on kind. REQUIRED when a type declares more than one relationship of the same kind whose instance edges would otherwise be ambiguous."
           },
           "adopted_from": {
             "type": "string",
-            "description": "The external standard defining this relation name (e.g. 'RFC 8343 lower-layer-if', 'OASIS TOSCA ConnectsTo') \u2014 SHOULD correspond to an entry in the type's adopts[]. Relation names are adopted, not invented, wherever a standard names the concept (common-elements \u00a79)."
+            "description": "The external standard defining this relation name (e.g. 'RFC 8343 lower-layer-if', 'OASIS TOSCA ConnectsTo') — SHOULD correspond to an entry in the type's adopts[]. Relation names are adopted, not invented, wherever a standard names the concept (common-elements §9)."
           }
         }
       }
@@ -263,7 +262,7 @@
     "lifecycle": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Lifecycle rules. Defaults to UDLM's four-state model Intent \u2192 Requested \u2192 Realized \u2192 Discovered (foundations/four-states.md). Override only to declare type-specific decommission behavior.",
+      "description": "Lifecycle rules. Defaults to UDLM's four-state model Intent → Requested → Realized → Discovered (foundations/four-states.md). Override only to declare type-specific decommission behavior.",
       "properties": {
         "states": {
           "type": "array",
@@ -283,7 +282,7 @@
     },
     "adopts": {
       "type": "array",
-      "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here \u2014 only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
+      "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
       "items": {
         "$ref": "#/$defs/adopted_standard_ref"
       }
@@ -319,7 +318,7 @@
     "metering": {
       "type": "object",
       "additionalProperties": false,
-      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). The meterable cost SURFACE \u2014 WHAT about this resource is measurable and WHERE each value comes from \u2014 the inputs a cost engine consumes. UDLM carries the surface only; rates and the calculation are the engine's (ADR-COST-001). This is one side of the reciprocal contract: UDLM/DCM hands these dimensions out; the engine hands cost back.",
+      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). The meterable cost SURFACE — WHAT about this resource is measurable and WHERE each value comes from — the inputs a cost engine consumes. UDLM carries the surface only; rates and the calculation are the engine's (ADR-COST-001). This is one side of the reciprocal contract: UDLM/DCM hands these dimensions out; the engine hands cost back.",
       "required": [
         "dimensions"
       ],
@@ -358,7 +357,7 @@
                 "required": [
                   "kind"
                 ],
-                "description": "Where the value is resolved from. Deliberately no 'formula'/'derived' kind \u2014 UDLM declares sources, never computes (ADR-COST-001). A realization resolves each source; the engine does the math.",
+                "description": "Where the value is resolved from. Deliberately no 'formula'/'derived' kind — UDLM declares sources, never computes (ADR-COST-001). A realization resolves each source; the engine does the math.",
                 "properties": {
                   "kind": {
                     "enum": [
@@ -479,7 +478,10 @@
               "UseCase"
             ]
           }
-        }
+        },
+        "required": [
+          "entity_type"
+        ]
       }
     },
     {
@@ -497,7 +499,10 @@
               "Identity"
             ]
           }
-        }
+        },
+        "required": [
+          "entity_type"
+        ]
       }
     }
   ],
@@ -505,7 +510,7 @@
     "standard_version": {
       "type": "string",
       "minLength": 1,
-      "description": "A reference over an external standard's OWN versioning scheme \u2014 a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (DCM), not the data model (T2/T5)."
+      "description": "A reference over an external standard's OWN versioning scheme — a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (DCM), not the data model (T2/T5)."
     },
     "adopted_standard_ref": {
       "type": "object",
@@ -517,7 +522,7 @@
         "license",
         "license_compatibility"
       ],
-      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md \u00a73.1). Carries provenance + version pointer + recorded license verdict \u2014 never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `license_compatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS \u00a722\u201323).",
+      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `license_compatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
       "properties": {
         "standard": {
           "type": "string",
@@ -528,7 +533,7 @@
         },
         "standard_name": {
           "type": "string",
-          "description": "OPTIONAL cross-walk: the name THIS standard uses for this type/concept (e.g. Redfish 'ComputerSystem', Metal3 'BareMetalHost'). Together with `standard` + `version` this is the {alternative name, spec, spec version} translation for compatibility \u2014 a consumer using the standard's vocabulary can resolve its term to this UDLM type."
+          "description": "OPTIONAL cross-walk: the name THIS standard uses for this type/concept (e.g. Redfish 'ComputerSystem', Metal3 'BareMetalHost'). Together with `standard` + `version` this is the {alternative name, spec, spec version} translation for compatibility — a consumer using the standard's vocabulary can resolve its term to this UDLM type."
         },
         "role": {
           "type": "string",
@@ -555,11 +560,11 @@
         },
         "source": {
           "type": "string",
-          "description": "Canonical URL of the standard (e.g. https://focus.finops.org/). REQUIRED provenance (SPEC-DESIGN-REQUIREMENTS \u00a722)."
+          "description": "Canonical URL of the standard (e.g. https://focus.finops.org/). REQUIRED provenance (SPEC-DESIGN-REQUIREMENTS §22)."
         },
         "license": {
           "type": "string",
-          "description": "The source's license identifier (SPDX where possible, e.g. CC-BY-4.0, Apache-2.0, GPL-3.0). REQUIRED (SPEC-DESIGN-REQUIREMENTS \u00a723)."
+          "description": "The source's license identifier (SPDX where possible, e.g. CC-BY-4.0, Apache-2.0, GPL-3.0). REQUIRED (SPEC-DESIGN-REQUIREMENTS §23)."
         },
         "license_compatibility": {
           "enum": [
@@ -567,7 +572,7 @@
             "compatible-vendor",
             "reference-only"
           ],
-          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS \u00a723): `compatible-reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible-vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference-only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
+          "description": "Recorded verdict of the license check against UDLM's Apache-2.0 (SPEC-DESIGN-REQUIREMENTS §23): `compatible-reference` = we only reference the vocabulary (field names = facts), license-clean regardless of source license (the default); `compatible-vendor` = source is Apache-2.0-compatible, so its text MAY be absorbed/vendored; `reference-only` = copyleft/file-scoped source (GPL/LGPL/MPL) whose names MAY be referenced but whose text/files MUST NOT be vendored."
         },
         "disposition": {
           "type": "string",
@@ -575,7 +580,7 @@
             "tier1_value",
             "tier2_record"
           ],
-          "description": "Adoption tier (adopted-standards.md \u00a71a). `tier1_value` = a value/codelist/vocabulary reference \u2014 near-constant, does NOT version in a way that changes shape (a referenced field constraint). `tier2_record` = a record/schema whose SHAPE this type conforms to \u2014 it versions its shape, needs the ADS apparatus (identity join + provider support matrix + version pin), and the type CANNOT change its conforming shape without breaking conformance."
+          "description": "Adoption tier (adopted-standards.md §1a). `tier1_value` = a value/codelist/vocabulary reference — near-constant, does NOT version in a way that changes shape (a referenced field constraint). `tier2_record` = a record/schema whose SHAPE this type conforms to — it versions its shape, needs the ADS apparatus (identity join + provider support matrix + version pin), and the type CANNOT change its conforming shape without breaking conformance."
         }
       }
     }

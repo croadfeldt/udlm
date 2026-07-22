@@ -1,16 +1,15 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "30542efe-3bed-4a70-944d-3869a4c45a96",
   "resource_type": "Facility.PowerFeed",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Resource",
-  "entity_type": "Atomic",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Power Feed",
-    "description": "A power source feeding equipment \u2014 utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL \u2014 referenced by name only).",
+    "description": "A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
@@ -69,7 +68,7 @@
   "outputs": {
     "status": {
       "type": "string",
-      "description": "Observed feed status \u2014 online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger."
+      "description": "Observed feed status — online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger."
     },
     "battery_charge": {
       "type": "integer",
@@ -96,7 +95,7 @@
       "standard": "NUT",
       "version": "2.8",
       "standard_name": "ups.status",
-      "role": "UPS telemetry variable namespace (status, battery.charge, battery.runtime) \u2014 reference-only: NUT is GPL",
+      "role": "UPS telemetry variable namespace (status, battery.charge, battery.runtime) — reference-only: NUT is GPL",
       "source": "https://networkupstools.org/docs/developer-guide.chunked/apas01.html",
       "license": "GPL-2.0-or-later",
       "license_compatibility": "reference-only",

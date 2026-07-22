@@ -53,8 +53,11 @@ A composite Resource's constituents are its owned resources; a composite Process
 
 ## Addendum (Proposed, 2026-07-20) — derive the shape; don't store it as source of truth
 
-**Status:** Proposed — for the same engineering review as the naming charter and ADR-034. Reconsiders whether
-the Resource/Process shape (`Atomic`/`Composite`, being renamed `single`/`multi`) earns a **stored** field.
+**Status:** **Accepted & implemented** (2026-07-22) — the shape and `lifecycle_archetype` are now **derived**, not
+stored. Meta-schema: `entity_type` dropped from `required` and required only on the Knowledge/Access branches;
+`lifecycle_archetype` optional/derived. Registry: both fields removed from the 34 Resource + 1 Process specs
+(`entity_type`) and from every spec that carried `lifecycle_archetype`, each MINOR-bumped (pre-1.0 incubation).
+The in-flight `Atomic|Composite → single|multi` **rename is superseded** — a field being derived is not renamed.
 
 **The question.** The shape asserts *"owns constituents?"* Does storing that flag add value beyond
 filtering, or does the **constituent list already carry it**?
@@ -82,11 +85,13 @@ Policy/query (**T2**). The Knowledge/Access `entity_type` values are unaffected.
 multi-ness for a type whose constituents are realized-only**. None exists today. If one appears, it carries
 the justification for storing the flag — the flag should not be stored "just in case."
 
-**Implications.**
-- The in-flight `single`/`multi` rename (PR #167) is **held** — don't rename a field we may retire. If this
-  addendum is adopted, #167 is replaced by "derive `has_constituents`, drop the stored shape value."
-- Meta-schema: `entity_type` is currently **required**; deriving the shape makes it optional/removed on the
-  Resource/Process branch (the Knowledge/Access branch — `Capability`/`Identity`/… — stays).
+**Implications (now realized).**
+- The `single`/`multi` rename branch (`feat/entity-type-single-multi`) is **superseded** — retired in favour of
+  deriving `has_constituents`; the stored shape value is gone, so there is nothing to rename.
+- Meta-schema: `entity_type` removed from top-level `required`; required only on the Knowledge/Access `allOf`
+  branches (`Capability`/`Identity`/… **stay** — genuine discriminators). `lifecycle_archetype` optional/derived.
+- `has_constituents` is the derived predicate: `true` iff the type/instance declares/holds `constituents[]`
+  (Templates/Composite Services declare them at catalog time; realized entities carry them). No stored field.
 
 ### Second finding — `lifecycle_archetype`: same disposition
 

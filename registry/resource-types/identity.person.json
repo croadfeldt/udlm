@@ -1,17 +1,16 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e1c7a4d9-3b62-4f08-9a15-2d6e8c0b7f31",
   "resource_type": "Identity.Person",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "family": "Access",
   "entity_type": "Identity",
-  "lifecycle_archetype": "provisioning",
   "portability": "portable",
   "status": "active",
   "metadata": {
     "display_name": "Person",
-    "description": "A human identity/account \u2014 an ACTOR that DCM authenticates and authorizes (ADR-RBAC-001). Fills the named-but-unbuilt Identity.* slot (naming-conventions \u00a72; resource-type-hierarchy \u00a7Identity). Holds NO secret material \u2014 credentials are referenced (Security.CredentialRef). Backs the built-in auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type is `human`, from the one closed actor-type vocabulary (universal-audit).",
+    "description": "A human identity/account — an ACTOR that DCM authenticates and authorizes (ADR-RBAC-001). Fills the named-but-unbuilt Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity). Holds NO secret material — credentials are referenced (Security.CredentialRef). Backs the built-in auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type is `human`, from the one closed actor-type vocabulary (universal-audit).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z"
   },
@@ -43,7 +42,7 @@
       },
       "credential_ref": {
         "type": "string",
-        "description": "Reference to a Security.CredentialRef \u2014 never inline secret material (CPX-001)."
+        "description": "Reference to a Security.CredentialRef — never inline secret material (CPX-001)."
       },
       "external_subject": {
         "type": "string",
@@ -76,7 +75,7 @@
       "edge_type": "references",
       "target": "Security.CredentialRef",
       "cardinality": "0..n",
-      "description": "Credentials \u2014 referenced, never inline."
+      "description": "Credentials — referenced, never inline."
     }
   ]
 }
