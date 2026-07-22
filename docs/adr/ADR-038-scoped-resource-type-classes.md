@@ -254,7 +254,8 @@ test (ADR-008) along the **authorship** axis:
   class conforms to and instructs DCM; **DCM implements class-authoring as a policy/profile-driven feature**,
   governed by org policy (same family as *Org standards*). Standardizing an *existing* class stays Policy/Profile
   (a constraint profile); authoring a *new* one your library lacks is this feature — told apart by **authority**,
-  both Policy/DCM.
+  both Policy/DCM. **How to author one well:** `docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`
+  (the cheapest-tool ladder, custom Type vs Base, the discipline, anti-patterns, the lifecycle, the never-redefine guard).
 - **Data-layer definitions are organization-level** — the layer *contract* is UDLM; *which* layers exist and what
   they hold (an org compliance overlay, a Data-Center info bundle) are org implementation details.
 - **DCM runs one contribution lifecycle over all of them.** Provider/org classes, data layers, and
@@ -342,7 +343,8 @@ distinct identity in the org's namespace, canon untouched, portability authority
 proven; it runs through **DCM's policy/profile class-authoring feature** and the one contribution lifecycle (see
 *Authorship & domain*). The line is **authority, not permission**: standardize a *shared* class → Policy/Profile;
 author a type the library lacks → your own class under your authority. **Org = a governance/tenancy overlay on the
-shared classes and, where the library falls short, an authority-scoped author of its own.**
+shared classes and, where the library falls short, an authority-scoped author of its own.** Best practice for that
+authoring: `docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`.
 
 ## Naming depth — unbounded, but governed
 `Category.Type.Provider` is not a hard three-level cap — the notation is **unbounded** (the grammar recurses to
