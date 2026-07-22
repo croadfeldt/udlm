@@ -1,0 +1,60 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "621fe78b-7069-485e-854f-292498c39663",
+  "resource_type": "SoftwareImage",
+  "version": "0.1.0",
+  "family": "Knowledge",
+  "entity_type": "SoftwareImage",
+  "lifecycle_archetype": "curation",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Software Image",
+    "description": "A container image as a Knowledge-family fact about the estate — the digest-identified artifact a Compute.Container runs, and the anchor for its bill-of-materials. Knowledge, not a Resource: it is discovered (a scanner sweep), never provider-realized; its lifecycle is curation/discovered. ADOPT (not absorb) the OCI image-spec by reference (T5): identity join (digest) + a version-pinned pointer, the standard's schema is not restated. Referenced by Compute.Container via runs_image; contains SoftwarePackage (the SBOM).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-22T00:00:00Z"
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "digest"
+    ],
+    "properties": {
+      "digest": {
+        "type": "string",
+        "description": "The image content digest (e.g. sha256:...) — the immutable correlation id (OCI image manifest digest). Dedup key: one record per digest."
+      },
+      "repository": {
+        "type": "string",
+        "description": "Repository path (registry/namespace/name), e.g. registry.example.com/org/app."
+      },
+      "tag": {
+        "type": "string",
+        "description": "A human tag observed pointing at this digest (advisory; tags are mutable, the digest is not)."
+      },
+      "registry": {
+        "type": "string",
+        "description": "The registry host serving the image (e.g. registry.example.com)."
+      },
+      "os": {
+        "type": "string",
+        "description": "Target OS from the image config (OCI platform.os)."
+      },
+      "arch": {
+        "type": "string",
+        "description": "Target architecture from the image config (OCI platform.architecture)."
+      }
+    }
+  },
+  "outputs": {},
+  "relationships": [
+    {
+      "edge_type": "references",
+      "target": "SoftwarePackage",
+      "cardinality": "0..n",
+      "description": "contains — the image bundles this package (SPDX CONTAINS; the software bill-of-materials). A declarative typed reference; the scan that produced it is Policy. Non-ordering, but walked by blast-radius/impact in reverse."
+    }
+  ]
+}
