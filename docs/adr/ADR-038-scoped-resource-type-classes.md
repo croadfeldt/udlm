@@ -20,7 +20,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
 1. **Three Class layers, keyed to the name hierarchy.**
    - **Base Class** — *Category* scope (`Compute`): `SharedDataElement`s common to the category.
    - **Type Class** — *Type* scope (`Compute.VM`): extends the Base Class with type-specific elements.
-   - **Provider Class** — *Provider* scope (`Compute.VM.VMware`): extends the Type Class with provider-specific
+   - **Provider Class** — *Provider* scope (`Compute.VM.OCPVirt`): extends the Type Class with provider-specific
      elements.
    Each **extends** the one above under the **Liskov invariant — add or refine, never contradict** (a Provider
    Class *is-a* Type Class *is-a* Base Class). This **subsumes** `provider_extensions` *and* the Vendor.Type
@@ -416,7 +416,7 @@ This is the **third relationship axis — references-context** — and it uses t
 | **references-context** | a resource references orthogonal data | `data_reference` → `reference_data` layer (dual-anchor, §10 coordinate) |
 
 ## Worked illustrations
-- **`encryption` ramp** — a Provider Class element (`Compute.VM.VMware` offers `encryption: sev-snp`) recurs at
+- **`encryption` ramp** — a Provider Class element (`Compute.VM.OCPVirt` offers `encryption: sev-snp`) recurs at
   a second provider, is contributed/promoted **up** to the `Compute.VM` Type Class, and — with enough adoption —
   to the `Compute` Base Class. Same data element + value list throughout; only its Class moved.
 - **Compute Base Class** — `cpu`/`memory`/`guest_os`/`storage`(requirements)/`network` defined once at
