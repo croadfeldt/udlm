@@ -178,7 +178,7 @@ An entity in `PENDING_REVIEW`:
 - Remains in `PENDING_REVIEW` until a resolution action is taken (re_authorize, release, escalate, or manual override)
 - Is never automatically resolved — all resolutions require explicit human or policy authorization
 
-### 2.2 Atomic and Composite — the shape (`entity_type`)
+### 2.2 Atomic and Composite — the derived shape (`has_constituents`)
 
 Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. the derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Compute.VirtualMachine`, `Automation.Workflow` — is `resource_type`, a finer gate.)
 
