@@ -44,7 +44,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
    | Reactive re-convergence | stateful flow tracking / rule reload |
    | Complete-vs-boundary (profile dial) | inspect-every-packet vs stateful-flow; default-deny posture |
 
-   **Scope (the "in this context" qualifier is load-bearing).** This governs policy's **flow role** only. Policy
+   **Scope.** This governs policy's **flow role** only. Policy
    also composes the spec — assembly, constraint-narrowing, policy-fill (ADR-024). That **composition role is not
    firewalling** and this ADR does not restate or constrain it. Same engine, two hats.
 
@@ -157,8 +157,7 @@ crossing.
 - **(A) Force all data through the policy engine regardless of destination** (universal reference-monitor
   mediation). *Rejected* — a data-plane chokepoint, availability coupling (no resolve without policy up), and it
   blurs the Data·Policy line (policy becomes part of *resolution*, not a *decision over* it). Boundary-mediation
-  gets the data-by-destination guarantee without the cost; the profile dial serves those who genuinely want
-  complete mediation.
+  gets the data-by-destination guarantee without the cost; the profile dial serves those requiring complete mediation.
 - **(B) Value inspection only** (resolve everything; policy on values). *Rejected* — loses structural policy
   (jurisdiction / decommission / trust on the pointer), and forces resolution even when it is gated, unavailable,
   or expensive.
@@ -172,7 +171,7 @@ crossing.
   boundaries, least-privilege rules, rule-shadowing, the any-any anti-pattern, exfil-via-allowed-channel.
 - The **reference/edge graph becomes a first-class policy input**; this depends on the classified-edge model
   (ADR-038 §references-context / the pending edge reframe).
-- **Field-granular egress / partial-release** is the one genuinely net-new mechanism — a firewall rule with a
+- **Field-granular egress / partial-release** is the one net-new mechanism — a firewall rule with a
   projection mask, expressed on the §10 coordinate.
 - Re-convergence requires extending **provenance from spec values to policy inputs**.
 - Ties **sovereignty & tenancy** to concrete **egress** gates and **FSI / trust** to concrete **ingress** gates —

@@ -14,12 +14,12 @@ Everything below is how to hold that line.
 
 ## 1. Is a custom class even the right tool?
 
-Most "we need our own class" instincts are really a cheaper mechanism. Walk the ladder top-down and author a
+Most "we need our own class" instincts are a cheaper mechanism. Walk the ladder top-down and author a
 class **only** when nothing above it fits:
 
 | If the need is… | Use | Not a class because… |
 |---|---|---|
-| a **value / default / constraint** on an existing type (must-encrypt, size ≤ X) | **Policy / Profile / layer value** | it's still a canonical `Compute.VM` — a class here fragments interop for zero schema gain (**the #1 mistake**) |
+| a **value / default / constraint** on an existing type (must-encrypt, size ≤ X) | **Policy / Profile / layer value** | it's still a canonical `Compute.VM` — a class here fragments interop for zero schema gain (the most common mistake) |
 | **extra org data** on an existing type (`cost_center`) | an org-scoped **`SharedDataElement`** (additive, must-ignore-unknown) | additive data is not a new type; peers ignore the unknown |
 | **orthogonal context** (a DC bundle, an app profile) | a **references-context edge** (ADR-038) | context is *linked*, not a type |
 | a genuinely **new type** the canonical library lacks, *with its own schema* | a **custom Type class** under your authority | ✅ this is the tool |
