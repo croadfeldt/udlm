@@ -8,6 +8,8 @@
 + SPEC-DESIGN §33 (the single-source precedent this mirrors). **Home of the `PVD` rule family:**
 `design-principles/portable-values.md`.
 
+**Settles:** the **portable-value discipline (PVD)** — a selectable value is a reference, codelist, or requirement; never a free string or an inline re-expression of an adopted standard.
+
 ## Context
 The review surfaced **two faces of the same discipline breach — a portable value restated inline instead of
 referenced.** (1) `guest_os` and `storage_class` were free strings where §3.7 *already* sanctioned a reference
@@ -34,7 +36,7 @@ discipline is load-bearing for portability.
    both rules — PVD-001 hard-fails; PVD-002 runs as a review-flag until its overlap catalogue is tuned. It scans
    type specs **and** instances, layer-contributed `fields`, and examples (the discipline holds in *data*, not
    just definitions).
-4. **The sweep line.** Added to CONTRIBUTING "review sweep" + SPEC-DESIGN-REQUIREMENTS:
+4. **The review-sweep line.** Added to CONTRIBUTING "review sweep" + SPEC-DESIGN-REQUIREMENTS:
    *"Portable-value discipline — reference what the model already owns: a selectable value is a reference,
    codelist, or requirement, never a free string (PVD-001); an adopted-standard/typed shape is bound by
    reference, never restated inline (PVD-002)."*
@@ -52,6 +54,6 @@ discipline is load-bearing for portability.
 - **(C) [chosen]** The PVD family (001 + 002) + one automated check + one sweep line — the single-source model.
 
 ## Consequences
-- The sweep backlog becomes the first PVD fix-PRs (ISA codelist; `instance_size` codelist; VM `placement.zone`).
+- The review-sweep backlog becomes the first PVD fix-PRs (ISA codelist; `instance_size` codelist; VM `placement.zone`).
 - ADR-038 (the scoped-Class paradigm) is the model these apply *under*, and generalizes them: *one canonical
   mechanism & notation*, and *reference-discipline in data, not just definitions*.
