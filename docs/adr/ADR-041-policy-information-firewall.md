@@ -83,11 +83,21 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
    - **Resolver.** Policy must resolve any datum for inspection — dereference an edge-projected / navigational
      coordinate to the concrete value, on the **same data plane assembly uses**. This is what makes value
      inspection (`PROJ-P1`) real: policy sees `fab-7`, never `self.located-in.…`.
-   - **Re-convergence.** Policy is a *settled state over inputs*; when an input changes it must re-establish.
-     **Provenance the policy's inputs** (not only spec values): recording each `policy → datum` dependency makes
-     that dependency set a **subscription**. A change fires the **same `impact_report` graph** — extended to find
-     affected **policies**, not only affected specs — which re-evaluate. Push or pull is a DCM implementation
-     choice; the contract only requires the policy→data edges be recorded.
+   - **Re-convergence (the outer loop).** Policy is a *settled state over inputs*; when an input changes it must
+     re-establish. **Provenance the policy's inputs** (not only spec values): recording each `policy → datum`
+     dependency makes that dependency set a **subscription**. A change fires the **same `impact_report` graph** —
+     extended to find affected **policies**, not only affected specs — which re-evaluate. Push or pull is a DCM
+     implementation choice; the contract only requires the policy→data edges be recorded.
+   - **Re-entrant convergence (the inner loop).** Policy application is a **fixpoint, not a single pass**:
+     policies **enrich** (looked-up/projected data), **inject** (layer data, defaults), and **mutate** (modify
+     fields), and each change means the changed payload must be **re-validated** — evaluate → enrich/inject/mutate
+     → re-validate → repeat **until stable and clean**. A single pass would ship the enriched/injected/mutated
+     output unchecked. The loop MUST **converge deterministically** — be **confluent** (order-independent result)
+     and **terminating** (a bounded fixpoint, no oscillation); the Evaluation Context (POL §7) is the shared
+     constraint space that lets policies converge rather than fight. **Determinism is required, not best-effort**
+     — it is what makes a request reproducible and replayable (audit; the dual-anchor/rehydration guarantees).
+     Enforcing it — cycle / non-determinism **detection** at execution and (where decidable) at policy-injection —
+     is the engine's job (**DCM ADR-027**).
 
 5. **Mediation granularity is profile-governed; high-assurance is a *guard*, not a firewall.**
    - **Boundary-mediation by default.** Mediate **crossings** (into-spec, egress-to-peer, provider-handoff,
