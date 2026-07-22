@@ -1,7 +1,7 @@
 # ADR-034: The orderable-composite tier is one thing — Composite Service becomes Template
 
 **Status:** Proposed (2026-07-20) — a **discussion card for engineering review**; binds nothing until ratified.
-**Related:** ADR-033 (Templates — the tier this unifies into); ADR-027 (the `single`/`multi` shape); `entities/composite-service-model.md` + `registry/catalog-item.schema.json` (the Composite Service model this absorbs); ADR-028 / DCM ADR-024 (the rule-ID registry the `CMP-*`→`TPL-*` rename rides).
+**Related:** ADR-033 (Templates — the tier this unifies into); ADR-027 (the shape — now **derived** `has_constituents`, ADR-027 addendum); `entities/composite-service-model.md` + `registry/catalog-item.schema.json` (the Composite Service model this absorbs); ADR-028 / DCM ADR-024 (the rule-ID registry the `CMP-*`→`TPL-*` rename rides).
 
 ## The problem — two terms for one objective
 
@@ -9,7 +9,7 @@ The goal is a **simple** model. Today two terms name the *same* objective — *a
 
 | | **Composite Service** (shipping) | **Template** (ADR-033, paper) |
 |---|---|---|
-| What | catalog item: constituent resource types + `depends_on` + bindings + `failure_effect` | the orderable assembly: a `multi` Resource + bound processes |
+| What | catalog item: constituent resource types + `depends_on` + bindings + `failure_effect` | the orderable assembly: a Resource **with constituents** (`has_constituents`) + bound processes |
 | Schema | `catalog-item.schema.json` + `validate.py` cross-field checks | none yet ("no schema change") |
 | Rules | `CMP-*` | — |
 | Runtime | instantiates into a **Composite Entity** | instantiates into a **System** |
@@ -31,7 +31,7 @@ These are the same tier. **Two names for one objective is not simple** — this 
 
 - **One term for one objective** — the simplicity goal, directly.
 - **Template stops being paper.** It inherits a shipping, validated schema + rules + the application model, and slots straight into Pattern → Template → System. ADR-033 gains a 1.0 grounding instead of a post-1.0 promise.
-- **Finishes killing the overloaded "composite" tag** — the `entity_type` value already moved to `single`/`multi` (ADR-027); this retires the last high-traffic use.
+- **Finishes killing the overloaded "composite" tag** — the Resource/Process shape is now **derived** (`has_constituents`, ADR-027 addendum), so there is no stored `composite` value left; this retires the remaining high-traffic use, the catalog-tier name.
 
 ## Open questions for engineering
 
@@ -53,7 +53,7 @@ These are the same tier. **Two names for one objective is not simple** — this 
 
 ## Decision
 
-**Proposed — binds nothing.** Ratify at engineering review, then execute as a migration behind the prefix ruling (schema rename + `CMP→TPL` + `Composite Entity → System` + the ~20 referencing docs), sequenced like the `single`/`multi` and rule-ID work.
+**Proposed — binds nothing.** Ratify at engineering review, then execute as a migration behind the prefix ruling (schema rename + `CMP→TPL` + `Composite Entity → System` + the ~20 referencing docs), sequenced like the derive-shape and rule-ID work.
 
 ## Alternatives considered
 
