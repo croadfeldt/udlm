@@ -167,6 +167,35 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 > carry provisioning connotation ("Requested" ≈ dispatched-to-a-provider), which the Knowledge family reinterprets
 > as `UNDER_REVIEW` for curated artifacts. No structural incompatibility.
 
+### 4.6 SoftwareImage · SoftwarePackage · Vulnerability — the software-supply-chain triad
+Facts *about* resources (their bill-of-materials and its known vulnerabilities), discovered by a scanner sweep
+and referenced by the resource estate — the first **knowledge-domain ingestion** under this family (the reusable
+method: a discovery avenue → Knowledge classes → references-context edges → filter + blast-radius).
+
+> **⚠ Proof of concept — not best practice.** Materializing these software facts as
+> local-discovery Knowledge records is a **POC** to demonstrate filter + blast-radius; it is
+> **not** the recommended production shape and **may be removed** for a more robust solution.
+> The authoritative source for *what is deployed and its config* is the live **System of
+> Record** — the cluster API and its **gitops repos** (once DCM-at-home lands, query OCP/gitops
+> directly), and for SBOM a central SBOM/SCA/VEX store. The robust direction is to
+> **reference / query the SOR on demand** rather than duplicate it here; a Knowledge record,
+> where kept, should *point at* its SOR, not *be* it. *Which* SOR, refresh cadence, and
+> precedence are an **operational detail each organization sets per its internal policy**.
+> Tracked: [udlm#197](https://github.com/croadfeldt/udlm/issues/197) (principle),
+> [udlm#188](https://github.com/croadfeldt/udlm/issues/188) (SBOM SoR),
+> [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, DCM-at-home).
+- **`SoftwareImage`** — a container image (correlation id: **digest**). *Adopts:* OCI image-spec. `contains`
+  (→ SoftwarePackage) is its SBOM; referenced by `Compute.Container` via `runs_image`.
+- **`SoftwarePackage`** — a library/package (correlation id: **purl**). *Adopts:* Package-URL + SPDX/CycloneDX
+  component. One record per purl, shared by every image that contains it. `affected_by` (→ Vulnerability).
+- **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV / NVD-CVE (+ VEX for
+  status). Terminal in the chain; blast-radius reverse-walks from here.
+- **Lifecycle:** curated upstream (NVD/OSV), **`Discovered`** locally (a scanner is a discovery avenue,
+  dcm ADR-017) — never provider-realized.
+- **Edges** are `kind: references` (non-ordering, so outside the shutdown sort) but **walked by
+  blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
+  container → app → host set.
+
 ## 5. Relationship graph (summary)
 
 ```
@@ -179,9 +208,10 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
 ```
 
 ## 6. Future members
-`UseCase`, `Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as DAV's UDLM-conformance
+`Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as DAV's UDLM-conformance
 expands beyond the capability catalog (the pilot). Each follows the curation archetype and
 the universal contracts; all remain universal definitions, free to use by any realization.
+(`SoftwareImage` / `SoftwarePackage` / `Vulnerability` have landed — §4.6.)
 
 > **`Finding` / `Resolution`** arrive with the **Findings & Resolutions** realization
 > (`dav/docs/findings-resolution-design.md`): a `Finding` is an externally-surfaced observation about the

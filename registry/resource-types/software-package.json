@@ -1,0 +1,54 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "0230f9b6-e401-4d5b-ad10-ff65a3779868",
+  "resource_type": "SoftwarePackage",
+  "version": "0.1.0",
+  "family": "Knowledge",
+  "entity_type": "SoftwarePackage",
+  "status": "active",
+  "metadata": {
+    "display_name": "Software Package",
+    "description": "A software package / library as a Knowledge-family fact — one record per purl, shared by every SoftwareImage that contains it (one entity, many referrers). Knowledge, not a Resource: discovered by a scanner sweep, never provider-realized. ADOPT (not absorb) the Package-URL (purl) spec and SPDX/CycloneDX component identity by reference (T5): purl is the portable correlation id; the component schema is not restated. Contained by SoftwareImage (contains); references Vulnerability (affected_by).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-22T00:00:00Z"
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "purl"
+    ],
+    "properties": {
+      "purl": {
+        "type": "string",
+        "description": "Package URL (purl) — the portable identity and dedup key, e.g. pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1. One record per purl."
+      },
+      "name": {
+        "type": "string",
+        "description": "Package name (as parsed from the purl / SBOM component)."
+      },
+      "version": {
+        "type": "string",
+        "description": "Package version (as parsed from the purl / SBOM component)."
+      },
+      "type": {
+        "type": "string",
+        "description": "Package ecosystem / purl type (e.g. rpm, maven, npm, pypi, golang, deb)."
+      },
+      "license": {
+        "type": "string",
+        "description": "Declared license as an SPDX license identifier (e.g. Apache-2.0), where the SBOM reports one."
+      }
+    }
+  },
+  "outputs": {},
+  "relationships": [
+    {
+      "edge_type": "references",
+      "target": "Vulnerability",
+      "cardinality": "0..n",
+      "description": "affected_by — this package version is affected by the vulnerability (OSV / VEX). A declarative typed reference; the match is Policy. Non-ordering, but walked by blast-radius/impact in reverse (the CVE -> resource path)."
+    }
+  ]
+}
