@@ -29,6 +29,11 @@ jobs:
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,
       # registry/rule-id-naming.md). Was authored but never CI-wired.
       - run: python3 tests/check_single_source.py
+      # Repo-cleanliness gates (the nine questions — dav docs/repo-cleanliness-review.md):
+      # referential integrity (Q8) + CI/signoff parity (these two ran only in signoff.sh before).
+      - run: python3 tests/check_links.py
+      - run: python3 tests/check_profile_tables.py
+      - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump
       # vs origin/main (compat-check old-vs-new). New types are skipped.
