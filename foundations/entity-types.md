@@ -161,9 +161,9 @@ resource_entity:
   # [all resource-type-specific fields carry provenance metadata]
 ```
 
-#### 2.1.2 PENDING_REVIEW State
+#### 2.1.2 The PENDING_REVIEW Condition
 
-`PENDING_REVIEW` is a formal lifecycle state for Resources (not Processes). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed. **Why a distinct state rather than FAILED:** the underlying resource is unchanged and healthy — the conflict is a *governance* question (sovereignty/authorization), not a provisioning fault. `FAILED` would imply the resource is broken and invite teardown; `PENDING_REVIEW` preserves the resource intact while a human or policy resolves the conflict, and it is never auto-resolved.
+`PENDING_REVIEW` is a `status.conditions` entry on Resources (not Processes) — an operational hold, not a `lifecycle_state` (the five-value enum, data-model-core §3, is unchanged while it is set). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed. **Why a distinct state rather than FAILED:** the underlying resource is unchanged and healthy — the conflict is a *governance* question (sovereignty/authorization), not a provisioning fault. `FAILED` would imply the resource is broken and invite teardown; `PENDING_REVIEW` preserves the resource intact while a human or policy resolves the conflict, and it is never auto-resolved.
 
 | Trigger | Description |
 |---------|-------------|
@@ -336,7 +336,7 @@ conformant realization guarantees, not runtime governance policy.
 | `ENT-002` | Processes must declare max_execution_time — this field has no default and is not optional |
 | `ENT-003` | Processes must record all affected entity UUIDs if any infrastructure modifications are made during execution |
 | `ENT-004` | Composite aggregate constituent health is carried on the `composite_health` axis (a status/conditions overlay — data-model-core §3): healthy only when all required constituents are operational. DEGRADED/degraded is a health-axis value, never a lifecycle_state — the lifecycle enum is unchanged for composites |
-| `ENT-005` | PENDING_REVIEW is a valid Resource state requiring human resolution — it is never an error state and never automatically resolved |
+| `ENT-005` | PENDING_REVIEW is a valid Resource **condition** (`status.conditions`, data-model-core §3 — not a `lifecycle_state`) requiring human resolution — it is never an error state and never automatically resolved |
 | `ENT-006` | The entity UUID is immutable across the full entity lifecycle including rehydration, provider migration, and ownership transfer |
 
 ---
