@@ -51,6 +51,21 @@ It is the sanctioned home for a genuinely provider-specific datum — a first-cl
 satisfy natively (e.g. `isolation: private`), it belongs at the **Type Class** as a portable requirement, not
 here. Provider scope is the last resort, not the default.
 
+**Search first — reuse before you author.** Before defining anything, look for an element that already exists.
+The canonical shapes live in **`registry/common-elements.md`** (`common-elements.schema.json#/$defs/<Name>` —
+`Quantity`, `ComputeResources`, `Reference`, `Condition`, …), and any element already declared at **Base or Type
+scope** on your resource is equally reusable. Reuse joins on **`(scope, name, schema)`** (ADR-038), so filter
+by:
+- **scope** — prefer the **highest** applicable (Base ▷ Type ▷ Provider); an existing higher-scope element is the
+  most portable reuse.
+- **Base / resource compatibility** — elements on your canonical Base or a compatible Type.
+- **name / meaning** — what the datum represents.
+
+The element coordinate is addressable as a native URL — `https://<authority>/<Class-path>?<filter>#<field-path>`
+(filters are OData `$filter`, e.g. `?scope=Compute&name=isolation`); the dotted form (`Compute.isolation`) is the
+compact alias. If a shape exists, **`$ref` it** (`#/$defs/<Name>`) — don't restate it (§4.3; core-tenets **T7**).
+Author a new element only when the search comes up empty.
+
 **The element.** A `SharedDataElement` at Provider scope — `{scope: Compute.VM.OCPVirt, element, schema, values,
 state}`. The **provider owns the schema** of what is inside; UDLM **custodies** it (identity, provenance,
 versioning, tenancy) and passes it to the provider to apply. UDLM never renders it into a native spec —
@@ -71,10 +86,16 @@ entity ports across that set. Portability narrows to a single target only when a
 is named (the authority/instance axis, ADR-038 §10). So a Provider Class element degrades portability to *its
 declaring set* — flagged, and the consumer notified — never a silent pin to one vendor.
 
-**Grow portability by contributing upward.** A Provider Class element that recurs across providers is a
-Type-Class candidate. Contribute it **upward** (Provider → Type) through the gated contribution model (ADR-038
-§6): it lands `proposed` at the target scope and canonicalizes by governance, so the intent then ports for
-everyone. The recurring-provider-element set is the observable roadmap of what should become canonical.
+**Define at the highest scope you're allowed — portability by scope.** A `SharedDataElement` in a Provider Class
+need not stay at Provider scope. A Class may define an element **at its own scope or any higher — Type or Base —
+when that scope's authority allows it** (ADR-038 §6; gated by governance, tightening with blast radius:
+Provider→Type affects all VM providers, →Base all of Compute). **Where your organization permits it, this is
+encouraged:** an element defined at **Type or Base scope is reusable by every other provider compatible with that
+Type / Base**, so the datum *ports* instead of pinning to you — prefer the highest scope your authority permits.
+If you cannot write at the higher scope directly, define at Provider scope and **contribute upward**: the element
+lands `proposed` at the target scope and canonicalizes by governance. Either way, a Provider Class element that
+recurs across providers is a Type-Class candidate — the recurring-provider-element set is the observable roadmap
+of what should become canonical.
 
 **Lifecycle.** A Provider Class rides the **same one contribution lifecycle** as Base/Type classes (§6): author
 (proposed) → register (Liskov-validated against its Type parent) → use (authority-scoped, policy/profile-governed)
