@@ -701,7 +701,7 @@ payload:
 
 ---
 
-## 16.5. Conformance and Schema Events (`conformance.*`, `schema.*`)
+## 16a. Conformance and Schema Events (`conformance.*`, `schema.*`)
 
 Conformance events let a UDLM-conformant peer signal lifecycle changes in its
 conformance state and schema bundle. Other peers subscribe to these so they
@@ -888,7 +888,7 @@ payload:
 
 ## 20. Accreditation Events (`accreditation.*`)
 
-Fired by the Accreditation Monitor (doc 47) when external verification
+Fired by the Accreditation Monitor ([accreditation-and-authorization-matrix.md](../governance/accreditation-and-authorization-matrix.md)) when external verification
 of a registered accreditation produces a result or requires attention.
 
 | Event Type | Urgency | Description |
@@ -1036,5 +1036,5 @@ authorization.granted
 | `group.deleted` | A DCMGroup has been deleted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `group.member_added` | A member (actor or entity) has been added to a DCMGroup | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
 | `group.member_removed` | A member (actor or entity) has been removed from a DCMGroup (actual removal only) | entity_uuid, group_uuid, member_uuid | LCM, AUD, OBS |
-| `group.membership_expired` | A time-bounded group membership reached expires_at ([universal-groups](../observability/universal-groups.md) §9.4, GRP-014) — distinct from removal: the `notify`/`suspend_member` on_expiry actions emit ONLY this event; the `remove` action additionally emits `group.member_removed` | group_uuid, member_uuid, expires_at, on_expiry action taken | LCM, AUD, OBS |
+| `group.membership_expired` | A time-bounded group membership reached expires_at ([universal-groups](../observability/universal-groups.md) §9a.4, GRP-014) — distinct from removal: the `notify`/`suspend_member` on_expiry actions emit ONLY this event; the `remove` action additionally emits `group.member_removed` | group_uuid, member_uuid, expires_at, on_expiry action taken | LCM, AUD, OBS |
 | `authorization.granted` | A cross-tenant authorization has been granted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |

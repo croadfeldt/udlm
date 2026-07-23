@@ -437,9 +437,9 @@ policies below add behavior on top of those invariants:
 
 ---
 
-## 9. Grouping and Relationship Gap Resolutions
+## 9a. Grouping and Relationship Gap Resolutions
 
-### 9.1 Community Subclass Catalog (Q35)
+### 9a.1 Community Subclass Catalog (Q35)
 
 The `group_class` set is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
 
@@ -466,7 +466,7 @@ common_group_subclasses:
 
 Organizations freely declare subclasses not in the catalog — there is no validation or enforcement on subclass values.
 
-### 9.2 Group Sovereignty Interaction (Q36)
+### 9a.2 Group Sovereignty Interaction (Q36)
 
 Sovereignty interaction is group_class-specific:
 
@@ -491,7 +491,7 @@ policy:
     THEN gate: "Classified resources cannot join cross-sovereignty resource groups"
 ```
 
-### 9.3 Tenant Decommission Lifecycle (Q37)
+### 9a.3 Tenant Decommission Lifecycle (Q37)
 
 Tenant decommission is the highest-stakes lifecycle operation in DCM. It requires mandatory pre-decommission validation and follows a staged sequence.
 
@@ -519,7 +519,7 @@ For each resource in the Tenant:
 **Phase 4 — Audit record archival:**
 All audit records enter `all_retired` retention_status. They are **never destroyed** as part of Tenant decommission. Post-lifecycle retention clock starts per governing policy.
 
-### 9.4 Time-Bounded Group Membership (Q38)
+### 9a.4 Time-Bounded Group Membership (Q38)
 
 Group memberships already support time-bounded validity via `valid_from` and `expires_at` in the Universal Group Model. The Lifecycle Constraint Enforcer handles expiry.
 
@@ -545,7 +545,7 @@ actually removed — i.e. the `remove` on_expiry action additionally produces a
 membership persists with `membership_status: expired` / the member is suspended, nothing is
 removed).
 
-### 9.5 Group Policy Inheritance — Nested Groups (Q39)
+### 9a.5 Group Policy Inheritance — Nested Groups (Q39)
 
 Policy inheritance for nested groups is group_class-specific and profile-governed:
 
@@ -582,11 +582,11 @@ dcm_group:
 
 ## 11. Related Concepts
 
-- **Resource Grouping** (doc 08) — original resource grouping model, now implemented via `group_class: resource_grouping`
-- **Policy Organization** (doc 14) — Policy Groups and Profiles, now implemented via `group_class: policy_collection` and `group_class: policy_profile`
-- **Entity Relationships** (doc 09) — cross-tenant authorized relationships between groups
-- **Universal Audit Model** (doc 16) — all group changes produce audit records
-- **Ingestion Model** (doc 13) — migration of existing constructs to universal groups
+- **[resource-grouping.md](../entities/resource-grouping.md)** — original resource grouping model, now implemented via `group_class: resource_grouping`
+- **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `group_class: policy_collection` and `group_class: policy_profile`
+- **[entity-relationships.md](../entities/entity-relationships.md)** — cross-tenant authorized relationships between groups
+- **[universal-audit.md](universal-audit.md)** — all group changes produce audit records
+- **[ingestion-model.md](../lifecycle/ingestion-model.md)** — migration of existing constructs to universal groups
 
 
 ---
