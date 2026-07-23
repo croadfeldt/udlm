@@ -100,6 +100,20 @@ coined primitive is permanent surface — every peer must implement it and every
 this tenet aimed **outward** — don't re-express an external standard; T7 aims it **inward** — don't
 multiply internal primitives. Occam's razor as a contract obligation.
 
+## T8 — Adopt tools by reference: orchestrate, don't reimplement
+Where a mature tool already owns a **mechanism** — building, scanning, signing, deploying, orchestrating
+CI/CD — the realization (DCM) **wraps it as a Provider** and **never reimplements it**. This is the
+tool-level twin of T5 and T7: T5 keeps the data model from re-expressing an external *standard*'s schema;
+T7 keeps it from coining a redundant *primitive*; T8 keeps the *realization* from rebuilding a *mechanism*
+a best-of-breed tool already provides. The **naturalization boundary** (DCM ADR-023) is the wrap point — a
+Provider translates generic intent into the tool's native form and reports realized state back, so the tool
+stays swappable and the substrate stays generic. **This is an active review gate, not advice:** a proposal
+for the control plane to directly build / scan / sign / deploy must show that no existing tool can be wrapped
+as a Provider — otherwise the finding is "wrap it, don't build it." The control plane's value is the layer
+no single tool owns: the **cross-tool intent** and the **estate / realized graph**. Litmus — *does a mature
+tool own this mechanism?* → Provider-wrap it; *does anyone own the cross-tool intent + estate graph?* → no →
+that's ours.
+
 ---
 
 **Consequence — what a UDLM spec contains and doesn't.**
