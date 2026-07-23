@@ -114,3 +114,19 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ---
 
 *Keep this current: when a document changes what it owns — a new rule-ID family, a moved vocabulary, a rename — update its line here in the same change.*
+
+## Unindexed-until-now (linked here so nothing is orphaned)
+
+- **`docs/consumer-perspective.md`** — consumer-facing walkthrough of the model (status: under review — promote-or-retire decision pending).
+- **`docs/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
+- **`docs/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via Hardware.NetworkInterface; Kea/NMstate projection).
+- **`docs/design/scoped-class-hierarchy/compute-class-render.md`** — worked render of the Compute Base/Type/Provider Class hierarchy (ADR-038).
+- **`docs/design/scoped-class-hierarchy/identity-class-render.md`** — worked render of the Identity class hierarchy (ADR-038).
+- **`docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`** — Provider-Class authoring best practice (search-first reuse; define at highest allowed scope).
+- **`docs/design/scoped-class-hierarchy/request-pipeline-layers.md`** — how scoped classes ride the request pipeline layer assembly.
+- **`docs/examples/vm-end-to-end-example.md`** — a VM from intent to realized, end to end.
+- **`docs/examples/provider-accreditation-worked-example.md`** — accreditation flow worked example (claim → attestation → verdict).
+- **`docs/research/architecture-as-code-ingestion.md`** — research: mapping CALM/LikeC4 architecture-as-code into UDLM edges.
+- **`docs/research/likec4-and-udlm.md`** — research: LikeC4 view layer over UDLM data.
+- **`docs/udlm-0.1-engineering-handoff.md`** — the 0.1 engineering handoff (what to read in which order).
+- **`registry/rule-id-naming.md`** — the rule-ID naming rules behind the registry (ADR-028).

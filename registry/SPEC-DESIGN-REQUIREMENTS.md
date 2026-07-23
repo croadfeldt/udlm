@@ -108,7 +108,7 @@ Each hard constraint cites the UDLM contract it derives from.
     it; independent extensions stay interoperable via the schema-sharing protocol
     (`contracts/identifier-scheme.md`, `contracts/schema-sharing.md`).
 20. **Data, not logic** — a spec carries values + declarative constraints; *executable* rules are
-    Policy, *static* values are Layers (`foundations/layering-and-versioning.md` §1a).
+    Policy, *static* values are Layers (`foundations/layering-and-versioning.md` §1b).
 21. **No embedded expressions** — a spec carries *declarative* constraints only (JSON Schema
     `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
     expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;

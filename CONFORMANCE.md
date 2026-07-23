@@ -208,6 +208,7 @@ only if it enumerates the exclusion in its declaration (§3.2).
 ### 5.1 Foundations (required — not excludable)
 
 - `foundations/context-and-purpose.md`
+- `foundations/data-model-core.md` — the settled core decisions ([D1]-[D9]: edge model, status conditions, derived shape)
 - `foundations/foundations.md`
 - `foundations/entity-types.md`
 - `foundations/four-states.md` — the four-state lifecycle is non-negotiable
@@ -499,4 +500,5 @@ detectable by running the test suite; verifiers MAY publish discrepancies.
 - [`contracts/provider-contract.md`](contracts/provider-contract.md)
 - [`contracts/policy-contract.md`](contracts/policy-contract.md)
 - [`tests/test-framework-specification.md`](tests/test-framework-specification.md) — the conformance test suite
+- [`foundations/data-model-core.md`](foundations/data-model-core.md) — the settled core decisions
 - [`foundations/layering-and-versioning.md`](foundations/layering-and-versioning.md) — semver basis

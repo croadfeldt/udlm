@@ -413,7 +413,7 @@ specified in the DCM architecture docs.
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
 | 1 | Should subscription-to-subscription dependencies be supported (e.g., a monitoring subscription that depends on a compute subscription)? | Dependency model complexity | ✅ Resolved — use standard Entity Relationship model with `subscription_binding` nature; subscriptions can reference other subscriptions via relationship |
-| 2 | How does subscription interact with the composite service definition model — can a composite service definition compose subscriptions from multiple child providers? | Compound subscription complexity | ✅ Resolved — yes, a composite service definition subscription creates child subscriptions on constituent providers; parent subscription lifecycle governs children per standard composite service definition composition model (doc 30) |
+| 2 | How does subscription interact with the composite service definition model — can a composite service definition compose subscriptions from multiple child providers? | Compound subscription complexity | ✅ Resolved — yes, a composite service definition subscription creates child subscriptions on constituent providers; parent subscription lifecycle governs children per standard composite service definition composition model ([composite-service-model.md](../entities/composite-service-model.md)) |
 | 3 | Should subscription cost be pre-computed or dynamic? | Cost attribution accuracy | ✅ Resolved — both; pre-computed estimate at request time (displayed in catalog), actual cost tracked via ongoing cost attribution (Transformation Policy injects cost records on each billing period) |
 
 ---
