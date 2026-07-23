@@ -143,7 +143,7 @@
         "type",
         "properties"
       ],
-      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): a provider EXTENDS an instance additively via the realized entity's provider-namespaced `provider_extensions` surface, never by widening this base — no-override is structural (ADR-PROV-004, closes #198).",
+      "description": "The field schema for the Intent/Requested state — the wire contract every provider offering this type MUST satisfy. A nested JSON Schema 2020-12 fragment. Catalog items / constraint profiles (E1) project over these fields by path; they never widen them. This base is CLOSED (a type's `spec` sets `additionalProperties: false`): a provider EXTENDS an instance additively via the realized entity's provider-namespaced `provider_extensions` surface, never by widening this base — no-override is structural (ADR-PROV-004 — DEPRECATED, subsumed by ADR-038's Provider-Class `SharedDataElement`; `provider_extensions` is the interim carrier, retiring per #202 once scoped classes land, #199).",
       "properties": {
         "type": {
           "const": "object"

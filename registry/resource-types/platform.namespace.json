@@ -78,7 +78,7 @@
   "outputs": {
     "name": {
       "type": "string",
-      "description": "The realized namespace name — the string value that provider_extensions fields reference."
+      "description": "The realized namespace name — the string value that provider_extensions fields reference (provider_extensions is deprecated — subsumed by ADR-038's Provider-Class SharedDataElement, retiring #202)."
     },
     "uid": {
       "type": "string",

@@ -19,7 +19,7 @@ resource was never locked to one provider.
   deregistration) is what kicks the flow off; the affected resources are already realized.
 - **Re-placement onto an *alternate* provider.** Placement runs again but with the failed provider excluded,
   landing the resource on a different eligible one. Validation policies re-evaluate for the new provider.
-- **Naturalized references are rewritten.** The provider-specific values in `provider_extensions` — the
+- **Naturalized references are rewritten.** The provider-specific values in `provider_extensions` (deprecated — subsumed by ADR-038, interim, retiring #202) — the
   namespace, the native id, the cluster — are the old provider's and cannot carry over. They are re-derived
   (re-enriched) for the new provider; the portable base is untouched.
 - **Portability is the proof.** Success is that the provider-neutral fields still match intent after the move.

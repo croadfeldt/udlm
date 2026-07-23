@@ -520,7 +520,7 @@ spec:
         reference_data_type: network
       ip_mode: dynamic
 
-provider_extensions:
+provider_extensions:   # deprecated — subsumed by ADR-038's Provider-Class SharedDataElement; interim, retiring #202
   ocp-prod-east:
     namespace_ref:
       ref_uuid: "e2f3a4b5-..."           # → Platform.Namespace

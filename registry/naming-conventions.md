@@ -214,7 +214,7 @@ composability). Normative rules:
    across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
    IETF response to augmentation fragmentation), promoted through registry governance §3.
 4. **The formal `extends` mechanism** is **RESOLVED** — ADR-PROV-004 (closes #198). A provider
-   extends an instance **additively** via the provider-namespaced `provider_extensions` surface on
+   extends an instance **additively** via the provider-namespaced `provider_extensions` surface (deprecated — subsumed by ADR-038's Provider-Class `SharedDataElement`, interim, retiring per #202) on
    the realized entity, never by modifying the closed base spec. **No-override is structural**: the
    base type-spec is `additionalProperties: false`, and the validator rejects any extension path that
    collides with a base field. Any extension **computes a portability degradation** (`portability_breaking:
