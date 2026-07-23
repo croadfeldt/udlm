@@ -261,6 +261,8 @@ This separation of concerns is what makes a realization technology-agnostic whil
 
 ### 7.1 The substrate never translates into a provider's native spec — and why
 
+> Normative home: [core-tenets **T9**](../design-principles/core-tenets.md). This section is the narrative rationale.
+
 **A realization carries only generic intent, typed data, and denaturalized realized results. It never
 translates intent into — or stores — a provider's native/vendor spec.** The provider does that at its edge
 (naturalize in, denaturalize out — DCM ADR-023); the native form never enters the substrate. Two reasons,

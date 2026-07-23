@@ -52,7 +52,7 @@ UUID, always carrying provenance." Applied to a `Capability`:
 | **Lifecycle state** (per-type machine) | The curation/normalization state machine (below) |
 | **Artifact-metadata block** (handle, version, status, owned_by, created_by, created_via) | handle = capability name; owned_by = the scope/tier; created_via = assessment ingest / UC analysis / manual |
 | **Field-level provenance** | "this capability's `domain` came from the DCM taxonomy; its `evidence` came from assessment X, finding Y" |
-| **Data classification** | Engagement-derived capabilities are client-confidential; the canonical taxonomy is public — per-field classification governs what crosses the boundary |
+| **Data classification** | Field-derived capabilities are client-confidential; the canonical taxonomy is public — per-field classification governs what crosses the boundary |
 | **Contributor identity + review** | The hybrid LLM-proposes / human-curates step is UDLM's federated-contribution model verbatim |
 
 No property had to be discarded or bent. The metadata block, provenance, and
@@ -114,7 +114,7 @@ extension path works for a domain UDLM never anticipated.
 Because both DCM and DAV would emit UDLM-conformant Data, capabilities flow **across** the
 boundary for free: a capability DAV identifies as "required by these use cases" is the
 same UDLM artifact a DCM platform must "provide" — no translation layer. The consulting
-back-fill (field engagements → taxonomy completion) compounds across clients *because it
+back-fill (field work → taxonomy completion) compounds across clients *because it
 is all one substrate*. This is the payoff UDLM promises — "data any other conformant
 system can read" — demonstrated rather than asserted.
 
