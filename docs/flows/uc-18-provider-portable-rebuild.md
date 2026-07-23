@@ -19,7 +19,8 @@ resource was never locked to one provider.
   deregistration) is what kicks the flow off; the affected resources are already realized.
 - **Re-placement onto an *alternate* provider.** Placement runs again but with the failed provider excluded,
   landing the resource on a different eligible one. Validation policies re-evaluate for the new provider.
-- **Naturalized references are rewritten.** The provider-specific values in `provider_extensions` (deprecated — subsumed by ADR-038, interim, retiring #202) — the
+- **Naturalized references are rewritten.** The provider-specific values — the old provider's
+  Provider-Class elements (ADR-038): the
   namespace, the native id, the cluster — are the old provider's and cannot carry over. They are re-derived
   (re-enriched) for the new provider; the portable base is untouched.
 - **Portability is the proof.** Success is that the provider-neutral fields still match intent after the move.
@@ -45,7 +46,7 @@ The re-realize step is request-realization, run with the failed provider exclude
 - The re-resolution and rebuild are recorded in the audit trail.
 
 ## Data · Policy · Provider
-- **Data:** intent is the source of truth; provider-specific references in `provider_extensions` are rewritten
+- **Data:** intent is the source of truth; provider-specific references (Provider-Class elements) are rewritten
   while the portable base holds steady; realized state is updated.
 - **Policy:** validation policies re-evaluate for the alternate provider — the move is governed, not blind.
 - **Provider:** the original is detected unavailable; an alternate eligible provider re-realizes the resources.

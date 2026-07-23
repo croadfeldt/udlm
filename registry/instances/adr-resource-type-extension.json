@@ -70,6 +70,11 @@
         "at": "2026-07-23T00:00:00Z",
         "author": "claude-opus-4-8 (session a3cae804)",
         "text": "DEPRECATED — superseded by ADR-038 (scoped-Class paradigm): provider-specific data is a Provider-Class `SharedDataElement`, not a `provider_extensions` blob. The `provider_extensions` surface on the realized entity remains the INTERIM carrier until the scoped-Class construct is realized in the schema (#199), at which point the field is removed and the portability block re-keyed onto provider-scoped data (#202). This record is retired; do not treat it as the live mechanism."
+      },
+      {
+        "at": "2026-07-23T00:00:00Z",
+        "author": "claude-fable-5 (session a3cae804)",
+        "text": "RETIRED — maintainer ruling 2026-07-23: no interim support. `provider_extensions` removed from registry/realized-entity.schema.json and all doc surfaces (#202 executed ahead of #199); registry/tools/validate.py now rejects any instance carrying the field. Provider-specific data is a Provider-Class `SharedDataElement` (ADR-038); schema realization tracked in #199."
       }
     ]
   }
