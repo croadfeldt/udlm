@@ -72,7 +72,8 @@ The Resource Type Authority has full responsibility for:
 - Publishing new versions when the contract changes
 - Deprecating the specification and declaring a replacement when it's superseded
 
-**Authority assignment by registry tier:**
+**Authority assignment by registry tier** (the tiers themselves are defined by
+[registry-governance](../governance/registry-governance.md); this table adds who holds authority per tier):
 
 | Tier | Who is the Resource Type Authority |
 |------|------------------------------------|
@@ -130,6 +131,7 @@ These two terms are frequently conflated throughout the documentation. They are 
 
 - The registry is **open** — third parties, implementors, and the community can propose new resource type definitions
 - Registry entries are **versioned and immutable** once published — changes produce new versions
+  (the versioning/deprecation rules are owned by [registry-governance](../governance/registry-governance.md) §5, `REG-DP-*`)
 - Registry definitions are **vendor-neutral by hard requirement** — no vendor-specific data is permitted in a DCM-specified resource type unless that vendor is the exclusive provider of that technology stack
 - The registry itself is subject to the same **deprecation model** as all other DCM definitions
 - All registry entries follow the **universal versioning scheme** (Major.Minor.Revision)
