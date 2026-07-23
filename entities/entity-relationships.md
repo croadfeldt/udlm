@@ -230,35 +230,27 @@ Nature describes the **structural character** of a relationship — what it mean
 
 ---
 
-## 6a. Relationship Type × Nature Matrix
+## 6a. Common Patterns in the Edge Model
 
-Type and nature form a matrix; not every combination is valid. **In practice you only need four cells** — the rest are either invalid or rare:
+With nature derived from `edge_type` (§6, data-model-core §4), the old type × nature matrix reduces
+to the edge model itself: each `edge_type` has exactly one nature reading, so invalid combinations
+are not representable. The patterns the matrix used to govern, in current vocabulary:
 
-| Common combination | Means | Lifecycle policy |
-|--------------------|-------|------------------|
-| `requires` + `constituent` | core component (VM ↔ its boot disk) | required |
-| `depends_on` + `operational` | operational/allocated dependency (incl. cross-tenant) | required |
-| `references` + `informational` | business context (Business Unit, Cost Center, Owner) | none |
-| `peer` + `operational`\|`informational` | cluster members / HA partners | per side / none |
-
-The full matrix below is the **reference** for the remaining (rarer or invalid) combinations and the exact behavioral rule per cell. The four rows above are what the overwhelming majority of relationships use.
-
-| | `constituent` | `operational` | `informational` |
+| Pattern | Expressed as | Nature (derived) | Lifecycle policy |
 |---|---|---|---|
-| **`requires`** | ✅ **Core constituent** — entity cannot function without this component; component is part of its definition. Lifecycle policy required. | ✅ **Hard operational dependency** — entity cannot function without this but it is not a component. Lifecycle policy required. | ⚠️ **Invalid** — if an entity truly requires something, it has an operational or constituent dependency, not merely informational context. |
-| **`depends_on`** | ✅ **Soft constituent** — entity degrades without this component but is not fully broken. Lifecycle policy required. | ✅ **Primary cell for allocated resources** — soft operational dependency. Cross-tenant allocations live here. Lifecycle policy required. | ✅ **Awareness dependency** — entity is aware of and tracks this entity but has no hard operational dependency. No lifecycle policy. |
-| **`contains`** | ✅ **Ownership container** — this entity logically owns and contains the related entity as a component. Lifecycle policy required. | ⚠️ **Rare** — containing something operationally is unusual; most containment is constituent. Use with explicit justification. | ❌ **Invalid** — containing something purely informational has no semantic meaning. |
-| **`references`** | ❌ **Invalid** — a reference implies no ownership or dependency; constituent implies the opposite. | ❌ **Invalid** — if there is an operational dependency, use `depends_on`. A reference that creates operational coupling is mismodeled. | ✅ **Pure informational reference** — primary cell for Business Unit, Cost Center, Product Owner relationships. No lifecycle policy. |
-| **`peer`** | ❌ **Invalid** — peers cannot be constituent components of each other. | ✅ **Operational peers** — equal entities with mutual operational interdependency. Lifecycle policy on each side. | ✅ **Informational peers** — equal entities that are aware of each other. No lifecycle policy. |
-| **`manages`** | ✅ **Component management** — this entity has lifecycle authority over a component it manages. Lifecycle policy required. | ✅ **Operational management** — this entity manages the operations of another entity without owning it. Lifecycle policy required. | ✅ **Audit/reporting management** — management relationship for visibility only. No lifecycle policy. |
+| Core constituent (VM ↔ its boot disk) | `constituents[]` / `contained_by` | `constituent` | required |
+| Operational dependency (incl. cross-tenant allocation) | `edge_type: depends_on` + `strength: hard\|soft` | `operational` | required |
+| Business context (Business Unit, Cost Center, Owner) | `edge_type: references` | `informational` | none |
+| Cluster members / HA partners | mutual `edge_type: depends_on` (`strength: soft`), one edge per direction, with a declared `relation` (e.g. `peer_of`) | `operational` | per side |
+| Component management authority | a declared `relation` (e.g. `manages`) refining `depends_on` or `contained_by` | per edge_type | required |
 
-**Key behavioral rules derived from the matrix:**
+**Behavioral rules (unchanged in substance):**
 
 - Any `constituent` or `operational` relationship **must** declare a lifecycle policy (ERL-004, REL-008)
-- `constituent` + `requires` is the strongest possible relationship — both the entity and its component are mutually dependent; cross-tenant is prohibited (REL-010)
-- `operational` + `depends_on` is the **allocated resource cell** — this is where cross-tenant allocations are modeled
-- `informational` + `references` is the **business context cell** — Business Unit, Cost Center, Person relationships live here
-- `❌ Invalid` combinations must be rejected by the Policy Engine at request time
+- Constituent edges are the strongest coupling — cross-tenant is prohibited (REL-010)
+- `depends_on` with derived `operational` nature is the **allocated resource cell** — where cross-tenant allocations are modeled (§6c)
+- `references` with derived `informational` nature is the **business context cell** — Business Unit, Cost Center, Person relationships live here
+- The retired six-type `relationship_type` field cannot reappear in examples — guarded by `tests/check_model_vocabulary.py`
 
 ---
 
@@ -353,7 +345,7 @@ When a consuming Tenant claims an available allocation, DCM creates a first-clas
 ```yaml
 allocated_entity:
   uuid: <uuid — consuming Tenant's own entity>
-  entity_type: Atomic  # ownership_model: allocation (ADR-027 shape; family: Resource)
+  family: Resource  # ownership_model: allocation (ADR-027); shape derived — Atomic (no constituents)
   resource_type_uuid: <uuid of the allocated resource type>
   tenant_uuid: <Tenant A uuid>  # Belongs to the consuming Tenant
 
@@ -433,7 +425,7 @@ Policy Engine evaluates:
   ▼
 DCM creates:
   │  Allocated Entity (owned by Tenant A) with UUID
-  │  depends_on / dependency_of relationship (bidirectional, cross_tenant: true)
+  │  depends_on edge on the allocated entity (+ inbound record on the parent — direction: inbound; cross_tenant: true)
   │  Updates parent's available_allocation status: available → claimed
   │  Adds record to parent's active_allocations
   │  Provenance recorded on both entities
@@ -899,14 +891,14 @@ The relationship graph exists across all four states:
 | `ERL-003` | Circular relationships are invalid and must be rejected |
 | `ERL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
 | `REL-005` | External relationships must reference a registered Information Provider |
-| `REL-006` | Relationship types must be from the standard vocabulary |
+| `REL-006` | `edge_type` must be from the closed set (`depends_on`, `contained_by`, `binds_to`, `references`); a named `relation` must be declared by the pinned type (REL-001/003) |
 | `REL-007` | Consumer-declared binding types must be permitted by the Resource Type Specification |
 | `REL-008` | A constituent relationship lifecycle policy may not be set to `ignore` for `on_related_destroy` |
 | `REL-009` | Lifecycle policy conflicts between policies are resolved by the standard Policy Engine authority hierarchy — no special case |
 | `REL-010` | Constituent relationships may not cross Tenant boundaries |
 | `REL-011` | Cross-tenant operational relationships require explicit authorization from both the owning Tenant and the consuming Tenant |
 | `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
-| `REL-013` | `❌ Invalid` relationship type × nature combinations (per the matrix in Section 6a) must be rejected by the Policy Engine at request time |
+| `REL-013` | Retired 2026-07-23 — nature is derived from `edge_type` (data-model-core §4), so invalid type × nature combinations are not representable; the retired stored fields are guarded by `tests/check_model_vocabulary.py` |
 | `REL-014` | An allocated resource claim requires a matching `available` allocation record on the parent entity |
 | `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` (see [Ownership, Sharing, and Allocation](../foundations/ownership-sharing-allocation.md))) is deferred until `active_relationship_count` reaches `minimum_relationship_count` |
 | `REL-016` | Informational relationships do not contribute to `active_relationship_count` on shared resource entities |
@@ -997,10 +989,11 @@ Every relationship carries two properties that the Notification Router uses for 
 
 ```yaml
 relationship:
-  type: attached_to
+  edge_type: depends_on
+  relation: attached_to            # declared relation name (REL-001)
   stake_strength: <required|preferred|optional>
   notification_relevance:
-    # Declared in the Resource Type Spec for this relationship type
+    # Declared in the Resource Type Spec for this relation
     # Can be overridden per relationship instance
     notifiable_events: [entity.decommissioning, entity.state_changed, entity.ttl_expired]
     traversal_depth: 1               # how many hops from this relationship

@@ -630,16 +630,16 @@ payload:
   reported_by_provider_uuid: <uuid>
   observed_at: <RFC 3339 UTC 'Z'>
   drift_cases:                       # one entry per differing edge
-    - case: declared_missing_in_observed | observed_missing_in_declared | type_mismatch
+    - case: declared_missing_in_observed | observed_missing_in_declared | strength_mismatch
       edge_ref:
         from_entity_uuid: <uuid>
         to_entity_ref: <object>      # entity_uuid or external_handle
       declared:
         present: <bool>
-        dependency_type: <string|null>
+        strength: <string|null>
       observed:
         present: <bool>
-        dependency_type: <string|null>
+        strength: <string|null>
         observation_method: <string|null>
         confidence: <string|null>
   recommended_action: review | reintrospect | none

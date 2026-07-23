@@ -88,10 +88,10 @@ the previous Realized state and the new topology.
 
 | Source concept | UDLM relationship | UDLM nature |
 |----------------|-------------------|-------------|
-| CALM `composed-of` / LikeC4 nesting | `contains` / `contained_by` | `constituent` |
-| CALM `deployed-in` | `contains` / `contained_by` | `operational` |
-| CALM `interacts` / LikeC4 `->` | `depends_on` / `dependency_of` | `operational` |
-| CALM `connects` (interface-to-interface) | `depends_on` / `dependency_of` | `operational` |
+| CALM `composed-of` / LikeC4 nesting | `contained_by` (recorded on the component) | `constituent` |
+| CALM `deployed-in` | `contained_by` (recorded on the component) | `operational` |
+| CALM `interacts` / LikeC4 `->` | `depends_on` (+ `direction: inbound` record on the target) | `operational` |
+| CALM `connects` (interface-to-interface) | `depends_on` (+ `direction: inbound` record on the target) | `operational` |
 
 ### Interfaces → Provider capability extensions
 
