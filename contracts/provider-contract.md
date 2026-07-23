@@ -819,72 +819,28 @@ A UDLM-conformant realization MUST expose a machine-readable endpoint that descr
 GET /api/v1/capabilities
 ```
 
-The response *shape* is normative. **Substrate stream names are the event catalog's**
+The response **envelope** is normative; the capability **inventory is realization-owned** (the
+boundary, ADR-008: what a realization can do is the realization's to declare — the substrate
+defines *how it is advertised*, never *what it is*). Each advertised capability carries a
+description, its API endpoint(s), and/or its `data_streams` (payload schema + subscribe endpoint
+per stream). **Substrate stream names are the event catalog's**
 ([event-catalog.md](event-catalog.md)) — the advertisement may not rename them. A realization MAY
-additionally advertise realization-defined streams beyond the substrate catalog: placement scoring
-(`placement.decided`) is realization-defined, and the cost streams (`cost.estimated` /
-`cost.attributed`) are the metering engine's, relayed per
-[cost-metering-linkage.md](cost-metering-linkage.md). Endpoints and `framework` values below are
-illustrative, not contractual.
+additionally advertise realization-defined streams (e.g. placement scoring, or cost streams
+relayed from a metering engine per [cost-metering-linkage.md](cost-metering-linkage.md)).
+Endpoints are illustrative, not contractual.
 
 ```json
 {
   "realization_instance": "<instance-handle>",
   "version": "1.0.0",
   "capabilities": {
-    "lifecycle_management": {
-      "description": "Full lifecycle management of resources",
-      "operations": ["create", "update", "scale", "decommission", "rehydrate"],
-      "resource_types": ["Compute.VirtualMachine", "Network.IPAddress", "..."],
-      "api_endpoint": "/api/v1/requests"
-    },
-    "policy_evaluation": {
-      "description": "Policy-as-code evaluation on every request",
-      "policy_types": ["validation", "transformation", "gating", "recovery", "orchestration_flow", "governance_matrix_rule", "..."],
-      "framework": "opa_rego",
-      "api_endpoint": "/api/v1/admin/policies"
-    },
-    "cost_analysis": {
-      "description": "Cost estimation at placement time, cost attribution per tenant",
-      "data_streams": {
-        "cost_estimated": {
-          "description": "Emitted when placement scores include cost",
-          "payload_schema": "/api/v1/schemas/events/cost.estimated",
-          "subscribe_endpoint": "/api/v1/webhooks"
-        },
-        "cost_attributed": {
-          "description": "Emitted when realized entity cost is recorded",
-          "payload_schema": "/api/v1/schemas/events/cost.attributed",
-          "subscribe_endpoint": "/api/v1/webhooks"
-        }
-      }
-    },
-    "audit_trail": {
-      "description": "Tamper-evident Merkle tree audit with configurable granularity",
-      "proof_types": ["inclusion", "consistency"],
-      "api_endpoint": "/api/v1/audit"
-    },
-    "placement_decisions": {
-      "description": "Provider selection with sovereignty pre-filter and policy scoring",
-      "data_streams": {
-        "placement_decided": {
-          "description": "Full scoring rationale for every placement decision",
-          "payload_schema": "/api/v1/schemas/events/placement.decided",
-          "subscribe_endpoint": "/api/v1/webhooks"
-        }
-      }
-    },
-    "drift_detection": {
-      "description": "Discovered vs realized state comparison",
-      "data_streams": {
-        "drift_detected": {
-          "payload_schema": "/api/v1/schemas/events/drift.detected",
-          "subscribe_endpoint": "/api/v1/webhooks"
-        }
-      }
+    "<capability-key>": {
+      "description": "<what this capability does>",
+      "api_endpoint": "/api/v1/<surface>",
+      "operations": ["<operation>", "..."]
     },
     "entity_lifecycle": {
-      "description": "Full entity state change events",
+      "description": "Entity state-change events (substrate stream names — event-catalog.md)",
       "data_streams": {
         "entity_realized": { "subscribe_endpoint": "/api/v1/webhooks" },
         "entity_state_changed": { "subscribe_endpoint": "/api/v1/webhooks" },
@@ -895,6 +851,11 @@ illustrative, not contractual.
   }
 }
 ```
+
+A realization's actual capability inventory lives with the realization — for DCM it is the
+[DCM Capabilities Matrix](https://github.com/croadfeldt/dcm/blob/main/architecture/DCM-Capabilities-Matrix.md)
+(one advertisement key per matrix capability, kept current by the realization, versioned per
+DISC-005).
 
 #### 10.1b Capability Query (Substrate Required)
 
@@ -919,7 +880,7 @@ A consuming system integrating with a UDLM-conformant realization:
 2. Realization responds with:
    - cost.estimated event stream (subscribe via webhook)
    - cost.attributed event stream (subscribe via webhook)
-   - cost estimation API (GET /api/v1/requests/{uuid}/cost-estimate)
+   - the query API the capability advertises (`api_endpoint`)
    - payload schemas for each
 
 3. Consumer subscribes: POST /api/v1/webhooks
