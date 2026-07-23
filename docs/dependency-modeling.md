@@ -8,19 +8,19 @@ dependency resolution).
 
 ## The primitive: typed dependency edges
 
-Every resource carries `dependencies[]`; each entry is a directed edge to another resource with a
-`kind`, an optional named `relation`, and an optional `strength` (hard/soft). The four edge kinds are
-aligned to OASIS TOSCA root relationship types:
+Every resource carries `dependencies[]`; each entry is a directed edge to another resource with an
+`edge_type`, an optional named `relation`, and an optional `strength` (hard/soft). The four edge types
+are aligned to OASIS TOSCA root relationship types:
 
-| kind | TOSCA | meaning |
+| edge_type | TOSCA | meaning |
 |---|---|---|
 | `contained_by` | (containment) | physical/logical containment — a component within its parent |
 | `depends_on` | DependsOn | a runtime/functional dependency |
 | `references` | HostedOn / general | placement or a general reference |
 | `binds_to` | BindsTo | a binding to a specific provider (e.g. a database) |
 
-A type may **declare** the named relations it allows (`relationships[]`: name → kind + target type),
-and the validator enforces that a used relation is declared and kind-consistent (REL-001/003). A
+A type may **declare** the named relations it allows (`relationships[]`: name → edge_type + target
+type), and the validator enforces that a used relation is declared and edge_type-consistent (REL-001/003). A
 relation name is optional — an unnamed edge is valid — so a type need not enumerate every use.
 
 Direction convention: `source → target` means "source depends on target". That single convention is
