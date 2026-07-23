@@ -207,7 +207,7 @@ All four states are distinct data domains, each with specific immutability rules
 
 Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance: all current policies always apply.
 
-**Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order), preserving the entity's identity. UDLM contributes only the three irreducible things below; *how* a realization runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is realization concern (see the DCM operational model, `operations/rehydration.md`).
+**Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order). The entity's identity is preserved on a **restore in place** and re-established on a **rebuild** (§5.2). UDLM contributes only the three irreducible things below; *how* a realization runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is realization concern (see the DCM operational model, `operations/rehydration.md`).
 
 ### 5.1 Sources — the three stored states
 
@@ -221,7 +221,12 @@ A rehydration starts from any of the three stored states; this is not new struct
 
 ### 5.2 Preserved identity + lineage
 
-The entity **UUID is preserved** across rehydration — every external reference (CMDB, cost attribution, audit, relationships, dependency declarations) is by UUID, so regenerating it would silently break them. Only the **provider-side identifier** changes, and that change is already recorded in `provider_entity_id_history`; the event itself is in the audit trail (`REHYDRATE` action). **So the data model needs no separate rehydration-history structure** — it is reconstructable from those two. Lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent records `source_store` / `source_record_uuid` for the record it was rehydrated from.
+Identity behaves in one of two ways, by scenario — mirroring the rehydration **modes** (§5.3):
+
+- **Restore in place** (the *Faithful* mode — the same resource returns on its provider). The entity **UUID is preserved**; only the **provider-side identifier** changes (recorded in `provider_entity_id_history`, `REHYDRATE` audit action). Every external reference (CMDB, cost attribution, audit, relationships, dependency declarations) is by UUID, so preserving it keeps them valid.
+- **Rebuild from intent** (the *Provider-Portable* mode — the original is gone, e.g. its provider is offline, so the workload is re-realized elsewhere). The replacement is a **new entity with a new UUID**; dependents are re-pointed to it as the dependency graph replays.
+
+In both cases lineage rides the general provenance model: `rehydration` is a provenance `source.kind`, and the new Intent records `source_store` / `source_record_uuid` for the record it was rehydrated from — so a rebuild's new UUID stays traceable to what it replaced. **The data model needs no separate rehydration-history structure**: it is reconstructable from provenance plus the `REHYDRATE` audit trail.
 
 ### 5.3 The two invariants
 
@@ -230,7 +235,7 @@ Everything genuinely data-model about rehydration reduces to two rules:
 | Policy | Rule |
 |--------|------|
 | `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use **current** policies during rehydration — they cannot be pinned to a historical version (only resource-configuration policy may be pinned). |
-| `RHY-005` | The entity **UUID is preserved** on rehydration; the provider-side identifier changes (recorded in `provider_entity_id_history`); rehydration is transactional — a failed target leaves the pre-rehydration state intact, no UUID change. |
+| `RHY-005` | On a **restore in place** (Faithful mode) the entity **UUID is preserved** and only the provider-side identifier changes (recorded in `provider_entity_id_history`); a **rebuild** (Provider-Portable mode — the original is gone) is a **new entity with a new UUID**, kept traceable to its source by lineage (§5.2). Rehydration is transactional either way — a failed target leaves the pre-rehydration state intact. |
 
 *The rest is realization/policy, not data model, and lives in the DCM operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
 
@@ -274,7 +279,7 @@ An **unsanctioned change** is a change made directly to a resource without a cor
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — UUID preserved; provider-side ID changes recorded in `provider_entity_id_history` + the REHYDRATE audit trail (no separate rehydration-history structure); transactional (RHY-005) |
+| 1 | Should the entity UUID be preserved or regenerated on rehydration? | Entity identity | ✅ Resolved — by scenario: a **restore in place** preserves the UUID (provider-side ID changes, recorded in `provider_entity_id_history` + the REHYDRATE audit trail); a **rebuild** (original gone) is a new entity with a new UUID, kept traceable by lineage; transactional either way (RHY-005, §5.2) |
 | 2 | Should the Discovered stream retain full history or only a configurable window? | Retention | ✅ Resolved — snapshot-stream retention is profile-governed (operational); the durable per-UUID inventory record is exempt and persists until claim/retirement (RHY-008) |
 
 ---
