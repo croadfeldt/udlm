@@ -819,7 +819,13 @@ A UDLM-conformant realization MUST expose a machine-readable endpoint that descr
 GET /api/v1/capabilities
 ```
 
-The response shape is normative:
+The response *shape* is normative. **Substrate stream names are the event catalog's**
+([event-catalog.md](event-catalog.md)) — the advertisement may not rename them. A realization MAY
+additionally advertise realization-defined streams beyond the substrate catalog: placement scoring
+(`placement.decided`) is realization-defined, and the cost streams (`cost.estimated` /
+`cost.attributed`) are the metering engine's, relayed per
+[cost-metering-linkage.md](cost-metering-linkage.md). Endpoints and `framework` values below are
+illustrative, not contractual.
 
 ```json
 {
@@ -880,9 +886,9 @@ The response shape is normative:
     "entity_lifecycle": {
       "description": "Full entity state change events",
       "data_streams": {
-        "entity_created": { "subscribe_endpoint": "/api/v1/webhooks" },
         "entity_realized": { "subscribe_endpoint": "/api/v1/webhooks" },
-        "entity_updated": { "subscribe_endpoint": "/api/v1/webhooks" },
+        "entity_state_changed": { "subscribe_endpoint": "/api/v1/webhooks" },
+        "entity_decommissioning": { "subscribe_endpoint": "/api/v1/webhooks" },
         "entity_decommissioned": { "subscribe_endpoint": "/api/v1/webhooks" }
       }
     }
@@ -962,7 +968,7 @@ When a provider registers with `needs_from_realization`, the realization MUST ma
       "action_required": "POST to subscribe_endpoint to activate"
     },
     "entity_lifecycle": {
-      "streams": ["entity.created", "entity.realized", "entity.updated", "entity.decommissioned"],
+      "streams": ["entity.realized", "entity.state_changed", "entity.decommissioning", "entity.decommissioned"],
       "subscribe_endpoint": "/api/v1/webhooks",
       "auto_subscribed": false
     },
