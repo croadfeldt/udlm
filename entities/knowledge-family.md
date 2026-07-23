@@ -62,7 +62,7 @@ to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analy
   sourced from the DCM taxonomy vs an `evidence` field sourced from a specific assessment
   finding.
 - **Classification defaults:** canonical, shared vocabulary (TaxonomyTerm, Alias,
-  Antipattern seeded from public taxonomy) defaults **public**; engagement-derived
+  Antipattern seeded from public taxonomy) defaults **public**; field-derived
   instances (e.g. capabilities discovered in a client assessment) default
   **client-confidential**. Set per instance, per field.
 - **Family tag:** every definition here carries `family: knowledge` — the disambiguation

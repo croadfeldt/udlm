@@ -117,7 +117,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 ## Unindexed-until-now (linked here so nothing is orphaned)
 
-- **`docs/consumer-perspective.md`** — consumer-facing walkthrough of the model (status: under review — promote-or-retire decision pending).
+- **`docs/consumer-perspective.md`** — consumer-facing walkthrough of the model (promoted 2026-07-23; maintained with the spec — the cleanliness sweep covers it).
 - **`docs/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
 - **`docs/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via Hardware.NetworkInterface; Kea/NMstate projection).
 - **`docs/design/scoped-class-hierarchy/compute-class-render.md`** — worked render of the Compute Base/Type/Provider Class hierarchy (ADR-038).
