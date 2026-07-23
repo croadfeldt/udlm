@@ -16,7 +16,7 @@
 >
 > **This document maps to: DATA**
 >
-> The Data abstraction — Audit Record structure and tamper-evident chain
+> The Data abstraction — Audit Record structure and the tamper-evident Merkle tree
 
 
 
@@ -317,8 +317,8 @@ This cannot happen. While any referenced entity is live, `retention_status: live
 The contract requires a change's occurrence to be **durably recorded before the operation reports
 success** — no silent, unaudited change. That guarantee is carried by a minimal **commit-log entry** (a
 registered type, `registry/commit-log-entry.schema.json`), written synchronously to a consensus-durable
-store before the operation returns; the full `audit_record` (§3) is enriched from it and hash-chained
-afterwards.
+store before the operation returns; the full `audit_record` (§3) is enriched from it and inserted into the
+Merkle tree afterwards.
 
 ```yaml
 commit_log_entry:
@@ -341,7 +341,7 @@ commit_log_entry:
 - The entry is **durable before success is returned**; if the durable store cannot confirm the write, the
   operation **aborts** — never a silent change (AUD-001).
 - The entry's **timestamp is the authoritative audit timestamp** (AUD-013) — not the later enrichment time.
-- Every entry is **eventually enriched** into a full `audit_record` whose hash chain covers it, and any
+- Every entry is **eventually enriched** into a full `audit_record` the Merkle tree covers, and any
   un-forwarded entries are replayed on restart before new operations proceed (AUD-009/011).
 
 *How* a realization implements this — the two-stage synchronous-commit / asynchronous-forward pipeline, the
@@ -512,13 +512,13 @@ them; how it exposes them (the API surface) is realization control-plane, not fi
 
 ## 10. Universal Audit Gap Resolutions
 
-### 10.1 Hash Chain Verification Modes (Q1)
+### 10.1 Integrity Verification Modes (Q1)
 
-Hash chain verification operates at three independent levels:
+Merkle-tree integrity verification operates at three independent levels:
 
 ```yaml
-hash_chain_verification:
-  continuous_write: true              # always — hash computed on every write (chain construction)
+integrity_verification:
+  continuous_write: true              # always — leaf hashed and inserted on every write (tree append)
 
   scheduled_sweep:
     enabled: true
@@ -539,7 +539,7 @@ hash_chain_verification:
     create_integrity_incident: true
 ```
 
-Continuous verification is part of chain construction (not a separate process). Scheduled sweep catches tampering between writes. On-demand is available for incident investigation, compliance audit, and pre-report verification.
+Continuous verification is part of tree append (not a separate process). Scheduled sweep catches tampering between writes. On-demand is available for incident investigation, compliance audit, and pre-report verification.
 
 ### 10.2 Commit Log Maximum Capacity (Q2)
 
@@ -597,37 +597,37 @@ System actor records are full audit records — they appear in all queries and c
 - `filter: actor.immediate.type IN (system_component, policy, scheduled_job)` → all automated lifecycle operations
 - `filter: actor.immediate.type = service_account` → all API/programmatic changes
 
-### 10.4 Distributed Hash Chain Integrity (Q4)
+### 10.4 Distributed Audit Integrity (Q4)
 
-In distributed DCM deployments (Hub + Regional + Sovereign DCMs), each instance maintains its own independent hash chain. Federation-level integrity is provided by daily Merkle root proofs.
+In distributed DCM deployments (Hub + Regional + Sovereign DCMs), each instance maintains its own independent Merkle tree. Federation-level integrity is provided by daily Merkle root proofs.
 
 ```yaml
-distributed_hash_chain:
-  model: per_instance               # each DCM instance has its own chain
-  instance_chain:
-    chain_id: <dcm-instance-uuid>   # chain scoped to this instance
+distributed_audit_trees:
+  model: per_instance               # each DCM instance has its own Merkle tree
+  instance_tree:
+    tree_id: <dcm-instance-uuid>    # tree scoped to this instance
 
   federation_integrity_proof:
     enabled: true
     schedule: "0 0 * * *"           # daily
     mechanism: merkle_root
-    # Hub DCM collects chain tip hashes from all Regional DCMs
+    # Hub DCM collects the Merkle roots from all Regional DCMs
     # Computes Merkle root → stores as federation_integrity_record
-    # Any chain break in any instance is detectable against this root
+    # Any integrity break in any instance is detectable against this root
     stored_at: hub_dcm_audit_store
     signed_by: hub_dcm_service_account
 ```
 
-**Cross-instance queries:** Records from different chains are presented as parallel chains with cross-references via `correlation_id`. Not merged into a single chain — each instance's chain remains independently verifiable. Federation-level verification requires Hub DCM connectivity; per-instance verification is always available locally.
+**Cross-instance queries:** Records from different trees are presented as parallel trees with cross-references via `correlation_id`. Not merged into a single chain — each instance's chain remains independently verifiable. Federation-level verification requires Hub DCM connectivity; per-instance verification is always available locally.
 
 ### 10.5 System Policies — Universal Audit Gaps
 
 | Policy | Rule |
 |--------|------|
-| `AUD-020` | Hash chain verification operates at three levels: continuous (hash computed on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
+| `AUD-020` | Merkle-tree integrity verification operates at three levels: continuous (leaf hashed and inserted on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
 | `AUD-021` | The Commit Log has configurable maximum capacity with a declared overflow policy: alert_and_continue (standard/prod) or reject_new_ops (fsi/sovereign). Backpressure alerts fire at 75% and 90% capacity. Records older than P7D trigger escalation regardless of capacity. |
 | `AUD-016` | Audit records for system-initiated changes use the nested actor shape (AUD-005): actor.immediate.type: system_component with a system_actor detail block identifying the DCM component and trigger, and an authorized_by chain naming the authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.immediate.type (single vocabulary: human, service_account, system_component, policy, provider, scheduled_job) enables filtering between human-, service-account-, and system-initiated changes. |
-| `AUD-017` | In distributed DCM deployments, each instance maintains its own independent hash chain scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub DCM. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
+| `AUD-017` | In distributed DCM deployments, each instance maintains its own independent Merkle tree scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub DCM. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
 
 ## 11. Audit vs Observability — The Definitive Distinction (Q16)
 
@@ -641,10 +641,10 @@ Audit and Observability are separate components with separate storage contracts,
 | **Primary consumers** | Auditors, compliance, security, legal, regulators | SREs, platform engineers, operators, dashboards |
 | **Write rate** | Low — one record per action | Very high — multiple per second per component |
 | **Retention** | Very long — P7Y+ (compliance-driven) | Short — days to months (operational) |
-| **Mutability** | Never — append-only, hash-chained | Downsampling and aggregation acceptable |
+| **Mutability** | Never — append-only, Merkle-inserted | Downsampling and aggregation acceptable |
 | **Accuracy** | 100% required — no sampling | Statistical sampling acceptable |
 | **Compliance grade** | Required | Not required |
-| **Cost per event** | High — hash chain computation | Low — time series append |
+| **Cost per event** | High — leaf hashing, tree insertion, signing | Low — time series append |
 | **Failure behavior** | Missing audit = compliance violation | Missing observability = operational inconvenience |
 | **Query model** | Point-in-time, actor-based, compliance reports | Time-series, rate queries, anomaly detection |
 | **Data model** | Closed action vocabulary (§4), structured | Open schema — any component emits any metric |
@@ -671,10 +671,10 @@ These are different questions requiring different storage architectures.
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | Should hash chain verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (chain construction), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
+| 1 | Should integrity verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (tree append), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
 | 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-021) |
 | 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — nested actor shape with actor.immediate.type: system_component + system_actor block (component/trigger) + authorized_by chain; full audit records; enables filtering in queries and dashboards (AUD-016) |
-| 4 | How does hash chain verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance hash chains; daily Merkle root federation integrity proof at Hub DCM; cross-instance queries via parallel chains + correlation_id (AUD-017) |
+| 4 | How does integrity verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance hash chains; daily Merkle root federation integrity proof at Hub DCM; cross-instance queries via parallel chains + correlation_id (AUD-017) |
 
 ---
 
