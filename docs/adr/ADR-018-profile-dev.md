@@ -3,7 +3,7 @@
 **Status:** Accepted (maintainer decision, 2026-07-15)
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-007 (profile model — composed set + floor); ADR-017 (the homelab profile + the per-profile-ADR template this follows); the record: `registry/instances/profile-dev.yaml`; `docs/profile-resolution.md`; `registry/UDLM-1.0-SCOPE.md` §2 (profile posture — implement against dev)
+**Related:** ADR-007 (profile model — composed set + floor); ADR-017 (the homelab profile + the per-profile-ADR template this follows); the record: `registry/instances/profile-dev.yaml`; `docs/profile-resolution.md`; `../../registry/UDLM-0.1-SCOPE.md` §2 (profile posture — implement against dev)
 
 > Owns the *rationale* for `dev`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 

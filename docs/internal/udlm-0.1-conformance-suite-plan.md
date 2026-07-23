@@ -1,7 +1,7 @@
-# UDLM 1.0 — Conformance Suite: scope, options, recommendation
+# UDLM 0.1 — Conformance Suite: scope, options, recommendation
 
 **Status:** 📋 Review artifact (decision-support). Frames the build-vs-defer decision for the one
-heavy 1.0 exit criterion (`UDLM-1.0-SCOPE.md` §5.3).
+heavy 1.0 exit criterion (`../../registry/UDLM-0.1-SCOPE.md` §5.3).
 
 **The tension:** `VERSIONING.md` makes *"the `CONFORMANCE.md` suite passes"* the literal 1.0 gate.
 Today CI runs only registry validators (`validate_registry.py`, `ci_compat_gate.py`,

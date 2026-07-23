@@ -6,7 +6,7 @@
 _An effectiveness analysis: does UDLM's "realization-neutral universal substrate" claim
 hold when a system in a domain UDLM was **not** designed around adopts it? Written
 2026-06-08 from the DAV capability-catalog modeling exercise. Companion:
-`dav/docs/capability-catalog-design.md` (UDLM CONFORMANCE), `holistic-vision.md`._
+`dav/docs/capability-catalog-design.md` (UDLM CONFORMANCE), `../research/holistic-vision.md`._
 
 ## 1. The test
 

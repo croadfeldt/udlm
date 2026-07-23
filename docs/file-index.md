@@ -84,7 +84,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`standards-adoption-register.md`** — *Owns:* the per-standard adoption decision + license verdict (`ADOPT-001`). The single home for license verdicts.
 - **`resource-type-data-sources.md`** — per-type "what it adopts by reference" mapping (design input; license verdicts defer to the register).
 - **`REALIZED-ENTITY.md`** — the realized-entity instance schema, in prose.
-- **`UDLM-1.0-SCOPE.md`** — the 1.0 scope + exit criteria.
+- **`../registry/UDLM-0.1-SCOPE.md`** — the 1.0 scope + exit criteria.
 - **`README.md`** — registry overview.
 
 ## `observability/`
@@ -104,8 +104,12 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `docs/` and `docs/adr/`
 
 - **`docs/adr/`** — Architecture Decision Records. A ratified ADR is the authority for the decision it records; spec prose conforms to it, never contradicts it (e.g. ADR-007 owns "profiles are composed sets, not levels"). Its README also indexes the **instance-backed `ADR-<FAMILY>-NNN` namespace** (`ADR-PROV/RBAC/COST/AEP-*`) — DecisionRecord JSON in `registry/instances/`, resolvable only through that index.
-- **`docs/`** — narrative/vision/design notes (non-normative unless they state otherwise).
-- **`docs/internal/`** — working notes (gitignored); not part of the published spec.
+- **`docs/`** (root) — orientation + settled narrative surface: the file index, signoff procedure, consumer perspective, the 0.1 engineering handoff, and the settled "what this settles" docs (dependency-modeling, foundational-resources, graph-integrity, host-network-and-config-model, profile-resolution). Non-normative unless a doc states otherwise.
+- **`docs/design/`** — design rationale + decision trails (scoped-class hierarchy, registry design notes).
+- **`docs/examples/`** — non-normative worked examples (VM end-to-end trace, the DAV knowledge case study, provider accreditation).
+- **`docs/flows/`** — the flow tier (stage-level walkthroughs; see its README).
+- **`docs/internal/`** — tracked working/review artifacts (review packages, decision-support artifacts such as the 0.1 ratification-readiness and conformance-suite plans, the data-point necessity audit); not part of the published spec surface.
+- **`docs/research/`** — prior art, proposals, and vision explorations (architecture-as-code, LikeC4, OSAC, holistic vision).
 
 ---
 

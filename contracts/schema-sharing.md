@@ -254,7 +254,7 @@ These are the **shared vocabulary** every peer can assume. A realization's bundl
 manifest lists only its *own* extensions on top of this baseline; it does not
 re-publish the core. The bundle-manifest shape itself (§3) is the normative
 structure; publishing it as a machine-validatable `schema-bundle.schema.json` is
-a tracked follow-on tied to the conformance suite (UDLM-1.0-SCOPE.md §6).
+a tracked follow-on tied to the conformance suite (../registry/UDLM-0.1-SCOPE.md §6).
 
 ---
 

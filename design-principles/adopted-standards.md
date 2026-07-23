@@ -7,7 +7,7 @@ portable model. This document formalizes that disposition, the constructs it int
 between what the **Data** model carries and what **Policy** does.
 
 It is the elaboration of **core tenet T5** (`core-tenets.md`). The worked example is cost
-(`../docs/resource-type-registry-design-notes.md` §4a): FOCUS + OpenCost, adopted, not absorbed.
+(`../docs/design/resource-type-registry-design-notes.md` §4a): FOCUS + OpenCost, adopted, not absorbed.
 
 ## 1. The disposition test — absorb / embed / adopt
 
