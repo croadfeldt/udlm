@@ -34,28 +34,7 @@ Every authentication mode UDLM admits — static API key, local users, GitHub OA
 
 ## 2. Auth and Credentials as Capabilities
 
-Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds (see [Provider Contract](../contracts/provider-contract.md) §8, [Credentials](credentials.md) §1). The substrate distinguishes provider **kinds** (interaction shape) from **capabilities** (what a provider yields, declared via resource types + a capability block):
-
-**Provider kinds** (interaction shape):
-
-| Kind | Purpose |
-|------|---------|
-| **Service / Resource Provider** | Realizes resources |
-| **Information Provider** | Serves authoritative external data |
-| **Process Provider** | Executes ephemeral workflows to completion |
-| **Peer Realization** | Another UDLM-conformant peer (federation) |
-
-**Capabilities** (declared on any provider; not registered as kinds):
-
-| Capability | Declared via | Yields |
-|------------|--------------|--------|
-| **Auth** | `auth_capability` | Authenticates actors, resolves roles/groups |
-| **Credential issuance** | `Credential.*` + `credential_capability` | Issues/holds secrets, certs, keys (broker model) |
-| **Notification** | `Notification.*` | Delivers notifications |
-| **ITSM** | `ITSM.*` | ITSM integration |
-| **Telemetry** | telemetry descriptor | Metrics/logs/events for hosted resources |
-
-A Composite Service is not a kind — it is a Service Provider registering a multi-resource definition. There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities a kind exercises.
+Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary and capability categories are [capability-discovery](../contracts/capability-discovery.md) §2.2–2.4; the registration floor is [provider-contract](../contracts/provider-contract.md) §2. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
 
 > **Identity-model authority (UDLM vs a realization's auth architecture).** This document and the
 > `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, ADR-RBAC-001)

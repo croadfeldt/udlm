@@ -145,6 +145,49 @@ Each constituent declares how its failure affects the composite outcome:
 
 These classifications are evaluated by DCM, not by the registering provider, when computing composite status from constituent outcomes.
 
+### 2.4a Compensation Declaration (the one home)
+
+Each constituent also declares its compensation behavior. This is the **single normative home** for the
+declaration shape (previously duplicated in `service-dependencies.md` §8 and `operational-models.md` §6.1 —
+both now reference here); the runtime execution and failure handling live in `lifecycle/operational-models.md`
+§6, governed by Recovery Policy (CMP-005).
+
+```yaml
+service_component:
+  id: vm
+  resource_type: Compute.VirtualMachine
+  required_for_delivery: <required|partial|optional>   # §2.4 — the one enum
+
+  compensation_on_failure: <decommission_immediately|release_allocation|skip|notify>
+  # decommission_immediately: decommission this component as part of rollback
+  # release_allocation:       release allocation back to pool (for allocatable resources)
+  # skip:                     do not compensate; used for partial-delivery components
+  # notify:                   notify owner; human decides compensation
+
+  compensation_order: <integer>
+  # Compensation runs in REVERSE dependency order — the HIGHEST compensation_order
+  # compensates first (last-provisioned is first-decommissioned). Reverse dependency
+  # order is the default when not declared.
+
+  depends_on: [<component_ids>]
+```
+
+```yaml
+partial_delivery_policy:
+  min_required_components: [vm, ip]   # composite DEGRADED if only these succeed
+  degraded_is_acceptable: true
+  auto_retry_optional_components:
+    enabled: true
+    max_attempts: 3
+    interval: PT15M
+    on_exhaustion: notify_owner
+```
+
+**Compensation semantics** (stated once): compensation executes in reverse dependency order, highest
+`compensation_order` first; a compensation-step failure enters `COMPENSATION_FAILED` and triggers immediate
+orphan detection (runtime detail: operational-models §6.3); `required_for_delivery: partial` constituents are
+not compensation-triggering — their failure yields a `DEGRADED` composite (§2.4, CMP-004).
+
 ### 2.5 Interop Note — DCM Control-Plane Catalog Model
 
 The DCM control-plane's merged catalog model (catalog-item-schema / declarative-api, dcm-project enhancements) expresses the same composition concepts in a name-referenced, inferred form. The mapping:

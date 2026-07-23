@@ -397,6 +397,12 @@ data_authorization_matrix:
       # PHI partition has additional encryption and access control
 ```
 
+**One decision vocabulary.** The `on_missing_accreditation` values above are matrix *content* — they resolve
+onto the Governance Matrix's decision enum (governance-matrix.md §4, the single boundary-decision vocabulary):
+`DENY_REQUEST` → `DENY`; `STRIP_FIELD` → `STRIP_FIELD`; `WARN_AND_ALLOW` → `AUDIT_ONLY`; `DENY_CAPABILITY` →
+`DENY` scoped to the capability axis; `ALLOW` → `ALLOW`. This file defines the accreditation *inputs* and matrix
+content; the decision semantics live in governance-matrix.md and are not redefined here.
+
 ### 4.3 Federation Boundary Matrix
 
 A dedicated matrix governs what crosses peer-to-peer federation boundaries:
@@ -435,7 +441,7 @@ federation_boundary_matrix:
 
 ### 4.4 Matrix Evaluation Contract (Substrate-Required)
 
-The authorization matrix check MUST be a distinct evaluation step executed at every interaction boundary by any conformant realization:
+The authorization matrix check MUST execute at every interaction boundary — **as Governance-Matrix axes within the single boundary evaluation (GMX-009), not a parallel enforcement path (GMX-001)**. Any conformant realization performs it as:
 
 ```
 Outbound interaction assembled (peer → Provider OR peer → peer)

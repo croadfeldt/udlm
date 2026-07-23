@@ -681,48 +681,14 @@ Multiple recovery policies for the same trigger at the same domain level
 
 ## 6. Composite Service Compensation Model
 
-### 6.1 Compensation Declaration in Service Dependencies
+### 6.1 Compensation Declaration (reference)
 
-Each component in a composite service declares its compensation behavior:
-
-```yaml
-composite_service_spec:
-  service_type: ApplicationStack.WebApp
-  components:
-    - id: vm
-      resource_type: Compute.VirtualMachine
-      required_for_delivery: atomic        # must succeed; failure triggers compensation
-      compensation_on_failure: decommission_immediately
-      compensation_order: 3                # decommissioned last (highest number = last)
-
-    - id: ip
-      resource_type: Network.IPAddress
-      required_for_delivery: atomic
-      compensation_on_failure: release_allocation
-      compensation_order: 1                # decommissioned first
-      depends_on: []
-
-    - id: dns
-      resource_type: DNS.Record
-      required_for_delivery: partial       # failure → DEGRADED, not FAILED
-      compensation_on_failure: skip        # DNS failure doesn't trigger VM decommission
-      depends_on: [vm, ip]
-
-    - id: loadbalancer
-      resource_type: Network.LoadBalancer
-      required_for_delivery: partial
-      compensation_on_failure: skip
-      depends_on: [vm, ip]
-
-  partial_delivery_policy:
-    min_required_components: [vm, ip]     # composite DEGRADED if only these succeed
-    degraded_is_acceptable: true          # DEGRADED entity is delivered; not FAILED
-    auto_retry_optional_components:
-      enabled: true
-      max_attempts: 3
-      interval: PT15M
-      on_exhaustion: notify_owner
-```
+The declaration shape — `required_for_delivery: required|partial|optional`, `compensation_on_failure`,
+`compensation_order`, `partial_delivery_policy` — has one home:
+[composite-service-model](../entities/composite-service-model.md) §2.4/§2.4a. This section owns only the
+**runtime**: execution order (§6.2) and compensation failure (§6.3). In the worked example below, `vm` was
+declared `required` with `compensation_order: 3` and `ip` `required` with `compensation_order: 1`; `dns` and
+`loadbalancer` are `partial` (`compensation_on_failure: skip`).
 
 ### 6.2 Compensation Execution Order (Substrate Contract)
 

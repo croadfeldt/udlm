@@ -40,7 +40,7 @@ The Universal Audit Model defines the **unconditional obligation** for every DCM
 
 **Universal — no exceptions.** Every mutation to every DCM artifact produces an audit record. Resources, policies, layers, groups, relationships, providers, configurations, authorizations, external evaluation queries, ingestion events, rehydration events, drift events, login events — all covered.
 
-**Append-only — tamper-evident.** Audit records are never modified or deleted while retention obligations apply. Each record carries a hash of its own content and a reference to the previous record's hash — forming a tamper-evident chain per entity.
+**Append-only — tamper-evident.** Audit records are never modified or deleted while retention obligations apply. Each record is a leaf in the RFC 9162 Merkle tree (§8; [D2]/AUD-006) — inclusion and consistency proofs against signed tree heads make insertion, modification, or deletion of already-logged records detectable.
 
 **Guaranteed delivery — not guaranteed synchrony.** Audit writes use a write-ahead log (WAL) pattern — the change and its audit record are written to a local WAL first, then delivered to the Audit Store asynchronously with retry. A change is never silent — it may be briefly buffered, but delivery is guaranteed before the WAL is cleared.
 
@@ -178,13 +178,12 @@ audit_record:
     governing_policy_uuid: <uuid>
     retain_until: <RFC 3339 UTC 'Z' — null if live; calculated when status becomes policy_governed>
 
-  # INTEGRITY — tamper-evident hash chain
+  # INTEGRITY — RFC 9162 Merkle model (§8; [D2]/AUD-006)
   integrity:
-    record_hash: <SHA-256 of this record's content>
-    previous_record_hash: <hash of the immediately preceding audit record for this entity>
-    # Forms a per-entity hash chain — inserting, modifying, or deleting a
-    # historical record breaks the chain, detectable by verification
-    chain_sequence: <integer — monotonically increasing per entity>
+    record_hash: <SHA-256 of this record's content — the Merkle leaf hash (§8.2)>
+    # The record is a leaf in the audit Merkle tree; inclusion + consistency
+    # proofs against signed tree heads (§8.3–8.4) make insertion, modification,
+    # or deletion of historical records detectable
     signed_by: <signing authority UUID — if audit signing is configured>
     signature: <cryptographic signature — if configured>
 ```
