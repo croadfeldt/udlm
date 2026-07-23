@@ -8,7 +8,7 @@
 
 ## 1. Design Principle — Data Contracts, Not Abstraction Layers
 
-UDLM prescribes **data contracts** (schemas, immutability rules, versioning, hash chains) — not infrastructure products. Where a contract maps directly to a single well-understood infrastructure category, UDLM prescribes the category and the contract, not an abstraction layer over it.
+UDLM prescribes **data contracts** (schemas, immutability rules, versioning, tamper-evidence) — not infrastructure products. Where a contract maps directly to a single well-understood infrastructure category, UDLM prescribes the category and the contract, not an abstraction layer over it.
 
 Abstraction layers earn their place when the underlying implementations have genuinely different interaction contracts — different APIs, different lifecycle semantics, different operational models. When the implementations share a standard protocol (SQL, OIDC, AMQP), the protocol is the abstraction. Adding a substrate-specific abstraction on top of a standard protocol is unnecessary indirection.
 
@@ -37,7 +37,7 @@ These are the invariants the substrate places on the domains, **stated once here
 - **Append-only for Intent, Requested, and Audit:** once written, records in these domains are never updated or deleted. Supersession is a new record that supersedes the prior one.
 - **Versioned snapshots for Realized:** each state change produces a new snapshot; the current one is identifiable.
 - **Ephemeral snapshots for Discovered:** each discovery run produces a fresh snapshot; retention is a declared realization policy.
-- **Tamper-evidence on Audit:** audit records carry tamper-evidence (e.g. a SHA-256 hash chain) so any modification is detectable.
+- **Tamper-evidence on Audit:** audit records carry tamper-evidence per the RFC 9162 Merkle model ([D2]/AUD-006) so any modification is detectable.
 - **Tenant isolation:** cross-tenant data access is enforced at the storage interface.
 
 ---
@@ -63,7 +63,7 @@ The `DSC-*` policies below are the **normative, enforceable encoding** of the pr
 | `DSC-003` | Intent, Requested, and Audit records MUST be append-only — never modified or deleted after write; supersession is a new record. |
 | `DSC-004` | Realized records MUST be versioned snapshots with an identifiable current snapshot; each state change produces a new snapshot. |
 | `DSC-005` | Discovered records MUST be retained per the realization's declared retention policy and MUST NOT be conflated with Realized records. |
-| `DSC-006` | Audit records MUST carry tamper-evidence (hash chain or equivalent). Any modification of the audit chain MUST be detectable. |
+| `DSC-006` | Audit records MUST carry tamper-evidence per the RFC 9162 Merkle model ([D2]/AUD-006 — per-leaf signatures, signed tree heads). Any modification of already-logged audit records MUST be detectable. |
 | `DSC-007` | Tenant isolation MUST be enforced at the storage interface. Cross-tenant data access requires explicit substrate-defined authorization. |
 
 ---
