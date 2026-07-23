@@ -25,7 +25,7 @@ collapsing. This contract defines how that signaling works on the wire.
 Every conformant interop surface (consumer API endpoints, provider callbacks,
 federation endpoints, information provider queries) MAY publish a rate limit
 declaration via the capability discovery mechanism
-(see [`capability-discovery.md`](capability-discovery.md)).
+(see [`provider-contract.md`](provider-contract.md) §2).
 
 A rate limit declaration:
 
@@ -211,6 +211,6 @@ A conformant consumer MUST:
 
 - [`error-model.md`](error-model.md) — `rate_limit.*` codes
 - [`retry-semantics.md`](retry-semantics.md) — exponential backoff coordination
-- [`capability-discovery.md`](capability-discovery.md) — rate-limit declaration surface
+- [`provider-contract.md`](provider-contract.md) §2 — rate-limit declaration surface
 - [`provider-contract.md`](provider-contract.md) — provider capacity declaration
 - [`information-providers.md`](information-providers.md) — query rate limits for information providers

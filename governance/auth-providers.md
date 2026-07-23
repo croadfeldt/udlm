@@ -34,7 +34,7 @@ Every authentication mode UDLM admits — static API key, local users, GitHub OA
 
 ## 2. Auth and Credentials as Capabilities
 
-Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary and capability categories are [capability-discovery](../contracts/capability-discovery.md) §2.2–2.4; the registration floor is [provider-contract](../contracts/provider-contract.md) §2. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
+Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary, capability categories, and registration floor are [provider-contract](../contracts/provider-contract.md) §§2, 8–9. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
 
 > **Identity-model authority (UDLM vs a realization's auth architecture).** This document and the
 > `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, ADR-RBAC-001)
@@ -354,39 +354,12 @@ auth_provider_chain:
 
 Credential issuance is a **capability** a provider declares (`credential_capability` + `Credential.*` resource types — [credentials.md](credentials.md) §9), **not** a separate provider kind (§2; PROV-002/PROV-003 capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any realization component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the realization; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
 
-```yaml
-credential_provider_registration:
-  artifact_metadata:
-    uuid: <uuid>
-    handle: "providers/credentials/hashicorp-vault-prod"
-    status: active
-
-  name: "HashiCorp Vault Production"
-  backend_type: <hashicorp_vault|aws_secrets_manager|azure_key_vault|
-                 gcp_secret_manager|kubernetes_secrets|cyberark|
-                 delinea|external_api|internal>
-
-  connection:
-    endpoint: https://vault.corp.example.com:8200
-    auth_method: <kubernetes|approle|token|aws_iam|ldap>
-    namespace: <vault namespace>
-
-  # Credential types this backend can issue — drawn from the CLOSED substrate vocabulary in
-  # credentials.md §2; this list does NOT redefine it. Backend-flavored names fold into canonical
-  # types (nothing lost): a connection_string / username_password / ldap_bind / hmac_secret is a
-  # `secret`; a bearer token is a `service_account_token`; a raw private key is `ssh_key`/`signing_key`.
-  credential_types: [api_key, x509_certificate, ssh_key, secret, signing_key, service_account_token]
-
-  health_check:
-    interval_seconds: 60
-    on_unhealthy: <alert|suspend_dependents|fail_open>
-    # suspend_dependents: suspend all components using this provider
-    # fail_open: continue using cached credentials (risk — use cautiously)
-
-  caching:
-    enabled: true
-    ttl_seconds: 300             # refresh from credential provider every 5 minutes
-```
+The registration shape is owned by [credentials.md](credentials.md) — the `credential_capability`
+declaration (§8 summary, §13 full shape incl. external-CA config) and the closed `credential_types`
+vocabulary (§2). Backend-flavored names fold into the canonical types (nothing lost): a
+connection_string / username_password / ldap_bind / hmac_secret is a `secret`; a bearer token is a
+`service_account_token`; a raw private key is `ssh_key`/`signing_key`. Backend connection, health
+(`on_unhealthy: alert|suspend_dependents|fail_open`), and caching-TTL details ride the same shape.
 
 **Credential reference shape** — normative; used wherever a secret is needed:
 
