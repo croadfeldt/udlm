@@ -102,7 +102,7 @@ For deployments spanning multiple sovereignty zones, the contract is: **data doe
 - Cross-zone reads are prohibited — a query in Zone A cannot read data from Zone B.
 - Federation between zones uses the peer-realization protocol, which transfers only the minimum data required and is subject to sovereignty policy evaluation.
 
-Store bindings satisfy this per profile ([D1]): a single instance at `minimal`/`standard`; per-zone instances with no cross-zone replication at `sovereign`. *The concrete per-zone deployment topology is realization architecture.*
+Store bindings satisfy this per profile ([D1]): a single instance at `homelab`/`standard`; per-zone instances with no cross-zone replication at `sovereign`. *The concrete per-zone deployment topology is realization architecture.*
 
 ---
 

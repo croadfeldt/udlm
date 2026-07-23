@@ -418,7 +418,7 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 
 | Profile | Auth Modes Available | Setup Effort | Notes |
 |---------|---------------------|-------------|-------|
-| `minimal` | Static API key, Local user/password | Seconds to minutes | Generated at bootstrap; zero external config |
+| `homelab` | Static API key, Local user/password | Seconds to minutes | Generated at bootstrap; zero external config |
 | `dev` | + GitHub/GitLab OAuth, FreeIPA/AD (direct bind) | Minutes | OAuth requires app registration; LDAP requires server config |
 | `standard` | + OIDC via broker (Dex/Keycloak), AD/FreeIPA direct | Tens of minutes | Enterprise directory or IdP integration |
 | `prod` | + OIDC direct, MFA | Hours | Full enterprise IdP; MFA configurable |
@@ -429,7 +429,7 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 
 ## 8. Profile-Governed Mode Availability (Substrate Vocabulary)
 
-| Feature | minimal | dev | standard | prod | fsi | sovereign |
+| Feature | homelab | dev | standard | prod | fsi | sovereign |
 |---------|---------|-----|---------|------|-----|----------|
 | Static API key | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Local user/password | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
@@ -454,7 +454,7 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 | `AUTH-005` | If an Auth Provider becomes unhealthy, existing sessions remain valid until TTL expiry. New authentication attempts route to the configured fallback provider or are rejected. |
 | `AUTH-006` | The Auth Provider used to authenticate a request is recorded in the ingress block and carried into the audit record. Policies may act on `auth_provider_uuid` and `provider_type`. |
 | `AUTH-007` | Auth Provider configuration credentials must reference a registered credential provider. Plaintext credentials are rejected. |
-| `AUTH-008` | There is no anonymous access in any profile. Minimal and dev profiles support lightweight authenticated modes requiring minimal setup. |
+| `AUTH-008` | There is no anonymous access in any profile. Homelab and dev profiles support lightweight authenticated modes requiring minimal setup. |
 | `AUTH-009` | Webhook and message bus inbound surfaces always require authentication regardless of active profile. Anonymous actors are never permitted on these surfaces. |
 | `AUTH-010` | Rate limiting is enforced per authenticated actor. Limits are declared on the Auth Provider or webhook actor registration. |
 | `AUTH-011` | Git PR actor identity resolution must use the registered Auth Provider. The realization trusts the Git server's verified identity assertion — not user-declared Git configuration. The resolved actor carries the same role, group, and tenant scope as any other user authenticated via the same Auth Provider. |

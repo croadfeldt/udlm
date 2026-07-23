@@ -13,7 +13,7 @@ this glossary states the **single sense UDLM means**.
 | **contract** | UDLM uses this word in **one** sense only: the normative **interface specifications under `contracts/`** (wire contracts, provider contract, policy contract). For the generic notion "obligations a party must satisfy," this spec prefers **"interface"** or **"specification"** to avoid overloading. |
 | **surface** | A named, externally-observable interface area (e.g., consumer API, provider callbacks, federation, audit export). The **conformance surface** is what an independent verifier tests. |
 | **naturalization / denaturalization** | The adapter operation a provider performs: **naturalize** = translate a native (vendor) representation *into* the unified data model; **denaturalize** = translate the realized state *back out* to the native form. |
-| **profile** | A named conformance bundle (e.g., `minimal`, `prod`) selecting which optional surfaces/behaviors a realization supports. Two peers may both be conformant yet run different profiles. |
+| **profile** | A named conformance bundle (e.g., `homelab`, `prod`) selecting which optional surfaces/behaviors a realization supports. Two peers may both be conformant yet run different profiles. |
 | **decision_gravity** | A governance weight on a request/decision (`none` | `routine` | …) indicating how much scrutiny/authority it warrants (design-principles/design-priorities.md). |
 | **leap-second smear** ("smear") | A clock strategy for absorbing leap seconds gradually rather than as a 1-second step; a conformance-declared time behavior (CONFORMANCE.md time section). |
 | **concern_type** | A Policy Group artifact classifier (e.g., `data_authorization_boundary`) naming which governance concern a policy matrix addresses. |

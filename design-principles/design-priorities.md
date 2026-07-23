@@ -28,7 +28,7 @@ Security properties — value separation, rotation, audit trails, idle detection
 
 **The `minimal` profile is "security with minimal operational overhead" — not "minimal security."**
 
-A `minimal` profile realization keeps every one of these properties, only scaled down. Here a *[credential](../governance/credentials.md)* is a consumer-facing secret brokered under the credential contract:
+A `homelab` profile realization keeps every one of these properties, only scaled down. Here a *[credential](../governance/credentials.md)* is a consumer-facing secret brokered under the credential contract:
 
 - Rotates credentials (at longer intervals with manual triggers acceptable — not never)
 - Detects idle credentials (at a generous threshold — not never)
@@ -41,7 +41,7 @@ Every one of these security properties is present in `minimal`; only its enforce
 
 **When security and convenience conflict, security wins** — but the design must find a way to make the secure option easy. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability. The profile system is the mechanism: the right profile makes secure behavior automatic, not effortful.
 
-**Security properties that are non-negotiable in all profiles** — this table is the single normative list; the `minimal`-profile narrative above illustrates it, the Profile Scaling Table shows each property's per-profile posture, and the `DPO-*` policies enforce it — none re-defines it:
+**Security properties that are non-negotiable in all profiles** — this table is the single normative list; the `homelab`-profile narrative above illustrates it, the Profile Scaling Table shows each property's per-profile posture, and the `DPO-*` policies enforce it — none re-defines it:
 
 | Property | Rule | Reference |
 |----------|------|-----------|
@@ -131,7 +131,7 @@ When priorities seem to conflict, the resolution follows this order:
 
 ### Common Misapplications
 
-**"We can disable X in the minimal profile for simplicity."**
+**"We can disable X in the homelab profile for simplicity."**
 Wrong application. The minimal profile scales down operational burden, not security properties. The question is: what is the minimum viable implementation of X that requires no operational overhead? That is what minimal profile gets.
 
 **"Security is too complex for our users, so we'll make it optional."**
@@ -177,7 +177,7 @@ UDLM defines the following named profiles as the substrate vocabulary. Realizati
 
 The table below illustrates the **shape** of profile scaling — each profile's posture per dimension. Threshold values are realization-defined (a peer MAY pick different absolute values). Profiles are **composed sets, not ordered levels** ([ADR-007](../docs/adr/ADR-007-profile-model.md)): `sovereign` is not "more of" `standard`, and there is **no monotonic total order across profiles**. Read the table *down a column* — one profile's coherent posture — not as a ranking across columns. Each *dimension* has a direction (it runs loose→tight); which point a profile takes on it is that profile's composed choice, and `fsi`/`sovereign` are **overlays** on a base profile, not stricter points on one scale. "Present" means the property is architecturally required — what varies is the configuration.
 
-| Security Property | minimal | dev | standard | prod | fsi | sovereign |
+| Security Property | homelab | dev | standard | prod | fsi | sovereign |
 |------------------|---------|-----|----------|------|-----|-----------|
 | Credential rotation | Required; longer interval; manual OK | Required; medium interval; manual OK | Required; automated | Required; strict interval | Required; short interval | Required; hardware-triggered |
 | Idle detection threshold | Loose | Medium | Tight | Tighter | Very tight | Hourly-class |

@@ -179,7 +179,7 @@ resource_type_version_constraint:
 
 | Profile | Default Version Policy | Rationale |
 |---------|----------------------|-----------|
-| `minimal` | `latest` | Home lab — always current, no pinning overhead |
+| `homelab` | `latest` | Home lab — always current, no pinning overhead |
 | `dev` | `compatible` | Dev — tracks major version, picks up fixes automatically |
 | `standard` | `compatible` | Production — stable within major version |
 | `prod` | `compatible` | Production — explicit major version control |

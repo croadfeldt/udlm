@@ -1095,7 +1095,7 @@ relationship_depth_policy:
 
 | Profile | Max Depth | Rationale |
 |---------|----------|-----------|
-| `minimal` | 25 | Home lab — free composition |
+| `homelab` | 25 | Home lab — free composition |
 | `dev` | 20 | Development — generous |
 | `standard` | 15 | Production baseline |
 | `prod` | 15 | Production |

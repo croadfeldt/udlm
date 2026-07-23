@@ -246,7 +246,7 @@ DCM ships four provenance Policy Groups. The active Profile activates the approp
 
 | Group Handle | Model | Profile Default | Concern Type |
 |-------------|-------|----------------|-------------|
-| `system/group/provenance-full-inline` | A — Full Inline | minimal, dev, fsi, sovereign | implementation_posture |
+| `system/group/provenance-full-inline` | A — Full Inline | homelab, dev, fsi, sovereign | implementation_posture |
 | `system/group/provenance-deduplicated` | B — Deduplicated | standard, prod | implementation_posture |
 | `system/group/provenance-tiered-archive` | C — Tiered | (available — not default) | implementation_posture |
 | `system/group/provenance-deduplicated-tiered` | B+C — Combined | (available for large-scale) | implementation_posture |
@@ -1648,7 +1648,7 @@ constraint_visibility:
 
 | Profile | Default Level | Rationale |
 |---------|--------------|-----------|
-| `minimal` | `full` | All context helpful |
+| `homelab` | `full` | All context helpful |
 | `dev` | `full` | Developers benefit from full schema |
 | `standard` | `full` | Good developer experience |
 | `prod` | `summary` | Bounds visible; reasons may be sensitive |
