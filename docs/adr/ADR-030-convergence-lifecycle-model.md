@@ -1,6 +1,6 @@
 # ADR-030: The convergence lifecycle — one model beneath the entity families
 
-**Status:** Proposed (2026-07-19) — records the unified model as the **post-1.0 direction**; 1.0 keeps the four families verbatim as its archetype vocabulary (see ADR-031 focus, ADR-032 direction).
+**Status:** Proposed (2026-07-19) — records the unified model as the **post-1.0 direction**; 0.1 keeps the four families verbatim as its archetype vocabulary (see ADR-031 focus, ADR-032 direction).
 **Related:** ADR-006 (convergence control — this *completes* it); ADR-027 (entity family model — this *refines* it, post-1.0); ADR-011 (validate-and-reserve — identity mint + reserve, at intent declaration); ADR-029 (inventory / observed provenance); ADR-031 (1.0 focus); ADR-032 (post-1.0 direction). Pictures: [lifecycle-convergence flow](../flows/lifecycle-convergence.md).
 
 ## Context
@@ -61,7 +61,7 @@ This reframes "intent vs realized": not two co-equal tracks, but **one root (int
 
 ### Relationship to what exists
 - **This completes ADR-006.** The re-entrant Data·Policy·Provider loop *is* the lifecycle; realize, reconcile, rehydrate, and teardown are one pipeline fired by different triggers; `request-realization` is one firing of it (the create scenario).
-- **This refines ADR-027 — as direction, not a 1.0 change.** The four families' durable core is *nature*; the model is nature + parameters + archetypes. For 1.0 the four families stay verbatim (they *are* the archetype vocabulary); nothing in the schema or estate changes now. Per ADR-031/032, the only pre-1.0 obligation is to **avoid the one contradiction**: do not harden Resource/Process into closed *species* with behaviour branching on the family — the model makes them archetypes over one loop. Leaving them as today's labels contradicts nothing and costs nothing. Promotion (nature-first, convergence-primitive, archetypes) is a post-1.0 superseding ADR with migration.
+- **This refines ADR-027 — as direction, not a 0.1 change.** The four families' durable core is *nature*; the model is nature + parameters + archetypes. For 1.0 the four families stay verbatim (they *are* the archetype vocabulary); nothing in the schema or estate changes now. Per ADR-031/032, the only pre-1.0 obligation is to **avoid the one contradiction**: do not harden Resource/Process into closed *species* with behaviour branching on the family — the model makes them archetypes over one loop. Leaving them as today's labels contradicts nothing and costs nothing. Promotion (nature-first, convergence-primitive, archetypes) is a post-1.0 superseding ADR with migration.
 
 ## Data · Policy · Provider
 - **Data** — Intent and Realized (and the gap between them) are UDLM data; provenance (`Realized` vs `Discovered`) is carried in the record.
@@ -85,7 +85,7 @@ Most usefully, **`Type=oneshot` is a *service* that runs once and completes** (`
 
 ## Consequences
 - One mental model, one pipeline: DCM has no separate "provision" and "day-2" subsystems — only triggers into one convergence loop. This is what makes Templates and Day-0/1/2 fall out as parameters, not subsystems.
-- 1.0 is untouched — four families, current schema, current estate. The model is *recorded*, not *rebuilt*.
+- 0.1 is untouched — four families, current schema, current estate. The model is *recorded*, not *rebuilt*.
 - The requested / observed / curated provenance split lands ADR-029 coherently: inventory is Resource-nature entered by observation or creation, not a new family.
 - **Post-1.0 follow-up — process reconcilability.** The archetype table marks Process `reconcilable: no`, which is DCM's **1.0 orchestration** view (a process runs to a terminal outcome). Given enough observability and control levers, a running process could be reconciled mid-flight (steer / re-drive / checkpoint-resume to a target progress state). Taken further, a Process looks like a **maintained-state with a one-shot intent and a completion terminal** (short-lived, self-terminating, never decommissioned) — in which case "work-product" is not a distinct *nature* but the **intent-shape** parameter (standing vs one-shot), leaving Curated (Knowledge) the sole non-fulfillment kind. The open question: **does "work-product" survive as a nature?** (Note: the knob is intent-shape, not duration — timeline stays orthogonal.) Flagged for post-1.0 discussion, not decided here.
 - Post-1.0, a superseding ADR can promote convergence + nature + archetypes and migrate; ADR-027's family axis becomes the archetype layer.

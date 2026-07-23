@@ -9,7 +9,7 @@
 
 ## Context
 
-UDLM 1.0 has to be *built and evaluated* before any production floor is implemented. That work needs a profile whose floor is small enough to exercise the 21 release use cases end to end without standing up governance ceremony, attestation, or an attested clock first — but on the **same** architecture, types, and wire contracts as every production profile, so nothing learned against it is throwaway.
+UDLM 0.1 has to be *built and evaluated* before any production floor is implemented. That work needs a profile whose floor is small enough to exercise the 21 release use cases end to end without standing up governance ceremony, attestation, or an attested clock first — but on the **same** architecture, types, and wire contracts as every production profile, so nothing learned against it is throwaway.
 
 ## Decision
 
