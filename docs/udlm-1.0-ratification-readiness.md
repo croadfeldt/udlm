@@ -36,7 +36,7 @@ question I can find. Recommend ratifying the full set.
 | Record | Decision (gist) | Readiness | Note |
 |---|---|---|---|
 | adr-udlm-dcm-boundary | UDLM = data model, DCM = realization | **Ready** | The JSON twin of prose ADR-008; ratify together |
-| adr-resource-type-extension (PROV-004) | providers ADD via additive, portability-honest extensions; no override | **Ready** | Closes #198; machinery (closed base + `provider_extensions` + computed portability) is in place |
+| adr-resource-type-extension (PROV-004) | providers ADD via additive, portability-honest extensions; no override | **Superseded (ADR-038, #202)** | Deprecated: provider-specific data is a Provider-Class `SharedDataElement` (ADR-038); `provider_extensions` is the interim carrier until scoped classes land (#199), then removed (#202) |
 | adr-provider-dispatch-role (PROV-001) | `data_role`; only `role: execution` crosses to a provider | **Ready** | Exercised this cycle (the two-phase data-scoping work); `data-roles.md` is its contract |
 | adr-provider-capabilities-categories (PROV-002) | capability = (verb × domain); categories are the policy target | **Ready** | Underpins §8/capability-discovery; settled |
 | adr-provider-capability-admission (PROV-003) | platform-admin admission disposition; default-deny | **Ready** | Settled; audit-record admission enum encodes it |

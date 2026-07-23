@@ -52,7 +52,7 @@
     "entities/resource-type-hierarchy.md",
     "contracts/provider-contract.md"
   ],
-  "state": "PROPOSED",
+  "state": "DEPRECATED",
   "provenance": {
     "proposed_by": "maintainer",
     "model_version": "claude-opus-4-8",
@@ -65,6 +65,11 @@
         "at": "2026-07-11T00:00:00Z",
         "author": "claude-opus-4-8 (session a3cae804)",
         "text": "Closes the open #198 `extends` mechanism using existing machinery (naming-conventions §Extension model + RFC 8345 augmentation discipline, the closed base additionalProperties:false, the portability classification + realized-entity portability block, provider_hints, and the resource-type-hierarchy Transparency principle). Design: providers extend ONLY via an additive, provider-namespaced `provider_extensions` surface on the realized entity (typed successor to provider_hints); NO-OVERRIDE is structural (closed base + validator rejects base-field collisions); any extension COMPUTES portability_breaking:true + narrows classification + lists the keys/bound provider; the consumer is NOTIFIED of the deviation before/at realization (silent non-portability prohibited); recurrence across ≥2 providers → base MINOR (not permanent forks). Realization NOT yet written — touches the meta-schema (W0 floor / load-bearing), held for Maintainer's alignment on the extension-surface shape. Stacks on feat/provider-model."
+      },
+      {
+        "at": "2026-07-23T00:00:00Z",
+        "author": "claude-opus-4-8 (session a3cae804)",
+        "text": "DEPRECATED — superseded by ADR-038 (scoped-Class paradigm): provider-specific data is a Provider-Class `SharedDataElement`, not a `provider_extensions` blob. The `provider_extensions` surface on the realized entity remains the INTERIM carrier until the scoped-Class construct is realized in the schema (#199), at which point the field is removed and the portability block re-keyed onto provider-scoped data (#202). This record is retired; do not treat it as the live mechanism."
       }
     ]
   }
