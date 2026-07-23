@@ -72,7 +72,7 @@ links:
 | `credential.*` | 4 | Credential lifecycle |
 | `approval.*` | 4 | Approval pipeline |
 | `tier_registry.*` | 4 | Authority tier registry changes |
-| `audit.*` | 3 | Audit chain integrity |
+| `audit.*` | 3 | Audit integrity (Merkle) |
 | `dependency.*` | 2 | Entity dependency events (drift events catalogued in §14) |
 | `stakeholder.*` | 1 | Stakeholder notifications |
 | `allocation.*` | 2 | Resource allocation events |
@@ -582,21 +582,21 @@ payload:
 
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
-| `audit.chain_integrity_alert` | critical | Hash chain verification failed; audit trail may be compromised |
-| `audit.chain_break` | critical | Explicit break detected in audit hash chain |
+| `audit.integrity_alert` | critical | Merkle verification failed (inclusion/consistency proof); audit trail may be compromised |
+| `audit.integrity_break` | critical | Explicit integrity break detected in the audit Merkle tree |
 | `audit.forward_failed` | high | Audit record failed to forward to external audit sink |
 
 ### 13.1 Payload Schema
 
-#### `audit.chain_integrity_alert`
+#### `audit.integrity_alert`
 ```yaml
 payload:
   affected_record_uuid: <uuid>
   expected_hash: <string>
   actual_hash: <string>
-  chain_segment_start: <uuid>
-  chain_segment_end: <uuid>
-  records_in_segment: <int>
+  leaf_range_start: <uuid>
+  leaf_range_end: <uuid>
+  records_in_range: <int>
 ```
 
 ---
@@ -986,7 +986,7 @@ approval.expired
 tier_registry.proposed     tier_registry.impact_assessed
 tier_registry.degradation_detected  tier_registry.activated
 
-audit.chain_integrity_alert  audit.chain_break          audit.forward_failed
+audit.integrity_alert      audit.integrity_break      audit.forward_failed
 
 dependency.state_changed   dependency.drift_detected
 stakeholder.resource_decommissioning
