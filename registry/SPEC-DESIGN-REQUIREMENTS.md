@@ -278,8 +278,8 @@ Each hard constraint cites the UDLM contract it derives from.
     **audit/provenance/identity**, and **observability/drift** elements. The line is **portable vs
     provider-specific**, not config-vs-not: portable config that defines the resource is base;
     **provider-specific** config is declared by the provider, projected as a config interface DCM offers
-    (`contracts/provider-contract.md` §1a.3), and its **values stored** as provider-namespaced
-    `provider_extensions` (`PRV-010`; deprecated — subsumed by ADR-038, interim, retiring #202) across Requested/Realized, portability-flagged. **DCM stores the config
+    (`contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
+    `SharedDataElement`s (ADR-038; schema realization #199 — the `provider_extensions` carrier is retired, #202 executed) across Requested/Realized, portability-flagged. **DCM stores the config
     *state* — base and extra — because it is the state system-of-record and drift is a diff; there is no
     "store a pointer instead of the values".** The provider owns the *schema*; the *mechanism* stays out of
     the substrate (DCM ADR-023); the *state* is always recorded. **Corollary:** every resource DCM manages

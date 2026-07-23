@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "f4a19c72-8e3d-4b1a-95d6-7c2e8f0b3d41",
   "resource_type": "Platform.Namespace",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -78,7 +78,7 @@
   "outputs": {
     "name": {
       "type": "string",
-      "description": "The realized namespace name — the string value that provider_extensions fields reference (provider_extensions is deprecated — subsumed by ADR-038's Provider-Class SharedDataElement, retiring #202)."
+      "description": "The realized namespace name — the string value provider-specific namespace references resolve to (Provider-Class `SharedDataElement` references, ADR-038)."
     },
     "uid": {
       "type": "string",

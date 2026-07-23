@@ -22,8 +22,8 @@ Provider-specific details get added *on top* of that base, and there are two way
 
 - **The system adds them** after it picks a provider — the usual path, and the flow below.
 - **The consumer adds them at intent time** — a consumer *may* pin a `namespace`, a vendor QoS class, any
-  provider-specific extension, right in the request. That's allowed and honored; it's simply **flagged as
-  breaking portability** so the trade is explicit (`PRV-010`).
+  provider-specific element, right in the request. That's allowed and honored; it's simply **flagged as
+  breaking portability** so the trade is explicit (realized-entity `portability` block).
 
 So the base is always portable, and going beyond it is a choice made with eyes open. The running example
 takes the common path: *the user gave cpu and memory, left the OpenShift specifics to the system, and
@@ -37,7 +37,7 @@ flowchart TD
   CC["Consumer specifics (optional)<br/>zone · capability · a named provider"] -.->|narrow the choice| P
   A["Assemble — fill in defaults<br/>from the data layers"] --> P
   P["Place — narrow to the providers that fit,<br/>pick one (→ OpenShift)"] --> E
-  E["Enrich — add what this provider needs<br/>(→ namespace) into provider_extensions"] --> R
+  E["Enrich — add what this provider needs<br/>(→ namespace) into its Provider-Class elements"] --> R
   R{"Reserve — check + converge<br/>validate against the provider's requirements"}
   R -. "not yet stable — new reserved facts re-evaluate policies" .-> P
   R -- converged --> C["Commit — build it (Realized)"]
@@ -68,7 +68,7 @@ do we know what that provider requires. (OpenShift needs a `namespace`; VMware w
 
 **4. Enrich — add what this provider needs.** The system compares what the provider requires against what
 the request already has, and fills the difference — here, `namespace`. The value lands in
-`provider_extensions` (kept separate from the portable type) with its origin recorded, and
+the provider's Provider-Class element (ADR-038 — off the portable Base/Type Class) with its origin recorded, and
 `enrichment_status` moves toward `complete`. *Where* the value comes from is the organization's choice — see
 [Where the value comes from](#where-the-value-comes-from).
 
@@ -144,16 +144,17 @@ FQDN" is the same idea one level down.)
 Whatever engine runs this flow:
 
 - **The required data is portable** — the user is never *required* to supply anything provider-specific; the
-  portable base is always enough. They *may* add provider-specific extensions at intent time — that's allowed
-  and honored, and flagged as breaking portability ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); `PRV-010`).
+  portable base is always enough. They *may* add provider-specific elements at intent time — that's allowed
+  and honored, and flagged as breaking portability ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); realized-entity `portability` block).
 - **How much to pin down is the user's dial, and it only narrows** — every request from abstract to finite
   is valid; more detail means fewer providers fit, never more.
 - **Nothing is built until it's complete** — reserve checks the filled-in request against the provider's
   requirements first; an incomplete request is stopped, not dispatched.
 - **Every value remembers where it came from** — a layer, the user, a policy, or a default; and
   `enrichment_status` says honestly whether it is `pending`, `partial`, or `complete`.
-- **Provider-specific values stay off the portable type** — they live in `provider_extensions` (deprecated — subsumed by ADR-038's Provider-Class `SharedDataElement`, interim, retiring #202), flagged as
-  non-portable ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); `PRV-010`).
+- **Provider-specific values stay off the portable type** — they are Provider-Class `SharedDataElement`s
+  (ADR-038; the retired `provider_extensions` carrier is removed), flagged as non-portable
+  ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); realized-entity `portability` block).
 - **"Enough" is the provider's to define** — the provider's required-data schema is what "provider-ready"
   means; the system doesn't guess it.
 
@@ -170,7 +171,7 @@ The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://g
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
-- **Data (UDLM):** the portable request, the four states, `provider_extensions` for provider-specific
+- **Data (UDLM):** the portable request, the four states, Provider-Class elements (ADR-038) for provider-specific
   values, and the provenance behind every field.
 - **Policy (DCM/org):** which provider gets chosen, and how the provider-required fields get filled.
 - **Provider:** declares what it needs ("enough"), and checks the request at reserve.
@@ -179,7 +180,7 @@ The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://g
 
 | Piece | Governing spec |
 |---|---|
-| Provider-specific config off the portable type | [ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) · `PRV-010` |
+| Provider-specific config off the portable type | [ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) · ADR-038 (Provider-Class elements) |
 | Provider declares the data it requires | `contracts/provider-contract.md` §base-level #2 |
 | Data layers + provider-aware enrichment | [`foundations/layering-and-versioning.md`](../../foundations/layering-and-versioning.md) |
 | Enrichment as a policy | `contracts/policy-contract.md` §12 |

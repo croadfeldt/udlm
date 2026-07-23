@@ -57,7 +57,7 @@ sequenceDiagram
     S->>S: validate against extension_schema
 
     Note over P,S: Phase 4 — Dispatch
-    S->>P: dispatch(complete request +<br/>provider_extensions filled)
+    S->>P: dispatch(complete request +<br/>Provider-Class elements filled)
     P->>P: reserve — validate + hold<br/>(no side effects)
     alt reserve rejects
         P-->>S: rejection(field, reason)
@@ -108,7 +108,7 @@ this provider for placement.
 | Identity (name, version, health endpoint) | The system needs to reach you and know you're alive | `provider-contract.md` §1 |
 | Capabilities — which resource types you realize, which operations you support | The system needs to match requests to providers who can fulfill them | `capability-discovery.md` §2.1 |
 | Required inputs per resource type — the fields you need beyond the portable base (e.g., `namespace`, `storage_class`) | The system and policies need to know what must be present before dispatching to you — policies determine where each value comes from | `provider-contract.md` §1a.2 |
-| Extension schema — the JSON Schema for your provider-specific fields | The system validates the enriched request before dispatch; consumers who pin provider-specific fields get validation at intent time | `provider-contract.md` §1a.3, PRV-010 |
+| Provider-Class element schema — the JSON Schema for your provider-specific elements (ADR-038) | The system validates the enriched request before dispatch; consumers who pin provider-specific elements get validation at intent time | `provider-contract.md` §1a.3 |
 | Sovereignty zones | The system enforces sovereignty constraints at placement | `capability-discovery.md` §2.1 |
 | Capacity (optional but recommended) | The system uses capacity data for placement decisions — without it, placement is capability-match only | UC-17 |
 
@@ -217,7 +217,7 @@ consumer_fields:
 
 The consumer sees `environment`, `vcpu`, `memory` as the primary choices. `namespace` and
 `storage_class` are visible but optional — the consumer MAY specify them if they know what they want
-(honored, validated, flagged as non-portable per `PRV-010`). If omitted, policies resolve them
+(honored, validated, flagged as non-portable per the realized-entity `portability` block). If omitted, policies resolve them
 post-placement. The provider declares *what* it needs at registration (Phase 1); the catalog item
 exposes *whether* the consumer can supply it directly.
 
@@ -520,16 +520,11 @@ spec:
         reference_data_type: network
       ip_mode: dynamic
 
-provider_extensions:   # deprecated — subsumed by ADR-038's Provider-Class SharedDataElement; interim, retiring #202
-  ocp-prod-east:
-    namespace_ref:
-      ref_uuid: "e2f3a4b5-..."           # → Platform.Namespace
-      ref_name: "tenant-alpha-prod"
-      reference_data_type: namespace
-    storage_class_ref:
-      ref_uuid: "c6d7e8f9-..."           # → Platform.StorageClass
-      ref_name: "ceph-rbd-fast"
-      reference_data_type: storage_class
+# Provider-specific references are Provider-Class `SharedDataElement`s (ADR-038), declared by
+# the provider's Class; schema realization is tracked in #199 (the retired provider_extensions
+# carrier is removed). For ocp-prod-east, addressed compute.vm.ocp-prod-east#<element>:
+#   namespace_ref     → Platform.Namespace     "tenant-alpha-prod"  (e2f3a4b5-...)
+#   storage_class_ref → Platform.StorageClass  "ceph-rbd-fast"      (c6d7e8f9-...)
 
 request_context:
   tenant_uuid: "75ccf4ff-..."
@@ -716,6 +711,6 @@ Provider                          System                           Consumer
 - How required inputs get filled: `docs/adr/ADR-024-filling-provider-required-inputs.md`
 - Policy contract (enrichment policies): `contracts/policy-contract.md` §12
 - Catalog item schema: `registry/catalog-item.schema.json`
-- Resource type extension rules: `contracts/provider-contract.md` PRV-010
+- Provider-specific data model: UDLM ADR-038 (Provider-Class `SharedDataElement`s); portability: `registry/realized-entity.schema.json` `portability` block
 - Realized entity schema: `registry/realized-entity.schema.json`
 - Provider registration UC: [UC-17](uc-17-provider-registration-capability.md)
