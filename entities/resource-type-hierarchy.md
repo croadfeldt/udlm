@@ -30,7 +30,7 @@ The hierarchy serves four goals:
 1. **Portability** — consumer intent can be fulfilled by any provider that satisfies the resource type contract, without the consumer needing to know which provider that is
 2. **Standardization** — a common vocabulary and data contract for all resource types encourages interoperability across providers, implementors, and the broader DCM community
 3. **Extensibility** — the model can be extended at every level without breaking existing definitions
-4. **Transparency** — any deviation from full portability is explicitly declared, versioned, and surfaced to consumers. This includes **instance-level** deviation: when a provider adds `provider_extensions` to a realized entity (ADR-PROV-004), portability is a computed **instance** property — the entity is marked `portability_breaking`, its classification narrowed, the extension keys + bound provider recorded, and **the consumer is notified before/at realization**. A resource is portable exactly to the extent it carries no provider extensions; silent non-portability is prohibited.
+4. **Transparency** — any deviation from full portability is explicitly declared, versioned, and surfaced to consumers. This includes **instance-level** deviation: when a provider adds `provider_extensions` (deprecated — subsumed by ADR-038's Provider-Class `SharedDataElement`, interim carrier retiring per #202) to a realized entity (ADR-PROV-004), portability is a computed **instance** property — the entity is marked `portability_breaking`, its classification narrowed, the extension keys + bound provider recorded, and **the consumer is notified before/at realization**. A resource is portable exactly to the extent it carries no provider extensions; silent non-portability is prohibited.
 
 ---
 

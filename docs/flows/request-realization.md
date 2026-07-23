@@ -152,7 +152,7 @@ Whatever engine runs this flow:
   requirements first; an incomplete request is stopped, not dispatched.
 - **Every value remembers where it came from** — a layer, the user, a policy, or a default; and
   `enrichment_status` says honestly whether it is `pending`, `partial`, or `complete`.
-- **Provider-specific values stay off the portable type** — they live in `provider_extensions`, flagged as
+- **Provider-specific values stay off the portable type** — they live in `provider_extensions` (deprecated — subsumed by ADR-038's Provider-Class `SharedDataElement`, interim, retiring #202), flagged as
   non-portable ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md); `PRV-010`).
 - **"Enough" is the provider's to define** — the provider's required-data schema is what "provider-ready"
   means; the system doesn't guess it.
