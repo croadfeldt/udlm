@@ -539,7 +539,7 @@ Zero trust requires that credentials are scoped to the minimum necessary operati
 
 | Posture | Description | Profile Default |
 |---------|-------------|----------------|
-| `none` | No zero trust enforcement; perimeter model acceptable | minimal |
+| `none` | No zero trust enforcement; perimeter model acceptable | homelab |
 | `boundary` | Zero trust at external boundaries (consumer→peer, peer→provider); internal components trust service mesh | dev, standard |
 | `full` | Zero trust everywhere including internal component communication; every call authenticated and authorized | prod, fsi |
 | `hardware_attested` | Full zero trust plus hardware attestation (TPM/HSM); component identity backed by hardware | sovereign |
@@ -664,7 +664,7 @@ Zero trust posture defaults are bound to deployment profiles. The profile determ
 
 | Profile | Zero Trust Posture | Data Boundary | Federation |
 |---------|-------------------|---------------|-----------|
-| `minimal` | none | public/internal only | Not recommended |
+| `homelab` | none | public/internal only | Not recommended |
 | `dev` | boundary | up to confidential | Permitted with warnings |
 | `standard` | boundary | up to restricted (with third-party accreditation) | Permitted |
 | `prod` | full | up to restricted | Permitted with accreditation |

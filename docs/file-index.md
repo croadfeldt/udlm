@@ -104,7 +104,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `docs/` and `docs/adr/`
 
 - **`docs/adr/`** — Architecture Decision Records. A ratified ADR is the authority for the decision it records; spec prose conforms to it, never contradicts it (e.g. ADR-007 owns "profiles are composed sets, not levels"). Its README also indexes the **instance-backed `ADR-<FAMILY>-NNN` namespace** (`ADR-PROV/RBAC/COST/AEP-*`) — DecisionRecord JSON in `registry/instances/`, resolvable only through that index.
-- **`docs/`** (root) — orientation + settled narrative surface: the file index, signoff procedure, consumer perspective, the 0.1 engineering handoff, and the settled "what this settles" docs (dependency-modeling, foundational-resources, graph-integrity, host-network-and-config-model, profile-resolution). Non-normative unless a doc states otherwise.
+- **`docs/`** (root) — orientation + settled narrative surface: the file index, signoff procedure, consumer perspective, the 0.1 engineering handoff, **profiles.md** (the six profiles — personas/environments/differing characteristics), and the settled "what this settles" docs (dependency-modeling, foundational-resources, graph-integrity, host-network-and-config-model, profile-resolution). Non-normative unless a doc states otherwise.
 - **`docs/design/`** — design rationale + decision trails (scoped-class hierarchy, registry design notes).
 - **`docs/examples/`** — non-normative worked examples (VM end-to-end trace, the DAV knowledge case study, provider accreditation).
 - **`docs/flows/`** — the flow tier (stage-level walkthroughs; see its README).

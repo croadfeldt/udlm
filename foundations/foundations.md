@@ -254,7 +254,7 @@ The priority order that governs every design decision — **security → ease of
 
 ---
 
-**The implication for profiles:** A `minimal` profile is "security with minimal operational overhead" — not
+**The implication for profiles:** The `homelab` profile is "security with minimal operational overhead" — not
 "minimal security." The security architecture is present and correct in every profile. What varies is how
 much automation, how strict the thresholds, and how much manual intervention is acceptable. This is the
 principle that makes the platform trustworthy in a homelab and in a sovereign government deployment using

@@ -130,7 +130,7 @@ it governs.
 - All instants are **RFC 3339 normalized to UTC (`Z`)**, pattern-enforced (`format:` alone is
   not enforcement); snapshots carry **`time_source`** (required on realized/discovered) and
   **`origin`** (declared | discovered-derived | backfilled). No fabricated precision.
-- **E4 field-level provenance holds in every profile** (minimal = derivable-carrier/git;
+- **E4 field-level provenance holds in every profile** (homelab = derivable-carrier/git;
   standard/prod = materialized; fsi/sovereign = + audit chain). Provenance `source.kind`
   vocabulary: `layer | policy | actor | provider | discovery | rehydration | override` (the
   last three added so DCM ADR-013 overrides and discovery/rehydration writes are recordable).
@@ -148,7 +148,7 @@ it governs.
   binding is declared and auditable (storage-provider records,
   `contracts/data-store-contracts.md`). **PostgreSQL is the reference implementation**
   satisfying all four contracts in one store at `standard`/`prod`; **git is a conforming
-  `minimal`-profile carrier** (derivable provenance); `fsi`/`sovereign` MAY — and where
+  `homelab`-profile carrier** (derivable provenance); `fsi`/`sovereign` MAY — and where
   isolation or residency policy requires, MUST — split stores per tenant/zone, use WORM audit
   tiers, embedded stores for disconnected/day-0 sites, or accredited substitutes. Conformance
   is measured against the contract, never the brand. Tenancy isolation is profile-keyed:

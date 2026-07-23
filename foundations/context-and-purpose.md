@@ -309,7 +309,7 @@ table has been removed so those decisions are not duplicated here.
 
 - **Sovereign Execution Posture** — the target end state the data model enables by providing a verified, auditable chain of custody through the full resource lifecycle
 - **CMDB Replacement** — DCM's four-state model is intended to replace the fragmented multi-CMDB problem by becoming the singular resource domain
-- **GitOps** — an ingress/carrier profile: consumers who prefer PR-based workflows can submit intent via Git; at the `minimal` profile git is itself a conforming State-Store carrier. Store bindings are contract-based per profile + sovereignty policy ([data-model-core](data-model-core.md) §6, ruling D1)
+- **GitOps** — an ingress/carrier profile: consumers who prefer PR-based workflows can submit intent via Git; at the `homelab` profile git is itself a conforming State-Store carrier. Store bindings are contract-based per profile + sovereignty policy ([data-model-core](data-model-core.md) §6, ruling D1)
 - **Data Lineage** — the chain of custody of a field value from origin through every modification; defined canonically with field-level provenance in [layering-and-versioning.md](layering-and-versioning.md) (see [GLOSSARY](../GLOSSARY.md) and §4 here for the summary)
 - **Field-Level Provenance** — the structural mechanism by which data lineage is captured and carried; defined canonically in [layering-and-versioning.md](layering-and-versioning.md) (§4 here summarizes it)
 - **UUID** — the universal identity mechanism that makes provenance references, dependency mapping, and cross-state correlation unambiguous and durable; defined normatively in [identifier-scheme.md](../contracts/identifier-scheme.md)
