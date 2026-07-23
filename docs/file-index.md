@@ -84,7 +84,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`standards-adoption-register.md`** — *Owns:* the per-standard adoption decision + license verdict (`ADOPT-001`). The single home for license verdicts.
 - **`resource-type-data-sources.md`** — per-type "what it adopts by reference" mapping (design input; license verdicts defer to the register).
 - **`REALIZED-ENTITY.md`** — the realized-entity instance schema, in prose.
-- **`../registry/UDLM-0.1-SCOPE.md`** — the 1.0 scope + exit criteria.
+- **`../registry/UDLM-0.1-SCOPE.md`** — the 0.1 scope + the 1.0 exit criteria.
 - **`README.md`** — registry overview.
 
 ## `observability/`

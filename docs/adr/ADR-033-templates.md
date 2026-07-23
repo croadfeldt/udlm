@@ -69,7 +69,7 @@ A Template is essentially a **TOSCA Service Template** — a topology of nodes (
 
 ### Scope
 
-Per ADR-031/032 this is a **direction**, not a 1.0 build: **no schema change**, nothing existing is touched. It is implemented only when a use case needs it (the combine-Day-0/1/2 case) — reusing catalog items, the subscription binding, and consumables, and adding only the Template packaging.
+Per ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change**, nothing existing is touched. It is implemented only when a use case needs it (the combine-Day-0/1/2 case) — reusing catalog items, the subscription binding, and consumables, and adding only the Template packaging.
 
 ## Data · Policy · Provider
 - **Data** — a Template is a catalog definition (Requested); a System is a realized composite + bound-activity records (Realized); a Pattern is Knowledge (type-level intent).
