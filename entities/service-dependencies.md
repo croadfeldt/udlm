@@ -505,7 +505,7 @@ dependency_depth_policy:
 
 | Profile | Default Max Depth | Rationale |
 |---------|-----------------|-----------|
-| `minimal` | 20 | Home lab — free composition |
+| `homelab` | 20 | Home lab — free composition |
 | `dev` | 15 | Development — generous |
 | `standard` | 10 | Production baseline |
 | `prod` | 10 | Production |

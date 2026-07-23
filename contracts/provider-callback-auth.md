@@ -187,7 +187,7 @@ Registration approved (provider status → ACTIVE)
 
 | Profile | Lifetime | Rotation trigger | IP binding |
 |---------|----------|-----------------|------------|
-| minimal | PT8H | Pre-expiry P1H | No |
+| homelab | PT8H | Pre-expiry P1H | No |
 | dev | PT4H | Pre-expiry P30M | No |
 | standard | PT1H | Pre-expiry PT10M | No |
 | prod | PT30M | Pre-expiry PT5M | Optional |

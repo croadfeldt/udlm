@@ -34,7 +34,7 @@ The four states answer four distinct questions:
 | **Realized State** | What did the provider actually build? | State Store (realized) — versioned snapshots, `is_current` flag |
 | **Discovered State** | What is observed actually existing right now? | Discovered stream — ephemeral, refreshed per discovery run |
 
-> **Store note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). The four states bind to conforming stores per profile and sovereignty/tenancy policy — a single PostgreSQL-compatible database at `standard`/`prod` (the reference implementation), git as a conforming carrier at `minimal`, and per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`. The concrete storage mechanics are realization architecture (see the DCM architecture documentation).
+> **Store note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). The four states bind to conforming stores per profile and sovereignty/tenancy policy — a single PostgreSQL-compatible database at `standard`/`prod` (the reference implementation), git as a conforming carrier at `homelab`, and per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`. The concrete storage mechanics are realization architecture (see the DCM architecture documentation).
 
 ---
 
@@ -46,7 +46,7 @@ The **Intent State** is the immutable record of a consumer's original declaratio
 
 **Characteristics:**
 - Immutable once created — the consumer's original intent is never modified
-- Stored in a profile-bound Commit Log per the [D1] contract — append-only, versioned, tenant-isolated; git is the conforming carrier at `minimal` and the PR-based ingress at `standard`/`prod`
+- Stored in a profile-bound Commit Log per the [D1] contract — append-only, versioned, tenant-isolated; git is the conforming carrier at `homelab` and the PR-based ingress at `standard`/`prod`
 - Fully versioned — every revision of an intent is traceable
 - The entity UUID is assigned at Intent State creation — it follows the entity through all subsequent states
 

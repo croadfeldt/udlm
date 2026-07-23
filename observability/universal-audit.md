@@ -368,7 +368,7 @@ Administrators configure how granular the audit trail is. Higher granularity pro
 
 | Profile | Default granularity | Override permitted? |
 |---------|-------------------|-------------------|
-| `minimal` | stage | Yes — can increase |
+| `homelab` | stage | Yes — can increase |
 | `dev` | stage | Yes |
 | `standard` | mutation | Yes — can increase to field |
 | `prod` | mutation | Yes |

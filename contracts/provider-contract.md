@@ -766,7 +766,7 @@ capability_registry_entry:
   category: realize_resources/Storage    # the (verb × domain) taxonomy term = the capability category
   tier: core
   default_approval_method: reviewed      # auto | reviewed | verified | authorized
-  enabled_in_profiles: [minimal, dev, standard, prod, fsi, sovereign]
+  enabled_in_profiles: [homelab, dev, standard, prod, fsi, sovereign]
   capability_extension_schema_ref: <uuid>
 ```
 

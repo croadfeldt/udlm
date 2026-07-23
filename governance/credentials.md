@@ -692,7 +692,7 @@ The `algorithm`, `key_usage`, and `retrieved_count_threshold` fields are declare
 | `standard`, `prod` | RSA-3072, ECDSA P-256 | RSA, ECDSA, Ed25519 |
 | `fsi`, `sovereign` | RSA-4096, ECDSA P-384 | RSA, ECDSA, Ed25519 (no RSA-2048) |
 
-Forbidden algorithms in all profiles: MD5, SHA-1, DES, 3DES, RC4, RSA-1024, RSA-512, DSA-1024. The forbidden list is non-negotiable; it applies even to the `minimal` profile.
+Forbidden algorithms in all profiles: MD5, SHA-1, DES, 3DES, RC4, RSA-1024, RSA-512, DSA-1024. The forbidden list is non-negotiable; it applies even to the `homelab` profile.
 
 HSM backing is required for `sovereign` profile signing keys.
 
@@ -876,7 +876,7 @@ Profile credential requirements map to NIST 800-63B Authenticator Assurance Leve
 
 | Profile | AAL | What it means |
 |---------|-----|--------------|
-| `minimal` | AAL1 | Single-factor; bearer token sufficient for credential retrieval |
+| `homelab` | AAL1 | Single-factor; bearer token sufficient for credential retrieval |
 | `dev` | AAL1 | Same as minimal; shorter lifetimes |
 | `standard` | AAL2 | MFA required for sensitive credential retrieval (ssh_key, database_password, kubeconfig) |
 | `prod` | AAL2 | MFA required for all credential retrieval |
@@ -933,7 +933,7 @@ UDLM's design priority order applies directly to credential management:
 
 3. **Extensibility third:** Compliance domain overlays, profile overrides, and algorithm configuration make the credential model adaptable without code changes.
 
-Profile variation applies only to **enforcement level and required features** — never to the underlying protocol or data model. A credential issued under the `minimal` profile has the same data structure, the same API contract, the same revocation mechanism, and the same audit record format as one issued under the `sovereign` profile.
+Profile variation applies only to **enforcement level and required features** — never to the underlying protocol or data model. A credential issued under the `homelab` profile has the same data structure, the same API contract, the same revocation mechanism, and the same audit record format as one issued under the `sovereign` profile.
 
 **CPX-001 (values never in the realization's stores) is non-negotiable in every profile including `minimal`.**
 

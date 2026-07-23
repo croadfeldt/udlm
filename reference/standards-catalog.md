@@ -83,10 +83,10 @@
 | Standard | Use in UDLM | Profiles | Obligation |
 |----------|-----------|---------|-----------|
 | **ECDSA P-384** | Internal CA certificates; component mTLS certs; preferred curve for substrate-issued certificates | All profiles | Normative for Internal CA |
-| **ECDSA P-256** | Permitted for performance-constrained contexts where P-384 is not available | minimal, dev | Optional |
+| **ECDSA P-256** | Permitted for performance-constrained contexts where P-384 is not available | homelab, dev | Optional |
 | **RSA ≥ 2048** | Permitted for compatibility with legacy systems; RSA < 2048 prohibited | All profiles | Conditional |
 | **AES-256-GCM** | Credential encryption at rest; audit record encryption (sovereign); data classification-driven | standard+ | Normative |
-| **AES-128-GCM** | Permitted for minimal/dev profiles where performance matters | minimal, dev | Conditional |
+| **AES-128-GCM** | Permitted for homelab/dev profiles where performance matters | homelab, dev | Conditional |
 | **SHA-256** | Hash function for audit chain integrity; entity handle generation; minimum acceptable | All profiles | Normative |
 | **SHA-384 / SHA-512** | Preferred hash function for fsi/sovereign profiles | fsi, sovereign | Normative for fsi+ |
 | **FIPS 140-3 Level 1** | Minimum cryptographic module requirement for standard/prod (140-2 module certificates accepted during transition) | standard, prod | Normative |
@@ -137,7 +137,7 @@ These frameworks drive specific UDLM profiles, overlays, and policy constraints.
 | Framework | Full Name | UDLM Profile/Overlay | Key Substrate Requirements |
 |-----------|-----------|-------------------|---------------------|
 | **NIST SP 800-53** | Security and Privacy Controls for Information Systems | `fedramp_moderate`, `fedramp_high` | Policy control families mapped to UDLM policy domains; access control, audit, configuration management |
-| **NIST SP 800-63B** | Digital Identity Guidelines | All profiles (AAL mapping) | AAL1 (minimal/dev), AAL2 (standard/prod), AAL2+ (fsi), AAL3 (sovereign); MFA requirements per level |
+| **NIST SP 800-63B** | Digital Identity Guidelines | All profiles (AAL mapping) | AAL1 (homelab/dev), AAL2 (standard/prod), AAL2+ (fsi), AAL3 (sovereign); MFA requirements per level |
 | **NIST SP 800-207** | Zero Trust Architecture | All profiles | Zero-trust posture defaults; five-check boundary model substrate |
 | **FedRAMP Moderate** | Federal Risk and Authorization Management Program — Moderate | `fedramp_moderate` overlay | NIST 800-53 Moderate baseline; FIPS 140-3 Level 1+ (140-2 accepted during transition); Federal data handling requirements |
 | **FedRAMP High** | Federal Risk and Authorization Management Program — High | `fedramp_high` overlay | NIST 800-53 High baseline; FIPS 140-3 Level 2+ (140-2 accepted during transition); enhanced audit retention |
@@ -183,7 +183,7 @@ UDLM maps profile security postures to NIST Authentication Assurance Levels:
 
 | Profile | AAL | Requirements |
 |---------|-----|-------------|
-| `minimal` | AAL1 | Single-factor authentication acceptable; password or API key |
+| `homelab` | AAL1 | Single-factor authentication acceptable; password or API key |
 | `dev` | AAL1 | Single-factor authentication acceptable |
 | `standard` | AAL2 | MFA required for all actor sessions; phishing-resistant preferred |
 | `prod` | AAL2 | MFA required; TOTP, FIDO2, or hardware token |

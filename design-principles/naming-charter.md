@@ -83,6 +83,7 @@ archetype — an identity is maintained, not one-shot.)*
 | **has_constituents** (derived) | constituent shape (is it a composite?) | the stored `entity_type` shape · Atomic/Composite · single/multi — all retired (derived, ADR-027 addendum) |
 | **edge_type** | the relationship-kind field | `kind` (for edges) |
 | **Converge** | the single lifecycle act | realize/reconcile/rehydrate/teardown (colloquial shortcuts, not distinct acts) |
+| **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (ADR-017; registry `profile-homelab.yaml`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine; `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
 
 *(Note a residual collision to resolve: "family" is also used for a **rule-ID prefix family** — an unrelated
 sense. If `family` is retired as an entity axis, keep it only in the rule-ID sense, or rename that too.)*

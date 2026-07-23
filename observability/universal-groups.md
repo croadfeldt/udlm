@@ -193,7 +193,7 @@ dcm_group:
 ```
 
 **Profile-governed enforcement:**
-- `minimal` profile → `enforcement_model: advisory` (tenancy optional)
+- `homelab` profile → `enforcement_model: advisory` (tenancy optional)
 - `dev` profile → `enforcement_model: enforced` (tenancy recommended)
 - `standard` and above → `enforcement_model: mandatory` (tenancy required)
 
@@ -392,7 +392,7 @@ A **Federated Tenant** structure is a `federation` group containing multiple ind
 
 ### 6.1 Universal Registry
 
-All groups are stored in a single **Group Registry** — a lifecycle store bound by contract, not technology ([data-model-core](../foundations/data-model-core.md) §6 [D1]; git is the conforming minimal-profile carrier). The registry is queryable by any combination of fields.
+All groups are stored in a single **Group Registry** — a lifecycle store bound by contract, not technology ([data-model-core](../foundations/data-model-core.md) §6 [D1]; git is the conforming homelab-profile carrier). The registry is queryable by any combination of fields.
 
 ### 6.2 Class-Filtered API Views
 
@@ -551,7 +551,7 @@ Policy inheritance for nested groups is group_class-specific and profile-governe
 
 | group_class | Default | Profile Override |
 |-------------|---------|----------------|
-| `tenant_boundary` | `opt_out` (parent cascades unless child excludes) | `opt_in` for minimal/dev/fsi/sovereign |
+| `tenant_boundary` | `opt_out` (parent cascades unless child excludes) | `opt_in` for homelab/dev/fsi/sovereign |
 | `resource_grouping` | Not applicable | Resource groups are tags — policies target them, not inherit through them |
 | `policy_collection` | Not applicable | Policy collections use `extends` for inheritance |
 | `composite` | `opt_out` | Configurable per group |
@@ -577,7 +577,7 @@ dcm_group:
 | `GRP-012` | Sovereignty interaction is group_class-specific. tenant_boundary groups never span sovereignty boundaries (structural). resource_grouping groups may span sovereignty boundaries by default — policy may restrict for classified resources. policy_collection and layer_grouping groups always permitted cross-sovereignty. composite groups are governed by the sovereignty rules of their most restrictive member type. |
 | `GRP-013` | Tenant decommission requires pre-decommission validation (resource state, cross-tenant relationships, compliance holds, child group resolution). Resources follow declared lifecycle policy. Child tenant_boundary groups must be resolved before parent decommission. Audit records enter post-lifecycle retention — never destroyed as part of Tenant decommission. |
 | `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBERSHIP_EXPIRE audit record (event group.membership_expired); MEMBER_REMOVE is additionally produced only by the `remove` on_expiry action, when the member is actually removed. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
-| `GRP-015` | Group policy inheritance is group_class-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (minimal/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
+| `GRP-015` | Group policy inheritance is group_class-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (homelab/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
 
 
 ## 11. Related Concepts
