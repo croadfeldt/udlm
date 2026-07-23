@@ -3,7 +3,7 @@
 **Status:** 📋 Review artifact (decision-support for the maintainer). **Not** a status change — every
 decision below remains `Proposed`; this is the assessment so ratification is a fast, informed pass.
 
-**Why this exists:** 0.1 commits to backward compatibility and cannot ship on unratified decisions
+**Why this exists:** 1.0 commits to backward compatibility and cannot ship on unratified decisions
 (`../../registry/UDLM-0.1-SCOPE.md` §5.1). All 11 prose ADRs (`docs/adr/`) and 9 JSON DecisionRecords
 (`registry/instances/adr-*.json`) are `Proposed`. This ranks each **Ready** (exercised + settled, no
 open question) vs **Hold** (a real open question or an unfinished dependency), so you accept the Ready
@@ -50,6 +50,6 @@ question I can find. Recommend ratifying the full set.
 - **Ratify now (18):** all 11 prose ADRs + udlm-dcm-boundary, PROV-001/002/003/004, RBAC-001, and
   (optionally) cost-metering-placement. These are exercised, settled, and carry no open question.
 - **Hold (2):** `cost-metering-linkage` (until its contract settles) and `aep-alignment` (until AEP /
-  error-model close). Neither blocks the 21 UCs or the surface-0.1 tag.
+  error-model close). Neither blocks the 21 UCs or the surface-1.0 tag.
 
 Ratifying the 18 clears exit-criterion §5.1 for everything the 21 UCs and the 0.1 surface depend on.
