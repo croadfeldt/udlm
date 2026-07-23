@@ -144,7 +144,7 @@ resource_entity:
   on_expiry: <decommission|suspend|notify|escalate>
   billing_state: <billable|non_billable|reduced_rate>
 
-  # Rehydration — UUID is preserved (RHY-005). There is NO separate rehydration_history
+  # Rehydration — UUID preserved on a restore in place; a rebuild is a new UUID (RHY-005). No separate rehydration_history
   # structure: provider-side ID changes are in provider_entity_id_history and the event is
   # in the REHYDRATE audit trail, so it is reconstructable (four-states.md §5). A minimum
   # auth level to rehydrate is an authorization POLICY, not an entity field.
