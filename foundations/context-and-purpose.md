@@ -283,16 +283,14 @@ for engineers** — each is what makes the substrate a reliable, legible source 
 naturalizes *from*. A vague or drifting substrate hands providers ambiguous intent; a rigorous one hands them
 ground truth.
 
-**Caveat — store-and-forward vendor extensions (custody without definition).** *Not translating* is not
-*not carrying vendor-specific data*. The substrate MAY **store and forward a vendor extension** — provider-
-specific config it holds as **opaque, UDLM-format data** (governed like any state: identity, provenance,
-versioning, tenancy) and passes to the provider to apply, e.g. on a resource or a catalog item. The line is
-sharp: UDLM **custodies** the extension but does **not own its data definition** — the vendor/provider owns
-the schema of what is inside, and UDLM never renders, translates, or reasons about it. That is the
-`provider_extensions` passthrough (ADR-016 / `PRV-010`; DCM ADR-023 §5 tier iii), and because relying on it
-is not portable it is flagged `portability_breaking` and the consumer is notified. So: **store-and-forward
-opaque vendor data = allowed** (custody, no definition); **translate or render a native spec = forbidden**
-(above).
+**Caveat — carrying provider-specific data is not translating it.** Declining to *translate* is not the same as
+declining to *carry* provider-specific data. The substrate holds such data as a **Provider Class element** — a
+provider-authored `SharedDataElement` scoped to that provider (ADR-038): the provider owns its definition, and
+UDLM **custodies** it like any other state (identity, provenance, versioning, tenancy) and passes it to the
+provider to apply. What UDLM never does is render it into a native spec — naturalization stays at the provider
+edge (ADR-023). Because provider-scoped data does not carry to another provider, an entity that depends on it is
+flagged as portability-degraded and the consumer is notified. So: **carry provider-specific data = allowed**
+(custody; the provider owns the definition); **translate or render a native spec = forbidden** (above).
 
 ---
 
