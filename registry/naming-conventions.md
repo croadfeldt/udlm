@@ -213,12 +213,13 @@ composability). Normative rules:
 3. **A recurring need is a base revision, not N vendor forks.** When the same extension appears
    across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
    IETF response to augmentation fragmentation), promoted through registry governance §3.
-4. **The formal `extends` mechanism** is **RESOLVED** — ADR-PROV-004 (closes #198). A provider
-   extends an instance **additively** via the provider-namespaced `provider_extensions` surface (deprecated — subsumed by ADR-038's Provider-Class `SharedDataElement`, interim, retiring per #202) on
-   the realized entity, never by modifying the closed base spec. **No-override is structural**: the
-   base type-spec is `additionalProperties: false`, and the validator rejects any extension path that
-   collides with a base field. Any extension **computes a portability degradation** (`portability_breaking:
-   true`, classification narrowed, extension keys + bound provider recorded) that **MUST be surfaced to
-   the consumer** — silent non-portability is prohibited. A Tier-2 `Vendor.Type` fork remains the path
+4. **The formal `extends` mechanism** is **RESOLVED** — Provider-Class `SharedDataElement`s
+   (ADR-038; supersedes ADR-PROV-004/#198 — the `provider_extensions` carrier is retired and
+   removed, #202 executed). A provider extends an instance **additively** at its Provider Class,
+   never by modifying the closed base spec. **No-override is structural**: the base type-spec is
+   `additionalProperties: false`, and an element may not shadow a base field. Any provider-specific
+   data **computes a portability degradation** (`portability_breaking: true`, classification
+   narrowed, the elements + bound provider recorded) that **MUST be surfaced to the consumer** —
+   silent non-portability is prohibited. A Tier-2 `Vendor.Type` fork remains the path
    for a genuinely *new* type; a recurrence across ≥2 providers promotes to a base MINOR (rule 3). See
    docs/research/minimal-custom-surface-and-graph-resilience.md.
