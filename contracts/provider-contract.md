@@ -723,7 +723,7 @@ peer_dcm_capabilities:
 
 ### 8.6 `execute_workflows` — Process profile
 
-**What it does:** Executes ephemeral workflows to completion. Unlike service providers that manage persistent resource lifecycle (create → operate → decommission), process providers execute a job and report a result. No persistent resource is created — the entity is a Process (`family: Process`, `entity_type: Atomic`) which reaches a terminal execution state on completion.
+**What it does:** Executes ephemeral workflows to completion. Unlike service providers that manage persistent resource lifecycle (create → operate → decommission), process providers execute a job and report a result. No persistent resource is created — the entity is a Process (`family: Process`; the Atomic shape is derived — no constituents) which reaches a terminal execution state on completion.
 
 **Use cases:** Software installation, backup execution, compliance scan, data migration, certificate rotation, patch application, report generation.
 

@@ -66,13 +66,13 @@ type_level_dependencies:
   - dependency_uuid: <uuid>
     required_resource_type_uuid: <uuid of Network.IPAddress>
     required_resource_type_name: Network.IPAddress
-    dependency_type: hard
+    strength: hard
     cardinality: one_to_one
     description: Every VM requires exactly one IP address
   - dependency_uuid: <uuid>
     required_resource_type_uuid: <uuid of Network.FirewallRule>
     required_resource_type_name: Network.FirewallRule
-    dependency_type: hard
+    strength: hard
     cardinality: one_to_many
     description: Every VM requires at least one firewall rule
 ```
@@ -94,7 +94,7 @@ provider_specific_dependencies:
   - dependency_uuid: <uuid>
     required_resource_type_uuid: <uuid of Nutanix.StorageContainer>
     required_resource_type_name: Nutanix.StorageContainer
-    dependency_type: hard
+    strength: hard
     portability_breaking: true
     description: Nutanix VMs require a Nutanix Storage Container
     portability_warning: This dependency locks this request to Nutanix providers
@@ -124,7 +124,7 @@ observed_dependency_edge:
     entity_uuid: <uuid>                   # optional — present if the dependency
                                           # is itself a UDLM-known entity
     external_handle: "<provider-native handle>"   # required if not UDLM-known
-  dependency_type: hard | soft            # provider's classification
+  strength: hard | soft                   # provider's classification
   observation:
     reported_by_provider_uuid: <uuid>
     observed_at: <ISO 8601 timestamp>
@@ -158,7 +158,7 @@ The substrate compares observed dependencies against the declared graph attached
 |------|---------|--------------------------|
 | Declared edge present, observed edge missing | Provider lost or never wired the dependency, or cannot introspect it | `dependency.drift_detected` event (warning); audit record |
 | Declared edge absent, observed edge present | Resource has acquired an out-of-band dependency the catalog did not anticipate | `dependency.drift_detected` event (info); operator review |
-| Both present, dependency_type disagrees | Provider classifies the strength differently than the spec | `dependency.drift_detected` event (info) |
+| Both present, `strength` disagrees | Provider classifies the strength differently than the spec | `dependency.drift_detected` event (info) |
 | Both present, agree | No drift | No event |
 
 The substrate stores both edge natures side-by-side; the realization decides whether drift triggers automated remediation, opens a review, or merely accrues to audit.
@@ -175,15 +175,21 @@ The substrate stores both edge natures side-by-side; the realization decides whe
 
 ---
 
-## 4. Dependency Types
+## 4. Dependency Strength
 
-Every declared dependency must specify its type:
+Every declared dependency carries a `strength` — the same enum the realized-entity edge model uses
+(`strength: hard|soft` on `depends_on` edges, data-model-core §4; degrade-don't-break is DEP-006):
 
-| Type | Description | Behavior |
-|------|-------------|----------|
+| Strength | Description | Behavior |
+|----------|-------------|----------|
 | `hard` | Must be realized before or alongside the dependent resource | Failure of dependency fails the dependent resource |
 | `soft` | Preferred but not blocking | Failure of dependency is recorded but does not block the dependent resource |
-| `conditional` | Required only if specific conditions in the request payload are met | Evaluated by Policy Engine against request data |
+
+**Conditional dependencies are a construction predicate, not a third strength.** A catalog item
+declares them in `conditional_dependencies[]` with a `condition` block (§9); the Policy Engine
+evaluates the condition against the request payload at graph construction. A satisfied condition
+yields a normal edge with the declared `strength`; an unsatisfied one yields no edge. `conditional`
+never appears on a built edge.
 
 ---
 
@@ -222,13 +228,13 @@ dependency_graph:
       dependencies:
         - dependency_uuid: <uuid of dependency declaration>
           dependent_node_uuid: <uuid of node this depends on>
-          dependency_type: <hard|soft|conditional>
+          strength: <hard|soft>           # conditional resolves at construction (§4) — never stored on a built edge
           status: <PENDING|SATISFIED|FAILED>
   edges:
     - from_node_uuid: <uuid>
       to_node_uuid: <uuid>
       dependency_uuid: <uuid>
-      dependency_type: <hard|soft|conditional>
+      strength: <hard|soft>
 ```
 
 ### 6.2 Transitive Dependencies
@@ -403,13 +409,13 @@ catalog_item:
   type_level_dependencies:
     - dependency_uuid: <uuid>
       required_resource_type_uuid: <uuid of Compute.VirtualMachine>
-      dependency_type: hard
+      strength: hard
       cardinality: one_to_one
   provider_specific_dependencies: []
   conditional_dependencies:
     - dependency_uuid: <uuid>
       required_resource_type_uuid: <uuid of Network.LoadBalancer>
-      dependency_type: conditional
+      strength: hard                    # the edge's strength once the condition holds (§4)
       condition:
         field: high_availability
         operator: equals
@@ -430,7 +436,7 @@ catalog_item:
 | `DEP-005` | Every node in a dependency graph must have a UUID | Enforced at graph construction |
 | `DEP-006` | **Dangling-reference semantics (degrade, don't break):** a reference whose target cannot be resolved renders the *referencing* entity nonoperational in the OPERATIONAL projection while remaining intact in the INTENDED projection, until the target appears or the reference is repointed (adopts RFC 8345 leafref semantics). Never hard-fail at runtime; never silently tolerate. | DCM runtime, at operational-state derivation. Authoring stores (git estates) instead validate-at-write and REJECT dangling references — the authoring gate is hard-fail by design. |
 | `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition `lifecycle_state: retired` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `retired` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + DCM decommission workflow. |
-| `DEP-008` | **Constrained reference topology:** relationship kinds carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (renamed from `connected_to` when relation names were adopted from standards — common-elements §9) only between `device_class: physical` Hardware.NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + DCM graph construction. |
+| `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (renamed from `connected_to` when relation names were adopted from standards — common-elements §9) only between `device_class: physical` Hardware.NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + DCM graph construction. |
 
 > **Division of responsibility (DEP-006..008):** the model defines the states and edges;
 > *acting* on them — reconciliation, identity correlation, finalizer-style deletion gating,
