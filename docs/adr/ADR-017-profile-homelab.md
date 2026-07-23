@@ -37,7 +37,7 @@ The design follows two rules that make it an on-ramp rather than a stripped-down
 
 - A self-hoster can adopt UDLM/DCM with a one-line profile choice and get the headline value immediately — the intended community/feedback flywheel.
 - The homelab floor is a stable, referenceable baseline that custom profiles fork from (the canonical worked example in the DCM custom-profile how-to).
-- `homelab` is a sixth built-in; the 1.0 scope profile set and `profile-resolution` examples include it. It does not change any wire contract or the September `dev` default.
+- `homelab` is a sixth built-in; the 0.1 scope profile set and `profile-resolution` examples include it. It does not change any wire contract or the September `dev` default.
 - **Establishes the per-profile-ADR pattern:** each built-in profile gets an ADR owning its intent + floor rationale, referencing its record for the data. `dev/standard/prod/fsi/sovereign` ADRs follow on this template.
 
 ## Options considered
