@@ -27,7 +27,7 @@ The DCM Entity Relationship model is the **universal mechanism for expressing re
 
 A single relationship model is used everywhere. There is no separate binding mechanism for storage, no separate dependency graph structure, no separate business data association mechanism. One model serves all relationship types across the full lifecycle — from pre-realization planning through to post-realization management, drift detection, cost rollup, and rehydration.
 
-This document defines the Entity Relationship Graph, which is the data structure underlying service dependency declaration (doc 07) and rehydration ordering. The Service Dependencies document retains content on rehydration ordering and failure handling, which operate on the relationship graph defined here.
+This document defines the Entity Relationship Graph, which is the data structure underlying service dependency declaration ([service-dependencies.md](service-dependencies.md)) and rehydration ordering. The Service Dependencies document retains content on rehydration ordering and failure handling, which operate on the relationship graph defined here.
 
 ---
 
@@ -979,11 +979,11 @@ Relationships follow the universal versioning and deprecation model. A relations
 
 ---
 
-## 14. Notification Traversal Rules
+## 13. Notification Traversal Rules
 
-The entity relationship graph is the source of truth for notification audiences. This section defines how relationships govern notification traversal for the Notification Model (doc 23).
+The entity relationship graph is the source of truth for notification audiences. This section defines how relationships govern notification traversal for the notification model ([subscription-lifecycle.md](../lifecycle/subscription-lifecycle.md)).
 
-### 14.1 Relationship Properties Relevant to Notifications
+### 13.1 Relationship Properties Relevant to Notifications
 
 Every relationship carries two properties that the Notification Router uses for audience resolution:
 
@@ -1000,7 +1000,7 @@ relationship:
     audience_role: stakeholder       # role assigned to notified party
 ```
 
-### 14.2 Stake Strength and Notification Threshold
+### 13.2 Stake Strength and Notification Threshold
 
 Different event types use different minimum stake strengths for notification:
 
@@ -1016,11 +1016,11 @@ Different event types use different minimum stake strengths for notification:
 
 The minimum stake strength threshold per event type is declared in the resource type specification and can be overridden by a platform-domain policy.
 
-### 14.3 Notification Traversal and Graph Depth
+### 13.3 Notification Traversal and Graph Depth
 
 What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared in the Resource Type Specification (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) declare depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is realization concern (foundations §5 lists notification routing as realization machinery); it consumes these declarations.
 
-### 14.4 Notification Traversal Policies
+### 13.4 Notification Traversal Policies
 
 | Policy | Rule |
 |--------|------|
@@ -1031,7 +1031,7 @@ What the data model fixes is the **declared depth**: notification traversal resp
 
 ---
 
-## 13. Related Concepts
+## 14. Related Concepts
 
 - **Entity Relationship Graph** — the complete traversable graph of all entity relationships in DCM
 - **Information Provider** — provider type for external data entities referenced in relationships
@@ -1042,7 +1042,7 @@ What the data model fixes is the **declared depth**: notification traversal resp
 - **External Entity Reference** — stable pointer to data owned by an external system
 
 
-## 12. Relationship Gap Resolutions — Q58 and Q60
+## 15. Relationship Gap Resolutions — Q58 and Q60
 
 ### 12.1 Relationship Role Validation (Q58)
 
@@ -1099,7 +1099,7 @@ relationship_depth_policy:
 
 ---
 
-## 13. System Policies — Relationship Gaps
+## 16. System Policies — Relationship Gaps
 
 | Policy | Rule |
 |--------|------|

@@ -40,7 +40,7 @@ The layering model enables:
 
 ---
 
-## 1b. At a glance — one field, end to end
+## 1a. At a glance — one field, end to end
 
 Before the full contract, here is the whole mechanism on a single field. A VM request resolves `backup_retention_days` by merging the ordered layers, lowest authority first; each layer may set the value and declare whether lower or higher authorities can override it (`LAY-005`: `allow` | `constrained` | `immutable`). The final value carries provenance — which layer set it (`LAY-008`).
 
@@ -72,7 +72,7 @@ Field-level override intent is `LAY-005`; provenance is always reconstructable p
 
 ---
 
-## 1a. Layers vs Policies — The Clear Distinction
+## 1b. Layers vs Policies — The Clear Distinction
 
 Layers and policies are the two foundational mechanisms of DCM's assembly process. They are complementary and distinct — understanding the difference is critical to using DCM correctly.
 
@@ -150,7 +150,7 @@ Layers are stored in Git following GitOps practices. They are the configuration 
 
 ---
 
-## 3a. Provenance Model Configuration
+## 2a. Provenance Model Configuration
 
 ### 3a.1 The Three Provenance Models
 
@@ -1595,7 +1595,7 @@ The layer chain of a Realized Entity is always traceable — given a Realized St
 
 ---
 
-## 13b. Override Control and Constraint Visibility Gaps
+## 13a. Override Control and Constraint Visibility Gaps
 
 ### 13b.1 Override Preference Enforcement (Q50)
 
@@ -1683,7 +1683,7 @@ policy:
 | `LAY-006` | Constraint schemas on constrained fields are visible to consumers in the Service Catalog UI and Consumer API at a policy-governed disclosure level: full (constraint, bounds, reason, suggestions), summary (bounds only), or hidden (enforced but not displayed). Profile sets the default. Policy may override per field or resource type. |
 
 
-## 13a. Layer System Policies
+## 13b. Layer System Policies
 
 | Policy | Rule |
 |--------|------|
@@ -1702,7 +1702,7 @@ policy:
 
 ---
 
-## 14. Related Concepts
+## 15. Related Concepts
 
 - **Request Payload Processor** — the control plane component that executes the assembly process; enforces structural layer rules
 - **Policy Engine** — executes Policy Layers (Validation Policy, Transformation) during the assembly process; the sole authority for setting field override control
