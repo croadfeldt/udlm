@@ -390,7 +390,7 @@ Override actions MUST always be audited with the overriding admin's actor UUID a
 
 Contributors deprecate their own artifacts. When a Service Provider deprecates a resource type spec:
 1. All consumers using that type receive deprecation notifications
-2. A sunset period is declared (minimum: P30D for standard profile; P90D for prod/fsi/sovereign)
+2. A sunset period is declared — the per-profile minimums are owned by [registry-governance](registry-governance.md) §5 (`REG-DP-*`, the profile-governed sunset table)
 3. During sunset: new requests using the deprecated spec are warned; existing resources unaffected
 4. After sunset: new requests using the deprecated spec are blocked
 5. Platform admin must confirm final retirement

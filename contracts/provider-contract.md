@@ -178,6 +178,13 @@ provider_base_registration:
   # role the provider requested; it can never widen beyond this declaration.
   accepts_roles: [execution]             # e.g. [execution, assembly]
 
+  # What the provider needs FROM the realization (optional). Matched against the realization's
+  # own capability advertisement at registration; the provider gets a matched-capabilities
+  # response and explicitly opts in to subscriptions (§10.2 — never auto-subscribed, DISC-004).
+  needs_from_realization:
+    - domain: cost
+      description: "Cost estimation and attribution data"
+
   # Endpoints (which endpoints are required varies by type — see extensions)
   health_endpoint: "https://<provider>/health"
 
@@ -226,7 +233,8 @@ dcm_registration_verdict:                # DCM-OWNED — references the submissi
     - capability: serve_data/Network           # POLICY (Governance Matrix), not here. Domain granularity is inherent:
       disposition: provisional           # a category IS verb×domain (approve /Storage, deny /Compute independently).
   effective_capabilities: [realize_resources/Storage]   # COMPUTED intersecting CEILING (ADR-PROV-003); starts EMPTY:
-                                         # the default-deny ceiling formula — capability-discovery §2 / PRV-009
+                                         # the default-deny ceiling formula (declared ∩ admitted ∩ registry-enabled
+                                         # ∩ Governance-Matrix-permitted) — this verdict block / PRV-009
                                          # (mirrors effective_accepts_roles). A provider can never exceed this.
                                          # Admission history is IMMUTABLE: every admin change is an explicit forward
                                          # CAPABILITY_ADMIT audit event (actor+reason); current = LIFO-newest.
@@ -243,6 +251,23 @@ SUBMITTED → VALIDATING → PENDING_APPROVAL → ACTIVE
                        ↘ REJECTED
 ACTIVE → SUSPENDED | DEREGISTERING → DEREGISTERED | FORCED_DEREGISTERED
 ```
+
+---
+
+## 2a. Sovereignty Obligations (`SOV-*`)
+
+The rules the `sovereignty_declaration` (§2) puts on every provider — all providers, all
+capabilities (A4 landed 2026-07-23: these moved here from storage-providers.md because they are
+registration obligations, not storage behavior). How a realization *executes* the responses
+(pause, migrate, quarantine) is control-plane, owned by the DCM architecture docs.
+
+| ID | Policy |
+|----|--------|
+| `SOV-001` | All provider registrations must include a `sovereignty_declaration` covering operating jurisdictions, legal frameworks, data-residency guarantees, external dependencies, certifications with validity periods, and government-access risk. |
+| `SOV-002` | Providers must notify the platform when any declared sovereignty data changes; a sovereignty change is treated as discovered drift and triggers policy re-evaluation. The notification SLA is declared at registration. |
+| `SOV-003` | When a provider sovereignty change violates a Tenant's sovereignty requirements, affected resources are re-evaluated and the declared action applied: `notify_only`, `pause`, `migrate`, or `emergency_migrate`. |
+| `SOV-004` | Auto-migration triggered by SOV-003 uses provider-portable rehydration; the non-compliant provider is excluded from the placement candidate set, and the migration is a first-class, fully-audited operation. |
+| `SOV-005` | Certification validity periods are tracked; a certification expiring within P30D warns the provider and affected Tenants, and an expired certification triggers SOV-003 re-evaluation. |
 
 ---
 
@@ -465,12 +490,12 @@ this surface.
 
 ## 8. Capability Extensions — Capabilities and Categories
 
-Each provider shares the base contract (Section 1–7) and adds a typed capability extension declaring what it can do. There is **one axis**: the **capability**, expressed as **(verb × domain)** (ADR-PROV-002; capability-discovery §2). What earlier drafts split into "provider kinds" (interaction shape) versus "yielded capabilities" is unified here — both are capabilities:
+Each provider shares the base contract (Section 1–7) and adds a typed capability extension declaring what it can do. There is **one axis**: the **capability**, expressed as **(verb × domain)** (ADR-PROV-002). What earlier drafts split into "provider kinds" (interaction shape) versus "yielded capabilities" is unified here — both are capabilities:
 
 - The former **kinds** are capability **verbs**: Service/Resource = `realize_resources`, Information = `serve_data`, Process = `execute_workflows`, Peer DCM = `federate`. (A Composite Service is *not* a kind — it is an ordinary `realize_resources` provider registering a multi-resource definition, §8.3.)
 - The former **yields** are simply more capabilities: **authentication** = `authenticate`; **credential issuance**, **notification** (`Notification.*`), **ITSM** (`ITSM.*`), and **telemetry** (§7) are `realize_resources`/`serve_data` scoped to those domains. Any provider that declares the capability exercises it — there is no separate "kind of provider."
 
-A provider declares its capabilities once; the **capability categories** (verb × domain; capability-discovery §2.4) it occupies follow, non-exclusive, and are what policy targets. The convenience-labeled blocks below (`service_provider_capabilities`, `information_provider_capabilities`, …) are per-capability **profile extensions** — shorthand for a capability + its domain; the canonical identity is the declared capability set, not the block name.
+A provider declares its capabilities once; the **capability categories** (verb × domain; §9) it occupies follow, non-exclusive, and are what policy targets. The convenience-labeled blocks below (`service_provider_capabilities`, `information_provider_capabilities`, …) are per-capability **profile extensions** — shorthand for a capability + its domain; the canonical identity is the declared capability set, not the block name.
 
 ### 8.1 `realize_resources` — Service / Resource profile
 
@@ -776,7 +801,222 @@ A provider registers with a **capability set** (each `verb × domain`), verified
 
 ---
 
-## 10. Related Policies
+## 10. Capability Discovery — Wire Protocol (bidirectional)
+
+How the two sides of the contract learn each other's surface: the realization advertises its own
+capabilities to providers and external consumers (§10.1), and a provider declares what it needs from
+the realization at registration and gets a matched-capabilities answer (§10.2). Folded in from
+`capability-discovery.md` (2026-07-23) — this contract is the owner; the capability *model* itself
+(verbs, categories, admission) lives in §§2, 8–9.
+
+### 10.1 The Realization's Capability Advertisement (Wire Contract)
+
+#### 10.1a The Advertisement Endpoint
+
+A UDLM-conformant realization MUST expose a machine-readable endpoint that describes what it can do:
+
+```
+GET /api/v1/capabilities
+```
+
+The response shape is normative:
+
+```json
+{
+  "realization_instance": "<instance-handle>",
+  "version": "1.0.0",
+  "capabilities": {
+    "lifecycle_management": {
+      "description": "Full lifecycle management of resources",
+      "operations": ["create", "update", "scale", "decommission", "rehydrate"],
+      "resource_types": ["Compute.VirtualMachine", "Network.IPAddress", "..."],
+      "api_endpoint": "/api/v1/requests"
+    },
+    "policy_evaluation": {
+      "description": "Policy-as-code evaluation on every request",
+      "policy_types": ["validation", "transformation", "gating", "recovery", "orchestration_flow", "governance_matrix_rule", "..."],
+      "framework": "opa_rego",
+      "api_endpoint": "/api/v1/admin/policies"
+    },
+    "cost_analysis": {
+      "description": "Cost estimation at placement time, cost attribution per tenant",
+      "data_streams": {
+        "cost_estimated": {
+          "description": "Emitted when placement scores include cost",
+          "payload_schema": "/api/v1/schemas/events/cost.estimated",
+          "subscribe_endpoint": "/api/v1/webhooks"
+        },
+        "cost_attributed": {
+          "description": "Emitted when realized entity cost is recorded",
+          "payload_schema": "/api/v1/schemas/events/cost.attributed",
+          "subscribe_endpoint": "/api/v1/webhooks"
+        }
+      }
+    },
+    "audit_trail": {
+      "description": "Tamper-evident Merkle tree audit with configurable granularity",
+      "proof_types": ["inclusion", "consistency"],
+      "api_endpoint": "/api/v1/audit"
+    },
+    "placement_decisions": {
+      "description": "Provider selection with sovereignty pre-filter and policy scoring",
+      "data_streams": {
+        "placement_decided": {
+          "description": "Full scoring rationale for every placement decision",
+          "payload_schema": "/api/v1/schemas/events/placement.decided",
+          "subscribe_endpoint": "/api/v1/webhooks"
+        }
+      }
+    },
+    "drift_detection": {
+      "description": "Discovered vs realized state comparison",
+      "data_streams": {
+        "drift_detected": {
+          "payload_schema": "/api/v1/schemas/events/drift.detected",
+          "subscribe_endpoint": "/api/v1/webhooks"
+        }
+      }
+    },
+    "entity_lifecycle": {
+      "description": "Full entity state change events",
+      "data_streams": {
+        "entity_created": { "subscribe_endpoint": "/api/v1/webhooks" },
+        "entity_realized": { "subscribe_endpoint": "/api/v1/webhooks" },
+        "entity_updated": { "subscribe_endpoint": "/api/v1/webhooks" },
+        "entity_decommissioned": { "subscribe_endpoint": "/api/v1/webhooks" }
+      }
+    }
+  }
+}
+```
+
+#### 10.1b Capability Query (Substrate Required)
+
+External systems MUST be able to query for specific capabilities:
+
+```
+GET /api/v1/capabilities?domain=cost
+GET /api/v1/capabilities?domain=audit
+GET /api/v1/capabilities?data_stream=true
+GET /api/v1/capabilities?operation=create&resource_type=Compute.VirtualMachine
+```
+
+The response MUST include only matching capabilities with their API endpoints and subscription mechanisms.
+
+#### 10.1c The Integration Flow (Substrate Pattern)
+
+A consuming system integrating with a UDLM-conformant realization:
+
+```
+1. Consumer queries:  GET /api/v1/capabilities?domain=cost
+
+2. Realization responds with:
+   - cost.estimated event stream (subscribe via webhook)
+   - cost.attributed event stream (subscribe via webhook)
+   - cost estimation API (GET /api/v1/requests/{uuid}/cost-estimate)
+   - payload schemas for each
+
+3. Consumer subscribes: POST /api/v1/webhooks
+   {
+     "event_types": ["cost.estimated", "cost.attributed", "entity.realized"],
+     "callback_url": "https://consumer.example.com/events",
+     "auth": { "type": "hmac_sha256", "secret_ref": "..." }
+   }
+
+4. Data flows automatically — no manual wiring
+```
+
+---
+
+### 10.2 Provider Needs and Matched Capabilities (Wire Contract)
+
+When a provider registers, it MAY declare what it offers AND what it needs from the realization:
+
+```yaml
+provider_base_registration:            # canonical shape — §2; only the discovery-relevant
+  artifact_metadata:                   # fields are shown here
+    handle: "org/finops/acme-finops"
+  display_name: "Acme FinOps Platform"
+  capabilities: [serve_data/Cost]      # verb × domain (§8.2 profile carries the data_domains detail)
+
+  needs_from_realization:
+    - domain: cost
+      description: "Cost estimation and attribution data"
+    - domain: entity_lifecycle
+      description: "Entity create/update/decommission events"
+    - domain: placement_decisions
+      description: "Placement scoring rationale for cost analysis"
+```
+
+#### 10.2a Matched-Capabilities Response
+
+When a provider registers with `needs_from_realization`, the realization MUST match the declared needs against its capability advertisement and offer subscription endpoints in the registration response:
+
+```json
+{
+  "matched_capabilities": {
+    "cost": {
+      "streams": ["cost.estimated", "cost.attributed"],
+      "subscribe_endpoint": "/api/v1/webhooks",
+      "auto_subscribed": false,
+      "action_required": "POST to subscribe_endpoint to activate"
+    },
+    "entity_lifecycle": {
+      "streams": ["entity.created", "entity.realized", "entity.updated", "entity.decommissioned"],
+      "subscribe_endpoint": "/api/v1/webhooks",
+      "auto_subscribed": false
+    },
+    "placement_decisions": {
+      "streams": ["placement.decided"],
+      "subscribe_endpoint": "/api/v1/webhooks",
+      "auto_subscribed": false
+    }
+  },
+  "unmatched_needs": []
+}
+```
+
+Substrate invariants:
+- The provider then activates the subscriptions it wants. The realization MUST NEVER auto-subscribe — the provider explicitly opts in.
+- The realization MUST advertise exactly what's available and how to obtain it.
+
+#### 10.2b Bidirectional Discovery Pattern
+
+The pattern works in both directions:
+
+```
+Provider → Realization: "Here's what I can do" (capabilities)
+Provider → Realization: "Here's what I need from you" (needs_from_realization)
+Realization → Provider: "Here's what I have that matches your needs" (matched_capabilities)
+Realization → Provider: "Here's what I need from you" (dispatch payloads via the provider contract)
+```
+
+---
+
+### 10.3 Substrate Invariants
+
+The substrate requires the following invariants on capability discovery interactions:
+
+- **Catalog separation:** The capability advertisement endpoint exposes resource types the realization manages, but NOT the tenant-scoped, RBAC-filtered service catalog itself.
+- **Policy enforcement:** Capability discovery MUST NOT bypass policy. A provider that discovers a data stream and subscribes to it still has its webhook authenticated, its data filtered by tenant scope, and its subscription audited.
+- **Audit:** Every capability query, subscription establishment, and data stream delivery MUST be audited. The audit trail shows: who queried capabilities, what they subscribed to, and what data was delivered.
+- **Federation use:** A peer realization (`federate` capability) MAY use capability discovery to understand what a remote instance can do before establishing a federation tunnel. This replaces static federation scope declarations with dynamic capability negotiation.
+
+---
+
+### 10.4 Discovery Policies (`DISC-*`)
+
+| ID | Policy |
+|----|--------|
+| `DISC-001` | Capability advertisement is read-only and requires authentication. No anonymous capability queries. |
+| `DISC-002` | Webhook subscriptions MUST be tenant-scoped. A provider's subscription only receives events for entities in its authorized scope. |
+| `DISC-003` | Capability query MUST be rate-limited. Prevents enumeration attacks. |
+| `DISC-004` | `needs_from_realization` matching is advisory, not automatic. The realization suggests matches; the provider activates subscriptions explicitly. |
+| `DISC-005` | Capability schema versions follow the substrate's API versioning strategy. Capability response format is versioned and backward-compatible. |
+
+---
+
+## 11. Related Policies
 
 | Policy | Rule |
 |--------|------|
@@ -788,7 +1028,7 @@ A provider registers with a **capability set** (each `verb × domain`), verified
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../entities/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
 | `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 | `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the DCM→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
-| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in [`capability-discovery.md`](capability-discovery.md) §2 (mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
+| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in §2's `dcm_registration_verdict` (`effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`; mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
 | `PRV-010` | **Retired 2026-07-23 (#202 executed).** Provider-specific data is a Provider-Class `SharedDataElement` (ADR-038; schema realization #199) — the interim `provider_extensions` carrier is removed from the realized-entity schema and the validator rejects it. The enduring obligations moved with the model: additive-only (the base type-spec stays closed — no override of base elements), declared by the provider at registration, and any provider-specific data computes a portability degradation with mandatory consumer notification (realized-entity `portability` block; resource-type-hierarchy Transparency principle). |
 
 ---

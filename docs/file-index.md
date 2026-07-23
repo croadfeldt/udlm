@@ -30,7 +30,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `contracts/` — the wire contracts between DCM and providers/peers
 
 - **`provider-contract.md`** — the unified provider base contract + capability extensions (§8). *Owns:* the base registration/health/lifecycle floor, `PRV-*`, the reserve/commit two-phase realize.
-- **`capability-discovery.md`** — the unified provider/capability model. *Owns:* the verb×domain capability model, capability categories, and the default-deny admission formula (`declared ∩ admitted ∩ registry-enabled ∩ matrix-permitted`).
+- **`capability-discovery.md`** — supersession stub (folded 2026-07-23). The capability model, registration shape, default-deny ceiling, and the discovery wire protocol (`DISC-*`) are all owned by `provider-contract.md` (§§2, 8–10).
 - **`policy-contract.md`** — the unified policy contract. *Owns:* policy evaluation surface, `POL-*`.
 - **`data-store-contracts.md`** — enforcement contracts for the four data domains + audit. *Owns:* the Realized/Audit store domain invariants.
 - **`storage-providers.md`** — the storage capability extension. *Owns:* store sub-profiles (GitOps/snapshot/event/search/audit) and `STO-*` — *not* provider types.

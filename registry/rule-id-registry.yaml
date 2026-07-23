@@ -61,8 +61,8 @@ prefixes:
     status: active
   - prefix: DISC
     name: Capability discovery
-    home: contracts/capability-discovery.md
-    domain: Capability discovery and the unified provider model
+    home: contracts/provider-contract.md
+    domain: Capability discovery wire protocol (provider-contract §10; folded 2026-07-23)
     status: active
   - prefix: DPO
     name: Design priority order
@@ -200,8 +200,8 @@ prefixes:
     status: active
   - prefix: SOV
     name: Sovereignty
-    home: contracts/storage-providers.md
-    domain: Sovereignty rules carried on the storage-provider contract
+    home: contracts/provider-contract.md
+    domain: Provider-sovereignty registration obligations (provider-contract §2a; A4 landed 2026-07-23)
     status: active
   - prefix: STO
     name: Storage providers

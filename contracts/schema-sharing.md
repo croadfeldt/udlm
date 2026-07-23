@@ -280,7 +280,7 @@ A conformant realization MUST:
 - [`error-model.md`](error-model.md) — `schema.*` error codes
 - [`event-catalog.md`](event-catalog.md) — `schema.bundle_updated` federation event
 - [`layering-and-versioning.md`](../foundations/layering-and-versioning.md) — semver conventions
-- [`capability-discovery.md`](capability-discovery.md) — broader capability declaration mechanism
+- [`provider-contract.md`](provider-contract.md) §8–10 — broader capability declaration mechanism
 - [`provider-contract.md`](provider-contract.md) — provider schemas in the bundle
 - [`policy-contract.md`](policy-contract.md) — policy schemas in the bundle
 - [`CONFORMANCE.md`](../CONFORMANCE.md) — conformance declaration that complements the bundle

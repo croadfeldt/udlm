@@ -106,10 +106,10 @@ this provider for placement.
 | What | Why | Where it's specified |
 |------|-----|---------------------|
 | Identity (name, version, health endpoint) | The system needs to reach you and know you're alive | `provider-contract.md` §1 |
-| Capabilities — which resource types you realize, which operations you support | The system needs to match requests to providers who can fulfill them | `capability-discovery.md` §2.1 |
+| Capabilities — which resource types you realize, which operations you support | The system needs to match requests to providers who can fulfill them | `provider-contract.md` §8–10 §2.1 |
 | Required inputs per resource type — the fields you need beyond the portable base (e.g., `namespace`, `storage_class`) | The system and policies need to know what must be present before dispatching to you — policies determine where each value comes from | `provider-contract.md` §1a.2 |
 | Provider-Class element schema — the JSON Schema for your provider-specific elements (ADR-038) | The system validates the enriched request before dispatch; consumers who pin provider-specific elements get validation at intent time | `provider-contract.md` §1a.3 |
-| Sovereignty zones | The system enforces sovereignty constraints at placement | `capability-discovery.md` §2.1 |
+| Sovereignty zones | The system enforces sovereignty constraints at placement | `provider-contract.md` §2 (`sovereignty_declaration`) |
 | Capacity (optional but recommended) | The system uses capacity data for placement decisions — without it, placement is capability-match only | UC-17 |
 
 **Example — an OpenShift VM provider registering:**
@@ -707,7 +707,7 @@ Provider                          System                           Consumer
 
 - The request's perspective on the same flow: [request-realization](request-realization.md)
 - Provider base contract (what you MUST implement): `contracts/provider-contract.md` §1a
-- Capability advertisement shape: `contracts/capability-discovery.md` §2.1
+- Capability advertisement shape: `contracts/provider-contract.md` §2 (registration) + §10 (discovery protocol)
 - How required inputs get filled: `docs/adr/ADR-024-filling-provider-required-inputs.md`
 - Policy contract (enrichment policies): `contracts/policy-contract.md` §12
 - Catalog item schema: `registry/catalog-item.schema.json`
