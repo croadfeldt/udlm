@@ -4,7 +4,7 @@
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `entities/knowledge-family.md` §4.5)
 **Related:** `docs/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (UDLM/DCM boundary)
-**Tracking:** September 1.0 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before realization").
+**Tracking:** September 0.1 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before realization").
 
 ## Context
 

@@ -21,7 +21,7 @@ These are the same tier. **Two names for one objective is not simple** — this 
 
 **Composite Service and Template are one tier. Keep one name — `Template`.**
 
-- **Composite Service (catalog item) → `Template`.** Template **adopts `catalog-item.schema.json` as its 1.0 schema**; ADR-033's "+ **bound processes**" becomes the *post-1.0 generalization* on top. A Composite Service is simply a Template whose consumables are **resources only**.
+- **Composite Service (catalog item) → `Template`.** Template **adopts `catalog-item.schema.json` as its 0.1 schema**; ADR-033's "+ **bound processes**" becomes the *post-1.0 generalization* on top. A Composite Service is simply a Template whose consumables are **resources only**.
 - **Composite Entity (runtime) → `System`** (a realized Template).
 - **`CMP-*` rule family → `TPL-*`** — a rule-ID renumber that rides the registry work (ADR-028 / DCM ADR-024), not a behavior change.
 
@@ -39,7 +39,7 @@ These are the same tier. **Two names for one objective is not simple** — this 
 2. **`CMP-*` → `TPL-*`** rename + timing (rides the rule-ID registry renumber).
 3. **Composite Entity → System** in the runtime/DCM docs — agree the runtime instance name.
 4. **Resources-only Template** — does it need an explicit marker, or is "zero bound processes" sufficient?
-5. **Migration sequencing.** `catalog-item.schema.json` is an *accepted, implemented* 1.0 surface — so this touches shipping code. Baseline-then-ratchet (the rule-ID path) or a single cut?
+5. **Migration sequencing.** `catalog-item.schema.json` is an *accepted, implemented* 0.1 surface — so this touches shipping code. Baseline-then-ratchet (the rule-ID path) or a single cut?
 
 ## What it does NOT change
 
