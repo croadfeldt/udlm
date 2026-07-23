@@ -9,7 +9,7 @@
 #
 # LAYERS:
 #   root   -> `provider-capability`
-#   verb   -> the closed capability vocabulary (capability-discovery.md §2.2); parent = root
+#   verb   -> the closed capability vocabulary (provider-contract.md §8); parent = root
 #   category -> a (verb x domain) LEAF; parent = the verb. A CATEGORY IS A verb-x-domain TERM.
 #              Providers are classified under the categories their declared capabilities place them in
 #              (non-exclusive); Governance-Matrix policy targets a category / a verb / the data.

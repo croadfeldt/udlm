@@ -20,7 +20,7 @@
 
 ## 1. Purpose
 
-In the unified provider model ([capability-discovery.md](capability-discovery.md); ADR-PROV-002), a
+In the unified provider model ([provider-contract.md](provider-contract.md) §8; ADR-PROV-002), a
 **Storage Provider** is *not* a provider type — it is a provider that declares the **`realize_resources`
 capability over the `Storage` domain** (the `realize_resources/Storage`, *storage-provisioning*, capability
 category), and typically **`serve_data`** over what it stores as well. It is the interface through which a
@@ -37,7 +37,7 @@ organization using GitHub and Kafka satisfies the same contracts as one using Gi
 ## 2. Store sub-profiles
 
 There are no provider *types* in the unified model — a provider declares capabilities (verb × domain) and
-occupies the **capability categories** they form ([capability-discovery.md](capability-discovery.md) §2.4;
+occupies the **capability categories** they form ([provider-contract.md](provider-contract.md) §9;
 ADR-PROV-002). "Storage Provider" is the convenience label for a provider in the `realize_resources/Storage`
 category. Within storage, four **store sub-profiles** are defined, each optimized for a different access
 pattern and consistency requirement (a provider may occupy several):
@@ -131,18 +131,13 @@ registration or trust and are not Storage Providers.
 
 ## 6. Sovereignty
 
-A Storage Provider declares its sovereignty like any other provider. The `sovereignty_declaration`
-*structure* is shared across all provider kinds; consolidating it into a single home
-([provider-contract.md](provider-contract.md)) is tracked as an open dedup ruling (A4) and is deliberately
-**not** pre-empted here. The provider-sovereignty policies (homed here until A4 lands) are:
-
-| ID | Policy |
-|----|--------|
-| `SOV-001` | All provider registrations must include a `sovereignty_declaration` covering operating jurisdictions, legal frameworks, data-residency guarantees, external dependencies, certifications with validity periods, and government-access risk. |
-| `SOV-002` | Providers must notify the platform when any declared sovereignty data changes; a sovereignty change is treated as discovered drift and triggers policy re-evaluation. The notification SLA is declared at registration. |
-| `SOV-003` | When a provider sovereignty change violates a Tenant's sovereignty requirements, affected resources are re-evaluated and the declared action applied: `notify_only`, `pause`, `migrate`, or `emergency_migrate`. |
-| `SOV-004` | Auto-migration triggered by SOV-003 uses provider-portable rehydration; the non-compliant provider is excluded from the placement candidate set, and the migration is a first-class, fully-audited operation. |
-| `SOV-005` | Certification validity periods are tracked; a certification expiring within P30D warns the provider and affected Tenants, and an expired certification triggers SOV-003 re-evaluation. |
+A Storage Provider declares its sovereignty like any other provider — the `sovereignty_declaration`
+structure and the provider-sovereignty policies (`SOV-001..005`) are owned by
+[provider-contract.md](provider-contract.md) §2a (A4 landed 2026-07-23: registration obligations live
+on the registration contract). The gist: every registration carries a sovereignty declaration;
+declared-sovereignty changes are discovered drift triggering re-evaluation; violations apply the
+declared action, with auto-migration via provider-portable rehydration; expiring certifications warn
+at P30D.
 
 Storage-specific: a store holding state in a jurisdiction that falls out of compliance is a **data-at-rest**
 sovereignty incident. SOV-002/003/004 state the *policy*; *how* a realization executes the response (pause,
