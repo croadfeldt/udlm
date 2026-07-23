@@ -19,7 +19,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`foundations.md`** — the three abstractions (Data · Provider · Policy). *Owns:* the abstraction triad.
 - **`data-model-core.md`** — *normative* core. *Owns:* the `lifecycle_state` five-value enum, the drift-severity enum, the `kind`+`relation` relationship model (§4), and the `[D1]–[D7]` core rules — including that operational/health are `status.conditions` and Process run dynamics are `execution_state`.
 - **`four-states.md`** — the canonical definitions of Intent / Requested / Realized / Discovered and their immutability. *Owns:* the four-state semantics (the enum values themselves are in data-model-core §3).
-- **`entity-types.md`** — the entity families (Resource, Process) and the Atomic/Composite shape (`entity_type`), and their data models. *Owns:* the entity-type taxonomy, `ENT-*` entity-type invariants.
+- **`entity-types.md`** — the entity families (Resource, Process) and the derived Atomic/Composite shape (`has_constituents`), and their data models. *Owns:* the entity-type taxonomy, `ENT-*` entity-type invariants.
 - **`entity-type-families.md`** — the logical family grouping (Resource family, Knowledge family). *Owns:* family membership.
 - **`ownership-sharing-allocation.md`** — the ownership model. *Owns:* the `ownership_model` vocabulary (`whole_allocation | allocation | shareable`) and allocation semantics.
 - **`layering-and-versioning.md`** — data layers and the assembly process. *Owns:* the layer model and the artifact status lifecycle (`active → deprecated → retired`) + transition rules.
