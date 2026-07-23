@@ -259,6 +259,39 @@ This separation of concerns is what makes a realization technology-agnostic whil
 
 *The wire protocol that carries data across this boundary — how a provider transforms unified data into its own tool-specific format and back (naturalization / denaturalization) — is the provider INTERFACE. See [Provider Contract](../contracts/provider-contract.md) and the DCM architecture documentation.*
 
+### 7.1 The substrate never translates into a provider's native spec — and why
+
+**A realization carries only generic intent, typed data, and denaturalized realized results. It never
+translates intent into — or stores — a provider's native/vendor spec.** The provider does that at its edge
+(naturalize in, denaturalize out — DCM ADR-023); the native form never enters the substrate. Two reasons,
+and they compound:
+
+1. **Peer portability.** A native spec in the substrate breaks wire-compatibility — a peer that realizes the
+   *same* intent with a *different* tool could no longer read the data. Keeping the substrate generic is what
+   lets any conformant realization or provider participate (ADR-008; core tenet T1).
+2. **Ramification ownership.** The substrate cannot translate intent into a third-party spec **and** fully
+   understand that translation's *current and continuing* ramifications — the side effects, the ongoing
+   lifecycle behavior, how it drifts as the provider's platform evolves. **Only the provider knows its own
+   native spec** to that depth. So the substrate must not own a translation it cannot reason about; it would
+   be asserting authority over behavior it does not, and cannot, fully see.
+
+**The corollary — this is UDLM's actual job.** Because the substrate does *not* translate, its contribution
+is to be a **consistent, unambiguous, well-documented** expression of intent and realized state, so the
+provider has the **context it needs** to translate correctly and safely into its native form. This is why the
+model's discipline is not housekeeping: **one home per rule, settled vocabulary, no duplicated data, written
+for engineers** — each is what makes the substrate a reliable, legible source of context that every provider
+naturalizes *from*. A vague or drifting substrate hands providers ambiguous intent; a rigorous one hands them
+ground truth.
+
+**Caveat — carrying provider-specific data is not translating it.** Declining to *translate* is not the same as
+declining to *carry* provider-specific data. The substrate holds such data as a **Provider Class element** — a
+provider-authored `SharedDataElement` scoped to that provider (ADR-038): the provider owns its definition, and
+UDLM **custodies** it like any other state (identity, provenance, versioning, tenancy) and passes it to the
+provider to apply. What UDLM never does is render it into a native spec — naturalization stays at the provider
+edge (ADR-023). Because provider-scoped data does not carry to another provider, an entity that depends on it is
+flagged as portability-degraded and the consumer is notified. So: **carry provider-specific data = allowed**
+(custody; the provider owns the definition); **translate or render a native spec = forbidden** (above).
+
 ---
 
 ## 8. Resolved Questions

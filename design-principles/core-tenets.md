@@ -29,7 +29,10 @@ non-conformant. The tenets below define each side of that boundary.
 UDLM's role is to **maintain data through its lifecycle** — the four states (Intent → Requested →
 Realized → Discovered), with identity, versioning, relationships, provenance, audit, and sovereignty.
 It **holds, moves, references, versions, and audits** data; it **does not compute, derive, enrich, or
-transform** it. A spec carries values and *declarative* constraints — never executable behavior.
+transform** it. A spec carries values and *declarative* constraints — never executable behavior. Nor does
+the substrate **translate intent into a provider's native spec** — that is the provider's naturalization
+boundary, kept out of the substrate for peer portability *and* because only the provider can own the
+translation's ramifications (`foundations/context-and-purpose.md` §7.1; DCM ADR-023).
 
 ## T2 — Transformation and enrichment are Policy
 All logic that **derives, computes, modifies, or enriches** data is the **Policy** abstraction's
