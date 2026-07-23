@@ -15,11 +15,15 @@ realized-entity.schema.json) and scanning fenced code blocks in the docs for:
                              and the edge field `kind:` (retired for edges → `edge_type`, ADR-026)
   2. INVALID `edge_type:` values — any `edge_type:` whose value is not in the schema enum
 
-It only looks INSIDE ``` fences (where a field name is a data claim, not prose), so prose that
-discusses "the nature of a relationship" is never flagged. The retired-`kind` check is
+Field checks look INSIDE ``` fences (where a field name is a data claim, not prose), so prose
+that discusses "the nature of a relationship" is never flagged. The retired-`kind` check is
 value-scoped (only edge values depends_on|contained_by|binds_to|references) so the separate
-provenance `source.kind` is never flagged. Extend RETIRED_FIELDS as the model consolidates.
-Wired into .github/workflows/validate.yml alongside the other guards.
+provenance `source.kind` is never flagged. A narrow PROSE scan (added with the P3 sweep,
+2026-07-23) additionally flags unambiguous retired snake_case tokens in running text — the
+`kind`→`edge_type` prose escape was the type specimen (repo-cleanliness Q2); common words like
+`kind` stay fence-only, identifiers like `dependency_type` cannot false-positive in prose.
+Extend RETIRED_FIELDS as the model consolidates. Wired into .github/workflows/validate.yml
+alongside the other guards.
 """
 import json
 import os
@@ -41,7 +45,22 @@ RETIRED_FIELDS = [
     # edge-field `kind:` is retired → `edge_type` (ADR-026). Value-scoped so source.kind is safe.
     (re.compile(_P + r"kinds?\s*:\s*[\[<]?\s*" + _EDGE),
                                                     "the edge field `kind` is retired — use `edge_type` (ADR-026)"),
+    (re.compile(_P + r"dependency_type\s*:"),       "use `strength` (hard|soft); `conditional` is a construction "
+                                                    "predicate, not a strength (service-dependencies.md §4)"),
+    # Stored shape is retired: Atomic/Composite is derived (`has_constituents`), not an `entity_type`
+    # field (ADR-027 addendum, 2026-07-20). Value-scoped so unrelated *_entity_type fields are safe.
+    (re.compile(_P + r"entity_type\s*:\s*(<?\s*)?(Atomic|Composite)\b"),
+                                                    "the shape is derived (`has_constituents`) — not a stored "
+                                                    "`entity_type` field (ADR-027 addendum)"),
 ]
+
+# Prose scan (outside fences): these snake_case tokens are unambiguous even in running text —
+# a mention means the doc still explains the model in retired vocabulary. Lines that say
+# "retired" are skipped (tombstones and retirement notes legitimately name the old field),
+# and ADRs are excluded wholesale (historical records narrate the vocabulary they retired).
+PROSE_RETIRED = re.compile(r"\b(relationship_types?|relationship_nature|dependency_type)\b")
+PROSE_SKIP = re.compile(r"retired", re.IGNORECASE)
+PROSE_EXCLUDE_PREFIX = ("docs/adr/",)
 EDGE_TYPE_LINE = re.compile(r"^\s*(?:-\s*)?edge_type\s*:\s*(.+?)\s*(?:#.*)?$")
 FENCE = re.compile(r"^\s*```")
 
@@ -95,6 +114,13 @@ def main() -> int:
                         in_fence = not in_fence
                         continue
                     if not in_fence:
+                        if (not path.startswith(PROSE_EXCLUDE_PREFIX)
+                                and PROSE_RETIRED.search(line)
+                                and not PROSE_SKIP.search(line)):
+                            m = PROSE_RETIRED.search(line)
+                            hits.append((path, lineno,
+                                         f"retired field `{m.group(1)}` in prose — the doc still "
+                                         "explains the model in retired vocabulary", line.strip()))
                         continue
                     for rx, hint in RETIRED_FIELDS:
                         if rx.match(line):

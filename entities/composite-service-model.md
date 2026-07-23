@@ -211,7 +211,7 @@ A Composite Service request produces a Composite Entity that exists across all f
 Intent records the consumer's declared intent without expansion. The Composite Entity Intent record contains the catalog reference and the consumer-supplied parameters; constituents are not yet enumerated.
 
 ```yaml
-entity_type: Composite
+# shape: Composite — derived (has_constituents, via the catalog definition's constituents)
 catalog_ref: ApplicationStack.WebApp/v2
 parameters:
   size: medium
@@ -224,7 +224,7 @@ parameters:
 Requested expands the intent: DCM applies the Composite Service definition, runs the layer assembly to inject defaults and standards, applies all policies, resolves `external` placements, and produces the full constituent block.
 
 ```yaml
-entity_type: Composite
+# shape: Composite — derived (has_constituents, from constituents[] below)
 entity_uuid: <composite_uuid>
 parent_composite_uuid: null
 catalog_ref: ApplicationStack.WebApp/v2
