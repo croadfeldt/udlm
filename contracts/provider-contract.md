@@ -651,7 +651,7 @@ information_provider_capabilities:
 
 > **Full specification:** See [Composite Service Composition Model](../entities/composite-service-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (CMP-001–CMP-008).
 
-**Capability declaration extension (summary — full schema in doc 30):**
+**Capability declaration extension (summary — full schema in [composite-service-model.md](../entities/composite-service-model.md)):**
 ```yaml
 composite_service_capabilities:
   constituent_provider_types: [service_provider, information_provider]

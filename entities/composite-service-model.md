@@ -148,7 +148,7 @@ These classifications are evaluated by DCM, not by the registering provider, whe
 ### 2.4a Compensation Declaration (the one home)
 
 Each constituent also declares its compensation behavior. This is the **single normative home** for the
-declaration shape (previously duplicated in `service-dependencies.md` §8 and `operational-models.md` §6.1 —
+declaration shape (previously duplicated in `service-dependencies.md` — now its §14 reference stub — and `operational-models.md` §6.1 —
 both now reference here); the runtime execution and failure handling live in `lifecycle/operational-models.md`
 §6, governed by Recovery Policy (CMP-005).
 
@@ -245,7 +245,7 @@ constituents:
 
 Constituent UUIDs are generated according to §5.1 (composition visibility).
 
-The Requested state is fully assembled before any constituent dispatch occurs. Constituent payloads do not contain references to dependencies' realized state — those are filled in at dispatch time via binding fields (see doc 38, request dependency graph).
+The Requested state is fully assembled before any constituent dispatch occurs. Constituent payloads do not contain references to dependencies' realized state — those are filled in at dispatch time via binding fields (see [request-dependency-graph.md](../lifecycle/request-dependency-graph.md)).
 
 ### 3.3 Realized State
 
@@ -337,7 +337,7 @@ For each constituent in dependency-forward order:
 
 1. Resolve the constituent's provider:
    - `self` constituents: dispatched to the registering provider as it stands at rehydration time
-   - `external` constituents: re-resolved via placement using the rehydration policy (faithful, provider-portable, historical-exact, or historical-portable; see doc 17)
+   - `external` constituents: re-resolved via placement using the rehydration policy (faithful, provider-portable, historical-exact, or historical-portable; see [four-states.md](../foundations/four-states.md))
 2. Send the standard rehydration payload to the resolved provider
 3. Record the resulting realized state
 

@@ -206,7 +206,7 @@ The `action` field uses a closed vocabulary. Free-text actions are invalid and r
 | `RETIRE` | All | Artifact retired |
 | `MEMBER_ADD` | Groups | Member added to group |
 | `MEMBER_REMOVE` | Groups | Member removed from group (actual removal only) |
-| `MEMBERSHIP_EXPIRE` | Groups | Time-bounded membership expired (universal-groups §9.4) — distinct from removal; the `remove` on_expiry action additionally emits MEMBER_REMOVE |
+| `MEMBERSHIP_EXPIRE` | Groups | Time-bounded membership expired (universal-groups §9a.4) — distinct from removal; the `remove` on_expiry action additionally emits MEMBER_REMOVE |
 | `RELATIONSHIP_CREATE` | Entities | Relationship established |
 | `RELATIONSHIP_RELEASE` | Entities | Relationship released |
 | `AUTHORIZE` | Cross-tenant, actors | Authorization granted |
@@ -680,11 +680,11 @@ These are different questions requiring different storage architectures.
 
 ## 13. Related Concepts
 
-- **Audit, Provenance, and Observability** (doc 12) — three distinct concerns; this document covers the audit concern in full
+- **[audit-provenance-observability.md](audit-provenance-observability.md)** — three distinct concerns; this document covers the audit concern in full
 - **Field-Level Provenance** — data lineage embedded in every payload; separate from audit records
-- **data stores** (doc 11) — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
-- **Universal Groups** (doc 15) — all group changes produce audit records per this model
-- **Policy Organization** (doc 14) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
+- **[data-store-contracts.md](../contracts/data-store-contracts.md)** — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
+- **[universal-groups.md](universal-groups.md)** — all group changes produce audit records per this model
+- **Policy Organization** (now the policy-contract / policy-groups model) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
 
 ---
 

@@ -585,7 +585,7 @@ composite_service_registration:
 
 ---
 
-## 8. Composite Service Compensation (reference)
+## 14. Composite Service Compensation (reference)
 
 Compensation is declared per constituent as part of the composite definition — not discovered at runtime.
 The declaration shape (`required_for_delivery: required|partial|optional`, `compensation_on_failure`,
@@ -594,7 +594,7 @@ The declaration shape (`required_for_delivery: required|partial|optional`, `comp
 order, highest `compensation_order` first, governed by Recovery Policy (CMP-005). Runtime execution and
 compensation-failure handling: [operational-models](../lifecycle/operational-models.md) §6.
 
-### 8.1 Retired rules
+### 14.1 Retired rules
 
 | Policy | Rule |
 |--------|------|

@@ -154,10 +154,10 @@ resource_entity:
   drift_status: <clean|drifted|unknown>
   last_drift_severity: <minor|significant|critical|null>
 
-  # Relationships (see doc 09)
+  # Relationships (see entities/entity-relationships.md)
   relationships: [...]
 
-  # Field-level provenance on all data fields (see doc 00, Section 4)
+  # Field-level provenance on all data fields (see foundations.md §4)
   # [all resource-type-specific fields carry provenance metadata]
 ```
 
