@@ -18,7 +18,7 @@ this glossary states the **single sense UDLM means**.
 | **leap-second smear** ("smear") | A clock strategy for absorbing leap seconds gradually rather than as a 1-second step; a conformance-declared time behavior (CONFORMANCE.md time section). |
 | **concern_type** | A Policy Group artifact classifier (e.g., `data_authorization_boundary`) naming which governance concern a policy matrix addresses. |
 | **DCM** | Data Center Manager — the example realization of the **Resource** (infrastructure) family. **Non-normative** with respect to this spec: UDLM is realization-neutral; DCM is the primary driver but is not required to define, validate, or use UDLM. |
-| **DAV** | An open-source architecture-assessment tool, cited in this spec **only as a non-normative example realization** of the **Knowledge** family (the peer demonstration to DCM's Resource family — see `docs/case-study-dav-knowledge-realization.md`). **Nothing in UDLM's definition, validation, or use depends on DAV.** It is illustrative, included to show UDLM holds outside infrastructure. |
+| **DAV** | An open-source architecture-assessment tool, cited in this spec **only as a non-normative example realization** of the **Knowledge** family (the peer demonstration to DCM's Resource family — see `docs/examples/case-study-dav-knowledge-realization.md`). **Nothing in UDLM's definition, validation, or use depends on DAV.** It is illustrative, included to show UDLM holds outside infrastructure. |
 
 > **Realization-neutrality (normative):** UDLM is defined, validated, and used independently
 > of any realization. Where DCM or DAV are named, they are **examples**, never requirements.

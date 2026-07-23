@@ -4,7 +4,7 @@
 **Related:** [design-principles/adopted-standards.md](../design-principles/adopted-standards.md) (the
 absorb/adopt disposition) · [reference/standards-catalog.md](../reference/standards-catalog.md) (the
 authoritative standards list) · [registry/resource-type-spec.schema.json](resource-type-spec.schema.json)
-(`spec`/`outputs`/`relationships` shape) · [docs/osac-better-together.md](../docs/osac-better-together.md)
+(`spec`/`outputs`/`relationships` shape) · [../docs/research/osac-better-together.md](../docs/research/osac-better-together.md)
 
 ## 1. Purpose
 
@@ -45,7 +45,7 @@ is `{ id, metadata, spec, status }` with `status.conditions[]` (Kubernetes-style
 `IMMUTABLE/REQUIRED` field-behavior, and an `owner-reference` annotation = `contained_by`. This lines up
 1:1 with UDLM Intent/Requested/Realized/Discovered and the `resource-type-spec.schema.json`
 `spec`/`outputs`/`relationships` model. **Recommendation: adopt the OSAC envelope + field-behavior
-vocabulary as the cross-cutting convention** (see [osac-better-together.md](../docs/osac-better-together.md)),
+vocabulary as the cross-cutting convention** (see [../docs/research/osac-better-together.md](../docs/research/osac-better-together.md)),
 and take OSAC **VirtualMachine** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly verbatim.
 
 ## 4. Per-type sources & disposition

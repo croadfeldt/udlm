@@ -31,7 +31,7 @@ settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at 
 
 ### Cutting the spec `0.1 → 1.0` — the mechanical procedure
 
-The 1.0 exit criteria are enumerated in [`UDLM-1.0-SCOPE.md`](UDLM-1.0-SCOPE.md). Once they are met,
+The 1.0 exit criteria are enumerated in [`UDLM-0.1-SCOPE.md`](UDLM-0.1-SCOPE.md). Once they are met,
 declaring 1.0 is a **repo-wide, mechanical re-stamp** — not a redesign:
 
 1. **Re-stamp `conforms_to`** on every type spec, schema, and instance: `udlm/0.1 → udlm/1.0`.

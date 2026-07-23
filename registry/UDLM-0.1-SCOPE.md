@@ -1,27 +1,27 @@
-# UDLM 1.0 — Scope, Use-Case Coverage, and Exit Criteria
+# UDLM 0.1 — Scope, Use-Case Coverage, and Exit Criteria
 
-**Document Status:** ✅ Normative — the committed definition of the 1.0 release surface.
-**What this settles:** what UDLM 1.0 *is* for the September release — the data/contract surface that
+**Document Status:** ✅ Normative — the committed definition of the 0.1 release surface.
+**What this settles:** what UDLM 0.1 *is* for the September release — the data/contract surface that
 enables the 21 release use cases, what is deliberately **deferred**, the **exit criteria** that gate
-the `0.1 → 1.0` tag, and the **profile posture** (implement against dev/eval; architect for
+the `0.1 → 0.1` tag, and the **profile posture** (implement against dev/eval; architect for
 sovereign/fsi). It turns the scattered `P1–P7` gap references into one checkable definition.
 
 UDLM is the **data / contract / type** layer. DCM is the orchestration/runtime. The boundary rule
 (DCM ADR-008): *"could a peer implement this differently and still be valid? Yes → DCM; No → UDLM."*
 Many use-case success criteria are satisfied by **DCM runtime** behavior over a UDLM shape — those are
-called out below and are **not** 1.0 spec gaps.
+called out below and are **not** 0.1 spec gaps.
 
 ---
 
 ## 1. The two completeness bars
 
 - **Bar A — enable the 21 release use cases (data/contract layer).** Reached. After #69/#70/#71 and
-  the 1.0-definition changes, exactly the concrete gaps below remained, and both are now closed:
+  the 0.1-definition changes, exactly the concrete gaps below remained, and both are now closed:
   **tenant quota (P7)** and **override on the machine-validatable surface (P6)**. Everything else is
   covered or is DCM-runtime by the ADR-008 boundary.
-- **Bar B — declare "UDLM 1.0" (ratified, backward-compat-committed).** A larger, mostly non-code bar:
+- **Bar B — declare "UDLM 0.1" (ratified, backward-compat-committed).** A larger, mostly non-code bar:
   ratify the decisions, finish the load-bearing draft contracts, ship an executable conformance suite,
-  and re-stamp `0.1 → 1.0`. Tracked in §5 (exit criteria) and §6 (deferred).
+  and re-stamp `0.1 → 0.1`. Tracked in §5 (exit criteria) and §6 (deferred).
 
 ## 2. Profile posture — implement dev/eval, architect for sovereign/fsi
 
@@ -87,14 +87,14 @@ by the merged spec (ADR-010 / §8.1a / realized-entity) or are DCM-runtime by th
 | P6 | Policy override (validatable surface) | ✅ `override` policy_type + allOf (this release) |
 | P7 | Tenant quota (consumption) | ✅ `dcm-group` `quota` block + `quota.*` match sources (this release) |
 
-## 5. Exit criteria to tag `udlm/1.0`
+## 5. Exit criteria to tag `udlm/0.1`
 
-The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "Cutting the spec 0.1→1.0"):
+The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "Cutting the spec 0.1→0.1"):
 
 1. **Ratify the decisions.** All `docs/adr/` records (now **ADR-001–016** — the 2026-07-15 session added
    012 data-references, 013 hardware-component-scope, 014 optionality-with-conformity, 015
    settings-and-config-bundles, 016 resource-type-role) and the `registry/instances/adr-*.json`
-   DecisionRecords are `Proposed`; 1.0 commits to backward-compat and cannot ship on unratified decisions.
+   DecisionRecords are `Proposed`; 0.1 commits to backward-compat and cannot ship on unratified decisions.
    **Ready to ratify** (settled, exercised by the 21 UCs): ADR-005–011 and the provider/boundary
    DecisionRecords (PROV-001/002/003, RBAC-001, udlm-dcm-boundary, resource-type-extension). The
    2026-07-15 additions (013–016) ratify once their PRs merge (#88 / #95 / #97). Review-then-accept is
@@ -104,15 +104,15 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
    drafts (`error-model`, `time-and-clock`, `retry-semantics`, `rate-limit-and-backpressure`) are
    triaged in §6.
 3. **Executable conformance suite.** `VERSIONING.md` makes "the `CONFORMANCE.md` suite passes" the
-   literal 1.0 gate; today CI runs only the registry validators. Building the §6 wire-conformance
-   runner is **deferred** (§6) — until it exists, 1.0 cannot honestly claim the conformance bar.
-4. **`0.1 → 1.0` re-stamp** — the mechanical procedure in `VERSIONING.md`; runs last, once 1–3 pass.
+   literal 0.1 gate; today CI runs only the registry validators. Building the §6 wire-conformance
+   runner is **deferred** (§6) — until it exists, 0.1 cannot honestly claim the conformance bar.
+4. **`0.1 → 0.1` re-stamp** — the mechanical procedure in `VERSIONING.md`; runs last, once 1–3 pass.
 
-## 6. Explicitly deferred (out of 1.0 scope, tracked)
+## 6. Explicitly deferred (out of 0.1 scope, tracked)
 
 - **Executable conformance test runner** — large; overlaps DCM/test-infra. `CONFORMANCE.md` is Draft
   and `tests/test-framework-specification.md` specifies but does not implement it. Highest-value
-  post-scope item; gates the honest 1.0 claim.
+  post-scope item; gates the honest 0.1 claim.
 - **Draft contracts not load-bearing for the 21 UCs** — `error-model`, `time-and-clock`,
   `retry-semantics`, `rate-limit-and-backpressure`: finish or mark stable-by-reference before tag.
 - **Per-type `stability` field** — coarse maturity signal while the spec is `0.x`; deferred candidate
@@ -123,7 +123,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
   (checked: `bmc`/`software.service` promoted to `portable`, `bios-profile` stays `partial` — its
   attributes are an opaque vendor passthrough). The `Credential.*` resource types (`credentials.md §2`) are
   **deferred by design, not a gap** — credential values never enter UDLM, so the reference model
-  (`Security.CredentialRef` + `credential_record`) covers 1.0 the way Kubernetes covers it (one `Secret` +
+  (`Security.CredentialRef` + `credential_record`) covers 0.1 the way Kubernetes covers it (one `Secret` +
   a `type` discriminator). A future *requestable-credential* UC would split by **lifecycle** (Secret /
   Certificate / Key — the Key Vault / cert-manager pattern), never one type per `credential_type`.
 - **Final resource-type quality sweep** (planned, once the type set stabilizes) — a human review pass over
@@ -134,7 +134,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 - **How-to guides + worked examples** (planned, *after* the data is polished) — consumer/operator how-tos
   and per-type examples (`docs/`, `registry/examples/`), authored once the type set is stable.
 
-## 7. The 1.0 surface (inventory)
+## 7. The 0.1 surface (inventory)
 
 **~34 resource types** (post-2026-07-15: ADR-013 removes the 5 hardware-*component* types —
 memory-module / processor / storage-device / graphics-processor / power-supply, #88 — keeping
@@ -146,4 +146,4 @@ Plus the 2026-07-15 **recurrence-prevention layer**: SPEC-DESIGN **§33** (singl
 (resource-type role, ADR-016), the guards `tests/check_single_source.py` · `check_profile_tables.py` ·
 `check_standards_registered.py`, and the indices `docs/file-index.md` · `registry/profile-settings-index.md`.
 
-`conforms_to: udlm/0.1` on every type + schema today; the tag re-stamps to `udlm/1.0` (§5.4).
+`conforms_to: udlm/0.1` on every type + schema today; the tag re-stamps to `udlm/0.1` (§5.4).
