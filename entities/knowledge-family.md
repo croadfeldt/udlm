@@ -14,7 +14,7 @@ realization (a non-normative example; UDLM depends on no realization — see `GL
 > classification, scope), never to these definitions.
 >
 > **Realization:** `dav/docs/capability-catalog-design.md`. Case study:
-> [`../docs/case-study-dav-knowledge-realization.md`](../docs/case-study-dav-knowledge-realization.md).
+> [`../docs/examples/case-study-dav-knowledge-realization.md`](../docs/examples/case-study-dav-knowledge-realization.md).
 
 ---
 

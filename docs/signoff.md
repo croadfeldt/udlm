@@ -38,7 +38,7 @@ The recurring review findings, distilled. A good PR self-checks these in its *Wh
 - **Adopt by reference (T5).** Don't re-express a concept a credible external standard already solves.
 - **Adopt tools by reference (T8).** Where a mature tool owns the mechanism, wrap it as a Provider — don't reimplement.
 - **Data point earns its keep.** Every stored field has a real consumer *or* is a derived predicate — no
-  duplicated functionality (the data twin of T7; see `docs/data-point-necessity-audit.md`).
+  duplicated functionality (the data twin of T7; see `internal/data-point-necessity-audit.md`).
 - **Written for engineers** (`docs/writing-for-humans.md`). Audience is engineering teams. **Strip internal
   working-context — session/working-set labels, private ticket numbers, colleague names, internal tool
   artifacts.** Every reference carries its gist in one line. Concise; no duplication.

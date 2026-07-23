@@ -1,16 +1,16 @@
-# UDLM 1.0 — Engineering Handoff
+# UDLM 0.1 — Engineering Handoff
 
 **Status:** Handoff (orientation, non-normative) — points at the normative surface, does not restate it.
-**Audience:** the engineering team implementing UDLM 1.0 (the September release).
-**What this settles:** where to start, the model you must hold in your head, where the authoritative truth lives, and how to check your work. Scope, use-case coverage, and exit criteria are settled separately in [`registry/UDLM-1.0-SCOPE.md`](../registry/UDLM-1.0-SCOPE.md) — read that for *what's in*; read this for *how to get oriented*.
+**Audience:** the engineering team implementing UDLM 0.1 (the September release).
+**What this settles:** where to start, the model you must hold in your head, where the authoritative truth lives, and how to check your work. Scope, use-case coverage, and exit criteria are settled separately in [`../registry/UDLM-0.1-SCOPE.md`](../registry/UDLM-0.1-SCOPE.md) — read that for *what's in*; read this for *how to get oriented*.
 
 ---
 
 ## 1. What you're building
 
-UDLM is the **data / contract / type** layer — the wire-compatible substrate. It is **not** the orchestrator; the runtime that consumes it is DCM. The boundary is one test (ADR-008): *"could a peer implement this differently and still be valid? Yes → it's DCM (runtime/policy); No → it's UDLM (data/contract)."* Every ambiguity resolves with that question. UDLM 1.0 is the substrate that **enables the 21 release use cases** (`UDLM-1.0-SCOPE.md` §3); DCM satisfies many success criteria at runtime over a UDLM shape — those are not 1.0 spec work.
+UDLM is the **data / contract / type** layer — the wire-compatible substrate. It is **not** the orchestrator; the runtime that consumes it is DCM. The boundary is one test (ADR-008): *"could a peer implement this differently and still be valid? Yes → it's DCM (runtime/policy); No → it's UDLM (data/contract)."* Every ambiguity resolves with that question. UDLM 0.1 is the substrate that **enables the 21 release use cases** (`../registry/UDLM-0.1-SCOPE.md` §3); DCM satisfies many success criteria at runtime over a UDLM shape — those are not 0.1 spec work.
 
-**Implement against the `dev` profile.** The architecture and wire contracts are identical across the five profiles; only the required *floor* differs (`registry/instances/profile-*.yaml`). September builds and validates the 21 UCs against **dev**; the `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`UDLM-1.0-SCOPE.md` §2).
+**Implement against the `dev` profile.** The architecture and wire contracts are identical across the five profiles; only the required *floor* differs (`registry/instances/profile-*.yaml`). September builds and validates the 21 UCs against **dev**; the `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`../registry/UDLM-0.1-SCOPE.md` §2).
 
 **Valid-by-construction.** Everything is a typed record that validates against a JSON Schema. If it doesn't validate, it isn't UDLM. The validators are the definition of done (§5).
 
@@ -51,9 +51,9 @@ Hold these seven concepts and the rest follows:
 
 ## 4. Scope, deferral, conformance
 
-- **In scope / deferred / exit criteria:** [`registry/UDLM-1.0-SCOPE.md`](../registry/UDLM-1.0-SCOPE.md) — the normative definition. Deferred to post-1.0 (its §6): operational rehydration, `topology_capability`-as-reference, JIT credentials (§ TODOs), and other explicitly-listed items.
-- **Ratification status:** [`docs/udlm-1.0-ratification-readiness.md`](udlm-1.0-ratification-readiness.md) — which ADRs are ready to ratify for the `0.1 → 1.0` tag.
-- **Conformance bar:** [`docs/udlm-1.0-conformance-suite-plan.md`](udlm-1.0-conformance-suite-plan.md) and [`CONFORMANCE.md`](../CONFORMANCE.md) — what an implementation must pass to claim UDLM 1.0.
+- **In scope / deferred / exit criteria:** [`../registry/UDLM-0.1-SCOPE.md`](../registry/UDLM-0.1-SCOPE.md) — the normative definition. Deferred to post-1.0 (its §6): operational rehydration, `topology_capability`-as-reference, JIT credentials (§ TODOs), and other explicitly-listed items.
+- **Ratification status:** [`internal/udlm-0.1-ratification-readiness.md`](internal/udlm-0.1-ratification-readiness.md) — which ADRs are ready to ratify for the `0.1 → 1.0` tag.
+- **Conformance bar:** [`internal/udlm-0.1-conformance-suite-plan.md`](internal/udlm-0.1-conformance-suite-plan.md) and [`CONFORMANCE.md`](../CONFORMANCE.md) — what an implementation must pass to claim UDLM 0.1.
 
 ## 5. How to check your work (definition of done)
 
@@ -74,7 +74,7 @@ python3 tests/check_estate_tokens.py       # no private/estate tokens leaked int
 
 1. This document, then [`README.md`](../README.md) and [`GLOSSARY.md`](../GLOSSARY.md).
 2. `foundations/four-states.md` → `foundations/data-model-core.md` → `foundations/layering-and-versioning.md`.
-3. `registry/UDLM-1.0-SCOPE.md` (what 1.0 is) → `docs/adr/` for the *why* of whatever you're touching.
+3. `../registry/UDLM-0.1-SCOPE.md` (what 0.1 is) → `docs/adr/` for the *why* of whatever you're touching.
 4. The schema + contract for your area (§3), then write records and run the gates (§5).
 
 The substrate is realization-neutral: implement to the schemas and contracts, not to DCM. If a decision feels like runtime behavior, apply the ADR-008 test — it probably belongs to DCM, not here.

@@ -12,7 +12,7 @@
 >
 > **Related:** [Entity Types](entity-types.md) | [Four States](four-states.md) |
 > [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) |
-> Case study: [`../docs/case-study-dav-knowledge-realization.md`](../docs/case-study-dav-knowledge-realization.md)
+> Case study: [`../docs/examples/case-study-dav-knowledge-realization.md`](../docs/examples/case-study-dav-knowledge-realization.md)
 
 ---
 
@@ -102,7 +102,7 @@ grouped). The **Knowledge** family is the first proof that the same substrate or
 domain UDLM did not originally anticipate. A family may be referred to by its domain name
 (Resource, Knowledge) or by its anchoring realization ("the DCM family", "the DAV family")
 — they denote the same grouping. Future domains (People/Process, Enablement — see
-`dav/docs/holistic-vision.md`) would be organized as additional families, their
+`../docs/research/holistic-vision.md`) would be organized as additional families, their
 definitions equally universal.
 
 ## 5. What a family definition document specifies
