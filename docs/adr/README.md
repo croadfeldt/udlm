@@ -10,19 +10,37 @@ control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
 
 | Ref | Topic (as cited in UDLM) |
 |---|---|
-| DCM ADR-012 | (control-plane; cited by UDLM docs) |
+| DCM ADR-012 | How organizational data merges with consumer requests — the assembly engine behind UDLM's layer model |
 | DCM ADR-013 | Override model (control-plane side of policy override) |
 | DCM ADR-014 | Layer/authority seam |
 | DCM ADR-016 / 017 / 018 | Discovery/inventory control-plane decisions |
 | DCM ADR-019 | Placement (the placement engine + algorithm) |
-| DCM ADR-020 | Placement-adjacent control-plane decision |
+| DCM ADR-020 | Migration & operational gating — the control-plane rules that gate a workload's migration/rehydration |
 | DCM ADR-022 | Trust model (DCM brokers trust, never custodies it) |
 | DCM ADR-023 | Scale-of-integration / denaturalization tiers |
 
-The local sequence below is UDLM's own — ADR-001…033 all have files here. The **DCM** ADR numbers
+The local sequence below is UDLM's own — ADR-001…042 all have files here. The **DCM** ADR numbers
 referenced above overlap these same integers, so a bare "ADR-014" is ambiguous between the local
 ADR-014 and DCM ADR-014. Always qualify a control-plane reference as `DCM ADR-0XX` (it resolves in the
 DCM repo `architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.
+
+**Instance-backed decision records (`ADR-<FAMILY>-NNN`).** A third namespace: decisions recorded as
+machine-validated `DecisionRecord` JSON in [`registry/instances/`](../../registry/instances/), not as files
+here. A reference like `ADR-PROV-004` resolves there. Current records:
+
+| Handle | Decision | State |
+|---|---|---|
+| [ADR-PROV-001](../../registry/instances/adr-provider-dispatch-role.json) | Data-role classification — a provider receives execution data only; the dispatch payload is filtered by role | PROPOSED |
+| [ADR-PROV-002](../../registry/instances/adr-provider-capabilities-categories.json) | Provider capabilities + capability categories — one unified declaration interface | PROPOSED |
+| [ADR-PROV-003](../../registry/instances/adr-provider-capability-admission.json) | Capability admission — platform-admin disposition over a provider's *declared* capabilities (default-deny) | PROPOSED |
+| [ADR-PROV-004](../../registry/instances/adr-resource-type-extension.json) | Resource-type extension model (`provider_extensions`) — additive, no-override, portability-degrading | **DEPRECATED** — superseded by ADR-038; interim carrier retiring per #202 |
+| [ADR-RBAC-001](../../registry/instances/adr-dcm-rbac-function-matrix.json) | DCM RBAC — default (no-IdP) admin groups/accounts/roles + governed change | PROPOSED |
+| [ADR-COST-001](../../registry/instances/adr-cost-metering-placement.json) | Metering/billing is *referenced* by UDLM, not modeled in it — cost decisions are admin policy | PROPOSED |
+| [ADR-COST-002](../../registry/instances/adr-cost-metering-linkage.json) | Cost/metering linkage hooks — a reciprocal contract; the engine computes, never decides | PROPOSED |
+| [ADR-AEP-001](../../registry/instances/adr-aep-alignment.json) | Adopt AEP — RFC 9457 error model + resource-oriented design + the Spectral linter | PROPOSED |
+| [ADR-UDLM-DCM-001](../../registry/instances/adr-udlm-dcm-boundary.json) | UDLM = data model, DCM = realization — runtime-architecture prose belongs in DCM (the instance record behind [ADR-008](ADR-008-udlm-dcm-boundary.md), which is authoritative) | PROPOSED |
+
+A `PROPOSED` record binds nothing (ADR-031); rules citing one carry the proposal, not a ratified mandate.
 
 **Required lens (every ADR / DecisionRecord).** Each decision MUST state its **Data · Policy · Provider**
 aspects — the three foundational abstractions (DCM ADR-002). *Data* = what's modeled/held (UDLM);
@@ -66,4 +84,11 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [032](ADR-032-post-one-zero-direction.md) | Post-1.0 direction — "pre-1.0, pay only to remove a future-contradiction, never to pre-build a feature"; the one contradiction to avoid is hardening Resource/Process into closed species; cards on the table are Proposed ADRs; records the convergence-model direction for future-us | Proposed |
 | [033](ADR-033-templates.md) | Templates — the orderable assembly, and Pattern → Template → System as the ADR-030 lifecycle (Intent → Requested → Realized) at assembly scale; Template ≈ TOSCA Service Template / OAM Application (chosen over the vendor-in-retreat "Blueprint"); Pattern = type-level intent in Knowledge (Antipattern's twin); processes bound not contained; Day-N a projection; composable infra is a Provider capability (ADR-004); on-ramp to LikeC4/C4/TOSCA. Post-1.0 direction | Proposed |
 | [034](ADR-034-composite-service-is-template.md) | Composite Service **is** a Template (proposed / eng-discussion) — one orderable-composite tier, not two names for one objective; Template adopts catalog-item.schema.json as its 1.0 grounding (Composite Service = resources-only Template); Composite Entity → System; CMP-* → TPL-*; finishes retiring the "composite" tag after ADR-027 single/multi. Binds nothing until ratified | Proposed |
+| [035](ADR-035-reference-vocabulary-portability.md) | Reference-vocabulary portability — a *referenced* vocabulary (`os_image`, `storage_class`, …) is portable via adopted identity + provider-advertised eligibility + validated membership; an application of ADR-037 (PVD) | Accepted |
+| [036](ADR-036-storage-selection-requirements.md) | Storage selection is **requirements-based** — a requirements descriptor, never a reference to a (Kubernetes-native) storage class; an application of ADR-037 (PVD) | Accepted |
+| [037](ADR-037-portable-value-discipline.md) | Portable-value discipline (PVD) — a selectable value is a **reference, codelist, or requirement**; never a free string or an inline re-expression of an adopted standard | Accepted |
+| [038](ADR-038-scoped-resource-type-classes.md) | Scoped resource-type Class hierarchy — **Base / Type / Provider Classes** of scoped `SharedDataElement`s; one meta-model unifying base fields, shared vocabularies, and provider extensions (subsumes `provider_extensions`, retirement #202); portability legible from the name; URL-native addressing coordinate (§10) | Accepted — downstream adoption pending eng alignment |
+| [039](ADR-039-vocabulary-ingest.md) | Vocabulary ingest — reference vocabularies populated as staged (`proposed → canonical`), cleaned, provenance-tracked **Data**; minimal-toil ingestion | Proposed |
+| [040](ADR-040-federation-resolution.md) | Federation resolution (**STUB**) — how rooted addresses resolve across peers / tenants / sovereignty borders; deferred, demand-driven, `peer` root first | Proposed (stub) |
+| [041](ADR-041-policy-information-firewall.md) | Policy as information firewall — boundary mediation: egress *release* + ingress *admission* control, structural (unresolved reference) vs value (resolved datum) inspection, resolver + reactive re-convergence, cross-domain guard for high-assurance zones | Proposed |
 | [042](ADR-042-standard-neutrality-and-portability-policy.md) | Enable, don't mandate — the **pattern** for opt-in standards governance without an approved-standards list: derive a *descriptive* property (from the standard's governing body), let policy evaluate it (ADR-041), let an org **profile** set the stance. UDLM describes; the org decides. The `neutrality` + portability-strictness (`off`/`warn`/`deny`) illustration is **consumer-gated — recorded, not built** until a UC asks (ADR-032). No new rule/primitive/store | Proposed |

@@ -35,7 +35,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`data-store-contracts.md`** — enforcement contracts for the four data domains + audit. *Owns:* the Realized/Audit store domain invariants.
 - **`storage-providers.md`** — the storage capability extension. *Owns:* store sub-profiles (GitOps/snapshot/event/search/audit) and `STO-*` — *not* provider types.
 - **`information-providers.md`** — the `serve_data` capability. *Owns:* information-provider registration.
-- **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules (distinct family from data-contracts `INF-*` — pending renumber).
+- **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules (`INF-*` is now solely the information-provider family — data-contracts' former `INF` family renumbered to `DSC-*`).
 - **`error-model.md`** — *Owns:* the error envelope (RFC 9457).
 - **`event-catalog.md`** — *Owns:* the event catalog and delivery semantics (the wire event shapes).
 - **`identifier-scheme.md`** — *Owns:* the UUID / handle / reference identity contract.
@@ -53,7 +53,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`design-priorities.md`** — ranked priorities + the profile and authority-tier *vocabularies*. *Owns:* `Priority 1–4`, `DPO-*`, the profile name vocabulary (nature of a profile defers to ADR-007).
 - **`cross-cutting-requirements.md`** — always-on obligations. *Owns:* `P0–P4`.
 - **`adopted-standards.md`** — how external standards enter (the *Adopt* disposition). *Owns:* the absorb/embed/adopt test + adoption constructs.
-- **`data-contracts.md`** — the data-contract principle + the four persistent domains. *Owns:* `INF-1–INF-7` (persistence).
+- **`data-contracts.md`** — the data-contract principle + the four persistent domains. *Owns:* `DSC-001–DSC-007` (persistence; the former data-contracts `INF-*` family, renumbered).
 
 ## `governance/`
 
@@ -103,7 +103,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 ## `docs/` and `docs/adr/`
 
-- **`docs/adr/`** — Architecture Decision Records. A ratified ADR is the authority for the decision it records; spec prose conforms to it, never contradicts it (e.g. ADR-007 owns "profiles are composed sets, not levels").
+- **`docs/adr/`** — Architecture Decision Records. A ratified ADR is the authority for the decision it records; spec prose conforms to it, never contradicts it (e.g. ADR-007 owns "profiles are composed sets, not levels"). Its README also indexes the **instance-backed `ADR-<FAMILY>-NNN` namespace** (`ADR-PROV/RBAC/COST/AEP-*`) — DecisionRecord JSON in `registry/instances/`, resolvable only through that index.
 - **`docs/`** — narrative/vision/design notes (non-normative unless they state otherwise).
 - **`docs/internal/`** — working notes (gitignored); not part of the published spec.
 
