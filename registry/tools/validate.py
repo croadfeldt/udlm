@@ -248,53 +248,20 @@ def _spec_field_paths(schema, prefix=""):
     return out
 
 
-def _type_spec_field_index():
-    """resource_type -> set(dot-path) of base spec fields a provider extension may NOT collide with."""
-    index = {}
-    for path in (ROOT / "resource-types").glob("*"):
-        if path.suffix not in (".json", ".yaml", ".yml"):
-            continue
-        doc = load(path)
-        index[doc["resource_type"]] = _spec_field_paths(doc.get("spec") or {})
-    return index
-
-
-def _data_paths(obj, prefix=""):
-    out = set()
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            p = f"{prefix}{k}"
-            out.add(p)
-            out |= _data_paths(v, p + ".")
-    return out
+_UUID_V4_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
 
 
 def check_provider_extensions(doc):
-    """ADR-PROV-004: provider_extensions are strictly ADDITIVE and honest about portability.
-      (a) NO-OVERRIDE — no extension element path may collide with a base spec field path.
-      (b) NO SILENT NON-PORTABILITY — an entity carrying extensions MUST declare degraded
-          portability (portability_breaking:true) and record consumer notification."""
-    errors = []
-    exts = doc.get("provider_extensions") or {}
-    if not exts:
-        return errors
-    base = _type_spec_field_index().get(doc.get("resource_type"), set())
-    for handle, elements in exts.items():
-        for p in _data_paths(elements):
-            if p in base:
-                errors.append(f"provider_extensions[{handle}].{p} collides with base spec field "
-                              f"'{p}' — extensions are additive-only, never override the base (ADR-PROV-004)")
-    port = doc.get("portability") or {}
-    if not port.get("portability_breaking"):
-        errors.append("carries provider_extensions but portability.portability_breaking is not true "
-                      "— extensions degrade portability and MUST be declared (ADR-PROV-004)")
-    if not port.get("consumer_notified"):
-        errors.append("carries provider_extensions but portability.consumer_notified is absent — "
-                      "silent non-portability is prohibited; the consumer MUST be notified (ADR-PROV-004)")
-    return errors
-
-
-_UUID_V4_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+    """provider_extensions is RETIRED (removed 2026-07-23, executing #202): provider-specific
+    data is a Provider-Class `SharedDataElement` (ADR-038; schema realization #199). Any
+    instance still carrying the field is rejected so the retirement cannot silently regress.
+    The enduring obligations (additive-only, portability degradation, consumer notification)
+    live on the `portability` block and the Transparency principle."""
+    if "provider_extensions" in doc:
+        return ["carries the retired `provider_extensions` field — provider-specific data is a "
+                "Provider-Class SharedDataElement (ADR-038; schema realization #199); re-home "
+                "the values and record portability on the `portability` block"]
+    return []
 
 
 def _reference_data_index():
