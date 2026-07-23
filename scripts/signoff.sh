@@ -37,6 +37,9 @@ cat <<'EOF'
   [ ] Sizing: <=2-3k lines, one subject; split if larger
   [ ] Document the why: rationale in the repo (design note / tenet / ADR), not just the diff
   [ ] Git hygiene: rebased on freshly-fetched origin/main
+  [ ] Cleanliness Q1-Q7 semantic residues (single-source prose, vocab drift in prose,
+      boundary/ADR-008, provider-neutrality, doc scoping) — the nine-question brief:
+      croadfeldt/dav docs/repo-cleanliness-review.md
 EOF
 echo ""
 if [ "$fail" -gt 0 ]; then printf '\033[31mSIGNOFF FAILED — %d hard gate(s) failed.\033[0m\n' "$fail"; exit 1; fi
