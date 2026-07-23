@@ -1,6 +1,6 @@
 # Data-point necessity audit (review artifact, 2026-07-20)
 
-> **Status: review artifact for engineering discussion, non-normative.** A pre-1.0 pass asking of each stored
+> **Status: review artifact for engineering discussion, non-normative.** A pre-0.1 pass asking of each stored
 > field: *does it earn its keep, or does it duplicate functionality?* Findings are proposals; each links where
 > it is tracked. The goal is a lean data model where every stored point has real value.
 
