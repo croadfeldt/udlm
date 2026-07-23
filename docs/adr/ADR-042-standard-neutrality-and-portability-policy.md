@@ -1,6 +1,8 @@
-# UDLM ADR-042: Standard neutrality as a derived property + a profile-dialed portability policy — enable, don't mandate
+# UDLM ADR-042: Enable, don't mandate — opt-in standards governance without an approved-standards list (portability strictness is the consumer-gated illustration)
 
-**Status:** Proposed (croadfeldt upstream)
+**Status:** Proposed (croadfeldt upstream) — records the **pattern**; the illustrating mechanism (a `neutrality`
+property + a portability-strictness knob) is **consumer-gated — recorded, not built** — until a use case pulls it
+(ADR-032: pay to remove a future-contradiction, never pre-build a feature).
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related — the complete picture, each cited once.** This decision sits on the standards-adoption mechanism
@@ -18,87 +20,89 @@ control-plane side — **DCM ADR-021** (adopting external standards) + `adopted-
 [core-tenets **T5**](../../design-principles/core-tenets.md) (adopt outward) and the standing directive: UDLM is an
 **enablement** substrate, not an arbiter.
 
-**Settles:** how UDLM steers `adopts[]` toward vendor-neutral standards **without mandating a choice on an authority
-and without shipping an approved-standards list.** It ships neither a global allowlist nor a prohibition. Instead
-a three-layer split — **fact / mechanism / stance**: (1) a standard's **`neutrality`** is a *descriptive,
-derivable* property read off its **governing body**, not an assessment; (2) **policy may evaluate** that property at
-the authoring/ingress crossing (ADR-041 firewall); (3) an **org profile dials** the stance — `off` (default) /
-`warn` / `deny` — scoped to that org's own estate. **UDLM classifies the standard; the org governs its own
-estate.**
+**Settles:** the **pattern** for adding an *opt-in* governance capability over adopted standards **without UDLM
+shipping an approved-standards list or mandating one answer**: (1) derive a **descriptive** property of the
+standard from data UDLM already holds; (2) let **policy evaluate** it at the adoption boundary (ADR-041); (3) let
+an **org profile set the stance**, scoped to its own estate. **UDLM describes the standard; the org decides for
+itself.** The concrete illustration — a `neutrality` property + a portability-strictness stance
+(`off`/`warn`/`deny`) — **demonstrates** the pattern but is **consumer-gated: recorded, not built, until a use
+case asks.**
 
 ## Context
 
-A type's `adopts[]` (adopted-standards.md §3.1) references an external standard by identity + version. That
-standard may be **vendor-neutral** (Redfish, FOCUS, OSV — a portable conformance join-key) or **provider-native**
-(KubeVirt, vSphere, EC2 — no portability when carried on the type). A provider-native standard on a *portable
-type* buys no portability and biases the substrate toward one ecosystem — a real trade-off worth surfacing.
+The design question: an org may want to steer its estate toward vendor-neutral standards (for portability), but
+**UDLM cannot and must not mandate that on anyone** — authorities author under their own authority (ADR-038), and
+adopting a provider-native standard is a legitimate choice. So how do you offer the governance *option* without
+UDLM deciding for everyone?
 
-But **UDLM cannot and must not override an authority's choice** to adopt one. Authorities author under their own
-authority (ADR-038); an implementation will make vendor-specific choices, and that is legitimate. An earlier
-"audit + relocate provider-native `adopts[]`" framing was **closed as the wrong shape** — it treated a valid
-authoring choice as a defect. The principle: **we enable and describe; we don't mandate a choice on an authority — document best practice, don't impose it.**
+The trigger was an **observation, not a demand**: a type's `adopts[]` (adopted-standards.md §3.1) may reference a
+**vendor-neutral** standard (Redfish, FOCUS, OSV — a portable join-key) or a **provider-native** one (KubeVirt,
+vSphere — no portability when carried on the type). `Compute.VM` adopting KubeVirt at type scope is real, and it
+silently shrinks the portable subset. Surfacing that could help a portability-strict estate — but **no consumer
+is asking for it today.**
 
-The instinct to make the trade-off a *governance/profile* item then hits a trap: enforcing it seems to require an
-**approved-standards allowlist** — which is UDLM deciding *for everyone* (who curates it? whose list?), returning
-to exactly the top-down mandate we rejected. This ADR resolves that.
+The instinct to make it a governance/profile item hits a trap: enforcing it seems to require an
+**approved-standards allowlist** — UDLM deciding *for everyone* (who curates it? whose list?), which is exactly
+the top-down mandate we reject. This ADR records how to avoid that trap; it does **not** build the feature.
 
 ## Decision
 
-Split the one conflated "approved list" into **fact**, **mechanism**, and **stance** — no layer is UDLM mandating one answer.
+### The pattern — what this ADR settles
 
-### 1. Fact — `neutrality`, **derived** from the standard's governing body
-A standard governed by a **multi-vendor / open body** (DMTF, FinOps Foundation, OpenSSF, IETF, OASIS) is
-`vendor-neutral`; one owned by a **single vendor or project** (KubeVirt, vSphere, EC2) is `provider-native`. This
-is **read off the standard's `Body:`** — the **governing body** already recorded per standard in the adoption
-register (Related). It is descriptive metadata *about the standard* (adopt-by-reference), derived from that
-existing record — **not a new store, not a curated allowlist, and not an assessment of any adoption.**
-- **Derive, don't store** (ADR-027 addendum discipline): `neutrality` is *computed* from the recorded governing
-  body, not a hand-set flag that drifts and re-imports the curation/assessment problem.
-- Where the governing-body signal is absent, `neutrality: unknown` — the profile decides how to treat unknown
-  (default: allow).
+To make a governance stance over adopted standards **opt-in without UDLM deciding for everyone**, split it into
+**fact / mechanism / stance** — no layer ships an allowlist or a mandate:
 
-### 2. Mechanism — policy **may** evaluate the property (ADR-041)
-Adopting a standard is an **authoring / ingress crossing**; the policy firewall (ADR-041) can evaluate
-`standard.neutrality` **and the scope it sits at** (type surface vs the provider's `adopted_standard_support`) at
-that crossing. UDLM ships the *ability* to evaluate — never a rule that fires by default.
+1. **Fact — a *derived, descriptive* property of the standard.** Compute a property *about the standard itself*
+   from data UDLM already holds (adopt-by-reference) — never a hand-curated allowlist, never an assessment of
+   anyone's adoption. **Derive, don't store** (ADR-027 addendum).
+2. **Mechanism — policy *may* evaluate it (ADR-041).** The adoption is an authoring/ingress crossing; the firewall
+   *can* evaluate the property there. UDLM ships the **ability**, never a rule that fires by default.
+3. **Stance — the org's profile sets it.** The org dials the response for **its own estate** — the established
+   **strictness-is-Policy** pattern (ADR-025 §6 / `DPO-001`): the stance is a **profile dial, never a data field.**
 
-### 3. Stance — the **org's profile** dials it
-A profile declares the org's **portability strictness** for **its own estate**:
-- **`off`** — default. Pure enablement: adopt anything, anywhere. UDLM's out-of-the-box posture.
-- **`warn`** — surface a provider-native standard adopted at type scope (advisory signal, no block).
-- **`deny`** — reject a provider-native adoption at type scope in this estate.
+**The line:** UDLM **classifies / describes** the standard; the **org governs its own estate.** An
+approved-standards *list* is UDLM mandating one answer for everyone; a *derivable property + a profile knob* is
+each org governing itself. It reuses the ADR-041 firewall + the profile mechanism — no new primitive.
 
-The setting is **opt-in and org-scoped**. UDLM ships **no default mandate**; a strict-portability org dials it up,
-and everyone else is unaffected. This is the established **strictness-is-Policy** pattern (Related) applied to
-portability — the stance is a **profile dial, never a data field** on the type.
+### The illustration — `neutrality` + portability strictness (consumer-gated, unbuilt)
 
-### The line that keeps this out of the trap
-**UDLM classifies the standard (describes it, from its governance); the org governs its own estate (opt-in
-profile).** An approved-standards *list* is UDLM mandating one answer for everyone. A *derivable property + a
-profile knob* is each org governing itself. Classification is a description of the standard; the stance is the
-org's to set. It reuses the ADR-041 firewall machinery (a policy
-reading a property at a boundary), not a new primitive.
+Applied to the case that prompted this:
+- **Fact:** `neutrality` — a standard governed by a **multi-vendor / open body** (DMTF, FinOps, OpenSSF, IETF) is
+  `vendor-neutral`; one owned by a **single vendor / project** (KubeVirt, vSphere) is `provider-native`. Read off
+  the **`Body:`** already recorded per standard in the adoption register (Related); `unknown` when absent.
+- **Mechanism:** evaluate `standard.neutrality` + the scope it sits at (type surface vs the provider's
+  `adopted_standard_support`) at the `adopts[]` crossing.
+- **Stance:** portability strictness — `off` (default; adopt anything) / `warn` (surface a provider-native adopt
+  at type scope) / `deny` (reject it) — scoped to the org's estate.
+
+> **Consumer-gated — recorded, not built.** No use case pulls this today; it came from an observation (KubeVirt on
+> `Compute.VM`), not a demand. Per **ADR-032** ("pre-1.0, pay only to remove a future-contradiction, never
+> pre-build a feature"), we record the *pattern* — which removes the future contradiction of someone hard-coding
+> an allowlist or a global prohibition — and **do not build** the `neutrality` derivation or the profile knob
+> until a use case (e.g. a sovereign / exit-strategy estate that must stay portable across providers) asks.
 
 ## Consequences
 
-- **No global allowlist, no prohibition.** The default posture is adopt-anything; nothing is a "finding."
-- The best-practice ("*for portability*, prefer vendor-neutral standards at type scope; native ones on the
-  provider surface") stays **documented advice**; the profile is how a strict org *chooses* to enforce it **on
-  itself**.
-- `neutrality` needs a governing-body signal; it is `unknown` when absent, and profiles treat unknown per their
-  own stance (default allow). Deriving it (not storing) means it stays correct as the register grows.
-- **No new rule family, no new primitive, no new store.** This ADR records a capability and a stance (defines no
-  `PREFIX-NNN` rules); it reuses the firewall, the profile mechanism, and the strictness-is-Policy pattern named
-  in Related.
-- The **DCM realization** is control-plane (DCM ADR-021, Related): evaluate the property at the contribution
-  pipeline and expose `portability_strictness` as a profile setting.
+- **The decision recorded is the *pattern*, not a feature.** Nothing is built; default behavior is unchanged
+  (adopt anything; nothing is a "finding").
+- The best-practice ("*for portability*, prefer vendor-neutral standards at type scope") stays **documented
+  advice**; the pattern is *how* a strict estate would later opt into enforcing it **on itself** — once a UC
+  exists.
+- **When a consumer appears**, nothing new is invented: `neutrality` derives from the register's existing `Body:`
+  (no new store); the stance is a profile setting; the DCM realization is control-plane (**DCM ADR-021**, Related)
+  — evaluate at the contribution pipeline. **No new rule family, no new primitive, no new store** (defines no
+  `PREFIX-NNN` rules).
+- **If no consumer ever appears**, the ADR still earns its keep: it prevents the recurring wrong-turn (an
+  approved-standards list / global prohibition) by recording why that is not the shape.
 
 ## Alternatives considered
 
 - **UDLM ships an approved-standards allowlist / prohibits provider-native `adopts[]` globally** — rejected: UDLM
   mandating one answer for everyone; unanswerable "whose list?"; overrides legitimate authoring choices (VMs are
   commonly KubeVirt); the exact trap this ADR exists to avoid.
-- **Store `neutrality` as an authored per-standard flag** — rejected in favor of deriving it from the governing
-  body: a hand-set flag drifts and reintroduces the curation/assessment burden (derive-don't-store).
-- **Do nothing — best-practice doc only** — this *is* the default (stance `off`); the ADR adds only the *opt-in
-  enforcement path* for orgs that want it, changing no default behavior.
+- **Build the `neutrality` derivation + profile knob now** — rejected: no use case pulls it (**ADR-032** — don't
+  pre-build). Record the pattern; build when a consumer asks.
+- **Store `neutrality` as an authored per-standard flag** — rejected in favor of deriving it from the recorded
+  governing body (derive-don't-store; a hand-set flag drifts and reintroduces the curation/assessment burden).
+- **Do nothing — no ADR** — rejected: the allowlist trap kept recurring in discussion; recording the
+  enable-don't-mandate resolution is the future-contradiction this pays to remove.
