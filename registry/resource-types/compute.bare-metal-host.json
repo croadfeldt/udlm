@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -18,7 +18,8 @@
     "use_when": [
       "You need an inventory of physical servers, including ones not yet assigned to any workload.",
       "You need the dependency chain workload → host → power feed, so an outage or maintenance walk knows what stops when.",
-      "You need per-host aggregate capacity (cores, memory, storage) for allocation decisions."
+      "You need per-host aggregate capacity (cores, memory, storage) for allocation decisions.",
+      "you need host provisioning to be replayable intent — image, root device, boot MAC, power target — so a lost host rebuilds from the estate (the bare-metal leg of rehydration)"
     ],
     "not_for": [
       "A virtual machine — that is Compute.VirtualMachine; a host is hardware you can touch.",
@@ -132,6 +133,84 @@
       "bios_version": {
         "type": "string",
         "description": "Firmware/BIOS version (Redfish BiosVersion)."
+      },
+      "image": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "url",
+          "checksum"
+        ],
+        "description": "The provisioning image for this host (Metal3 image): what gets written to the root device at provision time. The heart of replayable host intent — a host rebuilt from intent re-provisions from exactly this image.",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Image URL (artifact location, not a resource reference)."
+          },
+          "checksum": {
+            "type": "string",
+            "description": "Image checksum value."
+          },
+          "checksum_type": {
+            "enum": [
+              "md5",
+              "sha256",
+              "sha512"
+            ],
+            "default": "sha256",
+            "description": "Checksum algorithm (Metal3 checksumType)."
+          },
+          "format": {
+            "enum": [
+              "raw",
+              "qcow2",
+              "vmdk",
+              "live-iso"
+            ],
+            "description": "Image format (Metal3 DiskFormat)."
+          }
+        }
+      },
+      "root_device_hints": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Which disk receives the image (Metal3 rootDeviceHints, the portable core) — the §27 Identity discriminators in provisioning form, matched at provision time.",
+        "properties": {
+          "device_name": {
+            "type": "string",
+            "description": "Device path hint (e.g. /dev/sda)."
+          },
+          "serial_number": {
+            "type": "string",
+            "description": "Disk serial hint — the stable choice across reboots."
+          },
+          "wwn": {
+            "type": "string",
+            "description": "WWN hint."
+          },
+          "min_size_gigabytes": {
+            "type": "integer",
+            "description": "Smallest acceptable root device."
+          }
+        }
+      },
+      "boot_mac_address": {
+        "type": "string",
+        "pattern": "^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$",
+        "description": "The NIC MAC the host network-boots from (Metal3 bootMACAddress) — ties provisioning to a concrete port; pairs with that NIC's Hardware.NetworkInterface record."
+      },
+      "online": {
+        "type": "boolean",
+        "default": true,
+        "description": "Desired power target (Metal3 online): true = powered on and kept on. The intent counterpart of the observed power_state output — the host analogue of the VM's run_state.desired_state."
+      },
+      "boot_mode": {
+        "enum": [
+          "uefi",
+          "legacy"
+        ],
+        "default": "uefi",
+        "description": "Firmware boot mode (Metal3 bootMode / Redfish Boot). Fleet note: converging this with the VM's firmware block into a common element is a candidate next MINOR — adopted vocabulary kept verbatim until then."
       }
     }
   },
@@ -142,7 +221,11 @@
     },
     "management_address": {
       "type": "string",
-      "description": "Reachable management endpoint (BMC/Redfish or host management IP) once Realized."
+      "description": "Reachable management endpoint (BMC/Redfish or host management IP) once Realized. When a Hardware.BMC record exists for this host, the BMC record is authoritative; this output is the convenience copy."
+    },
+    "provisioning_state": {
+      "type": "string",
+      "description": "Metal3's headline status (available | provisioning | provisioned | deprovisioning | error) — the signal cluster bring-up binds on: a Cluster/NodePool consumer waits for provisioned."
     }
   },
   "immutable": [

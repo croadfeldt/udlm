@@ -48,7 +48,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## Compute
 
-### Compute.BareMetalHost (0.5.0)
+### Compute.BareMetalHost (0.6.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -58,6 +58,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - You need an inventory of physical servers, including ones not yet assigned to any workload.
 - You need the dependency chain workload → host → power feed, so an outage or maintenance walk knows what stops when.
 - You need per-host aggregate capacity (cores, memory, storage) for allocation decisions.
+- you need host provisioning to be replayable intent — image, root device, boot MAC, power target — so a lost host rebuilds from the estate (the bare-metal leg of rehydration)
 
 **Not for:**
 - A virtual machine — that is Compute.VirtualMachine; a host is hardware you can touch.
