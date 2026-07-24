@@ -4,13 +4,27 @@
 
 ## The request
 
-A consumer submits a catalog item `vm-service` — `consumer_fields`: `location_ref`, `network_ref`, `disk_size`. Their intent:
+A consumer submits a catalog item `vm-service` — `consumer_fields`: `location_ref`, `network_ref`,
+`disk_size`, plus the 0.6.0 portable VM surface. Their intent:
 
 ```yaml
 catalog_ref: vm-service
 location_ref: fac-rack3      # selects an existing Facility.Location
 network_ref:  net-dmz        # selects an existing Network.VirtualNetwork
 disk_size:    100Gi
+
+# The 0.6.0 type surface — sizing is a oneOf: EITHER a provider-neutral class...
+instance_size: medium        # ...OR explicit topology (vcpu: {count: 4}, memory: {size: 8GiB})
+guest_os:
+  os_image: rhel-9           # a reference into the provider-advertised os_image vocabulary
+                             # (ADR-012 reference data; policy validates membership at request;
+                             # inline OS spec is the explicit portability_breaking escape)
+firmware:
+  type: uefi                 # bios|uefi; uefi default
+  secure_boot: true
+  vtpm: true                 # Win11-class guests need all three
+run_state:
+  desired_state: running     # running|stopped|suspended (default running)
 ```
 
 Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries **selections of foundational resources** (`fac-rack3`, `net-dmz`) and VM-owned knobs.
@@ -38,6 +52,23 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 | `vol-app` (100Gi) | `Storage.Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |
 
 That is the **entire** graph for one VM: 4 foundational + 4 realized resources, 9 typed edges. Every one resolves to an existing resource type.
+
+**Realized outputs (the E2 binding surface).** At Realized, `vm-app` publishes its typed outputs —
+the first registry type to do so; the pattern the fleet follows:
+
+```yaml
+outputs:
+  ip_addresses: ["192.0.2.55"]     # what an LB backend pool or DNS record binds to
+  primary_ip: "192.0.2.55"
+  hostname: "vm-app.dmz.example"
+  mac_addresses: ["52:54:00:ab:12:34"]
+  provider_handle: "vm-app-9f3c"    # opaque provider-native id — correlation only
+  run_state: running
+```
+
+A downstream consumer binds by contract, never by string-splicing: a `binds_to` edge with
+`target_field: ip_addresses` is validated against this declaration (data-model-core [D8.3]) — the
+composite examples' "app-server IPs feed the LB pool" flow is exactly this edge.
 
 ## The fulfillment modes at play (ADR-009)
 

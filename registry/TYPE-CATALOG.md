@@ -112,7 +112,7 @@ A single containerized workload: the image it runs, the CPU and memory it needs,
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VirtualMachine (0.5.0)
+### Compute.VirtualMachine (0.6.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.
 

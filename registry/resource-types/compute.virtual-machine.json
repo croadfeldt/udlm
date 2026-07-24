@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -12,43 +12,10 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
-  "context": {
-    "purpose": "Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.",
-    "plain_description": "The request for one VM: how big (a named size class, or explicit vCPU and memory), what guest OS, which disks backed by what storage class, and which existing networks its NICs attach to. Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
-    "use_when": [
-      "You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.",
-      "You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.",
-      "You need a VM's disks and addresses to reference existing Storage.Volume / Network.IPAddress records rather than duplicate them."
-    ],
-    "not_for": [
-      "The physical machine it runs on — Compute.BareMetalHost.",
-      "A containerized workload — Compute.Container; the VM carries a full guest OS.",
-      "The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory."
-    ],
-    "works_with": [
-      "Network.VirtualNetwork — the networks the VM's NICs attach to.",
-      "Storage.Volume — the volumes behind the VM's disks.",
-      "Facility.Location — where the VM is placed (selected from existing places, policy-governed).",
-      "Network.IPAddress — pre-allocated addresses the VM consumes."
-    ]
-  },
   "spec": {
     "type": "object",
     "required": [
       "guest_os"
-    ],
-    "anyOf": [
-      {
-        "required": [
-          "instance_size"
-        ]
-      },
-      {
-        "required": [
-          "vcpu",
-          "memory"
-        ]
-      }
     ],
     "properties": {
       "instance_size": {
@@ -64,7 +31,17 @@
           "count": {
             "type": "integer",
             "minimum": 1,
-            "description": "Number of virtual CPUs."
+            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (k8s/kubevirt domain cpu, vSphere sockets*cores, EC2 vCPUs) at realization (ADR-023)."
+          },
+          "sockets": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable."
+          },
+          "cores_per_socket": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint: cores per socket. Provider-support-dependent."
           }
         }
       },
@@ -78,20 +55,60 @@
             "type": "string",
             "pattern": "^[0-9]+(MB|GB|TB)$",
             "description": "Memory allocation, e.g. 16GB."
+          },
+          "hugepages": {
+            "type": "object",
+            "description": "Optional huge-page backing (provider-support-dependent; validated against provider capability).",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "page_size": {
+                "type": "string",
+                "description": "e.g. 2Mi, 1Gi."
+              }
+            }
           }
         }
       },
       "guest_os": {
-        "type": "object",
-        "required": [
-          "type"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "Guest OS image identifier, e.g. rhel-9."
+        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Inline OS identifier (e.g. rhel-9). portability_breaking: a value with no os_image vocabulary entry — a review finding."
+              },
+              "version": {
+                "type": "string",
+                "description": "Inline OS version (e.g. 9.4)."
+              }
+            }
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "../data-reference.schema.json#/$defs/data_reference"
+              },
+              {
+                "required": [
+                  "reference_data_type"
+                ],
+                "properties": {
+                  "reference_data_type": {
+                    "const": "os_image"
+                  }
+                }
+              }
+            ]
           }
-        }
+        ]
       },
       "disks": {
         "type": "array",
@@ -106,7 +123,21 @@
               "pattern": "^[0-9]+(GB|TB)$"
             },
             "storage_class": {
-              "type": "string"
+              "description": "Storage tier for this disk — a resource reference to a Platform.StorageClass the provider advertises (common-elements §2.5, ADR-025), consistent with Storage.Volume.storage_class. Authored by handle; deferred resolution supported. A requirements/SLA descriptor alternative is proposed in ADR-035. Not a free string.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "Short form — the handle of an existing Platform.StorageClass."
+                },
+                {
+                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                }
+              ]
+            },
+            "boot_order": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Optional boot order (0 = first). Absent = provider default."
             }
           }
         }
@@ -121,11 +152,11 @@
           },
           "zone": {
             "type": "string",
-            "description": "Sovereignty/availability zone constraint (resolved against the selected location's zone)."
+            "description": "Availability/sovereignty zone constraint, selected from the zones the provider advertises for the chosen location; resolved against that location."
           },
           "affinity": {
             "type": "array",
-            "description": "Co-location / separation intent relative to OTHER existing resources.",
+            "description": "Co-location / separation intent relative to OTHER named resources (not nodes). Each target is resolved at reserve, so a pre-known UUID is not required.",
             "items": {
               "type": "object",
               "required": [
@@ -135,13 +166,20 @@
               "properties": {
                 "target": {
                   "type": "string",
-                  "description": "handle/uuid of an existing resource to co-locate with or avoid."
+                  "description": "Handle OR label-selector of an existing resource to co-locate with / avoid, resolved at reserve (ADR-025/AEP-124) - you do not need its UUID in advance."
                 },
                 "rule": {
                   "enum": [
                     "affinity",
                     "anti_affinity"
                   ]
+                },
+                "selector": {
+                  "type": "object",
+                  "description": "Alternative to a handle: match target(s) by labels (key/value).",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -165,29 +203,20 @@
               "type": "string",
               "description": "handle/uuid of an existing Network.VirtualNetwork the NIC attaches to (selected from the eligible set). Carried as a references->Network.VirtualNetwork relationship."
             },
-            "ip_mode": {
-              "enum": [
-                "dynamic",
-                "static",
-                "byo"
-              ],
-              "default": "dynamic",
-              "description": "How the address is procured (ADR-009 fulfillment): dynamic=allocate, static=a specific requested address, byo=a consumer-supplied existing Network.IPAddress reference."
-            },
-            "requested_address": {
-              "type": "string",
-              "description": "For ip_mode=static/byo: the desired/existing address (byo references an existing Network.IPAddress)."
-            },
             "mac": {
               "type": "string",
               "description": "Optional requested MAC address."
+            },
+            "ip_address_ref": {
+              "type": "string",
+              "description": "Optional handle/uuid of an existing Network.IPAddress to bind to this NIC (an ADR-025 resource reference, like network_ref). The referenced record carries HOW the address was selected and WHAT it is — its `allocation` origin (static | dhcp | link-layer | random) and `address` CIDR, the RFC 8344 / NMstate convergent form (ADR-023); a static reservation is simply `allocation: static`. ABSENT = the provider allocates an address on `target_segment` at reserve (ADR-009 §3 fulfillment). Host L3 config (routes, DNS, bond/bridge/VLAN) lives in Network.ConnectionProfile (NMstate), not restated here. Carried as a references->Network.IPAddress relationship."
             }
           }
         }
       },
-      "power": {
+      "run_state": {
         "type": "object",
-        "description": "Desired guest power state the provider drives to (KubeVirt runStrategy / Redfish PowerState). Distinct from the four-state lifecycle_state.",
+        "description": "Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from the four-state lifecycle_state; snapshot/restore are separate operations, not run states.",
         "properties": {
           "desired_state": {
             "enum": [
@@ -196,20 +225,79 @@
               "suspended"
             ],
             "default": "running",
-            "description": "Target guest power state."
+            "description": "Target guest run state."
+          }
+        }
+      },
+      "firmware": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Guest firmware surface — portable across every major virtualization stack (Redfish Boot.BootSourceOverrideMode, KubeVirt firmware/TPM, cloud UEFI/trusted-launch). Required by modern guests (Win11-class needs uefi + secure_boot + vtpm).",
+        "properties": {
+          "type": {
+            "enum": [
+              "bios",
+              "uefi"
+            ],
+            "default": "uefi",
+            "description": "Firmware interface presented to the guest."
+          },
+          "secure_boot": {
+            "type": "boolean",
+            "default": false,
+            "description": "UEFI Secure Boot. Only valid with type: uefi (policy-validated)."
+          },
+          "vtpm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Virtual TPM 2.0 device presented to the guest."
           }
         }
       }
-    }
+    },
+    "oneOf": [
+      {
+        "required": [
+          "instance_size"
+        ]
+      },
+      {
+        "required": [
+          "vcpu",
+          "memory"
+        ]
+      }
+    ],
+    "description": "Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements (ADR-038) — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data) is an open design decision (process concern vs VM field) — tracked on the type, not silently absent."
   },
   "outputs": {
-    "ip_address": {
+    "ip_addresses": {
+      "type": "array",
+      "description": "Assigned guest IP addresses (all interfaces), IPv4-first ordering. The canonical binding surface for LB backend pools, DNS records, and monitoring targets."
+    },
+    "primary_ip": {
       "type": "string",
-      "description": "Primary IP address assigned once Realized."
+      "description": "The primary/management address — first of ip_addresses; the single-address convenience most bindings want."
     },
     "hostname": {
       "type": "string",
-      "description": "Resolvable hostname."
+      "description": "Realized guest hostname (FQDN where the realm provides one)."
+    },
+    "mac_addresses": {
+      "type": "array",
+      "description": "Realized MAC per interface, ordered as spec.networks[]. Binding surface for DHCP reservation and switch-port records."
+    },
+    "provider_handle": {
+      "type": "string",
+      "description": "The provider-native identifier of the realized VM (opaque; correlation/ops use only — never a portable reference)."
+    },
+    "run_state": {
+      "type": "string",
+      "description": "Observed run state at last reconciliation (running|stopped|suspended) — the discovered counterpart of spec.run_state.desired_state."
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "Primary IP address assigned once Realized."
     },
     "instance_id": {
       "type": "string",
@@ -229,7 +317,7 @@
       "target": "Network.IPAddress",
       "target_field": "address",
       "cardinality": "0..n",
-      "description": "May consume one or more pre-allocated addresses."
+      "description": "May consume zero or more pre-allocated Network.IPAddress addresses (optional dependency)."
     },
     {
       "edge_type": "references",
@@ -258,7 +346,7 @@
       "standard": "Redfish",
       "version": "2024.4",
       "standard_name": "ComputerSystem",
-      "role": "vendor-neutral virtual system inventory + power vocabulary (ProcessorSummary, MemorySummary, PowerState) — same family as Compute.BareMetalHost",
+      "role": "Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for the Compute.* family (shared with Compute.BareMetalHost). Provider-NATIVE realizations (KubeVirt, vSphere, EC2, ...) are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
       "license_compatibility": "compatible-reference",
@@ -274,5 +362,25 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "context": {
+    "purpose": "Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.",
+    "plain_description": "The request for one VM: how big (a named size class, or explicit vCPU and memory), what guest OS, which disks backed by what storage class, and which existing networks its NICs attach to. Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
+    "use_when": [
+      "You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.",
+      "You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.",
+      "You need a VM's disks and addresses to reference existing Storage.Volume / Network.IPAddress records rather than duplicate them."
+    ],
+    "not_for": [
+      "The physical machine it runs on — Compute.BareMetalHost.",
+      "A containerized workload — Compute.Container; the VM carries a full guest OS.",
+      "The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory."
+    ],
+    "works_with": [
+      "Network.VirtualNetwork — the networks the VM's NICs attach to.",
+      "Storage.Volume — the volumes behind the VM's disks.",
+      "Facility.Location — where the VM is placed (selected from existing places, policy-governed).",
+      "Network.IPAddress — pre-allocated addresses the VM consumes."
+    ]
+  }
 }
