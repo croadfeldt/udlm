@@ -4,10 +4,10 @@ version: 1.0.0
 scenario:
   description: "A platform engineer composes a service that must bind a consumer (a load balancer backend\
     \ pool) to a producer's realized facts (a VM's addresses). The binding is only contract-checkable\
-    \ if the producer TYPE declares typed Realized outputs (the E2 surface) \u2014 a registry survey found\
-    \ 0 of 46 types declared any while the meta-schema and every binding-field example assumed them. This\
-    \ stresses that every realizable resource type publishes its output surface so bindings resolve against\
-    \ declarations, never string-splicing."
+    \ if the producer TYPE declares typed Realized outputs (the E2 surface) \u2014 a registry review found\
+    \ the declared surfaces systemically inadequate for binding (median one thin boolean; five types empty\
+    \ and silent). This stresses that every realizable resource type publishes its output surface so bindings\
+    \ resolve against declarations, never string-splicing."
   actor:
     persona: platform-engineer
     profile: standard
