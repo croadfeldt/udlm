@@ -27,14 +27,21 @@ lifecycle/        Operational models, recovery state machine
 ## Operating rules (non-negotiable)
 
 - **Commits:** `--no-gpg-sign`, author = the repo owner's public git identity (match `git log -1 --format='%an <%ae>'`), trailer
-  `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`. This repo is on **GitHub**
+  `Co-Authored-By: <the Claude model in use> <noreply@anthropic.com>`. This repo is on **GitHub**
   (`cexample/udlm`) — use `gh`, not `glab`.
-- **PRs are subject-scoped** — one logical thing per PR (see open PRs below).
+- **PRs are subject-scoped** — one logical thing per PR, ≤2–3k lines.
+- **Run `bash scripts/signoff.sh` before every PR** — all hard gates (registry, meta-schema,
+  estate tokens, single-source, vocabulary, profile tables, compat vs origin/main) + the judgment
+  checklist. The cleanliness bar and sweep process live in the dav repo:
+  `docs/repo-cleanliness-review.md` (the twelve questions) + `docs/runbook-overnight-sweep.md`.
+- **Audience: human engineers. Voice: software and data-model architect** — declarative,
+  model-grounded, references carry their gist, no editorializing.
 - **The definition rules are law.** Every new resource type or common element MUST satisfy
   `registry/SPEC-DESIGN-REQUIREMENTS.md`. The load-bearing ones:
-  - **No vendor-exclusive data in the portable spec** (§17, §24). Vendor specifics live only at the
-    extension surface (`portability: provider-specific` / `provider_hints`).
-  - **Reuse canonical common-elements** (§24–25) — camelCase, explicit-unit `Quantity`, RFC 3339.
+  - **No vendor-exclusive data in the portable spec** (§17, §24). Provider-specific data is a
+    **Provider-Class `SharedDataElement`** (ADR-038); the old `provider_extensions`/`provider_hints`
+    carriers are removed — the validator rejects them (schema realization tracked in #199).
+  - **Reuse canonical common-elements** (§24–25) — **snake_case** (settled 2026-06-27; never re-litigate), explicit-unit `Quantity`, RFC 3339.
   - **Adopt standards by reference, record provenance + license** (§22–23): every `adopts[]` entry
     carries `source` (name/version/URL) and `license` + `license_compatibility`
     (`compatible-vendor` | `compatible-reference` | `reference-only`). UDLM is Apache-2.0 — copying
@@ -64,22 +71,32 @@ lifecycle/        Operational models, recovery state machine
 | **DAV** review console | `dav` (cexample/dav) |
 | **Estate DATA** (instances, the dependency graph) | a private estate-data repo (kept off GitHub — no personal infrastructure in the public specs) |
 
-## Current state (2026-06-26)
+## Current state (2026-07-25)
 
-Open PRs (stacked): **#1** Resource Type Registry + cross-cutting principles · **#2** DecisionRecord
-Knowledge entity (stacked on #1) · **#3** adopted-standard provenance/license rules + data-source matrix
-+ cross-type consistency + component model (this branch, `feat/resource-type-data-sources`).
+**0.1 surface is complete** (the September release is **0.1**; 1.0 is only the earned milestone —
+never conflate them). All ADRs and DecisionRecords are **Proposed**: ratification sits with the
+engineering team (issue #217) — never claim Accepted/ratified status.
 
-**Recently added to the spec (this thread):**
-- Provenance + license rules for adopted standards (SPEC-DESIGN §22–23; `design-principles/adopted-standards.md`).
-- Cross-type consistency rules + `registry/common-elements.md` (canonical Quantity / ComputeResources /
-  cidr / ip_family / Reference / Condition + the sweep finding: the 4 existing types express cpu/memory
-  three ways → normalize additively, converge at next MAJOR).
-- Component granularity §26 + `common-elements.md` §5 (entity vs data element, both ways; `Hardware.*` family).
-- Instance identity §27 + `common-elements.md` §5a (`Identity` discriminators).
-- Raw/unallocated resources §28 + `four-states.md` §2.4 + `common-elements.md` §6 (`lifecycle_state`).
+**Settled this cycle (write to this reality):**
+- **Edge model:** `edge_type` (`depends_on`|`contained_by`|`binds_to`|`references`) + `strength`
+  (hard|soft) + declared `relation`; nature is derived; the Atomic/Composite **shape is derived**
+  (`has_constituents`), never stored (ADR-027 addendum); `kind`/`dependency_type`/
+  `relationship_type` are retired and guarded (tests/check_model_vocabulary.py, incl. prose).
+- **`provider_extensions` is removed** (ADR-038 subsumption executed; validator rejects it).
+- **provider-contract.md owns the whole provider/capability surface**: registration §2, sovereignty
+  obligations `SOV-*` §2a, capability profiles §8, registry §9, discovery wire protocol §10
+  (capability-discovery.md is a stub — never cite it as a home).
+- **Six profiles:** homelab → dev → standard → prod → fsi → sovereign (`docs/profiles.md`;
+  `minimal` is retired).
+- **Audit is Merkle** (RFC 9162): events are `audit.integrity_alert`/`audit.integrity_break`;
+  linear hash-chain wording is a defect.
+- **Core tenet T9:** the substrate never translates into a provider's native spec.
+- **ADR-029 Hardware ancillary types landed** (StorageDevice / Processor / GraphicsProcessor 0.2.0)
+  — the roadfeldt estate validates 288+ records / 0 failures against main.
 
-**Pending:** author the `Hardware.*` component types (MemoryModule, StorageDevice, NetworkInterface,
-GraphicsProcessor, Processor) and the 8 infra types (BareMetalInstance, CephCluster, Gateway,
-AddressService, DirectoryService, PowerFeed, …) against these rules; verify the two `verify` licenses
-(OSAC, heatmiser) in the data-source matrix.
+**In flight:** engineering ratification pass (#217); the dcm-project downstream publishing wave
+(UC-priority split per the Jordi criteria — 21-UC-required PRs first); `SharedDataElement` schema
+realization (#199); Ansible estate discovery feeding Discovered state (croadfeldt/dcm#79).
+
+**Navigation:** `docs/file-index.md` (ownership per file) · `registry/UDLM-0.1-SCOPE.md` (the 21
+UCs + tag gate) · `docs/adr/README.md` (decision index) · `CONTRIBUTING.md` (the checklist).
