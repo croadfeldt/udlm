@@ -11,4 +11,5 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 
 - `binding-surface/` — the typed-outputs (E2) gap class: outputs declared per type, bindings
   contract-checked, fleet coverage queryable, worked-example currency. Born from the 2026-07-24
-  registry finding that zero of 46 types declared the output surface the binding examples assumed.
+  registry review finding the output surface systemically inadequate for binding (median: one thin
+  boolean; ~14 of 46 types binder-consumable; 5 empty and silent about why).
