@@ -43,6 +43,8 @@ spec:
     - {type: mirror, raid_type: RAID1, members: [sd-a, sd-b]}
     - {type: mirror, raid_type: RAID1, members: [sd-c, sd-d]}
   # [mirror, mirror] at top level IS raid10 — no explicit stripe wrapper, exactly as zpool models it.
+  # NOTE: implicit top-level striping is ZFS's aggregation semantic. lvm allocates per VG policy;
+  # a hardware controller doesn't aggregate independent VDs — two independent VDs = two Pools.
 
 # Hardware-RAID persona — the controller's explicit stripe-of-mirrors tree:
 spec:
