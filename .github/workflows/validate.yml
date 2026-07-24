@@ -33,6 +33,10 @@ jobs:
       # referential integrity (Q8) + CI/signoff parity (these two ran only in signoff.sh before).
       - run: python3 tests/check_links.py
       - run: python3 tests/check_profile_tables.py
+      # Rule-36 base-standard gates (G1/G2/G3/G5/G6, 2026-07-25 fleet review) with the
+      # burn-down baseline ratchet — new violations fail; baselined ones warn until fixed.
+      - run: python3 tests/check_type_standard.py
+      - run: python3 registry/tools/generate_type_catalog.py --check
       - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump

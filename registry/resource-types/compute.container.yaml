@@ -116,7 +116,7 @@ spec:
             required: [mount_path, source_ref]
             properties:
               mount_path: {type: string}
-              source_ref: {type: string, description: handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets).: null}
+              source_ref: {type: string, description: "handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets)."}
               read_only: {type: boolean, default: true}
     network:
       type: object

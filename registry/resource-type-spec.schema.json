@@ -400,6 +400,48 @@
           "description": "Opaque id of the cost model within that engine. UDLM treats it as a black box."
         }
       }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "plain_description",
+        "use_when"
+      ],
+      "description": "Plain-English context for humans (rule 36(l)): why the type exists and when to reach for it. Written for an engineer meeting the type for the first time — no coined terms without a gloss, no schema-speak. Rendered into registry/TYPE-CATALOG.md by tools/generate_type_catalog.py (generated, never hand-edited, so it cannot drift).",
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "description": "One sentence: why this type exists — the job it does in the model."
+        },
+        "plain_description": {
+          "type": "string",
+          "description": "A short paragraph in plain English: what one of these IS, in words a new engineer uses on day one."
+        },
+        "use_when": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Concrete situations that call for this type ('you need X', not 'facilitates X')."
+        },
+        "not_for": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The near-misses: situations that look like this type but belong to another (name it)."
+        },
+        "works_with": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The types it most commonly appears beside, one line of why each."
+        }
+      }
     }
   },
   "allOf": [

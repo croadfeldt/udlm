@@ -9,7 +9,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Processor",
-    "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Hardware.Processor entities. device_class distinguishes a physical socket from a virtual CPU presented to a guest.",
+    "description": "A CPU component. First-class entity form of the §26 component model — a parent carries the cpu rollup and MAY also contain Hardware.Processor entities. device_class distinguishes a physical socket from a virtual CPU presented to a guest. outputs-exempt: opaque inventory component — its attributes are Discovered-state facts on the containing host; it publishes no realize-time binding surface (rule 36(b) documented exclusion).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },

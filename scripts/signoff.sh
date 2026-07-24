@@ -21,6 +21,7 @@ run "single-source (definitions)"       hard python3 tests/check_definition_sing
 run "model vocabulary"                  hard python3 tests/check_model_vocabulary.py
 run "session narration"                 hard python3 tests/check_session_narration.py
 run "profile tables"                    hard python3 tests/check_profile_tables.py
+run "type base standard (rule 36)"      hard python3 tests/check_type_standard.py
 run "compat-check compiles"             hard python3 -c "compile(open('registry/tools/compat-check.py').read(),'x','exec')"
 run "version / compat gate vs $base"    hard python3 tests/ci_compat_gate.py "$base"
 run "standards registered"              soft python3 tests/check_standards_registered.py

@@ -9,7 +9,7 @@
   "status": "active",
   "metadata": {
     "display_name": "Graphics Processor",
-    "description": "A GPU / accelerator component. device_class covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parent_device references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice.",
+    "description": "A GPU / accelerator component. device_class covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parent_device references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice. outputs-exempt: opaque inventory component — its attributes are Discovered-state facts on the containing host; it publishes no realize-time binding surface (rule 36(b) documented exclusion).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },

@@ -92,7 +92,7 @@ engineering team (issue #217) — never claim Accepted/ratified status.
   linear hash-chain wording is a defect.
 - **Core tenet T9:** the substrate never translates into a provider's native spec.
 - **ADR-029 Hardware ancillary types landed** (StorageDevice / Processor / GraphicsProcessor 0.2.0)
-  — the roadfeldt estate validates 288+ records / 0 failures against main.
+  — the private estate validates 288+ records / 0 failures against main.
 
 **In flight:** engineering ratification pass (#217); the dcm-project downstream publishing wave
 (UC-priority split per the Jordi criteria — 21-UC-required PRs first); `SharedDataElement` schema
