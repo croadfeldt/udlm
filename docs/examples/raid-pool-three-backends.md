@@ -30,6 +30,35 @@ spec:
       members: [nvme0, nvme1]      # the md array IS one vdev; datasets above are LVM LVs
 ```
 
+## 2a. raid10 — one topology, both personas
+
+The vdev tree is recursive (members are drives **or child vdevs**), so composed layouts model
+faithfully in either idiom:
+
+```yaml
+# ZFS persona — the pool stripes across top-level vdevs implicitly (zpool semantics):
+spec:
+  pool_kind: zfs
+  vdevs:
+    - {type: mirror, raid_type: RAID1, members: [sd-a, sd-b]}
+    - {type: mirror, raid_type: RAID1, members: [sd-c, sd-d]}
+  # [mirror, mirror] at top level IS raid10 — no explicit stripe wrapper, exactly as zpool models it.
+
+# Hardware-RAID persona — the controller's explicit stripe-of-mirrors tree:
+spec:
+  pool_kind: hardware_raid
+  vdevs:
+    - type: raid10
+      raid_type: RAID10
+      members:
+        - {type: mirror, raid_type: RAID1, members: [ctrl-disk-0, ctrl-disk-1]}
+        - {type: mirror, raid_type: RAID1, members: [ctrl-disk-2, ctrl-disk-3]}
+  # ...and a mirror-of-stripes (raid01) is the same tree with the layers swapped.
+```
+
+`fault_tolerance_remaining` composes through the tree — min across striped children, per-group
+survivability within mirrors — so both personas report the same honest number.
+
 ## 3. Hardware RAID — declared as intent, built at provision
 
 ```yaml

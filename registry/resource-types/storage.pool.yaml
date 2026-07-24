@@ -91,63 +91,76 @@ spec:
           pattern: ^[0-9]+(\.[0-9]+)?(MB|GB|TB|PB|MiB|GiB|TiB|PiB|M|G|T|P)$
     vdevs:
       type: array
-      description: The redundancy topology — each vdev groups member drives under a protection scheme. Data-protection
-        is per-vdev; the pool's fault tolerance is the vdev's (a raidz2 tolerates 2 lost members). The member drives
-        are recorded by handle/serial; this array carries the grouping the edges can't.
+      description: 'The redundancy topology, as a tree: each top-level entry is a vdev whose members are drives
+        or child vdevs. Like ZFS, the pool stripes across its top-level vdevs implicitly — so [mirror, mirror] IS
+        raid10 without an explicit stripe wrapper; an explicit wrapper expresses the hardware-RAID persona of the
+        same topology.'
       items:
-        type: object
-        required:
-        - type
-        properties:
-          type:
-            type: string
-            enum:
-            - stripe
-            - mirror
-            - raidz1
-            - raidz2
-            - raidz3
-            - draid
-            - raid0
-            - raid1
-            - raid5
-            - raid6
-            - raid10
-            - jbod
-            - cache
-            - log
-            - spare
-            description: The NATIVE protection term for this vdev/group — authoritative, in the backend's own vocabulary
-              (raidz2 is not RAID6 and is never renamed into it).
-            x-extensible-enum: true
-          members:
-            type: array
-            items:
-              type: string
-              description: 'A member drive of this vdev — a common-elements Reference to Hardware.StorageDevice
-                (handle string or {uuid, handle} object). Members as references make disk-failure blast radius a
-                graph walk: a dead drive''s inbound edges ARE the affected pools.'
-            description: The physical member drives of this vdev, as references.
-          raid_type:
-            type: string
-            enum:
-            - RAID0
-            - RAID1
-            - RAID5
-            - RAID6
-            - RAID10
-            - RAID50
-            - RAID60
-            - none
-            description: The canonical SNIA Swordfish RAIDType this protection MAPS TO for cross-backend comparison
-              (nearest-equivalent, declared not derived — raidz2 maps to RAID6-class tolerance while type stays
-              raidz2). Optional; queries wanting "everything with >=2-disk tolerance" use this.
+        $ref: '#/$defs/vdev'
     properties:
       type: object
       additionalProperties:
         type: string
       description: Provider-passthrough pool properties not lifted into typed fields (e.g. compression, recordsize,
         ashift).
+  $defs:
+    vdev:
+      type: object
+      required:
+      - type
+      description: 'A redundancy group. RECURSIVE like ZFS: members are device references OR child vdevs, so composed
+        topologies model as trees — raid10 as an explicit stripe of mirrors {type: stripe, members: [mirror(a,b),
+        mirror(c,d)]} or as a mirror of stripes; ZFS-style raid10 may equally be expressed as multiple top-level
+        mirror vdevs (the pool stripes across top-level vdevs implicitly, as zpool does). Fault tolerance composes
+        through the tree (min across children for stripes; sum-of-survivable for mirrors).'
+      properties:
+        type:
+          type: string
+          enum:
+          - stripe
+          - mirror
+          - raidz1
+          - raidz2
+          - raidz3
+          - draid
+          - raid0
+          - raid1
+          - raid5
+          - raid6
+          - raid10
+          - jbod
+          - cache
+          - log
+          - spare
+          description: The NATIVE protection term for this vdev/group — authoritative, in the backend's own vocabulary
+            (raidz2 is not RAID6 and is never renamed into it).
+          x-extensible-enum: true
+        raid_type:
+          type: string
+          enum:
+          - RAID0
+          - RAID1
+          - RAID5
+          - RAID6
+          - RAID10
+          - RAID50
+          - RAID60
+          - none
+          description: The canonical SNIA Swordfish RAIDType this protection MAPS TO for cross-backend comparison
+            (nearest-equivalent, declared not derived — raidz2 maps to RAID6-class tolerance while type stays raidz2).
+            Optional; queries wanting "everything with >=2-disk tolerance" use this.
+        members:
+          type: array
+          minItems: 1
+          description: 'The members of this group: physical drives (References to Hardware.StorageDevice) and/or
+            CHILD VDEVS (nested groups) — mixing is legal where the backend allows it.'
+          items:
+            oneOf:
+            - type: string
+              description: 'A member drive of this vdev — a common-elements Reference to Hardware.StorageDevice
+                (handle string or {uuid, handle} object). Members as references make disk-failure blast radius a
+                graph walk: a dead drive''s inbound edges ARE the affected pools.'
+            - $ref: '#/$defs/vdev'
 outputs:
   usable_capacity:
     type: string
@@ -161,8 +174,9 @@ outputs:
       form of the degraded flag.
   fault_tolerance_remaining:
     type: integer
-    description: How many further member failures the pool survives right now (min across vdevs). 0 on a degraded
-      mirror = the next failure loses data — the number an operator actually acts on.
+    description: How many further member failures the pool survives right now — composed through the vdev TREE (min
+      across striped children; per-group survivability for mirrors/parity). 0 on a degraded mirror = the next failure
+      loses data — the number an operator actually acts on.
 relationships:
 - edge_type: contained_by
   target: Compute.BareMetalHost
