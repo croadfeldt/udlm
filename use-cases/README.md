@@ -20,4 +20,6 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   control-residency sovereignty (hub jurisdiction vs spoke), self-managed-hub rehydration (the
   ADR-043 demotion rule under its hardest test).
 - `storage-redundancy/` — the generic RAID model (fix-wave PR-2): degraded-pool drift with
-  graph-walkable blast radius; hardware RAID declared as Pool intent at bare-metal provision.
+  graph-walkable blast radius; hardware RAID declared as Pool intent at bare-metal provision;
+  composed-topology fault tolerance across authoring personas (recursive vdev trees); the
+  backend-owned aggregation semantics and the one-capacity-source pool boundary.

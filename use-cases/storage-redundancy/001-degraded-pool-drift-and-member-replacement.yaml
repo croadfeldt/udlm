@@ -16,6 +16,8 @@ scenario:
   success_criteria:
   - The failed member's inbound edges enumerate affected vdevs/pools/datasets with no bespoke tooling
   - redundancy_status and fault_tolerance_remaining outputs reflect degradation at discovery
+  - Degradation in a nested vdev (a mirror leg inside a stripe) composes up the tree to the pool's reported
+    tolerance
   - 'fault_tolerance_remaining: 0 is distinguishable as at-risk (next failure loses data)'
   - Member replacement and rebuild restore healthy status, recorded as governed operations
   - The identical flow holds for pool_kind zfs, md, and hardware_raid
