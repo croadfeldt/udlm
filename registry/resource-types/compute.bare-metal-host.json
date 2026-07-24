@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.6.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
+  "uuid": "a079fea1-7b6f-4da4-90a8-52d4f3ec8358",
   "resource_type": "Compute.BareMetalHost",
   "version": "0.6.0",
   "family": "Resource",
