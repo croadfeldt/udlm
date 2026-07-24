@@ -28,6 +28,14 @@ Every registry entry MUST validate against its meta-schema — run `python3 regi
 or provider matrix includes a worked example that passes the gate. Version per `registry/VERSIONING.md`;
 `registry/tools/compat-check.py` enforces that the declared bump matches the change.
 
+**A new resource type also meets the base standard** — SPEC-DESIGN rule 36, the eleven expectations
+(a–k): standards cross-walk with documented exclusions, typed Realized outputs or exempt-by-family,
+minimal required surface, references-not-strings, declared relationship surface, lifecycle
+completeness, brownfield instantiability, credential/sensitive discipline, an observability
+position, a *current* worked example, and **corpus use cases** (`use-cases/`) covering the six
+capability axes: usage, migration, rehydration, portability, sovereignty, tenancy. The type PR and
+its use-case PR travel together; a type without its UCs is not done.
+
 ## The review sweep — what every PR is checked against
 
 Before a PR merges it is swept against the standing checks below. The **automated** ones run in CI

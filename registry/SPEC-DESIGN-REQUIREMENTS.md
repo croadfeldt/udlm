@@ -296,6 +296,33 @@ Each hard constraint cites the UDLM contract it derives from.
     review]** *(quality-sweep bar — audit every type's descriptions/adopts/roles for a dictated mechanism,
     provider, or estate specific.)*
 
+36. **The resource-type base standard — expectations every type meets.** A new or revised
+    resource type is not done when its schema validates; it is done when it meets the base
+    standard. **(a) Standards cross-walk:** the domain's industry standards are surveyed;
+    `adopts[]` records what is adopted with disposition + provenance/license (§22–23); concerns
+    the industry treats as portable are either modeled or listed as **documented deliberate
+    exclusions** (with the ADR-038 scope: provider-variable concerns are Provider-Class
+    `SharedDataElement`s, named as such — never silently absent). **(b) Typed outputs (E2):**
+    every realizable type declares its Realized output surface — the named, typed values a
+    downstream binder consumes — or is explicitly exempt-by-family (Knowledge/reference types);
+    a binding names a declared output, never a string-spliced guess. **(c) Minimal required
+    surface:** `spec.required` is the smallest honest set. **(d) References, not strings:**
+    fields naming another resource are references (§34/PVD discipline). **(e) Relationship
+    surface declared:** `relationships[]` states what the type may depend on, contain, or bind
+    to, with `edge_type` + cardinality. **(f) Lifecycle completeness:** `immutable[]` is declared;
+    decommission semantics follow the tombstone discipline (DEP-007); the Realized/Discovered
+    surface is drift-comparable. **(g) Brownfield instantiability:** the type is instantiable
+    from Discovered state alone (§28). **(h) Credential/sensitive discipline:** secret-bearing
+    fields are credential references, never inline values; sensitive outputs are flagged
+    `sensitive`. **(i) Observability position:** the type states what is model state vs external
+    telemetry (referenced via an Information Provider) — metrics are not modeled as fields.
+    **(j) A current worked example** (existing requirement, plus currency: the example exercises
+    the type's present spec surface). **(k) Corpus use cases:** the type ships model-validation
+    use cases in `use-cases/` covering its capability axes — **usage (provision through day-2
+    update), migration, rehydration, portability, sovereignty, and tenancy** — so DAV gap
+    analysis can detect regressions per type, not just per model. **[enforced: review; (b), (j),
+    and (k) are CI-gate candidates — outputs-nonempty, example-currency, and UC-coverage checks]**
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.

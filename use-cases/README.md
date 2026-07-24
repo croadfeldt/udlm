@@ -1,0 +1,14 @@
+# use-cases/ — the UDLM model-validation corpus
+
+**What this is:** use cases that validate the *data model itself* — that a capability the model
+claims is actually expressible, checkable, and gap-detectable. They are the model-side twin of the
+DAV analysis corpus (the dcm repo's `dav/use-cases/`, where these are registered as analysis sets);
+the YAML shape is the shared use-case schema, so a file is valid in both corpora unchanged.
+
+**Why in this repo:** the resource-type base standard (SPEC-DESIGN §36) requires every new type to
+ship corpus use cases proving its capability axes. Those UCs live beside the model they validate;
+the DAV instance ingests them from here (or from the mirrored dcm set) for gap analysis runs.
+
+- `binding-surface/` — the typed-outputs (E2) gap class: outputs declared per type, bindings
+  contract-checked, fleet coverage queryable, worked-example currency. Born from the 2026-07-24
+  registry finding that zero of 46 types declared the output surface the binding examples assumed.
