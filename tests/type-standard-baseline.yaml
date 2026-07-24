@@ -4,9 +4,6 @@ _comment: The burn-down baseline for tests/check_type_standard.py (rule 36 gates
   entries to silence a new violation without a maintainer ruling.
 known:
 - gate: G3
-  type: Compute.VirtualMachine
-  item: networks[].network_ref
-- gate: G3
   type: Hardware.NetworkInterface
   item: vlan_memberships[].network_vlan_ref
 - gate: G3

@@ -200,16 +200,32 @@
               "description": "Local NIC name, e.g. eth0."
             },
             "network_ref": {
-              "type": "string",
-              "description": "handle/uuid of an existing Network.VirtualNetwork the NIC attaches to (selected from the eligible set). Carried as a references->Network.VirtualNetwork relationship."
+              "description": "The Network.VirtualNetwork this interface attaches to — common-elements Reference (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "Short form — the handle of an existing Platform.StorageClass."
+                },
+                {
+                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                }
+              ]
             },
             "mac": {
               "type": "string",
               "description": "Optional requested MAC address."
             },
             "ip_address_ref": {
-              "type": "string",
-              "description": "Optional handle/uuid of an existing Network.IPAddress to bind to this NIC (an ADR-025 resource reference, like network_ref). The referenced record carries HOW the address was selected and WHAT it is — its `allocation` origin (static | dhcp | link-layer | random) and `address` CIDR, the RFC 8344 / NMstate convergent form (ADR-023); a static reservation is simply `allocation: static`. ABSENT = the provider allocates an address on `target_segment` at reserve (ADR-009 §3 fulfillment). Host L3 config (routes, DNS, bond/bridge/VLAN) lives in Network.ConnectionProfile (NMstate), not restated here. Carried as a references->Network.IPAddress relationship."
+              "description": "A pre-allocated Network.IPAddress to bind to this interface (optional — omitted means the address service allocates at realization). Common-elements Reference shape.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "Short form — the handle of an existing Platform.StorageClass."
+                },
+                {
+                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                }
+              ]
             }
           }
         }
