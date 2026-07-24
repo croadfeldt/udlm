@@ -45,31 +45,31 @@ compensation: none             # rollback is a DIFFERENT process type; declared 
 Nothing above names an engine. This is what the org's policy gates, what schedules reference,
 what compliance reports against — and what both providers must satisfy to declare support.
 
-## Provider Class: `Process.OSPatch.EngineBlue` (today — the incumbent, an agent-pull engine)
+## Provider Class: `Process.OSPatch.EngineBlue` (today — the incumbent)
 
 ```yaml
 class: Process.OSPatch.EngineBlue
 extends: Process.OSPatch
 elements:
-  recipe_ref:           {scope: provider, value: "org-patching/apply", version_pin: "~> 4.2"}
+  definition_ref:       {scope: provider, value: "org-patching/apply", version_pin: "~> 4.2"}
   control_server:       {scope: provider, schema: reference -> the engine's control-plane Software.Service}
-  run_list_position:    {scope: provider, purpose: where in the agent's run list this executes}
-  splay:                {scope: provider, schema: duration, purpose: agent check-in jitter}
+  execution_order:      {scope: provider, purpose: where in the engine's host execution sequence this runs}
+  start_jitter:         {scope: provider, schema: duration, purpose: per-host start-time spread}
 ```
 
 Registration: the blue engine's provider declares `execute_workflows / Process.OSPatch` in its
 capability set. Admission (PRV-009), trust, and audit apply as for any provider.
 
-## Provider Class: `Process.OSPatch.EngineGreen` (tomorrow — the successor, a push engine)
+## Provider Class: `Process.OSPatch.EngineGreen` (tomorrow — the successor)
 
 ```yaml
 class: Process.OSPatch.EngineGreen
 extends: Process.OSPatch
 elements:
-  playbook_ref:         {scope: provider, value: "playbooks/os-patch.yml @ the org automation repo", version_pin: git tag}
+  definition_ref:       {scope: provider, value: "os-patch @ the org automation repo", version_pin: release tag}
   execution_env:        {scope: provider, purpose: the engine's execution-environment image}
-  inventory_source:     {scope: provider, values: [static, dynamic-from-estate], note: dynamic = the estate IS the inventory}
-  serial:               {scope: provider, schema: int|percent, purpose: rolling batch size}
+  target_source:        {scope: provider, values: [static, estate-derived], note: estate-derived = the estate IS the target list}
+  rolling_batch:        {scope: provider, schema: int|percent, purpose: rolling batch size}
 ```
 
 Same Type extended, different engine vocabulary. Neither provider class leaks into the other —
@@ -80,7 +80,7 @@ or into the Type.
 1. **Both declared.** The green engine's provider registers, declaring `execute_workflows /
    Process.OSPatch`. Two providers now satisfy the Type — the same state as a resource type with
    two eligible providers. Default-deny: the platform admin admits the new capability.
-2. **Canary by policy.** A placement/validation policy routes a slice (one host group; `serial`
+2. **Canary by policy.** A placement/validation policy routes a slice (one host group; `rolling_batch`
    makes this natural) to the green provider. The org's patch *intent* — targets, patch_policy,
    reboot_policy, window — is untouched: it lives at Type scope.
 3. **Comparable by construction.** Both engines publish the same typed outputs (`patched`,
@@ -105,7 +105,7 @@ or into the Type.
 ## What this proves about the design
 
 - **Portability read structurally:** everything the org cares about sits at Type scope; only
-  `recipe_ref`/`playbook_ref`-tier elements are engine-bound. "How locked-in is our patching?"
+  `definition_ref`-tier bindings are engine-bound. "How locked-in is our patching?"
   is answered by *looking at where the elements sit.*
 - **The migration used zero new machinery** — capability declaration, admission, placement,
   typed outputs, scheduled requests, audit: all existing. The class system's contribution was
