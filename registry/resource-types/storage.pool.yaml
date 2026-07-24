@@ -14,7 +14,7 @@
 # StoragePool's; a provider (zfs) naturalizes the concrete zpool.
 $id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.0
 conforms_to: udlm/0.1
-uuid: 91b18748-7f03-461a-9ee1-6cd77e8367c7
+uuid: 93a945c2-f6f7-4606-944d-8670bc3625ac
 resource_type: Storage.Pool
 version: 0.3.0
 family: Resource
