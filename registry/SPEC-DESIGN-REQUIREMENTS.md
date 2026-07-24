@@ -317,7 +317,11 @@ Each hard constraint cites the UDLM contract it derives from.
     `sensitive`. **(i) Observability position:** the type states what is model state vs external
     telemetry (referenced via an Information Provider) — metrics are not modeled as fields.
     **(j) A current worked example** (existing requirement, plus currency: the example exercises
-    the type's present spec surface). **(k) Corpus use cases:** the type ships model-validation
+    the type's present spec surface). **(l) Plain-English context:** the type carries a `context`
+    block — purpose (one sentence), plain description (day-one engineer language), use-when,
+    not-for, works-with — rendered into `registry/TYPE-CATALOG.md` (generated; a `--check` gate
+    keeps it current). A type an engineer cannot place without reading its schema is not done.
+    **(k) Corpus use cases:** the type ships model-validation
     use cases in `use-cases/` covering its capability axes — **usage (provision through day-2
     update), migration, rehydration, portability, sovereignty, and tenancy** — so DAV gap
     analysis can detect regressions per type, not just per model. **[enforced: review; (b), (j),

@@ -13,7 +13,7 @@ fails CI. Shrink the baseline with every fix-wave PR; never grow it.
   G6 property-strict    schema-authoring keys inside spec.properties subtrees come from the JSON
                         Schema keyword allowlist (catches mangled keys that are legal-but-wrong)
 
-G4 (worked-example currency) is deferred pending the D8 example-bar ruling; the exists-half is
+G7 context-present (rule 36(l)) rides the same ratchet. G4 (worked-example currency) is deferred pending the D8 example-bar ruling; the exists-half is
 reported informationally, never failing.
 """
 import glob
@@ -119,6 +119,10 @@ def main():
         meta_desc = (d.get("metadata", {}) or {}).get("description", "") or d.get("description", "") or ""
         if ADOPT_TOKENS.search(meta_desc) and not (d.get("adopts") or []):
             found.append(("G5", rt, "adopts[]", "prose claims adoption; adopts[] is empty"))
+
+        # G7 — plain-English context present (rule 36(l))
+        if not d.get("context"):
+            found.append(("G7", rt, "context", "no plain-English context block (purpose/plain_description/use_when)"))
 
         # G6
         bad = []
