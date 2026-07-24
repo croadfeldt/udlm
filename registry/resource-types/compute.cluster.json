@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aa9b102d-ce5f-4921-82ba-ada25f44c6ea",
   "resource_type": "Compute.Cluster",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Cluster",
-    "description": "A managed Kubernetes/OpenShift cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via RHACM + Hosted Control Planes) realizes. Targets Network.VirtualNetwork and Platform.Hub are forthcoming OSAC-derived types.",
+    "description": "A managed Kubernetes/OpenShift cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via RHACM + Hosted Control Planes) realizes. Target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T19:57:00Z"
   },
@@ -27,7 +27,8 @@
       "Platform.Namespace — the isolation boundaries carved inside the cluster.",
       "Platform.NodePool — homogeneous slices of the cluster's node capacity.",
       "Network.VirtualNetwork — the network the cluster is realized onto.",
-      "Compute.Container — the workloads scheduled onto the cluster."
+      "Compute.Container — the workloads scheduled onto the cluster.",
+      "Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target"
     ]
   },
   "spec": {
@@ -119,7 +120,13 @@
       "edge_type": "contained_by",
       "target": "Platform.Hub",
       "cardinality": "0..1",
-      "description": "Provisioned and managed by a hub (ACM / Hosted Control Planes)."
+      "description": "Provisioned and managed by a hub (ACM / Hosted Control Planes): the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on (soft) edge instead. Unnamed per ADR-043."
+    },
+    {
+      "edge_type": "depends_on",
+      "target": "Platform.Hub",
+      "cardinality": "0..1",
+      "description": "Imported/adopted into a hub's fleet (OCM ManagedCluster semantics): managed, not contained — strength soft because an imported cluster survives hub loss (degrade-don't-break). Mutually exclusive with the contained_by hub edge per cluster-hub pair; unnamed per ADR-043 — the typed target is the context."
     }
   ],
   "adopts": [

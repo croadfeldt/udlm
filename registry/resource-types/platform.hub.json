@@ -1,0 +1,96 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Hub/0.1.0",
+  "resource_type": "Platform.Hub",
+  "family": "Resource",
+  "version": "0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "975228ba-d50f-424f-8a1c-acaa764d20c1",
+  "status": "active",
+  "metadata": {
+    "display_name": "Hub",
+    "description": "The multi-cluster management plane (ACM hub / HCP management cluster / Rancher server / hosted fleet manager). Adopts Cluster API's management-cluster vocabulary and OCM's hub/ManagedCluster model; relationship semantics per ADR-043 (typed target carries meaning; self-managed hubs hold no ordering edge into their host chain).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-24T20:00:00Z"
+  },
+  "context": {
+    "purpose": "The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.",
+    "plain_description": "A Hub is whatever sits above your clusters and manages them as a fleet — an ACM hub, a HyperShift/HCP management cluster, a Rancher server, or a hosted fleet manager. It may itself run on a cluster (including, in the self-managed pattern, the very cluster it manages) or be standalone software. Model the hub as its own entity; whether it lives on a cluster is just an edge.",
+    "use_when": [
+      "you need to record which management plane provisioned or now manages a cluster",
+      "a cluster's lifecycle operations flow through a fleet manager and shutdown/startup order must respect it",
+      "you need the management plane's own sovereignty position (which jurisdiction governs the manager, distinct from its spokes)"
+    ],
+    "not_for": [
+      "the cluster a hub happens to run on — that host is a plain Compute.Cluster, and hub-ness on it is a derived role marker, never authored",
+      "single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service on the cluster",
+      "a peer DCM instance in federation — that is the federate capability on the provider contract, not a Hub"
+    ],
+    "works_with": [
+      "Compute.Cluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster",
+      "Facility.Location — where the hub's control plane actually runs, for the sovereignty question",
+      "Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline"
+    ]
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "Portable hub surface. Deliberately thin: what a hub IS to the model (identity, reachability, fleet role) — hub-product specifics (ACM policy sets, Rancher projects, HCP sizing knobs) are Provider-Class SharedDataElements (ADR-038), documented exclusions per rule 36(a). Relationship semantics follow ADR-043: meaning lives in the typed target, ordering in edge_type; the self-managed hub holds no ordering edge into its own host chain (references only — the CYCLE gate enforces it).",
+    "properties": {
+      "api_endpoint": {
+        "type": "string",
+        "description": "The hub's management API endpoint (URL). The address spokes and operators talk to."
+      },
+      "hosted_control_planes": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether this hub hosts spoke control planes inside itself (HyperShift/HCP pattern). Hosted spokes are contained_by this hub; imported spokes are depends_on (soft)."
+      }
+    },
+    "required": []
+  },
+  "outputs": {
+    "hub_ready": {
+      "type": "boolean",
+      "description": "The management plane is up and serving its API — the realize-time fact a spoke-provisioning request binds on."
+    },
+    "api_endpoint": {
+      "type": "string",
+      "description": "Realized management API endpoint (may differ from intent when the provider assigns it)."
+    },
+    "managed_cluster_count": {
+      "type": "integer",
+      "description": "Fleet rollup at last reconciliation: how many clusters point at this hub (contained_by + depends_on inbound). A reading of the graph, published for cheap binding."
+    }
+  },
+  "immutable": [],
+  "relationships": [
+    {
+      "edge_type": "contained_by",
+      "target": "Compute.Cluster",
+      "cardinality": "0..1",
+      "description": "The host cluster, when the hub runs on one (ACM hub, HCP management cluster). Standalone hubs (Rancher server, hosted fleet managers) omit it. In the self-managed pattern the host is also a spoke: that reflexive management edge is expressed as references on the spoke side, never as an ordering edge back into this host chain (ADR-043; CYCLE-gate enforced)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Cluster API",
+      "version": ">=1.6",
+      "standard_name": "management cluster / workload cluster",
+      "role": "the industry vocabulary for exactly this split: the management cluster provisions and manages workload clusters; Platform.Hub is the management-cluster identity, Compute.Cluster edges are the workload side",
+      "source": "https://cluster-api.sigs.k8s.io/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "Open Cluster Management",
+      "version": ">=0.13",
+      "standard_name": "hub / ManagedCluster",
+      "role": "ACM's upstream hub-spoke model: the hub cluster and its ManagedCluster resources — the imported-spoke (depends_on soft) semantics mirror OCM's non-destructive import/detach",
+      "source": "https://open-cluster-management.io/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ]
+}

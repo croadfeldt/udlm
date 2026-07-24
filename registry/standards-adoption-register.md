@@ -138,6 +138,14 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `RFC 9396` `RFC-9396` · **Body:** IETF · **Since:** registered 2026-07-15 (first referenced in `capability-discovery.md` §2.5). · **Where:** the capability-admission model — RAR is the structured `verb × domain` request shape behind `effective_capabilities` (`contracts/capability-discovery.md` §2.5; SPEC-DESIGN adopt-by-ref §22–23).
 **Why:** the provider-capability model needed a standard shape for "a request for authorization to do specific actions on specific resources"; RAR's typed `authorization_details` *is* our `verb × domain`, and it pairs with the IAM permission-boundary / OAuth-scope intersection semantics already adopted. **Adopt the mechanism (PATTERN), not a specific OAuth server.** *Alternatives:* plain OAuth scopes (flat strings, no resource/action structure), an invented request grammar (rejected on the don't-reinvent rule). **License:** IETF Trust — compatible-reference.
 
+### Cluster API — CANONICAL
+**Covers:** `Cluster API` `CAPI` · **Body:** CNCF (Kubernetes SIG Cluster Lifecycle) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the management-cluster / workload-cluster vocabulary.
+**Why:** CAPI names exactly the multi-cluster split UDLM models: a management cluster provisions and manages workload clusters. Platform.Hub is the management-cluster identity; the Compute.Cluster hub edges are the workload side. Apache-2.0, compatible-reference.
+
+### Open Cluster Management — CANONICAL
+**Covers:** `Open Cluster Management` `OCM` · **Body:** CNCF (ACM's upstream) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the hub / ManagedCluster model.
+**Why:** OCM's non-destructive import/detach of ManagedClusters is the semantic the imported-spoke edge mirrors (`depends_on` soft — an imported cluster survives hub loss). Apache-2.0, compatible-reference.
+
 ### NUT (Network UPS Tools) — CANONICAL
 **Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** Facility.PowerFeed (`ups.status` vocabulary).
 **Why:** the estate's actual UPS telemetry producer (NUT upsd/upsmon daemons); its status vocabulary is the de-facto open standard. **License:** GPL-2.0+ — reference-only.
