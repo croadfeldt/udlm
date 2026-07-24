@@ -77,6 +77,34 @@ The bare-metal provisioning provider (Metal3/BMC-class) derives its controller c
 this declared pool — the host type carries no RAID fields (see Compute.BareMetalHost 0.6.0's
 provisioning-intent surface: image/root-hints/boot, with storage topology living here).
 
+## Hot spares — scope by tree position
+
+```yaml
+# Pool-wide spares (ZFS spares / controller global) — a top-level spare group:
+vdevs:
+  - {type: raidz2, raid_type: RAID6, members: [sd-a, sd-b, sd-c, sd-d, sd-e, sd-f]}
+  - {type: spare, members: [sd-g, sd-h]}          # claimable by any protected vdev in the pool
+
+# Dedicated spare (mdadm per-array / controller dedicated) — nested inside the vdev it serves:
+vdevs:
+  - type: mirror
+    raid_type: RAID1
+    members:
+      - nvme0
+      - nvme1
+      - {type: spare, members: [nvme2]}           # standby for THIS mirror only
+
+# draid — spare capacity is woven in; no physical spare device:
+vdevs:
+  - {type: draid, distributed_spares: 2, members: [sd-a, sd-b, sd-c, sd-d, sd-e, sd-f, sd-g, sd-h]}
+```
+
+A controller's **global** spare serving several virtual disks (= several Pools) appears in each
+pool's spare group: exclusivity applies to *active* membership only; standby claims resolve
+first-come, as the hardware behaves. `spares_available` is its own output — a spare restores
+tolerance after resilver, it never adds tolerance now, so it is deliberately not folded into
+`fault_tolerance_remaining`.
+
 ## What every backend gets for free
 
 - **Blast radius as a graph walk:** members are References to `Hardware.StorageDevice` — a dead

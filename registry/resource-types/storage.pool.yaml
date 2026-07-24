@@ -14,7 +14,7 @@
 # StoragePool's; a provider (zfs) naturalizes the concrete zpool.
 $id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.0
 conforms_to: udlm/0.1
-uuid: 93a945c2-f6f7-4606-944d-8670bc3625ac
+uuid: a8704332-aa77-4b38-9fb8-bb3a026ae0fa
 resource_type: Storage.Pool
 version: 0.3.0
 family: Resource
@@ -114,7 +114,12 @@ spec:
         model as trees — raid10 as an explicit stripe of mirrors {type: stripe, members: [mirror(a,b), mirror(c,d)]}
         or as a mirror of stripes; under zfs the same layout may be expressed as multiple top-level mirror vdevs
         because ZFS''s OWN aggregation semantic dynamic-stripes top-level vdevs (backend semantic, not a type rule).
-        Fault tolerance composes through the tree (min across striped children; per-group survivability for mirrors/parity).'
+        Fault tolerance composes through the tree (min across striped children; per-group survivability for mirrors/parity)
+        SPARES: a {type: spare} group is scoped by TREE POSITION — at the pool''s top level it is pool-wide (ZFS
+        spares, a controller''s global spare); nested inside a protected vdev it is dedicated to that vdev (mdadm
+        per-array, controller dedicated). A device MAY appear in multiple pools'' spare groups simultaneously (controller
+        global spares serve many virtual disks = many Pools): exclusivity applies to ACTIVE membership only, and
+        standby claims resolve first-come, as the hardware behaves.'
       properties:
         type:
           type: string
@@ -163,6 +168,10 @@ spec:
                 (handle string or {uuid, handle} object). Members as references make disk-failure blast radius a
                 graph walk: a dead drive''s inbound edges ARE the affected pools.'
             - $ref: '#/$defs/vdev'
+        distributed_spares:
+          type: integer
+          description: 'draid only: spare CAPACITY woven into the vdev (draid2:...:2s) — no physical spare device
+            exists; rebuild is distributed. Mutually exclusive with member spare groups inside this vdev.'
 outputs:
   usable_capacity:
     type: string
@@ -179,6 +188,11 @@ outputs:
     description: How many further member failures the pool survives right now — composed through the vdev TREE (min
       across striped children; per-group survivability for mirrors/parity). 0 on a degraded mirror = the next failure
       loses data — the number an operator actually acts on.
+  spares_available:
+    type: integer
+    description: Standby spare devices currently claimable by this pool (all spare groups in scope, minus claimed/failed).
+      Deliberately NOT part of fault_tolerance_remaining — a spare restores tolerance after resilver; it does not
+      add tolerance now.
 relationships:
 - edge_type: contained_by
   target: Compute.BareMetalHost
