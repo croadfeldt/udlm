@@ -25,7 +25,7 @@ without the why; a reviewer should be able to reconstruct *why* from the repo, n
 
 Every registry entry MUST validate against its meta-schema — run `python3 registry/tools/validate.py`
 (types, instances, and provider support matrices all pass, 0 invalid). A new resource type, instance,
-or provider matrix includes a worked example that passes the gate. Version per `registry/VERSIONING.md`;
+or provider matrix includes a worked example that passes the gate. Version per `registry/VERSIONING.md` — including **uuid rotation**: any change to a uuid-bearing definition mints a new uuid (the handle is the stable identity; the uuid pins the revision);
 `registry/tools/compat-check.py` enforces that the declared bump matches the change.
 
 **A new resource type also meets the base standard** — SPEC-DESIGN rule 36, the eleven expectations

@@ -99,6 +99,24 @@ optional/widened fields, so up/down-conversion is mechanical). Cross-major conve
 explicit, declared mapping — never an implicit guess. This mirrors Kubernetes' storage-version +
 conversion model: one canonical version per major, declared conversions between the rest.
 
+## UUID rotation — the uuid is the revision, the handle is the thing
+
+**If anything in a uuid-bearing definition document changes, its uuid changes.** This applies to
+every definition and spec in the registry — resource types, instances, DecisionRecords, and future
+class artifacts alike. It is the same discipline instances already follow: each revision mints a
+new UUID; the **handle** (`resource_type`, `handle`) is the stable identity that floats to current.
+
+Operationally:
+- **Referencing something that should track current** → cite the handle (or `resource_type` +
+  semver range). **Pinning an exact revision** (audit, reproduction, compat proofs) → cite the
+  uuid. A uuid reference can never silently change meaning, because its target can never change.
+- **The old uuid is not retired** — it remains the immutable identity of the prior revision
+  (git history is the revision store; `git log -S<uuid>` finds it).
+- **Rotation is a consequence, never an act**: rotating without a content change is flagged as
+  noise, and a rotated uuid is never reused anywhere.
+- **Enforced**: `tests/check_uuid_rotation.py` (CI + signoff) — content changed ⇒ uuid rotated;
+  uuids unique registry-wide; uuid-only diffs rejected.
+
 ## Registry resolution
 
 - Reference a type by `resource_type` + a version constraint: exact (`1.2.0`), minor-floating
