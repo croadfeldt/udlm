@@ -21,3 +21,7 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   ADR-043 demotion rule under its hardest test).
 - `bare-metal/` — replayable host provisioning intent (Metal3 surface, fix-wave PR-1): provision
   from intent; host rehydration by replaying intent onto replacement hardware.
+- `process-migration/` — automation intent as a peer of resource intent: engine migration by
+  canary + cutover, blue/green verification by typed-output diff, staged promotion (application
+  deployment discipline applied to automation), structural lock-in queries, engine-upgrade
+  regression. Stage flow: docs/flows/automation-migration-and-promotion.md.
