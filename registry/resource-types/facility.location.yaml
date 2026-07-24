@@ -2,7 +2,7 @@
 #
 # A physical place — site, building, room, row, rack, shelf, or bench — that resources sit in. The
 # anchor for physical organization and location-scoped environment (cooling, structured cabling,
-# physical uplink). NOTE: power is deliberately NOT owned here — each host carries that via its own
+# physical uplink). NOTE: power is not owned here — each host carries that via its own
 # `depends_on Facility.PowerFeed` edge (ADR-013), possibly to different feeds. Location answers "where
 # is it", which is a different question from "what powers it". Locations nest (bench within room within site).
 #
@@ -10,7 +10,7 @@
 # models physical placement; UDLM references it and owns only identity + the containment nesting.
 $id: https://udlm.dev/registry/udlm/0.1/Facility.Location/0.3.0
 conforms_to: udlm/0.1
-uuid: ef034d7f-d8ba-484a-9a0a-360c2327c8f2
+uuid: bd9fab08-f158-4fdc-b8ef-f82153060834
 resource_type: Facility.Location
 version: 0.3.0
 family: Resource
@@ -77,7 +77,7 @@ context:
     A physical place, at whatever granularity is useful: a site contains rooms, a room contains
     racks, a rack has positions. Resources declare where they physically sit by referencing a
     location; location-scoped concerns like cooling or a shared uplink attach at the right level of
-    the hierarchy. Power is deliberately not carried here — each host declares its own power-feed
+    the hierarchy. Power is not carried here — each host declares its own power-feed
     edges, because two hosts in one rack can draw from different feeds.
   use_when:
     - >-

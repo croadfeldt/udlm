@@ -1,25 +1,25 @@
 # UDLM Resource Type Specification — Hardware.BMC
 #
-# A baseboard management controller (BMC / IPMI / iDRAC / ASPEED) — the out-of-band management and
+# A baseboard management controller (BMC — Redfish/IPMI-managed) — the out-of-band management and
 # POWER-CONTROL surface of a physical host. It's what an ordered shutdown/startup actuates for the
 # force-off and (critically) the power-ON side, where the OS can't act because the host is off.
 #
 # ADOPT (not absorb), core-tenets T5: the BMC's data model and power/reset actions are DMTF Redfish's
 # (Manager + ComputerSystem.Reset); UDLM carries identity + a version-pinned pointer + which host it
 # manages. IPMI is the legacy fallback protocol, named not modeled.
-$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.4.1
 conforms_to: udlm/0.1
-uuid: e5e97d76-ab1c-4286-8ca4-db6aaeb08eb2
+uuid: 362e1d9d-017f-45bd-8a31-d1c3918f6b94
 resource_type: Hardware.BMC
-version: 0.4.0
+version: 0.4.1
 family: Resource
 status: active
 metadata:
   display_name: BMC
   description: >-
     A host's baseboard management controller — its management address, protocol, and the power/reset
-    control surface — modeled so power actions have a first-class target. Common types are ASPEED/
-    Supermicro, Dell iDRAC, and HPE iLO; credentials are never inline (reference a
+    control surface — modeled so power actions have a first-class target. Every board vendor ships
+    its own BMC family; this record is vendor-neutral. Credentials are never inline (reference a
     Security.CredentialRef). `manages` points at the host it powers; power operations are Redfish
     (or a vendor tool like ipmitool where a board's Redfish is incomplete) — the mechanism is Policy (DCM), not data.
   maintainer: udlm-registry
@@ -60,7 +60,7 @@ spec:
       description: Out-of-band protocol(s) the BMC answers. redfish for power/reset; ipmi as legacy fallback.
     vendor:
       type: string
-      description: BMC/board vendor (e.g. ASPEED/Supermicro, Dell iDRAC).
+      description: BMC/board vendor — the observed vendor string (e.g. `<vendor>`).
     dns_name:
       type: string
       description: Management DNS name (e.g. ipmi-host01.example.com).
@@ -81,7 +81,7 @@ context:
     addressable target.
   plain_description: >-
     The always-on management controller inside a server that answers even when the host is off —
-    iDRAC, iLO, a Supermicro/ASPEED BMC. This record carries its management address, the protocols
+    each board vendor ships its own flavor. This record carries its management address, the protocols
     it answers (Redfish, IPMI as fallback), and its vendor, and points at the one host it controls.
     Credentials are never stored here — they are referenced. It exists so that power that host off
     resolves to a concrete address and mechanism instead of prose.

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "a8b23d15-6f47-4c9e-b0a1-3d5e7f9c2b84",
+  "uuid": "cf5a71f0-7960-4653-ba99-efc1c77d855b",
   "resource_type": "Platform.StorageClass",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -64,7 +64,7 @@
       },
       "provisioner": {
         "type": "string",
-        "description": "The storage provisioner that handles volumes of this class (e.g. 'rbd.csi.ceph.com', 'ebs.csi.aws.com')."
+        "description": "The storage provisioner that handles volumes of this class (a CSI driver name, e.g. 'block.csi.example.com')."
       },
       "reclaim_policy": {
         "type": "string",

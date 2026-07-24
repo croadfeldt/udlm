@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.6.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "e4d414d7-249b-4e87-b0c2-9e44402ae768",
+  "uuid": "aca89c7a-aa0a-4363-ae4a-296ab45e7b4e",
   "resource_type": "Compute.BareMetalHost",
   "version": "0.6.0",
   "family": "Resource",
@@ -141,7 +141,7 @@
           "url",
           "checksum"
         ],
-        "description": "The provisioning image for this host (Metal3 image): what gets written to the root device at provision time. The heart of replayable host intent — a host rebuilt from intent re-provisions from exactly this image.",
+        "description": "The provisioning image for this host (Metal3 image): what gets written to the root device at provision time. A host rebuilt from intent re-provisions from exactly this image.",
         "properties": {
           "url": {
             "type": "string",

@@ -4,11 +4,11 @@
 # that lets a container be placed under a Minnesota-residency requirement — which the region (US/CA)
 # accreditation alone does not satisfy. §3.3.1.
 record_type: accreditation
-uuid: f30a142c-c9ee-4b37-b5bf-cea136a25b67
+uuid: f747823c-d895-4f6a-84e1-e2c03fb49937
 handle: accreditations/providers/full-stack-sp/state-mn-containers
 conforms_to: udlm/0.1
 version: 1.0.0
-subject_uuid: ae18b73d-84c9-49ff-add9-d2d5de464967    # full-stack-sp — match axis 1 (provider)
+subject_uuid: ee72f521-a06d-41ec-82c7-dfac5cd1bb09    # full-stack-sp — match axis 1 (provider)
 subject_type: service_provider
 accreditation_type: sovereign_authorization
 framework: sovereign

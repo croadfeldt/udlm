@@ -1,7 +1,7 @@
 {
   "provider": {
     "name": "full-stack-sp",
-    "uuid": "ae18b73d-84c9-49ff-add9-d2d5de464967",
+    "uuid": "ee72f521-a06d-41ec-82c7-dfac5cd1bb09",
     "kind": "service"
   },
   "adopted_standard_support": [
@@ -51,7 +51,7 @@
     {
       "capability_uuid": "31aa387c-71d0-4718-83dc-780b7fce13d3",
       "version": "1.0.0",
-      "name": "OpenShift Cluster Lifecycle",
+      "name": "Cluster Lifecycle",
       "categories": [
         {
           "category": "realize_resources/Compute",

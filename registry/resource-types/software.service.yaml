@@ -1,7 +1,7 @@
 # UDLM Resource Type Specification — Software.Service
 #
 # A LOGICAL running service — the unit an operator reasons about and orders in a shutdown/startup:
-# a web app, a registry, a mail server, a CI system. Deliberately form-agnostic: its constituents may
+# a web app, a registry, a mail server, a CI system. Form-agnostic: its constituents may
 # be container(s) on a cluster/host (Compute.Container) OR native systemd units on a host/VM (e.g. a
 # mail server's postfix/dovecot/amavis units, not containers). One node per service, carrying the runtime edges
 # that a plain container can't — runs_on, uses_storage, requires(hard/soft), binds_to — which is
@@ -9,14 +9,14 @@
 #
 # ADOPT (not absorb), core-tenets T5: the standards' schemas are NOT restated here — only an identity
 # join + a version-pinned pointer. Composition and relationship *semantics* are TOSCA's and OAM's;
-# the OCP realization vocabulary is Kubernetes'; the provider naturalizes them. (Design also informed
+# the container-platform realization vocabulary is Kubernetes'; the provider naturalizes them. (Design also informed
 # by CNCF Backstage Component/System catalog entities and systemd ordering-vs-dependency semantics —
 # referenced, not adopted, to keep the register surface minimal.)
-$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.1
 conforms_to: udlm/0.1
-uuid: 94762c84-a096-4e54-a4f7-95123807fc95
+uuid: 960478c6-93e8-41ff-a5a6-6d487ac690c7
 resource_type: Software.Service
-version: 0.4.0
+version: 0.4.1
 family: Resource
 status: active
 metadata:
@@ -24,7 +24,7 @@ metadata:
   description: >-
     A logical running service composed of one or more constituents (containers and/or native systemd
     units) that a provider realizes and manages under the four-state lifecycle. Models the application
-    layer of the estate — Kubernetes/OCP workloads (web apps, registries, observability, model serving)
+    layer of the estate — Kubernetes workloads (web apps, registries, observability, model serving)
     and host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime
     dependencies carry order. Secret material is never inline; env/mounts reference a Security.CredentialRef. Fine-grained
     per-container detail, when wanted, hangs off `constituents` as Compute.Container references.
@@ -51,7 +51,7 @@ adopts:
   - standard: Kubernetes
     version: ">=1.29"
     standard_name: Workload objects (Deployment/StatefulSet/DaemonSet, KServe InferenceService)
-    role: realization vocabulary for OCP-hosted services — naturalized by the provider, not restated
+    role: realization vocabulary for Kubernetes-hosted services — naturalized by the provider, not restated
     source: https://kubernetes.io/docs/concepts/workloads/
     license: CC-BY-4.0
     license_compatibility: compatible-reference
@@ -64,7 +64,7 @@ lifecycle:
     persistent data of its own — it `uses_storage` external Storage.* and `binds_to` Data.Database — so
     decommission is non-destructive to data. Reverse of the realization/startup order.
 
-# Instance dependency edges (the point of this type — expressed with the estate-wide edge kinds,
+# Instance dependency edges (the primary content of this type — expressed with the estate-wide edge kinds,
 # aligned to TOSCA root relationships; not restated in spec):
 #   runs_on     edge_type: references, relation: runs_on     -> Compute.Cluster | Compute.BareMetalHost | Compute.VirtualMachine   (TOSCA HostedOn)
 #   uses_storage edge_type: references, relation: uses_storage -> Storage.Cluster | Storage.FileShare | Storage.Volume            (TOSCA DependsOn)
@@ -148,7 +148,7 @@ relationships:
     name: requires
     target: Security.DirectoryService
     cardinality: 0..n
-    description: Requires a directory/identity service (e.g. FreeIPA) — strength hard|soft.
+    description: Requires a directory/identity service — strength hard|soft.
   - edge_type: depends_on
     name: requires
     target: Network.AddressService

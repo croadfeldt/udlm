@@ -6,7 +6,7 @@
 # from Storage.Cluster (a DISTRIBUTED multi-node system, Ceph) and from Storage.Volume (a CONSUMABLE
 # volume a workload attaches): a Pool is the single-host aggregation layer between the drives
 # (the physical drives) and the datasets (Storage.Dataset). It owns the redundancy topology — the
-# vdev grouping — which a flat "dataset on host" edge would lose, exactly as PSU→feed captures power
+# vdev grouping — which a flat "dataset on host" edge would lose, the same way PSU→feed captures power
 # redundancy the coarse "host on UPS" edge drops.
 #
 # ADOPT (not absorb), core-tenets T5: schemas are not restated — only an identity join + version-pinned
@@ -14,7 +14,7 @@
 # StoragePool's; a provider (zfs) naturalizes the concrete zpool.
 $id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.0
 conforms_to: udlm/0.1
-uuid: a8704332-aa77-4b38-9fb8-bb3a026ae0fa
+uuid: 942d9e8d-6fb7-4442-b5b3-ddc038b3d14b
 resource_type: Storage.Pool
 version: 0.3.0
 family: Resource
@@ -94,7 +94,7 @@ spec:
       description: 'The redundancy topology, as a tree: each top-level entry is a vdev whose members are drives
         or child vdevs. The recursion is backend-agnostic; HOW the backend aggregates its top-level vdevs into the
         pool''s one capacity source is the BACKEND''S semantic — zfs dynamic-stripes across them ([mirror, mirror]
-        IS raid10, no wrapper needed), lvm allocates across them per VG policy, and a hardware controller does not
+        IS raid10), lvm allocates across them per VG policy, and a hardware controller does not
         aggregate independent virtual disks at all: two independent VDs are two Pools (one capacity source each),
         so a hardware_raid pool normally carries ONE top-level vdev tree (the explicit stripe-of-mirrors).'
       items:
@@ -119,7 +119,7 @@ spec:
         spares, a controller''s global spare); nested inside a protected vdev it is dedicated to that vdev (mdadm
         per-array, controller dedicated). A device MAY appear in multiple pools'' spare groups simultaneously (controller
         global spares serve many virtual disks = many Pools): exclusivity applies to ACTIVE membership only, and
-        standby claims resolve first-come, as the hardware behaves.'
+        standby claims resolve first-come.'
       properties:
         type:
           type: string
@@ -187,11 +187,11 @@ outputs:
     type: integer
     description: How many further member failures the pool survives right now — composed through the vdev TREE (min
       across striped children; per-group survivability for mirrors/parity). 0 on a degraded mirror = the next failure
-      loses data — the number an operator actually acts on.
+      means the next member failure loses data.
   spares_available:
     type: integer
     description: Standby spare devices currently claimable by this pool (all spare groups in scope, minus claimed/failed).
-      Deliberately NOT part of fault_tolerance_remaining — a spare restores tolerance after resilver; it does not
+      Not included in fault_tolerance_remaining — a spare restores tolerance after resilver; it does not
       add tolerance now.
 relationships:
 - edge_type: contained_by

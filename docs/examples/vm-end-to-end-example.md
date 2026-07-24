@@ -16,7 +16,7 @@ disk_size:    100Gi
 # The 0.6.0 type surface — sizing is a oneOf: EITHER a provider-neutral class...
 instance_size: medium        # ...OR explicit topology (vcpu: {count: 4}, memory: {size: 8GiB})
 guest_os:
-  os_image: rhel-9           # a reference into the provider-advertised os_image vocabulary
+  os_image: linux-server-9   # a reference into the provider-advertised os_image vocabulary
                              # (ADR-012 reference data; policy validates membership at request;
                              # inline OS spec is the explicit portability_breaking escape)
 firmware:
@@ -114,8 +114,8 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 | DNS record/zone | `Network.DNSZone` | name→IP (operate; remap on rehydrate) | DNS | ✔ |
 | Storage pool | `Storage.Pool` / `Storage.Cluster` | volume source | storage | ✔ |
 | Volume | `Storage.Volume` | disk (`attaches_to`) | storage | — (consumable) |
-| Hypervisor host | `Compute.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, OCP) | ✔ |
-| Realm / identity | `Security.DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (e.g. FreeIPA) | ✔ |
+| Hypervisor host | `Compute.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, KubeVirt) | ✔ |
+| Realm / identity | `Security.DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (a directory service) | ✔ |
 | Secret | `Security.CredentialRef` | `references` (never inline) | credential / secrets | ✔ |
 | Power feed | `Facility.PowerFeed` | via the host's PSU (fault domain) | facilities | ✔ |
 | Time sync | (ADR-005 capability) | clock discipline | provider-attested per profile | — (capability) |

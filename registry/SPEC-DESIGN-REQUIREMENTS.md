@@ -292,7 +292,19 @@ Each hard constraint cites the UDLM contract it derives from.
     Concrete providers appear only as **examples** ("e.g. …") or reference realizations — never as the type's
     grounding, its normative text, or an adopted "the model." And **no estate/deployment-specific references
     in the portable spec** (host names, a site's tool choice, `group_vars`, generator scripts) — those live
-    in the estate's own repo. Extends §17 (no provider-specific data in the universal spec). **[enforced:
+    in the estate's own repo. Extends §17 (no provider-specific data in the universal spec).
+    **Product-name neutrality (the diplomatic tightening):** a product or vendor name appears ONLY
+    (a) in `adopts[]` / `aliases[]` entries and the standards-adoption register — attribution of an
+    adopted standard or vocabulary cross-walk is not endorsement, and an adoption stripped of its
+    name is meaningless — and (b) in a spec description only when attributing that adopted
+    standard's own vocabulary (e.g. "Metal3 `rootDeviceHints`", where Metal3 is in the type's
+    `adopts[]`). Products as **actors, examples, or illustrations** are replaced with generic
+    archetypes everywhere — normative text, `context` blocks, worked examples, flows ("a
+    multi-cluster fleet manager", "an IPAM appliance", "the incumbent/successor engine" — never a
+    named engine or platform). Technology identifiers that ARE the generic mechanism stay
+    (`zfs`/`md`/`lvm` pool kinds, `x86_64`, `uefi`, Kubernetes as the generic system); public
+    example data uses neutral placeholders (`<vendor>`, `Board-X`, `linux-server-9`) even where a
+    real estate would record an observed vendor string. **[enforced:
     review]** *(quality-sweep bar — audit every type's descriptions/adopts/roles for a dictated mechanism,
     provider, or estate specific.)*
 

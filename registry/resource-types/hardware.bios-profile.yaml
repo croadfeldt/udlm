@@ -5,11 +5,11 @@
 # Litmus (§1): Redfish releasing a new version must NOT force a change here. So this type carries
 # no attribute value-typing and no apply-time semantics (those are Redfish's, referenced); the
 # desired settings ride as an OPAQUE passthrough interpreted via the pinned attribute_registry.
-$id: https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.4.1
 conforms_to: udlm/0.1
-uuid: c1a483e0-f52a-4e0f-b58d-1b8425884afe
+uuid: 9e8dbb91-cf60-420f-9ab0-fc9df20d6ff4
 resource_type: Hardware.BiosProfile
-version: 0.4.0
+version: 0.4.1
 family: Resource
 status: active
 metadata:
@@ -20,7 +20,7 @@ metadata:
     identity, the version-pinned registry pointer (binding), and the apply method; the attribute
     schema, value types, and apply-time semantics are Redfish's and are never restated here. Desired
     settings are an opaque passthrough interpreted via `attribute_registry`. Applied out-of-band
-    (Redfish SetBiosAttributes, or Supermicro SUM where a board's Redfish Bios.Attributes is empty).
+    (Redfish SetBiosAttributes, or a board vendor's own settings utility where a board's Redfish Bios.Attributes is empty).
   maintainer: udlm-registry
   origination_timestamp: "2026-07-12T00:00:00Z"
 adopts:
@@ -55,13 +55,13 @@ spec:
       default: redfish
       description: >-
         How DCM applies the profile out-of-band (UDLM's realization concern, not Redfish schema).
-        `sum` = Supermicro SUM (a supported board Redfish Bios.Attributes is empty, so SUM is the path).
+        `sum` = a board vendor's out-of-band settings utility (a supported board's Redfish Bios.Attributes is empty, so the vendor utility is the path).
     attributes:
       type: object
       description: >-
         Desired settings as Redfish Bios `Attributes` (name->value). OPAQUE passthrough — UDLM does not
         model or type these; they are the adopted standard's data, interpreted via `attribute_registry`
-        and naturalized by the provider. Vendor/firmware-specific; lives only in the instance (gitlab).
+        and naturalized by the provider. Vendor/firmware-specific; lives only in the instance (the estate repo).
 outputs:
   applied_generation:
     type: integer

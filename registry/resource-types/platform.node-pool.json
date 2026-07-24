@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "c5d36e28-9a14-4f7b-8b3c-1e4d6a8f5c97",
+  "uuid": "514920a1-9d0a-44fb-a4b3-0b59fa71454d",
   "resource_type": "Platform.NodePool",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -45,7 +45,7 @@
     "properties": {
       "name": {
         "type": "string",
-        "description": "The node pool name within the cluster (e.g. 'gpu-a100', 'general-purpose', 'infra')."
+        "description": "The node pool name within the cluster (e.g. 'gpu-large', 'general-purpose', 'infra')."
       },
       "cluster_ref": {
         "description": "Resource reference to a Compute.Cluster (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
@@ -79,7 +79,7 @@
                 "items": {
                   "type": "string"
                 },
-                "description": "GPU model names (e.g., A100, H100, MI300X)."
+                "description": "GPU model names — the observed accelerator model strings (e.g. '<gpu-model>')."
               },
               "count_per_node": {
                 "type": "integer"

@@ -38,7 +38,7 @@ The fan-out is why the tiers are distinct objects, not stages of one record. A *
 flowchart TD
     PAT["Pattern<br/>3-Tier Web App<br/>(web → app → data · HA in prod · TLS · backup)"]:::p
     PAT -->|codify · dev profile| T1["Template · homelab/dev<br/>libvirt VMs · single Postgres"]:::t
-    PAT -->|codify · FSI profile| T2["Template · FSI/prod<br/>OpenShift · HA Postgres · sovereign placement"]:::t
+    PAT -->|codify · FSI profile| T2["Template · FSI/prod<br/>Kubernetes · HA Postgres · sovereign placement"]:::t
     T1 -->|Converge| S1["System · dev-3tier-01"]:::s
     T2 -->|Converge| S2["System · acme-prod-3tier-01"]:::s
     T2 -->|Converge| S3["System · beta-prod-3tier-02"]:::s
@@ -50,7 +50,7 @@ flowchart TD
 | Tier | In the example | State | What is pinned |
 |---|---|---|---|
 | **Pattern** | "3-Tier Web App" — tiers, dependencies, "data tier HA in prod", TLS, a backup process | Intent (type-level) | nothing concrete — no product, size, or provider |
-| **Template** | "FSI/prod" — OpenShift, HA Postgres, sovereign placement, audit-heavy; params: hostname prefix, DB size, replica count | Requested | every blank has a real type + provider; **orderable** |
+| **Template** | "FSI/prod" — Kubernetes, HA Postgres, sovereign placement, audit-heavy; params: hostname prefix, DB size, replica count | Requested | every blank has a real type + provider; **orderable** |
 | **System** | "acme-prod-3tier-01" — three pods/VMs with UUIDs+IPs, a Postgres with a connection string, backup scheduled, cert issued | Realized | the provider's actual output |
 
 *Gut-check for any artifact: names no providers/sizes → **Pattern**; orderable, everything pinned → **Template**; one-of, with live IDs → **System**.*

@@ -9,7 +9,7 @@ target, ordering in `edge_type`, names only where they add information).
 
 | handle | type | what it is |
 |---|---|---|
-| `hub-prod` | `Platform.Hub` (`hosted_control_planes: true`) | the fleet manager (ACM/HCP-style) |
+| `hub-prod` | `Platform.Hub` (`hosted_control_planes: true`) | the fleet manager (hosted-control-planes style) |
 | `cluster-mgmt` | `Compute.Cluster` | the cluster hub-prod runs on |
 | `cluster-hcp-a` | `Compute.Cluster` | a hosted-control-plane spoke (control plane lives inside hub-prod) |
 | `cluster-edge-1` | `Compute.Cluster` | an imported spoke (existed before the hub; adopted into the fleet) |

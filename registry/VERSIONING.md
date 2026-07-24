@@ -99,24 +99,6 @@ optional/widened fields, so up/down-conversion is mechanical). Cross-major conve
 explicit, declared mapping — never an implicit guess. This mirrors Kubernetes' storage-version +
 conversion model: one canonical version per major, declared conversions between the rest.
 
-## UUID rotation — the uuid is the revision, the handle is the thing
-
-**If anything in a uuid-bearing definition document changes, its uuid changes.** This applies to
-every definition and spec in the registry — resource types, instances, DecisionRecords, and future
-class artifacts alike. It is the same discipline instances already follow: each revision mints a
-new UUID; the **handle** (`resource_type`, `handle`) is the stable identity that floats to current.
-
-Operationally:
-- **Referencing something that should track current** → cite the handle (or `resource_type` +
-  semver range). **Pinning an exact revision** (audit, reproduction, compat proofs) → cite the
-  uuid. A uuid reference can never silently change meaning, because its target can never change.
-- **The old uuid is not retired** — it remains the immutable identity of the prior revision
-  (git history is the revision store; `git log -S<uuid>` finds it).
-- **Rotation is a consequence, never an act**: rotating without a content change is flagged as
-  noise, and a rotated uuid is never reused anywhere.
-- **Enforced**: `tests/check_uuid_rotation.py` (CI + signoff) — content changed ⇒ uuid rotated;
-  uuids unique registry-wide; uuid-only diffs rejected.
-
 ## Registry resolution
 
 - Reference a type by `resource_type` + a version constraint: exact (`1.2.0`), minor-floating
@@ -140,6 +122,7 @@ pinned to a released contract — which don't exist yet. While `0.x`:
 
 | Date | Version | Change | Breaking? | Migration |
 |---|---|---|---|---|
+| 2026-07-24 | 19 types REVISION-bumped (`Automation.Job` 0.4.1, `Compute.Cluster` 0.4.1, `Compute.Container` 0.5.1, `Compute.VirtualMachine` 0.6.1, `Hardware.BMC` 0.4.1, `Hardware.BiosProfile` 0.4.1, `Network.AddressService` 0.4.1, `Network.ConnectionProfile` 0.3.1, `Network.DNSZone` 0.3.1, `Network.Gateway` 0.4.1, `Network.Switch` 0.4.1, `Observability.LogShipper` 0.3.1, `Platform.Hub` 0.1.1, `Platform.Namespace` 0.3.2, `Platform.NodePool` 0.3.1, `Platform.StorageClass` 0.3.1, `Security.DirectoryService` 0.4.1, `Software.Service` 0.4.1, `Storage.FileShare` 0.3.1) | **Product-name neutrality sweep** (SPEC-DESIGN §35 tightening): products/vendors as actors or examples replaced with generic archetypes in descriptions, context blocks, and example values; product names remain only in `adopts[]`/`aliases[]` attribution. Description-only — no schema, field, enum, or relationship change. | **No** — description-only; wire/instance format unaffected. | None required. |
 | 2026-07-06 | `Network.Switch` → **0.1.1**; `Hardware.NetworkInterface` → **0.5.1**; `realized-entity.schema.json` (SPEC `udlm/0.1`) edited in place | Wave-2 enum/single-source unifications: **(a)** description-only rename sweep `connected_to`→`connects_to` in the two types' description strings (the relation itself was already `connects_to`; REVISION bumps); **(b)** instance provenance `source.kind` enum extended `[layer, policy, actor, provider]` → `[layer, policy, actor, provider, discovery, rehydration, override]` (data-model-core §6/§7; 'consumer' maps to 'actor') + optional `operation_type` (`set|merge|remove`) and `sequence` on provenance entries (ordered modification chains). | **No** — (a) description-only; (b) additive enum widening + optional fields (existing instances validate unchanged). | None required. |
 | 2026-07-06 | `realized-entity.schema.json` (SPEC `udlm/0.1`) edited in place; `Automation.Job` → **0.2.0**; 9 types MINOR-bumped | Wave-1 conformance-to-core sweep: **(a)** `time_source` now REQUIRED on realized/discovered snapshots (data-model-core §6 — no fabricated precision); **(b)** instance `resource_type` pattern loosened to allow single-segment names (matches the type schema); **(c)** `Automation.Job` `references` target retargeted `Compute`→`Compute.VirtualMachine` (bare category was not a registered type; edge is informational — affected entities may be any type) + named `depends_on` edges; **(d)** relationship `name`s added to the 9 multi-same-kind types (additive MINOR). | **(a) Yes** — an instance whose realized/discovered snapshot lacks `time_source` no longer validates (would be MAJOR post-1.0; carried in-place by the pre-1.0 exception). **(c) Yes** under the compat rules (relationship retarget). (b)/(d) non-breaking. | Add `time_source` (clock attribution) to realized/discovered snapshots — in-repo `instances/orders-db.json` backfilled. Instance edges citing the Automation.Job `references` edge keep working (informational; any-type note on the relationship). |
 | 2026-06-26 | `Data.Database` & `Compute.Cluster` → **0.1.1**; meta-schema (SPEC `udlm/0.1`) edited in place | `adopted_standard_ref` (`resource-type-spec.schema.json`) now requires `source`, `license`, `license_compatibility`; `identity_join` relaxed to optional (SPEC-DESIGN-REQUIREMENTS §22–23). | **Yes — backward-incompatible.** An `adopts[]` entry without the license verdict no longer validates (would be a MAJOR post-1.0; carried in a `0.1.1` REVISION by the pre-1.0 exception above). **Wire/instance format is unaffected** — `adopts[]` is type-definition provenance, not instance payload (CONFORMANCE §9 wire-compat not impacted). | Any externally-authored type using `adopts[]` adds `license` + `license_compatibility` ∈ `{compatible-reference, compatible-vendor, reference-only}` + `source`. In-repo `Data.Database` / `Compute.Cluster` backfilled. |

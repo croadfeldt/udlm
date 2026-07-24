@@ -6,7 +6,7 @@ system: what it must do at each stage, what data it supplies, and what it gets b
 [request-realization](request-realization.md) tells the same story from the request's perspective; this
 document tells it from the provider's.
 
-**In one breath.** A provider registers, declares "I can provision VMs on OpenShift, and I need a namespace
+**In one breath.** A provider registers, declares "I can provision VMs on a Kubernetes cluster, and I need a namespace
 and a storage class to do it." It publishes a catalog item that says "here's my VM offering with these
 consumer-facing options." A consumer asks for a VM. The system picks this provider, fills in the namespace
 from governed data, and hands the provider a complete request. The provider reserves, commits, builds the
@@ -49,7 +49,7 @@ sequenceDiagram
     S-->>C: catalog item visible
 
     Note over C,S: Phase 3 — Consumer requests (provider is passive)
-    C->>S: intent(VM, 4 cpu, 16G mem, rhel-9<br/>+ optional: namespace, storage_class)
+    C->>S: intent(VM, 4 cpu, 16G mem, linux-server-9<br/>+ optional: namespace, storage_class)
     S->>L: assemble — fill defaults from layers
     L-->>S: assembled request
     S->>S: place — match capability + sovereignty<br/>+ cost + capacity → select provider<br/>(consumer pins narrow eligible set)
@@ -112,23 +112,23 @@ this provider for placement.
 | Sovereignty zones | The system enforces sovereignty constraints at placement | `provider-contract.md` §2 (`sovereignty_declaration`) |
 | Capacity (optional but recommended) | The system uses capacity data for placement decisions — without it, placement is capability-match only | UC-17 |
 
-**Example — an OpenShift VM provider registering:**
+**Example — a Kubernetes VM provider registering:**
 
 ```yaml
 provider:
-  name: "ocp-prod-east"
+  name: "k8s-prod-east"
   version: "1.2.0"
-  health_endpoint: "https://ocp-prod-east.internal/healthz"
+  health_endpoint: "https://k8s-prod-east.internal/healthz"
 
   capabilities:
     realize_resources:
       resource_types:
         - type: Compute.VirtualMachine
           required_inputs: [namespace, storage_class]
-          extension_schema_ref: "urn:udlm:schema:ocp-vm-extensions:1.0"
+          extension_schema_ref: "urn:udlm:schema:k8s-vm-extensions:1.0"
         - type: Compute.Container
           required_inputs: [namespace, resource_quota]
-          extension_schema_ref: "urn:udlm:schema:ocp-container-extensions:1.0"
+          extension_schema_ref: "urn:udlm:schema:k8s-container-extensions:1.0"
       operations: [create, update, scale, decommission]
       supports_discovery: true
       supports_capacity_query: true
@@ -137,7 +137,7 @@ provider:
     zones: [us-east-1]
 ```
 
-A VMware provider registering for the same resource type would declare different required inputs:
+An enterprise-virtualization provider registering for the same resource type would declare different required inputs:
 
 ```yaml
 capabilities:
@@ -145,7 +145,7 @@ capabilities:
     resource_types:
       - type: Compute.VirtualMachine
         required_inputs: [cluster, datastore, resource_pool]
-        extension_schema_ref: "urn:udlm:schema:vmware-vm-extensions:1.0"
+        extension_schema_ref: "urn:udlm:schema:virt-vm-extensions:1.0"
 ```
 
 Same portable type. Different required inputs. The system knows both at registration time and can fill
@@ -176,16 +176,16 @@ available.
 
 ### Simple catalog item — a VM
 
-Continuing the VM example from Phase 1. The OpenShift VM provider publishes a catalog item for a
+Continuing the VM example from Phase 1. The Kubernetes VM provider publishes a catalog item for a
 single virtual machine:
 
 ```yaml
-name: Compute.VirtualMachine.OCP
+name: Compute.VirtualMachine.K8s
 resource_type: Compute.VirtualMachine
 type_version: 0.1.1
 
 spec_defaults:
-  guest_os: rhel-9
+  guest_os: linux-server-9
   disks:
     - size_gb: 100
       type: ssd
@@ -207,7 +207,7 @@ consumer_fields:
     type: reference                 # a reference to a Platform.Namespace, not a free-form string
     reference_type: Platform.Namespace
     required: false
-    description: "OpenShift namespace — optional; a reference to an existing Platform.Namespace, resolved by policy if omitted"
+    description: "Kubernetes namespace — optional; a reference to an existing Platform.Namespace, resolved by policy if omitted"
   - name: storage_class
     type: reference
     reference_type: Platform.StorageClass
@@ -314,7 +314,7 @@ consumers, and IaC pipelines where the provider is already known.
 │  ── Portable fields ──────────────────────────────────────  │
 │  CPU        [ 4        ]                                    │
 │  Memory     [ 16 GiB   ]                                    │
-│  Guest OS   [ RHEL 9   ▼]                                   │
+│  Guest OS   [ Linux 9  ▼]                                   │
 │  Network    [ prod-vlan-40 ▼]                                │
 │  Disk       [ 100 GB SSD   ]                                │
 │                                                             │
@@ -322,11 +322,11 @@ consumers, and IaC pipelines where the provider is already known.
 │  ⚠ Specifying these narrows placement and may break         │
 │    portability                                              │
 │                                                             │
-│  ▸ OpenShift                                                │
+│  ▸ Kubernetes                                               │
 │    Namespace      [ tenant-alpha-prod ▼]                     │
 │    Storage class  [ ceph-rbd-fast     ▼]                     │
 │                                                             │
-│  ▸ VMware                                                   │
+│  ▸ Enterprise virt                                          │
 │    Cluster        [                   ▼]                     │
 │    Datastore      [                   ▼]                     │
 │    Resource pool  [                   ▼]                     │
@@ -363,7 +363,7 @@ allowed.
 │                                                             │
 │  CPU        [ 4        ]                                    │
 │  Memory     [ 16 GiB   ]                                    │
-│  Guest OS   [ RHEL 9   ▼]                                   │
+│  Guest OS   [ Linux 9  ▼]                                   │
 │  Network    [ prod-vlan-40 ▼]                                │
 │  Disk       [ 100 GB SSD   ]                                │
 │                                                             │
@@ -371,13 +371,13 @@ allowed.
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**System runs placement → selects OpenShift (ocp-prod-east)**
+**System runs placement → selects the Kubernetes provider (k8s-prod-east)**
 
 **Stage 2 — provider-specific refinement:**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Provider selected: OpenShift (ocp-prod-east)               │
+│  Provider selected: Kubernetes (k8s-prod-east)              │
 │  Region: us-east-1 · Profile: fsi                           │
 │                                                             │
 │  The following fields are needed to complete your request.   │
@@ -395,7 +395,7 @@ allowed.
 │                                                             │
 │  Node pool      [ general-purpose   ▼]  ← auto (no GPU req) │
 │                   general-purpose (x86_64, 340 vCPU avail)  │
-│                   gpu-a100 (x86_64, 8×A100, 12 vCPU avail) │
+│                   gpu-pool (x86_64, 8 GPUs, 12 vCPU avail) │
 │                                                             │
 │                          [ ← Back ]  [ Submit ]             │
 └─────────────────────────────────────────────────────────────┘
@@ -451,7 +451,7 @@ consumer_fields:
     reference_type: Platform.Namespace
     required: false
     fill_strategy: auto_with_override
-    description: "OpenShift namespace — defaulted by policy, overridable"
+    description: "Kubernetes namespace — defaulted by policy, overridable"
   - name: storage_class
     type: reference
     reference_type: Platform.StorageClass
@@ -508,7 +508,7 @@ resource_type: Compute.VirtualMachine
 spec:
   vcpu: 4
   memory: 16384
-  guest_os: rhel-9
+  guest_os: linux-server-9
   disks:
     - size_gb: 100
       type: ssd
@@ -522,7 +522,7 @@ spec:
 
 # Provider-specific references are Provider-Class `SharedDataElement`s (ADR-038), declared by
 # the provider's Class; schema realization is tracked in #199 (the retired provider_extensions
-# carrier is removed). For ocp-prod-east, addressed compute.vm.ocp-prod-east#<element>:
+# carrier is removed). For k8s-prod-east, addressed compute.vm.k8s-prod-east#<element>:
 #   namespace_ref     → Platform.Namespace     "tenant-alpha-prod"  (e2f3a4b5-...)
 #   storage_class_ref → Platform.StorageClass  "ceph-rbd-fast"      (c6d7e8f9-...)
 
@@ -589,20 +589,20 @@ After commit, the provider reports the **realized state** — the receipt of wha
 
 ```yaml
 udlm_uuid: "a1b2c3d4-..."
-provider_native_id: "ocp-prod-east/tenant-alpha-prod/vm-0042"
+provider_native_id: "k8s-prod-east/tenant-alpha-prod/vm-0042"
 status: active
 
 realized:
   vcpu: 4
   memory: 16384
-  fqdn: "vm-0042.tenant-alpha-prod.ocp-east.internal"
+  fqdn: "vm-0042.tenant-alpha-prod.k8s-east.internal"
   ip_address:
     ref_uuid: "c9d4e5f6-..."            # → realized Network.IPAddress
     ref_name: "10.128.4.42"
   storage_path: "/dev/rbd0"
 
 outputs:
-  internal_dns: "vm-0042.tenant-alpha-prod.ocp-east.internal"
+  internal_dns: "vm-0042.tenant-alpha-prod.k8s-east.internal"
   ssh_endpoint: "10.128.4.42:22"
 
 relationships_created:

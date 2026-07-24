@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.5.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "5a34ffac-9232-4a62-a8fd-0a0c49811e78",
+  "uuid": "05b8a72f-f2f0-4ca6-8214-2d647385a7ca",
   "resource_type": "Storage.Volume",
   "version": "0.5.0",
   "family": "Resource",
@@ -23,7 +23,7 @@
   },
   "context": {
     "purpose": "Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.",
-    "plain_description": "The unit of storage a workload asks for and attaches: requested capacity, how concurrently it may be attached (one writer, many readers, and so on), filesystem versus raw block, and which storage class provisions it. It is deliberately distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.",
+    "plain_description": "The unit of storage a workload asks for and attaches: requested capacity, how concurrently it may be attached (one writer, many readers, and so on), filesystem versus raw block, and which storage class provisions it. It is distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.",
     "use_when": [
       "You need a workload's storage requested by capacity, access mode, and class, portable across provisioners.",
       "You need volumes ordered in the graph: realized before their consumer, never outliving their provisioning cluster."

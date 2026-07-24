@@ -1,20 +1,20 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "7c8fe45c-8a77-4ab2-9743-e779cd1c5401",
+  "uuid": "110f7b76-89e6-458f-b8db-1530f08627da",
   "resource_type": "Network.AddressService",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Address Service",
-    "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (Kea, dnsmasq, BIND, FreeIPA, UniFi, a cloud service) are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations from the estate's Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces. Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.",
+    "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (a DHCP/DNS server implementation, an integrated identity suite, a cloud service) are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations from the estate's Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces. Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:58:43Z"
   },
   "context": {
     "purpose": "Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.",
-    "plain_description": "The thing that hands out addresses and answers name lookups, as a single, deliberately thin service record. It says which capabilities are served (DHCP, DNS) and whether service is redundant, and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The software (Kea, BIND, dnsmasq, FreeIPA) is a provider; the data it serves is projected from address records and scope/zone records.",
+    "plain_description": "The thing that hands out addresses and answers name lookups, as a single, deliberately thin service record. It says which capabilities are served (DHCP, DNS) and whether service is redundant, and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.",
     "use_when": [
       "You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.",
       "You need the DHCP/DNS role pinned to the specific hosts that serve it."
