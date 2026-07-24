@@ -92,9 +92,11 @@ spec:
     vdevs:
       type: array
       description: 'The redundancy topology, as a tree: each top-level entry is a vdev whose members are drives
-        or child vdevs. Like ZFS, the pool stripes across its top-level vdevs implicitly — so [mirror, mirror] IS
-        raid10 without an explicit stripe wrapper; an explicit wrapper expresses the hardware-RAID persona of the
-        same topology.'
+        or child vdevs. The recursion is backend-agnostic; HOW the backend aggregates its top-level vdevs into the
+        pool''s one capacity source is the BACKEND''S semantic — zfs dynamic-stripes across them ([mirror, mirror]
+        IS raid10, no wrapper needed), lvm allocates across them per VG policy, and a hardware controller does not
+        aggregate independent virtual disks at all: two independent VDs are two Pools (one capacity source each),
+        so a hardware_raid pool normally carries ONE top-level vdev tree (the explicit stripe-of-mirrors).'
       items:
         $ref: '#/$defs/vdev'
     properties:
@@ -108,11 +110,11 @@ spec:
       type: object
       required:
       - type
-      description: 'A redundancy group. RECURSIVE like ZFS: members are device references OR child vdevs, so composed
-        topologies model as trees — raid10 as an explicit stripe of mirrors {type: stripe, members: [mirror(a,b),
-        mirror(c,d)]} or as a mirror of stripes; ZFS-style raid10 may equally be expressed as multiple top-level
-        mirror vdevs (the pool stripes across top-level vdevs implicitly, as zpool does). Fault tolerance composes
-        through the tree (min across children for stripes; sum-of-survivable for mirrors).'
+      description: 'A redundancy group. RECURSIVE: members are device references OR child vdevs, so composed topologies
+        model as trees — raid10 as an explicit stripe of mirrors {type: stripe, members: [mirror(a,b), mirror(c,d)]}
+        or as a mirror of stripes; under zfs the same layout may be expressed as multiple top-level mirror vdevs
+        because ZFS''s OWN aggregation semantic dynamic-stripes top-level vdevs (backend semantic, not a type rule).
+        Fault tolerance composes through the tree (min across striped children; per-group survivability for mirrors/parity).'
       properties:
         type:
           type: string
