@@ -29,6 +29,16 @@ nature (`edge_type`): compute, never store what structure already says. Promotio
 element up a class, rule-36/ADR-038 governed) *is* the portability-improvement operation, and it
 becomes visible in diffs.
 
+## Priority signal — automation intent (maintainer, 2026-07-25)
+
+**The Process family is likely the most-used instance of the class model.** Platform-to-platform
+automation migration (the Chef→Ansible render) is a live, recurring need in a way that
+resource-provider migration is episodic — so **automation intent is a first-class peer of
+resource intent**, and the Process family may lead class-system adoption rather than follow it.
+Open sequencing question for the maintainer at P1: pilot on Compute (deepest inheritance, most
+types), on Process (highest usage, sharpest payoff), or both in one cycle (Compute proves depth,
+Process proves the multi-provider declaration).
+
 ## Phases
 
 **P0 — substrate.** Meta-schema gains `SharedDataElement` + the class-artifact schema
