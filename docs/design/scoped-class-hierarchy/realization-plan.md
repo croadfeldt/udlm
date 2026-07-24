@@ -61,6 +61,24 @@ positions (computed; consumer-notification discipline unchanged). The declared c
 survives one MINOR as a cross-check (declared vs derived mismatch = a finding), then retires —
 the provider_extensions playbook, applied gently.
 
+## The Process family and workflows (maintainer refinement, 2026-07-25)
+
+**Process executions don't class; workflow definitions do.** A Process *run* is a bounded
+execution reaching a terminal state — its identity is the run, not a reusable definition, and it
+has no meaningful Base/Type/Provider decomposition (there is nothing portable about run #4711).
+The class system applies to the **definition layer** of the family: the workflow. A workflow
+definition classes cleanly — Base tier carries orchestration semantics every engine shares
+(steps, ordering, inputs/outputs, compensation, idempotency declaration), the Type tier the
+workflow's kind, and the Provider tier the engine binding (an Ansible/AAP job template, a Tekton
+pipeline) — so **workflow portability = engine portability**, exactly the axis that matters.
+
+**Workflows are multi-family — by reference, not by containment.** A workflow acts on Resources,
+consumes Knowledge, exercises Access. Its elements therefore include *references into other
+families' classes* — which the existing reference/edge model already expresses; no cross-family
+containment is invented. The class trees stay per-family; workflows compose across them the same
+way everything else does: typed references. This is the one place the realization must be
+explicit that a class's elements MAY be references whose targets live in another family's tree.
+
 ## Gates and corpus
 
 Each phase lands with its rule-36 kit: the Liskov gate and generator `--check` join CI in P0; the
