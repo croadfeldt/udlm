@@ -21,3 +21,7 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   ADR-043 demotion rule under its hardest test).
 - `bare-metal/` — replayable host provisioning intent (Metal3 surface, fix-wave PR-1): provision
   from intent; host rehydration by replaying intent onto replacement hardware.
+- `storage-redundancy/` — the generic RAID model (fix-wave PR-2): degraded-pool drift with
+  graph-walkable blast radius; hardware RAID declared as Pool intent at bare-metal provision;
+  composed-topology fault tolerance across authoring personas (recursive vdev trees); the
+  backend-owned aggregation semantics and the one-capacity-source pool boundary.
