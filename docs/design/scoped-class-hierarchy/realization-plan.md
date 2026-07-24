@@ -61,23 +61,32 @@ positions (computed; consumer-notification discipline unchanged). The declared c
 survives one MINOR as a cross-check (declared vs derived mismatch = a finding), then retires —
 the provider_extensions playbook, applied gently.
 
-## The Process family and workflows (maintainer refinement, 2026-07-25)
+## The Process family classes too (maintainer refinement, 2026-07-25)
 
-**Process executions don't class; workflow definitions do.** A Process *run* is a bounded
-execution reaching a terminal state — its identity is the run, not a reusable definition, and it
-has no meaningful Base/Type/Provider decomposition (there is nothing portable about run #4711).
-The class system applies to the **definition layer** of the family: the workflow. A workflow
-definition classes cleanly — Base tier carries orchestration semantics every engine shares
-(steps, ordering, inputs/outputs, compensation, idempotency declaration), the Type tier the
-workflow's kind, and the Provider tier the engine binding (an Ansible/AAP job template, a Tekton
-pipeline) — so **workflow portability = engine portability**, exactly the axis that matters.
+**The Process family is a class model — shallower inheritance, same three tiers, and the
+multi-provider shared capability is its headline payoff.** The layering is symmetric with
+Resources once definition and instance are kept straight (no *instance* classes anywhere — a run
+instantiates a class exactly as a VM instance does):
 
-**Workflows are multi-family — by reference, not by containment.** A workflow acts on Resources,
-consumes Knowledge, exercises Access. Its elements therefore include *references into other
-families' classes* — which the existing reference/edge model already expresses; no cross-family
-containment is invented. The class trees stay per-family; workflows compose across them the same
-way everything else does: typed references. This is the one place the realization must be
-explicit that a class's elements MAY be references whose targets live in another family's tree.
+- **Base tier (thin, but real):** the execution contract every process shares — typed
+  inputs/outputs, idempotency declaration, timeout/retry semantics, compensation declaration,
+  affected-entities declaration. Shallow is not absent: this tier is what makes any process
+  governable by the same policy machinery.
+- **Type tier — the shared capability:** `Process.OSPatch`-class definitions of *what the process
+  does* (parameters, preconditions, declared effects), which **multiple providers declare support
+  for** — exactly as multiple providers declare a resource type. Process execution enters the same
+  selection machinery: placement chooses an engine the way it chooses a VM provider, and "can this
+  automation run somewhere else" becomes the same computable question as resource portability.
+- **Provider tier:** the engine binding — the Type realized as an AAP job template, a Tekton
+  pipeline, a provider-native workflow — plus engine-specific elements. Engine lock-in is visible
+  as element scope, like everywhere else.
+- **Runs are instances** of the Type Class realized by the selected provider; Discovered-state and
+  audit machinery apply unchanged.
+- **Workflows are the composite shape** of Process types (the model already defines composite
+  Process as DCM-sequenced constituent calls) — and they are **multi-family by reference, not
+  containment**: their elements reference into Resource/Knowledge/Access class trees via the
+  existing edge model. P0's meta-schema must permit class elements whose reference targets live in
+  another family's tree; nothing else is invented.
 
 ## Gates and corpus
 
