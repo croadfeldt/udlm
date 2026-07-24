@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
+  "uuid": "79faa5f0-1233-418a-92dd-d934b3d4729f",
   "resource_type": "Compute.VirtualMachine",
   "version": "0.6.0",
   "family": "Resource",
