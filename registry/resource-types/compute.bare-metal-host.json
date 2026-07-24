@@ -12,6 +12,26 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:31:44Z"
   },
+  "context": {
+    "purpose": "Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.",
+    "plain_description": "One physical server: its identity (serial, model, asset tag), its aggregate capacity (CPU sockets and cores, memory, local storage), and its lifecycle state. It can sit unallocated in inventory before anything is deployed on it. Components like NICs can be modeled as their own records attached to the host; CPU, memory, and disk normally stay as rollup numbers on the host itself. Everything that runs — VMs, containers, storage daemons — ultimately sits on one of these, which makes it a central node in shutdown and startup ordering.",
+    "use_when": [
+      "You need an inventory of physical servers, including ones not yet assigned to any workload.",
+      "You need the dependency chain workload → host → power feed, so an outage or maintenance walk knows what stops when.",
+      "You need per-host aggregate capacity (cores, memory, storage) for allocation decisions."
+    ],
+    "not_for": [
+      "A virtual machine — that is Compute.VirtualMachine; a host is hardware you can touch.",
+      "The host's out-of-band management controller — that is Hardware.BMC, its own record with its own address and power-control surface.",
+      "Individual NICs, GPUs, or drives inside the host — those are Hardware.NetworkInterface / Hardware.GraphicsProcessor / Hardware.StorageDevice records contained by the host."
+    ],
+    "works_with": [
+      "Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.",
+      "Hardware.BiosProfile — the firmware configuration the host converges to.",
+      "Hardware.NetworkInterface — the host's NICs, modeled as contained components.",
+      "Compute.VirtualMachine — the guests the host runs."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

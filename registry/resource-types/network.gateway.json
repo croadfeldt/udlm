@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
+  "context": {
+    "purpose": "Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.",
+    "plain_description": "The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (pfSense, OPNsense, a vendor firewall) is a provider. Detailed routing tables and firewall rulesets are deliberately not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.",
+    "use_when": [
+      "You need what connects this network to the outside as an explicit node with its segments.",
+      "You need segment boundaries (LAN, DMZ, mgmt) and their VLANs recorded at the edge that routes between them."
+    ],
+    "not_for": [
+      "An L2 switch — Network.Switch; the gateway is the L3 edge.",
+      "Service-level L4/L7 traffic entry (the Kubernetes Gateway API sense) — that is the adopted naming ancestor, but this type is the broader network edge; application ingress belongs to the platform.",
+      "Handing out addresses on its segments — Network.DHCPScope / Network.AddressService."
+    ],
+    "works_with": [
+      "Network.VLAN — each gateway segment rides a referenced VLAN.",
+      "Network.DHCPScope — scopes serving the segments the gateway routes.",
+      "Network.Switch — the fabric behind the edge."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

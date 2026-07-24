@@ -12,6 +12,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z"
   },
+  "context": {
+    "purpose": "Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.",
+    "plain_description": "The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod count, storage, and object-count ceilings for a single namespace. Discovered usage is reported against the limits, so whether a namespace has room for a request is a data question a placement policy answers up front — and quota pressure is visible for capacity planning.",
+    "use_when": [
+      "You need per-namespace ceilings on aggregate consumption enforced and visible.",
+      "You need admission or placement to check remaining headroom before dispatching a workload."
+    ],
+    "not_for": [
+      "Per-container resource requests — those live on the workload (Compute.Container resources).",
+      "Node capacity — Platform.NodePool advertises capacity; a quota caps consumption within a namespace."
+    ],
+    "works_with": [
+      "Platform.Namespace — the one namespace this quota constrains.",
+      "Compute.Container — workloads whose aggregate consumption the quota caps."
+    ]
+  },
   "adopts": [
     {
       "standard": "Kubernetes",

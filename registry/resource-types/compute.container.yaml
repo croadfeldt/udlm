@@ -163,3 +163,41 @@ relationships:
     target_field: connection_string
     cardinality: 0..n
     description: May bind to a database's connection outputs.
+
+context:
+  purpose: >-
+    Declares one container workload — image, resources, environment, mounts, ports — for a provider
+    to run.
+  plain_description: >-
+    A single containerized workload: the image it runs, the CPU and memory it needs, its
+    environment, mounted paths, and exposed ports. It runs either on a cluster or directly on a host
+    (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points
+    at a Security.CredentialRef instead. The image can be given as a plain OCI reference or as a
+    reference into governed image data, which is what lets change-impact analysis find every
+    container affected when a base image is patched.
+  use_when:
+    - >-
+      You need to run a specific image with declared resources, environment, and ports on a cluster
+      or a host.
+    - >-
+      You need workload records that secret-handling rules and image blast-radius analysis can
+      reason over.
+  not_for:
+    - >-
+      A multi-part application (several containers and/or systemd units behaving as one thing) —
+      that is Software.Service, which references containers as constituents.
+    - >-
+      The image itself as a fact (digest, bill-of-materials anchor) — that is SoftwareImage; the
+      container runs an image, it is not the image.
+    - >-
+      A one-shot automation task with a bounded runtime — that is Automation.Job.
+  works_with:
+    - >-
+      Compute.Cluster / Compute.BareMetalHost — exactly one of them is where the container runs.
+    - >-
+      Security.CredentialRef — every secret the container consumes, by reference only.
+    - >-
+      SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability
+      analysis.
+    - >-
+      Data.Database — connection outputs the container binds to.

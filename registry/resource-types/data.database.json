@@ -12,6 +12,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
+  "context": {
+    "purpose": "Declares a managed relational database instance and publishes the connection facts other resources bind to.",
+    "plain_description": "The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and resource sizing. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version actually provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.",
+    "use_when": [
+      "You need a database provisioned to a declared engine, version, and size, with its connection surface published for consumers.",
+      "You need the database's backing volume and host in the graph so ordering (volume before database, database before app) is derivable."
+    ],
+    "not_for": [
+      "The volume storing the data — Storage.Volume; the database references it.",
+      "The secret material for connecting — that belongs with Security.CredentialRef (the current sensitive connection outputs are a known open decision)."
+    ],
+    "works_with": [
+      "Storage.Volume — the persistent volume backing the data directory.",
+      "Compute.VirtualMachine / Compute.Cluster — where the database runs, when self-hosted.",
+      "Software.Service / Compute.Container — the consumers that bind to its connection outputs."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

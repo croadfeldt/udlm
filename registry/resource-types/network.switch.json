@@ -12,6 +12,25 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z"
   },
+  "context": {
+    "purpose": "Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.",
+    "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup, and its management addressing. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
+    "use_when": [
+      "You need the switching fabric in the dependency graph so connectivity-outlives-compute is derivable in shutdown ordering.",
+      "You need per-port records (VLAN membership, host adjacency) on real switch hardware.",
+      "You need brownfield discovery — switches found via LLDP, then adopted."
+    ],
+    "not_for": [
+      "A software bridge on a host — Hardware.NetworkInterface with device_class bridge.",
+      "The routed/NAT edge — Network.Gateway.",
+      "The VLAN segments themselves — Network.VLAN; the switch carries segments, it doesn't define them."
+    ],
+    "works_with": [
+      "Hardware.NetworkInterface — its ports, and the host NICs those ports connect to.",
+      "Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.",
+      "Network.VLAN — segments carried on the fabric, including the referenced management VLAN."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

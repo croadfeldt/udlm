@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T20:29:19Z"
   },
+  "context": {
+    "purpose": "Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.",
+    "plain_description": "One record describing a graph of domains, each with a stable id, an abstract kind (zone, rack, power, and so on), a parent, and labels (e.g. jurisdiction). Portable intent constrains against kinds — spread across power domains — while what a resource actually landed in is a concrete id. Domains are addressable data inside this one type, not separate records. Observed per-domain status (active, draining, unavailable) is the signal maintenance gating reads — a draining domain holds off further maintenance.",
+    "use_when": [
+      "You need placement or anti-affinity constraints that reference abstract domain kinds portably.",
+      "You need residency and sovereignty resolved against domain labels (jurisdiction, region).",
+      "You need maintenance serialization gated on domain status — e.g. not starting the next host while a domain is draining."
+    ],
+    "not_for": [
+      "The physical places themselves — Facility.Location is where things sit; Topology is the failure/locality view constraints resolve against. A rack appears in both, on purpose, in different roles.",
+      "Network segments — Network.VLAN / Network.VirtualNetwork; a network domain here is a failure domain, not the segment object."
+    ],
+    "works_with": [
+      "Facility.Location — the physical containment the domains often mirror.",
+      "Compute.VirtualMachine — placement intent resolved against domain kinds.",
+      "Storage.Cluster — fault-domain-aware placement and maintenance gating."
+    ]
+  },
   "adopts": [
     {
       "standard": "Kubernetes well-known topology labels",

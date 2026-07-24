@@ -13,6 +13,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },
+  "context": {
+    "purpose": "Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.",
+    "plain_description": "One processor as its own record: model, cores, threads, architecture, clock. Most estates only need the aggregate CPU numbers already carried on the host; this type exists for when a socket must be individually addressable (asset tracking, heterogeneous sockets). device_class distinguishes the physical socket from a virtual CPU presented to a guest. Nothing binds to a processor at runtime, so it publishes no outputs — it is inventory.",
+    "use_when": [
+      "You need per-socket inventory (exact model, position, serial) beyond the host's aggregate core/thread rollup.",
+      "You need virtual CPUs presented to a guest tracked as components."
+    ],
+    "not_for": [
+      "Ordinary capacity accounting — the cpu rollup on Compute.BareMetalHost covers that without per-socket records.",
+      "GPUs and accelerators — Hardware.GraphicsProcessor."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.",
+      "Compute.VirtualMachine — the guest a virtual CPU is presented to."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

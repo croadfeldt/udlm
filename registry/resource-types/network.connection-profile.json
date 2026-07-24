@@ -12,6 +12,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-15T00:00:00Z"
   },
+  "context": {
+    "purpose": "Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.",
+    "plain_description": "What a host interface's network configuration should be, in NMstate's own schema, carried as an opaque body against a pinned schema version — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (Ansible, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.",
+    "use_when": [
+      "You need host interface config (static addressing, routes, VLANs on a bond) declared once and converged by automation.",
+      "You need drift in host networking detected from data, not by logging into hosts."
+    ],
+    "not_for": [
+      "The interface device itself — Hardware.NetworkInterface; the profile configures a device that type inventories.",
+      "BIOS settings — Hardware.BiosProfile: the same opaque-body-plus-pinned-registry pattern, for firmware."
+    ],
+    "works_with": [
+      "Hardware.NetworkInterface — the adapter or port the profile applies to.",
+      "Network.VLAN — the segments the configured VLANs and sub-interfaces ride."
+    ]
+  },
   "lifecycle": {
     "states": [
       "Intent",

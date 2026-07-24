@@ -12,6 +12,26 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
+  "context": {
+    "purpose": "Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.",
+    "plain_description": "The request for one VM: how big (a named size class, or explicit vCPU and memory), what guest OS, which disks backed by what storage class, and which existing networks its NICs attach to. Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
+    "use_when": [
+      "You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.",
+      "You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.",
+      "You need a VM's disks and addresses to reference existing Storage.Volume / Network.IPAddress records rather than duplicate them."
+    ],
+    "not_for": [
+      "The physical machine it runs on — Compute.BareMetalHost.",
+      "A containerized workload — Compute.Container; the VM carries a full guest OS.",
+      "The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory."
+    ],
+    "works_with": [
+      "Network.VirtualNetwork — the networks the VM's NICs attach to.",
+      "Storage.Volume — the volumes behind the VM's disks.",
+      "Facility.Location — where the VM is placed (selected from existing places, policy-governed).",
+      "Network.IPAddress — pre-allocated addresses the VM consumes."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

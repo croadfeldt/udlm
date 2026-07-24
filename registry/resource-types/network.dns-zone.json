@@ -12,6 +12,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
+  "context": {
+    "purpose": "Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.",
+    "plain_description": "One DNS zone (e.g. example.com) with its authoritative role (primary, secondary, stub, forward) and, optionally, its resource records. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.",
+    "use_when": [
+      "You need zones inventoried with their authoritative role and their serving relationships.",
+      "You need zone data declared portably so the serving software can change without the model changing."
+    ],
+    "not_for": [
+      "The DNS service as a running dependency — Network.AddressService; the zone is data, the service is what stops and starts.",
+      "The address facts behind A/PTR entries — those originate on Network.IPAddress records; the zone holds the name-side projection."
+    ],
+    "works_with": [
+      "Security.DirectoryService — when the directory (e.g. FreeIPA) serves the zone.",
+      "Network.AddressService — the operated DNS capability answering for the zone."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

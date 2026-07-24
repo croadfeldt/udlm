@@ -12,6 +12,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-16T06:00:00Z"
   },
+  "context": {
+    "purpose": "Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.",
+    "plain_description": "A range of addresses that individual address records are carved from: the subnet prefix, the allocatable ranges inside it, exclusions (gateway, broadcast, known statics), and how addresses leave it (leased, reserved, or both). Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.",
+    "use_when": [
+      "You need to know which addresses are in play, who holds each, and when a range is close to exhausted.",
+      "You need address allocation scoped to the one network segment the pool serves."
+    ],
+    "not_for": [
+      "Service-side DHCP config for the subnet (options, lease time) — Network.DHCPScope; the pool is intent-side inventory. The range overlap between the two is deliberate and documented on both.",
+      "A single address — Network.IPAddress, carved from this pool."
+    ],
+    "works_with": [
+      "Network.IPAddress — the records carved from the pool (allocated_from).",
+      "Network.VirtualNetwork — the segment the pool serves.",
+      "Network.DHCPScope — the service-side projection of the same subnet."
+    ]
+  },
   "adopts": [
     {
       "standard": "RFC-2131",

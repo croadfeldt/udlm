@@ -12,6 +12,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-18T13:14:58Z"
   },
+  "context": {
+    "purpose": "Declares the outcome that a host's logs reach the central sink — without saying anything about how.",
+    "plain_description": "A statement of outcome: logs from a target host, shipped to a named sink URL, tagged with the host's identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed agent, a container, or something else is the provider's private business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened, which drives staleness detection.",
+    "use_when": [
+      "You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.",
+      "You need shipping health and last-delivery time surfaced for drift and staleness detection."
+    ],
+    "not_for": [
+      "The log store itself — that is its own resource (e.g. a Software.Service running the sink); this type is the per-host shipping outcome.",
+      "Metrics or trace collection — not covered; this type is logs."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost / Compute.VirtualMachine — the target host whose logs are shipped.",
+      "Software.Service — the central log store the sink URL points at."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

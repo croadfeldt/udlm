@@ -12,6 +12,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
+  "context": {
+    "purpose": "Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.",
+    "plain_description": "One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated capacity (watts, voltage, phases) and redundancy are declared up front.",
+    "use_when": [
+      "You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown of exactly what that UPS feeds.",
+      "You need rated capacity and feed redundancy recorded per circuit/UPS/PDU."
+    ],
+    "not_for": [
+      "The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two deliberately vary independently.",
+      "Powering one host off — that action targets the host's Hardware.BMC control surface, not the feed."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — hosts declare depends_on the feed(s) they draw from.",
+      "Network.Switch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.",
+      "Automation.Job — the shutdown job a feed's on-battery status triggers."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

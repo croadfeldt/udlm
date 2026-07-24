@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z"
   },
+  "context": {
+    "purpose": "Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.",
+    "plain_description": "The segment itself: its encapsulation (802.1Q tag, VXLAN/Geneve VNI, or flat/untagged) and its id. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.",
+    "use_when": [
+      "You need one authoritative record per segment that ports, virtual networks, and gateway segments all reference.",
+      "You need overlay segments (VXLAN/Geneve VNIs) modeled with the same shape as 802.1Q VLANs."
+    ],
+    "not_for": [
+      "The workload attachment point — Network.VirtualNetwork rides a VLAN; guests attach to the VirtualNetwork, not to the VLAN.",
+      "A port's tagging configuration — that is vlan_memberships on Hardware.NetworkInterface, referencing this record."
+    ],
+    "works_with": [
+      "Hardware.NetworkInterface — ports and sub-interfaces declare membership by reference.",
+      "Network.VirtualNetwork — virtual networks ride a referenced segment.",
+      "Network.Switch — the fabric carrying the segment.",
+      "Network.Gateway — edge segments each ride a referenced VLAN."
+    ]
+  },
   "adopts": [
     {
       "standard": "IEEE 802.1Q",

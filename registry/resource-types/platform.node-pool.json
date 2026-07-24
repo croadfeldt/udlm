@@ -12,6 +12,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z"
   },
+  "context": {
+    "purpose": "Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.",
+    "plain_description": "A named group of like nodes in a cluster: how many, what they offer (GPU, architecture, memory tier), what labels they carry, and what taints a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.",
+    "use_when": [
+      "You need GPU or otherwise-special nodes grouped so only workloads that need (and tolerate) them land there.",
+      "You need placement to select capacity by declared capability (architecture, memory tier) rather than by node names."
+    ],
+    "not_for": [
+      "The cluster — Compute.Cluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).",
+      "One physical machine — Compute.BareMetalHost; a pool is a cluster-level grouping, not a host record."
+    ],
+    "works_with": [
+      "Compute.Cluster — the cluster the pool belongs to.",
+      "Platform.Namespace — namespaces whose workloads schedule onto pools."
+    ]
+  },
   "lifecycle": {
     "states": [
       "Intent",

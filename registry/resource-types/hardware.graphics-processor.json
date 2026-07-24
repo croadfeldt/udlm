@@ -13,6 +13,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },
+  "context": {
+    "purpose": "Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.",
+    "plain_description": "One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes (model, memory, architecture) are discovered facts; the type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.",
+    "use_when": [
+      "You need GPU inventory across hosts — which cards, where, with what memory and architecture.",
+      "You need the passthrough/partition chain (guest slice → physical card → host) traversable for maintenance impact."
+    ],
+    "not_for": [
+      "CPU sockets — Hardware.Processor.",
+      "Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. Platform.NodePool capabilities), not a GPU component record."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — the host the physical card is installed in.",
+      "Compute.VirtualMachine — the guest a passthrough or partition is presented to.",
+      "Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

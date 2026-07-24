@@ -13,6 +13,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z"
   },
+  "context": {
+    "purpose": "Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.",
+    "plain_description": "A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated (proposed, under review, canonical, deprecated); once canonical, the term's handle is what other records bind to instead of restating names.",
+    "use_when": [
+      "You need an authoritative vocabulary that observed, free-text items normalize onto.",
+      "You need several disjoint controlled vocabularies without minting a new type per vocabulary."
+    ],
+    "not_for": [
+      "The observed thing being normalized — Capability records normalize onto terms; the term is the authority, not the observation.",
+      "Ad-hoc classification of resources — labels on resource records cover that; TaxonomyTerm is for governed vocabularies with curation."
+    ],
+    "works_with": [
+      "Capability — capabilities normalize onto terms (normalized_to).",
+      "TaxonomyTerm — the parent term; chains stay inside one vocabulary root."
+    ]
+  },
   "spec": {
     "type": "object",
     "additionalProperties": false,

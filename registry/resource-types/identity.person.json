@@ -13,6 +13,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z"
   },
+  "context": {
+    "purpose": "Models a human account — the actor that gets authenticated, authorized, and audited.",
+    "plain_description": "One human's identity: login handle, display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a Security.CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.",
+    "use_when": [
+      "You need human accounts as records that role assignments and audit trails reference.",
+      "You need a federated user tied to their external IdP subject without copying the IdP's data."
+    ],
+    "not_for": [
+      "Automation, agents, or API-key holders — Identity.ServiceAccount.",
+      "The credential itself — Security.CredentialRef; a person references credentials, never contains them.",
+      "The directory server — Security.DirectoryService is the server; this is one identity in it."
+    ],
+    "works_with": [
+      "Identity.Group — memberships that drive role binding.",
+      "Security.CredentialRef — the person's credentials, by reference.",
+      "Security.DirectoryService — the external authenticator when federated."
+    ]
+  },
   "spec": {
     "type": "object",
     "additionalProperties": false,

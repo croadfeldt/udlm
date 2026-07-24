@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T03:29:34Z"
   },
+  "context": {
+    "purpose": "Makes an automation job (playbook, pipeline, script) a first-class node in the dependency graph, so what the job needs stays up while it runs.",
+    "plain_description": "A record of a job that automation runs — an Ansible playbook, a CI pipeline, a backup script. It is modeled like infrastructure because it has real dependencies: the host it executes on, the network fabric it traverses, the name service it resolves through. While the job runs, none of those may be taken down, which is how ordered operations like a UPS-triggered graceful shutdown come out of the data instead of hand-written runbooks. The engine that runs the job (Ansible, Tekton, Argo) is a provider detail, not part of the type.",
+    "use_when": [
+      "You need a shutdown or upgrade sequence to know an orchestration job is running and must finish before its executor host stops.",
+      "You need to record which automation created or modified a resource, so the resource's provenance can cite the job.",
+      "You need a scheduled or event-triggered job (cron, a UPS on-battery event) tracked with a hard execution-time limit."
+    ],
+    "not_for": [
+      "The long-running service a job might deploy — that is Software.Service; a service has no scheduled end, a job must declare max_execution_time.",
+      "The workload container a job runs in — that is Compute.Container; the job is the process, not the runtime."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — the executor host a running job pins (the orchestrator stops last).",
+      "Network.Switch — the fabric the job traverses; connectivity outlives whatever the job operates on.",
+      "Network.AddressService — the name resolution the job needs to reach its targets."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

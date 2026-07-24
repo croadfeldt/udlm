@@ -12,6 +12,25 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
+  "context": {
+    "purpose": "Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.",
+    "plain_description": "The identity directory as a running server: which protocols it serves (LDAP, Kerberos), its realm and base DN, and its role in a replication topology (a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; a suite like FreeIPA realizes this server plus DNS zones.",
+    "use_when": [
+      "You need services and hosts that authenticate against the directory to depend on it, so it stops last among them.",
+      "You need the directory replication topology (primary/replica) explicit for recovery planning."
+    ],
+    "not_for": [
+      "The identities inside — Identity.Person / Identity.Group / Identity.ServiceAccount.",
+      "The DNS zones a directory suite serves — Network.DNSZone; related, but its own record.",
+      "The bind credential — Security.CredentialRef."
+    ],
+    "works_with": [
+      "Compute.VirtualMachine / Compute.BareMetalHost — where the directory runs.",
+      "Identity.Group — external groups sourced from this directory.",
+      "Software.Service — services requiring the directory, with hard/soft strength.",
+      "Network.DNSZone — zones served when DNS is directory-integrated."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

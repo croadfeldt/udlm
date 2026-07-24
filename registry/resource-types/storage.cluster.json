@@ -21,6 +21,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
+  "context": {
+    "purpose": "Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.",
+    "plain_description": "A multi-node storage system — Ceph is the reference realization, but the technology is the provider, never the type. It declares which protocols it serves (block, file, object), its capacity, and its redundancy scheme, and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.",
+    "use_when": [
+      "You need the storage platform in the graph so volumes and their consumers order correctly against it and its member nodes.",
+      "You need the cluster's protocols, capacity, and protection scheme declared vendor-neutrally."
+    ],
+    "not_for": [
+      "A host-local pool of drives (ZFS zpool, LVM VG) — Storage.Pool; a Storage.Cluster is distributed across nodes.",
+      "The consumable volume — Storage.Volume, provisioned from this cluster.",
+      "The provisioning policy name — Platform.StorageClass; the cluster backs a class, the class is the policy record."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost / Compute.VirtualMachine — the nodes the cluster runs across.",
+      "Storage.Volume — volumes provisioned from the cluster.",
+      "Platform.StorageClass — the class records naming what this cluster serves."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [
