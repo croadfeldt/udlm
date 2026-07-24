@@ -16,3 +16,6 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 - `type-standard/` — the rule-36 gate classes beyond outputs: reference discipline (PVD-001),
   adopts-registration parity, relationship-target integrity. Deterministic halves enforced by
   `tests/check_type_standard.py` (baseline ratchet); these UCs keep the classes gap-analyzable.
+- `multi-cluster/` — the Platform.Hub capability axes: provision-via-hub, hub-to-hub portability,
+  control-residency sovereignty (hub jurisdiction vs spoke), self-managed-hub rehydration (the
+  ADR-043 demotion rule under its hardest test).

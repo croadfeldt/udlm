@@ -70,7 +70,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Compute.VirtualMachine — the guests the host runs.
 
-### Compute.Cluster (0.3.0)
+### Compute.Cluster (0.4.0)
 
 **Purpose:** Declares a managed Kubernetes/OpenShift cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -89,6 +89,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Platform.NodePool — homogeneous slices of the cluster's node capacity.
 - Network.VirtualNetwork — the network the cluster is realized onto.
 - Compute.Container — the workloads scheduled onto the cluster.
+- Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
 ### Compute.Container (0.5.0)
 
@@ -591,6 +592,27 @@ A statement of outcome: logs from a target host, shipped to a named sink URL, ta
 
 ## Platform
 
+### Platform.Hub (0.1.0)
+
+**Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
+
+A Hub is whatever sits above your clusters and manages them as a fleet — an ACM hub, a HyperShift/HCP management cluster, a Rancher server, or a hosted fleet manager. It may itself run on a cluster (including, in the self-managed pattern, the very cluster it manages) or be standalone software. Model the hub as its own entity; whether it lives on a cluster is just an edge.
+
+**Use when:**
+- you need to record which management plane provisioned or now manages a cluster
+- a cluster's lifecycle operations flow through a fleet manager and shutdown/startup order must respect it
+- you need the management plane's own sovereignty position (which jurisdiction governs the manager, distinct from its spokes)
+
+**Not for:**
+- the cluster a hub happens to run on — that host is a plain Compute.Cluster, and hub-ness on it is a derived role marker, never authored
+- single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service on the cluster
+- a peer DCM instance in federation — that is the federate capability on the provider contract, not a Hub
+
+**Works with:**
+- Compute.Cluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster
+- Facility.Location — where the hub's control plane actually runs, for the sovereignty question
+- Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
+
 ### Platform.Namespace (0.3.1)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
@@ -939,4 +961,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*46 types; 46 with context, 0 pending.*
+*47 types; 47 with context, 0 pending.*
