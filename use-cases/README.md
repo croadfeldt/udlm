@@ -19,3 +19,5 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 - `multi-cluster/` — the Platform.Hub capability axes: provision-via-hub, hub-to-hub portability,
   control-residency sovereignty (hub jurisdiction vs spoke), self-managed-hub rehydration (the
   ADR-043 demotion rule under its hardest test).
+- `bare-metal/` — replayable host provisioning intent (Metal3 surface, fix-wave PR-1): provision
+  from intent; host rehydration by replaying intent onto replacement hardware.
