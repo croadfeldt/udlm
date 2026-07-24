@@ -19,3 +19,5 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 - `multi-cluster/` — the Platform.Hub capability axes: provision-via-hub, hub-to-hub portability,
   control-residency sovereignty (hub jurisdiction vs spoke), self-managed-hub rehydration (the
   ADR-043 demotion rule under its hardest test).
+- `storage-redundancy/` — the generic RAID model (fix-wave PR-2): degraded-pool drift with
+  graph-walkable blast radius; hardware RAID declared as Pool intent at bare-metal provision.
