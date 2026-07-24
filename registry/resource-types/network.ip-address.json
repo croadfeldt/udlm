@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
+  "context": {
+    "purpose": "Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.",
+    "plain_description": "One IP address, bound to the interface it is configured on, with how it came to be: static (a fixed reservation — this IS the DHCP reservation; there is no second record), leased via DHCP, or self-assigned (SLAAC/privacy). A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.",
+    "use_when": [
+      "You need address assignments tracked per interface with their origin (static, dhcp, auto).",
+      "You need one authoritative record that DHCP reservation lists and other projections derive from."
+    ],
+    "not_for": [
+      "The range addresses come from — Network.IPAddressPool.",
+      "The subnet's DHCP service configuration — Network.DHCPScope.",
+      "The interface itself — Hardware.NetworkInterface; the address attaches to it."
+    ],
+    "works_with": [
+      "Hardware.NetworkInterface — the interface the address is configured on.",
+      "Network.IPAddressPool — the pool the address was carved from.",
+      "Compute.VirtualMachine — consumers that request or bring addresses."
+    ]
+  },
   "spec": {
     "type": "object",
     "properties": {

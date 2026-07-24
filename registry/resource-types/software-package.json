@@ -13,6 +13,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z"
   },
+  "context": {
+    "purpose": "Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.",
+    "plain_description": "One package at one version — identified by its purl (Package URL), the portable id that carries ecosystem, name, and version in one string. There is exactly one record per purl no matter how many images contain it, which is what makes blast-radius questions cheap: find the package once, walk back to every image and container that includes it. Discovered by scanners; never built or provisioned.",
+    "use_when": [
+      "You need where-do-we-run-version-X-of-library-Y answerable as a graph walk.",
+      "You need packages linked to the advisories affecting them."
+    ],
+    "not_for": [
+      "The image bundling the package — SoftwareImage contains packages.",
+      "The advisory itself — Vulnerability; a package is affected_by it."
+    ],
+    "works_with": [
+      "SoftwareImage — the images that contain this package.",
+      "Vulnerability — the advisories affecting this package version."
+    ]
+  },
   "spec": {
     "type": "object",
     "additionalProperties": false,

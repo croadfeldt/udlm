@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z"
   },
+  "context": {
+    "purpose": "Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.",
+    "plain_description": "The Kubernetes StorageClass construct: a named policy saying which provisioner builds volumes, what happens to data on release, when binding happens, whether volumes can grow, and what the class can do (IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.",
+    "use_when": [
+      "You need volumes to request storage by named policy instead of naming backends.",
+      "You need placement to pick storage by advertised capability (encrypted, fast, replicated)."
+    ],
+    "not_for": [
+      "The volume itself — Storage.Volume references a class.",
+      "The backing storage system — Storage.Cluster; the class is the policy naming what the cluster serves.",
+      "Host-local pools — Storage.Pool; a class is a platform-level provisioning policy."
+    ],
+    "works_with": [
+      "Storage.Volume — volumes declare their class by reference.",
+      "Storage.Cluster — the storage cluster backing the class.",
+      "Compute.VirtualMachine — VM disks select a storage class."
+    ]
+  },
   "adopts": [
     {
       "standard": "Kubernetes",

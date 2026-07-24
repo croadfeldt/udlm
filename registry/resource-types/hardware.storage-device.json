@@ -13,6 +13,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },
+  "context": {
+    "purpose": "Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.",
+    "plain_description": "One storage device as a record: where it sits (bay or slot), what it is (model, serial, world-wide name), its capacity, media and bus type, and its role (boot, data, cache, storage-cluster member). device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host actually sees.",
+    "use_when": [
+      "You need drive-level inventory — which drive, in which bay, of which host — so a failing disk maps to a physical pull-and-replace.",
+      "You need pool or cluster membership grounded in real devices (a vdev's members, a storage daemon's backing drive)."
+    ],
+    "not_for": [
+      "The consumable volume a workload attaches — Storage.Volume; a device is hardware, a volume is provisioned capacity.",
+      "The aggregation layer over drives — Storage.Pool (host-local) or Storage.Cluster (distributed)."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — the host the drive is installed in.",
+      "Storage.Pool — pools whose vdevs group these drives.",
+      "Compute.VirtualMachine — the guest a virtual disk is presented to."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

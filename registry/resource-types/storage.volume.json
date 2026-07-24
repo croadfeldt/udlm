@@ -21,6 +21,26 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-07T14:35:00Z"
   },
+  "context": {
+    "purpose": "Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.",
+    "plain_description": "The unit of storage a workload asks for and attaches: requested capacity, how concurrently it may be attached (one writer, many readers, and so on), filesystem versus raw block, and which storage class provisions it. It is deliberately distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.",
+    "use_when": [
+      "You need a workload's storage requested by capacity, access mode, and class, portable across provisioners.",
+      "You need volumes ordered in the graph: realized before their consumer, never outliving their provisioning cluster."
+    ],
+    "not_for": [
+      "The provisioning policy — Platform.StorageClass; the volume references a class by name.",
+      "The storage platform — Storage.Cluster provisions volumes.",
+      "Host-local ZFS/LVM storage a host service mounts — Storage.Dataset.",
+      "The physical drive — Hardware.StorageDevice."
+    ],
+    "works_with": [
+      "Platform.StorageClass — the class declaring what kind of storage the volume gets.",
+      "Storage.Cluster — the platform provisioning it.",
+      "Compute.VirtualMachine — the consumer(s) it attaches to.",
+      "Data.Database — databases whose data directory it backs."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

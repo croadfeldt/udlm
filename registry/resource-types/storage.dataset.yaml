@@ -88,3 +88,35 @@ relationships:
     cardinality: 0..1
     name: host
     description: The host the pool (and thus this dataset) is local to.
+
+context:
+  purpose: >-
+    Models a dataset carved from a host-local pool — the mounted filesystem or block device host
+    workloads actually use.
+  plain_description: >-
+    The consumable unit of host-local storage: a ZFS filesystem or zvol (the same shape extends to
+    LVM logical volumes and btrfs subvolumes), with its mountpoint, quota, and passthrough
+    properties. It is what a podman container or host service bind-mounts, so it is the storage node
+    those workloads depend on. Datasets nest (parent chains) and cannot outlive the pool they are
+    carved from. Snapshot and replication policy is orchestration, deliberately not stored here.
+  use_when:
+    - >-
+      You need host services and containers tied to the specific dataset they store on, so the
+      dataset outlives them in shutdown order.
+    - >-
+      You need the pool → dataset → workload chain explicit for capacity and migration planning.
+  not_for:
+    - >-
+      The pool it is carved from — Storage.Pool owns the drives and redundancy.
+    - >-
+      Cluster-provisioned volumes a platform attaches — Storage.Volume; a dataset is host-local.
+    - >-
+      A network share exported to other machines — Storage.FileShare exposes storage; a dataset is
+      the local storage itself.
+  works_with:
+    - >-
+      Storage.Pool — the pool the dataset is carved from.
+    - >-
+      Compute.BareMetalHost — the host the dataset is local to.
+    - >-
+      Storage.Dataset — the parent dataset, when nested.

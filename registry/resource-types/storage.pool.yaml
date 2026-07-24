@@ -106,3 +106,36 @@ relationships:
     cardinality: 0..1
     name: host
     description: The host whose drives make up this pool (a pool is host-local).
+
+context:
+  purpose: >-
+    Models a host-local aggregation of physical drives into redundancy-protected capacity that
+    datasets are carved from.
+  plain_description: >-
+    The ZFS zpool shape (extensible to an LVM volume group or btrfs pool): a set of drives on one
+    host grouped into vdevs, each vdev carrying a protection scheme (mirror, raidz). The vdev
+    topology is why the type exists — a flat dataset-on-host edge would lose which drives protect
+    which data and how many failures the pool survives. It sits between the physical drives below
+    and the datasets above, and orders accordingly: a pool stops after its datasets and before its
+    drives.
+  use_when:
+    - >-
+      You need the drive → vdev → pool → dataset chain explicit so drive failures and maintenance
+      map to affected data.
+    - >-
+      You need host-local capacity facts (usable after redundancy, degraded state) as data.
+  not_for:
+    - >-
+      Distributed multi-node storage — Storage.Cluster.
+    - >-
+      The consumable unit workloads mount — Storage.Dataset, carved from the pool.
+    - >-
+      An allocatable range of IP addresses — Network.IPAddressPool is the same pool pattern in the
+      network domain.
+  works_with:
+    - >-
+      Compute.BareMetalHost — the host whose drives form the pool.
+    - >-
+      Storage.Dataset — the datasets carved from the pool.
+    - >-
+      Hardware.StorageDevice — the physical member drives of the vdevs.

@@ -12,6 +12,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
+  "context": {
+    "purpose": "Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.",
+    "plain_description": "One subnet's DHCP setup: the CIDR, the dynamic ranges leased from, common options (gateway, DNS servers, domain name), and lease time. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.",
+    "use_when": [
+      "You need a subnet's dynamic ranges and options declared portably, independent of which DHCP server serves them.",
+      "You need static reservations to fall out of address records automatically instead of being maintained twice."
+    ],
+    "not_for": [
+      "Allocation-side accounting of a range (who holds which address, is it exhausted) — Network.IPAddressPool; the scope is service-side config. The two overlap on ranges deliberately, and both document it.",
+      "One address or reservation — Network.IPAddress with static allocation; it projects into the scope."
+    ],
+    "works_with": [
+      "Network.IPAddress — the address records whose static allocations project into reservations.",
+      "Network.AddressService — the operated service serving this scope.",
+      "Compute.BareMetalHost / Compute.VirtualMachine — the servers the scope is served from."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [

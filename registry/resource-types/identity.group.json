@@ -13,6 +13,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z"
   },
+  "context": {
+    "purpose": "Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.",
+    "plain_description": "A named set of person and service-account identities. Two sources: a built_in group owns its member list locally; an external group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.",
+    "use_when": [
+      "You need role assignments to bind to a set of identities instead of to individuals.",
+      "You need a directory (LDAP/IdP) group represented in the model without duplicating its membership."
+    ],
+    "not_for": [
+      "The directory server that hosts an external group — Security.DirectoryService.",
+      "The secret an account authenticates with — Security.CredentialRef; groups hold identities, never credentials."
+    ],
+    "works_with": [
+      "Identity.Person / Identity.ServiceAccount — the members, for built_in groups.",
+      "Security.DirectoryService — the source of an external group's membership."
+    ]
+  },
   "spec": {
     "type": "object",
     "additionalProperties": false,

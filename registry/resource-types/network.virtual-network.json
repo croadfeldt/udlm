@@ -12,6 +12,25 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:10:32Z"
   },
+  "context": {
+    "purpose": "Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.",
+    "plain_description": "The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes NetworkAttachmentDefinition, an OVN logical switch — whichever; the mechanism is the provider. It declares how traffic leaves (bridged straight onto a host bridge, NATed, routed, or isolated) and references downward: the VLAN segment it rides and the host bridge or uplink interface supporting it. That downward reference completes the walkable path guest → virtual network → bridge → bond → NIC → switch.",
+    "use_when": [
+      "You need VMs or pods to attach to networks by selecting an existing named network rather than describing L2 details inline.",
+      "You need the guest-to-physical-network path traversable for impact analysis — e.g. which guests a bridge change affects."
+    ],
+    "not_for": [
+      "The VLAN id or segment itself — Network.VLAN; a virtual network rides a segment, referenced not restated.",
+      "The host bridge device — Hardware.NetworkInterface (device_class bridge) supports this network from below.",
+      "Per-guest NIC intent — that lives on Compute.VirtualMachine's own networks list."
+    ],
+    "works_with": [
+      "Compute.VirtualMachine / Compute.Cluster — the guests that attach, and the scope that hosts the network.",
+      "Network.VLAN — the underlying segment, selected by reference.",
+      "Hardware.NetworkInterface — the supporting bridge or uplink on the host.",
+      "Network.IPAddressPool — the address pool scoped to this segment."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

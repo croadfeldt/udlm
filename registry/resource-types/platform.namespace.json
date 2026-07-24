@@ -12,6 +12,23 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z"
   },
+  "context": {
+    "purpose": "Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.",
+    "plain_description": "What Kubernetes calls a Namespace and OpenShift calls a Project: a named partition of a cluster that workloads live in. It binds a tenant, carries labels and annotations, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in; the realized name and platform UID are published for provider-side references to resolve.",
+    "use_when": [
+      "You need workloads partitioned per tenant, team, or environment inside a shared cluster.",
+      "You need quota and placement policy to operate on a governed namespace record, not an ad-hoc string."
+    ],
+    "not_for": [
+      "The cluster itself — Compute.Cluster.",
+      "The consumption limits inside the boundary — Platform.ResourceQuota constrains a namespace; it doesn't define one."
+    ],
+    "works_with": [
+      "Compute.Cluster — the cluster the namespace exists within.",
+      "Platform.ResourceQuota — hard limits scoped to this namespace.",
+      "Compute.Container / Software.Service — workloads placed into it."
+    ]
+  },
   "adopts": [
     {
       "standard": "Kubernetes",

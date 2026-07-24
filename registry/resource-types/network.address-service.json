@@ -12,6 +12,24 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:58:43Z"
   },
+  "context": {
+    "purpose": "Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.",
+    "plain_description": "The thing that hands out addresses and answers name lookups, as a single, deliberately thin service record. It says which capabilities are served (DHCP, DNS) and whether service is redundant, and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The software (Kea, BIND, dnsmasq, FreeIPA) is a provider; the data it serves is projected from address records and scope/zone records.",
+    "use_when": [
+      "You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.",
+      "You need the DHCP/DNS role pinned to the specific hosts that serve it."
+    ],
+    "not_for": [
+      "A subnet's pools and options — Network.DHCPScope is the config surface.",
+      "A zone and its records — Network.DNSZone.",
+      "A single address — Network.IPAddress."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost / Compute.VirtualMachine — where the service runs; it stops before its host.",
+      "Network.DHCPScope — the per-subnet config this service serves.",
+      "Network.DNSZone — the zones it answers for."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

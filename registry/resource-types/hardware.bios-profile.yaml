@@ -72,3 +72,34 @@ relationships:
     target: Hardware.BiosProfile
     cardinality: 0..1
     description: An optional base profile this one derives from (attribute inheritance). Hosts that converge to this profile declare the edge host-side (Compute.BareMetalHost references Hardware.BiosProfile).
+
+context:
+  purpose: >-
+    Captures a reusable desired BIOS/firmware configuration that a fleet of hosts converge to.
+  plain_description: >-
+    A named set of BIOS settings, written once and applied to many hosts. The attribute names and
+    values are the vendor's own (Redfish BIOS attributes), carried as an opaque block and
+    interpreted against a pinned attribute registry for the exact board and firmware — the profile
+    does not re-describe what each setting means. Hosts reference the profile; the applied
+    generation reported back is what drift detection compares against. A profile can derive from a
+    base profile.
+  use_when:
+    - >-
+      You need identical BIOS settings (e.g. SR-IOV enabled, boot order) enforced across a fleet of
+      like hosts.
+    - >-
+      You need to detect a host whose live BIOS no longer matches its declared profile.
+  not_for:
+    - >-
+      Host network interface configuration — that is Network.ConnectionProfile: the same
+      opaque-body-plus-pinned-registry pattern, against NMstate instead of a BIOS attribute
+      registry.
+    - >-
+      The host record itself — Compute.BareMetalHost references the profile it converges to.
+  works_with:
+    - >-
+      Compute.BareMetalHost — the hosts that declare convergence to this profile.
+    - >-
+      Hardware.BiosProfile — an optional base profile this one derives from.
+    - >-
+      Hardware.BMC — the out-of-band path the profile is applied through.

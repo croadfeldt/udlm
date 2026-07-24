@@ -12,6 +12,26 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:11:51Z"
   },
+  "context": {
+    "purpose": "Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.",
+    "plain_description": "One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.",
+    "use_when": [
+      "You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.",
+      "You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.",
+      "You need a port's VLAN membership (native/tagged) declared against shared VLAN records."
+    ],
+    "not_for": [
+      "The attachment point guests plug into — Network.VirtualNetwork; a bridge here is the device, the VirtualNetwork is the workload-facing network on top of it.",
+      "The desired configuration applied to an interface (addressing, routes, DNS) — Network.ConnectionProfile configures the device this type inventories.",
+      "The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).",
+      "Hardware.NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge membership, cable adjacency.",
+      "Network.VLAN — the segments the port is a member of.",
+      "Network.ConnectionProfile — the declarative config realized onto this interface."
+    ]
+  },
   "spec": {
     "type": "object",
     "required": [],

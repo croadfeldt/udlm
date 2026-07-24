@@ -162,3 +162,42 @@ relationships:
     target: Security.CredentialRef
     cardinality: 0..n
     description: Secrets consumed by the service's constituents — no secret material inline (DCM ADR-023).
+
+context:
+  purpose: >-
+    Models a logical running service — one or more containers and/or systemd units acting as one
+    thing — so application-level dependencies carry order.
+  plain_description: >-
+    The application layer: the mail service, the registry, model serving — a named service composed
+    of constituents that are either referenced container records or named systemd units on a host.
+    It declares what the service needs — a database, a directory, name service, storage, another
+    service, each dependency hard or soft — which is what makes
+    infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface
+    how it is reached and whether it is serving.
+  use_when:
+    - >-
+      You need an application composed of several workloads treated as one node with one dependency
+      surface.
+    - >-
+      You need service-to-service and service-to-infrastructure dependencies (with hard/soft
+      strength) to drive shutdown/startup order.
+    - >-
+      You need host services (systemd units) and containerized services modeled uniformly.
+  not_for:
+    - >-
+      A single container's runtime spec — Compute.Container; the service references containers as
+      constituents.
+    - >-
+      A bounded-runtime task — Automation.Job.
+    - >-
+      The database a service uses — Data.Database, referenced as a dependency.
+  works_with:
+    - >-
+      Compute.Container — containerized constituents, by reference.
+    - >-
+      Compute.Cluster / Compute.BareMetalHost / Compute.VirtualMachine — where the constituents run.
+    - >-
+      Data.Database / Security.DirectoryService / Network.AddressService — what the service
+      requires.
+    - >-
+      Security.CredentialRef — the service's secrets, by reference.

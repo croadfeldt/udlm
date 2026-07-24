@@ -98,3 +98,37 @@ relationships:
     target: Storage.Volume
     cardinality: 0..n
     description: The underlying storage the shares expose.
+
+context:
+  purpose: >-
+    Declares a file-sharing service and its exported shares — who may reach which path over which
+    protocol.
+  plain_description: >-
+    A file server's sharing surface: the protocol (SMB today, extensible to NFS), the exported
+    shares with their paths and access rules, and the directory service that authenticates the
+    principals named in them — membership stays in the directory, referenced not copied. Share-level
+    knobs the model doesn't type ride through a passthrough field the provider serializes (e.g. into
+    smb.conf). Once realized, the reachable share URI is published.
+  use_when:
+    - >-
+      You need network file shares — their paths, access lists, read-only flags — governed as data
+      rather than living only in a config file.
+    - >-
+      You need share authentication tied to the directory service that actually holds the
+      principals.
+  not_for:
+    - >-
+      The local storage behind the share path — Storage.Dataset / Storage.Volume; the share exposes
+      storage, it isn't the storage.
+    - >-
+      The identity data of who may connect — Security.DirectoryService holds it; shares reference
+      principals.
+  works_with:
+    - >-
+      Security.DirectoryService — authenticates the share principals.
+    - >-
+      Storage.Volume — the underlying storage the shares expose.
+    - >-
+      Compute.BareMetalHost / Compute.Container — where the file service runs.
+    - >-
+      Security.CredentialRef — service credentials (e.g. a keytab), by reference.

@@ -13,6 +13,22 @@
     "maintainer": "dav",
     "origination_timestamp": "2026-06-18T00:58:56Z"
   },
+  "context": {
+    "purpose": "Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.",
+    "plain_description": "A single named thing a platform can do — e.g. workload placement, or secret rotation — kept as a curated fact rather than provisioned infrastructure. Capabilities move through a curation lifecycle (proposed, under review, canonical, deprecated); once canonical, other records bind to the capability's normalized handle instead of free-text names, so the same capability spelled five ways converges onto one record. Nothing is ever built from a Capability — it is knowledge about the platform, not a resource in it.",
+    "use_when": [
+      "You need to track which architectural capabilities a platform has, is missing, or has duplicated across teams.",
+      "You need many differently-worded mentions of the same capability to converge onto one canonical name."
+    ],
+    "not_for": [
+      "The vocabulary term a capability normalizes onto — that is TaxonomyTerm (the authority); Capability is the observed thing being normalized.",
+      "A provider's concrete operation vocabulary (create-volume, allocate-address) — that lives as provider-capability terms under TaxonomyTerm, not here."
+    ],
+    "works_with": [
+      "TaxonomyTerm — the canonical taxonomy a capability is mapped onto (normalized_to).",
+      "Capability — capabilities depend on other capabilities, forming the capability map."
+    ]
+  },
   "spec": {
     "type": "object",
     "additionalProperties": false,

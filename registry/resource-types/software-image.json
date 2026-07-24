@@ -13,6 +13,22 @@
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z"
   },
+  "context": {
+    "purpose": "Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.",
+    "plain_description": "One container image, identified by its content digest (tags are recorded but advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which repository and registry it came from, what OS and architecture it targets, and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.",
+    "use_when": [
+      "You need every running container tied to the exact image digest it runs, deduplicated across the fleet.",
+      "You need a bill-of-materials anchor: image → packages → vulnerabilities, walkable in both directions."
+    ],
+    "not_for": [
+      "The running workload — Compute.Container runs an image; this is the image as a fact.",
+      "A package inside the image — SoftwarePackage; the image contains packages."
+    ],
+    "works_with": [
+      "Compute.Container — workloads that run this image.",
+      "SoftwarePackage — the packages the image contains (the software bill of materials)."
+    ]
+  },
   "spec": {
     "type": "object",
     "additionalProperties": false,

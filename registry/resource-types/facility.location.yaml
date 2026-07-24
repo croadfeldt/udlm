@@ -68,3 +68,33 @@ outputs:
   occupant_count:
     type: integer
     description: How many resources are currently located in this place.
+
+context:
+  purpose: >-
+    Names a physical place — site, room, rack, bench — that resources sit in, nesting into a
+    containment hierarchy.
+  plain_description: >-
+    A physical place, at whatever granularity is useful: a site contains rooms, a room contains
+    racks, a rack has positions. Resources declare where they physically sit by referencing a
+    location; location-scoped concerns like cooling or a shared uplink attach at the right level of
+    the hierarchy. Power is deliberately not carried here — each host declares its own power-feed
+    edges, because two hosts in one rack can draw from different feeds.
+  use_when:
+    - >-
+      You need to record where equipment physically is, down to a rack position.
+    - >-
+      You need placement intent for a VM or workload to select among existing places.
+  not_for:
+    - >-
+      Failure or locality domains for placement constraints (zone, power domain,
+      rack-as-failure-domain) — that is Topology: put resources IN Locations, constrain placement
+      AGAINST Topology.
+    - >-
+      Power sources — Facility.PowerFeed, referenced per host, not per location.
+  works_with:
+    - >-
+      Facility.Location — the parent place this one nests inside.
+    - >-
+      Compute.BareMetalHost — the equipment that declares its location.
+    - >-
+      Topology — the failure-domain view of the same physical reality.

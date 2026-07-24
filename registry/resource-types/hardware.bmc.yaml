@@ -74,3 +74,33 @@ relationships:
     target: Compute.BareMetalHost
     cardinality: 0..1
     description: The host this BMC is the out-of-band controller for — its power/reset surface. A BMC controls exactly one host when assigned.
+
+context:
+  purpose: >-
+    Models a host's baseboard management controller so power and reset actions have a first-class,
+    addressable target.
+  plain_description: >-
+    The always-on management controller inside a server that answers even when the host is off —
+    iDRAC, iLO, a Supermicro/ASPEED BMC. This record carries its management address, the protocols
+    it answers (Redfish, IPMI as fallback), and its vendor, and points at the one host it controls.
+    Credentials are never stored here — they are referenced. It exists so that power that host off
+    resolves to a concrete address and mechanism instead of prose.
+  use_when:
+    - >-
+      You need out-of-band power/reset control of a host to be addressable data, for shutdown
+      ordering and recovery automation.
+    - >-
+      You need the management-network surface of the fleet inventoried separately from in-band host
+      addresses.
+  not_for:
+    - >-
+      The host itself — Compute.BareMetalHost; the BMC manages it, one-to-one.
+    - >-
+      The BMC login secret — Security.CredentialRef, referenced not stored.
+  works_with:
+    - >-
+      Compute.BareMetalHost — the host this BMC is the power/reset surface for.
+    - >-
+      Security.CredentialRef — the BMC credential, by reference.
+    - >-
+      Hardware.BiosProfile — firmware profiles applied over the BMC's out-of-band path.
