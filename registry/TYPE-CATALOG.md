@@ -856,20 +856,22 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Compute.BareMetalHost / Compute.Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
-### Storage.Pool (0.2.0)
+### Storage.Pool (0.3.0)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
-The ZFS zpool shape (extensible to an LVM volume group or btrfs pool): a set of drives on one host grouped into vdevs, each vdev carrying a protection scheme (mirror, raidz). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which drives protect which data and how many failures the pool survives. It sits between the physical drives below and the datasets above, and orders accordingly: a pool stops after its datasets and before its drives.
+The generic redundancy group — one shape for a ZFS zpool, an md array, a hardware-RAID virtual disk, an LVM VG, or a btrfs pool: a set of drives on one host grouped into vdevs, each vdev carrying a protection scheme (mirror, raidz). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which drives protect which data and how many failures the pool survives. It sits between the physical drives below and the datasets above, and orders accordingly: a pool stops after its datasets and before its drives.
 
 **Use when:**
 - You need the drive → vdev → pool → dataset chain explicit so drive failures and maintenance map to affected data.
 - You need host-local capacity facts (usable after redundancy, degraded state) as data.
+- You have RAID anywhere — firmware, mdadm, zpool — and want one reusable model for it (declared hardware-RAID pools drive controller config at bare-metal provision time).
 
 **Not for:**
 - Distributed multi-node storage — Storage.Cluster.
 - The consumable unit workloads mount — Storage.Dataset, carved from the pool.
 - An allocatable range of IP addresses — Network.IPAddressPool is the same pool pattern in the network domain.
+- RAID fields on the host type — a host never carries RAID; it contains pools (see Compute.BareMetalHost).
 
 **Works with:**
 - Compute.BareMetalHost — the host whose drives form the pool.
