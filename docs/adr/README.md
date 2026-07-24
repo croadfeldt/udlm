@@ -19,7 +19,7 @@ control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
 | DCM ADR-022 | Trust model (DCM brokers trust, never custodies it) |
 | DCM ADR-023 | Scale-of-integration / denaturalization tiers |
 
-The local sequence below is UDLM's own — ADR-001…042 all have files here. The **DCM** ADR numbers
+The local sequence below is UDLM's own — ADR-001…043 all have files here. The **DCM** ADR numbers
 referenced above overlap these same integers, so a bare "ADR-014" is ambiguous between the local
 ADR-014 and DCM ADR-014. Always qualify a control-plane reference as `DCM ADR-0XX` (it resolves in the
 DCM repo `architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.
@@ -92,3 +92,4 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [040](ADR-040-federation-resolution.md) | Federation resolution (**STUB**) — how rooted addresses resolve across peers / tenants / sovereignty borders; deferred, demand-driven, `peer` root first | Proposed (stub) |
 | [041](ADR-041-policy-information-firewall.md) | Policy as information firewall — boundary mediation: egress *release* + ingress *admission* control, structural (unresolved reference) vs value (resolved datum) inspection, resolver + reactive re-convergence, cross-domain guard for high-assurance zones | Proposed |
 | [042](ADR-042-standard-neutrality-and-portability-policy.md) | Enable, don't mandate — the **pattern** for opt-in standards governance without an approved-standards list: derive a *descriptive* property (from the standard's governing body), let policy evaluate it (ADR-041), let an org **profile** set the stance. UDLM describes; the org decides. The `neutrality` + portability-strictness (`off`/`warn`/`deny`) illustration is **consumer-gated — recorded, not built** until a UC asks (ADR-032). No new rule/primitive/store | Proposed |
+| [043](ADR-043-managed-by-relation-deferred.md) | No `managed_by` relation | The typed target is the context; ordering lives in `edge_type` — a relation name earns its way in only via a naming standard or a same-type disambiguation need. Deferred with a defined re-review trigger. |
