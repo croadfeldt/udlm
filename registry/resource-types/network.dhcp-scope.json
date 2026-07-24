@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.5.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "bb2b301f-b5d9-4d5e-b9bf-7d9a4bb6c1ff",
+  "uuid": "1866386c-93d7-41f6-9591-670f99f9560d",
   "resource_type": "Network.DHCPScope",
   "version": "0.5.0",
   "family": "Resource",
@@ -20,7 +20,7 @@
       "You need static reservations to fall out of address records automatically instead of being maintained twice."
     ],
     "not_for": [
-      "Allocation-side accounting of a range (who holds which address, is it exhausted) — Network.IPAddressPool; the scope is service-side config. The two overlap on ranges deliberately, and both document it.",
+      "Allocation-side accounting of a range (who holds which address, is it exhausted) — Network.IPAddressPool; the scope is service-side config. The two overlap on ranges by design, and both document it.",
       "One address or reservation — Network.IPAddress with static allocation; it projects into the scope."
     ],
     "works_with": [

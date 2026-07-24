@@ -76,14 +76,14 @@ terms:
     parent: realize_resources
     domain: Compute
     curation_state: canonical
-    definition: Provision/manage Compute.* resources (VMs, containers, bare-metal). e.g. libvirt, OCP/podman.
+    definition: Provision/manage Compute.* resources (VMs, containers, bare-metal). e.g. libvirt, podman, a Kubernetes cluster.
   - term: realize_resources/Network
     category: network-provisioning
     root: provider-capability
     parent: realize_resources
     domain: Network
     curation_state: canonical
-    definition: Provision/manage Network.* resources (IP addresses, subnets, segments). e.g. an InfoBlox IPAM allocating IPs.
+    definition: Provision/manage Network.* resources (IP addresses, subnets, segments). e.g. an IPAM appliance allocating IPs.
   - term: serve_data/Network
     category: network-information
     root: provider-capability
@@ -92,7 +92,7 @@ terms:
     curation_state: canonical
     definition: >-
       Serve authoritative Network data (IP availability, subnet utilization). The SECOND capability of an
-      InfoBlox IPAM — same provider, alongside realize_resources/Network; two categories, one registration.
+      IPAM appliance — same provider, alongside realize_resources/Network; two categories, one registration.
   - term: serve_data/Storage
     category: storage-information
     root: provider-capability
@@ -109,7 +109,7 @@ terms:
     parent: authenticate
     domain: Identity
     curation_state: canonical
-    definition: Authenticate identities against a directory (FreeIPA, OIDC). Category label for the authenticate verb.
+    definition: Authenticate identities against a directory (LDAP/Kerberos, OIDC). Category label for the authenticate verb.
   - term: federate/Peer
     category: federation
     root: provider-capability

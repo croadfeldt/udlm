@@ -1,7 +1,7 @@
 # UDLM Resource Type Specification — Storage.Dataset (YAML; validated against resource-type-spec.schema.json).
 #
 # A dataset carved from a Storage.Pool — the ZFS dataset (filesystem / zvol), extensible to an LVM LV or
-# btrfs subvolume. This is the thing a host service's bind-mount actually points at, so it is the storage
+# btrfs subvolume. This is the thing a host service's bind-mount points at, so it is the storage
 # node in the dependency graph for host/podman workloads: a container `depends_on` its dataset, the
 # dataset `depends_on` its pool, the pool `depends_on` its drives. Distinct from Storage.Volume (a
 # cluster-provisioned PVC/CSI volume a workload attaches) — a Dataset is the host-local, hierarchy-bearing
@@ -10,7 +10,7 @@
 # ADOPT (not absorb): the dataset/property vocabulary is OpenZFS's; a provider (zfs) naturalizes it.
 $id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.3.0
 conforms_to: udlm/0.1
-uuid: a87f8bfa-e544-4e64-8b5e-24c9c581ad64
+uuid: 0b67e5ab-48ff-4bd4-8439-32b6fb878bfa
 resource_type: Storage.Dataset
 version: 0.3.0
 family: Resource
@@ -92,13 +92,13 @@ relationships:
 context:
   purpose: >-
     Models a dataset carved from a host-local pool — the mounted filesystem or block device host
-    workloads actually use.
+    workloads use.
   plain_description: >-
     The consumable unit of host-local storage: a ZFS filesystem or zvol (the same shape extends to
     LVM logical volumes and btrfs subvolumes), with its mountpoint, quota, and passthrough
     properties. It is what a podman container or host service bind-mounts, so it is the storage node
     those workloads depend on. Datasets nest (parent chains) and cannot outlive the pool they are
-    carved from. Snapshot and replication policy is orchestration, deliberately not stored here.
+    carved from. Snapshot and replication policy is orchestration, not stored here.
   use_when:
     - >-
       You need host services and containers tied to the specific dataset they store on, so the

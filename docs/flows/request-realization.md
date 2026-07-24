@@ -5,16 +5,16 @@ build — filled in and checked before anything is created. This is the model's 
 and the rules that always hold, told without reference to any particular engine. How a real engine performs
 it is the DCM companion, [`docs/flows/request-realization.md`](https://github.com/dcm-project/dcm/tree/main/docs/flows/request-realization.md).
 
-**In one breath.** A user asks for *a VM this size*; the OpenShift-specific parts like the `namespace` are
+**In one breath.** A user asks for *a VM this size*; the Kubernetes-specific parts like the `namespace` are
 usually left to the system to fill in. The system picks a provider, fills in whatever that provider needs
-(OpenShift wants a `namespace`; VMware wants a `cluster`), checks the result is complete, and only then
+(Kubernetes wants a `namespace`; an enterprise virtualization platform wants a `cluster`), checks the result is complete, and only then
 builds it. Portable in, provider-ready out — never dispatched half-built.
 
 ## Start vendor-agnostic; add specifics on top
 
 Every request starts from a **vendor-agnostic base**. A portable `Compute.VirtualMachine` carries the things
 true of *any* VM — `guest_os`, size, disks, networks — and deliberately leaves out one provider's mechanics
-like OpenShift's `namespace`. Keeping those off the base is what makes the type portable: another provider
+like Kubernetes' `namespace`. Keeping those off the base is what makes the type portable: another provider
 can still read it ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) — the type models
 the graph and audit surface; provider-specific config is stored separately).
 
@@ -26,8 +26,8 @@ Provider-specific details get added *on top* of that base, and there are two way
   breaking portability** so the trade is explicit (realized-entity `portability` block).
 
 So the base is always portable, and going beyond it is a choice made with eyes open. The running example
-takes the common path: *the user gave cpu and memory, left the OpenShift specifics to the system, and
-OpenShift needs a `namespace` — where does it come from?* The answer is a real step in the flow.
+takes the common path: *the user gave cpu and memory, left the Kubernetes specifics to the system, and
+Kubernetes needs a `namespace` — where does it come from?* The answer is a real step in the flow.
 
 ## The flow
 
@@ -36,7 +36,7 @@ flowchart TD
   I["Intent — a portable request<br/>(cpu, memory, guest_os)<br/>as vague or exact as the user likes"] --> A
   CC["Consumer specifics (optional)<br/>zone · capability · a named provider"] -.->|narrow the choice| P
   A["Assemble — fill in defaults<br/>from the data layers"] --> P
-  P["Place — narrow to the providers that fit,<br/>pick one (→ OpenShift)"] --> E
+  P["Place — narrow to the providers that fit,<br/>pick one (→ the Kubernetes provider)"] --> E
   E["Enrich — add what this provider needs<br/>(→ namespace) into its Provider-Class elements"] --> R
   R{"Reserve — check + converge<br/>validate against the provider's requirements"}
   R -. "not yet stable — new reserved facts re-evaluate policies" .-> P
@@ -64,7 +64,7 @@ field.
 **3. Place — pick a provider that fits.** The system narrows to the providers that satisfy the request and
 the policies (sovereignty, cost, capability), then picks one. The vaguer the request, the more providers fit
 and the more the system decides; the more exact, the fewer fit. Only now — with a specific provider chosen —
-do we know what that provider requires. (OpenShift needs a `namespace`; VMware would need a `cluster`.)
+do we know what that provider requires. (The Kubernetes provider needs a `namespace`; an enterprise virtualization platform would need a `cluster`.)
 
 **4. Enrich — add what this provider needs.** The system compares what the provider requires against what
 the request already has, and fills the difference — here, `namespace`. The value lands in
@@ -77,7 +77,7 @@ requirements, without creating anything. This is a loop, not a single check — 
 re-trigger enrichment and policy evaluation, converging before commit ([see below](#it-converges--the-flow-isnt-one-straight-pass)).
 Complete → it holds a spot and the flow commits. Still missing
 something → the request stops here with a clear, field-level error. An incomplete VM never reaches
-OpenShift's API; the gap surfaces as a plain validation failure, not a runtime crash.
+the provider's API; the gap surfaces as a plain validation failure, not a runtime crash.
 
 **6. Commit — build it.** The provider creates the VM, reports back what it built and the id that ties the
 UDLM record to the provider's native one, and DCM records the result. What was *asked* and what was *built*
@@ -107,7 +107,7 @@ post-placement enrichment policy looks up the right one for the chosen provider 
 stays data; the only logic is the lookup.
 
 If the data has no entry for the chosen provider, the policy stops with a clear reason ("no namespace mapping
-for OpenShift VMs") — caught at reserve, never a silent gap. A plain layer default still covers fields that
+for Kubernetes VMs") — caught at reserve, never a silent gap. A plain layer default still covers fields that
 aren't provider-conditional and need no selecting.
 
 Whichever value wins is recorded in provenance, and a compliance policy can still override it for sovereignty

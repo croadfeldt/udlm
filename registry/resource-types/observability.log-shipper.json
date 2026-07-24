@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "0aa66fc7-f17c-4a34-b053-824c16570022",
+  "uuid": "3433e0ac-d339-4ced-aab9-3fe4c937a21a",
   "resource_type": "Observability.LogShipper",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Log Shipper",
-    "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (an Ansible role today via ansible-runner, an AAP job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization: a provider's Ansible `alloy` role (journald -> Loki). See DCM architecture/integrations/automation-outcome-providers.md.",
+    "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (a configuration-management role today, an automation platform's job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization: a provider's configuration-management role shipping the host journal to the central log store. See DCM architecture/integrations/automation-outcome-providers.md.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-18T13:14:58Z"
   },
@@ -53,11 +53,11 @@
         "required": [
           "url"
         ],
-        "description": "Where the logs go — the central log store endpoint. Vendor-neutral (a Loki/OTLP push URL); the store itself is another entity.",
+        "description": "Where the logs go — the central log store endpoint. Vendor-neutral (e.g. an OTLP push URL); the store itself is another entity.",
         "properties": {
           "url": {
             "type": "string",
-            "description": "Log-store push endpoint (e.g. a Loki push URL)."
+            "description": "Log-store push endpoint (e.g. an OTLP push URL)."
           }
         }
       },
@@ -89,7 +89,7 @@
     },
     "shipping_to": {
       "type": "string",
-      "description": "The sink URL the shipper is actually delivering to (echo of realized config)."
+      "description": "The sink URL the shipper is delivering to (echo of realized config)."
     },
     "last_shipped_at": {
       "type": "string",

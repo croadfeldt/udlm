@@ -1,15 +1,15 @@
 # Worked example — declaring a full-stack provider and its sovereignty accreditations
 
 **What this shows:** how one provider declares itself, declares that it manages the **full lifecycle of
-VMs, containers, and OpenShift clusters** (and all their constituent capabilities), and how **three
+VMs, containers, and Kubernetes clusters** (and all their constituent capabilities), and how **three
 different sovereignty postures** are modelled with the accreditation record — using nothing but the
 provider capability declaration (`registry/provider-adopted-standards.schema.json`) and the accreditation
 record (`registry/accreditation.schema.json`; `governance/accreditation-and-authorization-matrix.md`).
 
 The scenario:
-- **Region sovereignty (US + Canada) for everything** the provider offers — *except* OpenShift.
+- **Region sovereignty (US + Canada) for everything** the provider offers — *except* cluster lifecycle.
 - **State sovereignty (Minnesota) for containers.**
-- **No sovereignty accreditation for OpenShift** at all.
+- **No sovereignty accreditation for Cluster Lifecycle** at all.
 
 All three artifacts below are live, validated instances — `registry/providers/full-stack-sp.json`,
 `registry/instances/accreditation-region-us-ca.yaml`, `registry/instances/accreditation-state-mn.yaml`.
@@ -26,7 +26,7 @@ A **capability** is the versioned, accreditable unit (`capability_uuid` + `versi
 |---|---|
 | **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VirtualMachine) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
 | **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Compute.Container) · `…/Network` · `…/Storage` |
-| **OpenShift Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (Compute.Cluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
+| **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (Compute.Cluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
 
 So "full lifecycle of X and all its constituent capabilities" = **one capability that spans the
 categories X is built from**. Operational primitives (drain, online-migrate, rolling-update, rehearsal)
@@ -35,7 +35,7 @@ are declared per category — e.g. the VM's Compute category advertises `online_
 **The declared sovereignty stance (a *claim*, not yet trust):**
 - `provider_defaults.sovereignty = { operating_jurisdictions: [US, CA] }` — the provider's default
   residency stance, inherited by every capability/category that does not override it. So VM, Container,
-  **and OpenShift** all *claim* US + CA.
+  **and Cluster** all *claim* US + CA.
 - The Container capability's `realize_resources/Container` category **overrides** it to add Minnesota:
   `{ operating_jurisdictions: [US, CA], data_residency_zones: [us-mn], enforcement_plane: both }`
   (finest-granularity-wins). `enforcement_plane: both` means the provider claims to enforce **both** the
@@ -51,7 +51,7 @@ categories elided for length; they carry no per-category override and inherit th
 
 ```json
 {
-  "provider": { "name": "full-stack-sp", "uuid": "ae18b73d-…", "kind": "service" },
+  "provider": { "name": "full-stack-sp", "uuid": "ee72f521-…", "kind": "service" },
   "adopted_standard_support": [
     { "standard": "Redfish",    "supports": ">=1.0",   "direction": "consume" },
     { "standard": "KubeVirt",   "supports": ">=1.0",   "direction": "consume" },
@@ -79,7 +79,7 @@ categories elided for length; they carry no per-category override and inherit th
         { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress"] },
         { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume"] } ] },
 
-    { "capability_uuid": "31aa387c-…", "version": "1.0.0", "name": "OpenShift Cluster Lifecycle",
+    { "capability_uuid": "31aa387c-…", "version": "1.0.0", "name": "Cluster Lifecycle",
       "categories": [
         { "category": "realize_resources/Compute", "resource_types": ["Compute.Cluster"],
           "operational_capability": { "drain": true, "rolling_update": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
@@ -89,7 +89,7 @@ categories elided for length; they carry no per-category override and inherit th
 }
 ```
 
-Note there is **no `sovereignty` block on the OpenShift capability** — it silently inherits the provider
+Note there is **no `sovereignty` block on the cluster capability** — it silently inherits the provider
 default `{US, CA}`, which is exactly the *claim* §3 shows is untrusted for want of an accreditation.
 
 ## 2. Two accreditations attest specific scopes
@@ -100,15 +100,15 @@ is also a **verifiable credential**: it carries a `proof` (the accreditor's sign
 (here a `government_registry`), which DCM verifies **before** it appraises scope (the two-gate, §3.7). Two
 accreditation records provide the match:
 
-**A — Region (US + CA), everything except OpenShift** (`accreditation-region-us-ca.yaml`):
+**A — Region (US + CA), everything except cluster lifecycle** (`accreditation-region-us-ca.yaml`):
 ```yaml
-subject_uuid: ae18b73d-…            # full-stack-sp
+subject_uuid: ee72f521-…            # full-stack-sp
 framework: sovereign
 scope:
   capability_scope:
     - capability_uuid: 44e7eb3d-…   # VM Lifecycle      (whole capability, any version — grain 2)
     - capability_uuid: a26c91c8-…   # Container Lifecycle
-    # OpenShift (31aa387c-…) intentionally absent
+    # Cluster Lifecycle (31aa387c-…) intentionally absent
   geographic_scope: [US, CA]
   data_classifications: [sovereign]
   plane: both                       # attests BOTH data-plane residency AND control-plane operator access
@@ -119,7 +119,7 @@ proof: { type: DataIntegrityProof, verification_method: "did:web:na-sovereignty-
 
 **B — State (Minnesota), containers only** (`accreditation-state-mn.yaml`):
 ```yaml
-subject_uuid: ae18b73d-…
+subject_uuid: ee72f521-…
 framework: sovereign
 scope:
   capability_scope:
@@ -147,11 +147,11 @@ table keys on those:
 | **Container** in US or CA | A (`a26c91c8` ∈ scope, geo US/CA) | ✅ yes |
 | **Container** with **Minnesota** residency | B (`a26c91c8`/`…/Container`, geo US-MN) | ✅ yes — the finer state grain |
 | **VM** with Minnesota residency | *(none — A is country-grain US/CA, B is containers-only)* | ❌ no |
-| **OpenShift** in US or CA | *(none — A omits `31aa387c`)* | ❌ **no — self_asserted** |
+| **Cluster** in US or CA | *(none — A omits `31aa387c`)* | ❌ **no — self_asserted** |
 | VM/Container in the **EU** | *(none — geo is US/CA only)* | ❌ no |
 
 The two consequences worth stating plainly:
-- **OpenShift can still be *provisioned*** — the provider genuinely manages its lifecycle. It just
+- **A cluster can still be *provisioned*** — the provider genuinely manages its lifecycle. It just
   **cannot satisfy a sovereign/restricted placement**: with no accreditation covering `31aa387c`, its
   US/CA claim is `self_asserted`. Under a non-sovereign profile (dev/standard) it places normally; under
   sovereign/fsi it is filtered out for any sovereignty-gated request.
@@ -177,7 +177,7 @@ eligible provider — DCM surfaces an **accreditation gap** (§3.5) instead of s
 ```yaml
 accreditation_gap_record:
   uuid: <uuid>
-  provider_uuid: ae18b73d-…            # full-stack-sp
+  provider_uuid: ee72f521-…            # full-stack-sp
   required_framework: sovereign
   required_for: [VM intent requiring US-MN residency]
   gap_type: missing
@@ -236,7 +236,7 @@ Two things make the match above trustworthy rather than merely declared:
   data-classification × plane, and the accreditation must **cryptographically verify** first (two-gate).
   No match → `self_asserted` → not honored for sovereign placement.
 - **Different grains coexist cleanly:** region (country) for VM + Container, state (Minnesota) for
-  Containers, nothing for OpenShift — three postures, two accreditation records, one provider.
+  Containers, nothing for Cluster Lifecycle — three postures, two accreditation records, one provider.
 - **Sovereignty splits by plane.** Control-plane and data-plane are attested separately; a data-plane
   requirement is enforced by the provider that holds the bytes, with DCM conveying the requirement and
   verifying that provider's attestation.

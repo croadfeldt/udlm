@@ -1,9 +1,9 @@
 # UDLM Resource Type Specification (YAML; validated against registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.3.1
 conforms_to: udlm/0.1
-uuid: c63f6d8c-8d1c-44c3-b996-62a7fe62b48a
+uuid: 7e26562a-ea20-4922-be38-4bf1ed6e9a45
 resource_type: Storage.FileShare
-version: 0.3.0
+version: 0.3.1
 family: Resource
 status: active
 metadata:
@@ -11,8 +11,8 @@ metadata:
   description: >-
     A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network.
     The shares and their access are TYPED config — UDLM owns them and DCM's interface manages them
-    (DCM ADR-023 tier (i), the "full" scale). Provider-specific serialization (the smb.conf file, the
-    FreeIPA [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into
+    (DCM ADR-023 tier (i), the "full" scale). Provider-specific serialization (the smb.conf file, an
+    identity suite's [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into
     typed fields ride the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives
     in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored.
   maintainer: udlm-registry
@@ -114,7 +114,7 @@ context:
       You need network file shares — their paths, access lists, read-only flags — governed as data
       rather than living only in a config file.
     - >-
-      You need share authentication tied to the directory service that actually holds the
+      You need share authentication tied to the directory service that holds the
       principals.
   not_for:
     - >-

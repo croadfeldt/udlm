@@ -1,20 +1,20 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "c96eeddc-ff58-4159-8d28-675addc80a9a",
+  "uuid": "09b7214e-60ab-4711-82ff-0f7316ced4b2",
   "resource_type": "Security.DirectoryService",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Directory Service",
-    "description": "An identity directory server providing LDAP and (optionally) Kerberos. Grounded in RFC 4511/4512 (LDAP protocol + information model) and RFC 4120 (Kerberos). This is the directory SERVER (a Security resource); the identity DATA it holds (Person/Group/ServiceAccount) is the Identity information category. A suite like FreeIPA realizes this PLUS Network.DNSZone and (future) Security.CertificateAuthority.",
+    "description": "An identity directory server providing LDAP and (optionally) Kerberos. Grounded in RFC 4511/4512 (LDAP protocol + information model) and RFC 4120 (Kerberos). This is the directory SERVER (a Security resource); the identity DATA it holds (Person/Group/ServiceAccount) is the Identity information category. An integrated identity suite realizes this PLUS Network.DNSZone and (future) Security.CertificateAuthority.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
   "context": {
     "purpose": "Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.",
-    "plain_description": "The identity directory as a running server: which protocols it serves (LDAP, Kerberos), its realm and base DN, and its role in a replication topology (a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; a suite like FreeIPA realizes this server plus DNS zones.",
+    "plain_description": "The identity directory as a running server: which protocols it serves (LDAP, Kerberos), its realm and base DN, and its role in a replication topology (a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.",
     "use_when": [
       "You need services and hosts that authenticate against the directory to depend on it, so it stops last among them.",
       "You need the directory replication topology (primary/replica) explicit for recovery planning."

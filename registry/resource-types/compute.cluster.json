@@ -1,22 +1,22 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "aa9b102d-ce5f-4921-82ba-ada25f44c6ea",
+  "uuid": "9d14fb43-aba5-4f27-99b0-faa9d26a66be",
   "resource_type": "Compute.Cluster",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Cluster",
-    "description": "A managed Kubernetes/OpenShift cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via RHACM + Hosted Control Planes) realizes. Target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
+    "description": "A managed Kubernetes cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via a fleet-manager hub + hosted control planes) realizes. Target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T19:57:00Z"
   },
   "context": {
-    "purpose": "Declares a managed Kubernetes/OpenShift cluster — release, node pools, and network ranges — as one provisionable intent.",
+    "purpose": "Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.",
     "plain_description": "The request for a whole container platform: which release, how many nodes of what shape in which pools, and what internal network ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.",
     "use_when": [
-      "You need to request a new Kubernetes/OpenShift cluster with a declared release and node shape rather than hand-building one.",
+      "You need to request a new Kubernetes cluster with a declared release and node shape rather than hand-building one.",
       "You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive."
     ],
     "not_for": [
@@ -40,7 +40,7 @@
     "properties": {
       "release": {
         "type": "string",
-        "description": "Platform release, e.g. 4.16 (OpenShift)."
+        "description": "Platform release, e.g. 1.30 (a Kubernetes minor release) or a distribution's release stream."
       },
       "node_pools": {
         "type": "array",
@@ -120,7 +120,7 @@
       "edge_type": "contained_by",
       "target": "Platform.Hub",
       "cardinality": "0..1",
-      "description": "Provisioned and managed by a hub (ACM / Hosted Control Planes): the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on (soft) edge instead. Unnamed per ADR-043."
+      "description": "Provisioned and managed by a hub (a fleet manager / hosted control planes): the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on (soft) edge instead. Unnamed per ADR-043."
     },
     {
       "edge_type": "depends_on",

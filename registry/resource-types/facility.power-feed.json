@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.3.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "30542efe-3bed-4a70-944d-3869a4c45a96",
+  "uuid": "0c1cd033-c4bf-4363-b23d-b318e9472fd8",
   "resource_type": "Facility.PowerFeed",
   "version": "0.3.0",
   "family": "Resource",
@@ -20,7 +20,7 @@
       "You need rated capacity and feed redundancy recorded per circuit/UPS/PDU."
     ],
     "not_for": [
-      "The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two deliberately vary independently.",
+      "The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two vary independently.",
       "Powering one host off — that action targets the host's Hardware.BMC control surface, not the feed."
     ],
     "works_with": [

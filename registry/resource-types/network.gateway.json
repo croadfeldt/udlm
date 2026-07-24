@@ -1,20 +1,20 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "541766ad-94b8-40db-8886-c42fd85e8bd1",
+  "uuid": "1ce9c9d1-1b4f-4a0c-bc89-817e0757f100",
   "resource_type": "Network.Gateway",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Network Gateway",
-    "description": "A network edge gateway — routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (pfSense, OPNsense, vendor firewalls) are the provider/extension.",
+    "description": "A network edge gateway — routing / NAT / firewalling between network segments and to external networks. Grounded in the Kubernetes Gateway API 'Gateway' concept (a network entry/exit point); note UDLM's Network.Gateway is L3/edge (router/NAT/firewall), broader than the Gateway API's L4/L7 service focus. Vendor specifics (a firewall distribution or a vendor firewall appliance) are the provider/extension.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z"
   },
   "context": {
     "purpose": "Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.",
-    "plain_description": "The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (pfSense, OPNsense, a vendor firewall) is a provider. Detailed routing tables and firewall rulesets are deliberately not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.",
+    "plain_description": "The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (a firewall distribution, a vendor firewall appliance) is a provider. Detailed routing tables and firewall rulesets are not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.",
     "use_when": [
       "You need what connects this network to the outside as an explicit node with its segments.",
       "You need segment boundaries (LAN, DMZ, mgmt) and their VLANs recorded at the edge that routes between them."

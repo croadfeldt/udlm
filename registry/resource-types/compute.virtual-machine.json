@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "692b9112-5944-4d3a-93b3-cfd6e93299c7",
+  "uuid": "3f45a6ac-02fc-4cce-a44d-a05d450bbb24",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -31,7 +31,7 @@
           "count": {
             "type": "integer",
             "minimum": 1,
-            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (k8s/kubevirt domain cpu, vSphere sockets*cores, EC2 vCPUs) at realization (ADR-023)."
+            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (ADR-023)."
           },
           "sockets": {
             "type": "integer",
@@ -83,7 +83,7 @@
             "properties": {
               "type": {
                 "type": "string",
-                "description": "Inline OS identifier (e.g. rhel-9). portability_breaking: a value with no os_image vocabulary entry — a review finding."
+                "description": "Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with no os_image vocabulary entry — a review finding."
               },
               "version": {
                 "type": "string",
@@ -362,7 +362,7 @@
       "standard": "Redfish",
       "version": "2024.4",
       "standard_name": "ComputerSystem",
-      "role": "Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for the Compute.* family (shared with Compute.BareMetalHost). Provider-NATIVE realizations (KubeVirt, vSphere, EC2, ...) are declared on the provider support matrix, not on the substrate type.",
+      "role": "Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for the Compute.* family (shared with Compute.BareMetalHost). Provider-NATIVE realizations (KubeVirt, a hypervisor platform, a public cloud, ...) are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
       "license_compatibility": "compatible-reference",

@@ -32,7 +32,7 @@ scenario:
   - domain: policy
     interaction: validation confirms the hub is admitted for cluster provisioning
   - domain: provider
-    interaction: the multi-cluster provider (ACM/CAPI-class) realizes the spoke under the hub
+    interaction: the multi-cluster provider (OCM/CAPI-class) realizes the spoke under the hub
   - domain: audit
     interaction: provisioning path and binding resolution are recorded
 generated_by:
