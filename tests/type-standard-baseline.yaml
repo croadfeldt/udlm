@@ -1,0 +1,62 @@
+_comment: The burn-down baseline for tests/check_type_standard.py (rule 36 gates). Entries are KNOWN violations
+  from the 2026-07-25 fleet review (TYPE-REVIEW-2026-07-25.md), reported as WARN. Any violation NOT listed fails
+  CI as a regression. Shrink with every fix-wave PR; a fixed entry shows STALE-BASELINE until removed. Never add
+  entries to silence a new violation without a maintainer ruling.
+known:
+- gate: G1
+  type: Hardware.GraphicsProcessor
+  item: outputs
+- gate: G1
+  type: Hardware.Processor
+  item: outputs
+- gate: G2
+  type: Compute.Cluster
+  item: Platform.Hub
+- gate: G3
+  type: Compute.VirtualMachine
+  item: networks[].network_ref
+- gate: G3
+  type: Hardware.NetworkInterface
+  item: vlan_memberships[].network_vlan_ref
+- gate: G3
+  type: Identity.Group
+  item: external_group_ref
+- gate: G3
+  type: Identity.Person
+  item: credential_ref
+- gate: G3
+  type: Identity.ServiceAccount
+  item: credential_ref
+- gate: G3
+  type: Identity.ServiceAccount
+  item: owner_ref
+- gate: G3
+  type: Network.Gateway
+  item: segments[].vlan_ref
+- gate: G3
+  type: Network.Switch
+  item: management_vlan_ref
+- gate: G3
+  type: Security.CredentialRef
+  item: issuer_ref
+- gate: G3
+  type: Software.Service
+  item: constituents[].container_ref
+- gate: G3
+  type: Storage.FileShare
+  item: directory_service_ref
+- gate: G5
+  type: SoftwareImage
+  item: adopts[]
+- gate: G5
+  type: SoftwarePackage
+  item: adopts[]
+- gate: G5
+  type: Vulnerability
+  item: adopts[]
+- gate: G6
+  type: Compute.Container
+  item: process.mounts[].source_ref:or a CredentialRef for secrets).
+- gate: G6
+  type: Security.CredentialRef
+  item: scope.entity_uuid:when applicable.
