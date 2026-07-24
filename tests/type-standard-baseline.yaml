@@ -3,12 +3,6 @@ _comment: The burn-down baseline for tests/check_type_standard.py (rule 36 gates
   CI as a regression. Shrink with every fix-wave PR; a fixed entry shows STALE-BASELINE until removed. Never add
   entries to silence a new violation without a maintainer ruling.
 known:
-- gate: G1
-  type: Hardware.GraphicsProcessor
-  item: outputs
-- gate: G1
-  type: Hardware.Processor
-  item: outputs
 - gate: G2
   type: Compute.Cluster
   item: Platform.Hub
@@ -54,9 +48,3 @@ known:
 - gate: G5
   type: Vulnerability
   item: adopts[]
-- gate: G6
-  type: Compute.Container
-  item: process.mounts[].source_ref:or a CredentialRef for secrets).
-- gate: G6
-  type: Security.CredentialRef
-  item: scope.entity_uuid:when applicable.
