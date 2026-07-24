@@ -32,7 +32,7 @@ becomes visible in diffs.
 ## Priority signal — automation intent (maintainer, 2026-07-25)
 
 **The Process family is likely the most-used instance of the class model.** Platform-to-platform
-automation migration (the Chef→Ansible render) is a live, recurring need in a way that
+automation migration (the engine-blue→engine-green render) is a live, recurring need in a way that
 resource-provider migration is episodic — so **automation intent is a first-class peer of
 resource intent**, and the Process family may lead class-system adoption rather than follow it.
 Open sequencing question for the maintainer at P1: pilot on Compute (deepest inheritance, most
@@ -87,7 +87,7 @@ instantiates a class exactly as a VM instance does):
   for** — exactly as multiple providers declare a resource type. Process execution enters the same
   selection machinery: placement chooses an engine the way it chooses a VM provider, and "can this
   automation run somewhere else" becomes the same computable question as resource portability.
-- **Provider tier:** the engine binding — the Type realized as an AAP job template, a Tekton
+- **Provider tier:** the engine binding — the Type realized as an engine's job-template binding, a
   pipeline, a provider-native workflow — plus engine-specific elements. Engine lock-in is visible
   as element scope, like everywhere else.
 - **Runs are instances** of the Type Class realized by the selected provider; Discovered-state and
