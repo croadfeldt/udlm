@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "ceb1644d-6d37-4d30-afc8-0691f07cc067",
+  "uuid": "1ce9c9d1-1b4f-4a0c-bc89-817e0757f100",
   "resource_type": "Network.Gateway",
   "version": "0.4.1",
   "family": "Resource",
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.",
-    "plain_description": "The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (a firewall distribution, a vendor firewall appliance) is a provider. Detailed routing tables and firewall rulesets are deliberately not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.",
+    "plain_description": "The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (a firewall distribution, a vendor firewall appliance) is a provider. Detailed routing tables and firewall rulesets are not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.",
     "use_when": [
       "You need what connects this network to the outside as an explicit node with its segments.",
       "You need segment boundaries (LAN, DMZ, mgmt) and their VLANs recorded at the edge that routes between them."

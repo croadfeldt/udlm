@@ -188,7 +188,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 - You need rated capacity and feed redundancy recorded per circuit/UPS/PDU.
 
 **Not for:**
-- The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two deliberately vary independently.
+- The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two vary independently.
 - Powering one host off — that action targets the host's Hardware.BMC control surface, not the feed.
 
 **Works with:**
@@ -379,7 +379,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 **Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
 
-The thing that hands out addresses and answers name lookups, as a single, deliberately thin service record. It says which capabilities are served (DHCP, DNS) and whether service is redundant, and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.
+The thing that hands out addresses and answers name lookups, as a single, thin service record. It says which capabilities are served (DHCP, DNS) and whether service is redundant, and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.
 
 **Use when:**
 - You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.
@@ -424,7 +424,7 @@ One subnet's DHCP setup: the CIDR, the dynamic ranges leased from, common option
 - You need static reservations to fall out of address records automatically instead of being maintained twice.
 
 **Not for:**
-- Allocation-side accounting of a range (who holds which address, is it exhausted) — Network.IPAddressPool; the scope is service-side config. The two overlap on ranges deliberately, and both document it.
+- Allocation-side accounting of a range (who holds which address, is it exhausted) — Network.IPAddressPool; the scope is service-side config. The two overlap on ranges by design, and both document it.
 - One address or reservation — Network.IPAddress with static allocation; it projects into the scope.
 
 **Works with:**
@@ -454,7 +454,7 @@ One DNS zone (e.g. example.com) with its authoritative role (primary, secondary,
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
-The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (a firewall distribution, a vendor firewall appliance) is a provider. Detailed routing tables and firewall rulesets are deliberately not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.
+The router/firewall at the edge of a network: which functions it provides (routing, NAT, firewall, VPN) and which segments it connects, each segment referencing the VLAN it rides. The vendor box or software (a firewall distribution, a vendor firewall appliance) is a provider. Detailed routing tables and firewall rulesets are not modeled — the portable surface is functions and segments; once realized it publishes the external address it presents.
 
 **Use when:**
 - You need what connects this network to the outside as an explicit node with its segments.
