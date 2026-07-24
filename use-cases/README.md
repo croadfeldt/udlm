@@ -25,3 +25,7 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   graph-walkable blast radius; hardware RAID declared as Pool intent at bare-metal provision;
   composed-topology fault tolerance across authoring personas (recursive vdev trees); the
   backend-owned aggregation semantics and the one-capacity-source pool boundary.
+- `process-migration/` — automation intent as a peer of resource intent: engine migration by
+  canary + cutover, blue/green verification by typed-output diff, staged promotion (application
+  deployment discipline applied to automation), structural lock-in queries, engine-upgrade
+  regression. Stage flow: docs/flows/automation-migration-and-promotion.md.
