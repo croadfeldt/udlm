@@ -65,7 +65,7 @@ set. Admission (PRV-009), trust, and audit apply as for any provider.
 class: Process.OSPatch.Ansible
 extends: Process.OSPatch
 elements:
-  playbook_ref:         {scope: provider, value: "playbooks/os-patch.yml @ roadfeldt-ansible", version_pin: git tag}
+  playbook_ref:         {scope: provider, value: "playbooks/os-patch.yml @ the org automation repo", version_pin: git tag}
   execution_env:        {scope: provider, purpose: AAP execution environment image}
   inventory_source:     {scope: provider, values: [static, dynamic-from-estate], note: dynamic = the estate IS the inventory}
   serial:               {scope: provider, schema: int|percent, purpose: rolling batch size}
@@ -85,12 +85,18 @@ or into the Type.
 3. **Comparable by construction.** Both engines publish the same typed outputs (`patched`,
    `failed`, `package_delta`), so the canary comparison is a query, not a spreadsheet — and
    compliance reporting doesn't notice the engine at all.
-4. **Cutover = placement preference.** Policy flips provider preference; the scheduled patch
+4. **Blue/green, not just canary.** Because the process is declared idempotent and both engines
+   publish identical typed outputs, the migration supports true blue/green: run green (Ansible)
+   against targets blue (Chef) just converged — a conformant green run's `package_delta` is ≈
+   empty, and any non-empty delta is a *behavioral difference between engines*, surfaced as data
+   before cutover. Engine testing becomes a diff of outputs, not a leap of faith; the same
+   mechanism later regression-tests engine upgrades (AAP N → N+1) against themselves.
+5. **Cutover = placement preference.** Policy flips provider preference; the scheduled patch
    process (a `lifecycle/scheduled-requests` entity referencing the Type) re-places onto Ansible.
    The schedule record's UUID and history are continuous — runs before and after instantiate the
    SAME Type, so the audit trail reads as one unbroken practice with an engine change, not two
    unrelated automations.
-5. **Chef retires.** The Chef provider's capability is de-admitted; its Provider Class stops being
+6. **Chef retires.** The Chef provider's capability is de-admitted; its Provider Class stops being
    selectable; its elements remain in history (custodied, never round-tripped). If Chef ever
    returns, the class is still defined.
 
