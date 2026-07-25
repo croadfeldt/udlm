@@ -196,6 +196,20 @@ method: a discovery avenue → Knowledge classes → references-context edges �
   blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
   container → app → host set.
 
+### 4.7 Pattern
+A pattern to follow — the reusable "what a thing of this kind IS" at type level: Antipattern's
+twin, positive polarity. ADR-033 places Pattern in Knowledge as **type-level intent** (the
+Pattern → Template → System tier ladder: Pattern is the Intent tier at assembly scale) and
+deliberately deferred the schema realization "unless a use case pulls it in" — the pull
+arrived: an external field-device fleet adopter models "what a field device of role X is"
+(the capabilities a role requires, the shape a season build asserts) as reusable role
+definitions, exactly this member.
+- **Fields:** name (handle), description, why (the outcome the pattern serves), pillar,
+  domain — Antipattern's field shape at positive polarity.
+- **Relationships:** `related_to` → TaxonomyTerm / Capability (the capabilities the pattern
+  requires or asserts); a Template (ADR-033) realizes a Pattern at the Requested tier.
+- **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
+
 ## 5. Relationship graph (summary)
 
 ```
