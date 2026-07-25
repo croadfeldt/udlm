@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "0309fc97-e8d9-4a81-a815-67dcbd399400",
+  "uuid": "9ea232e8-a798-4de4-b1ed-f8e9c7e349ef",
   "resource_type": "Network.Gateway",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -71,7 +71,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             }

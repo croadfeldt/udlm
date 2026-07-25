@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.4",
   "conforms_to": "udlm/0.1",
-  "uuid": "59d6ac13-4dff-4613-8067-ffef94e83e27",
+  "uuid": "a48d9cce-9035-4744-918d-2aefec4a9a72",
   "resource_type": "Platform.Namespace",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -69,7 +69,7 @@
             "description": "Short form — the handle of an existing Compute.Cluster."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
           }
         ]
       },
