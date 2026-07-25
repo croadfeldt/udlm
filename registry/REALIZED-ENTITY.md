@@ -16,6 +16,7 @@ policy that produces them (`core-tenets.md` G3). Validate instances with `tools/
 | **`ownership`** (per dot-path manager) | **field ownership / server-side apply (R4)** — offline conflict detection across providers |
 | `dependencies` (resolved edges + bindings) / `constituents` | **dependency graph** + composite realization |
 | `drift` (Discovered vs Requested) + `status.conditions` | **observability** + drift detection |
+| `expected_observation` (declared cadence/window + `on_exceeded`) | **staleness as declared expectation (ADR-048)** — verdicts (`current`/`stale_expected`/`stale_deviant`) derived against it, never stored; OBS-005 profile TTL is the fallback |
 | `sovereignty` (zone/classification, realized from `immutable` type fields) | **sovereignty** — can't change without replace + Governance-Matrix re-eval |
 | `audit` (Merkle `log_head` + `leaf_count`) | **audit linkage** (`AUD-001/002`) |
 | `type_version` / `type_ref` | **version pinning (E5)** — drift/validation measured against the exact contract realized |
