@@ -12,11 +12,11 @@
 # ADOPT (not absorb), core-tenets T5: schemas are not restated — only an identity join + version-pinned
 # pointer. The pool/vdev vocabulary is OpenZFS's; the capacity/redundancy alignment is SNIA Swordfish
 # StoragePool's; a provider (zfs) naturalizes the concrete zpool.
-$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.1
 conforms_to: udlm/0.1
-uuid: 942d9e8d-6fb7-4442-b5b3-ddc038b3d14b
+uuid: 35c647c9-1929-44d1-8ddd-830bf07255e4
 resource_type: Storage.Pool
-version: 0.3.0
+version: 0.3.1
 family: Resource
 status: active
 metadata:
@@ -55,6 +55,8 @@ lifecycle:
   decommission: Provider exports/destroys the pool; Discovered reflects exported/absent. Destroying a pool destroys
     every dataset it holds — so decommission is DATA-DESTRUCTIVE and must follow the datasets in order.
 spec:
+
+  additionalProperties: false
   type: object
   required:
   - pool_kind

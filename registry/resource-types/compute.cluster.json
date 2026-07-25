@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "9d14fb43-aba5-4f27-99b0-faa9d26a66be",
+  "uuid": "54a80b15-fba6-4dc1-ab57-4f4c9ceb138d",
   "resource_type": "Compute.Cluster",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -33,6 +33,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "release",
       "node_pools"

@@ -39,6 +39,10 @@ jobs:
       - run: python3 registry/tools/generate_type_catalog.py --check
       # UUID rotation: any change to a uuid-bearing definition mints a new uuid (VERSIONING.md)
       - run: python3 tests/check_uuid_rotation.py
+      # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
+      # the schema itself validates) and discriminating (dropped-required / enum-violation /
+      # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).
+      - run: python3 registry/tools/fuzz_type_specs.py
       - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump

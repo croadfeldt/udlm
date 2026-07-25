@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "5a246e1a-48ec-46b6-8045-5a961f73bfe2",
+  "uuid": "0309fc97-e8d9-4a81-a815-67dcbd399400",
   "resource_type": "Network.Gateway",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -32,6 +32,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [],
     "properties": {
       "functions": {

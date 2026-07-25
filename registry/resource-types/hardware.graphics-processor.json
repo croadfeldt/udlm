@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.2.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "8a9285ba-e17d-486b-aa81-37c7f94b16f9",
+  "uuid": "bd160f02-eb69-4b48-a790-2ad436eb1e57",
   "resource_type": "Hardware.GraphicsProcessor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "portability": "portable",
   "status": "active",
@@ -32,6 +32,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [],
     "properties": {
       "device_class": {

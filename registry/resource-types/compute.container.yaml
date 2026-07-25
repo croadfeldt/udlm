@@ -1,10 +1,10 @@
 # UDLM Resource Type Specification — authored in YAML (semantically identical to a JSON
 # document; validated against the same registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.5.1
+$id: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.5.2
 conforms_to: udlm/0.1
-uuid: 5aa2fab1-87d7-482c-8e10-81ffbf5cd60d
+uuid: 054bcbf3-bdc7-4171-a23e-b47f34f7a451
 resource_type: Compute.Container
-version: 0.5.1
+version: 0.5.2
 family: Resource
 status: active
 metadata:
@@ -53,6 +53,8 @@ lifecycle:
     persistent data of its own (mounts reference external sources), so decommission is non-destructive to data.
 
 spec:
+
+  additionalProperties: false
   type: object
   required: [image]
   properties:

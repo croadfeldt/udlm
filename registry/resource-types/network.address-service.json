@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "8e3947c2-b9e8-4373-8413-f75cd875d649",
+  "uuid": "2e3d4d56-8b98-442f-a06c-9285338c3cd2",
   "resource_type": "Network.AddressService",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -32,6 +32,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [],
     "properties": {
       "services": {

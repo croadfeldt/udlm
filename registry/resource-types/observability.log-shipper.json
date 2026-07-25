@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.3.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "3433e0ac-d339-4ced-aab9-3fe4c937a21a",
+  "uuid": "deb08aaa-19c7-45e3-aa50-7cf56b7c26e8",
   "resource_type": "Observability.LogShipper",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -30,6 +30,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "target",
       "sink"

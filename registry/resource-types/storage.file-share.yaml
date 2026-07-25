@@ -1,9 +1,9 @@
 # UDLM Resource Type Specification (YAML; validated against registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.3.2
 conforms_to: udlm/0.1
-uuid: 998c4914-e6e9-4acd-a02b-7b18a6611374
+uuid: 7b6797a3-9e7d-4aa0-b05a-57508069a357
 resource_type: Storage.FileShare
-version: 0.3.1
+version: 0.3.2
 family: Resource
 status: active
 metadata:
@@ -34,6 +34,8 @@ lifecycle:
   decommission: Provider stops advertising the shares and removes the service config; the underlying Storage.Volume
     data is untouched (a share is an access surface, not the data). Non-destructive to data.
 spec:
+
+  additionalProperties: false
   type: object
   required:
   - protocol

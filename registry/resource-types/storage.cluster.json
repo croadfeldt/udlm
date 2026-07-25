@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Cluster/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "21b5da18-94c1-44af-a09b-ecd1e1a38a65",
+  "uuid": "4229216b-626c-40e7-a7b4-f2ff8414c4a9",
   "resource_type": "Storage.Cluster",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -41,6 +41,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "protocols"
     ],

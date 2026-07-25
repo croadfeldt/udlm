@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.3.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "96bc9c6c-84c5-4d9d-a61e-cec26a69c14d",
+  "uuid": "59d6ac13-4dff-4613-8067-ffef94e83e27",
   "resource_type": "Platform.Namespace",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -52,6 +52,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "name"
     ],

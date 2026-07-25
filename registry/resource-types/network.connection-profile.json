@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.3.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "87c36cd6-d42c-4e01-b2d3-f8e5443ccdba",
+  "uuid": "c03b760e-8a3f-4037-a358-58251c649b3e",
   "resource_type": "Network.ConnectionProfile",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -39,6 +39,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "nmstate_schema_version",
       "desired_state"

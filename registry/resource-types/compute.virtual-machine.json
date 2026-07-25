@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "3f45a6ac-02fc-4cce-a44d-a05d450bbb24",
+  "uuid": "725cbb00-7f19-45ce-922b-6bfc02f7f7da",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,6 +14,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "guest_os"
     ],
