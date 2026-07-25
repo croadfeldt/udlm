@@ -1,0 +1,448 @@
+{
+  "scoreboard": "udlm-model-health/1",
+  "totals": {
+    "types": 47,
+    "by_family": {
+      "Access": 3,
+      "Knowledge": 5,
+      "Process": 1,
+      "Resource": 38
+    }
+  },
+  "discrimination": {
+    "mutations_attempted": 2965,
+    "mutations_rejected": 2965,
+    "density": 1.0,
+    "findings": 0,
+    "per_type": {
+      "Automation.Job": {
+        "attempted": 41,
+        "rejected": 41
+      },
+      "Capability": {
+        "attempted": 36,
+        "rejected": 36
+      },
+      "Compute.BareMetalHost": {
+        "attempted": 168,
+        "rejected": 168
+      },
+      "Compute.Cluster": {
+        "attempted": 74,
+        "rejected": 74
+      },
+      "Compute.Container": {
+        "attempted": 198,
+        "rejected": 198
+      },
+      "Compute.VirtualMachine": {
+        "attempted": 186,
+        "rejected": 186
+      },
+      "Data.Database": {
+        "attempted": 68,
+        "rejected": 68
+      },
+      "Facility.Location": {
+        "attempted": 28,
+        "rejected": 28
+      },
+      "Facility.PowerFeed": {
+        "attempted": 50,
+        "rejected": 50
+      },
+      "Hardware.BMC": {
+        "attempted": 33,
+        "rejected": 33
+      },
+      "Hardware.BiosProfile": {
+        "attempted": 31,
+        "rejected": 31
+      },
+      "Hardware.GraphicsProcessor": {
+        "attempted": 70,
+        "rejected": 70
+      },
+      "Hardware.NetworkInterface": {
+        "attempted": 146,
+        "rejected": 146
+      },
+      "Hardware.Processor": {
+        "attempted": 80,
+        "rejected": 80
+      },
+      "Hardware.StorageDevice": {
+        "attempted": 85,
+        "rejected": 85
+      },
+      "Identity.Group": {
+        "attempted": 40,
+        "rejected": 40
+      },
+      "Identity.Person": {
+        "attempted": 47,
+        "rejected": 47
+      },
+      "Identity.ServiceAccount": {
+        "attempted": 42,
+        "rejected": 42
+      },
+      "Network.AddressService": {
+        "attempted": 24,
+        "rejected": 24
+      },
+      "Network.ConnectionProfile": {
+        "attempted": 25,
+        "rejected": 25
+      },
+      "Network.DHCPScope": {
+        "attempted": 76,
+        "rejected": 76
+      },
+      "Network.DNSZone": {
+        "attempted": 56,
+        "rejected": 56
+      },
+      "Network.Gateway": {
+        "attempted": 52,
+        "rejected": 52
+      },
+      "Network.IPAddress": {
+        "attempted": 28,
+        "rejected": 28
+      },
+      "Network.IPAddressPool": {
+        "attempted": 68,
+        "rejected": 68
+      },
+      "Network.Switch": {
+        "attempted": 74,
+        "rejected": 74
+      },
+      "Network.VLAN": {
+        "attempted": 30,
+        "rejected": 30
+      },
+      "Network.VirtualNetwork": {
+        "attempted": 35,
+        "rejected": 35
+      },
+      "Observability.LogShipper": {
+        "attempted": 50,
+        "rejected": 50
+      },
+      "Platform.Hub": {
+        "attempted": 20,
+        "rejected": 20
+      },
+      "Platform.Namespace": {
+        "attempted": 37,
+        "rejected": 37
+      },
+      "Platform.NodePool": {
+        "attempted": 101,
+        "rejected": 101
+      },
+      "Platform.ResourceQuota": {
+        "attempted": 48,
+        "rejected": 48
+      },
+      "Platform.StorageClass": {
+        "attempted": 78,
+        "rejected": 78
+      },
+      "Security.CredentialRef": {
+        "attempted": 61,
+        "rejected": 61
+      },
+      "Security.DirectoryService": {
+        "attempted": 41,
+        "rejected": 41
+      },
+      "Software.Service": {
+        "attempted": 87,
+        "rejected": 87
+      },
+      "SoftwareImage": {
+        "attempted": 40,
+        "rejected": 40
+      },
+      "SoftwarePackage": {
+        "attempted": 35,
+        "rejected": 35
+      },
+      "Storage.Cluster": {
+        "attempted": 58,
+        "rejected": 58
+      },
+      "Storage.Dataset": {
+        "attempted": 40,
+        "rejected": 40
+      },
+      "Storage.FileShare": {
+        "attempted": 72,
+        "rejected": 72
+      },
+      "Storage.Pool": {
+        "attempted": 94,
+        "rejected": 94
+      },
+      "Storage.Volume": {
+        "attempted": 45,
+        "rejected": 45
+      },
+      "TaxonomyTerm": {
+        "attempted": 51,
+        "rejected": 51
+      },
+      "Topology": {
+        "attempted": 55,
+        "rejected": 55
+      },
+      "Vulnerability": {
+        "attempted": 61,
+        "rejected": 61
+      }
+    }
+  },
+  "strictness": {
+    "strict_specs": 47,
+    "total": 47
+  },
+  "outputs": {
+    "per_type": {
+      "Automation.Job": 1,
+      "Capability": 1,
+      "Compute.BareMetalHost": 3,
+      "Compute.Cluster": 4,
+      "Compute.Container": 2,
+      "Compute.VirtualMachine": 9,
+      "Data.Database": 5,
+      "Facility.Location": 1,
+      "Facility.PowerFeed": 3,
+      "Hardware.BMC": 1,
+      "Hardware.BiosProfile": 1,
+      "Hardware.GraphicsProcessor": 0,
+      "Hardware.NetworkInterface": 1,
+      "Hardware.Processor": 0,
+      "Hardware.StorageDevice": 1,
+      "Identity.Group": 1,
+      "Identity.Person": 1,
+      "Identity.ServiceAccount": 1,
+      "Network.AddressService": 1,
+      "Network.ConnectionProfile": 2,
+      "Network.DHCPScope": 1,
+      "Network.DNSZone": 1,
+      "Network.Gateway": 1,
+      "Network.IPAddress": 1,
+      "Network.IPAddressPool": 4,
+      "Network.Switch": 2,
+      "Network.VLAN": 1,
+      "Network.VirtualNetwork": 1,
+      "Observability.LogShipper": 3,
+      "Platform.Hub": 3,
+      "Platform.Namespace": 2,
+      "Platform.NodePool": 2,
+      "Platform.ResourceQuota": 1,
+      "Platform.StorageClass": 1,
+      "Security.CredentialRef": 3,
+      "Security.DirectoryService": 3,
+      "Software.Service": 1,
+      "SoftwareImage": 0,
+      "SoftwarePackage": 0,
+      "Storage.Cluster": 3,
+      "Storage.Dataset": 1,
+      "Storage.FileShare": 1,
+      "Storage.Pool": 5,
+      "Storage.Volume": 2,
+      "TaxonomyTerm": 1,
+      "Topology": 1,
+      "Vulnerability": 0
+    },
+    "zero_output_types": [
+      "Hardware.GraphicsProcessor",
+      "Hardware.Processor",
+      "SoftwareImage",
+      "SoftwarePackage",
+      "Vulnerability"
+    ],
+    "one_output_types": [
+      "Automation.Job",
+      "Capability",
+      "Facility.Location",
+      "Hardware.BMC",
+      "Hardware.BiosProfile",
+      "Hardware.NetworkInterface",
+      "Hardware.StorageDevice",
+      "Identity.Group",
+      "Identity.Person",
+      "Identity.ServiceAccount",
+      "Network.AddressService",
+      "Network.DHCPScope",
+      "Network.DNSZone",
+      "Network.Gateway",
+      "Network.IPAddress",
+      "Network.VLAN",
+      "Network.VirtualNetwork",
+      "Platform.ResourceQuota",
+      "Platform.StorageClass",
+      "Software.Service",
+      "Storage.Dataset",
+      "Storage.FileShare",
+      "TaxonomyTerm",
+      "Topology"
+    ]
+  },
+  "context": {
+    "with_context": 47,
+    "total": 47,
+    "missing": []
+  },
+  "relationships": {
+    "with_relationships": 43,
+    "total": 47,
+    "missing": [
+      "Facility.PowerFeed",
+      "Observability.LogShipper",
+      "Topology",
+      "Vulnerability"
+    ]
+  },
+  "uc_coverage": {
+    "files_scanned": 29,
+    "covered": [
+      "Compute.Cluster",
+      "Platform.Hub",
+      "Security.CredentialRef",
+      "Storage.Pool"
+    ],
+    "uncovered": [
+      "Automation.Job",
+      "Capability",
+      "Compute.BareMetalHost",
+      "Compute.Container",
+      "Compute.VirtualMachine",
+      "Data.Database",
+      "Facility.Location",
+      "Facility.PowerFeed",
+      "Hardware.BMC",
+      "Hardware.BiosProfile",
+      "Hardware.GraphicsProcessor",
+      "Hardware.NetworkInterface",
+      "Hardware.Processor",
+      "Hardware.StorageDevice",
+      "Identity.Group",
+      "Identity.Person",
+      "Identity.ServiceAccount",
+      "Network.AddressService",
+      "Network.ConnectionProfile",
+      "Network.DHCPScope",
+      "Network.DNSZone",
+      "Network.Gateway",
+      "Network.IPAddress",
+      "Network.IPAddressPool",
+      "Network.Switch",
+      "Network.VLAN",
+      "Network.VirtualNetwork",
+      "Observability.LogShipper",
+      "Platform.Namespace",
+      "Platform.NodePool",
+      "Platform.ResourceQuota",
+      "Platform.StorageClass",
+      "Security.DirectoryService",
+      "Software.Service",
+      "SoftwareImage",
+      "SoftwarePackage",
+      "Storage.Cluster",
+      "Storage.Dataset",
+      "Storage.FileShare",
+      "Storage.Volume",
+      "TaxonomyTerm",
+      "Topology",
+      "Vulnerability"
+    ]
+  },
+  "consumer_coverage": {
+    "manifests": 5,
+    "all_types_consumers": [
+      "dav",
+      "graph-explorer",
+      "records-ci",
+      "records-mcp"
+    ],
+    "named_by_consumer": {
+      "Compute.Cluster": [
+        "control-plane-servicetype-gen"
+      ],
+      "Compute.Container": [
+        "control-plane-servicetype-gen"
+      ],
+      "Compute.VirtualMachine": [
+        "control-plane-servicetype-gen"
+      ],
+      "Data.Database": [
+        "control-plane-servicetype-gen"
+      ],
+      "Storage.Volume": [
+        "control-plane-servicetype-gen"
+      ]
+    },
+    "named_by_none": [
+      "Automation.Job",
+      "Capability",
+      "Compute.BareMetalHost",
+      "Facility.Location",
+      "Facility.PowerFeed",
+      "Hardware.BMC",
+      "Hardware.BiosProfile",
+      "Hardware.GraphicsProcessor",
+      "Hardware.NetworkInterface",
+      "Hardware.Processor",
+      "Hardware.StorageDevice",
+      "Identity.Group",
+      "Identity.Person",
+      "Identity.ServiceAccount",
+      "Network.AddressService",
+      "Network.ConnectionProfile",
+      "Network.DHCPScope",
+      "Network.DNSZone",
+      "Network.Gateway",
+      "Network.IPAddress",
+      "Network.IPAddressPool",
+      "Network.Switch",
+      "Network.VLAN",
+      "Network.VirtualNetwork",
+      "Observability.LogShipper",
+      "Platform.Hub",
+      "Platform.Namespace",
+      "Platform.NodePool",
+      "Platform.ResourceQuota",
+      "Platform.StorageClass",
+      "Security.CredentialRef",
+      "Security.DirectoryService",
+      "Software.Service",
+      "SoftwareImage",
+      "SoftwarePackage",
+      "Storage.Cluster",
+      "Storage.Dataset",
+      "Storage.FileShare",
+      "Storage.Pool",
+      "TaxonomyTerm",
+      "Topology",
+      "Vulnerability"
+    ],
+    "consumed_by_at_least_one": 47
+  },
+  "expressibility_coverage": {
+    "value": null,
+    "note": "pending \u2014 dav Layer-2 (data-model-validation design) reports this"
+  },
+  "portability_surface": {
+    "value": null,
+    "note": "pending \u2014 Class realization (#199) makes this measurable"
+  },
+  "external_corpus_coverage": {
+    "value": null,
+    "note": "pending \u2014 no external UC corpus wired yet"
+  }
+}
