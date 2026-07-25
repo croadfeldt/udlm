@@ -29,3 +29,8 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   canary + cutover, blue/green verification by typed-output diff, staged promotion (application
   deployment discipline applied to automation), structural lock-in queries, engine-upgrade
   regression. Stage flow: docs/flows/automation-migration-and-promotion.md.
+- `must-reject/` — the negative family: success = the system REFUSES the intent, and the refusal
+  is typed, actionable, non-leaking (ADR-041 information-firewall behavior holds on the error
+  path), and auditable. Six rejection surfaces: cross-tenant reference, sovereignty egress,
+  inline credential literal (vs Security.CredentialRef), undeclared-output binding at request
+  time, provider capability mismatch, and write-through-masked-projection.
