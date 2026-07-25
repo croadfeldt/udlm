@@ -119,8 +119,25 @@ versions accordingly. Individual capabilities remain their own accreditation/ver
 actually used is recorded in realization provenance (§7). Pins, debt, and blue/green promotion
 apply to provider definitions unchanged — an estate pins a provider definition revision the
 same way it pins a class revision, and an engine upgrade verifies by output diff (the
-process-migration stage's engine-upgrade-regression pattern). Corpus: class-versioning
-013–015.
+process-migration stage's engine-upgrade-regression pattern).
+
+Provider versioning is **two-plane** — the registry's own pattern (individually versioned
+types, whole-release pinned by ref), recurring: **capabilities version individually** as the
+contract unit consumers bind to, and the **provider definition revision (uuid) is the
+whole-surface pin**. All compat classification routes to the capability plane: a breaking
+change inside one capability majors *that capability* and reaches exactly the consumers bound
+through the types it covers (`covers_types` — the explicit capability↔type linkage), never
+churning consumers of the provider's other capabilities. The **envelope version carries set
+semantics only**: capability added = minor, capability removed = major, provider-wide
+defaults/standards on their own merits — a member's internal breaking change does not major
+the envelope, because the set did not change. Consumers bind and pin at the finest unit they
+consume (the capability, by `capability_uuid`); estate-wide conservatism pins the definition
+revision. Realization provenance (§7) records the **capability revision** that governed a
+realization alongside the definition revision and engine binding. The operational payoff is
+**capability-level blue/green**: one capability's v2 runs green under ADR-046's promotion
+contract while sibling capabilities keep serving on their current versions — staged provider
+evolution without whole-provider upgrades. Accreditation stays at the capability (ADR-004),
+untouched by the envelope. Corpus: class-versioning 013–019.
 
 ## Consequences
 

@@ -18,4 +18,8 @@ definition revision — live, historically reconstructible, and verified by reco
 mismatches refused. Cases 013–015 carry provider versioning (ADR-045 §8): internal
 changes past the naturalization boundary are free (provable by empty output diff), declared-
 surface changes classify and version under the standard rules, and under-declared surface
-changes are refused naming the dropped output and its bound consumers.
+changes are refused naming the dropped output and its bound consumers. Cases 016–019 carry
+the two-plane refinement: capabilities version individually (breaking changes scoped to
+covers_types consumers, no sibling churn), the envelope versions the set only, whole-provider
+pins ride definition revisions, blue/green runs at capability granularity, and plane-misplaced
+classification is refused naming the correct plane and bump.

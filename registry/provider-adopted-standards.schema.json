@@ -145,6 +145,14 @@
           "items": {
             "$ref": "#/$defs/category_scope"
           }
+        },
+        "covers_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z]*(\\.[A-Z][A-Za-z]*)*$"
+          },
+          "description": "The resource types this capability's contract covers (explicit capability<->type linkage, ADR-045 §8 two-plane versioning): a capability change reaches exactly the consumers bound through these types, which is what makes classification blast radius computable and refusals able to name the bound consumers. A provider realizing a type no capability covers is a declare-and-select violation."
         }
       }
     },
