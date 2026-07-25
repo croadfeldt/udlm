@@ -43,6 +43,14 @@ jobs:
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).
       - run: python3 registry/tools/fuzz_type_specs.py
+      # Composition hammer: validate.py's catalog-item semantic checks driven with generated
+      # graphs — cycles / undeclared outputs / unresolved siblings must error, and a legal
+      # producer→consumer pair over every real declared output must pass clean.
+      - run: python3 tests/check_composition_hammer.py
+      # Provider contract cross-check: every provider standard token resolves in the
+      # standards-adoption register (the ADOPT-001 discipline), accreditation-anchor uuids
+      # v4 + unique across provider docs, version ranges parse.
+      - run: python3 tests/check_provider_contracts.py
       - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump
