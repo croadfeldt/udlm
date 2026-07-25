@@ -84,6 +84,34 @@ Each phase's contract, in order:
    *policy* (not a habit) decides failback vs. adopt-replica-as-primary; the trail records
    the derived orders and every gate verdict end to end.
 
+## What informs each decision — model surfaces, validated 2026-07-25
+
+The key validation item: every decision below names the exact UDLM surface that informs it,
+resolved against the current registry here and now. Two decisions found real today-gaps —
+filed as issues, not hand-waved. The **policy role** column separates policies that *decide*
+(gate, refuse, select) from policies that *enrich* (supply data other steps read).
+
+| Decision / step | Model surface read | Status | Policy role — decides or enriches what |
+|---|---|---|---|
+| Impact set (the ten clients) | realized-entity `dependencies[]` edges targeting the shares | **EXISTS** — validated: the estate's edge surface, same as shutdown order | Enriches: none needed — structure supplies the set; a policy may only widen review, never shrink the set |
+| Tolerance split (7 window / 3 continuity) | each client's availability policy (a Policy object `match`ed to the client) | Policy object + match **EXIST**; the tolerance-class vocabulary **PENDING-ADR** | Enriches (`transformation`): stamps each client's class; then Decides which path each takes |
+| DR gate (replica healthy, current, sized) | replica pool's declared outputs: `redundancy_status`, `degraded`, `fault_tolerance_remaining`, `spares_available` — **and the DR-pairing edge naming which pool is the replica** | Health outputs **EXIST** (Storage.Pool 0.3.x); the DR-pairing relationship **MISSING — issue #250** | Decides (`gating`): maintenance may not be scheduled until the gate passes |
+| Cutover re-bind | replica shares' declared outputs (the [D8.3] binding surface) | Mechanism **EXISTS**; FileShare's surface is **THIN — `mount_uri` only, issue #251** (re-bind possible, share-side verification is not) | Decides (`validation`): cutover verified or rolled back |
+| Client health post-cutover | client types' `run_state` / status outputs | **EXISTS** (VM/Container declared outputs) | Decides: proceed to window or roll back |
+| Window + ceremony | change policy clauses (window, approval, expedite) | **PENDING-ADR** (temporal clause vocabulary — validated absent from policy schema) | Decides: when execution may occur and under what authority |
+| Quiesce / restart order | the same `dependencies[]` edges, reverse and forward | **EXISTS** — derived, batched | Enriches: order derivation; Decides (`validation`) per batch verdict |
+| Post-maintenance verification | array + share declared outputs vs expected | Pool outputs **EXIST**; share-side limited by #251 | Decides (`gating`): nothing restarts onto an unverified array |
+| Failback decision | a declared failback policy (`policy_type: recovery`) | Policy type **EXISTS** in the vocabulary; the failback clause shape **PENDING-ADR** | Decides: return to primary vs promote replica; either outcome recorded |
+| Trail | audit records | **EXISTS** | Enriches: one reconstructible history |
+
+Summary of the validation: the flow's structural core — edges, orders, pool health outputs,
+binding mechanics, client status, policy and audit machinery — **exists today**. Two
+resource-type gaps are real and filed (#250 the DR-pairing edge, #251 FileShare's thin
+outputs); the remaining pendings are the same change-control vocabulary the corpus family
+demands, already the pending ADR's decision surface. UC 009's success criteria map onto this
+table row-for-row — which is exactly what makes the use case analyzable: when the gaps close,
+the analysis run flips, and the scoreboard shows it.
+
 ## The invariants
 
 - **The impact set is derived, never asserted.** The same edges that derive shutdown order

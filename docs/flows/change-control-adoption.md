@@ -47,6 +47,35 @@ flowchart TD
     J -->|fail| I1
 ```
 
+## What informs each decision — model surfaces, validated 2026-07-25
+
+Each decision node reads a named UDLM surface. Every row below was resolved against the
+current registry (validated here, not assumed); the status column is honest about what exists
+today versus what the pending change-control ADR and the class-realization P0 phase must
+supply. The **policy role** column states whether a policy *decides* (gates, refuses, selects)
+or *enriches* (adds data other steps read) at that node, and which `policy_type` from the
+policy schema's existing vocabulary carries it.
+
+| Decision / step | Model surface read | Status | Policy role — decides or enriches what |
+|---|---|---|---|
+| Change classified additive/breaking | the upstream change record's classification | **PENDING-P0** — the regeneration-manifest record schema | Enriches (`transformation`): stamps the change class every later gate branches on |
+| Blast radius known | class graph + ADR-044 consumer manifests | Manifests **EXIST** (`registry/consumers/`); class graph **PENDING-P0** | Enriches: attaches the affected-artifact set to the change record |
+| Adoption mode chosen per class | the estate's change policy (`policy_type: gating` / `orchestration_flow`) | Policy object **EXISTS** (`policy.schema.json`); the clause vocabulary (window/freeze/expedite/precondition) **PENDING-ADR** | Decides: automatic vs windowed vs full ceremony |
+| Freeze suspends adoption | a dated freeze clause | **PENDING-ADR** — no temporal clause surface exists in the policy schema today (validated: no window/schedule/freeze field anywhere) | Decides: refuse-and-queue vs proceed |
+| Evidence gate | the blue/green typed-output diff record | **PENDING-P1** — the promotion-evidence record shape (ADR-046) | Decides (`gating`): promotion may proceed only on clean/approved diff |
+| Approval gate | named approver sign-off on the diff | **PENDING-ADR** — approval record shape | Decides (`override`-class): a human authority accepts the evidence |
+| Window gate | window clause + expedite clause | **PENDING-ADR** (same temporal-clause gap) | Decides: execute now, defer, or expedite under elevated approval |
+| Propagation order | realized-entity `dependencies[]` edges (`edge_type`, ordering semantics) | **EXISTS** — the shutdown-order machinery's own surface | Enriches: derives batch order; no policy overrides structure |
+| Batch verification | target types' declared outputs vs realized values | **EXISTS** ([D8.3] outputs; per-type adequacy varies) | Decides (`validation`): batch passes or propagation halts |
+| Debt states (windowed/queued/frozen) | typed debt entries in estate validation output | **PENDING-ADR** — today's debt is untyped pin-lag only | Enriches: makes waiting legible and auditable |
+| Adoption trail | audit records | **EXISTS** (audit-record model) | Enriches: the reconstructible history every retrospective reads |
+
+The pattern the validation exposes: **the graph, outputs, policy machinery, and audit
+substrate all exist; what is pending is precisely the vocabulary this flow's corpus family was
+authored to demand** — the temporal policy clauses, the typed debt states, and the two record
+shapes (change record, evidence record) already assigned to P0/P1. Nothing in this flow
+requires a surface that is neither present nor already on the build list.
+
 ## The invariants
 
 - **The policy is data.** Adoption mode, gates, windows, freezes, and expedite paths are
