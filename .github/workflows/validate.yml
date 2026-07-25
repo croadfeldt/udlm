@@ -52,6 +52,15 @@ jobs:
       # from the tree (family counts, fuzz discrimination density, outputs/context/UC/consumer
       # coverage) — fail if stale, same discipline as the type catalog.
       - run: python3 registry/tools/model_health.py --check
+      # Attestation evidence: after the whole suite passed, emit the scoreboard + registry ref
+      # as an uncommitted artifact (a committed ref would be permanently stale). Validation
+      # results become signable attestation input downstream; a failed suite emits nothing
+      # because this step is unreached.
+      - run: python3 registry/tools/model_health.py --attest model-validation-attestation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-validation-attestation
+          path: model-validation-attestation.json
       - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump

@@ -366,9 +366,9 @@
     "manifests": 5,
     "all_types_consumers": [
       "dav",
-      "estate-ci",
-      "estate-explorer",
-      "estate-mcp"
+      "graph-explorer",
+      "records-ci",
+      "records-mcp"
     ],
     "named_by_consumer": {
       "Compute.Cluster": [

@@ -81,7 +81,7 @@ single-word handles could in principle match prose):
 
 ## Consumer coverage
 
-All-types (envelope-level) consumers: `dav`, `estate-ci`, `estate-explorer`, `estate-mcp`. Types named by a specific manifest:
+All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `records-mcp`. Types named by a specific manifest:
 
 | Type | Named by |
 |---|---|

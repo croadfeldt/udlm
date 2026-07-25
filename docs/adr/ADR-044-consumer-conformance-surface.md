@@ -13,7 +13,7 @@ types with no warning for the rest — found by sweep, not by CI).
 ## Context
 
 The registry's gates prove the model self-consistent, but the model exists to be read. Its
-consumers — generators, estate CI, graph ingest, MCP servers, the analysis engine — each depend
+consumers — generators, records CI, graph ingest, MCP servers, the analysis engine — each depend
 on some slice of the registry's types, versions, and vocabularies, and none of that dependency
 is recorded anywhere the registry can see. The failure mode is silent: a type rename, a version
 bump, or a vocabulary change leaves every downstream reader compiling happily against a shadow

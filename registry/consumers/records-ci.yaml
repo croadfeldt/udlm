@@ -1,0 +1,15 @@
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# tests/check_consumer_conformance.py.
+#
+# A records-repository CI validates every instance record against the registry (envelope
+# checks) plus the edge vocabulary, so its read surface is the whole registry, not a named
+# slice: any type can appear in a record.
+consumer:
+  name: records-ci
+  repo: private (instance-records repository)
+  description: Records-repository CI — validates instance records (envelope checks + edge vocabulary) against the registry on every change.
+consumes_all_types: true
+schemas:
+  - registry/realized-entity.schema.json  # edge_type vocabulary + record envelope
+  - registry/resource-type-spec.schema.json  # TODO verify — whether the CI loads the meta-schema or only the per-type specs
+coverage: declared

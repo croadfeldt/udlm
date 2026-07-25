@@ -1,0 +1,14 @@
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# tests/check_consumer_conformance.py.
+#
+# A graph explorer renders instance records as nodes typed by their resource-type handle and
+# derives ordered operational sequences from the edges, so every registry type can appear as
+# a node.
+consumer:
+  name: graph-explorer
+  repo: croadfeldt/estate-explorer
+  description: Dependency-graph visualizer — instance records as typed graph nodes; derives ordered operational sequences from edge_type semantics.
+consumes_all_types: true
+schemas:
+  - registry/realized-entity.schema.json  # edge_type vocabulary (depends_on|contained_by|binds_to|references)
+coverage: declared

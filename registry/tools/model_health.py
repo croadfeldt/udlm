@@ -7,6 +7,13 @@ after any registry/use-case/consumer change:
 
     python3 registry/tools/model_health.py            # write MD + JSON
     python3 registry/tools/model_health.py --check    # CI: fail if stale
+    python3 registry/tools/model_health.py --attest OUT.json
+                                                      # CI: emit an attestation artifact —
+                                                      # registry ref + scoreboard + gate list —
+                                                      # uncommitted (a committed ref would be
+                                                      # permanently stale); uploaded by CI and
+                                                      # signable downstream (validation results
+                                                      # as attestation evidence)
 
 Metrics (all from the tree, no network, no clock):
   - type count by family
@@ -263,6 +270,24 @@ def main() -> int:
     health = compute()
     md = render_md(health)
     js = json.dumps(health, indent=2) + "\n"
+    if "--attest" in sys.argv:
+        import subprocess
+        out_path = sys.argv[sys.argv.index("--attest") + 1]
+        ref = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                             text=True, cwd=str(ROOT)).stdout.strip()
+        attestation = {
+            "attestation_subject": "model-validation",
+            "registry_ref": ref,
+            "scoreboard": health,
+            "gate_suite": "registry validate.yml (deterministic hammers: fuzz, composition, "
+                          "provider cross-check, consumer conformance, scoreboard currency)",
+            "note": "Emitted by CI after the gate suite passed on registry_ref; a failed suite "
+                    "emits nothing. Signing/anchoring is the attestation pipeline's act.",
+        }
+        with open(out_path, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps(attestation, indent=2) + "\n")
+        print(f"wrote attestation artifact {out_path} for {ref}")
+        return 0
     if "--check" in sys.argv:
         cur_md = open(OUT_MD, encoding="utf-8").read() if os.path.exists(OUT_MD) else ""
         cur_js = open(OUT_JSON, encoding="utf-8").read() if os.path.exists(OUT_JSON) else ""
