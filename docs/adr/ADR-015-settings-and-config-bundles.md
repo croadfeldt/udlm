@@ -78,6 +78,8 @@ Without a filter the resolver can order tiers but cannot select which overlay ap
 3. **Compose** per setting: take the value from the highest-tier selected bundle that is **≤ the setting's ceiling**; reject any value set above the ceiling; if the setting is `tighten_only`, reject a finer value that weakens the coarser one.
 4. The result is the **effective value** + its provenance (the winning bundle's filter).
 
+Step 2 orders *tiers*; ordering **within** one tier is ADR-047 — same-tier composition follows explicit `precedence_order` (the `layer.schema.json` primitive), and two same-tier bundles setting the same setting with no declared order are a typed, refused conflict naming both sources.
+
 That is what makes precedence *effective* rather than merely ordered: the setting says how far down it may be pushed and in which direction; each overlay says which slice of the estate it is; the resolver matches, orders, and composes.
 
 **Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `scope` (the filter's coordinates) and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given scope — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `contracts/policy-contract.md`), enforced by DCM at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.

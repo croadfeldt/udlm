@@ -39,6 +39,10 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   intra-registry pins refused (registry ref = the only internal pin), organizational
   uuid-precise pins honored with enumerated debt, blue/green typed-output-diff promotion of
   re-pins, and element scope narrowing classified breaking (portability is part of compat).
+- `vocabulary-intake/` — strings meet SharedDataElements under profile control: exact-match
+  auto-binds free everywhere, unmatched strings mint at current scope as proposed (where the
+  profile permits), promotion dedups and canonicalizes; near matches never bind silently;
+  strict estates refuse-with-candidates or govern vocabulary by change control.
 - `change-control/` — the temporal layer on class versioning: change-management policies that
   gate and orchestrate WHEN adoptions occur — continuous adoption, maintenance windows, full
   ceremony for breaking changes, freezes with queued debt, break-glass expedites (evidence

@@ -23,6 +23,19 @@ def sh(*args):
     return subprocess.run(args, cwd=ROOT, capture_output=True, text=True)
 
 
+def renames():
+    """old_path -> new_path, from registry/renames.yaml (the rename-map discipline: every path
+    rename ships with an explicit old->new map). A renamed spec is the SAME entity as its
+    base-ref path — the gate compat-checks base-old-path vs working-new-path instead of
+    reading the move as a REMOVED + NEW pair (which would skip the check entirely)."""
+    path = os.path.join(ROOT, "registry", "renames.yaml")
+    if not os.path.exists(path):
+        return {}
+    import yaml
+    doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
+    return doc.get("renames") or {}
+
+
 def main() -> int:
     base = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
     # ensure the base ref is present (CI clones may be shallow); non-fatal if fetch fails
@@ -41,18 +54,33 @@ def main() -> int:
         print(f"compat-gate: no resource-type changes vs {base}")
         return 0
 
+    ren = renames()                          # old path -> new path
+    ren_rev = {new: old for old, new in ren.items()}
+
     failures = 0
     for rel in changed:
+        old_rel = rel
         old_blob = sh("git", "show", f"{base}:{rel}")
+        if old_blob.returncode != 0 and rel in ren_rev:
+            # renamed spec — same entity as its base-ref path (rename-map discipline)
+            old_rel = ren_rev[rel]
+            old_blob = sh("git", "show", f"{base}:{old_rel}")
         if old_blob.returncode != 0:
             print(f"ok   {rel}  — NEW type (no prior version on {base})")
             continue
         if not os.path.exists(os.path.join(ROOT, rel)):
+            new_rel = ren.get(rel)
+            if new_rel and os.path.exists(os.path.join(ROOT, new_rel)):
+                # the OLD path of a mapped rename: the new path carries the compat check
+                print(f"ok   {rel}  — RENAMED to {new_rel} (compat-checked at the new path)")
+                continue
             # symmetric to a NEW type: a REMOVED type has no new version to compat-check.
             # The removal is a deliberate, reviewed change (e.g. retiring an anti-pattern type);
             # the gate checks bump sufficiency, not removal policy, so don't crash on it.
             print(f"ok   {rel}  — REMOVED type (retired; no new version to compat-check)")
             continue
+        if old_rel != rel:
+            print(f"     {rel}  — renamed from {old_rel}; compat-checking across the rename")
         suffix = os.path.splitext(rel)[1]
         with tempfile.NamedTemporaryFile("w", suffix=suffix, delete=False) as tmp:
             tmp.write(old_blob.stdout)

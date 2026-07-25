@@ -291,6 +291,45 @@
         }
       }
     },
+    "expected_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The DECLARED observation expectation this entity is judged against (ADR-048 — staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; no verdict is ever stored. Where absent, the OBS-005 profile TTL (entities/service-dependencies.md) applies as the fallback. When the expectation is composed at a coarser scope (e.g. a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value — its provenance rides the standard per-field provenance record, never a hand-typed copy.",
+      "properties": {
+        "cadence": {
+          "type": "string",
+          "description": "ISO 8601 duration — expect an observation at least this often (e.g. P1D, PT4H, P30D)."
+        },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "A declared expected-contact period: observations are expected only within it, and their absence outside it is normal by declaration. Alternative to cadence; declare either or both.",
+          "properties": {
+            "opens": {
+              "type": "string",
+              "description": "Start of the expected-contact period (RFC 3339 date or instant)."
+            },
+            "closes": {
+              "type": "string",
+              "description": "End of the expected-contact period (RFC 3339 date or instant)."
+            },
+            "recurs": {
+              "type": "string",
+              "enum": ["none", "annually"],
+              "x-extensible-enum": true,
+              "default": "none",
+              "description": "Whether the window repeats (a seasonal fleet declares annually)."
+            }
+          }
+        },
+        "on_exceeded": {
+          "type": "string",
+          "enum": ["normal", "finding"],
+          "default": "finding",
+          "description": "What an overdue observation MEANS: normal -> the derived verdict is stale_expected (a healthy state); finding -> stale_deviant (the alarm). This is the judgment declaration that lets seasonal absence be healthy while true deviance still alarms."
+        }
+      }
+    },
     "sovereignty": {
       "type": "object",
       "additionalProperties": false,

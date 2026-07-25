@@ -79,6 +79,11 @@ prefixes:
     home: foundations/entity-types.md
     domain: Core entity lifecycle invariants (ownership, UUID immutability, PENDING_REVIEW, composite health)
     status: active
+  - prefix: ESC
+    name: Identity escrow
+    home: entities/identity-escrow.md
+    domain: Identity state surviving host re-realization (Access.IdentityEscrow contract rules)
+    status: active
   - prefix: ERL
     name: Entity-relationship (legacy-renumbered)
     home: entities/entity-relationships.md

@@ -90,7 +90,7 @@ best: hold required and relevant information.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
-- **Data (UDLM):** the governed values in a layer (required + relevant information); `provider_extensions` as
+- **Data (UDLM):** the governed values in a layer (required + relevant information); `provider_extensions` (since retired into Provider-Class SharedDataElements) as
   the home for what the policy injects.
 - **Policy (DCM/org):** the post-placement enrichment policy that selects and injects the value, and gates
   when the mapping is missing.

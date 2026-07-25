@@ -1,0 +1,155 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.4",
+  "conforms_to": "udlm/0.1",
+  "uuid": "ff7f0b01-d451-4aed-89da-83117923820f",
+  "resource_type": "Platform.NodePool",
+  "version": "0.3.4",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Node Pool",
+    "description": "A group of compute nodes within a cluster that share capabilities, labels, and scheduling constraints. Models the construct that cloud platforms call a node pool or machine set — a homogeneous slice of cluster capacity with specific hardware characteristics (GPU, architecture, memory tier). Placement policies query node pool capabilities to match workload requirements to available capacity.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-17T00:00:00Z"
+  },
+  "context": {
+    "purpose": "Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.",
+    "plain_description": "A named group of like nodes in a cluster — its `name` is required: how many (`node_count`), what they offer — `capabilities`, where advertisements are structured objects, not booleans (`gpu` carries available/models/count_per_node, beside `architecture` and `memory_tier`) — what `labels` they carry, and what `taints` a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.",
+    "use_when": [
+      "You need GPU or otherwise-special nodes grouped so only workloads that need (and tolerate) them land there.",
+      "You need placement to select capacity by declared capability (architecture, memory tier) rather than by node names."
+    ],
+    "not_for": [
+      "The cluster — Compute.Cluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).",
+      "One physical machine — Compute.BareMetalHost; a pool is a cluster-level grouping, not a host record."
+    ],
+    "works_with": [
+      "Compute.Cluster — the cluster the pool belongs to.",
+      "Platform.Namespace — namespaces whose workloads schedule onto pools."
+    ]
+  },
+  "lifecycle": {
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
+    "decommission": "Provider drains and removes the node pool. Workloads on the pool must be rescheduled or decommissioned first."
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "name"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The node pool name within the cluster (e.g. 'gpu-large', 'general-purpose', 'infra')."
+      },
+      "cluster_ref": {
+        "description": "Resource reference to a Compute.Cluster (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — the handle of an existing Compute.Cluster."
+          },
+          {
+            "$ref": "../../common-elements.schema.json#/$defs/Reference"
+          }
+        ]
+      },
+      "node_count": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Target number of nodes in this pool."
+      },
+      "capabilities": {
+        "type": "object",
+        "description": "Queryable capability advertisements — placement policies select pools by capability.",
+        "properties": {
+          "gpu": {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "boolean"
+              },
+              "models": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "GPU model names — the observed accelerator model strings (e.g. '<gpu-model>')."
+              },
+              "count_per_node": {
+                "type": "integer"
+              }
+            }
+          },
+          "architecture": {
+            "type": "string",
+            "description": "CPU architecture (e.g., x86_64, aarch64)."
+          },
+          "memory_tier": {
+            "type": "string",
+            "description": "Memory class (e.g., standard, high-memory)."
+          }
+        }
+      },
+      "labels": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "Labels applied to all nodes in this pool (Kubernetes label semantics)."
+      },
+      "taints": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "key",
+            "effect"
+          ],
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            },
+            "effect": {
+              "type": "string",
+              "enum": [
+                "NoSchedule",
+                "PreferNoSchedule",
+                "NoExecute"
+              ]
+            }
+          }
+        },
+        "description": "Taints applied to all nodes — workloads must tolerate these to be scheduled on the pool."
+      }
+    }
+  },
+  "outputs": {
+    "pool_name": {
+      "type": "string",
+      "description": "The realized pool name."
+    },
+    "available_capacity": {
+      "type": "object",
+      "description": "Current available capacity (discovered state)."
+    }
+  },
+  "relationships": [
+    {
+      "edge_type": "contained_by",
+      "target": "Compute.Cluster",
+      "cardinality": "1..1",
+      "name": "cluster",
+      "description": "The cluster this node pool belongs to."
+    }
+  ]
+}

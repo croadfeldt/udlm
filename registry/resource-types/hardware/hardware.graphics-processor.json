@@ -1,0 +1,132 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.2.2",
+  "conforms_to": "udlm/0.1",
+  "uuid": "7456b9f8-f215-4b75-ae6a-edd8cc854949",
+  "resource_type": "Hardware.GraphicsProcessor",
+  "version": "0.2.2",
+  "family": "Resource",
+  "portability": "portable",
+  "status": "active",
+  "metadata": {
+    "display_name": "Graphics Processor",
+    "description": "A GPU / accelerator component. device_class covers a physical GPU, a whole-GPU passthrough (VFIO) to a guest, or a vGPU/MIG partition carved from a physical GPU (parent_device references the physical Hardware.GraphicsProcessor). Mirrors Redfish Processor (ProcessorType=GPU) / PCIeDevice. outputs-exempt: opaque inventory component — its attributes are Discovered-state facts on the containing host; it publishes no realize-time binding surface (rule 36(b) documented exclusion).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-27T00:11:51Z"
+  },
+  "context": {
+    "purpose": "Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.",
+    "plain_description": "One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes are discovered facts. Identity facts — model, location (slot or instance id), serial, manufacturer — nest under the `identity` block, not at the top level; `memory` is an object whose size is a whole-number quantity like 48GB. The type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.",
+    "use_when": [
+      "You need GPU inventory across hosts — which cards, where, with what memory and architecture.",
+      "You need the passthrough/partition chain (guest slice → physical card → host) traversable for maintenance impact."
+    ],
+    "not_for": [
+      "CPU sockets — Hardware.Processor.",
+      "Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. Platform.NodePool capabilities), not a GPU component record."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — the host the physical card is installed in.",
+      "Compute.VirtualMachine — the guest a passthrough or partition is presented to.",
+      "Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from."
+    ]
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [],
+    "properties": {
+      "device_class": {
+        "type": "string",
+        "enum": [
+          "physical",
+          "virtual",
+          "passthrough",
+          "partition"
+        ],
+        "default": "physical",
+        "description": "Device realization (common-elements.md §7). passthrough = whole GPU to a guest; partition = vGPU/MIG slice (set parent_device + partition_mechanism)."
+      },
+      "partition_mechanism": {
+        "type": "string",
+        "description": "Only when device_class=partition: e.g. mediated (NVIDIA vGPU / Linux mdev), mig, sr-iov."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Instance discriminators (SPEC-DESIGN-REQUIREMENTS §27).",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "PCIe slot / BDF within the parent (Redfish PhysicalLocation). Primary discriminator; for a partition, the vGPU/MIG instance id."
+          },
+          "serial_number": {
+            "type": "string",
+            "description": "GPU serial (absent for virtual/partition)."
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "description": "GPU model, e.g. AMD Radeon Pro W7900 (Redfish Model)."
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "Semantic usage, e.g. compute | display | inference."
+          }
+        }
+      },
+      "memory": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "string",
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$",
+            "description": "Framebuffer / device memory, e.g. 48GB (for a vGPU, the profile's allocation)."
+          }
+        }
+      },
+      "architecture": {
+        "type": "string",
+        "description": "GPU architecture / generation, e.g. RDNA4, Hopper."
+      }
+    }
+  },
+  "outputs": {},
+  "relationships": [
+    {
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..1",
+      "name": "host",
+      "description": "The host the physical GPU is installed in.",
+      "edge_type": "contained_by"
+    },
+    {
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..1",
+      "name": "guest",
+      "description": "For passthrough / partition (vGPU), the guest the device is presented to.",
+      "edge_type": "contained_by"
+    },
+    {
+      "target": "Hardware.GraphicsProcessor",
+      "cardinality": "0..1",
+      "name": "parent_device",
+      "description": "parent_device — the physical GPU this passthrough/partition (vGPU/MIG) is derived from. REQUIRED when device_class is passthrough or partition (common-elements §7).",
+      "edge_type": "references"
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standard_name": "Processor",
+      "role": "GPU/accelerator component vocabulary (Processor ProcessorType=GPU / PCIeDevice)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible-reference"
+    }
+  ]
+}

@@ -1,31 +1,35 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 47,
+    "types": 48,
     "by_family": {
-      "Access": 3,
+      "Access": 4,
       "Knowledge": 5,
       "Process": 1,
       "Resource": 38
     }
   },
   "discrimination": {
-    "mutations_attempted": 2965,
-    "mutations_rejected": 2965,
+    "mutations_attempted": 3119,
+    "mutations_rejected": 3119,
     "density": 1.0,
     "findings": 0,
     "per_type": {
+      "Access.IdentityEscrow": {
+        "attempted": 72,
+        "rejected": 72
+      },
       "Automation.Job": {
-        "attempted": 41,
-        "rejected": 41
+        "attempted": 121,
+        "rejected": 121
       },
       "Capability": {
         "attempted": 36,
         "rejected": 36
       },
       "Compute.BareMetalHost": {
-        "attempted": 168,
-        "rejected": 168
+        "attempted": 170,
+        "rejected": 170
       },
       "Compute.Cluster": {
         "attempted": 74,
@@ -206,14 +210,15 @@
     }
   },
   "strictness": {
-    "strict_specs": 47,
-    "total": 47
+    "strict_specs": 48,
+    "total": 48
   },
   "outputs": {
     "per_type": {
-      "Automation.Job": 1,
+      "Access.IdentityEscrow": 4,
+      "Automation.Job": 0,
       "Capability": 1,
-      "Compute.BareMetalHost": 3,
+      "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
       "Compute.Container": 2,
       "Compute.VirtualMachine": 9,
@@ -260,6 +265,7 @@
       "Vulnerability": 0
     },
     "zero_output_types": [
+      "Automation.Job",
       "Hardware.GraphicsProcessor",
       "Hardware.Processor",
       "SoftwareImage",
@@ -267,7 +273,6 @@
       "Vulnerability"
     ],
     "one_output_types": [
-      "Automation.Job",
       "Capability",
       "Facility.Location",
       "Hardware.BMC",
@@ -294,13 +299,13 @@
     ]
   },
   "context": {
-    "with_context": 47,
-    "total": 47,
+    "with_context": 48,
+    "total": 48,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 43,
-    "total": 47,
+    "with_relationships": 44,
+    "total": 48,
     "missing": [
       "Facility.PowerFeed",
       "Observability.LogShipper",
@@ -309,7 +314,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 67,
+    "files_scanned": 73,
     "covered": [
       "Capability",
       "Compute.Cluster",
@@ -318,6 +323,7 @@
       "Storage.Pool"
     ],
     "uncovered": [
+      "Access.IdentityEscrow",
       "Automation.Job",
       "Compute.BareMetalHost",
       "Compute.Container",
@@ -388,6 +394,7 @@
       ]
     },
     "named_by_none": [
+      "Access.IdentityEscrow",
       "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
@@ -431,7 +438,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 47
+    "consumed_by_at_least_one": 48
   },
   "expressibility_coverage": {
     "value": null,

@@ -136,7 +136,7 @@ charter is to land on names that match how teams already speak, then freeze.
 
 The scoped-Class paradigm (ADR-038) and the policy-firewall (ADR-041) introduced canonical terms the freeze must cover — captured here so the pass is complete:
 
-- **Base / Type / Provider Class** · **`SharedDataElement`** — the scoped resource-type meta-model (subsumes `provider_extensions` and the Vendor.Type fork).
+- **Base / Type / Provider Class** · **`SharedDataElement`** — the scoped resource-type meta-model (subsumes the retired `provider_extensions` and the Vendor.Type fork).
 - **authority** (the addressing/routing namespace) · **references-context edge** (a classified, dereferenceable edge — the former `reference_data` layer, retired) · **`covers` / `applies_on` / `from_layers`** (layer→request injection scoping).
 - **information firewall** / **guard** · **structural vs value policy** · **egress / ingress** mediation — the policy-flow vocabulary (ADR-041).
 - **Knowledge classes** `SoftwareImage` / `SoftwarePackage` / `Vulnerability` — the SBOM/CVE knowledge domain.

@@ -18,8 +18,8 @@ OUT = os.path.join(ROOT, "registry", "TYPE-CATALOG.md")
 
 def render():
     types = []
-    for f in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "*.json")) +
-                    glob.glob(os.path.join(ROOT, "registry", "resource-types", "*.yaml"))):
+    for f in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*.json"), recursive=True) +
+                    glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*.yaml"), recursive=True)):
         with open(f, encoding="utf-8") as fh:
             d = json.load(fh) if f.endswith(".json") else yaml.safe_load(fh)
         if isinstance(d, dict):

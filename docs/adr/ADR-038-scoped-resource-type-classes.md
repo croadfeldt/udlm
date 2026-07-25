@@ -26,7 +26,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
      elements. UDLM defines the *grammar* for this layer; the definition itself is **provider-authored** (see
      *Authorship & domain*) — `Compute.VM.OCPVirt` here is illustrative of the grammar, not a UDLM-shipped class.
    Each **extends** the one above under the **Liskov invariant — add or refine, never contradict** (a Provider
-   Class *is-a* Type Class *is-a* Base Class). This **subsumes** `provider_extensions` *and* the Vendor.Type
+   Class *is-a* Type Class *is-a* Base Class). This **subsumes** the since-retired `provider_extensions` *and* the Vendor.Type
    fork into one uniform mechanism: a provider-specific element is just a `SharedDataElement` at the Provider
    Class, in a first-class, versioned, validatable definition — never an opaque per-instance blob.
 
@@ -292,7 +292,7 @@ authority-scoped and promotable, run through one DCM register/validate/promote l
 policy/profile.**
 
 ## Options considered
-- **(A) Status quo** — independent per-type definitions + `provider_extensions` + Vendor.Type fork. *Rejected*:
+- **(A) Status quo** — independent per-type definitions + the now-retired `provider_extensions` + Vendor.Type fork. *Rejected*:
   three mechanisms, structural cross-type drift, opaque provider blobs, no portability gradient.
 - **(B) [chosen]** Layered Classes of `SharedDataElement`s, instantiable at every level, policy-fill completing
   blanks, gated upward contribution. One mechanism; portability legible from the name; subsumes three prior

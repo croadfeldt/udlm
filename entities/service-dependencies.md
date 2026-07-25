@@ -171,7 +171,7 @@ The substrate stores both edge natures side-by-side; the realization decides whe
 | `OBS-002` | Observed-dependency edges MUST carry `reported_by_provider_uuid`, `observed_at`, and `observation_method`. Edges missing any of these fields MUST be rejected at ingestion. |
 | `OBS-003` | Observed dependencies MUST NOT be consulted by orchestration paths (placement, cost analysis, payload assembly, rehydration). Use is restricted to drift detection, blast-radius queries, deregister-safety checks, and federation reconciliation. |
 | `OBS-004` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint within the same SLA as their discovery endpoint. Providers that fail to introspect within SLA MUST be marked as `dependency_introspection_degraded` for the affected entities (no provider-level degradation). |
-| `OBS-005` | Observation TTL is profile-governed (default: PT24H for standard/prod; PT4H for fsi/sovereign). Observations older than TTL MUST be treated as stale by drift queries and trigger re-introspection on next scheduled poll. |
+| `OBS-005` | Observation TTL is profile-governed (default: PT24H for standard/prod; PT4H for fsi/sovereign) — as the FALLBACK: a declared `expected_observation` on the entity envelope always wins over the profile TTL (ADR-048 — staleness judged against declared expectation; verdicts `current \| stale_expected \| stale_deviant` derived, never stored). Where nothing is declared, observations older than TTL MUST be treated as stale by drift queries and trigger re-introspection on next scheduled poll. |
 
 ---
 

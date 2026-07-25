@@ -4,18 +4,44 @@
 > `registry/tools/generate_type_catalog.py` — edit the spec, regenerate, never edit here.
 > Missing entries are types without a `context` block yet (tracked by the rule-36 gate).
 
+## Access
+
+### Access.IdentityEscrow (0.1.1)
+
+**Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
+
+Some machines are routinely wiped and rebuilt, but parts of their identity must not die with the disk: a remote-access enrollment, an application session, a device certificate. This record is the contract for that state. It lists the items to escrow, when each is captured (at registration, before a wipe) and when it is restored (on re-realization), and whether restore is required for the rebuild to count as converged. Each item points at a credential reference — the escrow store holds the material; the model only ever holds the pointer and the capture/restore evidence. Because the escrow is bound to the host's stable entity UUID rather than to any one installation, a re-imaged machine gets its identity back by contract, and a brand-new machine can never silently claim another machine's identity.
+
+**Use when:**
+- A host is periodically re-imaged or replaced and named identity state must survive the rebuild by contract, not by operator memory.
+- You need one legible allowlist of what persists across a wipe — everything else dying by default.
+- You need restore to gate convergence: a rebuilt host with a required item unrestored is visibly not converged, never silently identity-less.
+- You need decommission of an identity-bearing host to force an explicit, audited disposition of its escrowed identity (destroy or transfer).
+
+**Not for:**
+- The credential reference itself — that is Security.CredentialRef; an escrow item wraps one, it does not replace it.
+- General backup or data protection of a host's contents — this carries identity state only, not data-migration payloads.
+- The identity that acts in requests — that is the Access family's Identity types (Identity.Person / Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself an actor.
+
+**Works with:**
+- Security.CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
+- Compute.BareMetalHost — the typical host entity whose re-realization triggers restore.
+- Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
+
 ## Automation
 
-### Automation.Job (0.4.2)
+### Automation.Job (0.5.3)
 
-**Purpose:** Makes an automation job (playbook, pipeline, script) a first-class node in the dependency graph, so what the job needs stays up while it runs.
+**Purpose:** Makes an automation job (playbook, pipeline, script) a first-class node in the dependency graph — carrying the job's own portable intent (definition_ref, parameters, targets, schedule) — so what the job needs stays up while it runs and the job itself survives an engine change. outputs-exempt: run-scoped — every run-history fact (state, timestamps, counts, the change-set a run produced, its evidence artifact) is an output of a RUN INSTANCE, not of the job: runs instantiate the process (Process-family model) and carry their own records. Job-level copies would project instance facts onto the definition — the compute-never-store rule forbids storing them, and the definition/instance separation forbids homing them here even as derivations. The run instance type (Process family, P1) declares these outputs; bindings that need them bind there.
 
-A record of a job that automation runs — a playbook, a CI pipeline, a backup script. It is modeled like infrastructure because it has real dependencies: the host it executes on, the network fabric it traverses, the name service it resolves through. While the job runs, none of those may be taken down, which is how ordered operations like a UPS-triggered graceful shutdown come out of the data instead of hand-written runbooks. The engine that runs the job is a provider detail, not part of the type.
+A record of a job that automation runs — a playbook, a CI pipeline, a backup script. It is modeled like infrastructure because it has real dependencies: the host it executes on, the network fabric it traverses, the name service it resolves through. While the job runs, none of those may be taken down, which is how ordered operations like a UPS-triggered graceful shutdown come out of the data instead of hand-written runbooks. The record also carries the automation intent itself: which definition the job executes (definition_ref), the parameters it is invoked with, the resources it operates on (targets), and — for scheduled jobs — when it runs and how overlapping or missed runs are handled (schedule). Because that intent lives on the record and not inside any engine, moving the job to a different engine is a provider change on an untouched definition. Each run publishes typed outputs — terminal state, timestamp, run count, a change-set, and an evidence reference — so two engines running the same job are comparable by diffing declared outputs. The engine that runs the job is a provider detail, not part of the type.
 
 **Use when:**
 - You need a shutdown or upgrade sequence to know an orchestration job is running and must finish before its executor host stops.
 - You need to record which automation created or modified a resource, so the resource's provenance can cite the job.
 - You need a scheduled or event-triggered job (cron, a UPS on-battery event) tracked with a hard execution-time limit.
+- You need the job's automation intent — definition, parameters, targets, schedule — recorded portably so an engine migration is a provider swap that leaves the intent and the job's identity untouched.
+- You need to verify a new engine (or an engine upgrade) against the incumbent by re-running an idempotent job and requiring an empty change-set in the typed outputs.
 
 **Not for:**
 - The long-running service a job might deploy — that is Software.Service; a service has no scheduled end, a job must declare max_execution_time.
@@ -28,11 +54,11 @@ A record of a job that automation runs — a playbook, a CI pipeline, a backup s
 
 ## Capability
 
-### Capability (0.2.0)
+### Capability (0.2.1)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
-A single named thing a platform can do — e.g. workload placement, or secret rotation — kept as a curated fact rather than provisioned infrastructure. Capabilities move through a curation lifecycle (proposed, under review, canonical, deprecated); once canonical, other records bind to the capability's normalized handle instead of free-text names, so the same capability spelled five ways converges onto one record. Nothing is ever built from a Capability — it is knowledge about the platform, not a resource in it.
+A single named thing a platform can do — e.g. workload placement, or secret rotation — kept as a curated fact rather than provisioned infrastructure. Capabilities move through a curation lifecycle — the `curation_state` property: `proposed`, `under-review`, `canonical`, `deprecated`; once canonical, other records bind to the capability's normalized handle instead of free-text names, so the same capability spelled five ways converges onto one record. Nothing is ever built from a Capability — it is knowledge about the platform, not a resource in it.
 
 **Use when:**
 - You need to track which architectural capabilities a platform has, is missing, or has duplicated across teams.
@@ -48,7 +74,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## Compute
 
-### Compute.BareMetalHost (0.6.1)
+### Compute.BareMetalHost (0.7.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -71,7 +97,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Compute.VirtualMachine — the guests the host runs.
 
-### Compute.Cluster (0.4.2)
+### Compute.Cluster (0.4.4)
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -92,11 +118,11 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.5.2)
+### Compute.Container (0.5.3)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
-A single containerized workload: the image it runs, the CPU and memory it needs, its environment, mounted paths, and exposed ports. It runs either on a cluster or directly on a host (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points at a Security.CredentialRef instead. The image can be given as a plain OCI reference or as a reference into governed image data, which is what lets change-impact analysis find every container affected when a base image is patched.
+A single containerized workload: the `image` it runs, the `resources` it needs (`cpu` as a number of cores — 0.5, 2 — never a millicore string, plus `memory`), its environment and mounted paths (`process.env`, `process.mounts`), and its exposed ports (`network.ports`). It runs either on a cluster or directly on a host (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points at a Security.CredentialRef instead. The image is an object either way: the inline form wraps the OCI string as `image.reference` (optionally pinned by `image.digest`), or `image` is a reference into governed image data, which is what lets change-impact analysis find every container affected when a base image is patched.
 
 **Use when:**
 - You need to run a specific image with declared resources, environment, and ports on a cluster or a host.
@@ -113,11 +139,11 @@ A single containerized workload: the image it runs, the CPU and memory it needs,
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VirtualMachine (0.6.3)
+### Compute.VirtualMachine (0.6.4)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.
 
-The request for one VM: how big (a named size class, or explicit vCPU and memory), what guest OS, which disks backed by what storage class, and which existing networks its NICs attach to. Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
+The request for one VM: how big — a named size class (`instance_size`), or explicit `vcpu` and `memory` in its place — what `guest_os`, which `disks` backed by what storage class, and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
 
 **Use when:**
 - You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.
@@ -137,11 +163,11 @@ The request for one VM: how big (a named size class, or explicit vCPU and memory
 
 ## Data
 
-### Data.Database (0.4.1)
+### Data.Database (0.4.2)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
-The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and resource sizing. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.
+The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and the required `resources` sizing — `cpu` as a string (`500m` or `2`), with `memory` and `storage` as sizes like `16GB`. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.
 
 **Use when:**
 - You need a database provisioned to a declared engine, version, and size, with its connection surface published for consumers.
@@ -177,11 +203,11 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 - Compute.BareMetalHost — the equipment that declares its location.
 - Topology — the failure-domain view of the same physical reality.
 
-### Facility.PowerFeed (0.3.1)
+### Facility.PowerFeed (0.3.2)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
-One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated capacity (watts, voltage, phases) and redundancy are declared up front.
+One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not a boolean — are declared up front.
 
 **Use when:**
 - You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown of exactly what that UPS feeds.
@@ -198,11 +224,11 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 ## Hardware
 
-### Hardware.BMC (0.4.1)
+### Hardware.BMC (0.4.2)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
-The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its management address, the protocols it answers (Redfish, IPMI as fallback), and its vendor, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.
+The always-on management controller inside a server that answers even when the host is off — each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`, `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it controls. Credentials are never stored here — they are referenced. It exists so that power that host off resolves to a concrete address and mechanism instead of prose.
 
 **Use when:**
 - You need out-of-band power/reset control of a host to be addressable data, for shutdown ordering and recovery automation.
@@ -236,11 +262,11 @@ A named set of BIOS settings, written once and applied to many hosts. The attrib
 - Hardware.BiosProfile — an optional base profile this one derives from.
 - Hardware.BMC — the out-of-band path the profile is applied through.
 
-### Hardware.GraphicsProcessor (0.2.1)
+### Hardware.GraphicsProcessor (0.2.2)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
-One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes (model, memory, architecture) are discovered facts; the type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.
+One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes are discovered facts. Identity facts — model, location (slot or instance id), serial, manufacturer — nest under the `identity` block, not at the top level; `memory` is an object whose size is a whole-number quantity like 48GB. The type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.
 
 **Use when:**
 - You need GPU inventory across hosts — which cards, where, with what memory and architecture.
@@ -255,11 +281,11 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 - Compute.VirtualMachine — the guest a passthrough or partition is presented to.
 - Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.
 
-### Hardware.NetworkInterface (0.9.2)
+### Hardware.NetworkInterface (0.9.3)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
-One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.
+One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.
 
 **Use when:**
 - You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.
@@ -277,11 +303,11 @@ One network interface, of any kind: device_class says whether it is a physical N
 - Network.VLAN — the segments the port is a member of.
 - Network.ConnectionProfile — the declarative config realized onto this interface.
 
-### Hardware.Processor (0.2.1)
+### Hardware.Processor (0.2.2)
 
 **Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
 
-One processor as its own record: model, cores, threads, architecture, clock. Most estates only need the aggregate CPU numbers already carried on the host; this type exists for when a socket must be individually addressable (asset tracking, heterogeneous sockets). device_class distinguishes the physical socket from a virtual CPU presented to a guest. Nothing binds to a processor at runtime, so it publishes no outputs — it is inventory.
+One processor as its own record: `cores` (required), `threads`, `architecture`, and its clock as `max_speed_mhz`. Identity facts — model, location (the socket designation), serial — nest under the `identity` block, not at the top level. Most estates only need the aggregate CPU numbers already carried on the host; this type exists for when a socket must be individually addressable (asset tracking, heterogeneous sockets). device_class distinguishes the physical socket from a virtual CPU presented to a guest. Nothing binds to a processor at runtime, so it publishes no outputs — it is inventory.
 
 **Use when:**
 - You need per-socket inventory (exact model, position, serial) beyond the host's aggregate core/thread rollup.
@@ -295,11 +321,11 @@ One processor as its own record: model, cores, threads, architecture, clock. Mos
 - Compute.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
 - Compute.VirtualMachine — the guest a virtual CPU is presented to.
 
-### Hardware.StorageDevice (0.2.1)
+### Hardware.StorageDevice (0.2.2)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
-One storage device as a record: where it sits (bay or slot), what it is (model, serial, world-wide name), its capacity, media and bus type, and its role (boot, data, cache, storage-cluster member). device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host sees.
+One storage device as a record: its required `capacity` — a whole-number quantity like 4TB; fractional sizes do not validate — its `media_type` and bus `protocol`, and where and what it is. Identity facts — bay or slot (`location`), model, serial, WWN, and the semantic `role` (boot, data, cache, a storage daemon's member drive) — nest under the `identity` block, not at the top level. device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host sees.
 
 **Use when:**
 - You need drive-level inventory — which drive, in which bay, of which host — so a failing disk maps to a physical pull-and-replace.
@@ -316,11 +342,11 @@ One storage device as a record: where it sits (bay or slot), what it is (model, 
 
 ## Identity
 
-### Identity.Group (0.2.1)
+### Identity.Group (0.2.2)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
-A named set of person and service-account identities. Two sources: a built_in group owns its member list locally; an external group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.
+A named set of person and service-account identities, keyed by its required `handle`. Two sources — the required `source` property: a `built_in` group owns its `members` list locally; an `external` group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.
 
 **Use when:**
 - You need role assignments to bind to a set of identities instead of to individuals.
@@ -334,11 +360,11 @@ A named set of person and service-account identities. Two sources: a built_in gr
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.3.1)
+### Identity.Person (0.3.2)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
-One human's identity: login handle, display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a Security.CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.
+One human's identity: its `handle` (the login name) and its `actor_type` — always `human`, and required alongside the handle — plus display name, email, status, and how they authenticate (the built-in provider by default, or a directory/IdP when federated). It carries no secret material — a password or key is referenced through a Security.CredentialRef, never stored. Every audited action and role assignment points back at this record's stable actor id.
 
 **Use when:**
 - You need human accounts as records that role assignments and audit trails reference.
@@ -354,11 +380,11 @@ One human's identity: login handle, display name, email, status, and how they au
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.3.1)
+### Identity.ServiceAccount (0.3.2)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
-An account for something that is not a person: a pipeline, an agent, an integration holding an API key. Like a person it has a handle, an authenticator, and referenced-only credentials; unlike a person it declares an owner — the person or team accountable for it. Its stable actor id is what role assignments and audit records bind to.
+An account for something that is not a person: a pipeline, an agent, an integration holding an API key. Like a person it has a required `handle` and `actor_type` (always `service_account`), an authenticator, and referenced-only credentials; unlike a person it declares an `owner_ref` — the person or group accountable for it. Its stable actor id is what role assignments and audit records bind to.
 
 **Use when:**
 - You need automation to authenticate with its own identity instead of borrowing a person's.
@@ -375,11 +401,11 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Network
 
-### Network.AddressService (0.4.2)
+### Network.AddressService (0.4.3)
 
 **Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
 
-The thing that hands out addresses and answers name lookups, as a single, thin service record. It says which capabilities are served (DHCP, DNS) and whether service is redundant, and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.
+The thing that hands out addresses and answers name lookups, as a single, thin service record. It says which capabilities are served — the `services` list (`dhcp`, `dns`) — and whether service is redundant (`ha`, a boolean), and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.
 
 **Use when:**
 - You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.
@@ -395,11 +421,11 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 - Network.DHCPScope — the per-subnet config this service serves.
 - Network.DNSZone — the zones it answers for.
 
-### Network.ConnectionProfile (0.3.2)
+### Network.ConnectionProfile (0.3.3)
 
 **Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
 
-What a host interface's network configuration should be, in NMstate's own schema, carried as an opaque body against a pinned schema version — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.
+What a host interface's network configuration should be, in NMstate's own schema: the opaque body is `desired_state`, interpreted against the pinned `nmstate_schema_version` it declares — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.
 
 **Use when:**
 - You need host interface config (static addressing, routes, VLANs on a bond) declared once and converged by automation.
@@ -413,11 +439,11 @@ What a host interface's network configuration should be, in NMstate's own schema
 - Hardware.NetworkInterface — the adapter or port the profile applies to.
 - Network.VLAN — the segments the configured VLANs and sub-interfaces ride.
 
-### Network.DHCPScope (0.5.1)
+### Network.DHCPScope (0.5.2)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
-One subnet's DHCP setup: the CIDR, the dynamic ranges leased from, common options (gateway, DNS servers, domain name), and lease time. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.
+One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased from — `pools` here (start/end pairs; the allocation-side Network.IPAddressPool calls its ranges `ranges`) — common `options` (router, dns_servers, domain_name), and `lease_time`. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.
 
 **Use when:**
 - You need a subnet's dynamic ranges and options declared portably, independent of which DHCP server serves them.
@@ -432,11 +458,11 @@ One subnet's DHCP setup: the CIDR, the dynamic ranges leased from, common option
 - Network.AddressService — the operated service serving this scope.
 - Compute.BareMetalHost / Compute.VirtualMachine — the servers the scope is served from.
 
-### Network.DNSZone (0.3.2)
+### Network.DNSZone (0.3.3)
 
 **Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
 
-One DNS zone (e.g. example.com) with its authoritative role (primary, secondary, stub, forward) and, optionally, its resource records. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.
+One DNS zone — its required `zone_name`, e.g. example.com — with its authoritative role spelled `zone_type` (`primary`, `secondary`, `stub`, `forward`) and, optionally, its resource `records`. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.
 
 **Use when:**
 - You need zones inventoried with their authoritative role and their serving relationships.
@@ -450,7 +476,7 @@ One DNS zone (e.g. example.com) with its authoritative role (primary, secondary,
 - Security.DirectoryService — when a directory service serves the zone.
 - Network.AddressService — the operated DNS capability answering for the zone.
 
-### Network.Gateway (0.4.3)
+### Network.Gateway (0.4.4)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -470,14 +496,14 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - Network.DHCPScope — scopes serving the segments the gateway routes.
 - Network.Switch — the fabric behind the edge.
 
-### Network.IPAddress (0.6.1)
+### Network.IPAddress (0.6.2)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
-One IP address, bound to the interface it is configured on, with how it came to be: static (a fixed reservation — this IS the DHCP reservation; there is no second record), leased via DHCP, or self-assigned (SLAAC/privacy). A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.
+One IP address, bound to the interface it is configured on, with how it came to be — `allocation`: `static` (a fixed reservation — this IS the DHCP reservation; there is no second record), `dhcp` (leased), or self-assigned as `link-layer` or `random` (SLAAC/privacy). The `address` itself is CIDR with prefix length — 192.0.2.10/24, never a bare 192.0.2.10. A static record authors the address up front; a dynamic one gets its address filled in once observed. From this one record, projections are derived — a DHCP scope's reservation list, name-side entries — instead of the same fact being retyped per system.
 
 **Use when:**
-- You need address assignments tracked per interface with their origin (static, dhcp, auto).
+- You need address assignments tracked per interface with their `allocation` origin (`static`, `dhcp`, `link-layer`, `random`).
 - You need one authoritative record that DHCP reservation lists and other projections derive from.
 
 **Not for:**
@@ -490,11 +516,11 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Compute.VirtualMachine — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.3.1)
+### Network.IPAddressPool (0.3.4)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
-A range of addresses that individual address records are carved from: the subnet prefix, the allocatable ranges inside it, exclusions (gateway, broadcast, known statics), and how addresses leave it (leased, reserved, or both). Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.
+A range of addresses that individual address records are carved from: the required subnet `prefix` (CIDR), the allocatable `ranges` inside it (start/end pairs — this allocation-side name differs from a DHCP scope's `pools` by design), `exclusions` (gateway, broadcast, known statics), and how addresses leave it — `allocation_mode`: `dynamic` (leased), `static` (reserved ahead of time), or `mixed`. Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.
 
 **Use when:**
 - You need to know which addresses are in play, who holds each, and when a range is close to exhausted.
@@ -509,11 +535,11 @@ A range of addresses that individual address records are carved from: the subnet
 - Network.VirtualNetwork — the segment the pool serves.
 - Network.DHCPScope — the service-side projection of the same subnet.
 
-### Network.Switch (0.4.3)
+### Network.Switch (0.4.4)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
-One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup, and its management addressing. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.
+One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.
 
 **Use when:**
 - You need the switching fabric in the dependency graph so connectivity-outlives-compute is derivable in shutdown ordering.
@@ -530,11 +556,11 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.3.1)
+### Network.VLAN (0.3.2)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 
-The segment itself: its encapsulation (802.1Q tag, VXLAN/Geneve VNI, or flat/untagged) and its id. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.
+The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `vxlan` or `geneve` for an overlay VNI, `flat` for untagged — and its id, `segment_id`. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.
 
 **Use when:**
 - You need one authoritative record per segment that ports, virtual networks, and gateway segments all reference.
@@ -550,11 +576,11 @@ The segment itself: its encapsulation (802.1Q tag, VXLAN/Geneve VNI, or flat/unt
 - Network.Switch — the fabric carrying the segment.
 - Network.Gateway — edge segments each ride a referenced VLAN.
 
-### Network.VirtualNetwork (0.6.1)
+### Network.VirtualNetwork (0.6.2)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 
-The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes NetworkAttachmentDefinition, an OVN logical switch — whichever; the mechanism is the provider. It declares how traffic leaves (bridged straight onto a host bridge, NATed, routed, or isolated) and references downward: the VLAN segment it rides and the host bridge or uplink interface supporting it. That downward reference completes the walkable path guest → virtual network → bridge → bond → NIC → switch.
+The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes NetworkAttachmentDefinition, an OVN logical switch — whichever; the mechanism is the provider. It declares how traffic leaves — `forward_mode`, in libvirt's vocabulary: `bridge` (straight onto a host bridge), `nat`, `routed`, or `isolated` — and references downward: the VLAN segment it rides and the host bridge or uplink interface supporting it. That downward reference completes the walkable path guest → virtual network → bridge → bond → NIC → switch.
 
 **Use when:**
 - You need VMs or pods to attach to networks by selecting an existing named network rather than describing L2 details inline.
@@ -573,11 +599,11 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Observability
 
-### Observability.LogShipper (0.3.2)
+### Observability.LogShipper (0.3.5)
 
 **Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
 
-A statement of outcome: logs from a target host, shipped to a named sink URL, tagged with the host's identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed agent, a container, or something else is the provider's private business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened, which drives staleness detection.
+A statement of outcome: logs from a target host — the `target` object naming its `host` — shipped to a named sink URL — the `sink` object carrying its `url`; both are objects, not flat strings — tagged with the host's identity. The consumer never sees the mechanism — whether a provider satisfies it with an automation-managed agent, a container, or something else is the provider's private business, and swapping mechanisms changes nothing in this record. Realized state reports whether shipping is healthy and when the last successful delivery happened, which drives staleness detection.
 
 **Use when:**
 - You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.
@@ -614,11 +640,11 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.Namespace (0.3.4)
+### Platform.Namespace (0.3.5)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
-What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. It binds a tenant, carries labels and annotations, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in; the realized name and platform UID are published for provider-side references to resolve.
+What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. Its `name` is required and authored as intent — the same name is published back at realization alongside the platform UID. It binds a tenant (`tenant_uuid`), references its cluster (`cluster_ref`), carries `labels` and `annotations`, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in.
 
 **Use when:**
 - You need workloads partitioned per tenant, team, or environment inside a shared cluster.
@@ -633,11 +659,11 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 - Platform.ResourceQuota — hard limits scoped to this namespace.
 - Compute.Container / Software.Service — workloads placed into it.
 
-### Platform.NodePool (0.3.3)
+### Platform.NodePool (0.3.4)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
-A named group of like nodes in a cluster: how many, what they offer (GPU, architecture, memory tier), what labels they carry, and what taints a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.
+A named group of like nodes in a cluster — its `name` is required: how many (`node_count`), what they offer — `capabilities`, where advertisements are structured objects, not booleans (`gpu` carries available/models/count_per_node, beside `architecture` and `memory_tier`) — what `labels` they carry, and what `taints` a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.
 
 **Use when:**
 - You need GPU or otherwise-special nodes grouped so only workloads that need (and tolerate) them land there.
@@ -651,11 +677,11 @@ A named group of like nodes in a cluster: how many, what they offer (GPU, archit
 - Compute.Cluster — the cluster the pool belongs to.
 - Platform.Namespace — namespaces whose workloads schedule onto pools.
 
-### Platform.ResourceQuota (0.3.1)
+### Platform.ResourceQuota (0.3.2)
 
 **Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
 
-The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod count, storage, and object-count ceilings for a single namespace. Discovered usage is reported against the limits, so whether a namespace has room for a request is a data question a placement policy answers up front — and quota pressure is visible for capacity planning.
+The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod count, storage, and object-count ceilings for a single namespace — the ceilings live under `hard`, in Kubernetes' own resource-name spelling, and the namespace is bound in the spec by the required `namespace_ref`, not by a relationship edge alone. Discovered usage is reported against the limits, so whether a namespace has room for a request is a data question a placement policy answers up front — and quota pressure is visible for capacity planning.
 
 **Use when:**
 - You need per-namespace ceilings on aggregate consumption enforced and visible.
@@ -669,11 +695,11 @@ The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod c
 - Platform.Namespace — the one namespace this quota constrains.
 - Compute.Container — workloads whose aggregate consumption the quota caps.
 
-### Platform.StorageClass (0.3.2)
+### Platform.StorageClass (0.3.3)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
-The Kubernetes StorageClass construct: a named policy saying which provisioner builds volumes, what happens to data on release, when binding happens, whether volumes can grow, and what the class can do (IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.
+The Kubernetes StorageClass construct: a named policy — its `name` and `provisioner` are required — saying which provisioner builds volumes, what happens to data on release (`reclaim_policy`), when binding happens (`volume_binding_mode`, Kubernetes-cased: `Immediate` or `WaitForFirstConsumer`), whether volumes can grow (`allow_volume_expansion`), and what the class can do (`capabilities` — IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.
 
 **Use when:**
 - You need volumes to request storage by named policy instead of naming backends.
@@ -691,11 +717,11 @@ The Kubernetes StorageClass construct: a named policy saying which provisioner b
 
 ## Security
 
-### Security.CredentialRef (0.3.1)
+### Security.CredentialRef (0.3.2)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
-A reference to a secret, never the secret. It names the kind of credential, the issuer that holds it, the provider-side path it resolves at, its scope (what it may operate on), and the minimum assurance the consumer requires. At realization the issuer resolves it and delivers the value directly to the authorized consumer — the value never passes through the model, audit, source control, or logs. What IS recorded: that it resolved, which version, and when it was first retrieved.
+A reference to a secret, never the secret. It names the kind of credential (the required `credential_type`), the issuer that holds it (`issuer_ref`), the provider-side path it resolves at (`secret_path`), its `scope` — an object saying what it may operate on — and the minimum assurance the consumer requires (`required_assurance`). At realization the issuer resolves it and delivers the value directly to the authorized consumer — the value never passes through the model, audit, source control, or logs. What IS recorded: that it resolved, which version, and when it was first retrieved.
 
 **Use when:**
 - You need any resource (a container, a service, a BMC, a bind account) to consume a secret without the secret appearing in data.
@@ -710,11 +736,11 @@ A reference to a secret, never the secret. It names the kind of credential, the 
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
 - Compute.Container / Software.Service / Storage.FileShare — consumers that reference it from env, mounts, or config.
 
-### Security.DirectoryService (0.4.2)
+### Security.DirectoryService (0.4.3)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
-The identity directory as a running server: which protocols it serves (LDAP, Kerberos), its realm and base DN, and its role in a replication topology (a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.
+The identity directory as a running server: which `protocols` it serves — required; `ldap`, `ldaps`, `kerberos` — its `realm` and `base_dn`, and its role in a replication topology, spelled `replication_role` (`primary`, `replica`, `standalone`; a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.
 
 **Use when:**
 - You need services and hosts that authenticate against the directory to depend on it, so it stops last among them.
@@ -733,11 +759,11 @@ The identity directory as a running server: which protocols it serves (LDAP, Ker
 
 ## Software
 
-### Software.Service (0.4.2)
+### Software.Service (0.4.3)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
-The application layer: the mail service, the registry, model serving — a named service composed of constituents that are either referenced container records or named systemd units on a host. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
+The application layer: the mail service, the registry, model serving — a named service, classified by its required `service_kind` (application, infrastructure-daemon, database, and kin), composed of `constituents` that each declare their `form`: a `container` constituent references its container record via `container_ref`; a `systemd` constituent names its `host` and `units`. It declares what the service needs — a database, a directory, name service, storage, another service, each dependency hard or soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal surface how it is reached and whether it is serving.
 
 **Use when:**
 - You need an application composed of several workloads treated as one node with one dependency surface.
@@ -757,11 +783,11 @@ The application layer: the mail service, the registry, model serving — a named
 
 ## SoftwareImage
 
-### SoftwareImage (0.1.0)
+### SoftwareImage (0.1.1)
 
 **Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
 
-One container image, identified by its content digest (tags are recorded but advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which repository and registry it came from, what OS and architecture it targets, and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.
+One container image, identified by its content digest (one observed `tag` is recorded, singular and advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which `repository` and `registry` it came from, what platform it targets (`os` and `arch`), and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.
 
 **Use when:**
 - You need every running container tied to the exact image digest it runs, deduplicated across the fleet.
@@ -797,11 +823,11 @@ One package at one version — identified by its purl (Package URL), the portabl
 
 ## Storage
 
-### Storage.Cluster (0.4.1)
+### Storage.Cluster (0.4.2)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
-A multi-node storage system — Ceph is the reference realization, but the technology is the provider, never the type. It declares which protocols it serves (block, file, object), its capacity, and its redundancy scheme, and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.
+A multi-node storage system — Ceph is the reference realization, but the technology is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure-coding`, plus replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.
 
 **Use when:**
 - You need the storage platform in the graph so volumes and their consumers order correctly against it and its member nodes.
@@ -817,11 +843,11 @@ A multi-node storage system — Ceph is the reference realization, but the techn
 - Storage.Volume — volumes provisioned from the cluster.
 - Platform.StorageClass — the class records naming what this cluster serves.
 
-### Storage.Dataset (0.3.1)
+### Storage.Dataset (0.3.2)
 
 **Purpose:** Models a dataset carved from a host-local pool — the mounted filesystem or block device host workloads use.
 
-The consumable unit of host-local storage: a ZFS filesystem or zvol (the same shape extends to LVM logical volumes and btrfs subvolumes), with its mountpoint, quota, and passthrough properties. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Datasets nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.
+The consumable unit of host-local storage — its required `dataset_kind` says whether it is a `filesystem` (mounted), a `volume` (a zvol block device), or a `snapshot`; the same shape extends to LVM logical volumes and btrfs subvolumes — with its `mountpoint`, `quota`, and passthrough `properties`. It is what a podman container or host service bind-mounts, so it is the storage node those workloads depend on. Datasets nest (parent chains) and cannot outlive the pool they are carved from. Snapshot and replication policy is orchestration, not stored here.
 
 **Use when:**
 - You need host services and containers tied to the specific dataset they store on, so the dataset outlives them in shutdown order.
@@ -837,7 +863,7 @@ The consumable unit of host-local storage: a ZFS filesystem or zvol (the same sh
 - Compute.BareMetalHost — the host the dataset is local to.
 - Storage.Dataset — the parent dataset, when nested.
 
-### Storage.FileShare (0.3.3)
+### Storage.FileShare (0.3.4)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -857,11 +883,11 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Compute.BareMetalHost / Compute.Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
-### Storage.Pool (0.3.1)
+### Storage.Pool (0.3.2)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
 
-The generic redundancy group — one shape for a ZFS zpool, an md array, a hardware-RAID virtual disk, an LVM VG, or a btrfs pool: a set of drives on one host grouped into vdevs, each vdev carrying a protection scheme (mirror, raidz). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which drives protect which data and how many failures the pool survives. It sits between the physical drives below and the datasets above, and orders accordingly: a pool stops after its datasets and before its drives.
+The generic redundancy group — one shape for every backend, named by the required `pool_kind` (`zfs` for a zpool, `md` for an md array, `hardware_raid` for a controller virtual disk, `lvm` for a VG, `btrfs`): a set of drives on one host grouped into `vdevs`, each vdev carrying a protection scheme spelled `type` (mirror, raidz, stripe). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which drives protect which data and how many failures the pool survives. It sits between the physical drives below and the datasets above, and orders accordingly: a pool stops after its datasets and before its drives.
 
 **Use when:**
 - You need the drive → vdev → pool → dataset chain explicit so drive failures and maintenance map to affected data.
@@ -879,11 +905,11 @@ The generic redundancy group — one shape for a ZFS zpool, an md array, a hardw
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.5.2)
+### Storage.Volume (0.5.3)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
-The unit of storage a workload asks for and attaches: requested capacity, how concurrently it may be attached (one writer, many readers, and so on), filesystem versus raw block, and which storage class provisions it. It is distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.
+The unit of storage a workload asks for and attaches: requested `capacity`, how concurrently it may be attached — `access_mode`, in the model's snake_case spelling: `read_write_once`, `read_only_many`, `read_write_many`, `read_write_once_pod` (the Kubernetes camelCase forms do not validate) — `volume_mode` (filesystem versus raw block), and which `storage_class` provisions it. It is distinct from the platform that builds it and the devices that back it. Once realized, the provider's volume handle comes back, tying the request to the actual volume.
 
 **Use when:**
 - You need a workload's storage requested by capacity, access mode, and class, portable across provisioners.
@@ -903,11 +929,11 @@ The unit of storage a workload asks for and attaches: requested capacity, how co
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.2.0)
+### TaxonomyTerm (0.2.1)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 
-A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated (proposed, under review, canonical, deprecated); once canonical, the term's handle is what other records bind to instead of restating names.
+A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated — the `curation_state` property: `proposed`, `under-review`, `canonical`, `deprecated`; once canonical, the term's handle is what other records bind to instead of restating names.
 
 **Use when:**
 - You need an authoritative vocabulary that observed, free-text items normalize onto.
@@ -923,11 +949,11 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Topology
 
-### Topology (0.3.0)
+### Topology (0.3.1)
 
 **Purpose:** Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.
 
-One record describing a graph of domains, each with a stable id, an abstract kind (zone, rack, power, and so on), a parent, and labels (e.g. jurisdiction). Portable intent constrains against kinds — spread across power domains — while what a resource landed in is a concrete id. Domains are addressable data inside this one type, not separate records. Observed per-domain status (active, draining, unavailable) is the signal maintenance gating reads — a draining domain holds off further maintenance.
+One record describing a graph of domains, framed by its required `scope` (`global`, `region`, `facility`, or `logical` — the breadth the topology describes); each domain has a stable id, an abstract kind (zone, rack, power, and so on), a parent, and labels (e.g. jurisdiction). Portable intent constrains against kinds — spread across power domains — while what a resource landed in is a concrete id. Domains are addressable data inside this one type, not separate records. Observed per-domain status (active, draining, unavailable) is the signal maintenance gating reads — a draining domain holds off further maintenance.
 
 **Use when:**
 - You need placement or anti-affinity constraints that reference abstract domain kinds portably.
@@ -945,11 +971,11 @@ One record describing a graph of domains, each with a stable id, an abstract kin
 
 ## Vulnerability
 
-### Vulnerability (0.1.0)
+### Vulnerability (0.1.1)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 
-One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the working set — severity, CVSS score and vector, weakness class, affected version ranges — and points at the full advisory rather than restating it. It is the terminal node of the software-knowledge chain: packages reference it, and impact analysis reverse-walks from here — advisory → packages → images → running containers.
+One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the working set — `severity`, CVSS score and vector (`cvss`), the weakness class as `cwe`, `affected_ranges` — and points at the full advisory through `references` (URLs) rather than restating it. It is the terminal node of the software-knowledge chain: packages reference it, and impact analysis reverse-walks from here — advisory → packages → images → running containers.
 
 **Use when:**
 - You need what-in-the-estate-is-exposed-to-this-advisory as a reverse graph walk.
@@ -964,4 +990,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*47 types; 47 with context, 0 pending.*
+*48 types; 48 with context, 0 pending.*

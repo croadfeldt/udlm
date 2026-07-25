@@ -11,7 +11,7 @@ The scenario:
 - **State sovereignty (Minnesota) for containers.**
 - **No sovereignty accreditation for Cluster Lifecycle** at all.
 
-All three artifacts below are live, validated instances — `registry/providers/full-stack-sp.json`,
+All three artifacts below are live, validated instances — `registry/providers/service/full-stack-sp.json`,
 `registry/instances/accreditation-region-us-ca.yaml`, `registry/instances/accreditation-state-mn.yaml`.
 
 ---
@@ -46,7 +46,7 @@ are declared per category — e.g. the VM's Compute category advertises `online_
 
 Declaring a stance does **not** make it trusted — that takes a matching, **verifiable** accreditation (§3).
 
-**The declaration** (`registry/providers/full-stack-sp.json`, abridged — Network/Storage constituent
+**The declaration** (`registry/providers/service/full-stack-sp.json`, abridged — Network/Storage constituent
 categories elided for length; they carry no per-category override and inherit the provider default):
 
 ```json
