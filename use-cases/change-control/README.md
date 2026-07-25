@@ -30,6 +30,9 @@ known gap is exposed by at least one case, so closure is measurable, not asserte
 | No temporal policy clauses (window/freeze/expedite) | 002 c1, 004 c2, 007 c1 | change-control ADR |
 | No typed debt states | 005 c3, 007 c3 | change-control ADR |
 | No change record / blast-radius manifest | 001 c5, 003 c5 | P0 (regeneration manifest) |
+| Change-calendar knowledge type + information-provider declaration | 013 (all criteria) | proposed — docs/design/change-control-knowledge-sources.md |
+| Authority-per-scope for multi-source knowledge | 014 (c1, c4) | change-control ADR |
+| Knowledge-family freshness surface (family-wide — stale CVE feed = same class) | 015 (c1, c5) | proposed — Knowledge Base-tier element |
 | Derived impact set + orders; pool health outputs | 009 c1/c3 — **MET today** | — |
 
 The contracts are proposed pending the
