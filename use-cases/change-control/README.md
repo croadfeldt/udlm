@@ -11,6 +11,10 @@ and dependency-ordered propagation inside one estate. 004 succeeds only if the s
 Two rules run through every case: scheduling gates control *when*, evidence gates control
 *whether* (nothing waives blue/green evidence, ADR-046); and waiting is visible — queued,
 windowed, and frozen are typed debt states, so an estate that is behind is provably on-policy
-behind, never silently stale (ADR-045's debt discipline, extended). Worked example:
-docs/examples/change-control-walkthrough.md. The contracts are proposed pending the
+behind, never silently stale (ADR-045's debt discipline, extended). Cases 009/010 carry the flagship
+operational scenario — a storage array with ten dependent applications through DR-gated
+maintenance (derived impact set, per-client tolerance, output-surface cutover, ordered
+quiesce/restart) and its mid-maintenance failure hold. Worked example:
+docs/examples/change-control-walkthrough.md. Flows: docs/flows/change-control-adoption.md and
+docs/flows/storage-array-maintenance-dr.md. The contracts are proposed pending the
 change-control ADR — corpus first, ruling after.
