@@ -74,6 +74,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`resource-grouping.md`** — *Owns:* grouping, tenant boundaries, the DCMGroup / `GRP-*` model.
 - **`resource-type-hierarchy.md`** — *Owns:* the resource-type hierarchy + service-catalog structure.
 - **`knowledge-family.md`** — *Owns:* the Knowledge entity family (Capability, TaxonomyTerm) — anchored by DAV.
+- **`identity-escrow.md`** — *Owns:* the identity-escrow contract (identity state surviving host re-realization), `ESC-*`.
 
 ## `registry/` — the machine-checked spec surface + policy
 

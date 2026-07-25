@@ -1,0 +1,94 @@
+# Worked-example Access.IdentityEscrow (rule 36(j)) — a field device that is re-imaged on a
+# fixed cadence but keeps its remote-access identity and an application session by contract.
+# Example content only (example.com / RFC 5737 conventions); belongs to the example tenant
+# (instances/example-tenant.yaml), like orders-db.json.
+uuid: 2a822681-403d-4895-b7aa-c70546e20c93
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Access.IdentityEscrow
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.1.0
+lifecycle_state: Realized
+generation: 2
+observed_generation: 2
+handle: escrow/unit-042
+metadata:
+  display_name: unit-042 identity escrow
+  description: Survival allowlist for field unit 042 — the remote-access enrollment (required,
+    gates converge) and the collaboration-app session (best-effort). Everything else on the
+    device dies with the yearly re-image, by default.
+states:
+  intent:
+    fields:
+      escrowed_items:
+      - item_id: remote-access
+        item_kind: remote_access_identity
+        credential_ref: credential/unit-042-remote-access
+        capture_on: [registration]
+        restore_on: [re_realization]
+        required: true
+      - item_id: app-session
+        item_kind: application_session
+        credential_ref: credential/unit-042-app-session
+        capture_on: [registration, pre_wipe]
+        restore_on: [re_realization]
+        required: false
+    at: '2026-07-20T09:00:00Z'
+  requested:
+    fields:
+      escrowed_items:
+      - item_id: remote-access
+        item_kind: remote_access_identity
+        credential_ref: credential/unit-042-remote-access
+        capture_on: [registration]
+        restore_on: [re_realization]
+        required: true
+      - item_id: app-session
+        item_kind: application_session
+        credential_ref: credential/unit-042-app-session
+        capture_on: [registration, pre_wipe]
+        restore_on: [re_realization]
+        required: false
+    at: '2026-07-20T09:00:02Z'
+  realized:
+    fields:
+      escrowed_items:
+      - item_id: remote-access
+        item_kind: remote_access_identity
+        credential_ref: credential/unit-042-remote-access
+        capture_on: [registration]
+        restore_on: [re_realization]
+        required: true
+      - item_id: app-session
+        item_kind: application_session
+        credential_ref: credential/unit-042-app-session
+        capture_on: [registration, pre_wipe]
+        restore_on: [re_realization]
+        required: false
+    outputs:
+      last_captured_at: '2026-07-20T09:05:11Z'
+      last_restored_at: '2026-07-21T14:02:40Z'
+      restore_verified: true
+      items_restored: [remote-access, app-session]
+    at: '2026-07-21T14:02:40Z'
+    provider: device-registration-provider
+    time_source: registration-provider host clock, chrony stratum 2, NTP-traceable
+provenance:
+  escrowed_items:
+  - source: {kind: actor, id: fleet-admin}
+    actor: fleet-admin@example.com
+    timestamp: '2026-07-20T09:00:00Z'
+ownership:
+  escrowed_items: actor:fleet-admin
+dependencies: []
+drift:
+  detected: false
+  checked_at: '2026-07-21T14:30:00Z'
+  fields: []
+status:
+  state: Converged
+  conditions:
+  - type: Restored
+    status: 'True'
+    reason: RestoreVerified
+    last_transition_time: '2026-07-21T14:02:40Z'

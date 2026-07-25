@@ -1,20 +1,24 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 47,
+    "types": 48,
     "by_family": {
-      "Access": 3,
+      "Access": 4,
       "Knowledge": 5,
       "Process": 1,
       "Resource": 38
     }
   },
   "discrimination": {
-    "mutations_attempted": 2965,
-    "mutations_rejected": 2965,
+    "mutations_attempted": 3037,
+    "mutations_rejected": 3037,
     "density": 1.0,
     "findings": 0,
     "per_type": {
+      "Access.IdentityEscrow": {
+        "attempted": 72,
+        "rejected": 72
+      },
       "Automation.Job": {
         "attempted": 41,
         "rejected": 41
@@ -206,11 +210,12 @@
     }
   },
   "strictness": {
-    "strict_specs": 47,
-    "total": 47
+    "strict_specs": 48,
+    "total": 48
   },
   "outputs": {
     "per_type": {
+      "Access.IdentityEscrow": 4,
       "Automation.Job": 1,
       "Capability": 1,
       "Compute.BareMetalHost": 3,
@@ -294,13 +299,13 @@
     ]
   },
   "context": {
-    "with_context": 47,
-    "total": 47,
+    "with_context": 48,
+    "total": 48,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 43,
-    "total": 47,
+    "with_relationships": 44,
+    "total": 48,
     "missing": [
       "Facility.PowerFeed",
       "Observability.LogShipper",
@@ -318,6 +323,7 @@
       "Storage.Pool"
     ],
     "uncovered": [
+      "Access.IdentityEscrow",
       "Automation.Job",
       "Compute.BareMetalHost",
       "Compute.Container",
@@ -388,6 +394,7 @@
       ]
     },
     "named_by_none": [
+      "Access.IdentityEscrow",
       "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
@@ -431,7 +438,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 47
+    "consumed_by_at_least_one": 48
   },
   "expressibility_coverage": {
     "value": null,

@@ -4,6 +4,30 @@
 > `registry/tools/generate_type_catalog.py` — edit the spec, regenerate, never edit here.
 > Missing entries are types without a `context` block yet (tracked by the rule-36 gate).
 
+## Access
+
+### Access.IdentityEscrow (0.1.0)
+
+**Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
+
+Some machines are routinely wiped and rebuilt, but parts of their identity must not die with the disk: a remote-access enrollment, an application session, a device certificate. This record is the contract for that state. It lists the items to escrow, when each is captured (at registration, before a wipe) and when it is restored (on re-realization), and whether restore is required for the rebuild to count as converged. Each item points at a credential reference — the escrow store holds the material; the model only ever holds the pointer and the capture/restore evidence. Because the escrow is bound to the host's stable entity UUID rather than to any one installation, a re-imaged machine gets its identity back by contract, and a brand-new machine can never silently claim another machine's identity.
+
+**Use when:**
+- A host is periodically re-imaged or replaced and named identity state must survive the rebuild by contract, not by operator memory.
+- You need one legible allowlist of what persists across a wipe — everything else dying by default.
+- You need restore to gate convergence: a rebuilt host with a required item unrestored is visibly not converged, never silently identity-less.
+- You need decommission of an identity-bearing host to force an explicit, audited disposition of its escrowed identity (destroy or transfer).
+
+**Not for:**
+- The credential reference itself — that is Security.CredentialRef; an escrow item wraps one, it does not replace it.
+- General backup or data protection of a host's contents — this carries identity state only, not data-migration payloads.
+- The identity that acts in requests — that is the Access family's Identity types (Identity.Person / Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself an actor.
+
+**Works with:**
+- Security.CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
+- Compute.BareMetalHost — the typical host entity whose re-realization triggers restore.
+- Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
+
 ## Automation
 
 ### Automation.Job (0.4.3)
@@ -964,4 +988,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*47 types; 47 with context, 0 pending.*
+*48 types; 48 with context, 0 pending.*
