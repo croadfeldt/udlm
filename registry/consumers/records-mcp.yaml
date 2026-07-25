@@ -1,0 +1,11 @@
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# tests/check_consumer_conformance.py.
+#
+# A records MCP server exposes instance records to agent tooling read-only; like the records
+# CI its surface is the record envelope, so any registry type can flow through it.
+consumer:
+  name: records-mcp
+  repo: private (records tooling)
+  description: MCP server exposing instance records (read-only) to agent tooling.
+consumes_all_types: true
+coverage: declared

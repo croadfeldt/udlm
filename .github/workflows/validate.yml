@@ -51,8 +51,26 @@ jobs:
       # standards-adoption register (the ADOPT-001 discipline), accreditation-anchor uuids
       # v4 + unique across provider docs, version ranges parse.
       - run: python3 tests/check_provider_contracts.py
+      # Consumer conformance (ADR-044): consumers declare their read surface in
+      # registry/consumers/; every declared type must exist, no noted_version may run ahead of
+      # the registry, and every type is consumed or acknowledged in unconsumed.yaml — which the
+      # gate regenerates and compares, so the acknowledgment never drifts silently.
+      - run: python3 tests/check_consumer_conformance.py
+      # Model-health scoreboard: registry/MODEL-HEALTH.md + model-health.json are generated
+      # from the tree (family counts, fuzz discrimination density, outputs/context/UC/consumer
+      # coverage) — fail if stale, same discipline as the type catalog.
+      - run: python3 registry/tools/model_health.py --check
       - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump
       # vs origin/main (compat-check old-vs-new). New types are skipped.
       - run: python3 tests/ci_compat_gate.py origin/main
+      # Attestation evidence: after the whole suite passed, emit the scoreboard + registry ref
+      # as an uncommitted artifact (a committed ref would be permanently stale). Validation
+      # results become signable attestation input downstream; a failed suite emits nothing
+      # because this step is unreached.
+      - run: python3 registry/tools/model_health.py --attest model-validation-attestation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-validation-attestation
+          path: model-validation-attestation.json
