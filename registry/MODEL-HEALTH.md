@@ -4,16 +4,16 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **47 types** (Access 3, Knowledge 5, Process 1, Resource 38). Every spec is strict (`additionalProperties: false`, 47/47 (100%)) and the instance-fuzz harness rejected 3050 of 3050 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 5/47 (10%) of types appear in at least one use case; 42 appear in none. 5 types are named by a specific consumer manifest; the other 42 are carried only by the 4 envelope-level (all-types) consumers. 5 types declare no outputs and 23 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **47 types** (Access 3, Knowledge 5, Process 1, Resource 38). Every spec is strict (`additionalProperties: false`, 47/47 (100%)) and the instance-fuzz harness rejected 3045 of 3045 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 5/47 (10%) of types appear in at least one use case; 42 appear in none. 5 types are named by a specific consumer manifest; the other 42 are carried only by the 4 envelope-level (all-types) consumers. 6 types declare no outputs and 23 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
 | Types (by family) | 47 (Access 3, Knowledge 5, Process 1, Resource 38) | — |
-| Discrimination density | 3050/3050 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Discrimination density | 3045/3045 = 100.00% | mutations rejected / attempted; 0 finding(s) |
 | Strictness coverage | 47/47 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 5 zero-output, 23 one-output | declared Realized binding surface |
+| Outputs adequacy | 6 zero-output, 23 one-output | declared Realized binding surface |
 | Context coverage | 47/47 (100%) | plain-English `context` blocks |
 | Relationships coverage | 43/47 (91%) | types declaring `relationships[]` |
 | UC coverage | 5/47 (10%) | types appearing in >=1 use case (67 UC files scanned) |
@@ -24,7 +24,7 @@ The registry holds **47 types** (Access 3, Knowledge 5, Process 1, Resource 38).
 Outputs are the contract-checked binding surface — a type with none publishes nothing a
 downstream consumer can bind on.
 
-**Zero-output types (5):** `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `Vulnerability`
+**Zero-output types (6):** `Automation.Job`, `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `Vulnerability`
 
 **One-output types (23):** `Capability`, `Facility.Location`, `Hardware.BMC`, `Hardware.BiosProfile`, `Hardware.NetworkInterface`, `Hardware.StorageDevice`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `Platform.ResourceQuota`, `Platform.StorageClass`, `Software.Service`, `Storage.Dataset`, `Storage.FileShare`, `TaxonomyTerm`, `Topology`
 

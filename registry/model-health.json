@@ -10,14 +10,14 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3050,
-    "mutations_rejected": 3050,
+    "mutations_attempted": 3045,
+    "mutations_rejected": 3045,
     "density": 1.0,
     "findings": 0,
     "per_type": {
       "Automation.Job": {
-        "attempted": 126,
-        "rejected": 126
+        "attempted": 121,
+        "rejected": 121
       },
       "Capability": {
         "attempted": 36,
@@ -211,7 +211,7 @@
   },
   "outputs": {
     "per_type": {
-      "Automation.Job": 5,
+      "Automation.Job": 0,
       "Capability": 1,
       "Compute.BareMetalHost": 3,
       "Compute.Cluster": 4,
@@ -260,6 +260,7 @@
       "Vulnerability": 0
     },
     "zero_output_types": [
+      "Automation.Job",
       "Hardware.GraphicsProcessor",
       "Hardware.Processor",
       "SoftwareImage",
