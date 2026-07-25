@@ -22,7 +22,7 @@ orders realization, and sovereignty governs where each state may live. (`foundat
 ## P1 — Auditability by construction
 **DCM requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
 success; a write failure aborts — no silent unaudited change), `AUD-002` (append-only, immutable
-while retention is live), a tamper-evident **Merkle hash-chain** (RFC 9162 / CT v2.0), and audit
+while retention is live), a tamper-evident **Merkle tree** (RFC 9162 / CT v2.0), and audit
 records that **survive at least as long as any referenced resource**.
 
 - **Reproducible validation.** Every artifact pins the exact type-version it validated against — the

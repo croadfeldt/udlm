@@ -186,7 +186,7 @@ is dropped — each is assigned to the domain that owns it.
 | R6 Tombstones/bundling | `supersededBy` + Compound Document | — |
 | Binding | the edge + typed reference | resolution at dispatch; **any transform** |
 | Sovereignty | immutable zone/classification fields, closure bundle | Governance Matrix evaluation, placement filtering |
-| Audit | the immutable records, provenance, hash-chain leaves | producing entries, Merkle proofs |
+| Audit | the immutable records, provenance, Merkle-tree leaves | producing entries, Merkle proofs |
 | Transformation / expressions | — (none; not carried) | **all of it** |
 
 The test: a noun (a record, a contract, an edge, a marker, a pin) → Data/UDLM. A verb (assemble,

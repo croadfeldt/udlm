@@ -6,20 +6,20 @@ scenario:
     estate''s policies — they live in the organization''s change-management system (an ITSM-archetype
     source of record). An information provider declares the change-calendar knowledge type as a capability
     and supplies window and freeze records as Knowledge-family entities: schedule, scope, source, and
-    validity. The estate''s gating policy references those knowledge records by handle (adopt-by-reference,
+    validity. The estate''s validation policy references those knowledge records by handle (adopt-by-reference,
     never a re-typed copy); the window gate evaluates policy-against-knowledge at decision time; and when
     the calendar changes upstream, the provider refreshes the records — the policy text never changes.'
   actor:
     persona: platform-engineer
     profile: prod
   intent: Source maintenance windows and freezes from an information provider as Knowledge-family records
-    the gating policy references, never copies
+    the validation policy references, never copies
   success_criteria:
   - Window and freeze definitions are Knowledge-family records with schedule, scope, source, and validity
     surfaces
   - An information provider (provider kind information) declares the change-calendar knowledge type as
     a capability it supplies
-  - The estate's gating policy references the knowledge records by handle — no window literal is re-typed
+  - The estate's validation policy references the knowledge records by handle — no window literal is re-typed
     into policy text
   - A calendar change upstream flows as a knowledge-record refresh; the referencing policy is untouched
   - The gate's decision record cites the knowledge record revision it evaluated against
@@ -35,7 +35,7 @@ scenario:
   - domain: data
     interaction: windows/freezes are Knowledge records with validity, referenced by handle
   - domain: policy
-    interaction: the gating policy evaluates against referenced knowledge at decision time
+    interaction: the validation policy evaluates against referenced knowledge at decision time
   - domain: provider
     interaction: an information provider declares and refreshes the knowledge type
   - domain: audit

@@ -24,6 +24,9 @@ jobs:
       - run: python3 tests/check_estate_tokens.py
       - run: python3 tests/check_session_narration.py
       - run: python3 tests/check_model_vocabulary.py
+      # Terminology guard (ported from the mirror repo after 'gating policy' regressed with
+      # nothing upstream to catch it): retired terms fail unless the line documents the change.
+      - run: python3 tests/check_terminology.py
       - run: python3 tests/check_definition_single_source.py
       # Rule-ID single-source: every normative rule-ID prefix must be registered in
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,

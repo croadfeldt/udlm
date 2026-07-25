@@ -14,7 +14,7 @@ attachment — all in the dev profile.
 ## What this adds over request-realization
 - **A cross-resource dependency** — the request references an *existing* `Compute.VirtualMachine`. Placement
   and reserve must resolve and honor that reference, not just stand up an isolated resource.
-- **Tenant isolation at the storage plane** — a gating policy checks the request against the tenant's storage
+- **Tenant isolation at the storage plane** — a validation policy checks the request against the tenant's storage
   class eligibility before allocation, and the attach must not expose the volume across tenants.
 - **Quota is state that moves** — the tenant's quota is decremented to reflect consumed capacity; the volume
   record carries the tenancy and the VM reference.
