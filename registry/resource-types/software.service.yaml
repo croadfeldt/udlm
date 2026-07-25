@@ -18,11 +18,11 @@
 #   uses_storage edge_type: references, relation: uses_storage -> Storage.Cluster | Storage.FileShare | Storage.Volume            (TOSCA DependsOn)
 #   requires    edge_type: depends_on, relation: requires, strength: hard|soft -> Security.DirectoryService | Network.AddressService | Software.Service
 #   binds_to    edge_type: binds_to,   -> Data.Database                                                                           (TOSCA BindsTo)
-$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.2
 conforms_to: udlm/0.1
-uuid: 44939b86-3bba-4d15-8ce0-9751d27cba22
+uuid: 84f69e6a-1cd1-453b-ad74-0167bb2b7463
 resource_type: Software.Service
-version: 0.4.1
+version: 0.4.2
 family: Resource
 status: active
 metadata:
@@ -106,7 +106,7 @@ spec:
             oneOf:
             - type: string
               description: Short form — the handle of an existing Platform.StorageClass.
-            - $ref: https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference
+            - $ref: ../common-elements.schema.json#/$defs/Reference
           host:
             type: string
             description: handle of the host/VM the systemd units run on (form=systemd).
