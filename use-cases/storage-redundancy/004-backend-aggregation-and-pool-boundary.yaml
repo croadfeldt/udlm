@@ -27,7 +27,7 @@ scenario:
     policy_complexity: system_defaults_only
     provider_landscape: multiple_eligible
     governance_context: internal_audit
-    failure_mode: validation_rejection
+    failure_mode: policy_violation
   profile: standard
   expected_domain_interactions:
   - domain: data

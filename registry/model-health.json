@@ -10,14 +10,14 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 2965,
-    "mutations_rejected": 2965,
+    "mutations_attempted": 3050,
+    "mutations_rejected": 3050,
     "density": 1.0,
     "findings": 0,
     "per_type": {
       "Automation.Job": {
-        "attempted": 41,
-        "rejected": 41
+        "attempted": 126,
+        "rejected": 126
       },
       "Capability": {
         "attempted": 36,
@@ -211,7 +211,7 @@
   },
   "outputs": {
     "per_type": {
-      "Automation.Job": 1,
+      "Automation.Job": 5,
       "Capability": 1,
       "Compute.BareMetalHost": 3,
       "Compute.Cluster": 4,
@@ -267,7 +267,6 @@
       "Vulnerability"
     ],
     "one_output_types": [
-      "Automation.Job",
       "Capability",
       "Facility.Location",
       "Hardware.BMC",

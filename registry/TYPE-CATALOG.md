@@ -6,16 +6,18 @@
 
 ## Automation
 
-### Automation.Job (0.4.3)
+### Automation.Job (0.5.0)
 
-**Purpose:** Makes an automation job (playbook, pipeline, script) a first-class node in the dependency graph, so what the job needs stays up while it runs.
+**Purpose:** Makes an automation job (playbook, pipeline, script) a first-class node in the dependency graph — carrying the job's own portable intent (definition_ref, parameters, targets, schedule) — so what the job needs stays up while it runs and the job itself survives an engine change.
 
-A record of a job that automation runs — its required `process_type` names the kind: a `playbook`, a `pipeline`, a `script` (or `workflow`, `automation_job`, `other`). It is modeled like infrastructure because it has real dependencies: the host it executes on, the network fabric it traverses, the name service it resolves through. While the job runs, none of those may be taken down, which is how ordered operations like a UPS-triggered graceful shutdown come out of the data instead of hand-written runbooks. The engine that runs the job is a provider detail, not part of the type.
+A record of a job that automation runs — a playbook, a CI pipeline, a backup script. It is modeled like infrastructure because it has real dependencies: the host it executes on, the network fabric it traverses, the name service it resolves through. While the job runs, none of those may be taken down, which is how ordered operations like a UPS-triggered graceful shutdown come out of the data instead of hand-written runbooks. The record also carries the automation intent itself: which definition the job executes (definition_ref), the parameters it is invoked with, the resources it operates on (targets), and — for scheduled jobs — when it runs and how overlapping or missed runs are handled (schedule). Because that intent lives on the record and not inside any engine, moving the job to a different engine is a provider change on an untouched definition. Each run publishes typed outputs — terminal state, timestamp, run count, a change-set, and an evidence reference — so two engines running the same job are comparable by diffing declared outputs. The engine that runs the job is a provider detail, not part of the type.
 
 **Use when:**
 - You need a shutdown or upgrade sequence to know an orchestration job is running and must finish before its executor host stops.
 - You need to record which automation created or modified a resource, so the resource's provenance can cite the job.
-- You need a scheduled or event-triggered job tracked with a hard execution-time limit — `trigger` records only the kind of initiation (`manual`, `event`, `schedule`); the cron expression or event wiring itself lives with the provider.
+- You need a scheduled or event-triggered job (cron, a UPS on-battery event) tracked with a hard execution-time limit.
+- You need the job's automation intent — definition, parameters, targets, schedule — recorded portably so an engine migration is a provider swap that leaves the intent and the job's identity untouched.
+- You need to verify a new engine (or an engine upgrade) against the incumbent by re-running an idempotent job and requiring an empty change-set in the typed outputs.
 
 **Not for:**
 - The long-running service a job might deploy — that is Software.Service; a service has no scheduled end, a job must declare max_execution_time.
@@ -75,7 +77,7 @@ One physical server: its identity, its aggregate capacity, and its lifecycle sta
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
-The request for a whole container platform: which `release`, and its `node_pools` — each pool naming its `name`, its `host_type` (the node shape; required), and its `count` — plus the internal `network` ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.
+The request for a whole container platform: which release, how many nodes of what shape in which pools, and what internal network ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.
 
 **Use when:**
 - You need to request a new Kubernetes cluster with a declared release and node shape rather than hand-building one.

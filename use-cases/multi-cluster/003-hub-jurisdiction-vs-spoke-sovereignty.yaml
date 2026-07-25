@@ -24,7 +24,7 @@ scenario:
     policy_complexity: multiple_interacting
     provider_landscape: multiple_eligible
     governance_context: sovereignty_constrained
-    failure_mode: validation_rejection
+    failure_mode: policy_violation
   profile: standard
   expected_domain_interactions:
   - domain: data

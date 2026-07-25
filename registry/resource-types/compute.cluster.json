@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.4.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "ab49449d-a51d-4f59-a3e6-a4e00cca9e1a",
+  "uuid": "78b59754-f19e-444a-a8d8-5f3fee812966",
   "resource_type": "Compute.Cluster",
   "version": "0.4.3",
   "family": "Resource",
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.",
-    "plain_description": "The request for a whole container platform: which `release`, and its `node_pools` — each pool naming its `name`, its `host_type` (the node shape; required), and its `count` — plus the internal `network` ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.",
+    "plain_description": "The request for a whole container platform: which release, how many nodes of what shape in which pools, and what internal network ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.",
     "use_when": [
       "You need to request a new Kubernetes cluster with a declared release and node shape rather than hand-building one.",
       "You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive."
@@ -59,7 +59,7 @@
             },
             "host_type": {
               "type": "string",
-              "description": "Resource Type name of the node shape (Compute.HostType — forthcoming)."
+              "description": "The node shape this pool requests — the handle of a provider-advertised host shape (CPU/memory/disk class) resolved via capability discovery. A requirement descriptor the provider must satisfy, not a reference to a registered Resource Type."
             },
             "count": {
               "type": "integer",
