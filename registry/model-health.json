@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3037,
-    "mutations_rejected": 3037,
+    "mutations_attempted": 3039,
+    "mutations_rejected": 3039,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -28,8 +28,8 @@
         "rejected": 36
       },
       "Compute.BareMetalHost": {
-        "attempted": 168,
-        "rejected": 168
+        "attempted": 170,
+        "rejected": 170
       },
       "Compute.Cluster": {
         "attempted": 74,
@@ -218,7 +218,7 @@
       "Access.IdentityEscrow": 4,
       "Automation.Job": 1,
       "Capability": 1,
-      "Compute.BareMetalHost": 3,
+      "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
       "Compute.Container": 2,
       "Compute.VirtualMachine": 9,

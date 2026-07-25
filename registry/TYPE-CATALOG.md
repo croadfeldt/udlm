@@ -72,11 +72,11 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## Compute
 
-### Compute.BareMetalHost (0.6.2)
+### Compute.BareMetalHost (0.7.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
-One physical server: its identity, its aggregate capacity, and its lifecycle state. Identity facts — serial, model, manufacturer, asset tag — nest under the `identity` block, not at the top level. The capacity rollups are objects, not scalars: `cpu` (sockets, cores, threads), `memory` and `storage` carrying whole-number sizes like 64GB. While it sits unallocated in inventory its `lifecycle_state` is `available`; adoption makes it `allocated`. Components like NICs can be modeled as their own records attached to the host; CPU, memory, and disk normally stay as rollup numbers on the host itself. Everything that runs — VMs, containers, storage daemons — ultimately sits on one of these, which makes it a central node in shutdown and startup ordering.
+One physical server: its identity (serial, model, asset tag), its aggregate capacity (CPU sockets and cores, memory, local storage), and its lifecycle state. It can sit unallocated in inventory before anything is deployed on it. Components like NICs can be modeled as their own records attached to the host; CPU, memory, and disk normally stay as rollup numbers on the host itself. Everything that runs — VMs, containers, storage daemons — ultimately sits on one of these, which makes it a central node in shutdown and startup ordering.
 
 **Use when:**
 - You need an inventory of physical servers, including ones not yet assigned to any workload.
