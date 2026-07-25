@@ -146,6 +146,34 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `Open Cluster Management` `OCM` · **Body:** CNCF (ACM's upstream) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the hub / ManagedCluster model.
 **Why:** OCM's non-destructive import/detach of ManagedClusters is the semantic the imported-spoke edge mirrors (`depends_on` soft — an imported cluster survives hub loss). Apache-2.0, compatible-reference.
 
+### OCI Image Format Specification — CANONICAL
+**Covers:** `OCI Image Format Specification` `OCI image-spec` · **Body:** Open Container Initiative (Linux Foundation) · **Since:** registered 2026-07-25 (SoftwareImage `adopts[]`). · **Where:** SoftwareImage — image identity/structure vocabulary.
+**Why:** the image digest/manifest vocabulary is the industry's one shape for image identity. Apache-2.0, compatible-reference.
+
+### purl — CANONICAL
+**Covers:** `purl` `package URL` · **Body:** purl-spec community (ECMA TC54 track) · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — canonical package identifier.
+**Why:** the cross-ecosystem package identifier every SBOM tool speaks. MIT, compatible-reference.
+
+### SPDX — CANONICAL
+**Covers:** `SPDX` · **Body:** Linux Foundation / ISO 5962 · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — SBOM interchange + license identifiers.
+**Why:** SBOM interchange alignment; license identifiers use the SPDX license list (data CC0-1.0). Spec under Community-Spec terms — reference-only posture.
+
+### CycloneDX — CANONICAL
+**Covers:** `CycloneDX` · **Body:** OWASP / ECMA-424 · **Since:** registered 2026-07-25 (SoftwarePackage `adopts[]`). · **Where:** SoftwarePackage — SBOM component identity.
+**Why:** the second SBOM interchange lingua franca; component/bom-ref alignment. Apache-2.0, compatible-reference.
+
+### OSV Schema — CANONICAL
+**Covers:** `OSV Schema` `OSV` · **Body:** OpenSSF · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — the interchange record shape.
+**Why:** the open vulnerability interchange record the ecosystem converged on. Apache-2.0, compatible-reference.
+
+### CVSS — CANONICAL
+**Covers:** `CVSS` · **Body:** FIRST · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — severity vector/score, by reference.
+**Why:** the severity vocabulary; carried as vector+score fields, never restated. FIRST terms (use with attribution) — reference-only.
+
+### CWE — CANONICAL
+**Covers:** `CWE` · **Body:** MITRE · **Since:** registered 2026-07-25 (Vulnerability `adopts[]`). · **Where:** Vulnerability — weakness identifiers, by reference.
+**Why:** weakness classification identifiers; carried by id, never restated. MITRE terms (free use with attribution) — reference-only.
+
 ### NUT (Network UPS Tools) — CANONICAL
 **Covers:** `NUT` · **Since:** 2026-06-26T22:30:12Z · **Where:** Facility.PowerFeed (`ups.status` vocabulary).
 **Why:** the estate's actual UPS telemetry producer (NUT upsd/upsmon daemons); its status vocabulary is the de-facto open standard. **License:** GPL-2.0+ — reference-only.

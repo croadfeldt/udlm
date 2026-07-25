@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.9.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "9422dacc-0643-4b78-9404-dd27001fe2cd",
+  "uuid": "374a23b0-3151-4972-bd70-41a3d70d5aef",
   "resource_type": "Hardware.NetworkInterface",
   "version": "0.9.0",
   "family": "Resource",
@@ -168,8 +168,16 @@
           "additionalProperties": false,
           "properties": {
             "network_vlan_ref": {
-              "type": "string",
-              "description": "handle/uuid of an existing Network.VLAN this port is a member of."
+              "description": "Reference to Network.VLAN — the VLAN this membership tags. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "Short form — the handle of an existing Platform.StorageClass."
+                },
+                {
+                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                }
+              ]
             },
             "mode": {
               "type": "string",

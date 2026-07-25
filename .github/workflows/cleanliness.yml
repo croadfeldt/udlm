@@ -22,8 +22,8 @@ jobs:
         id: gates
         run: |
           set +e; fail=0; : > /tmp/summary.md
-          for c in tests/validate_registry.py tests/check_single_source.py tests/check_definition_single_source.py tests/check_model_vocabulary.py tests/check_standards_registered.py tests/check_estate_tokens.py tests/check_profile_tables.py tests/check_links.py; do
-            out=$(python3 "$c" 2>&1); rc=$?
+          for c in tests/validate_registry.py tests/check_single_source.py tests/check_definition_single_source.py tests/check_model_vocabulary.py tests/check_standards_registered.py tests/check_estate_tokens.py tests/check_profile_tables.py tests/check_links.py 'tests/check_type_standard.py --require-empty-baseline'; do
+            out=$(python3 $c 2>&1); rc=$?  # unquoted: entries may carry flags
             [ $rc -ne 0 ] && fail=1
             printf '### `%s` — %s\n```\n%s\n```\n' "$c" "$([ $rc -eq 0 ] && echo PASS || echo FAIL)" "$(echo "$out" | tail -8)" >> /tmp/summary.md
           done

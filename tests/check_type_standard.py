@@ -139,6 +139,10 @@ def main():
     for g, rt, item in sorted(burned):
         print(f"STALE-BASELINE [{g}] {rt} :: {item} — fixed; remove from tests/type-standard-baseline.yaml")
     print(f"\n{len(found)} violation(s): {len(found)-len(regressions)} baselined, {len(regressions)} NEW; {len(burned)} baseline entr(y|ies) now stale")
+    if "--require-empty-baseline" in sys.argv and known:
+        print("TRIPWIRE: the baseline is non-empty — the burn-down is owed (scheduled check; "
+              "per-PR runs allow ruled baselines for new-gate rollouts only)")
+        return 1
     return 1 if regressions or burned else 0
 
 
