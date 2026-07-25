@@ -314,7 +314,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 67,
+    "files_scanned": 73,
     "covered": [
       "Capability",
       "Compute.Cluster",
