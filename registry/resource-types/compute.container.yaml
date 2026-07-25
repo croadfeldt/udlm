@@ -1,10 +1,10 @@
 # UDLM Resource Type Specification — authored in YAML (semantically identical to a JSON
 # document; validated against the same registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.5.2
+$id: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.5.3
 conforms_to: udlm/0.1
-uuid: 054bcbf3-bdc7-4171-a23e-b47f34f7a451
+uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 resource_type: Compute.Container
-version: 0.5.2
+version: 0.5.3
 family: Resource
 status: active
 metadata:
@@ -171,11 +171,12 @@ context:
     Declares one container workload — image, resources, environment, mounts, ports — for a provider
     to run.
   plain_description: >-
-    A single containerized workload: the image it runs, the CPU and memory it needs, its
-    environment, mounted paths, and exposed ports. It runs either on a cluster or directly on a host
+    A single containerized workload: the `image` it runs, the `resources` it needs (`cpu` as a
+    number of cores — 0.5, 2 — never a millicore string, plus `memory`), its environment and
+    mounted paths (`process.env`, `process.mounts`), and its exposed ports (`network.ports`). It runs either on a cluster or directly on a host
     (e.g. rootless podman). Secrets never appear inline — anything sensitive in env or mounts points
-    at a Security.CredentialRef instead. The image can be given as a plain OCI reference or as a
-    reference into governed image data, which is what lets change-impact analysis find every
+    at a Security.CredentialRef instead. The image is an object either way: the inline form wraps the OCI string as `image.reference`
+    (optionally pinned by `image.digest`), or `image` is a reference into governed image data, which is what lets change-impact analysis find every
     container affected when a base image is patched.
   use_when:
     - >-

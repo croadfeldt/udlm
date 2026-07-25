@@ -8,11 +8,11 @@
 # filesystem a pool carves, not a cluster-provisioned claim.
 #
 # ADOPT (not absorb): the dataset/property vocabulary is OpenZFS's; a provider (zfs) naturalizes it.
-$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.3.2
 conforms_to: udlm/0.1
-uuid: f89a29f3-f7c4-4ce5-82e0-3f935ca394ee
+uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 resource_type: Storage.Dataset
-version: 0.3.1
+version: 0.3.2
 family: Resource
 status: active
 metadata:
@@ -96,9 +96,10 @@ context:
     Models a dataset carved from a host-local pool — the mounted filesystem or block device host
     workloads use.
   plain_description: >-
-    The consumable unit of host-local storage: a ZFS filesystem or zvol (the same shape extends to
-    LVM logical volumes and btrfs subvolumes), with its mountpoint, quota, and passthrough
-    properties. It is what a podman container or host service bind-mounts, so it is the storage node
+    The consumable unit of host-local storage — its required `dataset_kind` says whether it is a
+    `filesystem` (mounted), a `volume` (a zvol block device), or a `snapshot`; the same shape
+    extends to LVM logical volumes and btrfs subvolumes — with its `mountpoint`, `quota`, and
+    passthrough `properties`. It is what a podman container or host service bind-mounts, so it is the storage node
     those workloads depend on. Datasets nest (parent chains) and cannot outlive the pool they are
     carved from. Snapshot and replication policy is orchestration, not stored here.
   use_when:

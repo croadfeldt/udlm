@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.1.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "25d6552a-7d28-430b-bf6b-8cbe6783ef9a",
+  "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16",
   "resource_type": "SoftwareImage",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Knowledge",
   "entity_type": "SoftwareImage",
   "status": "active",
@@ -15,7 +15,7 @@
   },
   "context": {
     "purpose": "Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.",
-    "plain_description": "One container image, identified by its content digest (tags are recorded but advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which repository and registry it came from, what OS and architecture it targets, and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.",
+    "plain_description": "One container image, identified by its content digest (one observed `tag` is recorded, singular and advisory — tags move, the digest does not). It is knowledge about the estate, discovered by scanning, never provisioned: which `repository` and `registry` it came from, what platform it targets (`os` and `arch`), and — through its contains edges — every package inside it. That containment is what turns which containers run something shipping a given library from an investigation into a graph walk.",
     "use_when": [
       "You need every running container tied to the exact image digest it runs, deduplicated across the fleet.",
       "You need a bill-of-materials anchor: image → packages → vulnerabilities, walkable in both directions."

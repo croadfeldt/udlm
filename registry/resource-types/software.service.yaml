@@ -18,11 +18,11 @@
 #   uses_storage edge_type: references, relation: uses_storage -> Storage.Cluster | Storage.FileShare | Storage.Volume            (TOSCA DependsOn)
 #   requires    edge_type: depends_on, relation: requires, strength: hard|soft -> Security.DirectoryService | Network.AddressService | Software.Service
 #   binds_to    edge_type: binds_to,   -> Data.Database                                                                           (TOSCA BindsTo)
-$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.2
+$id: https://udlm.dev/registry/udlm/0.1/Software.Service/0.4.3
 conforms_to: udlm/0.1
-uuid: 84f69e6a-1cd1-453b-ad74-0167bb2b7463
+uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 resource_type: Software.Service
-version: 0.4.2
+version: 0.4.3
 family: Resource
 status: active
 metadata:
@@ -184,8 +184,10 @@ relationships:
 context:
   purpose: Models a logical running service — one or more containers and/or systemd units acting as one thing —
     so application-level dependencies carry order.
-  plain_description: 'The application layer: the mail service, the registry, model serving — a named service composed
-    of constituents that are either referenced container records or named systemd units on a host. It declares what
+  plain_description: 'The application layer: the mail service, the registry, model serving — a named service, classified by its
+    required `service_kind` (application, infrastructure-daemon, database, and kin), composed of `constituents` that each declare their `form`: a
+    `container` constituent references its container record via `container_ref`; a `systemd`
+    constituent names its `host` and `units`. It declares what
     the service needs — a database, a directory, name service, storage, another service, each dependency hard or
     soft — which is what makes infrastructure-daemons-stop-after-applications derivable. Endpoints and a ready signal
     surface how it is reached and whether it is serving.'

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.2.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "a4d21f7e-3c85-4b09-8e16-2f9c0a7d5b34",
+  "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17",
   "resource_type": "TaxonomyTerm",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Knowledge",
   "entity_type": "TaxonomyTerm",
   "status": "active",
@@ -15,7 +15,7 @@
   },
   "context": {
     "purpose": "Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.",
-    "plain_description": "A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated (proposed, under review, canonical, deprecated); once canonical, the term's handle is what other records bind to instead of restating names.",
+    "plain_description": "A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated — the `curation_state` property: `proposed`, `under-review`, `canonical`, `deprecated`; once canonical, the term's handle is what other records bind to instead of restating names.",
     "use_when": [
       "You need an authoritative vocabulary that observed, free-text items normalize onto.",
       "You need several disjoint controlled vocabularies without minting a new type per vocabulary."

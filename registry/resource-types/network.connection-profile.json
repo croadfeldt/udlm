@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.3.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.ConnectionProfile/0.3.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "c03b760e-8a3f-4037-a358-58251c649b3e",
+  "uuid": "7c322a52-3d41-4067-b9e2-967280517aa8",
   "resource_type": "Network.ConnectionProfile",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.",
-    "plain_description": "What a host interface's network configuration should be, in NMstate's own schema, carried as an opaque body against a pinned schema version — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.",
+    "plain_description": "What a host interface's network configuration should be, in NMstate's own schema: the opaque body is `desired_state`, interpreted against the pinned `nmstate_schema_version` it declares — the profile does not re-describe NMstate's fields. A NetworkManager-family provider applies it (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published, and a difference between desired and discovered is drift. It replaces per-tool host-network variable files with one governed record per interface.",
     "use_when": [
       "You need host interface config (static addressing, routes, VLANs on a bond) declared once and converged by automation.",
       "You need drift in host networking detected from data, not by logging into hosts."

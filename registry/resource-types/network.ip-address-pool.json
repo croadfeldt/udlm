@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.3.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "5f46b5f7-1b16-43df-9b4f-37ba4ddd57a9",
+  "uuid": "31c2f010-3930-416d-a225-be7888ce2585",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.",
-    "plain_description": "A range of addresses that individual address records are carved from: the subnet prefix, the allocatable ranges inside it, exclusions (gateway, broadcast, known statics), and how addresses leave it (leased, reserved, or both). Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.",
+    "plain_description": "A range of addresses that individual address records are carved from: the required subnet `prefix` (CIDR), the allocatable `ranges` inside it (start/end pairs — this allocation-side name differs from a DHCP scope's `pools` by design), `exclusions` (gateway, broadcast, known statics), and how addresses leave it — `allocation_mode`: `dynamic` (leased), `static` (reserved ahead of time), or `mixed`. Once realized it reports totals — allocated, free, exhausted — the signal capacity and placement policies read before asking for another address. Same pattern as a storage pool feeding datasets: the pool is the source, the carved record depends on it.",
     "use_when": [
       "You need to know which addresses are in play, who holds each, and when a range is close to exhausted.",
       "You need address allocation scoped to the one network segment the pool serves."

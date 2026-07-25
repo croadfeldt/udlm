@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.2.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "90564ad5-4ef4-4d0d-b738-b12e0e261d1a",
+  "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
   "resource_type": "Identity.Group",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "family": "Access",
   "entity_type": "Identity",
   "status": "active",
@@ -15,7 +15,7 @@
   },
   "context": {
     "purpose": "Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.",
-    "plain_description": "A named set of person and service-account identities. Two sources: a built_in group owns its member list locally; an external group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.",
+    "plain_description": "A named set of person and service-account identities, keyed by its required `handle`. Two sources — the required `source` property: a `built_in` group owns its `members` list locally; an `external` group mirrors a directory/IdP group and is referenced, never copied — membership stays authoritative in the directory. Access-control machinery binds roles to groups rather than to individuals, so joining or leaving a group is the whole access change.",
     "use_when": [
       "You need role assignments to bind to a set of identities instead of to individuals.",
       "You need a directory (LDAP/IdP) group represented in the model without duplicating its membership."

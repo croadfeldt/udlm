@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.5.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "7af73bb0-c3b3-40e3-b7a6-a39965dfdde9",
+  "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42",
   "resource_type": "Network.DHCPScope",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.",
-    "plain_description": "One subnet's DHCP setup: the CIDR, the dynamic ranges leased from, common options (gateway, DNS servers, domain name), and lease time. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.",
+    "plain_description": "One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased from — `pools` here (start/end pairs; the allocation-side Network.IPAddressPool calls its ranges `ranges`) — common `options` (router, dns_servers, domain_name), and `lease_time`. Reservations are not authored here — they are derived: every statically-allocated address record bound to an interface projects into this scope's reservation list, so the fact that an address belongs to a MAC lives in exactly one place. The DHCP server software is a provider; this record is what it renders its config from.",
     "use_when": [
       "You need a subnet's dynamic ranges and options declared portably, independent of which DHCP server serves them.",
       "You need static reservations to fall out of address records automatically instead of being maintained twice."

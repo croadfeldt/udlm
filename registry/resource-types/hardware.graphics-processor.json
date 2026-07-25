@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.GraphicsProcessor/0.2.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "bd160f02-eb69-4b48-a790-2ad436eb1e57",
+  "uuid": "7456b9f8-f215-4b75-ae6a-edd8cc854949",
   "resource_type": "Hardware.GraphicsProcessor",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "family": "Resource",
   "portability": "portable",
   "status": "active",
@@ -15,7 +15,7 @@
   },
   "context": {
     "purpose": "Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.",
-    "plain_description": "One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes (model, memory, architecture) are discovered facts; the type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.",
+    "plain_description": "One GPU as a component record. The same type covers three shapes, distinguished by device_class: the physical card installed in a host, a whole card passed through to a guest, and a partition (a vGPU or MIG slice) carved from a physical card — a partition points at its parent physical device. Attributes are discovered facts. Identity facts — model, location (slot or instance id), serial, manufacturer — nest under the `identity` block, not at the top level; `memory` is an object whose size is a whole-number quantity like 48GB. The type publishes no runtime binding surface because nothing binds to a GPU record directly — schedulers bind through the host or guest.",
     "use_when": [
       "You need GPU inventory across hosts — which cards, where, with what memory and architecture.",
       "You need the passthrough/partition chain (guest slice → physical card → host) traversable for maintenance impact."

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.4",
   "conforms_to": "udlm/0.1",
-  "uuid": "dbdcf2fa-67ad-48ff-923f-6ea458858608",
+  "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "Network.Switch",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.",
-    "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup, and its management addressing. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
+    "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
     "use_when": [
       "You need the switching fabric in the dependency graph so connectivity-outlives-compute is derivable in shutdown ordering.",
       "You need per-port records (VLAN membership, host adjacency) on real switch hardware.",

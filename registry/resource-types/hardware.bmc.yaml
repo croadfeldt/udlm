@@ -7,11 +7,11 @@
 # ADOPT (not absorb), core-tenets T5: the BMC's data model and power/reset actions are DMTF Redfish's
 # (Manager + ComputerSystem.Reset); UDLM carries identity + a version-pinned pointer + which host it
 # manages. IPMI is the legacy fallback protocol, named not modeled.
-$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.4.2
 conforms_to: udlm/0.1
-uuid: 362e1d9d-017f-45bd-8a31-d1c3918f6b94
+uuid: ea6715e2-30d1-4a34-9611-00c85208e20a
 resource_type: Hardware.BMC
-version: 0.4.1
+version: 0.4.2
 family: Resource
 status: active
 metadata:
@@ -81,8 +81,9 @@ context:
     addressable target.
   plain_description: >-
     The always-on management controller inside a server that answers even when the host is off —
-    each board vendor ships its own flavor. This record carries its management address, the protocols
-    it answers (Redfish, IPMI as fallback), and its vendor, and points at the one host it controls.
+    each board vendor ships its own flavor. This record carries its `management_address`, the single `protocol` it answers — `redfish`,
+    `ipmi`, or the combined `redfish+ipmi` — and its `vendor`, and points at the one host it
+    controls.
     Credentials are never stored here — they are referenced. It exists so that power that host off
     resolves to a concrete address and mechanism instead of prose.
   use_when:
