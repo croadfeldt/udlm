@@ -38,8 +38,8 @@ def main() -> int:
 
     failures = 0
     paths = sorted(
-        glob.glob(os.path.join(ROOT, "registry", "resource-types", "*.json"))
-        + glob.glob(os.path.join(ROOT, "registry", "resource-types", "*.yaml"))
+        glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*.json"), recursive=True)
+        + glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*.yaml"), recursive=True)
     )
     for path in paths:
         rel = os.path.relpath(path, ROOT)

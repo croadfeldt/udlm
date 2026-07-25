@@ -67,7 +67,7 @@ def main():
     seen_uuids = {}  # uuid -> "file (role)"
     docs = 0
 
-    for path in sorted(PROVIDERS.glob("*")):
+    for path in sorted(PROVIDERS.rglob("*")):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         docs += 1

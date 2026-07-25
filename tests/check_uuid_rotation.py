@@ -27,6 +27,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = os.environ.get("UUID_GATE_BASE", "origin/main")
 
 
+def _renames():
+    """new_path -> old_path, from registry/renames.yaml (the rename-map discipline: every path
+    rename ships with an explicit old->new map). A renamed file is the SAME entity as its
+    base-ref path — it is diffed against that path, never silently exempted as 'new'."""
+    p = os.path.join(ROOT, "registry", "renames.yaml")
+    if not os.path.exists(p):
+        return {}
+    doc = yaml.safe_load(open(p, encoding="utf-8")) or {}
+    return {new: old for old, new in (doc.get("renames") or {}).items()}
+
+
 def load(text, path):
     try:
         return json.loads(text) if path.endswith(".json") else yaml.safe_load(text)
@@ -38,6 +49,7 @@ def main():
     paths = sorted(glob.glob(os.path.join(ROOT, "registry", "**", "*.json"), recursive=True) +
                    glob.glob(os.path.join(ROOT, "registry", "**", "*.yaml"), recursive=True))
     fails, seen = [], {}
+    renamed = _renames()
     for p in paths:
         rel = os.path.relpath(p, ROOT)
         cur_text = open(p, encoding="utf-8").read()
@@ -49,6 +61,10 @@ def main():
             fails.append(f"{rel}: uuid {u[:13]}… duplicates {seen[u]} (uuids are never shared or reused)")
         seen[u] = rel
         r = subprocess.run(["git", "-C", ROOT, "show", f"{BASE}:{rel}"], capture_output=True, text=True)
+        if r.returncode != 0 and rel in renamed:
+            # renamed file — same entity as its base-ref path (rename-map discipline)
+            r = subprocess.run(["git", "-C", ROOT, "show", f"{BASE}:{renamed[rel]}"],
+                               capture_output=True, text=True)
         if r.returncode != 0:
             continue  # new file — uniqueness already checked
         old_text = r.stdout

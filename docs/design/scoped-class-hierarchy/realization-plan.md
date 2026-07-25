@@ -91,7 +91,7 @@ corpus provider-class UCs (hammer-recent-model) become executable against real r
 **P4 — derived portability.** The realized-entity `portability` block re-keyed onto element scope
 positions (computed; consumer-notification discipline unchanged). The declared classification
 survives one MINOR as a cross-check (declared vs derived mismatch = a finding), then retires —
-the provider_extensions playbook, applied gently.
+the playbook proven on the retired provider_extensions surface, applied gently.
 
 ## The Process family classes too (maintainer refinement, 2026-07-25)
 

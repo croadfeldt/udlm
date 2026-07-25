@@ -622,7 +622,7 @@ def fuzz_type(path):
 
 
 def main():
-    paths = sorted(p for p in TYPES_DIR.glob("*") if p.suffix in (".json", ".yaml", ".yml"))
+    paths = sorted(p for p in TYPES_DIR.rglob("*") if p.suffix in (".json", ".yaml", ".yml"))
     all_errors, total_mut = [], 0
     for path in paths:
         try:

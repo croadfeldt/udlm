@@ -46,7 +46,7 @@ def _type_outputs_index():
     """resource_type -> set(declared output names). The typed-outputs surface a catalog-item
     binding resolves against (data-model-core §2 [D8.3])."""
     index = {}
-    for path in (ROOT / "resource-types").glob("*"):
+    for path in (ROOT / "resource-types").rglob("*"):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         doc = load(path)
@@ -85,7 +85,7 @@ def validate_dir(subdir: str, pick) -> int:
     base = ROOT / subdir
     if not base.exists():
         return 0
-    for path in sorted(base.glob("*")):
+    for path in sorted(base.rglob("*")):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         docs = load_all(path)
@@ -191,7 +191,7 @@ def check_catalog_item(doc):
 def _type_family_index():
     """resource_type -> family (Resource | Process | Knowledge | Access — ADR-027)."""
     index = {}
-    for path in (ROOT / "resource-types").glob("*"):
+    for path in (ROOT / "resource-types").rglob("*"):
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         doc = load(path)
@@ -456,7 +456,7 @@ def _reverse_reference_graph():
         base = ROOT / subdir
         if not base.exists():
             continue
-        for path in sorted(base.glob("*")):
+        for path in sorted(base.rglob("*")):
             if path.suffix not in (".json", ".yaml", ".yml"):
                 continue
             for doc in load_all(path):                   # multi-doc aware (`---` streams)

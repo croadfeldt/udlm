@@ -1,0 +1,100 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.3",
+  "conforms_to": "udlm/0.1",
+  "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc",
+  "resource_type": "Network.AddressService",
+  "version": "0.4.3",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Address Service",
+    "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (a DHCP/DNS server implementation, an integrated identity suite, a cloud service) are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations from the estate's Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces. Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-05T02:58:43Z"
+  },
+  "context": {
+    "purpose": "Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.",
+    "plain_description": "The thing that hands out addresses and answers name lookups, as a single, thin service record. It says which capabilities are served — the `services` list (`dhcp`, `dns`) — and whether service is redundant (`ha`, a boolean), and points at the host(s) or VM(s) running it. Its job in the model is ordering: hosts that need leases and name resolution depend on it, so it stops late and starts early. The serving software is a provider; the data it serves is projected from address records and scope/zone records.",
+    "use_when": [
+      "You need shutdown/startup ordering to account for everything here needing DHCP/DNS up first.",
+      "You need the DHCP/DNS role pinned to the specific hosts that serve it."
+    ],
+    "not_for": [
+      "A subnet's pools and options — Network.DHCPScope is the config surface.",
+      "A zone and its records — Network.DNSZone.",
+      "A single address — Network.IPAddress."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost / Compute.VirtualMachine — where the service runs; it stops before its host.",
+      "Network.DHCPScope — the per-subnet config this service serves.",
+      "Network.DNSZone — the zones it answers for."
+    ]
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [],
+    "properties": {
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "dhcp",
+            "dns"
+          ],
+          "x-extensible-enum": true
+        },
+        "description": "Which address capabilities this service provides. (IPAM-as-a-distinct-service dropped — addressing is modeled as Network.IPAddress records per ADR-023; there is no adopted IPAM vocabulary and its substance is covered by dhcp-scope + the IPAddress records.)"
+      },
+      "ha": {
+        "type": "boolean",
+        "description": "Served redundantly (e.g. an HA pair)."
+      }
+    }
+  },
+  "outputs": {
+    "serving": {
+      "type": "boolean",
+      "description": "Leases/answers being served once Realized."
+    }
+  },
+  "relationships": [
+    {
+      "edge_type": "depends_on",
+      "name": "served_by",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..n",
+      "description": "served_by — a host running this DHCP/DNS provider. The service stops before its host in a reverse-topo shutdown."
+    },
+    {
+      "edge_type": "depends_on",
+      "name": "served_by",
+      "target": "Compute.VirtualMachine",
+      "cardinality": "0..n",
+      "description": "served_by — a VM running this DHCP/DNS provider. (One of BareMetalHost / VirtualMachine per instance.)"
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "RFC-2131",
+      "version": "2.x",
+      "standard_name": "DHCPv4",
+      "role": "DHCP protocol concepts (lease/scope) — the neutral vocabulary; concrete servers (Kea/dnsmasq/...) are providers",
+      "source": "https://www.rfc-editor.org/rfc/rfc2131",
+      "license": "IETF-Trust",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "IETF DNS",
+      "version": "RFC 1035",
+      "standard_name": "Domain Names",
+      "role": "name-resolution vocabulary",
+      "source": "https://www.rfc-editor.org/rfc/rfc1035",
+      "license": "IETF Trust",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ]
+}

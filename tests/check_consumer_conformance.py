@@ -52,7 +52,7 @@ UNCONSUMED_HEADER = """\
 def load_registry_versions():
     """resource_type -> current version, from the type specs."""
     versions = {}
-    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "*"))):
+    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True)):
         if not path.endswith((".json", ".yaml", ".yml")):
             continue
         with open(path, encoding="utf-8") as fh:

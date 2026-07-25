@@ -36,13 +36,13 @@ Ownership of the config *schema* is the provider's (§2). Ownership of the confi
 
 **DCM stores the config values — base *and* provider-specific — because that is what a system-of-record is for: drift is a diff** (Requested vs Realized vs Discovered), and **you cannot diff what you did not store.** This is consistent, not halfway: **if we store one component's config we store every component's, end to end across an application stack** — otherwise the stack's state is un-diffable and DCM is not the SoR. There is no "track the pointer instead of the values" shortcut; a `config_interface` reference (`{interface_type, endpoint | handle, schema_ref?}`) MAY *additionally* record where the provider exposes its edit UI, but it **never replaces** storing the state — it is a navigation/audit convenience only.
 
-Provider-specific config values are stored as provider-namespaced state (`provider_extensions`, §2) — governed like any state (audit, provenance, tenancy) and portability-flagged — but stored. (This is *not* the ADR-013 case: ADR-013 declines to be the SoR for hardware components DCM does **not** manage; config of a resource DCM **does** manage is exactly its to record.)
+Provider-specific config values are stored as provider-namespaced state (formerly `provider_extensions`, §2) — governed like any state (audit, provenance, tenancy) and portability-flagged — but stored. (This is *not* the ADR-013 case: ADR-013 declines to be the SoR for hardware components DCM does **not** manage; config of a resource DCM **does** manage is exactly its to record.)
 
 **Corollary — complete coverage.** Every resource DCM manages has a **resource record type**, so its state (including config) is a stored, diffable record. Nothing DCM manages is a black box.
 
 ### Worked example — container
 - **Model (base):** `image` as a `data_reference` (dependency map + base-image blast-radius); mounts → `Storage.Volume` / `Security.CredentialRef` edges; `ports` → the service graph; the pinned digest (provenance); the `contained_by` / `references` / `depends_on` relationships.
-- **Project + configure via DCM, don't model:** command/args, restart policy, replicas, security context, the runtime's remaining knobs — the provider declares them, DCM projects the interface, the consumer sets them, they land in `provider_extensions`, portability-flagged.
+- **Project + configure via DCM, don't model:** command/args, restart policy, replicas, security context, the runtime's remaining knobs — the provider declares them, DCM projects the interface, the consumer sets them, they land in the since-retired `provider_extensions` state, portability-flagged.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the graph/audit/observability-bearing subset — the portable, conformity-bearing base type.

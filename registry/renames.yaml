@@ -1,0 +1,67 @@
+# Rename map — the path-rename discipline made mechanical.
+#
+# Commitment (DAV-session interface commitment): any rename of a handle, rule ID, or file
+# path ships IN THE SAME CHANGE with an explicit old -> new map, so no consumer, gate, or
+# reader is left resolving a rename by guesswork. Gates that diff against a base ref
+# (tests/ci_compat_gate.py, tests/check_uuid_rotation.py) consult this map to treat a
+# renamed file as the SAME entity as its base-ref path — a rename is never a delete+add,
+# and never an accidental exemption from a gate.
+#
+# Scope: cumulative, append-only. Each block is one renaming change (newest last); keys are
+# repo-relative old paths, values the new paths. Identity fields (resource_type, uuid
+# lineage, $id) are governed by registry/VERSIONING.md, not by file location.
+
+renames:
+  # 2026-07-25 — registry structure by class: resource-types/ grouped by class directory
+  # (dotted resource_type -> first segment, single-word types -> family), providers/ grouped
+  # by provider.kind. Rule + rationale: registry/resource-types/README.md.
+  registry/providers/cost-sp.json: registry/providers/information/cost-sp.json
+  registry/providers/full-stack-sp.json: registry/providers/service/full-stack-sp.json
+  registry/resource-types/access.identity-escrow.json: registry/resource-types/access/access.identity-escrow.json
+  registry/resource-types/automation.job.json: registry/resource-types/automation/automation.job.json
+  registry/resource-types/capability.json: registry/resource-types/knowledge/capability.json
+  registry/resource-types/compute.bare-metal-host.json: registry/resource-types/compute/compute.bare-metal-host.json
+  registry/resource-types/compute.cluster.json: registry/resource-types/compute/compute.cluster.json
+  registry/resource-types/compute.container.yaml: registry/resource-types/compute/compute.container.yaml
+  registry/resource-types/compute.virtual-machine.json: registry/resource-types/compute/compute.virtual-machine.json
+  registry/resource-types/data.database.json: registry/resource-types/data/data.database.json
+  registry/resource-types/facility.location.yaml: registry/resource-types/facility/facility.location.yaml
+  registry/resource-types/facility.power-feed.json: registry/resource-types/facility/facility.power-feed.json
+  registry/resource-types/hardware.bios-profile.yaml: registry/resource-types/hardware/hardware.bios-profile.yaml
+  registry/resource-types/hardware.bmc.yaml: registry/resource-types/hardware/hardware.bmc.yaml
+  registry/resource-types/hardware.graphics-processor.json: registry/resource-types/hardware/hardware.graphics-processor.json
+  registry/resource-types/hardware.network-interface.json: registry/resource-types/hardware/hardware.network-interface.json
+  registry/resource-types/hardware.processor.json: registry/resource-types/hardware/hardware.processor.json
+  registry/resource-types/hardware.storage-device.json: registry/resource-types/hardware/hardware.storage-device.json
+  registry/resource-types/identity.group.json: registry/resource-types/identity/identity.group.json
+  registry/resource-types/identity.person.json: registry/resource-types/identity/identity.person.json
+  registry/resource-types/identity.service-account.json: registry/resource-types/identity/identity.service-account.json
+  registry/resource-types/network.address-service.json: registry/resource-types/network/network.address-service.json
+  registry/resource-types/network.connection-profile.json: registry/resource-types/network/network.connection-profile.json
+  registry/resource-types/network.dhcp-scope.json: registry/resource-types/network/network.dhcp-scope.json
+  registry/resource-types/network.dns-zone.json: registry/resource-types/network/network.dns-zone.json
+  registry/resource-types/network.gateway.json: registry/resource-types/network/network.gateway.json
+  registry/resource-types/network.ip-address-pool.json: registry/resource-types/network/network.ip-address-pool.json
+  registry/resource-types/network.ip-address.json: registry/resource-types/network/network.ip-address.json
+  registry/resource-types/network.switch.json: registry/resource-types/network/network.switch.json
+  registry/resource-types/network.virtual-network.json: registry/resource-types/network/network.virtual-network.json
+  registry/resource-types/network.vlan.json: registry/resource-types/network/network.vlan.json
+  registry/resource-types/observability.log-shipper.json: registry/resource-types/observability/observability.log-shipper.json
+  registry/resource-types/platform.hub.json: registry/resource-types/platform/platform.hub.json
+  registry/resource-types/platform.namespace.json: registry/resource-types/platform/platform.namespace.json
+  registry/resource-types/platform.node-pool.json: registry/resource-types/platform/platform.node-pool.json
+  registry/resource-types/platform.resource-quota.json: registry/resource-types/platform/platform.resource-quota.json
+  registry/resource-types/platform.storage-class.json: registry/resource-types/platform/platform.storage-class.json
+  registry/resource-types/security.credential-ref.yaml: registry/resource-types/security/security.credential-ref.yaml
+  registry/resource-types/security.directory-service.json: registry/resource-types/security/security.directory-service.json
+  registry/resource-types/software-image.json: registry/resource-types/knowledge/software-image.json
+  registry/resource-types/software-package.json: registry/resource-types/knowledge/software-package.json
+  registry/resource-types/software.service.yaml: registry/resource-types/software/software.service.yaml
+  registry/resource-types/storage.cluster.json: registry/resource-types/storage/storage.cluster.json
+  registry/resource-types/storage.dataset.yaml: registry/resource-types/storage/storage.dataset.yaml
+  registry/resource-types/storage.file-share.yaml: registry/resource-types/storage/storage.file-share.yaml
+  registry/resource-types/storage.pool.yaml: registry/resource-types/storage/storage.pool.yaml
+  registry/resource-types/storage.volume.json: registry/resource-types/storage/storage.volume.json
+  registry/resource-types/taxonomy-term.json: registry/resource-types/knowledge/taxonomy-term.json
+  registry/resource-types/topology.json: registry/resource-types/resource/topology.json
+  registry/resource-types/vulnerability.json: registry/resource-types/knowledge/vulnerability.json
