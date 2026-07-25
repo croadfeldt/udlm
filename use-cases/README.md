@@ -39,3 +39,8 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   intra-registry pins refused (registry ref = the only internal pin), organizational
   uuid-precise pins honored with enumerated debt, blue/green typed-output-diff promotion of
   re-pins, and element scope narrowing classified breaking (portability is part of compat).
+- `change-control/` — the temporal layer on class versioning: change-management policies that
+  gate and orchestrate WHEN adoptions occur — continuous adoption, maintenance windows, full
+  ceremony for breaking changes, freezes with queued debt, break-glass expedites (evidence
+  gates never waived), policy-composed staged rollout across estates, and dependency-ordered
+  propagation within one.

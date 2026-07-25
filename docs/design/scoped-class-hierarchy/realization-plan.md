@@ -48,6 +48,28 @@ resolution (`compute.vm#memory` → the owning class + element). The spec genera
 `--check` in CI. *Evidence this is ready: the class renders in this directory (compute, identity)
 were authored against exactly this shape.*
 
+P0 also carries the ADR-045/046 evolution gates, decided 2026-07-25 and measured by the
+`class-versioning` corpus family: the class-compat classifier including the scope rule
+(narrowing an element's scope is breaking even with no shape change — UC-009), the blast-radius
+enumerator (class graph + ADR-044 consumer manifests, emitted into the change record — UC-003),
+pin-resolution validation on both planes (intra-registry fixed-version references refused,
+UC-004; organization-edge pins uuid-precise with behind-as-debt and ahead-as-refusal,
+UC-005/006), and atomic recompilation (`--check` fails if any generated descendant of a changed class
+was not regenerated in the same change set — UC-001; bump sufficiency is the classifier's job —
+UC-002). P0 also defines two record schemas the contracts depend on: the **regeneration
+manifest** (the durable blast-radius change record — `commit-log-entry` is per-entity and
+cannot carry it) and the **finding-routing record** (ADR-046's contradicted-claim route,
+expressibility finding N2). The generator also emits the **compilation-provenance block**
+(ADR-045 §7) into every generated spec — full input-revision chain incl. layers, schemas, and
+generator version — and the `--check` gate verifies it by faithful recompilation (a mismatch
+is an integrity refusal, UC-012); realized entities extend it with realization provenance
+(provider definition revision + engine binding version). Provider definitions are versioned
+contracts from now (schema requires `provider.version`; ADR-045 §8): the P0 classifier's
+provider-surface variant (declared capabilities/standards/outputs diffed under the same rules)
+joins the build list. The blue/green dual-compile + typed-output-diff harness (ADR-046,
+UC-007/008) lands with the P1 pilot, which exercises the full promotion contract on a real
+migration.
+
 **P1 — pilot: the Compute category.** Author Base Class `Compute`; re-express the Compute.* types
 as element compositions; the generator reproduces their current 0.x specs byte-comparably (bump
 only where the pilot fixes a real defect). First promotions — the proven cross-type elements this

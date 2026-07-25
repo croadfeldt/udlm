@@ -17,7 +17,7 @@ scenario:
   - 'The refusal is typed and actionable: it carries the diff, naming each changed output and its consumers'
   - The estate remains on the pinned revision; nothing partially promotes
   - The refusal and diff are recorded as audit evidence
-  - The contradicted compatibility claim is routed to the registry as a finding with the diff as provenance
+  - A finding-routing record (the P0-defined registry kind) is created carrying the contradicted claim with the diff as provenance
   dimensions:
     lifecycle_phase: day2_operations
     resource_complexity: composite_service

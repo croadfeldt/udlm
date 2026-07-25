@@ -6,6 +6,21 @@ abstractions (**Data / Provider / Policy**, `foundations/foundations.md`) and th
 distinction (`foundations/layering-and-versioning.md` §1a), and they settle the recurring design
 question: **where does logic live?**
 
+## The north star — removal of toil through enablement
+
+Above every tenet sits the project's north star (maintainer, enshrined 2026-07-25): **the
+primary goal is removal of toil through enablement.** The model surfaces what changed and what
+it touches, computed from structure and provenance rather than compiled by hand; the
+organization decides its response through declared policy; the platform enables that response
+— automated, approved, delayed, skipped, or a shape these documents never anticipated. Defaults
+and best practices are provided and advisory; an organization that adds ceremony or complexity
+beyond them is exercising exactly the control the platform exists to enable, and their chosen
+complexity must cost **declaration, not labor**. Every design decision in this registry answers
+to one measure: how much operational toil — the hand-maintained impact list, the tribal
+runbook, the spreadsheet of what's stale — does it delete? The operational expression of this
+star is the response matrix (`docs/design/operational-response-matrix.md`); its behavioral
+counterpart is the review discipline: enable, don't judge.
+
 ## This is a boundary, not a guideline
 These tenets draw a **domain responsibility boundary** — a service / contract seam between two distinct
 roles:

@@ -15,8 +15,8 @@ scenario:
   success_criteria:
   - The Base Class change and every regenerated descendant land in one atomic change set
   - Every regenerated artifact carries a new uuid and a version bump the compat gate accepts as sufficient
-  - The instance-fuzz and composition gates re-prove every regenerated spec without hand-written tests
-  - No pinned downstream consumer observes any change until it re-pins
+  - The change record lists the standing gate suite that re-proved every regenerated spec (no per-change test authoring appears anywhere in the change)
+  - Every pin in the consumer manifests still resolves to its pre-change uuid — no pinned consumer's resolved revision changes
   - The change record enumerates every regenerated artifact (the blast radius is explicit, not discovered)
   dimensions:
     lifecycle_phase: modification
