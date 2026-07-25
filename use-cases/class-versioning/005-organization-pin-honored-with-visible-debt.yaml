@@ -1,0 +1,51 @@
+uuid: uc-375a39b1-9e71-4a23-ad09-ced55a0356db
+handle: class-versioning/organization-pin-honored-with-visible-debt
+version: 1.0.0
+scenario:
+  description: 'A downstream organization pins its estate to a specific Base Class version (uuid-precise
+    — the uuid IS the revision) while the registry moves ahead. The pin is honored completely: compilation
+    and realization in that estate use the pinned revision; nothing upstream propagates implicitly. The
+    cost is visibility, not capability: the version distance appears as enumerated debt (per class, per
+    pinned artifact) in the estate''s validation output, and a registry-ref bump deliberately re-opens
+    the list. Pinning behind is legal; being silently behind is not.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  intent: Pin an organization's estate to a specific class revision and retain full control with the drift
+    visible as enumerated debt
+  success_criteria:
+  - The estate's compilation and realization resolve the pinned uuid-precise revision, not the registry
+    head
+  - No registry change alters the estate's behavior until the organization re-pins
+  - The version distance is enumerated per pinned artifact in the estate's own validation output
+  - The debt list re-opens automatically when the estate's registry ref advances
+  - An audit reader can reconstruct exactly which revision every estate artifact compiled against
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: uuid-precise pins resolve immutable revisions deterministically
+  - domain: policy
+    interaction: pin-behind is classified legal debt, never silent drift
+  - domain: provider
+    interaction: realization in the pinned estate uses the pinned class surface
+  - domain: audit
+    interaction: pin provenance is reconstructible per artifact
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: class-versioning-2026-07-25
+  timestamp: '2026-07-25T15:00:00Z'
+tags:
+- hammer
+- class-versioning
+- pinning
+- organizational-control
+- burn-down
