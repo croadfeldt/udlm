@@ -108,6 +108,13 @@ def main():
         for pk, pv in (spec.get("properties") or {}).items():
             if pk.endswith("_ref") and isinstance(pv, dict) and pv.get("type") == "string" and not is_reference_shape(pv):
                 found.append(("G3", rt, pk, "bare-string *_ref — use the common-elements Reference oneOf"))
+
+        # G8: no absolute $refs — validation must never depend on the network. Relative
+        # sibling refs only. Found live twice (ResourceQuota, then the VM's
+        # networks.network_ref hiding in an optional branch the fuzz synthesizer never
+        # reaches).
+        for m in re.finditer(r'"\$ref"\s*:\s*"(https?://[^"]+)"', json.dumps(d)):
+            found.append(("G8", rt, m.group(1)[:60], "absolute $ref — use a relative sibling ref"))
             if isinstance(pv, dict):
                 items = pv.get("items")
                 if isinstance(items, dict):

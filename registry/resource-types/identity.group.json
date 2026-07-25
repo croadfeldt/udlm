@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.2.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "1c7461ca-0bb4-4908-acbd-f0085582a156",
+  "uuid": "90564ad5-4ef4-4d0d-b738-b12e0e261d1a",
   "resource_type": "Identity.Group",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Access",
   "entity_type": "Identity",
   "status": "active",
@@ -59,7 +59,7 @@
             "description": "Short form — the handle of an existing Platform.StorageClass."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
           }
         ]
       },

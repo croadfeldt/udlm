@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "0750541b-5fbd-45b2-a622-df82276c0255",
+  "uuid": "9f2252fc-750d-4b2a-b021-179c601d8160",
   "resource_type": "Platform.NodePool",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -56,7 +56,7 @@
             "description": "Short form — the handle of an existing Compute.Cluster."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
           }
         ]
       },

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.5.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "80b6b7d8-e3e3-43ad-9cd5-d25ea4f66a01",
+  "uuid": "5d27db8a-02ec-40fd-bbf6-2bee0980c92e",
   "resource_type": "Storage.Volume",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -81,7 +81,7 @@
             "description": "Short form — the handle of an existing Platform.StorageClass."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
           }
         ]
       },

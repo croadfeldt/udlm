@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "725cbb00-7f19-45ce-922b-6bfc02f7f7da",
+  "uuid": "80b65d24-8e90-478e-aff4-4c6089b908ca",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -131,7 +131,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             },
@@ -208,7 +208,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             },
@@ -224,7 +224,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             }

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "217fb83d-7397-45b3-92a4-3a60145460d8",
+  "uuid": "dbdcf2fa-67ad-48ff-923f-6ea458858608",
   "resource_type": "Network.Switch",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -107,7 +107,7 @@
             "description": "Short form — the handle of an existing Platform.StorageClass."
           },
           {
-            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
           }
         ]
       }
