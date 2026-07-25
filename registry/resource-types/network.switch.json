@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "26f4c843-7898-4e79-9e45-05e9693e5385",
+  "uuid": "85a8a9ec-fcf3-47bc-88e0-830493d47a9f",
   "resource_type": "Network.Switch",
   "version": "0.4.1",
   "family": "Resource",
@@ -99,8 +99,16 @@
         }
       },
       "management_vlan_ref": {
-        "type": "string",
-        "description": "Reference (handle/uuid) to the Network.VLAN the management interface rides — selected, not an inline 802.1Q id (R5)."
+        "description": "Reference to Network.VLAN — the switch's management VLAN. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — the handle of an existing Platform.StorageClass."
+          },
+          {
+            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+          }
+        ]
       }
     }
   },

@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.1.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "0230f9b6-e401-4d5b-ad10-ff65a3779868",
+  "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
   "resource_type": "SoftwarePackage",
   "version": "0.1.0",
   "family": "Knowledge",
@@ -65,6 +65,38 @@
       "target": "Vulnerability",
       "cardinality": "0..n",
       "description": "affected_by — this package version is affected by the vulnerability (OSV / VEX). A declarative typed reference; the match is Policy. Non-ordering, but walked by blast-radius/impact in reverse (the CVE -> resource path)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "purl",
+      "version": "1.x",
+      "standard_name": "package URL",
+      "role": "the canonical package identifier this type's identity fields carry",
+      "source": "https://github.com/package-url/purl-spec",
+      "license": "MIT",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "SPDX",
+      "version": "2.3",
+      "standard_name": "SBOM package fields / license list",
+      "role": "SBOM interchange alignment; license identifiers use the SPDX license list",
+      "source": "https://spdx.dev/",
+      "license": "Community-Spec-1.0 (license list data CC0-1.0)",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "CycloneDX",
+      "version": "1.5",
+      "standard_name": "component / bom-ref",
+      "role": "SBOM interchange alignment (component identity and references)",
+      "source": "https://cyclonedx.org/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
     }
   ]
 }

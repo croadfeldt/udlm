@@ -1,7 +1,7 @@
 {
   "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.3.0",
   "conforms_to": "udlm/0.1",
-  "uuid": "e1c7a4d9-3b62-4f08-9a15-2d6e8c0b7f31",
+  "uuid": "d46d7ddb-7923-4cd7-87af-f30d95edef58",
   "resource_type": "Identity.Person",
   "version": "0.3.0",
   "family": "Access",
@@ -58,8 +58,16 @@
         "description": "handle/uuid of the Auth Provider (auth capability) or Security.DirectoryService that authenticates this person. Default: the built-in provider (no external IdP required)."
       },
       "credential_ref": {
-        "type": "string",
-        "description": "Reference to a Security.CredentialRef — never inline secret material (CPX-001)."
+        "description": "Reference to Security.CredentialRef — the credential record for this person. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — the handle of an existing Platform.StorageClass."
+          },
+          {
+            "$ref": "https://udlm.dev/registry/udlm/0.1/common-elements.schema.json#/$defs/Reference"
+          }
+        ]
       },
       "external_subject": {
         "type": "string",
