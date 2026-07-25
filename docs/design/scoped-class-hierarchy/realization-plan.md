@@ -63,7 +63,10 @@ expressibility finding N2). The generator also emits the **compilation-provenanc
 (ADR-045 §7) into every generated spec — full input-revision chain incl. layers, schemas, and
 generator version — and the `--check` gate verifies it by faithful recompilation (a mismatch
 is an integrity refusal, UC-012); realized entities extend it with realization provenance
-(provider definition revision + engine binding version). The blue/green dual-compile + typed-output-diff harness (ADR-046,
+(provider definition revision + engine binding version). Provider definitions are versioned
+contracts from now (schema requires `provider.version`; ADR-045 §8): the P0 classifier's
+provider-surface variant (declared capabilities/standards/outputs diffed under the same rules)
+joins the build list. The blue/green dual-compile + typed-output-diff harness (ADR-046,
 UC-007/008) lands with the P1 pilot, which exercises the full promotion contract on a real
 migration.
 

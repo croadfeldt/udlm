@@ -105,6 +105,23 @@ Provenance is only worth carrying if verified: recompiling from the block's name
 reproduce the artifact byte-comparably, and a mismatch (a hand-edit after generation, a stale
 block) is refused at the gate as an integrity failure. Corpus: class-versioning 010–012.
 
+**8. Providers version their edge, and only their edge.** A provider's declared surface — the
+capabilities it registers, the standards it adopts, the defaults it publishes, and the outputs
+it populates per type — is a versioned contract under exactly the standard rules: additive
+surface changes are compatible, removals and shape changes are breaking, the same bump floors
+apply, and any change to the definition rotates its uuid. Past the naturalization boundary
+(dcm ADR-023 — where provider-native implementation begins), the provider is free: engine
+internals, dependencies, and implementation may change without any versioning obligation
+toward consumers, because nothing a consumer can bind to has changed. The seam is precise:
+an internal change that alters a populated output's observable shape *is* a surface change and
+versions accordingly. Individual capabilities remain their own accreditation/version units
+(ADR-004), nested within the definition's version; the engine binding version a realization
+actually used is recorded in realization provenance (§7). Pins, debt, and blue/green promotion
+apply to provider definitions unchanged — an estate pins a provider definition revision the
+same way it pins a class revision, and an engine upgrade verifies by output diff (the
+process-migration stage's engine-upgrade-regression pattern). Corpus: class-versioning
+013–015.
+
 ## Consequences
 
 - Every Base change re-proves all descendants mechanically: atomic recompilation means the

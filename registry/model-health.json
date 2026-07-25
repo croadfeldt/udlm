@@ -309,7 +309,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 56,
+    "files_scanned": 59,
     "covered": [
       "Compute.Cluster",
       "Platform.Hub",

@@ -15,4 +15,7 @@ narrowing an element's scope is breaking even when no schema shape changes (009)
 010–012 carry the provenance contract (ADR-045 §7): generated specs declare their full
 compilation chain (classes, layers, schemas, generator) and realized instances their provider
 definition revision — live, historically reconstructible, and verified by recompilation with
-mismatches refused.
+mismatches refused. Cases 013–015 carry provider versioning (ADR-045 §8): internal
+changes past the naturalization boundary are free (provable by empty output diff), declared-
+surface changes classify and version under the standard rules, and under-declared surface
+changes are refused naming the dropped output and its bound consumers.
