@@ -11,4 +11,8 @@ the decisions, not just the mechanics: intra-registry references are by handle w
 registry ref as the only internal pin (004); organizational pins are uuid-precise, honored
 completely, and visible as enumerated debt (005, 006); compatibility claims are promoted on
 typed-output evidence, not trust (007, 008); and portability is part of the compat contract —
-narrowing an element's scope is breaking even when no schema shape changes (009).
+narrowing an element's scope is breaking even when no schema shape changes (009). Cases
+010–012 carry the provenance contract (ADR-045 §7): generated specs declare their full
+compilation chain (classes, layers, schemas, generator) and realized instances their provider
+definition revision — live, historically reconstructible, and verified by recompilation with
+mismatches refused.

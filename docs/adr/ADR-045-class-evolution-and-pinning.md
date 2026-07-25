@@ -93,6 +93,18 @@ plane is a re-review trigger for this ADR.
   differently-pinned estates read the owner's compiled-against record; they do not re-resolve
   it under their own pins.
 
+**7. Provenance is declared, verified, and two-plane.** Every generated flat spec carries a
+compilation-provenance block naming the exact revisions (handle, version, uuid) of every input
+— Base, Type, and Provider classes, shared-element layers, referenced common schemas, and the
+generator version — so "the artifact contains its chain" is verifiable, not asserted. Every
+realized instance extends this with realization provenance: the provider definition/
+registration revision and engine binding version that realized it. Live provenance means the
+current artifact states its inputs; historical provenance means any past revision's full chain
+reconstructs mechanically from the revision store (immutable uuids make history a database).
+Provenance is only worth carrying if verified: recompiling from the block's named inputs must
+reproduce the artifact byte-comparably, and a mismatch (a hand-edit after generation, a stale
+block) is refused at the gate as an integrity failure. Corpus: class-versioning 010–012.
+
 ## Consequences
 
 - Every Base change re-proves all descendants mechanically: atomic recompilation means the

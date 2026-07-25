@@ -59,7 +59,11 @@ was not regenerated in the same change set — UC-001; bump sufficiency is the c
 UC-002). P0 also defines two record schemas the contracts depend on: the **regeneration
 manifest** (the durable blast-radius change record — `commit-log-entry` is per-entity and
 cannot carry it) and the **finding-routing record** (ADR-046's contradicted-claim route,
-expressibility finding N2). The blue/green dual-compile + typed-output-diff harness (ADR-046,
+expressibility finding N2). The generator also emits the **compilation-provenance block**
+(ADR-045 §7) into every generated spec — full input-revision chain incl. layers, schemas, and
+generator version — and the `--check` gate verifies it by faithful recompilation (a mismatch
+is an integrity refusal, UC-012); realized entities extend it with realization provenance
+(provider definition revision + engine binding version). The blue/green dual-compile + typed-output-diff harness (ADR-046,
 UC-007/008) lands with the P1 pilot, which exercises the full promotion contract on a real
 migration.
 

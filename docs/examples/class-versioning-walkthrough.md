@@ -64,7 +64,10 @@ estate pin naming a revision the consumed registry ref does not contain.
 **Does an upstream class change affect my pinned resource?** No — and not because the chain is
 separately locked, but because your pinned artifact *contains* its chain: the flat spec was
 compiled from its Base/Type/Provider classes at a specific registry state, and that content is
-baked in at compilation, not looked up live. Upstream changes mint *new* revisions (uuids are
+baked in at compilation, not looked up live. It also *declares* that chain: the compilation-provenance
+block (ADR-045 §7) names every input revision — classes, layers, schemas, generator — and for
+realized instances, the provider definition revision that realized them; verified by faithful
+recompilation, so the claim is checkable, live and historically. Upstream changes mint *new* revisions (uuids are
 immutable; old ones never retire); yours is untouched by construction. The only thing that
 changes on your side is the debt list — the new revision appears as visible lag until *your*
 change policy says adopt, through blue/green. And if you pin at the class level instead, the
