@@ -61,6 +61,17 @@ distinctly (UC-004, UC-006): a *registry-internal* class declaring a fixed-versi
 (intra-registry references are by handle; the registry ref is the only internal pin), and an
 estate pin naming a revision the consumed registry ref does not contain.
 
+**Does an upstream class change affect my pinned resource?** No — and not because the chain is
+separately locked, but because your pinned artifact *contains* its chain: the flat spec was
+compiled from its Base/Type/Provider classes at a specific registry state, and that content is
+baked in at compilation, not looked up live. Upstream changes mint *new* revisions (uuids are
+immutable; old ones never retire); yours is untouched by construction. The only thing that
+changes on your side is the debt list — the new revision appears as visible lag until *your*
+change policy says adopt, through blue/green. And if you pin at the class level instead, the
+ancestor chain pins with it (subtree consistency, ADR-045): there is no half-locked chain.
+Corpus-tested: UC-001 ("every pin still resolves to its pre-change uuid") and UC-005 ("no
+registry change alters the estate's behavior until the organization re-pins").
+
 ## How to re-pin with blue/green — UC-007/008
 
 Never re-pin on the compatibility claim; re-pin on the diff:
