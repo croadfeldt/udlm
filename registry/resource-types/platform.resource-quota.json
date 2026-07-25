@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.3.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "5ceca904-3dd8-4905-96d2-bf53fdc63d8d",
+  "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a",
   "resource_type": "Platform.ResourceQuota",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.",
-    "plain_description": "The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod count, storage, and object-count ceilings for a single namespace. Discovered usage is reported against the limits, so whether a namespace has room for a request is a data question a placement policy answers up front — and quota pressure is visible for capacity planning.",
+    "plain_description": "The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod count, storage, and object-count ceilings for a single namespace — the ceilings live under `hard`, in Kubernetes' own resource-name spelling, and the namespace is bound in the spec by the required `namespace_ref`, not by a relationship edge alone. Discovered usage is reported against the limits, so whether a namespace has room for a request is a data question a placement policy answers up front — and quota pressure is visible for capacity planning.",
     "use_when": [
       "You need per-namespace ceilings on aggregate consumption enforced and visible.",
       "You need admission or placement to check remaining headroom before dispatching a workload."

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.3.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "45c5e856-48a4-41e8-8bf6-9fb95da0e578",
+  "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "Network.VLAN",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.",
-    "plain_description": "The segment itself: its encapsulation (802.1Q tag, VXLAN/Geneve VNI, or flat/untagged) and its id. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.",
+    "plain_description": "The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `vxlan` or `geneve` for an overlay VNI, `flat` for untagged — and its id, `segment_id`. It exists so a segment id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents select an existing VLAN, they do not invent one inline.",
     "use_when": [
       "You need one authoritative record per segment that ports, virtual networks, and gateway segments all reference.",
       "You need overlay segments (VXLAN/Geneve VNIs) modeled with the same shape as 802.1Q VLANs."

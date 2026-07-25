@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "40cd11f3-3bdd-4f0c-811f-df8306dd7df8",
+  "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab",
   "resource_type": "Topology",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Declares the failure and locality domains — region, zone, rack, power, network — that placement, residency, and maintenance gating resolve against.",
-    "plain_description": "One record describing a graph of domains, each with a stable id, an abstract kind (zone, rack, power, and so on), a parent, and labels (e.g. jurisdiction). Portable intent constrains against kinds — spread across power domains — while what a resource landed in is a concrete id. Domains are addressable data inside this one type, not separate records. Observed per-domain status (active, draining, unavailable) is the signal maintenance gating reads — a draining domain holds off further maintenance.",
+    "plain_description": "One record describing a graph of domains, framed by its required `scope` (`global`, `region`, `facility`, or `logical` — the breadth the topology describes); each domain has a stable id, an abstract kind (zone, rack, power, and so on), a parent, and labels (e.g. jurisdiction). Portable intent constrains against kinds — spread across power domains — while what a resource landed in is a concrete id. Domains are addressable data inside this one type, not separate records. Observed per-domain status (active, draining, unavailable) is the signal maintenance gating reads — a draining domain holds off further maintenance.",
     "use_when": [
       "You need placement or anti-affinity constraints that reference abstract domain kinds portably.",
       "You need residency and sovereignty resolved against domain labels (jurisdiction, region).",

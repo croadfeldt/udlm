@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.2.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "ae59bcaa-3fb7-4de2-8780-110f7165fbe8",
+  "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b",
   "resource_type": "Hardware.StorageDevice",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "family": "Resource",
   "portability": "portable",
   "status": "active",
@@ -15,7 +15,7 @@
   },
   "context": {
     "purpose": "Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.",
-    "plain_description": "One storage device as a record: where it sits (bay or slot), what it is (model, serial, world-wide name), its capacity, media and bus type, and its role (boot, data, cache, storage-cluster member). device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host sees.",
+    "plain_description": "One storage device as a record: its required `capacity` — a whole-number quantity like 4TB; fractional sizes do not validate — its `media_type` and bus `protocol`, and where and what it is. Identity facts — bay or slot (`location`), model, serial, WWN, and the semantic `role` (boot, data, cache, a storage daemon's member drive) — nest under the `identity` block, not at the top level. device_class separates a physical drive from a virtual disk presented to a guest; a virtual disk points at the storage that backs it. Once realized, the OS device path is published, tying the inventory record to what the host sees.",
     "use_when": [
       "You need drive-level inventory — which drive, in which bay, of which host — so a failing disk maps to a physical pull-and-replace.",
       "You need pool or cluster membership grounded in real devices (a vdev's members, a storage daemon's backing drive)."

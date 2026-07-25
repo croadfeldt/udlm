@@ -12,11 +12,11 @@
 # ADOPT (not absorb), core-tenets T5: schemas are not restated — only an identity join + version-pinned
 # pointer. The pool/vdev vocabulary is OpenZFS's; the capacity/redundancy alignment is SNIA Swordfish
 # StoragePool's; a provider (zfs) naturalizes the concrete zpool.
-$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.3.2
 conforms_to: udlm/0.1
-uuid: 35c647c9-1929-44d1-8ddd-830bf07255e4
+uuid: 643156a0-5c7b-4fa7-bcfb-089c0a06d520
 resource_type: Storage.Pool
-version: 0.3.1
+version: 0.3.2
 family: Resource
 status: active
 metadata:
@@ -204,9 +204,10 @@ relationships:
 context:
   purpose: Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are
     carved from.
-  plain_description: 'The generic redundancy group — one shape for a ZFS zpool, an md array, a hardware-RAID virtual
-    disk, an LVM VG, or a btrfs pool: a set of drives on one host grouped into vdevs, each vdev carrying a protection
-    scheme (mirror, raidz). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which
+  plain_description: 'The generic redundancy group — one shape for every backend, named by the required `pool_kind` (`zfs` for a zpool, `md` for
+    an md array, `hardware_raid` for a controller virtual disk, `lvm` for a VG, `btrfs`): a set
+    of drives on one host grouped into `vdevs`, each vdev carrying a protection scheme spelled
+    `type` (mirror, raidz, stripe). The vdev topology is why the type exists — a flat dataset-on-host edge would lose which
     drives protect which data and how many failures the pool survives. It sits between the physical drives below
     and the datasets above, and orders accordingly: a pool stops after its datasets and before its drives.'
   use_when:

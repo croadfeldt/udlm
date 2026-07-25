@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.3.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.3.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "cc8b91eb-65eb-4afe-bac7-69cc83e22139",
+  "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "Network.DNSZone",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.",
-    "plain_description": "One DNS zone (e.g. example.com) with its authoritative role (primary, secondary, stub, forward) and, optionally, its resource records. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.",
+    "plain_description": "One DNS zone — its required `zone_name`, e.g. example.com — with its authoritative role spelled `zone_type` (`primary`, `secondary`, `stub`, `forward`) and, optionally, its resource `records`. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once realized, the zone's nameservers are published. One asymmetry is a documented open decision: records here are authored inline, while the DHCP side derives its reservations from address records.",
     "use_when": [
       "You need zones inventoried with their authoritative role and their serving relationships.",
       "You need zone data declared portably so the serving software can change without the model changing."

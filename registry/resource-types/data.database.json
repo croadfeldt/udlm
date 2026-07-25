@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "b2652812-f778-4746-a7e4-fb2efafd3bd1",
+  "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337",
   "resource_type": "Data.Database",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Declares a managed relational database instance and publishes the connection facts other resources bind to.",
-    "plain_description": "The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and resource sizing. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.",
+    "plain_description": "The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and the required `resources` sizing — `cpu` as a string (`500m` or `2`), with `memory` and `storage` as sizes like `16GB`. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.",
     "use_when": [
       "You need a database provisioned to a declared engine, version, and size, with its connection surface published for consumers.",
       "You need the database's backing volume and host in the graph so ordering (volume before database, database before app) is derivable."

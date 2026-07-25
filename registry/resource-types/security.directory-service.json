@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.4.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "d6c22e8d-fd91-408d-8a97-50671a5f45db",
+  "uuid": "b5a74015-f60e-49ff-9ff8-c704152cb958",
   "resource_type": "Security.DirectoryService",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.",
-    "plain_description": "The identity directory as a running server: which protocols it serves (LDAP, Kerberos), its realm and base DN, and its role in a replication topology (a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.",
+    "plain_description": "The identity directory as a running server: which `protocols` it serves — required; `ldap`, `ldaps`, `kerberos` — its `realm` and `base_dn`, and its role in a replication topology, spelled `replication_role` (`primary`, `replica`, `standalone`; a replica depends on its primary). Consumers get endpoints once realized — the LDAP URL, the Kerberos KDC, the base DN to bind under. The server is distinct from the identity data in it: people, groups, and service accounts are their own records; an integrated identity suite realizes this server plus DNS zones.",
     "use_when": [
       "You need services and hosts that authenticate against the directory to depend on it, so it stops last among them.",
       "You need the directory replication topology (primary/replica) explicit for recovery planning."

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.4",
   "conforms_to": "udlm/0.1",
-  "uuid": "80b65d24-8e90-478e-aff4-4c6089b908ca",
+  "uuid": "dba568c8-78e7-4239-8929-5917305cce17",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -382,7 +382,7 @@
   ],
   "context": {
     "purpose": "Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.",
-    "plain_description": "The request for one VM: how big (a named size class, or explicit vCPU and memory), what guest OS, which disks backed by what storage class, and which existing networks its NICs attach to. Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
+    "plain_description": "The request for one VM: how big — a named size class (`instance_size`), or explicit `vcpu` and `memory` in its place — what `guest_os`, which `disks` backed by what storage class, and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
     "use_when": [
       "You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.",
       "You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.",

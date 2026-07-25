@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.9.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.9.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "a8b3b4de-5d3d-4bc5-992b-abdbdb0da265",
+  "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.",
-    "plain_description": "One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.",
+    "plain_description": "One network interface, of any kind: device_class says whether it is a physical NIC, a fully virtual interface (virtio/veth), a whole-NIC passthrough, a partition carved from one physical NIC (an SR-IOV VF or VLAN sub-interface, pointing up at its parent), or a composite built from many members (a bond or a bridge, pointing down at its members). The same type also serves switch ports. Identity facts — the MAC address (`mac_address`), location, serial, model — nest under the `identity` block, not at the top level. A physical interface carries a connects_to edge to its discovered peer port, which is what makes host → NIC → switch port → switch a walkable path. VLAN membership is declared by referencing Network.VLAN records, never by retyping raw tags.",
     "use_when": [
       "You need the full host interface stack — NICs, bond, bridge, sub-interfaces — as records whose parent/member links mirror reality.",
       "You need host-NIC-to-switch-port cabling (LLDP-discovered) in the graph for impact analysis.",

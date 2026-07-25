@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.3.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.3.3",
   "conforms_to": "udlm/0.1",
-  "uuid": "487d2fc4-faf7-4cb6-8969-f3d94373296b",
+  "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f",
   "resource_type": "Platform.StorageClass",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -14,7 +14,7 @@
   },
   "context": {
     "purpose": "Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.",
-    "plain_description": "The Kubernetes StorageClass construct: a named policy saying which provisioner builds volumes, what happens to data on release, when binding happens, whether volumes can grow, and what the class can do (IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.",
+    "plain_description": "The Kubernetes StorageClass construct: a named policy — its `name` and `provisioner` are required — saying which provisioner builds volumes, what happens to data on release (`reclaim_policy`), when binding happens (`volume_binding_mode`, Kubernetes-cased: `Immediate` or `WaitForFirstConsumer`), whether volumes can grow (`allow_volume_expansion`), and what the class can do (`capabilities` — IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.",
     "use_when": [
       "You need volumes to request storage by named policy instead of naming backends.",
       "You need placement to pick storage by advertised capability (encrypted, fast, replicated)."
