@@ -19,11 +19,13 @@ descendant in the same commit; no hand-written test exists anywhere in this flow
 downstream estate sees nothing: its pins resolve the old revisions until it chooses otherwise.
 
 **Change 2 — breaking, under-declared (UC-002).** The maintainer changes `memory.size` from
-string to object and declares a patch bump. The compat gate refuses:
+string to object and declares a revision bump. The compat gate refuses (real output format —
+the pre-1.0 floor for a breaking classification is MINOR, per VERSIONING.md):
 
 ```
-BREAKING: Compute#memory.size — type changed (string → object); declared bump 0.4.1→0.4.2
-is insufficient; minimum required: major (0.4.1→1.0.0 or 0.5.0 under 0.x convention)
+  [major] changed type on 'memory.size' (string -> object)
+  required bump: MAJOR   declared bump: REVISION   [pre-1.0: MAJOR relaxed to MINOR]
+FAIL: a MAJOR-classified change needs at least a MINOR bump pre-1.0 (0.4.1 -> 0.5.0)
 ```
 
 Nothing regenerates from a refused change. The same classifier refuses a *scope narrowing* —

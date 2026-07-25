@@ -15,7 +15,7 @@ scenario:
   - A Type or Provider Class declaring a fixed-version Base Class reference fails registry validation
   - 'The refusal is typed and actionable: it names the reference, the skew rule, and the by-handle correction'
   - Registry compilation always resolves class references to the release's current versions
-  - The registry ref (commit) is documented as the sole intra-registry pinning mechanism
+  - VERSIONING.md's registry-resolution scope states the registry ref is the sole intra-registry pin (the criterion is the citation resolving)
   - The refusal is a gate outcome recorded with the change
   dimensions:
     lifecycle_phase: new_request

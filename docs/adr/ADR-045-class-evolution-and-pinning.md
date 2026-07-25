@@ -1,6 +1,6 @@
 # UDLM ADR-045: Class evolution and pinning — atomic recompilation, two-plane pins, portability in the compat contract
 
-**Status:** Proposed (croadfeldt upstream) — ratified in-session 2026-07-25, pending engineering review
+**Status:** Proposed (croadfeldt upstream) — rulings decided in-session 2026-07-25; engineering ratifies (#217 discipline)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related — the complete picture, each cited once.** The class system this governs (ADR-038 —
@@ -26,9 +26,13 @@ element's scope.
 
 ## Decision
 
-**1. Recompilation is atomic.** A class change and every regenerated descendant — Type
-Classes, Provider Classes, generated flat specs — land in one change set. Each regenerated
-artifact mints a new uuid and a version bump the compat gate accepts as sufficient. Lazy
+**1. Recompilation is atomic.** A class change and every affected descendant land in one
+change set: **generated flat specs regenerate**; **authored Type and Provider Classes
+revalidate**, rotating uuid and version only where their own content actually changes (the
+rotation gate's no-op rule holds — an unchanged authored file never rotates). Every artifact
+whose content changes mints a new uuid and a bump the compat gate accepts as sufficient — which
+pre-1.0 means the **MINOR floor** for breaking classifications (VERSIONING.md, "the pre-1.0
+bump floor"), never a REVISION and never a jump to 1.0. Lazy
 regeneration is rejected: it would let one release carry two truths of the same element, which
 is version skew inside a single source. The cost — Base changes produce large diffs — is
 accurate reporting, not overhead: a Base change is large, and the diff is where its size
@@ -47,8 +51,12 @@ pin exactly and own their upgrades. Concretely:
   Base version inside the registry is refused at validation — the registry ref (commit) is the
   sole intra-registry pin, and it pins everything at once.
 - **Organization-edge pins are first-class and uuid-precise.** The uuid IS the revision, so a
-  pin is exact by construction. A pinned estate compiles and realizes against the pinned
-  revision completely; nothing upstream propagates until the organization re-pins.
+  pin is exact by construction. The revision store is the registry's git history: a pin
+  resolves within the registry ref (or ref range) the estate declares it consumes — which is
+  how behind-but-legal and unknown-refused are mechanically distinct. A pin carrying both
+  `version` and `uuid` must carry a matching pair; a mismatch is refused, and the uuid is
+  authoritative. A pinned estate compiles and realizes against the pinned revision completely;
+  nothing upstream propagates until the organization re-pins.
 - **Pin-behind is legal, enumerated debt.** The version distance appears per pinned artifact
   in the estate's own validation output and re-opens when the estate's registry ref advances —
   the standing estate discipline, applied unchanged to classes. **Pin-ahead or
@@ -66,9 +74,22 @@ shape changes, classified by rule, not review judgment. Scope widening is compat
 schema differ can see this class of break; the compat gate must implement the scope rule
 explicitly.
 
-**5. The inheritance depth stays at three.** Base/Type/Provider is a ruling, not a habit —
-ripple cost grows with depth, and the three scopes are exactly the portability distinctions
-the model needs. A proposed fourth level is a re-review trigger for this ADR.
+**5. The inheritance depth stays at three scope planes.** Base/Type/Provider is a ruling,
+not a habit — ripple cost grows with depth, and the three scopes are exactly the portability
+distinctions the model needs. This caps the **class-hierarchy planes**, and is orthogonal to
+ADR-038's naming-depth rule ("unbounded, but governed"), which governs **dotted address
+depth** within elements — both stand; neither supersedes the other. A proposed fourth scope
+plane is a re-review trigger for this ADR.
+
+**6. Ruled edge cases.**
+- **Element deletion** is breaking (the VERSIONING.md remove-a-field row), handled by the same
+  atomic path as narrowing: one change set, blast radius enumerated, MINOR-floor bump pre-1.0.
+- **Pins are subtree-consistent.** Pinning a class pins its ancestor chain; two pins in one
+  estate that resolve the same ancestor to different revisions are refused — the intra-registry
+  two-truths ban, applied at the estate edge (no diamond skew).
+- **A shared artifact resolves under exactly one pin set** — its owning estate's. Consumers in
+  differently-pinned estates read the owner's compiled-against record; they do not re-resolve
+  it under their own pins.
 
 ## Consequences
 

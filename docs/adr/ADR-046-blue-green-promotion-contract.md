@@ -1,6 +1,6 @@
 # UDLM ADR-046: The blue/green promotion contract — typed-output diff as the gate, evidence to attestation
 
-**Status:** Proposed (croadfeldt upstream) — ratified in-session 2026-07-25, pending engineering review
+**Status:** Proposed (croadfeldt upstream) — rulings decided in-session 2026-07-25; engineering ratifies (#217 discipline)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related — the complete picture, each cited once.** The pin lifecycle this completes (ADR-045
@@ -24,11 +24,17 @@ mechanically comparable on them.
 
 **Re-pins promote on evidence, not version claims.** The contract:
 
-1. **Two compilations, one corpus.** The organization's intent corpus compiles under blue (the
-   pinned class revisions) and green (the candidate revisions) side by side.
+1. **Two compilations, one corpus, one corpus ref.** The organization's intent corpus
+   compiles under blue (the pinned class revisions) and green (the candidate revisions) side by
+   side — at the **same recorded corpus ref**. A corpus that moved between the two compilations
+   voids the comparison; the evidence record carries the ref.
 2. **Dry-run realization, typed-output diff.** Both sides realize in dry-run; their declared
-   typed outputs — never provider internals — are diffed mechanically. The diff is the entire
-   promotion gate: empty, or every difference explicitly reviewed and approved.
+   typed outputs — never provider internals — are diffed mechanically. Outputs declared
+   **volatile** (timestamps, generated identifiers) are excluded by declaration, never ad hoc,
+   so non-determinism cannot manufacture perpetually-dirty diffs. When the changed axis is the
+   provider itself and green cannot dry-run, promotion routes through a staged environment —
+   the P1 pilot defines that path. The diff is the entire promotion gate: empty, or every
+   difference explicitly reviewed and approved.
 3. **Promotion is atomic and evidenced.** On a clean-or-approved diff the pins advance, the
    ADR-045 debt entries close, and the diff plus approvals are preserved as the promotion's
    audit evidence — attestation input, same discipline as the registry's model-validation
@@ -54,6 +60,10 @@ must not fork these paths.
 - The diff is only as good as the output surface — thin-output types (the standing scoreboard
   finding) are invisible to this contract, which makes output adequacy a prerequisite, not a
   nicety.
-- Gate work this creates (realization-plan P0/P1): the dual-compile harness, the typed-output
-  diff tool, and the promotion/refusal record shapes; the P1 pilot exercises the full contract
-  on a real migration.
+- Gate work this creates (realization-plan **P1**, consistently — the harness is pilot
+  work): the dual-compile harness, the typed-output diff tool, and two **named record shapes
+  the registry must define before P0 freezes**: the promotion-evidence record (corpus ref,
+  both revision sets, diff, approvals) and the upstream **finding-routing record** — the
+  registry kind that carries a contradicted compatibility claim home with the diff as
+  provenance. Neither exists today (expressibility audit r2, finding N2); ADR prose is not a
+  routing mechanism.
