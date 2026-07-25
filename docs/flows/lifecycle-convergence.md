@@ -129,4 +129,4 @@ flowchart LR
 
 ## The whole story in one line
 
-One loop (§2), fired by two trigger-classes (§3), walked by any entity (§1), yielding the familiar archetypes (§4), with days as a lens (§5) — `Intent + Realized`, a gap, and `Converge` closing it. See the combined-model ADR for the decision and the *why*.
+One loop (§2), fired by two trigger-classes (§3), walked by any entity (§1), yielding the familiar archetypes (§4), with days as a lens (§5) — `Intent + Realized`, a gap, and `Converge` closing it. See [ADR-030](../adr/ADR-030-convergence-lifecycle-model.md) (one convergence loop; realize / reconcile / rehydrate as trigger readings) for the decision and the *why*.

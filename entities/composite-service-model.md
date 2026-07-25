@@ -461,4 +461,4 @@ Registration is otherwise validated like any other catalog item.
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*

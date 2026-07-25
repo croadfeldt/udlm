@@ -31,6 +31,8 @@ made true*. Each UDLM flow links its DCM counterpart and vice versa.
 | [Provider lifecycle](provider-lifecycle.md) | The provider's side of the same story — register, declare the inputs it needs (namespaces, storage classes, …), get dispatched, report realized state — so placement and enrichment have the data to fill a request | `docs/flows/provider-lifecycle.md` |
 | [Template assembly](template-assembly.md) | Pattern → Template → System — a reusable design becomes an orderable definition becomes a running instance; the assembly-scale projection of Intent → Requested → Realized (ADR-033) | `docs/flows/template-assembly.md` |
 | [Automation migration & promotion](automation-migration-and-promotion.md) | Automation moves like everything else — engines declare a shared process type, a green engine verifies against blue by typed-output diff, cutover is a placement preference, and versions promote through stages like an application release. |
+| [Change-control adoption](change-control-adoption.md) | The calendar and ceremony around class adoption — a declared change policy branches on change class; scheduling gates decide when, evidence gates decide whether; waiting is typed, visible debt; propagation is dependency-ordered and batch-verified. |
+| [Storage-array maintenance with dependents](storage-array-maintenance-dr.md) | Disruptive maintenance on an array serving ten applications — impact set derived from the graph, per-client tolerance policies split window-quiesce from DR cutover, the DR gate precedes scheduling, cutover is a re-bind on declared outputs, and failure halts resumably with DR still carrying the continuity clients. |
 
 **[request-realization](request-realization.md) is the foundational flow** — it walks the whole model end
 to end. Every other flow is intentionally **lighter and uses it as its base**: it assumes request-realization
@@ -42,8 +44,9 @@ request-realization first.
 labeled by its Use Case number and built on request-realization. Grouped by persona in
 **[by-persona.md](by-persona.md)** — the usage-by-role view.
 
-**Planned** (same shape): decommission & teardown ordering · drift detection → reconcile · rehydration
-(faithful / provider-portable) · dependency brokering (fulfillment: provider).
+**Planned** (same shape): decommission & teardown ordering · dependency brokering (fulfillment: provider).
+Drift detection → reconcile and rehydration are delivered — [uc-14](uc-14-drift-detection-remediation.md),
+[uc-10](uc-10-dynamic-rehydration.md) (dynamic) and [uc-18](uc-18-provider-portable-rebuild.md) (provider-portable).
 
 ## The shape a flow follows
 

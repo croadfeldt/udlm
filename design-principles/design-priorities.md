@@ -26,7 +26,7 @@ Security is not a feature, a profile option, or a compliance checkbox. It is the
 
 Security properties — value separation, rotation, audit trails, idle detection, algorithm baselines, scoped credentials, revocation propagation, shadow mode evaluation — are **architecturally present in every profile**. What profiles control is enforcement strictness, threshold values, and automation level — not whether the security property applies.
 
-**The `minimal` profile is "security with minimal operational overhead" — not "minimal security."**
+**The `homelab` profile is "security with minimal operational overhead" — not "minimal security."**
 
 A `homelab` profile realization keeps every one of these properties, only scaled down. Here a *[credential](../governance/credentials.md)* is a consumer-facing secret brokered under the credential contract:
 
@@ -37,7 +37,7 @@ A `homelab` profile realization keeps every one of these properties, only scaled
 - Audits the first retrieval of a provisioned credential (always — not sometimes)
 - Maintains a **revocation registry** — the fast "revoked-but-not-yet-expired" check every component consults per request (with a bounded cache TTL — not disabled)
 
-Every one of these security properties is present in `minimal`; only its enforcement strictness and operational automation are scaled down.
+Every one of these security properties is present in `homelab`; only its enforcement strictness and operational automation are scaled down.
 
 **When security and convenience conflict, security wins** — but the design must find a way to make the secure option easy. A security model that is routinely bypassed because it is too burdensome has failed at both security and usability. The profile system is the mechanism: the right profile makes secure behavior automatic, not effortful.
 
@@ -68,7 +68,7 @@ The secure path must also be the easy path. Profile defaults should work for mos
 
 **The design principle:** When implementing a security requirement, simultaneously design the ease-of-use mechanism that makes it effortless to comply with. A scoring model's auto-approval threshold (not making every request require human review) is ease of use in service of security.
 
-**Human-in-the-loop is a last resort, not a design tool.** Every point where a request routes to a human — an approval tier, `route-to-review`, an override — is a **necessary anti-pattern**: sometimes unavoidable (a genuine compliance exception that only an authorized human may grant), but always a cost to minimize, never the default. The goal is automated, policy-driven governance where a *policy* decides; `route-to-review` exists so a governed **exception** has an auditable path, **not** so the common case can defer to a human. A design that reaches for human review where a policy could decide has failed this priority (`DPO-007`).
+**Human-in-the-loop is never the platform's default — and always the organization's option.** This priority governs what the **platform builds as its defaults**: a *platform* design that constructs a mandatory human gate where a declared policy could decide has failed this priority (`DPO-007`) — the goal is automated, policy-driven governance where a *policy* decides, and `route-to-review` exists so a governed **exception** has an auditable path. What an **organization declares** is a different matter entirely: an approval ceremony an estate writes into its own change policy is a legitimate, priced, visible disposition the platform enables and never judges (the operational response matrix, `docs/design/operational-response-matrix.md` — *approved* is a first-class response).
 
 **Things that should be easy in all profiles:**
 - Requesting a standard resource (auto-approve for clean requests)
@@ -132,7 +132,7 @@ When priorities seem to conflict, the resolution follows this order:
 ### Common Misapplications
 
 **"We can disable X in the homelab profile for simplicity."**
-Wrong application. The minimal profile scales down operational burden, not security properties. The question is: what is the minimum viable implementation of X that requires no operational overhead? That is what minimal profile gets.
+Wrong application. The homelab profile scales down operational burden, not security properties. The question is: what is the minimum viable implementation of X that requires no operational overhead? That is what the homelab profile gets.
 
 **"Security is too complex for our users, so we'll make it optional."**
 Wrong application. If security is too complex, the design of the security mechanism needs to improve (priority 2). Making security optional removes it — that fails priority 1. Design a simpler mechanism that achieves the same security outcome.
@@ -166,7 +166,7 @@ The profile system is the primary mechanism for expressing priorities 1–3 simu
 
 UDLM defines the following named profiles as the substrate vocabulary. Realizations may extend with additional named profiles but must support the substrate set so that artifacts and contributions referencing these names interoperate across peers.
 
-- `minimal` — security with minimal operational overhead
+- `homelab` — security with minimal operational overhead
 - `dev` — developer/lab settings with relaxed thresholds
 - `standard` — typical production-ish defaults
 - `prod` — strict production
@@ -241,9 +241,9 @@ The `on_expiry` action vocabulary (`escalate`, `reject`) is closed at the substr
 | `DPO-002` | Every security requirement must be accompanied by an ease-of-use mechanism that makes compliance effortless for the common case. A security model routinely bypassed because of complexity has failed. |
 | `DPO-003` | New capabilities should be expressed through the existing profile/policy/provider extension system before creating new mechanisms. Extensibility is achieved through composition, not proliferation. |
 | `DPO-004` | Fit for purpose is a precondition, not a priority. All four priorities apply only within the constraint that the system can fulfill its lifecycle management mission. |
-| `DPO-005` | The `minimal` profile is "security with minimal operational overhead" — not "minimal security." Design decisions that disable security properties rather than scaling them violate DPO-001. |
+| `DPO-005` | The `homelab` profile is "security with minimal operational overhead" — not "minimal security." Design decisions that disable security properties rather than scaling them violate DPO-001. |
 | `DPO-006` | When security and ease of use conflict, redesign the ease-of-use mechanism — not the security requirement. The secure path must also be the easy path. |
-| `DPO-007` | Human-in-the-loop (approval, `route-to-review`, override) is a last-resort anti-pattern — necessary for genuine authorized exceptions, minimized everywhere else. A decision a policy could make automatically MUST NOT route to a human; `route-to-review` is the exception path, not the common one. The goal is to reduce human-in-the-loop as far as governance allows. |
+| `DPO-007` | The platform MUST NOT construct mandatory human gates as its own defaults where a declared policy could decide — human-in-the-loop as a *platform default* is the anti-pattern, and policy-only automation must be possible in every profile. The MUST NOT binds platform-built defaults only: a human approval ceremony an **organization declares** in its own change policy is a legitimate disposition the platform enables, prices, and never judges (see the operational response matrix, `docs/design/operational-response-matrix.md`). |
 
 ---
 

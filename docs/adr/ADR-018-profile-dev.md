@@ -1,6 +1,6 @@
 # UDLM ADR-018: The Dev profile — the evaluation / co-engineering target
 
-**Status:** Accepted (maintainer decision, 2026-07-15)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
 **Related:** ADR-007 (profile model — composed set + floor); ADR-017 (the homelab profile + the per-profile-ADR template this follows); the record: `registry/instances/profile-dev.yaml`; `docs/profile-resolution.md`; `../../registry/UDLM-0.1-SCOPE.md` §2 (profile posture — implement against dev)

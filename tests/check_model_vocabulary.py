@@ -59,6 +59,11 @@ RETIRED_FIELDS = [
 # "retired" are skipped (tombstones and retirement notes legitimately name the old field),
 # and ADRs are excluded wholesale (historical records narrate the vocabulary they retired).
 PROSE_RETIRED = re.compile(r"\b(relationship_types?|relationship_nature|dependency_type)\b")
+# Doctrine-wave extension (2026-07-25): the `kind:`-key prose form with an edge value (the
+# knowledge-family §4.6 escape) and the phrase "edge kinds" (the uc-07 escape) — both slipped the
+# fence-scoped and enum-value-scoped checks because they live in running text.
+PROSE_KIND_KEY = re.compile(r"\bkinds?\s*:\s*`?(depends_on|contained_by|binds_to|references)\b")
+PROSE_EDGE_KINDS = re.compile(r"\bedge kinds\b", re.IGNORECASE)
 PROSE_SKIP = re.compile(r"retired", re.IGNORECASE)
 PROSE_EXCLUDE_PREFIX = ("docs/adr/",)
 EDGE_TYPE_LINE = re.compile(r"^\s*(?:-\s*)?edge_type\s*:\s*(.+?)\s*(?:#.*)?$")
@@ -121,6 +126,18 @@ def main() -> int:
                             hits.append((path, lineno,
                                          f"retired field `{m.group(1)}` in prose — the doc still "
                                          "explains the model in retired vocabulary", line.strip()))
+                        if (not path.startswith(PROSE_EXCLUDE_PREFIX)
+                                and PROSE_KIND_KEY.search(line)
+                                and not PROSE_SKIP.search(line)):
+                            hits.append((path, lineno,
+                                         "retired edge field `kind:` in prose — use `edge_type` "
+                                         "(ADR-026)", line.strip()))
+                        if (not path.startswith(PROSE_EXCLUDE_PREFIX)
+                                and PROSE_EDGE_KINDS.search(line)
+                                and not PROSE_SKIP.search(line)):
+                            hits.append((path, lineno,
+                                         '"edge kinds" is not the vocabulary — the closed set is '
+                                         "`edge_type` (data-model-core §4)", line.strip()))
                         continue
                     for rx, hint in RETIRED_FIELDS:
                         if rx.match(line):

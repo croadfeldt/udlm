@@ -19,7 +19,7 @@ scenario:
   - No registry change alters the estate's behavior until the organization re-pins
   - The version distance is enumerated per pinned artifact in the estate's own validation output
   - The debt list re-opens automatically when the estate's registry ref advances
-  - An audit reader can reconstruct exactly which revision every estate artifact compiled against
+  - Every estate artifact's compiled-against revision (uuid) is present in the estate's validation output as a record field
   dimensions:
     lifecycle_phase: day2_operations
     resource_complexity: single_with_deps

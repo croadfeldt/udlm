@@ -6,7 +6,7 @@ Sweep result: `handle`, `display_name` shared **3/3** (Group, Person, ServiceAcc
 
 ---
 
-## `Identity` — Base Class  (`identity.json`)
+## `Identity` — Base Class  (`identity.json` — post-P0 filename, not yet generated)
 The universal identity surface every member shares.
 
 ```jsonc

@@ -309,8 +309,9 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 38,
+    "files_scanned": 67,
     "covered": [
+      "Capability",
       "Compute.Cluster",
       "Platform.Hub",
       "Security.CredentialRef",
@@ -318,7 +319,6 @@
     ],
     "uncovered": [
       "Automation.Job",
-      "Capability",
       "Compute.BareMetalHost",
       "Compute.Container",
       "Compute.VirtualMachine",

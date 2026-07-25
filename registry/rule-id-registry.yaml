@@ -233,3 +233,8 @@ prefixes:
     home: governance/accreditation-and-authorization-matrix.md
     domain: Zero-trust posture rules
     status: active
+  - prefix: DOC
+    name: Documentation rules
+    home: CONTRIBUTING.md
+    domain: How documents in this repo are written — audience, prose standard, references-carry-gist
+    status: active

@@ -341,4 +341,4 @@ request:
 ---
 
 
-*Non-normative annex maintained by the DCM Project. See the [normative core](layering-and-versioning.md).*
+*Non-normative annex — part of the UDLM specification. See the [normative core](layering-and-versioning.md).*

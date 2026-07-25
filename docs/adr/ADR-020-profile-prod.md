@@ -1,6 +1,6 @@
 # UDLM ADR-020: The Prod profile — hardened production
 
-**Status:** Accepted (maintainer decision, 2026-07-15)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
 **Related:** ADR-007 (profile model); ADR-019 (standard — the floor this contains); ADR-010 (blast-radius/impact); ADR-006 (bounded convergence); ADR-011 (validate-and-reserve); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-prod.yaml`

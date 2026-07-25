@@ -14,7 +14,9 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "name"
+        "name",
+        "uuid",
+        "version"
       ],
       "properties": {
         "name": {
@@ -32,6 +34,11 @@
             "composite"
           ],
           "description": "Provider type (provider-contract.md). A provider may emit adopted-standard data in its Information-Provider role even when it also provisions (service)."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "The provider definition's version — the declared surface (capabilities, adopted standards, defaults, populated outputs) is the versioned contract under the standard rules (ADR-045 §8): internal changes past the naturalization boundary (dcm ADR-023) are free; surface changes classify and bump like any other definition, with uuid rotation per VERSIONING.md."
         }
       }
     },
@@ -138,6 +145,14 @@
           "items": {
             "$ref": "#/$defs/category_scope"
           }
+        },
+        "covers_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z]*(\\.[A-Z][A-Za-z]*)*$"
+          },
+          "description": "The resource types this capability's contract covers (explicit capability<->type linkage, ADR-045 §8 two-plane versioning): a capability change reaches exactly the consumers bound through these types, which is what makes classification blast radius computable and refusals able to name the bound consumers. A provider realizing a type no capability covers is a declare-and-select violation."
         }
       }
     },
@@ -189,7 +204,9 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["class"],
+            "required": [
+              "class"
+            ],
             "properties": {
               "class": {
                 "type": "string",

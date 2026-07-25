@@ -29,6 +29,13 @@ Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guar
 *post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
 settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
 
+**The pre-1.0 bump floor (one rule, gate-enforced):** a MAJOR-classified (breaking) change is
+accepted under a **MINOR** bump until 1.0 — never under a REVISION. This is exactly what
+`tests/ci_compat_gate.py` enforces ("MAJOR relaxed to MINOR"); any prose stating the bump a
+breaking change requires must cite this floor, not post-1.0 MAJOR semantics. Bumping an entity
+to `1.0.0` is never the remedy for a breaking change — 1.0 is earned by the stability
+commitment above, and an entity crossing it enters the strict regime.
+
 ### Cutting the spec `0.1 → 1.0` — the mechanical procedure
 
 The 1.0 exit criteria are enumerated in [`UDLM-0.1-SCOPE.md`](UDLM-0.1-SCOPE.md). Once they are met,
@@ -74,6 +81,8 @@ An explicit per-type `stability` field (for when one type is battle-tested while
 | Add an **enum value** to a field marked `x-extensible-enum: true` | **MINOR** |
 | Add an **enum value** to a closed (unmarked) enum — consumers that exhaustively switch on values break (Kubernetes api_changes rule) | **MAJOR** |
 | **Remove/rename** a field; make an existing field **required**; **narrow** validation (tighter enum/range); remove an output/relationship; change `entity_type`/`portability`/lifecycle | **MAJOR** |
+| **Change a field's declared `type`** (string→object, integer→string, …) — every existing instance of the field is invalidated | **MAJOR** |
+| Narrow a class element's **scope** (Base→Type, Type→Provider) — the derived portable surface of every carrier shrinks, even with no schema-shape change (ADR-045) | **MAJOR** |
 | Docs, descriptions, metadata, non-semantic edits | **REVISION** |
 
 A **MAJOR** bump is a breaking change: the prior version moves to `deprecated`, and the new
@@ -101,10 +110,29 @@ conversion model: one canonical version per major, declared conversions between 
 
 ## Registry resolution
 
+**Scope: the consumer edge.** Version constraints govern how *consumers* — estate records,
+downstream registries, external tooling — reference registry entities. **Inside the registry,
+none of this applies to class references** (ADR-045): a Type or Provider Class references its
+parent by handle only and compiles against the release's current version; the registry ref
+(commit) is the sole intra-registry pin. The revision store behind consumer pins is the
+registry's git history — a uuid-precise pin resolves within the registry ref (or ref range) the
+consumer declares it consumes, which is how a pin can be legally *behind* the current ref while
+a pin resolving in no declared ref is refused as unknown.
+
 - Reference a type by `resource_type` + a version constraint: exact (`1.2.0`), minor-floating
   (`~1.2`), or major-floating (`^1`). Default resolution returns the latest **active** version
   satisfying the constraint.
 - `deprecated` versions resolve only to consumers that pin them; `retired` versions do not resolve.
+
+## UUID rotation
+
+The uuid is the **revision**; the handle (with `resource_type`/name) is the **thing**. Any
+change to a uuid-bearing definition or spec — content, docs, metadata, anything — mints a new
+v4 uuid in the same change; the version communicates compat semantics, the uuid identifies the
+exact revision. Old uuids never retire and are never reused: they name immutable revisions
+forever (which is what makes uuid-precise consumer pins exact by construction). A changed
+definition keeping its uuid, and an unchanged definition rotating its uuid, are both gate
+failures (`tests/check_uuid_rotation.py`).
 
 ## Pre-1.0 surface-change log
 

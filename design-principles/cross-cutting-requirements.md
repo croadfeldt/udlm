@@ -55,8 +55,10 @@ order, compensation in reverse.
   `target_field` (a specific realized output), never by bare name or provider-specific ref.
 - **M:N, cross-scope.** Support real topologies — including edges that cross tenant/sovereignty
   scope, so they are visible and governable rather than hidden.
-- **Integrity propagation.** Maturity/stability propagates across edges — a stable entity may not
-  depend on an alpha one.
+- **Integrity propagation.** Maturity/stability propagates across edges — a maturity mismatch (a stable
+  entity depending on an alpha one) is **surfaced** across the edge; whether it gates is the estate's declared
+  policy (surface → decide → enable, `docs/design/operational-response-matrix.md`) — a knowing dependence on an
+  experimental component is a legitimate, priced choice.
 - **Acyclic, validated at submission** — not discovered at realization time.
 
 ## P4 — Sovereignty is structural, not advisory

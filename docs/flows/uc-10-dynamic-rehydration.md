@@ -19,9 +19,11 @@ original intent.
   unchanged.
 - **The plan is derived, not replayed.** There is no recorded action log to re-run. The order is computed from
   the dependency graph at rebuild time, so a changed policy or a departed provider is honored automatically.
-- **Policies re-evaluate against today's world.** Sovereignty and the other validation policies run again
-  during rebuild — a resource can legitimately land on a different provider than it did originally if that is
-  what policy now requires.
+- **Policies re-evaluate per the estate's declared touch-trigger stance.** A rebuild is a touch like any
+  other (ADR-045 §8): under the common adopt-current default, sovereignty and the other validation policies run
+  again during rebuild — a resource can legitimately land on a different provider than it did originally if
+  that is what policy now requires; a pinned estate replays against its pinned revisions completely (ADR-045
+  §3), a recorded outcome either way.
 - **Identity is preserved.** UUIDs are stable across the cycle, so references between resources still resolve
   and the rebuilt graph is the *same* graph, not a look-alike.
 - **Completeness is the bar.** The rebuild is done when every resource in the original intent is realized and
@@ -52,8 +54,9 @@ Everything inside each rebuild step is request-realization.
 ## Data · Policy · Provider
 - **Data:** stored intent and the dependency graph are the sole source of truth for the rebuild; the four
   states are repopulated with UUIDs preserved.
-- **Policy:** validation policies (sovereignty included) re-evaluate per resource during rebuild — nothing is
-  grandfathered.
+- **Policy:** validation policies (sovereignty included) re-evaluate per resource during rebuild under the
+  estate's declared touch-trigger stance (ADR-045 §8) — adopt-current is the common default the estate
+  declares, not a platform imposition.
 - **Provider:** the standard placement engine re-resolves each resource; providers re-realize in dependency order.
 
 ## Pointers

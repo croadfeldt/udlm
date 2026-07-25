@@ -143,7 +143,7 @@ The **Discovered State** is what is observed actually existing through active di
 - Append-only snapshot stream — each discovery cycle produces a new snapshot
 - Ephemeral — recent history retained, older snapshots archived or discarded
 - High-frequency and machine-generated — not appropriate for human review
-- Used exclusively for drift detection — comparing against Realized State
+- Consumed by drift detection (comparing against Realized State) — one of the two roles of the dual-role model below
 - May contain resources that were never provisioned — brownfield resources discovered for ingestion
 
 **When created:** On every discovery cycle, on demand for specific entities
@@ -152,7 +152,7 @@ The **Discovered State** is what is observed actually existing through active di
 
 **Raw / unallocated resources (discovered-first entry).** A resource MAY exist with **only** its Discovered State populated and **no Intent** — a freshly racked server, a spare drive, any brownfield asset that physically exists but has not been allocated. This is the **discovered-first** lifecycle entry, the peer of intent-first (declare → realize): the estate ingests the raw resource purely for **inventory and tracking**, carrying `lifecycle_state: available` (unallocated). The resource is later **adopted** — an Intent is attached (allocation / brownfield ingestion), moving it into the managed lifecycle — and adoption **preserves the Entity UUID** (§3), so all inventory history accrues to the same entity.
 
-**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is the recorded Antipattern (claim it or retire it). Multiple discovery sources correlate to ONE entity via `correlation_ids` (realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
+**Discovered has a dual role (dcm ADR-017 Decision A, #222).** Discovered is (1) the **ephemeral per-cycle snapshot stream** consumed by drift detection, *and* (2) a **durable, per-UUID entity inventory** — the source of truth for *what exists*, including discovered-but-**unclaimed** resources (no provider attached). These are one domain, not two stores: the durable inventory record is the latest reconciled observation per entity; the snapshot stream is its history. The durable-inventory role is exempt from snapshot-stream retention ceilings; the reconciled inventory record persists until claim or retirement ([data-model-core](data-model-core.md) §3). **Unclaimed = inventoried, not managed** (queryable, excluded from lifecycle operations); a provider claim/adoption moves the entity Discovered → Realized preserving its UUID, and a long-lived unclaimed resource is surfaced as visible inventory debt — its age is the signal; claiming or retiring it is the estate's decision (advisory best practice, never an imperative). Multiple discovery sources correlate to ONE entity via `correlation_ids` (realized-entity.schema.json; every discovery source MUST emit them). See [SPEC-DESIGN-REQUIREMENTS](../registry/SPEC-DESIGN-REQUIREMENTS.md) §28 and the canonical `lifecycle_state` element (`registry/common-elements.md` §6).
 
 ### 2.5 Recovery Conditions — a `status.conditions` overlay, NOT lifecycle states
 
@@ -205,7 +205,7 @@ All four states are distinct data domains, each with specific immutability rules
 
 ## 5. Rehydration
 
-Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance: all current policies always apply.
+Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance: the estate's declared touch-trigger stance (ADR-045 §8 — adopt-on-touch, offer-on-touch, or provenance-until-explicit, declared once as a policy clause) decides which policy revisions govern the replay, with adopt-current the common default; RHY-001's floor (§5.3 — tenancy, sovereignty, cross-tenant authorization always current) applies under every stance.
 
 **Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order). The entity's identity is preserved on a **restore in place** and re-established on a **rebuild** (§5.2). UDLM contributes only the three irreducible things below; *how* a realization runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is realization concern (see the DCM operational model, `operations/rehydration.md`).
 
@@ -295,4 +295,4 @@ An **unsanctioned change** is a change made directly to a resource without a cor
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*

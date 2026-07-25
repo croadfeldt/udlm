@@ -14,6 +14,34 @@ independently reviewable, subject-scoped PRs rather than forcing one oversized c
 boundaries over size-driven cuts, and never bundle unrelated subjects. Lead every PR description with a
 short **Why** (the rationale), linking the design note or DCM ADR when one exists.
 
+## Write for a reader who wasn't there (DOC-001 — rule #1 for every document)
+
+Existing document formats stay exactly as they are — the ADR skeleton (header, Related,
+Context / Decision / Consequences), the design-note shapes, the README conventions. This rule
+governs the **prose inside them**: every document is written so a competent engineer who was
+not in the room can read it cold and repeat the decision back at a whiteboard.
+
+The standard, concretely:
+
+- **Context sections read as narrative, not notation.** Name the problem the way the industry
+  names it (the fragile-base-class problem, a lockfile, blue/green deployment), say why the
+  question came up, and say what the stakes are — in ordinary sentences, before any rule-ID,
+  type name, or internal shorthand appears.
+- **Decisions state the rule and what it means in practice**, in that order: the readable
+  sentence first ("organizations may pin exactly, and the cost is a visible debt list, not a
+  fork"), the precise gate-enforceable contract language with it — both are requirements, and
+  when they fight, add explanatory words; never remove precision.
+- **References carry their gist** — never a bare "see ADR-NNN"; one line on what it decided.
+- **Jargon is introduced, not assumed**: the first use of an internal term in a document gets
+  a clause saying what it is.
+- **The cold-reader test**: hand the document to someone who has never seen this repo. If they
+  can say what was decided and why it matters, it passes; if they need a second document
+  first, it fails.
+
+This rule exists because the repository's precision was outrunning its readability: documents
+were correct, gate-enforceable, and unreadable cold. The fix is not a summary bolted on top —
+it is writing the document's own prose at this level throughout.
+
 ## Document the why
 
 Every non-trivial change records its rationale, not just its diff: a design note under `docs/`, an
@@ -75,7 +103,7 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
 - **Adopt tools by reference (tenet T8):** does this have the control plane *directly* build / scan / sign /
   deploy where a mature tool already owns the mechanism? Wrap the tool as a Provider (the naturalization
   boundary), don't reimplement it — the control plane owns the cross-tool intent + the estate graph.
-- **Written for engineers, not for us (`docs/writing-for-humans.md`):** the audience is engineering teams
+- **Written for engineers, not for us (DOC-001 — "Write for a reader who wasn't there", above):** the audience is engineering teams
   and common human personas. Strip internal working-context — session/working-set labels, private
   enhancement/ticket numbers, colleague names, or internal tool artifacts. Every reference **carries its
   gist in one line** (what it *decided*), never a bare number. Concise; no duplication; cut anything that

@@ -1,6 +1,6 @@
 # UDLM ADR-021: The FSI profile — regulated (financial-services) production
 
-**Status:** Accepted (maintainer decision, 2026-07-15)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
 **Related:** ADR-007 (profile model — distinct sets, not levels); ADR-020 (prod — the production floor this contains); ADR-005 (attested time); ADR-022/DCM (accreditation-gated admission); `observability/universal-audit.md` §8 (Merkle transparency, RFC 9162); `governance/accreditation-and-authorization-matrix.md` (two-gate verify-then-appraise); `contracts/policy-contract.md` §18 (override-approval); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-fsi.yaml`
@@ -40,5 +40,5 @@ Per ADR-007, `fsi` differs from `prod` in *kind* (a compliance posture), not mer
 ## Options considered
 
 - **(A) Treat `fsi` as "prod + more" on one severity scale.** Rejected: it differs in *kind* (compliance evidence + verified trust), not degree — ADR-007 profiles are sets, not levels.
-- **(B) Leave regulatory controls to per-org overlays.** Rejected: the regulated control set is common enough to warrant a ratified built-in floor teams can require and be measured against.
+- **(B) Leave regulatory controls to per-org overlays.** Rejected: the regulated control set is common enough to warrant a proposed built-in floor teams can require and be measured against.
 - **(C) [chosen] prod's floor + Merkle-transparency audit + verifiable attestation-gated admission + all-operations governance + override-approval + attested time + regulatory retention.**

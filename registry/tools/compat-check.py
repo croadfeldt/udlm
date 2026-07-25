@@ -79,6 +79,13 @@ def classify(old, new):
     for path in set(o_fields) & set(n_fields):
         o, n = o_fields[path], n_fields[path]
         if isinstance(o, dict) and isinstance(n, dict):
+            # Shape change: a declared `type` that changes (string→object, integer→string, …)
+            # invalidates every existing instance of the field — always breaking. Found live
+            # 2026-07-25: string→object read as MINOR (new subpaths = "added spec field") or
+            # slipped through entirely as REVISION.
+            ot, nt = o.get("type"), n.get("type")
+            if ot and nt and ot != nt:
+                reasons["major"].append(f"changed type on '{path}' ({ot} -> {nt})")
             oe, ne = o.get("enum"), n.get("enum")
             if oe and ne:
                 if set(oe) - set(ne):

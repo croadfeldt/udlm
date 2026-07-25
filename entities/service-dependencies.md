@@ -352,7 +352,7 @@ The dependency graph is the primary mechanism enabling **DC Rehydration** — th
 
 ### 9.1 Rehydration Process
 
-Rehydration uses the **Intent State** of the original request — not the Realized State — to reconstruct the dependency graph. This ensures that rehydration applies current policies and standards rather than replaying an old realized state.
+Rehydration uses the **Intent State** of the original request — not the Realized State — to reconstruct the dependency graph. Intent-based replay is what makes either touch-trigger stance possible (ADR-045 §8): the estate's declared clause — §11a's `re_evaluate` flag is the existing mechanism — decides whether the replay adopts current policies and standards or proceeds under governing provenance; adopt-current is the common default.
 
 ```
 Rehydration initiated for a Tenant / Group / Entity
@@ -382,7 +382,7 @@ New Realized States recorded
 
 Because rehydration uses Intent State rather than Realized State:
 - Resources can be rehydrated to a different provider — as long as the provider supports the required Resource Types
-- Current organizational standards and policies are applied — ensuring rehydrated resources meet current compliance requirements
+- Current organizational standards and policies are applied when the estate's touch-trigger stance elects it (`re_evaluate: true`, §11a — the common default); a provenance-pinned replay (`re_evaluate: false`) is an equally legal, recorded outcome
 - Provider-specific dependencies (portability-breaking) may prevent rehydration to a different provider — this is surfaced as a portability warning during rehydration planning
 
 ### 9.3 Rehydration Scope
@@ -605,4 +605,4 @@ compensation-failure handling: [operational-models](../lifecycle/operational-mod
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*

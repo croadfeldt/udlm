@@ -17,7 +17,7 @@ scenario:
   - 'The refusal is typed and actionable: it names the element, the breaking classification, and the minimum
     required bump'
   - No downstream artifact is regenerated from the refused change
-  - The refusal is recorded as a gate outcome, not silently retried
+  - The refusal exists as a durable typed gate-outcome record naming the change, the classification, and the declared-vs-required bumps
   dimensions:
     lifecycle_phase: modification
     resource_complexity: single_with_deps
