@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.2.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "1cfab46d-0e5a-4d15-9f05-4023d6e33409",
+  "uuid": "ae59bcaa-3fb7-4de2-8780-110f7165fbe8",
   "resource_type": "Hardware.StorageDevice",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "portability": "portable",
   "status": "active",
@@ -32,6 +32,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "capacity"
     ],

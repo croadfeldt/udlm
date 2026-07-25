@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "004b97cf-ccdc-4d0c-9910-dddba05a48d2",
+  "uuid": "5f46b5f7-1b16-43df-9b4f-37ba4ddd57a9",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -62,6 +62,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "prefix"
     ],

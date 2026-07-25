@@ -8,11 +8,11 @@
 # filesystem a pool carves, not a cluster-provisioned claim.
 #
 # ADOPT (not absorb): the dataset/property vocabulary is OpenZFS's; a provider (zfs) naturalizes it.
-$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.3.1
 conforms_to: udlm/0.1
-uuid: 0b67e5ab-48ff-4bd4-8439-32b6fb878bfa
+uuid: f89a29f3-f7c4-4ce5-82e0-3f935ca394ee
 resource_type: Storage.Dataset
-version: 0.3.0
+version: 0.3.1
 family: Resource
 status: active
 metadata:
@@ -43,6 +43,8 @@ lifecycle:
     so it must be stopped/unmounted after the services that use it and before its pool is exported.
 
 spec:
+
+  additionalProperties: false
   type: object
   required: [dataset_kind]
   properties:

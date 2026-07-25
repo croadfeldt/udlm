@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.6.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "aca89c7a-aa0a-4363-ae4a-296ab45e7b4e",
+  "uuid": "f7e4fab0-bf1d-4fda-bceb-3f9254ef769a",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -35,6 +35,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [],
     "properties": {
       "lifecycle_state": {

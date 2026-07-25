@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "0c1cd033-c4bf-4363-b23d-b318e9472fd8",
+  "uuid": "2bcab541-9e94-42c3-b720-d6af42d2256d",
   "resource_type": "Facility.PowerFeed",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -31,6 +31,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "feed_type"
     ],

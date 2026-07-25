@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "85a8a9ec-fcf3-47bc-88e0-830493d47a9f",
+  "uuid": "217fb83d-7397-45b3-92a4-3a60145460d8",
   "resource_type": "Network.Switch",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -33,6 +33,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [],
     "properties": {
       "lifecycle_state": {

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.2.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "29b39a5d-2745-40ea-8141-480bb3d2d70f",
+  "uuid": "b2dedf8f-14f3-4910-acda-7adf14129633",
   "resource_type": "Hardware.Processor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Resource",
   "portability": "portable",
   "status": "active",
@@ -31,6 +31,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "cores"
     ],

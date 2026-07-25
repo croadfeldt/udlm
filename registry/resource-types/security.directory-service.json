@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Security.DirectoryService/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "09b7214e-60ab-4711-82ff-0f7316ced4b2",
+  "uuid": "d6c22e8d-fd91-408d-8a97-50671a5f45db",
   "resource_type": "Security.DirectoryService",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -33,6 +33,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "protocols"
     ],

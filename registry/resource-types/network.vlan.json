@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.3.1",
   "conforms_to": "udlm/0.1",
-  "uuid": "4a1178f7-4da9-47cd-97f6-8d864adcb031",
+  "uuid": "45c5e856-48a4-41e8-8bf6-9fb95da0e578",
   "resource_type": "Network.VLAN",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -44,6 +44,7 @@
   ],
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "encapsulation"
     ],

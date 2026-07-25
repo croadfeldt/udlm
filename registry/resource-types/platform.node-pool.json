@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.3.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "514920a1-9d0a-44fb-a4b3-0b59fa71454d",
+  "uuid": "0750541b-5fbd-45b2-a622-df82276c0255",
   "resource_type": "Platform.NodePool",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -39,6 +39,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "name"
     ],

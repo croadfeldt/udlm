@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.Job/0.4.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "f41f9702-f0d2-4a08-a161-1ccb0fa35efb",
+  "uuid": "fdf13c4b-71dc-4a50-8f03-689ffea10c8c",
   "resource_type": "Automation.Job",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -32,6 +32,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "required": [
       "process_type",
       "max_execution_time"
