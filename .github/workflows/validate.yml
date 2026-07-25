@@ -43,6 +43,15 @@ jobs:
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).
       - run: python3 registry/tools/fuzz_type_specs.py
+      # Consumer conformance (ADR-044): consumers declare their read surface in
+      # registry/consumers/; every declared type must exist, no noted_version may run ahead of
+      # the registry, and every type is consumed or acknowledged in unconsumed.yaml — which the
+      # gate regenerates and compares, so the acknowledgment never drifts silently.
+      - run: python3 tests/check_consumer_conformance.py
+      # Model-health scoreboard: registry/MODEL-HEALTH.md + model-health.json are generated
+      # from the tree (family counts, fuzz discrimination density, outputs/context/UC/consumer
+      # coverage) — fail if stale, same discipline as the type catalog.
+      - run: python3 registry/tools/model_health.py --check
       - run: python3 tests/check_standards_registered.py || echo "::warning::standards-register warnings (soft gate, matches signoff)"
       - run: python3 -c "compile(open('registry/tools/compat-check.py').read(), 'compat-check.py', 'exec')"
       # Real §9 gate: every changed type spec must declare a sufficient version bump

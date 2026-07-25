@@ -1,0 +1,13 @@
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# tests/check_consumer_conformance.py.
+#
+# The explorer renders estate records as graph nodes typed by their resource-type handle and
+# derives ordered shutdown from the edges, so every registry type can appear as a node.
+consumer:
+  name: estate-explorer
+  repo: croadfeldt/estate-explorer
+  description: Dependency-graph visualizer — estate records as typed graph nodes; derives ordered shutdown (/api/order) from the edges.
+consumes_all_types: true
+schemas:
+  - registry/realized-entity.schema.json  # edge_type vocabulary (depends_on|contained_by|binds_to|references)
+coverage: declared

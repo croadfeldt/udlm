@@ -1,0 +1,15 @@
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# tests/check_consumer_conformance.py.
+#
+# Estate CI validates every estate record against the registry (validate_estate envelope
+# checks) plus the edge vocabulary, so its read surface is the whole registry, not a named
+# slice: any type can appear in an estate record.
+consumer:
+  name: estate-ci
+  repo: private estate-data repo (GitLab, kept off GitHub — estate-neutrality policy)
+  description: Estate-data CI — validates estate records (envelope checks + edge vocabulary) against the registry on every change.
+consumes_all_types: true
+schemas:
+  - registry/realized-entity.schema.json  # edge_type vocabulary + record envelope
+  - registry/resource-type-spec.schema.json  # TODO verify — whether estate CI loads the meta-schema or only the per-type specs
+coverage: declared
