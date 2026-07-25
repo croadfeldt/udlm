@@ -1,0 +1,14 @@
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# tests/check_consumer_conformance.py.
+#
+# dav consumes the use-case corpus today and, per its data-model-validation design
+# (dav docs/data-model-validation-design.md), takes the registry as its Layer-2
+# expressibility input — every type spec is read when that layer runs.
+consumer:
+  name: dav
+  repo: croadfeldt/dav
+  description: Analysis engine — consumes the use-case corpus; the registry is its Layer-2 (expressibility) model-validation input.
+consumes_all_types: true  # TODO verify — Layer-2 wiring is designed, not yet reading the tree per-run
+schemas:
+  - registry/resource-type-spec.schema.json
+coverage: declared
