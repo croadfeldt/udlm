@@ -68,11 +68,11 @@
     ],
     "properties": {
       "prefix": {
-        "$ref": "../common-elements.schema.json#/$defs/cidr",
+        "$ref": "../../common-elements.schema.json#/$defs/cidr",
         "description": "The subnet the pool draws from, as CIDR (RFC 8344), e.g. 192.0.2.0/24."
       },
       "ip_family": {
-        "$ref": "../common-elements.schema.json#/$defs/ip_family",
+        "$ref": "../../common-elements.schema.json#/$defs/ip_family",
         "description": "Address family (canonical ip_family, common-elements §2.4)."
       },
       "ranges": {
@@ -86,11 +86,11 @@
           ],
           "properties": {
             "start": {
-              "$ref": "../common-elements.schema.json#/$defs/ip_address",
+              "$ref": "../../common-elements.schema.json#/$defs/ip_address",
               "description": "First address of the range (inclusive)."
             },
             "end": {
-              "$ref": "../common-elements.schema.json#/$defs/ip_address",
+              "$ref": "../../common-elements.schema.json#/$defs/ip_address",
               "description": "Last address of the range (inclusive)."
             }
           }
@@ -109,7 +109,7 @@
       "exclusions": {
         "type": "array",
         "items": {
-          "$ref": "../common-elements.schema.json#/$defs/ip_address"
+          "$ref": "../../common-elements.schema.json#/$defs/ip_address"
         },
         "description": "Addresses withheld from allocation (gateway, broadcast, known-static, avoid-buggy). Not carved even if inside a range."
       }

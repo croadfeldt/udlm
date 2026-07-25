@@ -85,7 +85,7 @@
                   "description": "Short form — the handle of an existing Security.CredentialRef."
                 },
                 {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             },

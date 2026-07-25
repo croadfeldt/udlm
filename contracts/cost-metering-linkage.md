@@ -67,7 +67,7 @@ Given an `entity_uuid`, a conformant realization MUST be able to resolve every d
 
 ## 3. Worked example — a bare-metal host, capex + opex
 
-`Compute.BareMetalHost` v0.2.0 carries (see `registry/resource-types/compute.bare-metal-host.json`):
+`Compute.BareMetalHost` v0.2.0 carries (see `registry/resource-types/compute/compute.bare-metal-host.json`):
 
 | Dimension | class | source | Meaning |
 |-----------|-------|--------|---------|

@@ -2,7 +2,7 @@
 #
 # The governed vocabulary of PROVIDER capabilities: what operation a provider exposes at the
 # unified interface, as (verb x resource-domain). Each entry is a TaxonomyTerm
-# (registry/resource-types/taxonomy-term.json), curation-lifecycle governed (Core/Verified/Org tiers,
+# (registry/resource-types/knowledge/taxonomy-term.json), curation-lifecycle governed (Core/Verified/Org tiers,
 # registry-governance.md §2). This is the `provider-capability` ROOT subtree — DISJOINT from the
 # `architecture-capability` subtree that holds Capability [Knowledge] (DAV). One shared TaxonomyTerm
 # TYPE, two disjoint subtrees; parent chains never cross roots.

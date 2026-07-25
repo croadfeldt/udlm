@@ -106,7 +106,7 @@ spec:
             oneOf:
             - type: string
               description: Short form — the handle of an existing Platform.StorageClass.
-            - $ref: ../common-elements.schema.json#/$defs/Reference
+            - $ref: ../../common-elements.schema.json#/$defs/Reference
           host:
             type: string
             description: handle of the host/VM the systemd units run on (form=systemd).

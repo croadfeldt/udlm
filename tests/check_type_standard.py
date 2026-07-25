@@ -40,7 +40,8 @@ ADOPT_TOKENS = re.compile(r"\bADOPT\b|\badopts\b|\bOCI\b|\bpurl\b|\bSPDX\b|\bCyc
 
 def load_types():
     out = {}
-    for f in sorted(glob.glob(os.path.join(TYPES, "*.json")) + glob.glob(os.path.join(TYPES, "*.yaml"))):
+    for f in sorted(glob.glob(os.path.join(TYPES, "**", "*.json"), recursive=True)
+                    + glob.glob(os.path.join(TYPES, "**", "*.yaml"), recursive=True)):
         with open(f, encoding="utf-8") as fh:
             out[f] = json.load(fh) if f.endswith(".json") else yaml.safe_load(fh)
     return out

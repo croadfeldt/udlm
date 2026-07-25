@@ -95,7 +95,7 @@
           {
             "allOf": [
               {
-                "$ref": "../data-reference.schema.json#/$defs/data_reference"
+                "$ref": "../../data-reference.schema.json#/$defs/data_reference"
               },
               {
                 "required": [
@@ -131,7 +131,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             },
@@ -208,7 +208,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             },
@@ -224,7 +224,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             }

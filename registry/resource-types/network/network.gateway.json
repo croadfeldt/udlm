@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.4.4",
   "conforms_to": "udlm/0.1",
-  "uuid": "9ea232e8-a798-4de4-b1ed-f8e9c7e349ef",
+  "uuid": "ceb29900-486a-4c51-ac66-d686d8030711",
   "resource_type": "Network.Gateway",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -56,7 +56,7 @@
           "type": "object",
           "properties": {
             "cidr": {
-              "$ref": "../common-elements.schema.json#/$defs/cidr",
+              "$ref": "../../common-elements.schema.json#/$defs/cidr",
               "description": "Segment CIDR (canonical common-elements cidr)."
             },
             "role": {
@@ -71,7 +71,7 @@
                   "description": "Short form — the handle of an existing Platform.StorageClass."
                 },
                 {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
+                  "$ref": "../../common-elements.schema.json#/$defs/Reference"
                 }
               ]
             }

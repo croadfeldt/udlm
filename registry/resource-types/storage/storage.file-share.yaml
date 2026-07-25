@@ -1,9 +1,9 @@
 # UDLM Resource Type Specification (YAML; validated against registry/resource-type-spec.schema.json).
-$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.3.3
+$id: https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.3.4
 conforms_to: udlm/0.1
-uuid: 9ce90859-64c6-44dd-88dc-301855e7a9fd
+uuid: 83f66b92-ad66-4415-aa94-01327dec4f27
 resource_type: Storage.FileShare
-version: 0.3.3
+version: 0.3.4
 family: Resource
 status: active
 metadata:
@@ -57,7 +57,7 @@ spec:
       oneOf:
       - type: string
         description: Short form — the handle of an existing Platform.StorageClass.
-      - $ref: ../common-elements.schema.json#/$defs/Reference
+      - $ref: ../../common-elements.schema.json#/$defs/Reference
     shares:
       type: array
       description: The exported shares — TYPED config (tier i). DCM owns these; the provider naturalizes them to

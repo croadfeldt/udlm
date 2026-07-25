@@ -69,7 +69,7 @@
             "description": "Short form — the handle of an existing Compute.Cluster."
           },
           {
-            "$ref": "../common-elements.schema.json#/$defs/Reference"
+            "$ref": "../../common-elements.schema.json#/$defs/Reference"
           }
         ]
       },

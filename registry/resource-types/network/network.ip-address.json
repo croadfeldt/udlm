@@ -35,11 +35,11 @@
     "additionalProperties": false,
     "properties": {
       "address": {
-        "$ref": "../common-elements.schema.json#/$defs/cidr",
+        "$ref": "../../common-elements.schema.json#/$defs/cidr",
         "description": "The address with prefix as CIDR (RFC 8344/NMstate), e.g. 192.0.2.10/24. Intent for a static reservation; populated at Realized for a dhcp/auto address."
       },
       "ip_family": {
-        "$ref": "../common-elements.schema.json#/$defs/ip_family",
+        "$ref": "../../common-elements.schema.json#/$defs/ip_family",
         "description": "Address family (canonical `ip_family` — renamed from `family`, common-elements §2.4)."
       },
       "allocation": {

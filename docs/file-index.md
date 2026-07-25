@@ -12,7 +12,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 - **`README.md`** — project entry point and orientation. *Owns:* nothing normative; summarizes and links.
 - **`CONFORMANCE.md`** — what wire-level conformance certifies (and does not), the declaration shape, levels, and the wire-compatibility checklist. *Owns:* conformance levels, the `.well-known` declaration, the required-contracts list (§5), the wire-compat checklist (§6).
-- **`GLOSSARY.md`** — human-readable term definitions. *Owns:* short prose glosses only; the machine taxonomy lives in `registry/resource-types/taxonomy-term.json`.
+- **`GLOSSARY.md`** — human-readable term definitions. *Owns:* short prose glosses only; the machine taxonomy lives in `registry/resource-types/knowledge/taxonomy-term.json`.
 
 ## `foundations/` — the core model everything else builds on
 

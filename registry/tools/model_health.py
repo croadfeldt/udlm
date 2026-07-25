@@ -50,7 +50,7 @@ OUT_JSON = os.path.join(ROOT, "registry", "model-health.json")
 
 def load_types():
     types = {}
-    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "*"))):
+    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True)):
         if not path.endswith((".json", ".yaml", ".yml")):
             continue
         with open(path, encoding="utf-8") as fh:

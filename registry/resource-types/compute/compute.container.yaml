@@ -77,7 +77,7 @@ spec:
               pattern: "^sha256:[a-f0-9]{64}$"
               description: OCI content-addressable digest, pinned at Realized/Discovered for provenance.
         - allOf:
-            - $ref: ../data-reference.schema.json#/$defs/data_reference
+            - $ref: ../../data-reference.schema.json#/$defs/data_reference
             - required: [reference_data_type]
               properties:
                 reference_data_type: {const: container_image}

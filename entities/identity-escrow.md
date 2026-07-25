@@ -1,7 +1,7 @@
 # Identity Escrow — identity state that survives re-realization (`ESC-*`)
 
 **What this owns.** The normative rules for `Access.IdentityEscrow`
-(`registry/resource-types/access.identity-escrow.json`): the contract for identity state that
+(`registry/resource-types/access/access.identity-escrow.json`): the contract for identity state that
 must survive its host entity's re-realization. This file is the single home of the `ESC-*`
 rule family (`registry/rule-id-registry.yaml`).
 

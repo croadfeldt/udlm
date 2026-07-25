@@ -474,7 +474,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 - Security.DirectoryService — when a directory service serves the zone.
 - Network.AddressService — the operated DNS capability answering for the zone.
 
-### Network.Gateway (0.4.3)
+### Network.Gateway (0.4.4)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -861,7 +861,7 @@ The consumable unit of host-local storage — its required `dataset_kind` says w
 - Compute.BareMetalHost — the host the dataset is local to.
 - Storage.Dataset — the parent dataset, when nested.
 
-### Storage.FileShare (0.3.3)
+### Storage.FileShare (0.3.4)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
