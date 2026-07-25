@@ -22,4 +22,9 @@ changes are refused naming the dropped output and its bound consumers. Cases 016
 the two-plane refinement: capabilities version individually (breaking changes scoped to
 covers_types consumers, no sibling churn), the envelope versions the set only, whole-provider
 pins ride definition revisions, blue/green runs at capability granularity, and plane-misplaced
-classification is refused naming the correct plane and bump.
+classification is refused naming the correct plane and bump. Cases 020–021 carry
+realized-instance stability: capability movement is visibility never action (drift compares
+against provenance, not current), mixed-version day-2 operation is contractual within the
+deprecation window, and retirement is the one calendared forcing function — refusals carry
+the migration path. The unifying doctrine: docs/design/operational-response-matrix.md
+(surface → decide → enable).

@@ -136,8 +136,24 @@ revision. Realization provenance (§7) records the **capability revision** that 
 realization alongside the definition revision and engine binding. The operational payoff is
 **capability-level blue/green**: one capability's v2 runs green under ADR-046's promotion
 contract while sibling capabilities keep serving on their current versions — staged provider
-evolution without whole-provider upgrades. Accreditation stays at the capability (ADR-004),
-untouched by the envelope. Corpus: class-versioning 013–019.
+evolution without whole-provider upgrades. **Realized instances are stable under capability movement.** A capability version change —
+compatible or breaking — never triggers a redeploy, update, or reconciliation of instances
+already realized under an earlier capability revision: realization provenance is immutable
+fact, and a running instance's contract is the revision that governed its realization. The
+movement is *surfaced* at instance level (realized-under vs current-capability distance, typed
+distinctly from spec pin-lag) and the organization's change policy decides — update, re-realize
+under the new revision (blue/green when breaking), or deliberately nothing, which is
+legitimate. Breaking-ness matters at the *next* realization, never retroactively to a running
+one. Three rules make this stability real rather than aspirational: **mixed-version
+operation is supported by contract** — a capability's day-2 verbs (update, resize, snapshot,
+delete) must keep operating instances realized under any of its non-retired revisions, so a
+1.2.0-realized instance is operable while current is 1.3.0; **realized instances are pinned
+consumers** — a capability revision with instances realized under it cannot retire without the
+published deprecation window, making retirement the one legitimate, calendared forcing
+function; and **drift compares against provenance, never against current** — reconciliation
+that measured a 1.2.0-realized instance against the 1.3.0 contract would manufacture phantom
+drift fleet-wide and "fix" it into exactly the mass redeploy this rule forbids. Accreditation stays at the capability (ADR-004),
+untouched by the envelope. Corpus: class-versioning 013–020.
 
 ## Consequences
 
