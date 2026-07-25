@@ -14,9 +14,11 @@ cases 001–006 and 009 encode this ADR's rulings as testable contracts).
 
 ## Context
 
-The class system makes every resource, process, and provider definition a composition over
-shared elements. That concentration is the point — one Base element serves dozens of
-descendants — and also the risk: a Base change ripples into every Type Class, Provider Class,
+The class system rebuilds every resource, process, and provider definition as a composition
+over shared building blocks, arranged in three levels: Base elements everything in a category
+shares, Type elements multiple providers support, and Provider elements specific to one
+engine. That concentration is the point — one Base element serves dozens of descendants — and
+also the risk: a Base change ripples into every Type Class, Provider Class,
 and generated flat spec built on it. Software inheritance met this as the fragile-base-class
 problem and never fully solved it, because behavioral compatibility is undecidable. Ours is
 decidable: classes are data contracts, descendants are compiled artifacts, and the ripple is a

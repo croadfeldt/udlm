@@ -14,8 +14,10 @@ and 008).
 
 ## Context
 
-ADR-045 gives organizations complete pin control with visible debt. Debt must be retirable
-without a leap of faith: "the upstream change is compatible" is a claim, and claims about
+ADR-045 lets an organization pin its estate to exact class revisions, with the lag shown as
+a visible debt list. That debt must be retirable without a leap of faith — the way blue/green
+deployment retires risk in software delivery: run old and new side by side, compare, and only
+switch on evidence. Concretely: "the upstream change is compatible" is a claim, and claims about
 someone else's estate deserve evidence, not trust. The evidence exists deterministically —
 every realizable type declares typed outputs, and two compilations of the same intent are
 mechanically comparable on them.
