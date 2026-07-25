@@ -101,7 +101,7 @@ UDLM supplies the **data primitives** DCM's four faces rest on — a setting dec
 Each setting is **defined once**, in its owning bundle/module doc; the effective value is **composed**, never restated. Two enforcement aids, mirroring the file-index + single-source guard:
 
 - **A profile-settings index** (`registry/profile-settings-index.md`) — every profile-governed setting → its owning bundle/doc/block. The knobs are visible in one place (the file-index, for settings).
-- **A guard extension** (`tests/check_single_source.py`) — a **profile-column value table** (`minimal … sovereign`) that appears for the same setting in more than one doc is flagged, the way a duplicate rule-ID is. This closes the exact gap that hid A5 (a duplicated table has no ID for the original guard to catch).
+- **A guard extension** (`tests/check_single_source.py`) — a **profile-column value table** (`homelab … sovereign`) that appears for the same setting in more than one doc is flagged, the way a duplicate rule-ID is. This closes the exact gap that hid A5 (a duplicated table has no ID for the original guard to catch).
 
 ## Rule of thumb
 

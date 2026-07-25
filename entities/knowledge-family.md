@@ -192,7 +192,7 @@ method: a discovery avenue → Knowledge classes → references-context edges �
   status). Terminal in the chain; blast-radius reverse-walks from here.
 - **Lifecycle:** curated upstream (NVD/OSV), **`Discovered`** locally (a scanner is a discovery avenue,
   dcm ADR-017) — never provider-realized.
-- **Edges** are `kind: references` (non-ordering, so outside the shutdown sort) but **walked by
+- **Edges** are `edge_type: references` (non-ordering, so outside the shutdown sort) but **walked by
   blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
   container → app → host set.
 

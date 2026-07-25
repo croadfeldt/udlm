@@ -1,11 +1,11 @@
 # UDLM ADR-046: The blue/green promotion contract — typed-output diff as the gate, evidence to attestation
 
-**Status:** Proposed (croadfeldt upstream) — rulings decided in-session 2026-07-25; engineering ratifies (#217 discipline)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related — the complete picture, each cited once.** The pin lifecycle this completes (ADR-045
 — organizational pins are legal enumerated debt; this contract is how the debt retires), the
-binding surface it diffs ([D8.3] — declared typed outputs, the only comparable realization
+binding surface it diffs (data-model-core §2 [D8.3] — declared typed outputs, the only comparable realization
 facts), the migration pattern it generalizes (the Process-family engine-swap render — the same
 machinery serves provider swap and class upgrade), the evidence pipeline it feeds (validation
 results as signable attestation input, per the model-health emission), and the corpus that

@@ -6,7 +6,9 @@
 **Related:** ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
 `proposed → under-review → canonical → deprecated` (`foundations/four-states.md`); ADR-004 (capability
 declaration); ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
-machine-readable reference graph this consumes); provenance `source_type` (context-and-purpose §4.4)
+machine-readable reference graph this consumes); provenance `source_type` (context-and-purpose §4.4); the vocabulary-intake ladder
+(`docs/design/vocabulary-intake-ladder.md` — the operational rubric of this ADR: match/mint/promote,
+profile-priced, PVD-001 as the destination)
 
 **Settles:** how reference vocabularies get *populated* — staged (`proposed → canonical`), cleaned as lineage, ingested with minimal toil.
 

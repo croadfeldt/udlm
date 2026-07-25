@@ -319,7 +319,9 @@ Each hard constraint cites the UDLM contract it derives from.
     downstream binder consumes — or is explicitly exempt-by-family (Knowledge/reference types);
     a binding names a declared output, never a string-spliced guess. **(c) Minimal required
     surface:** `spec.required` is the smallest honest set. **(d) References, not strings:**
-    fields naming another resource are references (§34/PVD discipline). **(e) Relationship
+    fields naming another resource are references (§34/PVD discipline; an admission-time string reaches the
+    discipline via the vocabulary-intake ladder — `docs/design/vocabulary-intake-ladder.md` / ADR-039 —
+    strictness gates minting, never matching). **(e) Relationship
     surface declared:** `relationships[]` states what the type may depend on, contain, or bind
     to, with `edge_type` + cardinality. **(f) Lifecycle completeness:** `immutable[]` is declared;
     decommission semantics follow the tombstone discipline (DEP-007); the Realized/Discovered

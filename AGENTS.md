@@ -28,7 +28,7 @@ lifecycle/        Operational models, recovery state machine
 
 - **Commits:** `--no-gpg-sign`, author = the repo owner's public git identity (match `git log -1 --format='%an <%ae>'`), trailer
   `Co-Authored-By: <the Claude model in use> <noreply@anthropic.com>`. This repo is on **GitHub**
-  (`cexample/udlm`) — use `gh`, not `glab`.
+  (`croadfeldt/udlm`) — use `gh`, not `glab`.
 - **PRs are subject-scoped** — one logical thing per PR, ≤2–3k lines.
 - **Run `bash scripts/signoff.sh` before every PR** — all hard gates (registry, meta-schema,
   estate tokens, single-source, vocabulary, profile tables, compat vs origin/main) + the judgment
@@ -66,10 +66,13 @@ lifecycle/        Operational models, recovery state machine
 
 | Concern | Repo |
 |---|---|
-| **Spec + resource-type registry** (the *types*) | `udlm` (this repo, cexample/udlm) |
-| **DCM** control-plane / consumer code | `dcm` (cexample/dcm) |
-| **DAV** review console | `dav` (cexample/dav) |
+| **Spec + resource-type registry** (the *types*) | `udlm` (this repo, croadfeldt/udlm) |
+| **DCM** control-plane / consumer code | `dcm` (croadfeldt/dcm) |
+| **DAV** review console | `dav` (croadfeldt/dav) |
 | **Estate DATA** (instances, the dependency graph) | a private estate-data repo (kept off GitHub — no personal infrastructure in the public specs) |
+
+Estate **values** in examples stay anonymized — `cexample/*` org names and RFC 5737 addresses are the
+anonymization vocabulary (the estate-token gate enforces it); only the real repo pointers above are literal.
 
 ## Current state (2026-07-25)
 

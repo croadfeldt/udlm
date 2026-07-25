@@ -606,13 +606,15 @@ outputs:
   ssh_endpoint: "10.128.4.42:22"
 
 relationships_created:
-  - type: attached
+  - edge_type: binds_to
+    relation: attaches_to
     target_type: Storage.Volume
     target_ref:
       ref_uuid: "d8e9f0a1-..."          # → realized Storage.Volume
       ref_name: "pvc-a1b2c3"
     target_native_id: "ceph/pvc-a1b2c3"   # provider's native id for correlation
-  - type: connected
+  - edge_type: binds_to
+    relation: connects_to
     target_type: Network.VirtualNetwork
     target_ref:
       ref_uuid: "b7e3f1a2-..."          # → same Network.VirtualNetwork from intent

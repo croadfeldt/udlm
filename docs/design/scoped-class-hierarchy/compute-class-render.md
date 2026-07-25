@@ -4,7 +4,7 @@
 
 ---
 
-## `Compute` — Base Class  (`compute.json`)
+## `Compute` — Base Class  (`compute.json` — post-P0 filename, not yet generated)
 Shared surface, reconciled. Every element here is a `SharedDataElement` at `Compute` scope, inherited by every Compute Type Class.
 
 ```jsonc
@@ -61,7 +61,7 @@ Shared surface, reconciled. Every element here is a `SharedDataElement` at `Comp
 
 ---
 
-## `Compute.VM` — Type Class  (`compute.vm.json`)
+## `Compute.VM` — Type Class  (`compute.vm.json` — post-P0 filename, not yet generated)
 Extends the Base Class; carries only what is VM-specific.
 
 ```jsonc

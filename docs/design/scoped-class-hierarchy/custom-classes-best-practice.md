@@ -130,8 +130,9 @@ of what should become canonical.
   are extensions/leaves under your authority, never rewrites of the canonical chain.
 - **Premature / speculative custom Base** — a custom category where a custom Type under a canonical Base would do;
   or authoring before the schema need is real.
-- **Orphaned customs** — a custom class that clearly generalizes but is never proposed for promotion, leaving the
-  federation needlessly fragmented.
+- **Unproposed generalizers** — a custom class that clearly generalizes is a **promotion candidate**, surfaced
+  as visible debt while unproposed; staying org-scoped is a legitimate choice when chosen (§4.6 — fine when
+  chosen, not accidental), a fragmentation cost only when accidental.
 
 ## 6. Lifecycle — the one contribution lifecycle, applied to classes
 

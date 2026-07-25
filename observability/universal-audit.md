@@ -663,7 +663,7 @@ These are different questions requiring different storage architectures.
 
 | Policy | Rule |
 |--------|------|
-| `AUD-022` | Audit and Observability are separate components with separate storage contracts, consumers, and failure behaviors. Audit is compliance-grade, append-only, hash-chained, long-retention. Observability is operational, time-series, high-throughput, short-retention. They serve different consumers and cannot be combined without violating one contract or the other. Observability data may reference audit record UUIDs for correlation but is stored separately. |
+| `AUD-022` | Audit and Observability are separate components with separate storage contracts, consumers, and failure behaviors. Audit is compliance-grade, append-only, Merkle-treed (RFC 9162 — per-instance trees, signed tree heads), long-retention. Observability is operational, time-series, high-throughput, short-retention. They serve different consumers and cannot be combined without violating one contract or the other. Observability data may reference audit record UUIDs for correlation but is stored separately. |
 
 ---
 
@@ -674,7 +674,7 @@ These are different questions requiring different storage architectures.
 | 1 | Should integrity verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (tree append), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
 | 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-021) |
 | 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — nested actor shape with actor.immediate.type: system_component + system_actor block (component/trigger) + authorized_by chain; full audit records; enables filtering in queries and dashboards (AUD-016) |
-| 4 | How does integrity verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance hash chains; daily Merkle root federation integrity proof at Hub DCM; cross-instance queries via parallel chains + correlation_id (AUD-017) |
+| 4 | How does integrity verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance RFC 9162 Merkle trees with signed tree heads; federation integrity via daily cross-instance consistency proofs at Hub DCM; cross-instance queries via parallel trees + correlation_id (AUD-017) |
 
 ---
 
@@ -682,7 +682,7 @@ These are different questions requiring different storage architectures.
 
 - **[audit-provenance-observability.md](audit-provenance-observability.md)** — three distinct concerns; this document covers the audit concern in full
 - **Field-Level Provenance** — data lineage embedded in every payload; separate from audit records
-- **[data-store-contracts.md](../contracts/data-store-contracts.md)** — Audit Store contract: append-only, WAL delivery, hash chain, retention tracking
+- **[data-store-contracts.md](../contracts/data-store-contracts.md)** — Audit Store contract: append-only, WAL delivery, RFC 9162 Merkle tree (signed tree heads), retention tracking
 - **[universal-groups.md](universal-groups.md)** — all group changes produce audit records per this model
 - **Policy Organization** (now the policy-contract / policy-groups model) — policy activation, shadow evaluation, and external evaluation queries all produce audit records
 

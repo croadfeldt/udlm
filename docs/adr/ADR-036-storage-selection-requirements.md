@@ -1,6 +1,6 @@
 # UDLM ADR-036: Storage selection is requirements-based (not a native-class reference)
 
-**Status:** Accepted (croadfeldt upstream) — an application of ADR-037 (PVD)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related:** ADR-035 (reference-vocabulary portability); ADR-004 (capability declaration); ADR-029 (discovery);

@@ -1,6 +1,6 @@
 # UDLM ADR-037: Portable-value discipline (PVD)
 
-**Status:** Accepted (croadfeldt upstream)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related:** ADR-035 / ADR-036 (the two mechanisms this gate points at); ADR-012 (data-references); ADR-028
@@ -8,7 +8,7 @@
 + SPEC-DESIGN §33 (the single-source precedent this mirrors). **Home of the `PVD` rule family:**
 `design-principles/portable-values.md`.
 
-**Settles:** the **portable-value discipline (PVD)** — a selectable value is a reference, codelist, or requirement; never a free string or an inline re-expression of an adopted standard.
+**Settles:** the **portable-value discipline (PVD)** — a selectable value is a reference, codelist, or requirement; never a free string or an inline re-expression of an adopted standard. PVD-001 is the **destination**, not the admission gate: at admission time a string meets it via the vocabulary-intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039 — match/mint/promote under profile control); strictness gates minting, never matching.
 
 ## Context
 The review surfaced **two faces of the same discipline breach — a portable value restated inline instead of
@@ -32,10 +32,11 @@ discipline is load-bearing for portability.
 2. **Home + family.** `design-principles/portable-values.md` is the `PVD` family's home; the prefix is registered
    in `registry/rule-id-registry.yaml` (ADR-028). PVD is the third sibling of T5 (adopt *outward*) and T7 (reduce
    *inward*): **reference what the model already owns, don't restate it inline.**
-3. **The automated check.** `tests/check_portable_values.py`, CI-wired like `check_single_source.py`, enforces
-   both rules — PVD-001 hard-fails; PVD-002 runs as a review-flag until its overlap catalogue is tuned. It scans
-   type specs **and** instances, layer-contributed `fields`, and examples (the discipline holds in *data*, not
-   just definitions).
+3. **The automated check (planned).** `tests/check_portable_values.py` — planned, to be CI-wired like
+   `check_single_source.py` — will enforce both rules: PVD-001 hard-fails; PVD-002 runs as a review-flag until
+   its overlap catalogue is tuned, scanning type specs **and** instances, layer-contributed `fields`, and
+   examples (the discipline holds in *data*, not just definitions). Until it lands, both rules are enforced by
+   the review sweep (gap registered in the data-model-core §8 ledger).
 4. **The review-sweep line.** Added to CONTRIBUTING "review sweep" + SPEC-DESIGN-REQUIREMENTS:
    *"Portable-value discipline — reference what the model already owns: a selectable value is a reference,
    codelist, or requirement, never a free string (PVD-001); an adopted-standard/typed shape is bound by

@@ -75,9 +75,9 @@ The operational ownership model (described in Section 4) determines who has auth
 - The realization acts as the **Tenant advocate** — it protects the Tenant's interests in all provider interactions
 - Providers are **custodians** of the underlying infrastructure — they are not the system of record
 
-**Unsanctioned change response vocabulary (substrate-closed):**
+**Unsanctioned change response vocabulary (typed interop baseline):**
 
-If a provider reports a state change that was not initiated by an authorized request, the Policy Engine evaluates the change and selects from the following closed action vocabulary:
+If a provider reports a state change that was not initiated by an authorized request, the Policy Engine evaluates the change and selects from the following typed action vocabulary — the interop baseline: which responses an estate's policies reach for is the organization's declaration, and new response types may be proposed (`docs/design/operational-response-matrix.md`):
 
 | Response | Description |
 |----------|-------------|
@@ -432,9 +432,9 @@ Request body:
 }
 ```
 
-### 7a.4 Notification Outcomes (Closed Vocabulary)
+### 7a.4 Notification Outcomes (Typed Vocabulary)
 
-The substrate defines the closed outcome vocabulary for Provider Update Notifications. The realization evaluates the notification against policy and returns one of:
+The substrate defines the typed outcome vocabulary for Provider Update Notifications — the interop baseline; which outcomes an estate's policies select is the organization's declaration (`docs/design/operational-response-matrix.md`). The realization evaluates the notification against policy and returns one of:
 
 | Outcome | Meaning |
 |---------|---------|
@@ -731,7 +731,7 @@ capacity_confidence_policy:
     trigger_mode1_query: true
 ```
 
-Closed action vocabulary: `proceed`, `proceed_with_warning`, `refresh_before_placement`, `reject`.
+Typed action vocabulary (interop baseline — org policy declares which apply, and may propose additions, per the operational response matrix): `proceed`, `proceed_with_warning`, `refresh_before_placement`, `reject`.
 
 ---
 

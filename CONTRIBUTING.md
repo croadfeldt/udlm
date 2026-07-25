@@ -103,7 +103,7 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
 - **Adopt tools by reference (tenet T8):** does this have the control plane *directly* build / scan / sign /
   deploy where a mature tool already owns the mechanism? Wrap the tool as a Provider (the naturalization
   boundary), don't reimplement it — the control plane owns the cross-tool intent + the estate graph.
-- **Written for engineers, not for us (`docs/writing-for-humans.md`):** the audience is engineering teams
+- **Written for engineers, not for us (DOC-001 — "Write for a reader who wasn't there", above):** the audience is engineering teams
   and common human personas. Strip internal working-context — session/working-set labels, private
   enhancement/ticket numbers, colleague names, or internal tool artifacts. Every reference **carries its
   gist in one line** (what it *decided*), never a bare number. Concise; no duplication; cut anything that

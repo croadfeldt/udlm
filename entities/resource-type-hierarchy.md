@@ -372,6 +372,16 @@ A specific provider's concrete implementation of a Resource Type Specification. 
 When a Resource Type Authority defines a field, they make a deliberate decision
 about how that field's valid values are governed. There are three options:
 
+> **Reconciling note (PVD-001 / vocabulary intake).** This taxonomy predates the portable-value discipline:
+> anything with identity or vocabulary semantics — a value chosen from a set — is governed by **PVD-001**
+> (reference, codelist, or requirement, never an unconstrained string; `design-principles/portable-values.md`),
+> and an admission-time string meets the vocabulary via the intake ladder
+> (`docs/design/vocabulary-intake-ladder.md` / ADR-039 — match/mint/promote, profile-priced). "No constraint"
+> survives only for genuinely non-referential text (names, descriptions). A `layer_reference` and a
+> `SharedDataElement` divide as follows: the layer carries org-governed reference data resolved at catalog
+> render; the `SharedDataElement` (ADR-038) is the class-scoped vocabulary store the ladder mints into — one
+> governed-value seam, two carriers.
+
 ### Option 1 — Layer-Referenced Constraint
 
 ```yaml
@@ -451,7 +461,7 @@ with no guarantee of behavioral equivalence across providers.
 | Value determines which physical infrastructure is used | `layer_reference` |
 | Value is intrinsic to the resource type (CPU count, protocol) | `enum` or `range` |
 | Provider narrows a spec-defined range in their catalog item | `enum` or `range` at catalog item level |
-| Value is informational / naming / description | `pattern` or no constraint |
+| Value is informational / naming / description (genuinely non-referential text) | `pattern` or no constraint — PVD-001 governs anything vocabulary-shaped |
 | Value is entirely provider-internal | No constraint in spec; provider declares in catalog item |
 
 **An organization decides per field** — some fields in a resource type will be
@@ -535,6 +545,12 @@ field_name:
 ---
 
 ## 5. Inheritance Model
+
+> **Governing note (ADR-038 / ADR-045).** Class composition over **Base / Type / Provider Classes** of scoped
+> `SharedDataElement`s is the ruled specialization mechanism, and inheritance depth stays at the three scope
+> planes (ADR-045 §5 — "a ruling, not a habit"). The type-level inheritance below is retained as **historical
+> context** for reading older definitions; unbounded chains like the §5.2 example are not how a new
+> specialization is authored.
 
 Resource Types support inheritance, enabling specialization without duplication. A child type inherits all fields from its parent and may add new fields.
 
@@ -772,12 +788,12 @@ Once a version is published it is immutable. Any change — even a documentation
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | What is the governance model for proposing and approving new Resource Types to the DCM registry? | Community adoption, quality control | ✅ Resolved — three-tier registry (DCM Core / Verified Community / Organization); PR-based proposals with automated validation gates; shadow validation period before active promotion; see doc 20 (REG-001, REG-002) |
-| 2 | Should the registry support a formal review/approval workflow before a Resource Type becomes `active`? | Registry integrity, community trust | ✅ Resolved — PR-based workflow with automated gates (schema, FQN conflict, dependency resolution) and mandatory shadow validation before active; review periods by change type; see doc 20 (REG-002) |
-| 3 | What is the minimum sunset period for deprecated definitions? | Migration planning, operational stability | ✅ Resolved — default sunset policies REG-DP-002: Tier 1=P12M, Tier 2=P6M; overridable via standard policy priority; locked as immutable in fsi/sovereign profiles; see doc 20 |
-| 4 | Should version constraints in requests be strictly enforced or advisory? | Operational flexibility vs. predictability | ✅ Resolved — strictly enforced; version_policy options: exact/compatible/latest_minor/latest; DCM never auto-upgrades across major versions; profile-governed defaults (fsi/sovereign=exact); see doc 20 (REG-004) |
+| 1 | What is the governance model for proposing and approving new Resource Types to the DCM registry? | Community adoption, quality control | ✅ Resolved — three-tier registry (DCM Core / Verified Community / Organization); PR-based proposals with automated validation gates; shadow validation period before active promotion; see [registry-governance](../governance/registry-governance.md) (REG-001, REG-002) |
+| 2 | Should the registry support a formal review/approval workflow before a Resource Type becomes `active`? | Registry integrity, community trust | ✅ Resolved — PR-based workflow with automated gates (schema, FQN conflict, dependency resolution) and mandatory shadow validation before active; review periods by change type; see [registry-governance](../governance/registry-governance.md) (REG-002) |
+| 3 | What is the minimum sunset period for deprecated definitions? | Migration planning, operational stability | ✅ Resolved — default sunset policies REG-DP-002: Tier 1=P12M, Tier 2=P6M; overridable via standard policy priority; locked as immutable in fsi/sovereign profiles; see [registry-governance](../governance/registry-governance.md) (REG-DP-002) |
+| 4 | Should version constraints in requests be strictly enforced or advisory? | Operational flexibility vs. predictability | ✅ Resolved — strictly enforced; version_policy options: exact/compatible/latest_minor/latest; DCM never auto-upgrades across major versions; profile-governed defaults (fsi/sovereign=exact); see [registry-governance](../governance/registry-governance.md) (REG-004) |
 | 5 | How are conflicts resolved when multiple providers satisfy all narrowing criteria equally? | Request resolution determinism | ✅ Resolved — UDLM supplies the constraint *inputs* (policy preference, provider priority, tenant affinity, cost signal); the tie-breaking *algorithm* that consumes them (e.g. least-loaded → consistent-hash on request_uuid for determinism) is realization concern (REG-005). |
-| 6 | Should the registry be distributed or centralized? How does this interact with sovereignty requirements? | Registry availability, sovereignty | ✅ Resolved — federated model: DCM Project registry → Organization mirror → Sovereign DCM (offline/signed bundles); air-gap via signed bundle import; see doc 20 (REG-006) |
+| 6 | Should the registry be distributed or centralized? How does this interact with sovereignty requirements? | Registry availability, sovereignty | ✅ Resolved — federated model: DCM Project registry → Organization mirror → Sovereign DCM (offline/signed bundles); air-gap via signed bundle import; see [registry-governance](../governance/registry-governance.md) (REG-006) |
 
 ---
 
@@ -794,7 +810,7 @@ Once a version is published it is immutable. Any change — even a documentation
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*
 
 ---
 

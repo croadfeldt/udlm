@@ -1,6 +1,6 @@
 # ADR-027: Entity family model — Resource | Process, and the Atomic/Composite shape
 
-**Status:** Accepted (2026-07-17)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-17
 **Related:** [ADR-026 — typed-classification naming](ADR-026-typed-classification-naming.md); `foundations/entity-types.md`; `foundations/entity-type-families.md`; ADR-013 (hardware component scope)
 
 ## Context
@@ -53,7 +53,7 @@ A composite Resource's constituents are its owned resources; a composite Process
 
 ## Addendum (Proposed, 2026-07-20) — derive the shape; don't store it as source of truth
 
-**Status:** **Accepted & implemented** (2026-07-22) — the shape, `lifecycle_archetype`, **and `portability`** are
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); implemented 2026-07-22 — the shape, `lifecycle_archetype`, **and `portability`** are
 now **derived**, not stored. Meta-schema: `entity_type` dropped from `required` (required only on the
 Knowledge/Access branches); `lifecycle_archetype` and `portability` dropped from `required`, derived. Registry:
 all three fields removed from the specs they appeared on, each MINOR-bumped (pre-1.0 incubation). The in-flight

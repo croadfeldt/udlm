@@ -519,8 +519,9 @@ for a field constraint.
 
 **Adding a new allowed value** for any layer-referenced field means adding a new
 Reference Data Layer instance of the appropriate type. No changes to the Resource Type
-Specification, the catalog item, or any policy. The new value becomes available to
-all catalog items that reference that layer type on the next sync cycle.
+Specification, the catalog item, or any policy. Catalog items reference the layer type by **named head**, so the new value becomes available to every
+referencing catalog item when its named-head resolution next runs — the same dual-anchor model (pin or named
+head) the class documents use (`docs/design/scoped-class-hierarchy/request-pipeline-layers.md`).
 
 **Retiring an allowed value** means retiring the Reference Data Layer instance.
 Existing resources that used that value are unaffected. Future requests cannot
@@ -1320,11 +1321,11 @@ flowchart TD
 
 ### 5a.9 Override Control and Rehydration
 
-During rehydration, the Intent State is replayed through the **current** Policy Engine. Override control declared in current policies is applied fresh. A field that was `allow` in the original request may be `immutable` if a new compliance-class Validation Policy was added since. This is by design — rehydration applies current governance standards, not historical ones.
+During rehydration, the estate's declared **touch-trigger stance** decides which policy revisions the replay evaluates under (ADR-045 §8: adopt-on-touch, offer-on-touch, or provenance-until-explicit — a policy clause declared once, never improvised per touch; rehydration is a touch like any other, and the platform surfaces the provenance-distance rather than imposing a stance). Under the common **adopt-current default**, the Intent State is replayed through the **current** Policy Engine: override control declared in current policies is applied fresh, and a field that was `allow` in the original request may be `immutable` if a new compliance-class Validation Policy was added since.
 
 The original consumer intent is preserved unchanged in the Intent Store. The new realized state reflects current governance. Both are auditable and traceable.
 
-The one exception is `pinned` policy version rehydration (Historical Exact or Historical Portable modes) — this deliberately replays historical policies and may bypass current immutable locks. Pinned rehydration requires elevated authorization precisely for this reason.
+A `pinned` policy-version rehydration (Historical Exact or Historical Portable modes) deliberately replays historical policies — the provenance-until-explicit stance, a legal, recorded outcome of the estate's declared touch-trigger clause, not a platform exception. The RHY-001 substrate floor holds under every stance: tenancy, sovereignty, and cross-tenant authorizations always evaluate current (`foundations/four-states.md` §5.3).
 
 ---
 
@@ -1718,4 +1719,4 @@ policy:
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*

@@ -44,8 +44,9 @@ request-realization first.
 labeled by its Use Case number and built on request-realization. Grouped by persona in
 **[by-persona.md](by-persona.md)** — the usage-by-role view.
 
-**Planned** (same shape): decommission & teardown ordering · drift detection → reconcile · rehydration
-(faithful / provider-portable) · dependency brokering (fulfillment: provider).
+**Planned** (same shape): decommission & teardown ordering · dependency brokering (fulfillment: provider).
+Drift detection → reconcile and rehydration are delivered — [uc-14](uc-14-drift-detection-remediation.md),
+[uc-10](uc-10-dynamic-rehydration.md) (dynamic) and [uc-18](uc-18-provider-portable-rebuild.md) (provider-portable).
 
 ## The shape a flow follows
 

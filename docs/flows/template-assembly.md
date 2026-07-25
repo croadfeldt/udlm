@@ -59,7 +59,7 @@ flowchart TD
 
 ## 3 · What a Template is made of — a Composite plus bound processes
 
-A Template composes **consumables** (resources and processes are both consumables; ADR-030). Its resources are a **`Composite`** (structural constituents, `contained_by` — the `entity_type` value being renamed `single | multi`, task #58); its processes are **bound** (operational binding — the subscription `manages` model), **not** contained. Both a Composite's constituents and a Template's resources stay **same-family** (Resources) — cross-family combination (Resources + Processes) is what *binding* is for.
+A Template composes **consumables** (resources and processes are both consumables; ADR-030). Its resources are a **`Composite`** (structural constituents, `contained_by` — the shape is **derived** from `has_constituents`, never stored; ADR-027 addendum); its processes are **bound** (operational binding — the subscription `manages` model), **not** contained. Both a Composite's constituents and a Template's resources stay **same-family** (Resources) — cross-family combination (Resources + Processes) is what *binding* is for.
 
 ```mermaid
 flowchart TD

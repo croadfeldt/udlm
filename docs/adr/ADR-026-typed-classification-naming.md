@@ -1,6 +1,6 @@
 # ADR-026: Typed-classification naming — the `<noun>_type` convention
 
-**Status:** Accepted (2026-07-17)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-17
 **Related:** [ADR-027 — entity family model](ADR-027-entity-family-model.md); `registry/common-elements.md` §9 (relation vocabulary); ADR-025 (resource references)
 
 ## Context

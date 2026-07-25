@@ -45,7 +45,7 @@ data primitive.
   layer answers *"what values are available?"* and nothing more. Layers set the stage.
 - **A policy makes the decision** — a post-placement (`placement_phase: post`) transformation policy (Step 7;
   `policy-contract.md` §12) reads that data, selects the value for the selected provider, and injects it into
-  `provider_extensions`. The policy answers *"given the chosen provider, which value applies?"* — an explicit,
+  the provider's Provider-Class `SharedDataElement` (ADR-038; formerly `provider_extensions`, retired). The policy answers *"given the chosen provider, which value applies?"* — an explicit,
   ordered, auditable rule. Policies refine and validate.
 - **One generic policy scales by data, not by rules** — a single "resolve provider-required inputs from the
   mapping" policy covers every field and provider; adding a provider is a new data row, not a new rule.

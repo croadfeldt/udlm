@@ -226,7 +226,7 @@ Nature describes the **structural character** of a relationship — what it mean
 | `operational` | The related entity is needed for operation but is not part of the definition | Required — declared on relationship | Web server depends on load balancer |
 | `informational` | The related entity provides context or reference only — no operational dependency | Not applicable | Resource references its Business Unit |
 
-> **`informational` is a nature, not a duplicate of the `references` type.** They sit on **different axes**: *type* is what the relationship is (`references`, `peer`, `manages`, …); *nature* is how much the entities depend on each other (`constituent` / `operational` / `informational`). `informational` is the one nature that carries **no lifecycle coupling** — it is what tells the engine "track this edge but never cascade lifecycle across it." It is not interchangeable with `references`: an **informational `peer`** (two entities aware of each other, no dependency) and an **informational `manages`** (a management relationship kept for audit/reporting visibility only) are both meaningful and neither is a `references`. Collapsing `informational` into `references` would lose the ability to mark a peer or management edge as lifecycle-inert. It is retained for that reason.
+> **`informational` is a nature reading, not a stored duplicate of `references`.** Under the derived model (this section's opening; data-model-core §4) nature is **computed from `edge_type`, never authored**: an edge is informational exactly when it is a `references` edge — the one `edge_type` that carries **no lifecycle coupling** ("track this edge but never cascade lifecycle across it"). A peer or management *relation* is expressed as a declared `relation` name **refining** a `references` edge — lifecycle-inert by construction; the legacy six-type vocabulary (`peer`, `manages`, …) survives only for reading old records (§4).
 
 ---
 
@@ -852,7 +852,7 @@ All relationships across all entities form a traversable **Entity Relationship G
 - Every edge is a Relationship with a UUID
 - The graph is bidirectional — traversable from any node in any direction
 - Every node exists exactly once — shared entities appear once with multiple relationship edges
-- Circular relationships are invalid and must be rejected
+- Cycles over the **ordering** edge_types (`depends_on`, `contained_by`) are invalid and must be rejected (the CYCLE gate); non-ordering `references` cycles — including reflexive self-reference (the multi-cluster self-managed hub, `docs/examples/multi-cluster-hub-example.md`) — are legal and outside the ordering sort
 
 ### 10.2 Graph and the Four States
 
@@ -888,7 +888,7 @@ The relationship graph exists across all four states:
 |--------|------|
 | `ERL-001` | Every relationship must have a UUID |
 | `ERL-002` | Every relationship must be recorded on both participating entities |
-| `ERL-003` | Circular relationships are invalid and must be rejected |
+| `ERL-003` | Cycles over the ordering edge_types (`depends_on`, `contained_by`) are invalid and must be rejected; non-ordering `references` cycles (including reflexive self-reference, e.g. the multi-cluster self-managed hub) are legal and outside the ordering sort |
 | `ERL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
 | `REL-005` | External relationships must reference a registered Information Provider |
 | `REL-006` | `edge_type` must be from the closed set (`depends_on`, `contained_by`, `binds_to`, `references`); a named `relation` must be declared by the pinned type (REL-001/003) |
@@ -971,9 +971,9 @@ Relationships follow the universal versioning and deprecation model. A relations
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
 | 1 | How are relationship conflicts resolved — two policies declare different lifecycle policies for the same relationship? | Policy model | ✅ Resolved — standard Policy Engine authority hierarchy; REL-008 and REL-009 |
-| 2 | Should relationship roles be validated against the role registry at request time, or is validation advisory? | Operational complexity | ✅ Resolved — advisory default; Resource Type Spec may declare permitted_relationship_roles with role_validation: advisory/enforced; community role catalog; see doc 09 Section 12 (REL-020) |
+| 2 | Should relationship roles be validated against the role registry at request time, or is validation advisory? | Operational complexity | ✅ Resolved — advisory default; Resource Type Spec may declare permitted_relationship_roles with role_validation: advisory/enforced; community role catalog; see §15.1 below (REL-020) |
 | 3 | How does the relationship graph interact with multi-tenant scenarios — can a relationship cross Tenant boundaries? | Multi-tenancy | ✅ Resolved — nature governs; constituent never; operational with dual auth; informational unless deny_all; REL-010/011/012 |
-| 4 | Should there be a maximum relationship graph depth to prevent runaway complexity? | Operational governance | ✅ Resolved — profile-governed max depth: 15 standard/prod, 10 fsi/sovereign; circular detection always enforced; depth = traversal distance; see doc 09 Section 12 (REL-021) |
+| 4 | Should there be a maximum relationship graph depth to prevent runaway complexity? | Operational governance | ✅ Resolved — profile-governed max depth: 15 standard/prod, 10 fsi/sovereign; circular detection always enforced; depth = traversal distance; see §15.2 below (REL-021) |
 | 5 | How are shared entities represented in the relationship graph — an entity required by multiple parents? | Graph model | ✅ Resolved — sharing_model declaration; active_relationship_count; save_overrides_destroy hierarchy (REL-018); lifecycle_conflict_record; REL-015 through REL-019 |
 
 
@@ -1042,9 +1042,9 @@ What the data model fixes is the **declared depth**: notification traversal resp
 - **External Entity Reference** — stable pointer to data owned by an external system
 
 
-## 15. Relationship Gap Resolutions — Q58 and Q60
+## 15. Relationship Gap Resolutions — role validation and graph depth
 
-### 12.1 Relationship Role Validation (Q58)
+### 15.1 Relationship Role Validation — are roles validated at request time?
 
 Relationship roles are semantic labels — human-readable identifiers for the function a member plays in a relationship. By default, role validation is advisory. Resource Type Specifications may declare a closed set of permitted roles with enforced validation.
 
@@ -1071,7 +1071,7 @@ resource_type_spec:
 
 **Community role catalog:** DCM ships a non-authoritative reference list of commonly-used roles. Organizations freely declare roles not in the catalog when role_validation is advisory.
 
-### 12.2 Maximum Relationship Graph Depth (Q60)
+### 15.2 Maximum Relationship Graph Depth — is graph depth bounded?
 
 Relationship graph depth is limited to a profile-governed maximum. Circular relationship detection is always enforced regardless of depth configuration.
 
@@ -1109,4 +1109,4 @@ relationship_depth_policy:
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*

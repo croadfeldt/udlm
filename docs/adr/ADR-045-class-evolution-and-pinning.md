@@ -1,6 +1,6 @@
 # UDLM ADR-045: Class evolution and pinning — atomic recompilation, two-plane pins, portability in the compat contract
 
-**Status:** Proposed (croadfeldt upstream) — rulings decided in-session 2026-07-25; engineering ratifies (#217 discipline)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related — the complete picture, each cited once.** The class system this governs (ADR-038 —

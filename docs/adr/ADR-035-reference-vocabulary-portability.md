@@ -1,6 +1,6 @@
 # UDLM ADR-035: Reference-vocabulary portability and provider advertisement
 
-**Status:** Accepted (croadfeldt upstream) — an application of ADR-037 (PVD)
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related:** ADR-012 (data-references — the in-field reference shape); ADR-004 (provider capability declaration);
@@ -33,7 +33,9 @@ For any reference kind whose vocabulary must **federate across providers**:
    / `vm_size` identities it offers.
 3. **Validated membership (DCM / Policy).** At request, DCM validates the declared reference ∈
    *(portable vocabulary ∩ provider-advertised set)*; a miss is a placement/validation finding (ADR-024).
-   Selection is *from the advertised set*, never a guessed string.
+   Selection is *from the advertised set*, never a guessed string; a net-new string enters the vocabulary via
+   the intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039 — minted `proposed`, profile-priced),
+   never by being guessed into a request.
 
 **Boundary (peer test, ADR-008).** The reference *kind*, the *adopted identity standard*, and the *obligation to
 advertise* are substrate invariants a peer must honor to interoperate → **UDLM**. Negotiating, matching, and

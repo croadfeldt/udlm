@@ -56,7 +56,7 @@ but executed by DCM (ADR-008).
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
 | 5 | libvirt-vm-provider/vm-status-provenance | `realized-entity` field-level `provenance`/`status`/`drift` | Covered |
 | 6 | data/persistent-volume-provision | `storage.volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
-| 7 | dcm-core/udlm-dependency-graph-data-model | edge kinds; ADR-010 fault-domain/blast-radius; graph-integrity | Covered |
+| 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
 | 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
 | 9 | libvirt-vm-provider/dependency-failure-impact | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
 | 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = DCM) |
