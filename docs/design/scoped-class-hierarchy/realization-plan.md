@@ -56,10 +56,14 @@ pin-resolution validation on both planes (intra-registry fixed-version reference
 UC-004; organization-edge pins uuid-precise with behind-as-debt and ahead-as-refusal,
 UC-005/006), and atomic recompilation (`--check` fails if any generated descendant of a changed class
 was not regenerated in the same change set — UC-001; bump sufficiency is the classifier's job —
-UC-002). P0 also defines two record schemas the contracts depend on: the **regeneration
-manifest** (the durable blast-radius change record — `commit-log-entry` is per-entity and
-cannot carry it) and the **finding-routing record** (ADR-046's contradicted-claim route,
-expressibility finding N2). The generator also emits the **compilation-provenance block**
+UC-002). The two record schemas the contracts depend on are **defined**: the **regeneration
+manifest** ([`registry/regeneration-manifest.schema.json`](../../../registry/regeneration-manifest.schema.json)
+— the durable blast-radius change record, since `commit-log-entry` is per-entity and cannot
+carry it) and the **finding-routing record**
+([`registry/finding-routing-record.schema.json`](../../../registry/finding-routing-record.schema.json)
+— ADR-046's contradicted-claim route, expressibility finding N2). What remains is the
+producers: the enumerator that emits a manifest and the estate-side reporter that files a
+finding. The generator also emits the **compilation-provenance block**
 (ADR-045 §7) into every generated spec — full input-revision chain incl. layers, schemas, and
 generator version — and the `--check` gate verifies it by faithful recompilation (a mismatch
 is an integrity refusal, UC-012); realized entities extend it with realization provenance

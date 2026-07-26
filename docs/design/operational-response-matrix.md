@@ -35,7 +35,7 @@ exposure discipline.
 
 | Change origin | SURFACE — blast radius & distance (vs provenance) | DECIDE — whose policy, on what | ENABLE — the typed responses | Corpus |
 |---|---|---|---|---|
-| **Base/Type class change** | regeneration manifest: affected classes + regenerated specs (class graph) + consumers accruing debt (ADR-044 manifests) | estate change policy, branching on change class (additive/breaking) | auto-adopt · windowed adopt · full ceremony · blue/green re-pin · skip (stay pinned, visible debt) | cv-001..009, cc-001..008 |
+| **Base/Type class change** | regeneration manifest ([schema](../../registry/regeneration-manifest.schema.json)): affected classes + regenerated specs (class graph) + consumers accruing debt (ADR-044 manifests) | estate change policy, branching on change class (additive/breaking) | auto-adopt · windowed adopt · full ceremony · blue/green re-pin · skip (stay pinned, visible debt) | cv-001..009, cc-001..008 |
 | **Generated spec revision** | spec pin-lag per pinned artifact; re-opens on registry-ref advance | same estate change policy | re-pin under gates · skip-with-debt | cv-005/006; estate burn-down discipline |
 | **Provider envelope (set) change** | capability set diff (added/removed); definition revision movement | estate change policy; placement policy if switching providers | adopt · provider swap (blue/green) · skip | cv-017 |
 | **Provider capability revision** | bound consumers via `covers_types`; per-instance realized-under vs current distance (realization provenance) | the organization's change policy — the capability movement itself triggers nothing | update · re-realize (blue/green when breaking) · deliberate no-action (recorded) · expedite | cv-016, 018, 019, 020 |
@@ -57,7 +57,7 @@ corpus already cases has two orthogonal axes plus one platform-side complement:
 | **Skip** | deliberate, recorded no-action; visible debt, fully legitimate | cv-020 |
 | **Substitute** | change the dependency instead of absorbing the change — provider swap, migration off, DR cutover | cv-014, cc-017, cc-009 |
 | **Reverse** | undo an already-taken response — rollback, stay-on-blue, failback | cc-009, cv-008 |
-| **Escalate** | contest the change: route the contradicted claim upstream as a finding | cv-008 (ADR-046 D4) |
+| **Escalate** | contest the change: route the contradicted claim upstream as a finding ([schema](../../registry/finding-routing-record.schema.json)) | cv-008 (ADR-046 D4) |
 
 **Timing modifiers** — orthogonal; they attach to any adopt disposition:
 

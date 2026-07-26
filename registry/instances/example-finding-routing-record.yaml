@@ -1,0 +1,111 @@
+record_type: finding_routing_record
+uuid: d08a3920-c574-4f12-a73d-dbe3cb542812
+handle: findings/example/compute-vm-boot-mode-output
+conforms_to: udlm/0.1
+title: Compute Base 1.1.0 → 1.2.0 was classified additive, but the candidate compilation changes two
+  declared Compute.VirtualMachine outputs
+contradicted_claim:
+  artifact:
+    artifact_kind: base_class
+    handle: Compute
+    version: 1.2.0
+    uuid: 3394770e-a518-45d5-88f5-0f387bdca215
+  previous:
+    artifact_kind: base_class
+    handle: Compute
+    version: 1.1.0
+    uuid: dda18e8c-32f2-4286-8845-b230c3663031
+  declared_classification: additive
+  classified_by: element added (optional element, no carrier invalidated)
+  registry_ref:
+    commit: 9f8e7d6c5b4a39281706f5e4d3c2b1a099887766
+    branch: main
+  regeneration_manifest_uuid: abca4c9e-2a7c-43d6-ab2d-ca82c2f0690d
+evidence:
+  diff_summary:
+    changed_outputs:
+    - handle: Compute.VirtualMachine
+      output: boot_mode
+      change: value_changed
+      bound_consumer_count: 3
+      note: the added element carries a default that the generator threads into the realized output,
+        so the dry-run value differs from the pinned side on every instance
+    - handle: Compute.VirtualMachine
+      output: firmware_state
+      change: type_changed
+      bound_consumer_count: 1
+      note: string became an object; the previous value now sits under `.mode`
+    compared_output_count: 42
+    volatile_outputs_excluded:
+    - realized_at
+    - provider_request_id
+  diff_artifact_ref:
+    locator: typed-output-diff/2026-07-24/compute-base-1.2.0
+    digest:
+      algorithm: sha-256
+      value: e349bcf45efbc4eb43fe9fd12eafb96c4172214d38361a147bddc2022dd4e787
+    media_type: application/json
+    release: available_on_request
+  comparison:
+    baseline_revisions:
+    - artifact_kind: base_class
+      handle: Compute
+      version: 1.1.0
+      uuid: dda18e8c-32f2-4286-8845-b230c3663031
+    candidate_revisions:
+    - artifact_kind: base_class
+      handle: Compute
+      version: 1.2.0
+      uuid: 3394770e-a518-45d5-88f5-0f387bdca215
+    dry_run: true
+    compared_at: '2026-07-24T09:15:00Z'
+corpus_ref:
+  ref: corpus@71753c2d
+  verified_unmoved: true
+  corpus_kind: estate intent corpus
+reporting_estate:
+  estate_ref: estate:0d94fdc1
+  authority: cexample-financial
+  contact: platform-registry@cexample.com
+  profile: fsi
+  egress_disposition: field_masked
+promotion_attempt:
+  attempted_at: '2026-07-24T09:20:00Z'
+  outcome: refused
+  evidence_ref: promotion/2026-07-24/compute-base-1.2.0
+status: resolved
+status_history:
+- at: '2026-07-24T09:30:00Z'
+  status: submitted
+  by: cexample-financial platform team
+- at: '2026-07-24T14:02:00Z'
+  status: under_review
+  by: udlm-maintainers
+  note: reproduced from the summary alone; the full diff artifact was not requested
+- at: '2026-07-25T11:10:00Z'
+  status: accepted
+  by: udlm-maintainers
+  note: the classifier read the element as optional and stopped there; it never looked at whether the
+    element's default reaches a declared output
+- at: '2026-07-25T16:45:00Z'
+  status: resolved
+  by: udlm-maintainers
+resolution:
+  outcome: classifier_defect_fixed
+  at: '2026-07-25T16:45:00Z'
+  decision_record_uuid: 33514d6f-0c34-4d9f-b6b2-bed0fcdff678
+  regeneration_manifest_uuid: 7a69ab1e-1883-436d-9633-18bc7456970a
+  note: An added element whose default reaches a declared output is now classified breaking, which fixes
+    every future change of that shape rather than this one instance of it. The Base Class was re-declared
+    at 2.0.0 and its blast radius enumerated.
+reported_at: '2026-07-24T09:30:00Z'
+metadata:
+  display_name: Contradicted additive claim on Compute Base 1.2.0 (example)
+  notes:
+  - at: '2026-07-25T16:45:00Z'
+    author: udlm-maintainers
+    text: Worked example of the full round trip — a refused promotion becomes an upstream finding, the
+      finding becomes a classifier fix, and the fix becomes a change with its own regeneration manifest.
+      Note what the reporter did not have to disclose to make it actionable — an opaque estate reference,
+      output names and change kinds, and a digest were enough; the full diff stayed behind the estate's
+      egress gate and was never requested.

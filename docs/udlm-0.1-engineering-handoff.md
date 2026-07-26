@@ -43,6 +43,8 @@ Hold these seven concepts and the rest follows:
 | `catalog-item.schema.json` | a Composite Service catalog item |
 | `decision-record.schema.json` | a DecisionRecord (the substrate form of an ADR) |
 | `audit-record` / `audit-leaf` / `commit-log-entry` | audit + tamper-evidence (Merkle, RFC 9162) |
+| `regeneration-manifest.schema.json` | the durable change record of a class change — classification, machine-enumerated blast radius, consumer debt, the gate suite that re-proved it (ADR-045) |
+| `finding-routing-record.schema.json` | a contradicted compatibility claim routed upstream from an estate, with the typed-output diff as evidence (ADR-046) |
 | `function-capability-matrix.schema.json` | RBAC function matrix |
 
 **Contracts (`contracts/`) — the wire behavior a peer must honor.** Load-bearing first: `provider-contract.md` (the provider interface + registration), `policy-contract.md` (policy evaluation), `identifier-scheme.md` (UUIDs/handles), `data-roles.md` (what data crosses the DCM→provider boundary), `event-catalog.md` + `time-and-clock.md` (events, clocks), `schema-sharing.md`, `error-model.md`, `provider-contract.md` §8–10. The rest (`retry-semantics`, `rate-limit-and-backpressure`, `provider-callback-auth`, `storage-providers`, `information-providers*`, `cost-metering-linkage`, `data-store-contracts`) are scoped contracts referenced from those.

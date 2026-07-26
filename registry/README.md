@@ -12,6 +12,8 @@ registry/
   resource-type-spec.schema.json   # the meta-schema every entry MUST validate against
   VERSIONING.md                    # the two-axis versioning + compatibility policy
   realized-entity.schema.json      # the INSTANCE meta-schema (four states + provenance + ownership)
+  regeneration-manifest.schema.json   # the change record a class change emits (blast radius + consumer debt)
+  finding-routing-record.schema.json  # an estate's contradicted compatibility claim, routed upstream with the diff
   resource-types/                  # TYPE definitions — one file per entity type, JSON or YAML
     compute.virtual-machine.json   #   Resource family (Category.Type names)
     compute.cluster.json
