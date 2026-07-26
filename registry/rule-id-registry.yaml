@@ -74,6 +74,11 @@ prefixes:
     home: design-principles/data-contracts.md
     domain: Persistence contract for the data domains (append-only, versioned snapshots, retention, tamper-evidence, tenant isolation at the storage interface)
     status: active
+  - prefix: DRV
+    name: Derivability discipline
+    home: registry/SPEC-DESIGN-REQUIREMENTS.md
+    domain: Compute-never-store for type fields — a value derivable from other model records is not stored as an independent fact (enforced by tests/check_derivability.py)
+    status: active
   - prefix: ENT
     name: Entity invariants
     home: foundations/entity-types.md
@@ -222,6 +227,11 @@ prefixes:
     name: Tenancy
     home: entities/resource-grouping.md
     domain: Tenant-boundary group rules
+    status: active
+  - prefix: TERM
+    name: Terminology discipline
+    home: CONTRIBUTING.md
+    domain: Retired terms do not reappear in living text — history-marked lines and per-file/per-rule exemptions excepted (enforced by tests/check_terminology.py)
     status: active
   - prefix: XTA
     name: Cross-tenant authorization

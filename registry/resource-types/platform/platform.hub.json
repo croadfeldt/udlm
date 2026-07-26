@@ -1,10 +1,10 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Hub/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Hub/0.1.2",
   "resource_type": "Platform.Hub",
   "family": "Resource",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "conforms_to": "udlm/0.1",
-  "uuid": "d336615e-b758-45d6-a236-23b8a1ac362b",
+  "uuid": "e22decb9-0931-43ee-897e-6548459fd35a",
   "status": "active",
   "metadata": {
     "display_name": "Hub",
@@ -59,7 +59,7 @@
     },
     "managed_cluster_count": {
       "type": "integer",
-      "description": "Fleet rollup at last reconciliation: how many clusters point at this hub (contained_by + depends_on inbound). A reading of the graph, published for cheap binding."
+      "description": "DERIVED — a reading of the graph: the clusters whose inbound contained_by/depends_on edge points at this hub, counted at last reconciliation and published for cheap binding (compute-never-store; the edges remain the source)."
     }
   },
   "immutable": [],

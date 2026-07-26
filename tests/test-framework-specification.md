@@ -186,7 +186,7 @@ Every request flows through these stages in order:
 | MRKL-001 | Every audit leaf has a valid signature | Fetch N random leaves → verify signatures against known keys |
 | MRKL-002 | Inclusion proof verifies against current STH | Fetch random leaf → get inclusion proof → verify against latest STH |
 | MRKL-003 | Consistency proof verifies append-only | Get STH at time T1 and T2 → consistency proof must validate |
-| MRKL-004 | Request chain verification: output_hash[N] == input_hash[N+1] | Fetch all leaves for a request → verify hash chain |
+| MRKL-004 | Request linkage verification: output_hash[N] == input_hash[N+1] | Fetch all leaves for a request → verify each leaf's output_hash equals the next leaf's input_hash |
 | MRKL-005 | Tampering detection: modify any leaf → verification fails | Insert, verify, modify, re-verify → failure detected |
 | MRKL-006 | Granularity level controls leaf count | Stage → ~6 leaves; mutation → ~15-30; field → same count, richer content |
 

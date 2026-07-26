@@ -184,7 +184,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## Facility
 
-### Facility.Location (0.3.0)
+### Facility.Location (0.3.1)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -516,7 +516,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Compute.VirtualMachine — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.3.4)
+### Network.IPAddressPool (0.3.5)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -619,7 +619,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Platform
 
-### Platform.Hub (0.1.1)
+### Platform.Hub (0.1.2)
 
 **Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
 

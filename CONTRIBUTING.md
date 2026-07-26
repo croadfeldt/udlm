@@ -42,6 +42,22 @@ This rule exists because the repository's precision was outrunning its readabili
 were correct, gate-enforceable, and unreadable cold. The fix is not a summary bolted on top —
 it is writing the document's own prose at this level throughout.
 
+## Terminology discipline (TERM-001)
+
+When a ruling retires a term, the term stops being available for new writing. It does not stop
+being writable *about*: the sentence that records the retirement ("`gating policy` was merged into
+Validation Policy") is documentation of the decision, not a use of the term. That is the whole
+distinction the gate encodes — a retired term in living text is a defect; a retired term in a line
+that says it was retired is the record working as intended.
+
+This exists because retirement without enforcement decays. "Gating policy" was retired by ruling
+and then regressed into a corpus file and two flow documents, caught only by the downstream repo's
+copy of the check; the term list belongs upstream, where the ruling was made.
+
+| Rule | Statement |
+|---|---|
+| `TERM-001` | A term retired by a ruling MUST NOT appear in the repository's living text (tracked `.md`/`.yaml`/`.json`/`.py`/`.sh` files). It MAY appear on a line that documents the change itself — the line carries a history marker (*formerly*, *renamed*, *superseded*, *retired*, *no longer*, *deprecated*, …) — or in a file exempted **for that specific term** because recording it is the file's purpose (the rules table, the agent context file, the enforcement code that refuses the retired surface, an immutable instance revision). Exemptions are per file **and** per rule: a file that legitimately names one retired term is not thereby licensed to reintroduce another. The retired-term table is `tests/check_terminology.py`; grow it with the ruling that retires a term. |
+
 ## Document the why
 
 Every non-trivial change records its rationale, not just its diff: a design note under `docs/`, an
@@ -87,6 +103,12 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
   definition, **one home, one ID; reference, never restate** (`SPEC-DESIGN §33`). A duplicate definition is
   a build failure, not a style note.
 - **Settled vocabulary** — `check_model_vocabulary.py`: the agreed terms only; retired synonyms fail.
+- **Retired terminology (`TERM-001`, above)** — `check_terminology.py`: a term a ruling retired does not
+  reappear in living text; the scan reads wrapped lines and hyphenated forms, and exemptions are per file
+  *and* per rule.
+- **Derivability (`DRV-001` — `SPEC-DESIGN` rule 37, "a type does not store what the model already
+  computes")** — `check_derivability.py`: a history- or aggregation-shaped field declares **DERIVED**
+  (with its source) or **OBSERVED**, or does not exist on the type.
 - **Registered standards** — `check_standards_registered.py`: a standard cited in prose has a register row
   (`adopted-standards.md` §8).
 

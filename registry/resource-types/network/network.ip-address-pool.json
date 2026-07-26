@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.3.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.3.5",
   "conforms_to": "udlm/0.1",
-  "uuid": "4f7b189a-17d3-4011-91d7-0ea26cac5370",
+  "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -125,11 +125,11 @@
     },
     "allocated_count": {
       "type": "integer",
-      "description": "Addresses currently allocated_from this pool (a realized fact the provider populates)."
+      "description": "DERIVED — a count of the Network.IPAddress records allocated_from this pool; those records are the source (compute-never-store). Addresses currently allocated from this pool."
     },
     "free_count": {
       "type": "integer",
-      "description": "Remaining allocatable addresses."
+      "description": "DERIVED — total_addresses minus allocated_count, both themselves derived; never stored independently. Remaining allocatable addresses."
     },
     "exhausted": {
       "type": "boolean",

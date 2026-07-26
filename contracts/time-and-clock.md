@@ -184,8 +184,9 @@ Provider callbacks include timestamps. A conformant peer:
 
 ## 8. Leap seconds
 
-**Audit order is not at risk during a leap second**, because ordering is **structural** (§4): the hash
-chain and the `sequence_uuid` monotonic counter are unaffected by any wall-clock adjustment. So this
+**Audit order is not at risk during a leap second**, because ordering is **structural** (§4): the
+append-only Merkle log (RFC 9162) and the `sequence_uuid` monotonic counter are unaffected by any
+wall-clock adjustment. So this
 section is about **clock accuracy**, not order — and it deliberately does **not** require a specific
 leap-handling strategy, because there is no interoperable standard for one (smearing schemes differ across
 public-cloud providers) and a peer's choice is not observable on the wire (timestamps are millisecond UTC
