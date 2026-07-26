@@ -193,6 +193,19 @@ v4-nibble, snake_case key patterns, relationship-name coverage, and the PVD port
 (`tests/check_portable_values.py` — planned, not yet landed) are **NOT yet enforced** at the registry layer (semver compat IS now enforced — tests/ci_compat_gate.py runs compat-check on every changed spec vs origin/main) — tracked defects, not claims. Every
 "[enforced]" marker elsewhere is audited against this ledger.
 
+**The refusal contract is specification, not enforcement.** The rules governing what a refusal
+must be — typed, actionable, non-leaking, auditable (`contracts/error-model.md` §6a) — and the
+per-surface rules that apply it (`XTA-006`/`XTA-007`, `GMX-011`–`GMX-013`, `CPX-013`/`CPX-014`,
+`CMP-009`, `PRV-011`, `REG-011`–`REG-016`) describe behavior at request, dispatch, and promotion
+time. None of it is checked by a validator in this repository, and none of it claims
+`[enforced]`. Two of the registry-plane rules generalize checks that *do* run on the flat-spec
+plane today — version sufficiency (`tests/ci_compat_gate.py`) and version honesty on consumer
+manifests (`tests/check_consumer_conformance.py`) — and the class-plane gates additionally wait
+on a substrate that does not exist yet: class artifacts, their schema, and the classifier are P0
+items of `docs/design/scoped-class-hierarchy/realization-plan.md`. Listing them here is the point
+of the ledger: a written refusal is a contract, and calling it enforcement would be the exact
+dishonesty this section exists to prevent.
+
 ---
 
 *Defect-fix sweeps (rule-ID renumbering, enum rewrites, casing, stale citations) are tracked

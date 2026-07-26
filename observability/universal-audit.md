@@ -212,6 +212,7 @@ The `action` field uses a closed vocabulary. Free-text actions are invalid and r
 | `AUTHORIZE` | Cross-tenant, actors | Authorization granted |
 | `REVOKE` | Cross-tenant, actors | Authorization revoked |
 | `EVALUATE` | Policies | Policy evaluated (with outcome) |
+| `REFUSE` | Requests, changes, dispatches, promotions | A request, change, dispatch, or promotion was refused by a named rule at a named enforcement point (`AUD-023`). Distinct from `EVALUATE`: an evaluation that happened to fail is a policy fact, a refusal is an operational one — the thing the actor asked for did not happen |
 | `ENRICH` | Fields | Field enriched by policy, layer, or external policy evaluation |
 | `LOCK` | Fields | Field locked (override: immutable set) |
 | `HOLD_PLACE` | Resources | Resource hold placed with provider |
@@ -507,6 +508,8 @@ them; how it exposes them (the API surface) is realization control-plane, not fi
 | `AUD-013` | The Stage 1 timestamp in the Commit Log is the authoritative audit timestamp. Stage 2 enrichment timestamps record when the full audit record became queryable — not when the change occurred. |
 | `AUD-014` | Audit granularity level is configured per deployment profile. `fsi` and `sovereign` profiles require `field` granularity — this cannot be downgraded. |
 | `AUD-015` | Inter-stage verification mode is configured per deployment profile. `fsi` and `sovereign` profiles require `synchronous` verification — the pipeline halts if any signature verification fails. |
+| `AUD-023` | A refusal is recorded under the `REFUSE` action, not inferred from an `EVALUATE` record whose outcome was negative. The record names the **refusing rule** (`policy_uuid`, `rule_uuid`, or the rule ID for a substrate rule), the **enforcement point** that ran it (intent intake, registry validation, request validation, dispatch, promotion), and the **problem `type`** the actor received ([`contracts/error-model.md`](../contracts/error-model.md) §3 — the closed error-code vocabulary), so an operator can join what the actor saw to what the substrate decided. A refusal produced with no `REFUSE` record is an unaudited denial. |
+| `AUD-024` | A refusal record names **every subject of the crossing it refused**, not only the requesting one. A cross-tenant refusal carries both tenant identities and the attempted target identifier; a boundary-egress refusal carries the source and the declared boundary; a dispatch refusal carries the intended provider. Values that the refusal existed to protect are excluded — the record carries field paths, identifiers, and rule identities, never the protected content (the §8.2 hash-only leaf discipline, applied to the refusal record). |
 
 ---
 

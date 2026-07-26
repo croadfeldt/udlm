@@ -283,6 +283,37 @@ tenant:
 
 **Default is `explicit_only` — informational sharing is not open by default.** Every cross-tenant relationship of any nature requires an explicit `cross_tenant_authorization` record. This closes the model — cross-tenant access must be deliberately granted, not passively permitted.
 
+### 6b.2a What the refusal looks like
+
+Closed-by-default settles *whether* an unauthorized crossing is permitted. It leaves open what
+the submitter is handed when they attempt one — and that answer decides whether the boundary is
+usable. Three failure modes are available to a naive implementation, and each is worse than the
+refusal it replaces.
+
+The first is **repair**: dropping the offending edge and realizing the rest. The graph now
+validates, the request succeeds, and the consumer receives a resource whose dependency is
+missing — a partial realization nobody asked for, discovered later as a runtime failure. The
+whole intent is refused instead; a hard dependency is a required part of the declaration, and
+removing a required part is a different request.
+
+The second is **mistyping**: reporting the crossing as a schema error, an unresolvable
+reference, or a bare authorization failure. All three are true in a sense and none routes the
+submitter anywhere. The refusal is emitted as `authz.cross_tenant_unauthorized` and names the
+mechanism that would make the reference legal — a `cross_tenant_authorization` grant from the
+owning tenant, recorded as a DCMGroup of that class (`registry/dcm-group.schema.json`).
+
+The third is **over-explaining**. A refusal that helpfully describes what the submitter tried
+to reach — its type, its name, its state — has disclosed another tenant's inventory to prove
+they may not see it. The refusal discloses existence-as-forbidden and nothing further, and it
+gives the same answer whether or not the target exists, so that the error channel cannot be
+used to enumerate a foreign estate one identifier at a time
+([`contracts/error-model.md`](../contracts/error-model.md) §3.3 — the existence-disclosure
+rule, which is where not-found and not-authorized are separated for the whole model).
+
+`XTA-006` binds these three. `XTA-007` covers the record: a cross-tenant refusal concerns two
+tenants, so the refusal record names both — today's denial records carry a single
+`tenant_uuid`, which leaves the owning tenant unable to see that their resource was reached for.
+
 ### 6b.3 DCM System Policies for Cross-Tenant Relationships
 
 | Policy | Rule |
@@ -295,6 +326,8 @@ tenant:
 | `XTA-003` | More specific authorizations take precedence: field_specific > resource_specific > tenant_global |
 | `XTA-004` | All cross-tenant authorization decisions are policy-driven and DCM-enforced |
 | `XTA-005` | Sovereignty constraints declared by either Tenant must be honored by all cross-tenant relationships |
+| `XTA-006` | An intent whose dependency targets an entity in another Tenant without an active `cross_tenant_authorization` is refused **whole** at request validation — never repaired by dropping the edge and realizing the remainder, and never partially accepted. The refusal is emitted as `authz.cross_tenant_unauthorized`, names the grant that would make the reference legal, and discloses nothing about the target beyond existence-as-forbidden: no attributes, no type, no state, and the same response whether or not the target exists (`contracts/error-model.md` §3.3) |
+| `XTA-007` | The refusal record for a cross-tenant crossing names **both** Tenant identities and the attempted target identifier, alongside the refusing policy (`AUD-024` — a refusal record names every subject of the crossing it refused). A single-tenant denial record is insufficient: the owning Tenant is a party to the attempt and cannot audit what it cannot see |
 
 ---
 

@@ -97,6 +97,7 @@
         "MODIFY",
         "PROMOTE",
         "QUERY",
+        "REFUSE",
         "REHYDRATE",
         "RELATIONSHIP_CREATE",
         "RELATIONSHIP_RELEASE",
