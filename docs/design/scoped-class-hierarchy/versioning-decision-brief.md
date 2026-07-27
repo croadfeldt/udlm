@@ -41,7 +41,8 @@ pin safe rather than a leap of faith?
 2. **The registry is a library; an organization's estate is an application.** The industry's
    proven split, adopted whole: inside the registry, references always track current and the
    release commit is the only pin; at an organization's edge, pins are exact (down to the
-   revision uuid) and the organization owns its upgrades.
+   published version, or the content digest where bytes must be proven — ADR-051) and the
+   organization owns its upgrades.
 3. **Pinning old versions is fully supported — because the versioning model never forbade
    it.** What the model forbids is being *silently* out of date. A pinned organization keeps
    complete control, and its lag appears as an explicit, per-artifact debt list that reopens

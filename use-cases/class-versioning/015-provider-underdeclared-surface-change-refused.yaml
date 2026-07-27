@@ -1,23 +1,25 @@
 uuid: uc-b19e1b7a-6f56-4d92-898c-cbd223384fa6
 handle: class-versioning/provider-underdeclared-surface-change-refused
-version: 1.0.0
+version: 1.1.0
 scenario:
   description: 'A provider stops populating a declared output it previously supplied — consumers bind
-    to that output — but submits the change as a revision bump with no rotation. The gate refuses on both
+    to that output — but submits the change under its already-published version. The gate refuses on both
     counts: the surface diff classifies the dropped output as breaking (insufficient bump, same refusal
-    shape as an under-declared class change), and the unrotated uuid is an integrity failure against the
-    rotation rule. The refusal names the dropped output, the consumers bound to it (from the estate''s
-    bindings), the required bump, and the rotation obligation. Nothing propagates from a refused change.'
+    shape as an under-declared class change), and republishing a published (identity, version) with
+    different bytes is an integrity failure against the publish law (ADR-051 — the pin manifest''s
+    recorded digest is the detector). The refusal names the dropped output, the consumers bound to it
+    (from the estate''s bindings), and the required bump. Nothing propagates from a refused change.'
   actor:
     persona: platform-engineer
     profile: standard
   intent: Have an under-declared provider surface change refused with the dropped output, its bound consumers,
-    the required bump, and the rotation obligation named
+    and the required bump named
   success_criteria:
   - Dropping a populated output classifies breaking; a revision bump is refused as insufficient
-  - An unrotated uuid on a changed provider definition is refused as a rotation violation
+  - A changed provider definition republished under its already-published version is refused as a publish-law
+    violation (recorded digest mismatch)
   - The refusal names the dropped output and the consumers whose bindings depend on it
-  - The refusal states the required bump and the rotation obligation — typed and actionable
+  - The refusal states the required bump — typed and actionable
   - No downstream impact entry is created from a refused change
   dimensions:
     lifecycle_phase: modification
@@ -29,7 +31,7 @@ scenario:
   profile: standard
   expected_domain_interactions:
   - domain: policy
-    interaction: surface classification + rotation rule refuse the under-declared change
+    interaction: surface classification + publish law refuse the under-declared change
   - domain: data
     interaction: bound consumers are derived from bindings, giving the refusal its blast context
   - domain: audit

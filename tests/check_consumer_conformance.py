@@ -19,9 +19,11 @@ state green or red:
      as a conscious commit.
 
 Manifest shape (per ADR-044): `consumer` (name/repo/description), exactly one of `consumes`
-(list of {resource_type, noted_version}) or `consumes_all_types: true`, optional `schemas`
-(registry schema files read — must exist), `coverage: declared|verified` (`verified` is the
-consumer's own promotion, never granted here).
+(list of {resource_type, noted_version, optional noted_digest — the sha256:<hex> content
+digest of the revision last verified against, the exact half of the ADR-051 pin grammar})
+or `consumes_all_types: true`, optional `schemas` (registry schema files read — must exist),
+`coverage: declared|verified` (`verified` is the consumer's own promotion, never granted
+here).
 
     python3 tests/check_consumer_conformance.py            # gate (CI)
     python3 tests/check_consumer_conformance.py --update   # rewrite unconsumed.yaml from the tree
@@ -39,6 +41,7 @@ CONSUMERS_DIR = os.path.join(ROOT, "registry", "consumers")
 UNCONSUMED = os.path.join(CONSUMERS_DIR, "unconsumed.yaml")
 
 SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")  # ADR-051 exact-pin form
 
 UNCONSUMED_HEADER = """\
 # Explicit acknowledgment of registry types no consumer manifest covers (ADR-044).
@@ -114,6 +117,10 @@ def check_manifest(rel, doc, versions, fails):
         if parse_semver(noted) > parse_semver(versions[rt]):
             fails.append(f"{rel}: {rt}: noted_version {noted} is AHEAD of the registry's {versions[rt]} "
                          f"— verification against a registry that does not exist")
+        noted_digest = entry.get("noted_digest")
+        if noted_digest is not None and not (isinstance(noted_digest, str) and DIGEST.match(noted_digest)):
+            fails.append(f"{rel}: {rt}: noted_digest {noted_digest!r} does not parse as sha256:<64 hex> "
+                         f"(the ADR-051 exact-pin form)")
     return consumed
 
 

@@ -394,7 +394,8 @@ is decidable — classes are data contracts, descendants are compiled artifacts,
 set is computable — which is precisely why it should be gated rather than reviewed.
 
 ADR-045 (class evolution and pinning — recompilation is atomic, intra-registry references are by
-handle, organization-edge pins are uuid-precise, and element scope is part of the compatibility
+handle, organization-edge pins are `@version`/`@digest`-exact (ADR-051), and element scope is part
+of the compatibility
 contract) and ADR-046 (promotion happens on typed-output evidence, never on a version claim)
 decide the *policy*. This section states what the registry **refuses**, in the four-part refusal
 form the rest of the model uses — typed, actionable, non-leaking, auditable
@@ -441,7 +442,8 @@ References are by handle and compile against the release's current version; the 
 registry-resolution scope). The refusal names the offending reference and the by-handle
 correction, because the fix is a one-line edit and the maintainer should not have to look it up.
 
-At the organization edge, pins are first-class and uuid-precise, and the distinction that matters
+At the organization edge, pins are first-class — `thing@version` under the publish law, or
+`thing@sha256:<hex>` for exact bytes (ADR-051) — and the distinction that matters
 is between a pin that is *behind* and a pin that resolves to nothing. Behind is legal and carries
 enumerated debt — the estate is deliberately conservative and the distance is reported per
 artifact, never silent. Ahead of the consumed registry ref, or naming a revision that exists
@@ -498,7 +500,7 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 | `REG-011` | A declared version increment smaller than the classification the change earns is refused (`validation.version_bump_insufficient`). Classification is by rule against the bump table (`registry/VERSIONING.md`), never review judgment, and applies uniformly to resource-type specs, class artifacts, and provider surface declarations. The refusal names the **element**, the **classification**, and the **minimum sufficient bump**; a refused change regenerates nothing downstream. Pre-1.0, the accepted floor for a breaking classification is a MINOR bump, never a REVISION. |
 | `REG-012` | Narrowing a class element's scope (Base → Type, Type → Provider) is classified **breaking** even when no schema shape changes, because the portable surface of every carrier shrinks with it; widening is compatible. The comparison is explicit gate logic — a schema differ cannot observe a position change. The refusal names the portability impact and enumerates the types whose portable surface the move would shrink. |
 | `REG-013` | A class reference **inside** the registry that pins a fixed version is refused at validation (`validation.intra_registry_version_pin`): one release carrying two revisions of the same Base Class is version skew within a single source. Intra-registry references are by handle and compile against the release's current version; the registry ref is the sole intra-registry pin. The refusal names the offending reference, the single-truth rule, and the by-handle correction. |
-| `REG-014` | An organization-edge pin that names a version or uuid absent from the registry ref the estate declares it consumes is refused (`validation.pin_unresolvable`), typed distinctly from a pin that is legally behind. The refusal names the pinned reference and the registry ref it failed to resolve against. A pin carrying both `version` and `uuid` must carry a matching pair; a mismatch is refused and the uuid is authoritative. Pins that are behind continue to validate, each emitting its version-distance as enumerated debt — behind is legal, never silent. |
+| `REG-014` | An organization-edge pin that names a version or digest absent from the registry ref the estate declares it consumes is refused (`validation.pin_unresolvable`), typed distinctly from a pin that is legally behind. The refusal names the pinned reference and the registry ref it failed to resolve against. A pin carrying both `version` and `digest` must carry a matching pair per the pin manifest; a mismatch is refused and the digest is authoritative (ADR-051). Pins that are behind continue to validate, each emitting its version-distance as enumerated debt — behind is legal, never silent. |
 | `REG-015` | Every registry or estate gate refusal emits a **durable gate-outcome record**: the artifact and change under evaluation, the rule that refused, the classification or comparison that justified it, the named correction, and the actor and time. A CI log line and an exit code are not a gate-outcome record — a refused change and an unattempted one must remain distinguishable after the job that produced them has aged out. The record is the registry-plane counterpart of the `REFUSE` audit record (`AUD-023`) and carries the same content discipline. |
 | `REG-016` | Promotion of an estate from pinned to candidate revisions is refused when the typed-output diff between the two dry-run compilations is neither empty nor explicitly approved (`policy.promotion_diff_unapproved`). The refusal carries the diff, naming each changed output and the consumers bound to it; the estate remains wholly on its pinned revisions — nothing partially promotes. Because a dirty diff contradicts the upstream compatibility claim, the refusal also produces a finding routed to the registry with the diff as provenance. Both comparisons are computed at the same recorded corpus ref; a corpus that moved between them voids the comparison. |
 | `REG-DP-001` | Default deprecation notification period: P30D before deprecation status is applied. Overridable. |

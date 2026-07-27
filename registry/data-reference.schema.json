@@ -13,7 +13,7 @@
         "ref_uuid": {
           "type": "string",
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-          "description": "AUTHORITATIVE. RFC 9562 v4 uuid of the reference_data layer. Because a layer version is IMMUTABLE (any change mints a new uuid+version, ADR-012), this pins an exact, reproducible version. Resolution uses only this. A uuid that resolves to nothing is a dangling reference (hard fail), never a silent rebind onto a same-named record."
+          "description": "AUTHORITATIVE. RFC 9562 v4 uuid of the reference_data layer. Layers are IMMUTABLE RECORDS (the ADR-051 immutable-record family; ADR-012): a change is published as a NEW record — its own identity uuid, a higher version, `supersedes` naming the predecessor — never an edit, so this uuid pins an exact, reproducible revision by identity alone. Resolution uses only this. A uuid that resolves to nothing is a dangling reference (hard fail), never a silent rebind onto a same-named record."
         },
         "ref_name": {
           "type": "string",

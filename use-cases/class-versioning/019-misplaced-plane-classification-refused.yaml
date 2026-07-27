@@ -1,12 +1,14 @@
 uuid: uc-2e138eb9-4bf5-42d8-8325-1ed0e463e23b
 handle: class-versioning/misplaced-plane-classification-refused
-version: 1.0.0
+version: 1.1.0
 scenario:
   description: 'A provider changes a capability''s contract (an output it populates changes shape) but
-    submits the change with the capability''s version and uuid untouched, bumping only the envelope. The
+    submits the change with the capability''s version untouched, bumping only the envelope. The
     gate refuses on the plane violation: classification must land where the contract changed — the capability
-    — and an envelope bump is not a substitute. The refusal names the changed capability, its unmoved
-    version and unrotated uuid, the consumers bound through its covers_types, and the required capability-plane
+    — and an envelope bump is not a substitute for the capability''s own publish-law bump (ADR-051: the
+    capability''s recorded digest moved while its (identity, version) claimed nothing changed). The refusal
+    names the changed capability, its unmoved version, the consumers bound through its covers_types, and
+    the required capability-plane
     bump. The symmetric case is also refused: majoring the envelope for a capability-internal change misstates
     set semantics.'
   actor:
@@ -15,7 +17,8 @@ scenario:
   intent: Have a contract change classified on the wrong versioning plane refused with the correct plane,
     bump, and affected consumers named
   success_criteria:
-  - A capability whose contract changed with unmoved version and unrotated capability uuid is refused
+  - A capability whose contract changed under an unmoved version is refused (publish-law violation at
+    the capability plane)
   - An envelope bump is rejected as a substitute for capability-plane classification
   - The refusal names the changed capability, the required capability bump, and the consumers bound via
     covers_types

@@ -22,7 +22,8 @@ run "model vocabulary"                  hard python3 tests/check_model_vocabular
 run "session narration"                 hard python3 tests/check_session_narration.py
 run "profile tables"                    hard python3 tests/check_profile_tables.py
 run "type base standard (rule 36)"      hard python3 tests/check_type_standard.py
-run "uuid rotation (revision identity)"  hard python3 tests/check_uuid_rotation.py
+run "identity integrity (ADR-051)"      hard python3 tests/check_identity_integrity.py
+run "pin manifest (current+append-only)" hard python3 registry/tools/generate_pin_manifest.py --check
 run "compat-check compiles"             hard python3 -c "compile(open('registry/tools/compat-check.py').read(),'x','exec')"
 run "version / compat gate vs $base"    hard python3 tests/ci_compat_gate.py "$base"
 run "standards registered"              soft python3 tests/check_standards_registered.py

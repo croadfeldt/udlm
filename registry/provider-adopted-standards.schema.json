@@ -25,7 +25,7 @@
         "uuid": {
           "type": "string",
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-          "description": "RFC 9562 v4 identity of the provider — the `subject_uuid` an accreditation attests against (accreditation §3.3.1 axis 1)."
+          "description": "RFC 9562 v4 identity of the provider — FROZEN at registration, never rotated on edit (ADR-051): this is the `subject_uuid` an accreditation attests against (accreditation §3.3.1 axis 1), and an anchor that moved on edits would orphan every attestation bound to it. There is no revision field here — revision exactness lives in digests, recorded by the attesting/consuming side."
         },
         "kind": {
           "enum": [
@@ -38,7 +38,7 @@
         "version": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-          "description": "The provider definition's version — the declared surface (capabilities, adopted standards, defaults, populated outputs) is the versioned contract under the standard rules (ADR-045 §8): internal changes past the naturalization boundary (dcm ADR-023) are free; surface changes classify and bump like any other definition, with uuid rotation per VERSIONING.md."
+          "description": "The provider definition's version — the declared surface (capabilities, adopted standards, defaults, populated outputs) is the versioned contract under the standard rules (ADR-045 §8): internal changes past the naturalization boundary (dcm ADR-023) are free; surface changes classify and bump under the publish law (ADR-051 — the uuid stays frozen; (identity, version) is immutable once published)."
         }
       }
     },
@@ -127,7 +127,7 @@
         "capability_uuid": {
           "type": "string",
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-          "description": "Stable RFC 9562 v4 identity of this capability — the anchor an accreditation binds to (accreditation §3.3.1)."
+          "description": "Stable RFC 9562 v4 identity of this capability — FROZEN at declaration, never rotated on edit (ADR-051): the anchor an accreditation binds to (accreditation §3.3.1) survives every surface change; only the version moves."
         },
         "version": {
           "type": "string",

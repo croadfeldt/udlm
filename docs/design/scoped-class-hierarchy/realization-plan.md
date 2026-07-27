@@ -53,7 +53,7 @@ P0 also carries the ADR-045/046 evolution gates, decided 2026-07-25 and measured
 (narrowing an element's scope is breaking even with no shape change — UC-009), the blast-radius
 enumerator (class graph + ADR-044 consumer manifests, emitted into the change record — UC-003),
 pin-resolution validation on both planes (intra-registry fixed-version references refused,
-UC-004; organization-edge pins uuid-precise with behind-as-debt and ahead-as-refusal,
+UC-004; organization-edge pins `@version`/`@digest`-exact (ADR-051) with behind-as-debt and ahead-as-refusal,
 UC-005/006), and atomic recompilation (`--check` fails if any generated descendant of a changed class
 was not regenerated in the same change set — UC-001; bump sufficiency is the classifier's job —
 UC-002). The two record schemas the contracts depend on are **defined**: the **regeneration

@@ -37,7 +37,12 @@
     "type_version": {
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "Pins the Resource Type Specification version this instance was realized against (E5). Drift and validation are measured against this exact contract."
+      "description": "Pins the Resource Type Specification version this instance was realized against (E5) — the human-legible half of the ADR-051 pin grammar (type@version). Drift and validation are measured against this exact contract."
+    },
+    "type_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "OPTIONAL exact half of the type pin (ADR-051 — type@sha256:<hex>): sha256 over the pinned type spec revision's RFC 8785-canonical form, recorded at realization. The publish law makes type_version alone meaningful; the digest adds byte-exactness where the estate's profile demands it (fsi). A referrer field — the type spec never carries its own digest."
     },
     "type_ref": {
       "type": "string",

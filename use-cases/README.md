@@ -37,7 +37,7 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 - `class-versioning/` — the scoped-Class evolution contract (mixed semantics): additive and
   breaking Base Class changes with atomic recompilation and enumerated blast radius,
   intra-registry pins refused (registry ref = the only internal pin), organizational
-  uuid-precise pins honored with enumerated debt, blue/green typed-output-diff promotion of
+  `@version`/`@digest` pins honored with enumerated debt, blue/green typed-output-diff promotion of
   re-pins, and element scope narrowing classified breaking (portability is part of compat).
 - `vocabulary-intake/` — strings meet SharedDataElements under profile control: exact-match
   auto-binds free everywhere, unmatched strings mint at current scope as proposed (where the

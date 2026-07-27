@@ -1,5 +1,6 @@
 record_type: regeneration_manifest
-uuid: 3c72e0c0-715d-4126-a143-5eeae43cb597
+uuid: a31e6621-d3ed-4505-92f3-76df925db58c
+supersedes: 3c72e0c0-715d-4126-a143-5eeae43cb597
 handle: regeneration/example/compute-base-scope-narrowing
 conforms_to: udlm/0.1
 title: Compute Base Class 1.2.0 → 2.0.0 — `firmware` moved Base → Type scope (breaking, no shape change)
@@ -11,12 +12,12 @@ change:
     artifact_kind: base_class
     handle: Compute
     version: 2.0.0
-    uuid: 956304b9-7fee-45b6-9418-0dd79713d21d
+    digest: sha256:c227f29fbf901f2f6d92d1fd74fc8be27ee5ed3ddcf7493eea537b0b190d7db9
   previous:
     artifact_kind: base_class
     handle: Compute
     version: 1.2.0
-    uuid: 3394770e-a518-45d5-88f5-0f387bdca215
+    digest: sha256:4d67aab0aa2f4dc3b9f6c110ac8b93ae61ec8dab5e550201dc0d9d90ddcd34ef
   summary: The `firmware` element moved out of the Compute Base Class and into the Compute.VirtualMachine
     Type Class. No field was added, removed, or reshaped — the element's scope narrowed, so everything
     that inherited `firmware` from the Base Class no longer carries it portably.
@@ -39,13 +40,13 @@ affected_artifacts:
     artifact_kind: type_class
     handle: Compute.VirtualMachine
     version: 1.1.0
-    uuid: 9bb8d377-c013-4e32-8432-9860b23c85dd
+    digest: sha256:9e6254fef141859a7cf2d6d4ba2168e0148ce0d4cf6fdab5de27e7adca4c6aa5
   previous:
     artifact_kind: type_class
     handle: Compute.VirtualMachine
     version: 1.0.0
-    uuid: 2478bde3-db9b-4c97-86de-a459340744d3
-  disposition: revalidated_rotated
+    digest: sha256:a5ac27bada7332ff722a0a85ca46fb5938cee981cacae294b52493515f8737f2
+  disposition: revalidated_bumped
   reached_via:
   - Compute
   - Compute.VirtualMachine
@@ -53,12 +54,12 @@ affected_artifacts:
     artifact_kind: generated_type_spec
     handle: Compute.VirtualMachine
     version: 0.7.0
-    uuid: ceb44bd1-e6c6-4b0a-9b9a-5a8442bcd56c
+    digest: sha256:360e86fcaa70be83bf87eefd81cf4683687c0aada15269f0648788158aa5dea6
   previous:
     artifact_kind: generated_type_spec
     handle: Compute.VirtualMachine
     version: 0.6.4
-    uuid: dba568c8-78e7-4239-8929-5917305cce17
+    digest: sha256:13bfb60b072571f65b76dc873e48822ceaae942799763281d98515c8dca8d369
   disposition: regenerated
   path: registry/resource-types/compute/compute.virtual-machine.json
   reached_via:
@@ -68,7 +69,7 @@ affected_artifacts:
     artifact_kind: provider_class
     handle: Compute.VirtualMachine.ExampleHypervisor
     version: 1.0.1
-    uuid: 6691998b-62f6-4259-8982-3ddd34e0559f
+    digest: sha256:ed03d1032679911762b9b89def98f64cf7ae7d9b72337a0b500e1d2b3451a337
   disposition: revalidated_unchanged
   reached_via:
   - Compute
@@ -102,7 +103,7 @@ gate_suite:
   - gate: tests/ci_compat_gate.py
     result: passed
     covered: 1
-  - gate: tests/check_uuid_rotation.py
+  - gate: tests/check_identity_integrity.py
     result: passed
     covered: 3
   - gate: registry/tools/generate_type_catalog.py --check
@@ -123,3 +124,9 @@ metadata:
       the realization plan lands in registry/classes/, while the generated spec and the consumer manifests
       it cites are the real ones in this repo, so the wiring can be read end to end. The change it
       depicts is illustrative.
+  - at: '2026-07-27T00:00:00Z'
+    author: udlm-maintainers
+    text: Supersedes the original example record (ADR-051 v2-file pattern) — the artifact_revision
+      shape moved from uuid to digest and revalidated_rotated became revalidated_bumped when the
+      identity/version/digest ruling landed; a manifest is immutable, so the migration is a new
+      record, and the prior bytes remain in the revision store.

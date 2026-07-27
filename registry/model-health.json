@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3119,
-    "mutations_rejected": 3119,
+    "mutations_attempted": 3155,
+    "mutations_rejected": 3155,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -20,8 +20,8 @@
         "rejected": 72
       },
       "Automation.Job": {
-        "attempted": 121,
-        "rejected": 121
+        "attempted": 157,
+        "rejected": 157
       },
       "Capability": {
         "attempted": 36,
