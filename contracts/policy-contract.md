@@ -763,6 +763,14 @@ validation_output:
 - `pass` → request proceeds
 - `fail` → request blocked; `field_results` included in consumer error response
 
+**Egress guard on the consumer-error path** (`contracts/error-model.md` §8a — a refusal is
+itself a boundary crossing): `field_results` names only fields the submitting actor named or
+is entitled to read — a field outside the actor's read scope is reported through the
+scope-violation refusal (`GMX-012`/`GMX-013`), never enumerated here; and `suggested_value`
+MUST NOT carry a value derived from data the actor cannot read. The validation output an
+internal evaluator sees and the one a consumer receives may therefore lawfully differ; the
+filter runs before serialization.
+
 ---
 
 ## 12. Output Schema — Transformation

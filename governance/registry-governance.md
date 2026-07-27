@@ -382,6 +382,106 @@ Air-gapped deployment
 
 ---
 
+## 6a. Class-evolution gates — what the registry refuses about its own artifacts
+
+The registry governs artifacts that other artifacts are compiled from. Under the scoped-Class
+model (ADR-038 — Base, Type, and Provider Classes composed of shared data elements, with
+portability derived from where an element sits), one Base element serves dozens of descendants,
+so an edit to it is not a local change: it is a change to every flat spec generated from it and
+every estate compiled against those. Software inheritance met this as the fragile-base-class
+problem and never solved it in general, because behavioral compatibility is undecidable. Here it
+is decidable — classes are data contracts, descendants are compiled artifacts, and the affected
+set is computable — which is precisely why it should be gated rather than reviewed.
+
+ADR-045 (class evolution and pinning — recompilation is atomic, intra-registry references are by
+handle, organization-edge pins are uuid-precise, and element scope is part of the compatibility
+contract) and ADR-046 (promotion happens on typed-output evidence, never on a version claim)
+decide the *policy*. This section states what the registry **refuses**, in the four-part refusal
+form the rest of the model uses — typed, actionable, non-leaking, auditable
+([`contracts/error-model.md`](../contracts/error-model.md) §6a).
+
+**A caveat that belongs at the top, not in a footnote.** Class artifacts do not exist in the
+registry yet: there is no class-artifact schema, no class-compat classifier, and no estate-side
+pin resolver. Those are the P0 substrate items of the class realization plan
+(`docs/design/scoped-class-hierarchy/realization-plan.md`). `REG-011` through `REG-016` are
+therefore **specification, not enforcement** — they state the contract the P0 gates must satisfy
+when they are built, in the same way the rest of this repository specifies behavior that DCM
+realizes. The honest-enforcement ledger is
+[`foundations/data-model-core.md`](../foundations/data-model-core.md) §8, and none of these rules
+claims `[enforced]`. Two of them describe checks that already run on the flat-spec plane and are
+being generalized rather than invented, and both are called out where they apply.
+
+**Version sufficiency (`REG-011`).** A change is classified by rule against the bump table
+(`registry/VERSIONING.md` — what bumps what), and a bump smaller than the classification is
+refused. This runs today for resource-type specs (`registry/tools/compat-check.py` via
+`tests/ci_compat_gate.py`), and the class plane reuses the same classification rules rather than
+growing a second, divergent notion of "breaking". What the class plane adds is the refusal's
+content: the element, the classification, and the minimum bump that would be accepted. A refusal
+that reports only "insufficient" leaves the maintainer to re-derive the classification the gate
+already computed.
+
+**Scope narrowing (`REG-012`).** Portability is derived from where an element sits, so moving an
+element from Base scope to Type or Provider scope shrinks the portable surface of every type
+that carried it — breaking, even though no schema shape changed. This is the class of break a
+schema differ structurally cannot see: nothing about the field's declaration changed, only its
+position. The gate implements the scope comparison explicitly, and the refusal enumerates the
+types whose portable surface would shrink, since that set is the actual cost of the change and
+is computable rather than a matter of judgment. Widening (Provider → Type, Type → Base) is
+compatible.
+
+**Pins, on two planes (`REG-013`, `REG-014`).** The industry mapping ADR-045 adopts is that the
+registry is a library and an organization's estate is the application: libraries declare
+compatible ranges and never pin; applications pin exactly and own their upgrades. Both halves
+have a refusal.
+
+Inside the registry, a class reference that pins a fixed version is refused — a single release
+would then carry two truths of the same Base Class, which is version skew inside one source.
+References are by handle and compile against the release's current version; the registry ref
+(commit) is the sole intra-registry pin, and it pins everything at once (`registry/VERSIONING.md`,
+registry-resolution scope). The refusal names the offending reference and the by-handle
+correction, because the fix is a one-line edit and the maintainer should not have to look it up.
+
+At the organization edge, pins are first-class and uuid-precise, and the distinction that matters
+is between a pin that is *behind* and a pin that resolves to nothing. Behind is legal and carries
+enumerated debt — the estate is deliberately conservative and the distance is reported per
+artifact, never silent. Ahead of the consumed registry ref, or naming a revision that exists
+nowhere in it, is refused: it claims verification against a registry that does not exist. This
+same discipline already runs one plane over, on consumer manifests against type versions
+(`tests/check_consumer_conformance.py` distinguishes ahead from unknown from behind with separate
+messages), and generalizing it is the cheaper path than inventing new semantics.
+
+**Promotion (`REG-016`).** Retiring pin debt means moving an estate from pinned revisions to
+candidate ones, and ADR-046's ruling is that this happens on evidence: compile the organization's
+intent corpus under both, at the same recorded corpus ref, and diff the declared typed outputs. A
+diff that is neither empty nor explicitly approved refuses the promotion outright — nothing
+partially promotes — and, because the diff contradicts the upstream compatibility claim, it
+routes home as a finding with the diff as provenance. That upstream route is the part with no
+carrier today: the promotion-evidence record has no schema today, and the finding-routing record's schema (`registry/finding-routing-record.schema.json`) lands as its own change — this rule binds regardless of carrier availability, and a refusal that cannot yet file the record queues the filing rather than dropping it. Formerly: neither record existed as a
+registry kind, and ADR-046's Consequences names both as owed before P0 freezes. `REG-016` states
+the refusal contract; the record shapes remain to be defined.
+
+**Which of these an organization may loosen.** Adoption is governed twice: by the gates above,
+which decide whether a change is *sound*, and by an organization's change policy, which decides
+*when* it may be adopted — the window, the approvals, the expedite path. The two are not
+equivalent and should not be loosenable on the same terms. A maintenance window is the
+organization's to widen; refusing an out-of-window adoption is a scheduling decision, and its
+refusal names the policy clause, the next window, and the authorization that would permit an
+exception. An evidence gate is not the organization's to remove: a change policy amended to drop
+the typed-output diff before promotion, or the version-sufficiency check before adoption, is
+refused, because the gate's purpose is to protect against a claim the organization cannot
+independently verify. Loosening the schedule accepts risk knowingly; removing the evidence
+removes the ability to know. The change-control corpus
+([`use-cases/change-control/`](../use-cases/change-control/README.md) cases 004 and 016) measures
+both halves.
+
+**Recording (`REG-015`).** Every rule above ends in "and the refusal is recorded", and today that
+resolves to a CI log line and an exit code — which is not a record. A refused change and an
+unattempted one are indistinguishable a week later, and the class-versioning corpus asks for the
+refusal as a durable gate outcome in every one of its cases. `REG-015` defines one artifact all
+registry gates emit, so that the recording story is uniform rather than per-gate.
+
+---
+
 ## 7. UDLM System Policies
 
 | Policy | Rule |
@@ -395,6 +495,12 @@ Air-gapped deployment
 | `REG-008` | A formal fourth registry tier is not introduced. Resource Type Specifications in any tier may carry certification metadata from recognized certifying bodies. Certification metadata is a filter criterion — not a structural tier boundary. |
 | `REG-009` | Organizations may promote Tier 3 Resource Type Specifications to Tier 2 via the standard promotion pathway with additional requirements: at least one production deployment, OSS-compatible license, named community maintainer, and documented migration path from the Tier 3 handle. |
 | `REG-010` | The Organization Registry mirror operates independently from the upstream UDLM Project Registry. Permanent upstream unavailability does not affect existing operations. New community type adoption requires a designated community mirror, organizational fork, or independent operation decision. |
+| `REG-011` | A declared version increment smaller than the classification the change earns is refused (`validation.version_bump_insufficient`). Classification is by rule against the bump table (`registry/VERSIONING.md`), never review judgment, and applies uniformly to resource-type specs, class artifacts, and provider surface declarations. The refusal names the **element**, the **classification**, and the **minimum sufficient bump**; a refused change regenerates nothing downstream. Pre-1.0, the accepted floor for a breaking classification is a MINOR bump, never a REVISION. |
+| `REG-012` | Narrowing a class element's scope (Base → Type, Type → Provider) is classified **breaking** even when no schema shape changes, because the portable surface of every carrier shrinks with it; widening is compatible. The comparison is explicit gate logic — a schema differ cannot observe a position change. The refusal names the portability impact and enumerates the types whose portable surface the move would shrink. |
+| `REG-013` | A class reference **inside** the registry that pins a fixed version is refused at validation (`validation.intra_registry_version_pin`): one release carrying two revisions of the same Base Class is version skew within a single source. Intra-registry references are by handle and compile against the release's current version; the registry ref is the sole intra-registry pin. The refusal names the offending reference, the single-truth rule, and the by-handle correction. |
+| `REG-014` | An organization-edge pin that names a version or uuid absent from the registry ref the estate declares it consumes is refused (`validation.pin_unresolvable`), typed distinctly from a pin that is legally behind. The refusal names the pinned reference and the registry ref it failed to resolve against. A pin carrying both `version` and `uuid` must carry a matching pair; a mismatch is refused and the uuid is authoritative. Pins that are behind continue to validate, each emitting its version-distance as enumerated debt — behind is legal, never silent. |
+| `REG-015` | Every registry or estate gate refusal emits a **durable gate-outcome record**: the artifact and change under evaluation, the rule that refused, the classification or comparison that justified it, the named correction, and the actor and time. A CI log line and an exit code are not a gate-outcome record — a refused change and an unattempted one must remain distinguishable after the job that produced them has aged out. The record is the registry-plane counterpart of the `REFUSE` audit record (`AUD-023`) and carries the same content discipline. |
+| `REG-016` | Promotion of an estate from pinned to candidate revisions is refused when the typed-output diff between the two dry-run compilations is neither empty nor explicitly approved (`policy.promotion_diff_unapproved`). The refusal carries the diff, naming each changed output and the consumers bound to it; the estate remains wholly on its pinned revisions — nothing partially promotes. Because a dirty diff contradicts the upstream compatibility claim, the refusal also produces a finding routed to the registry with the diff as provenance. Both comparisons are computed at the same recorded corpus ref; a corpus that moved between them voids the comparison. |
 | `REG-DP-001` | Default deprecation notification period: P30D before deprecation status is applied. Overridable. |
 | `REG-DP-002` | Default sunset period: Tier 1 = P12M, Tier 2 = P6M. Overridable; locked as immutable in fsi and sovereign profiles. |
 | `REG-DP-003` | Default migration window after retirement: P90D. Overridable. |

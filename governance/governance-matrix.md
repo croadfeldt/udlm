@@ -422,6 +422,36 @@ reason: "Provider A has unresolved data handling concerns — PHI explicitly pro
 | `REDACT` | Field present with value `<REDACTED>` | Receiver needs to know field exists but not its value (e.g., audit evidence that a field was present) |
 | `DENY_REQUEST` | Entire interaction blocked | Field is required for the operation to make sense; stripping would produce invalid state |
 
+### 6.4 Reduction is disclosed, and one scope governs both directions
+
+Field-level control was specified above from the sender's side: what leaves the boundary. Two
+consequences on the *receiver's* side decide whether the control is safe, and both have to be
+stated, because a reader who applies §6.3 literally builds a system that silently corrupts data.
+
+**A reduced payload says so.** `STRIP_FIELD` removes a field without a trace, which is correct
+when the receiver is a foreign peer that must not learn the field exists. It is dangerous when
+the receiver is the resource's own administrator reading a projection of state they will later
+write back: absence reads as ground truth, and a reconciler that round-trips a silently shrunk
+projection proposes the missing fields as deletions. The industry name for this is a lossy
+round-trip, and every configuration system that has met it has landed on the same answer —
+distinguish "absent" from "withheld". So a projection served to an in-boundary consumer
+carries a **reduction disclosure**: a response-level statement that policy reduced this payload,
+and how many fields it touched. The disclosure is deliberately shallow — a count and the
+governing rule, never the list of withheld field paths, because enumerating what is protected
+is itself the disclosure the reduction prevented. `REDACT`'s in-band `<REDACTED>` sentinel
+remains available where the receiver may know a specific field exists; the disclosure is the
+mechanism for the case where it may not. The rule is `GMX-012`.
+
+**A field an actor cannot read, that actor cannot write.** Read reduction and write control
+are the same authorization question asked in two directions, and answering them from two
+different mechanisms is how a masked field gets overwritten by the actor it was masked from.
+One scope decides both: a field excluded from an actor's read scope is refused on write from
+that actor, whether the write sets the field or clears it by omitting it from a round-tripped
+projection. Without this, the only thing standing between a masked field and its erasure is a
+hand-authored field lock (`contracts/policy-contract.md` §10 — `field_locks` with
+`lock_type: immutable | constrained`), which is to say: whether someone remembered. The rule is
+`GMX-013`.
+
 ---
 
 ## 7. UDLM System Policies
@@ -438,6 +468,9 @@ reason: "Provider A has unresolved data handling concerns — PHI explicitly pro
 | `GMX-008` | Compliance domain matrix rules are automatically added to the active rule set when the compliance domain is active. They compose with profile rules — they do not replace them. |
 | `GMX-009` | The Governance Matrix is evaluated before provider dispatch, before federation tunnel data transmission, before notification delivery, and before any cross-boundary capability invocation. |
 | `GMX-010` | A STRIP_FIELD decision that removes a required field escalates to DENY_REQUEST automatically. Optional fields may be stripped without blocking the interaction. |
+| `GMX-011` | A refusal to cross a sovereignty boundary is emitted as `policy.sovereignty_egress_denied` and names the **declared boundary** and the **refusing rule** (`governance_matrix_rule_uuid`), so the requester can seek an in-boundary alternative. The decision is taken on the structural surface — the target authority carried in the reference — without dereferencing the protected data (ADR-041's ruling that policy in its information-flow role matches the unresolved pointer, so sovereignty is enforced on the address, never by first reading what it points at). The refusal payload names no protected field and carries no protected value: a refusal is itself a boundary crossing and passes the same egress guard as any other payload ([`contracts/error-model.md`](../contracts/error-model.md) §8a). Timing is `GMX-009`'s — before dispatch, before transmission, before serialization — because a refusal issued after the crossing is a disclosure that cannot be withdrawn. **Datum dependency, ledgered:** the authority component this rule decides on does not exist on the canonical `Reference` today (standing gap F14; closure proposed in `docs/design/standing-model-gaps.md` — `target_authority`). Until that ruling lands, realizations enforce on the boundary derivable without dereference (the target's declared scope resolved from the local index); the full structural-surface contract activates with F14. |
+| `GMX-012` | A payload reduced by a field-level decision is served with a **reduction disclosure**: the response states that policy reduced it and how many fields were affected, and names the governing rule. The disclosure MUST NOT enumerate the withheld field paths or values. Absence of the disclosure asserts a complete payload, so a consumer may treat an undisclosed absence as ground truth — which is why serving a reduced payload without it is a contract violation, not a cosmetic omission. The serve is auditable through the evaluation that reduced it: the field-level decision is recorded (`EVALUATE`, naming the governing rule and the affected-field count, joined by `request_id` to the served response) — a reduced payload with no such record is an unaudited disclosure-shape, the read-side twin of `AUD-023`'s unaudited denial (§6.4). |
+| `GMX-013` | One scope governs both directions: a field excluded from an actor's **read** scope is refused on **write** from that actor, emitted as `policy.field_scope_violation` naming the field path and the excluding scope. This holds for a write that sets the field and for a write that would clear it by omitting it from a round-tripped reduced projection — an omitted field an actor may not read is never merged as a deletion. The refusal names the field path and the scope; it carries neither the submitted value nor the masked one. |
 
 ---
 

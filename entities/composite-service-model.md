@@ -441,8 +441,44 @@ A registration is rejected if:
 - `max_nesting_depth` exceeds 3
 - Total constituent count exceeds the system limit (see profile policy)
 - `selective_visible` references undeclared component_ids
+- A binding names an `output` that the producing constituent's resource type does not declare
 
 Registration is otherwise validated like any other catalog item.
+
+### 10.1 Admission is not the last check — bindings re-resolve at request time
+
+The last rejection reason above is enforced today at admission, by the registry's
+valid-by-construction gate (`registry/tools/validate.py` resolves every binding's `output`
+against the producer type's declared output surface and names the declared alternatives when it
+fails). That gate is necessary and it is not sufficient, for a reason that has nothing to do
+with how well it is written: it ran *once*, against the state of the world on the day the
+catalog item was admitted.
+
+Two things move afterwards. A producer type is re-versioned, and an output the composite binds
+against is removed or renamed — the catalog item that passed admission now names an output that
+no longer exists, and no re-check is scheduled, because change-impact reporting in this model is
+advisory by design and never rewrites an admitted artifact. Separately, a request may compose
+items in a combination the catalog never checked together. In both cases the binding is invalid
+at the moment it matters and valid according to the only gate that examined it.
+
+So the resolution runs again against the *current* producer type version, as a stage of the
+request pipeline (§7) — after expansion, before policy and dispatch, while the request is still
+data. This placement is the point: a binding caught here costs a rejected request, whereas the
+same binding caught at dispatch costs a partially realized composite and a compensation path.
+Nothing is provisioned, so nothing is rolled back.
+
+The refusal reuses the admission gate's message contract — it names the producer type, the
+requested output, and the outputs the type actually declares — and is typed
+`validation.binding_undeclared_output`, a binding-contract violation distinct from a policy
+denial and from a provider failure. The declared output surface is cited as the authority for
+the decision, because it is the authority: typed outputs are the type's referenceable binding
+surface, and a binding names a declared output rather than guessing at a string. The rule is
+`CMP-009`.
+
+One consequence worth stating plainly, because it looks like an inconsistency and is not: this
+means a catalog item can be admitted and later become unrequestable without anything having
+been done to it. That is correct. The alternative — silently rewriting admitted items when a
+producer re-versions — would make the catalog's contents depend on when they were last read.
 
 ---
 
@@ -458,6 +494,7 @@ Registration is otherwise validated like any other catalog item.
 | `CMP-006` | `provided_by: external` constituents are placed by the placement using standard placement rules. The Composite Service definition does not influence external constituent provider selection. |
 | `CMP-007` | In transparent composition visibility mode, constituent entity UUIDs are `deterministic_uuid(parent_composite_uuid + component_id)` — stable across rehydration. |
 | `CMP-008` | Maximum Composite Service nesting depth is 3, enforced by DCM at registration time and at placement time by checking the composite definition chain depth. |
+| `CMP-009` | Constituent bindings are re-resolved against the producing type's **current** declared output surface at request validation, not only at catalog admission — so a producer re-versioned after admission, or a composition the catalog never checked together, still refuses. The check runs after expansion and before policy and dispatch (§7), so no constituent is provisioned and no compensation is needed. The refusal is emitted as `validation.binding_undeclared_output` and names the producer type, the requested output, and the outputs that type declares; the declared output surface is cited as the authority. A producer type absent from the registry is a refusal, not a skip — an unresolvable producer cannot be shown to declare anything. The refusal's audit record names the catalog item, the failing constituent, and the undeclared output as subjects (`AUD-024`) — stated here so an implementer working from this rule alone carries all three, not only the producer surface. |
 
 ---
 

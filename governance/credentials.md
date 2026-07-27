@@ -152,6 +152,42 @@ Credential values are never stored in the realization's data model, artifact sto
 
 Authorized consumers retrieve the credential value via `value_retrieval_endpoint` — which resolves to the **registered Credential Provider that holds the value**, not a realization-core endpoint (the value flows producer → consumer directly; the realization is never on the value path, CPX-001). Retrieval uses `value_retrieval_auth`, is itself authenticated — typically a short-lived bearer token or mTLS — and is audited.
 
+### 3.2 Credential material arriving where a reference belongs
+
+Value separation is a discipline about *where values live*. It says nothing about what happens
+when a value arrives somewhere it should never have been — and that is the common case, because
+the shape of a secret is a string, and the shape of a reference to a secret is also a string. A
+consumer writing an intent by hand, or generating one from an existing deployment, pastes a
+password into the field that expects a `Security.CredentialRef` — the reference type that names
+*which* credential is held *where* and carries no value-bearing field. The intent validates:
+the field is a string, the string is present, nothing in the schema can tell the difference.
+
+The type-authoring discipline that this is supposed to prevent is real and long-standing
+(`registry/SPEC-DESIGN-REQUIREMENTS.md` §36(h) — secret-bearing fields are credential
+references, never inline values), but it is a rule about how a *type* is designed, checked by
+review. It cannot see a value a submitter puts into a correctly-designed field at run time.
+That gap is what `CPX-013` closes, and where it runs is the whole substance of the rule: the
+Intent record is written verbatim and never modified afterwards
+([`foundations/four-states.md`](../foundations/four-states.md) — Intent is the immutable record
+of what was asked for), so a detection that runs *after* the intent is stored has already lost.
+There is nothing to scrub; the store's own integrity guarantee forbids it. **The check runs
+before the write, or it does not work at all** — a sequencing constraint, not an optimization.
+
+The second half is that the rejecting path must not itself become the leak. A refusal that
+quotes the offending value back to the submitter, a log line that captures the raw request
+body, an audit record that preserves `detail` verbatim — each of these takes a secret that was
+correctly refused and writes it somewhere durable. `CPX-014` states what the rejecting path may
+record: the field path and the violation class, never the material. This is the general
+refusal-payload rule ([`contracts/error-model.md`](../contracts/error-model.md) §8a — a refusal
+is itself a boundary crossing) at its sharpest, because here the protected value is one the
+submitter already knows. The reason to exclude it is not disclosure to *them*; it is that
+every store the refusal touches becomes a place the secret now lives.
+
+**The remaining architectural question — what a rejecting path does with an intent body that
+has already been received — is open and specified in ADR-049 (credential material at intent
+intake), which weighs scan-before-persist against a quarantine buffer, provider-side
+redaction, and intake-time coercion to a reference.**
+
 ---
 
 ## 4. Credential Lifecycle
@@ -1001,6 +1037,8 @@ credential_provider_registration:
 | `CPX-010` | Idle credential detection fires at the profile-governed threshold. Idle credentials are NOT automatically revoked — they trigger notification only. Auto-revocation after 2× threshold is profile-configurable. |
 | `CPX-011` | Profile credential requirements are additive when compliance domains are active (HIPAA, PCI DSS, FedRAMP, DoD IL4). Compliance overlay requirements always tighten, never relax, the base profile. |
 | `CPX-012` | CPX-001 (values never in the realization's stores) applies in ALL profiles including `minimal`. There is no profile that permits credential values to be stored by the realization. |
+| `CPX-013` | Inline credential material submitted where the model requires a credential reference is detected and refused **at intent intake, ordered before the Intent record is written**. The Intent store is append-only and never modified after write (four-states), so a detection that runs after persistence cannot be remediated — sequencing is part of the rule, not an implementation detail. The refusal is emitted as `validation.inline_credential_material` and names the offending field path and the conversion (declare a `Security.CredentialRef`; the issuer resolves the value directly to the authorized consumer). Detection covers the same surface as the existing store-side scanners — known credential formats, private-key and certificate blocks, and high-entropy strings in fields typed as references. |
+| `CPX-014` | The rejecting path does not persist the material it refused. The refusal payload MUST NOT echo the submitted value; request/error logs MUST NOT capture the raw body of an intent refused under `CPX-013`; and the `REFUSE` audit record carries the field path and the violation class only (`AUD-023`, `AUD-024` — refusal records name rules, paths, and subjects, never protected content). A corrected resubmission carrying a `Security.CredentialRef` in the same field passes the same validation unchanged. |
 
 ---
 

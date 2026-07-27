@@ -9,3 +9,14 @@ protects, per the information-firewall behavior of ADR-041), and auditable (a re
 exists). One use case per rejection surface: tenancy boundary, sovereignty egress,
 secrets-as-reference (Security.CredentialRef), binding-contract validation, provider
 declare-and-select eligibility, and field-granular policy scope on projections.
+
+**Where each surface's enforcement is specified.** The four-part refusal contract is stated once
+in [`contracts/error-model.md`](../../contracts/error-model.md) §6a, with the error-path
+non-disclosure rule in §8a and a surface-to-code index in §3.4. The per-surface mechanisms live
+in their own homes: `XTA-006`/`XTA-007` (cross-tenant), `GMX-011` (sovereignty egress),
+`GMX-012`/`GMX-013` (disclosed reduction and read/write scope symmetry), `CPX-013`/`CPX-014`
+(credential material at intake), `CMP-009` (request-time binding re-resolution), and `PRV-011`
+(the dispatch-boundary eligibility check). Two of these surfaced architectural questions rather
+than gaps, drafted for ruling as ADR-049 (credential material at intent intake — the rejecting
+path must not be where the secret lands) and ADR-050 (the absolute provider pin — whether a pin
+may confer eligibility or only express preference).

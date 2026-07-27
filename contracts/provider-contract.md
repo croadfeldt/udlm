@@ -271,6 +271,44 @@ registration obligations, not storage behavior). How a realization *executes* th
 
 ---
 
+## 2b. The eligibility ceiling is checked at dispatch, not only at selection
+
+`effective_capabilities` (§2) is stated as a ceiling: a provider can never be invoked outside
+the intersection of what it declared, what an administrator admitted, what the registry enables,
+and what the Governance Matrix permits. Read as a principle that is unambiguous. Read as an
+implementation instruction it is silent on the question that decides it — *where* is the ceiling
+checked?
+
+The natural assumption is that selection is enough: whatever chooses a provider consults its
+declared capabilities, so an ineligible provider is never chosen. That holds for the path where
+selection actually runs. It does not hold for the paths that skip selection, and those paths
+exist for good operational reasons — an administrator pins a provider by policy, a routing rule
+directs a class of work to a named target, an operator overrides placement for a migration.
+Every one of those hands the dispatcher a provider that no eligibility filter examined. If the
+ceiling is enforced only where placement runs, it is not a ceiling; it is a default.
+
+The failure mode this produces is specific and unpleasant: the dispatch is attempted, the
+provider fails at something it never claimed to do, and the failure surfaces as a provider
+error. The operator reading it sees a broken provider. Nothing was broken — the provider was
+handed work it never declared for, and the mis-routing that caused it is invisible in the
+symptom. Refusal-by-attempt also means the provider may have done partial work before failing,
+so a routing mistake becomes a cleanup.
+
+`PRV-011` puts the check at the dispatch boundary, where every path converges: pinned, routed,
+overridden, and placed dispatches all pass through it, and none of them can be exempted, since
+an exemption is exactly the bypass the rule exists to close. The refusal is
+`placement.capability_mismatch` — an eligibility fact, distinct from `provider.unavailable`,
+which says the provider broke — and it carries the required-versus-declared comparison, so the
+reader can tell a mis-routed request (another provider is eligible; fix the routing) from an
+unsatisfiable one (none is; the requirement itself has no home).
+
+**The related architectural question — whether an absolute provider pin should be able to skip
+eligibility filtering at all — is open and specified in ADR-050 (the absolute pin), which weighs
+demoting the pin to a preference within the eligible set against keeping it absolute behind an
+explicit override record, and against splitting it into two differently-named fields.**
+
+---
+
 ## 3. Base Contract — Health Check
 
 Every provider implements a health endpoint. DCM calls it on the declared interval.
@@ -997,6 +1035,7 @@ The substrate requires the following invariants on capability discovery interact
 | `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the DCM→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
 | `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in §2's `dcm_registration_verdict` (`effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`; mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
 | `PRV-010` | **Retired 2026-07-23 (#202 executed).** Provider-specific data is a Provider-Class `SharedDataElement` (ADR-038; schema realization #199) — the interim `provider_extensions` carrier is removed from the realized-entity schema and the validator rejects it. The enduring obligations moved with the model: additive-only (the base type-spec stays closed — no override of base elements), declared by the provider at registration, and any provider-specific data computes a portability degradation with mandatory consumer notification (realized-entity `portability` block; resource-type-hierarchy Transparency principle). |
+| `PRV-011` | **The `effective_capabilities` ceiling (`PRV-009`) is enforced at the dispatch boundary.** Every dispatch — placed, routed, pinned, or operator-overridden — re-checks that the target provider's `effective_capabilities` covers the required capability at the required grain (resource type at the required `spec_version`, §8.1) before any work is handed over. No routing mechanism, pin, or override exempts a dispatch from this check; a pin selects among eligible providers, it does not confer eligibility (§2b). A mismatch refuses **pre-dispatch** with `placement.capability_mismatch` — an eligibility outcome, distinct from `provider.unavailable`, which reports a provider that broke — carrying the required-versus-declared comparison so a mis-routed request is distinguishable from an unsatisfiable one. Eligibility is decided from the provider's registration declarations, never by attempting the operation and observing failure. |
 
 ---
 
