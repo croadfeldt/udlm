@@ -174,22 +174,27 @@ UDLM defines the vocabulary of states and how they flow; DCM's policies decide w
 chain cannot converge. No `atomic` flag and no best_effort/all_or_nothing axis exists anywhere in
 either half.
 
-## The ruling surface for the ADR (open — the maintainer decides)
+## The ruling surface — now ruled (ADR-052)
 
-The corpus measures the model; these calls are deliberately **not** made here:
+The corpus measured the model; the maintainer then made all five calls in
+[ADR-052](../adr/ADR-052-intent-fulfillment-dependency-nature.md). Recorded here so the note and
+the decision stay in step:
 
-- **The default window.** What `w` is when the intent does not state one (fail-fast, a bounded
-  default, or defer) — a safety-versus-liveness default the profiles may set differently.
-- **The placement of `nature` on the edge.** One attribute on a single edge, or edges expressed at
-  both layers (a Requested-layer request edge distinct from a Realized-layer operational edge) —
-  the data-model shape of the one new field.
-- **The convergence-status enum.** Confirmation of the seven-value set above (names and
-  completeness), and whether `cancelled` and `dependency-cancelled` stay distinct.
-- **The surfacing contract's exact obligation.** The precise required content of a warning versus a
-  refusal-with-resolution (UC-008/009 assert root-and-chain; the ADR fixes the shape).
-- **The request/operational mapping itself.** Confirmation that request = intent-layer atomicity
-  (hold-all/cancel-all from one binding) and operational = realized-layer functional coupling
-  (directional cascade, independents proceed) — the load-bearing reduction this whole note rests on.
+- **The default window** → **defer (converge)** when the intent states none; the give-up *bound* on
+  a `w=N` window is a DCM policy (a wall-clock value would breach T3), and a profile may set a
+  different default. Safe because surfacing is mandatory — a deferring member converges *in the
+  open*, never silently.
+- **The placement of `nature`** → **one attribute on the single existing dependency edge**, not a
+  second edge family. `nature` is the only new field in the portable model.
+- **The convergence-status set** → the **seven values confirmed and complete**, computed as a
+  **derived projection (never stored)** per ADR-048; `cancelled` and `dependency-cancelled` stay
+  **distinct** (different provenance; the root must be nameable).
+- **The surfacing contract** → a warning (transient) / refusal-with-resolution (permanent) MUST
+  carry the **root** dependency, the **chain**, the blocking **nature**, the **verdict**, and — for
+  a refusal — the **resolution**. Naming only the immediate member is insufficient; a silent field
+  is refused.
+- **The request/operational mapping** → **confirmed** as the load-bearing reduction (request =
+  intent-layer atomicity; operational = realized-layer functional coupling).
 
 ## Where each piece is specified
 
@@ -200,4 +205,4 @@ The corpus measures the model; these calls are deliberately **not** made here:
 | Reservation-not-activation | ADR-011 (validate-and-reserve) |
 | Edge model (`strength`, `edge_type`) | `entities/service-dependencies.md`, ADR-027 |
 | Degraded / partial delivery | `contracts/provider-contract.md` (`DEGRADED`, `partial_delivery`) |
-| The nature field + statuses + windows | proposed — the intent-fulfillment ADR (pending ruling) |
+| The nature field + statuses + windows | [ADR-052](../adr/ADR-052-intent-fulfillment-dependency-nature.md) (ruled; JSON-Schema shape follows as an implementing PR) |
