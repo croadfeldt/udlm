@@ -19,7 +19,7 @@ control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
 | DCM ADR-022 | Trust model (DCM brokers trust, never custodies it) |
 | DCM ADR-023 | Scale-of-integration / denaturalization tiers |
 
-The local sequence below is UDLM's own — ADR-001…050 all have files here. The **DCM** ADR numbers
+The local sequence below is UDLM's own — ADR-001…051 all have files here. The **DCM** ADR numbers
 referenced above overlap these same integers, so a bare "ADR-014" is ambiguous between the local
 ADR-014 and DCM ADR-014. Always qualify a control-plane reference as `DCM ADR-0XX` (it resolves in the
 DCM repo `architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.

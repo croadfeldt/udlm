@@ -724,7 +724,7 @@ The `algorithm`, `key_usage`, and `retrieved_count_threshold` fields are declare
 
 | Profile | Minimum Key Size | Allowed Algorithms |
 |---------|-----------------|-------------------|
-| `minimal`, `dev` | RSA-2048, ECDSA P-256 | RSA, ECDSA, Ed25519 |
+| `homelab`, `dev` | RSA-2048, ECDSA P-256 | RSA, ECDSA, Ed25519 |
 | `standard`, `prod` | RSA-3072, ECDSA P-256 | RSA, ECDSA, Ed25519 |
 | `fsi`, `sovereign` | RSA-4096, ECDSA P-384 | RSA, ECDSA, Ed25519 (no RSA-2048) |
 
@@ -797,7 +797,7 @@ credential_profile:
 
   # --- Credential Type Restrictions ---
   permitted_credential_types:
-    minimal:   [api_key, x509_certificate, ssh_key, service_account_token, database_password]
+    homelab:   [api_key, x509_certificate, ssh_key, service_account_token, database_password]
     dev:       [api_key, x509_certificate, ssh_key, service_account_token, database_password, kubeconfig]
     standard:  [api_key, x509_certificate, ssh_key, service_account_token, database_password, kubeconfig]
     prod:      [api_key, x509_certificate, ssh_key, service_account_token, database_password, kubeconfig]
@@ -806,7 +806,7 @@ credential_profile:
 
   # --- Lifetime Limits ---
   max_lifetime:
-    #               minimal   dev     standard  prod    fsi     sovereign
+    #               homelab   dev     standard  prod    fsi     sovereign
     api_key:        [P365D,   P90D,   P90D,     P30D,   —,      —]
     x509_certificate:[P365D,  P365D,  P365D,    P180D,  P90D,   P90D]
     ssh_key:        [P365D,   P90D,   P90D,     P30D,   P30D,   P30D]
@@ -824,14 +824,14 @@ credential_profile:
     sovereign:  P90D            # enforced
   scheduled_rotation_required:
     # Security-first: rotation is architecturally required in ALL profiles.
-    minimal:    true    # required; manual trigger acceptable; P365D max interval
+    homelab:    true    # required; manual trigger acceptable; P365D max interval
     dev:        true    # required; manual trigger acceptable; P180D max interval
     standard:   true    # required; automated pre-expiry rotation
     prod:       true    # required; automated; strict interval enforcement
     fsi:        true    # required; automated; P90D max (PCI DSS)
     sovereign:  true    # required; automated; hardware-triggered rotation
   min_transition_window:
-    minimal:    PT0S            # homelab: immediate cutover acceptable
+    homelab:    PT0S            # homelab: immediate cutover acceptable
     dev:        PT1H
     standard:   P1D
     prod:       P1D
@@ -840,7 +840,7 @@ credential_profile:
 
   # --- Value Retrieval Security ---
   value_retrieval_auth_required:
-    minimal:    bearer_token    # session token sufficient for homelab
+    homelab:    bearer_token    # session token sufficient for homelab
     dev:        bearer_token
     standard:   bearer_token    # step_up_mfa for sensitive types
     prod:       step_up_mfa     # all credential types require step-up
@@ -856,14 +856,14 @@ credential_profile:
   audit_every_retrieval:
     # Security-first: FIRST retrieval is always audited in ALL profiles (CPX-005).
     # audit_every_retrieval controls whether SUBSEQUENT retrievals are also audited.
-    minimal:    false           # subsequent retrievals silent; first always audited
+    homelab:    false           # subsequent retrievals silent; first always audited
     dev:        false           # subsequent retrievals silent; first always audited
     standard:   true            # every retrieval audited
     prod:       true
     fsi:        true
     sovereign:  true
   idle_detection_threshold:     # alert if credential not retrieved within N after issuance
-    minimal:    P30D            # generous; homelab credentials may sit unused longer
+    homelab:    P30D            # generous; homelab credentials may sit unused longer
     dev:        P14D
     standard:   P7D
     prod:       P3D
@@ -872,7 +872,7 @@ credential_profile:
 
   # --- Network Binding ---
   ip_binding_required:
-    minimal:    false
+    homelab:    false
     dev:        false
     standard:   false           # optional; recommended for prod
     prod:       false           # optional; recommended
@@ -882,7 +882,7 @@ credential_profile:
   # --- Cryptographic Requirements ---
   # FIPS 140-3 validation levels (140-2 module certificates accepted during transition)
   fips_140_level_required:
-    minimal:    0               # no requirement
+    homelab:    0               # no requirement
     dev:        0
     standard:   0
     prod:       1               # Level 1: software-only acceptable
@@ -891,14 +891,14 @@ credential_profile:
 
   # --- Revocation ---
   revocation_check_frequency:   # how often components must refresh revocation cache
-    minimal:    PT5M
+    homelab:    PT5M
     dev:        PT5M
     standard:   PT1M
     prod:       PT1M
     fsi:        PT30S
     sovereign:  PT15S
   revocation_sla:               # how quickly Credential Provider must invalidate on revocation
-    minimal:    PT10M
+    homelab:    PT10M
     dev:        PT5M
     standard:   PT5M
     prod:       PT2M
@@ -963,7 +963,7 @@ compliance_credential_overlays:
 
 UDLM's design priority order applies directly to credential management:
 
-1. **Security first:** Security properties — value separation, rotation, audit, idle detection, algorithm baselines, revocation — are architecturally present in ALL profiles. What profiles control is enforcement strictness, threshold values, and automation level. A `minimal` profile is "security with minimal operational overhead" — not "minimal security."
+1. **Security first:** Security properties — value separation, rotation, audit, idle detection, algorithm baselines, revocation — are architecturally present in ALL profiles. What profiles control is enforcement strictness, threshold values, and automation level. A `homelab` profile is "security with minimal operational overhead" — not "minimal security."
 
 2. **Ease of use second:** The secure path must be the easy path. Homelab deployments use the same API contract, same data model, and same provider interface as sovereign deployments. The profile system eliminates the need to choose between security and operational simplicity.
 
@@ -971,7 +971,7 @@ UDLM's design priority order applies directly to credential management:
 
 Profile variation applies only to **enforcement level and required features** — never to the underlying protocol or data model. A credential issued under the `homelab` profile has the same data structure, the same API contract, the same revocation mechanism, and the same audit record format as one issued under the `sovereign` profile.
 
-**CPX-001 (values never in the realization's stores) is non-negotiable in every profile including `minimal`.**
+**CPX-001 (values never in the realization's stores) is non-negotiable in every profile including `homelab`.**
 
 ---
 
@@ -1036,7 +1036,7 @@ credential_provider_registration:
 | `CPX-009` | `algorithm` and `key_usage` must be declared on every credential record at issuance (standard+ profiles). The Credential Provider must validate `key_usage` at the validate endpoint — a credential issued for `authentication` cannot be used for `signing`. |
 | `CPX-010` | Idle credential detection fires at the profile-governed threshold. Idle credentials are NOT automatically revoked — they trigger notification only. Auto-revocation after 2× threshold is profile-configurable. |
 | `CPX-011` | Profile credential requirements are additive when compliance domains are active (HIPAA, PCI DSS, FedRAMP, DoD IL4). Compliance overlay requirements always tighten, never relax, the base profile. |
-| `CPX-012` | CPX-001 (values never in the realization's stores) applies in ALL profiles including `minimal`. There is no profile that permits credential values to be stored by the realization. |
+| `CPX-012` | CPX-001 (values never in the realization's stores) applies in ALL profiles including `homelab`. There is no profile that permits credential values to be stored by the realization. |
 | `CPX-013` | Inline credential material submitted where the model requires a credential reference is detected and refused **at intent intake, ordered before the Intent record is written**. The Intent store is append-only and never modified after write (four-states), so a detection that runs after persistence cannot be remediated — sequencing is part of the rule, not an implementation detail. The refusal is emitted as `validation.inline_credential_material` and names the offending field path and the conversion (declare a `Security.CredentialRef`; the issuer resolves the value directly to the authorized consumer). Detection covers the same surface as the existing store-side scanners — known credential formats, private-key and certificate blocks, and high-entropy strings in fields typed as references. |
 | `CPX-014` | The rejecting path does not persist the material it refused. The refusal payload MUST NOT echo the submitted value; request/error logs MUST NOT capture the raw body of an intent refused under `CPX-013`; and the `REFUSE` audit record carries the field path and the violation class only (`AUD-023`, `AUD-024` — refusal records name rules, paths, and subjects, never protected content). A corrected resubmission carrying a `Security.CredentialRef` in the same field passes the same validation unchanged. |
 

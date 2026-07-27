@@ -452,7 +452,7 @@ Before federating, a peer SHOULD:
 2. Verify `udlm_version` is compatible with the local realization's version.
 3. Check `profile` compatibility — confirm the remote's advertised base profile
    (and any overlays) satisfies local policy for federation (e.g. a `sovereign`
-   peer may refuse to federate with a `minimal` peer).
+   peer may refuse to federate with a `homelab` peer).
 4. Check `level` and `exclusions` against the features needed for the planned
    federation.
 5. For each interop surface the federation will use, confirm that surface's

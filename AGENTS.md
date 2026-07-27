@@ -5,7 +5,7 @@
 
 ## What this repo is
 
-**UDLM — the Unified Data-center Lifecycle Model.** A vendor-neutral, **Apache-2.0**, **pre-1.0
+**UDLM — the Universal Data Lifecycle Model.** A vendor-neutral, **Apache-2.0**, **pre-1.0
 (`udlm/0.1`)** specification: the data model for declaring data-center resources (intent), realizing
 them, discovering them, and rebuilding them. It is *spec and schema only* — no runtime/controller lives
 here (DCM realizes the model; see the isolation table below).
