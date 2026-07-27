@@ -170,6 +170,13 @@ every refusal rather than only this one.
 | Detection | *that* submitted values are checked | the detector: formats, entropy thresholds, tuning |
 | Coercion (Option D) | that a coerced intent records the transformation and its provenance | the issuing call, retries, availability handling |
 
+**A fifth shape, considered and set aside — persist-with-redaction:** write the Intent with
+the offending field replaced by a marker + hash, preserving an immutable record of the refused
+ask without the secret. It buys forensic continuity (under Option A a refused submission
+leaves only its REFUSE audit record) at the cost of a mutation-on-intake precedent the
+append-only store otherwise never makes. Not clearly better than A; recorded so the
+engineering pass weighs it rather than rediscovering it.
+
 ## Consequences
 
 - Intake gains a stage that inspects submitted *values*, not just their shapes. That is a genuine

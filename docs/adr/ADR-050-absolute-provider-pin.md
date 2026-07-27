@@ -161,3 +161,9 @@ eligible and then failed.
 - If Option A is chosen, the deprecation window and the declaration-defect remedy should be named
   in the same change, so operators relying on today's behavior have a path that is not "your pin
   stopped working".
+
+---
+*Citation note: the pin short-circuit description cites control-plane text that lives in the
+DCM repository (a cross-repo citation — it does not resolve in this tree), and the sibling
+placement case with the conflicting `provider_failure` typing is in the DCM-side corpus, not
+this repository's. Both were verified there; flagged so an in-tree reader does not chase them.*

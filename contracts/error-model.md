@@ -184,7 +184,16 @@ at a time. Both concerns are real, so the rule is directional rather than a choi
   stated once here so every surface inherits it.
 
 The authorization refusal is still actionable without disclosing anything: it names the
-mechanism that would make the reference legal (the grant), never the target's attributes. See
+mechanism that would make the reference legal (the grant), never the target's attributes.
+
+The same directional rule covers the create-time collision oracle: `validation.uuid_collision`
+(409) reveals that *some* entity holds a submitted identifier, and an actor who deliberately
+submits foreign UUIDs at create time can probe existence one identifier at a time. A
+realization MUST emit `validation.uuid_collision` identically — same `type`, `status`,
+`detail`, timing — whether the colliding entity is inside or outside the actor's scope, and
+each such refusal writes its `REFUSE` record, so a probing pattern is legible in audit as an
+enumeration attempt rather than invisible in an error branch. (Legitimate v4 collisions are
+vanishingly rare; a run of them from one actor is signal, not noise.) See
 `entities/entity-relationships.md` §6b (`XTA-006` — the cross-tenant refusal contract).
 
 ### 3.4 Refusal surfaces — where each code is emitted
