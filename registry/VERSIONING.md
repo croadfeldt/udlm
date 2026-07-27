@@ -15,6 +15,12 @@ That tells the registry which meta-schema version validates it. Downstream, **co
 profiles / catalog items (E1)** and **realized instances (E5)** pin the *entity* version they
 were built from, so drift is measured against the exact contract that produced them.
 
+**The publish law (ADR-051), stated beside the rules it completes:** a published
+(identity, version) pair is immutable. Any content change — semantic, doc-only, anything —
+ships at least a REVISION bump; publishing different bytes under an already-published pair is
+refused (`tests/check_identity_integrity.py` R2, via the pin manifest). The bump *size* is
+classified by the entity-semver table below; the bump *existence* is this law.
+
 ## Spec status — pre-1.0 (`udlm/0.1`)
 
 **The UDLM spec is currently `0.1` — a `0.x`, pre-stable release.** The surface is still being
@@ -115,24 +121,47 @@ downstream registries, external tooling — reference registry entities. **Insid
 none of this applies to class references** (ADR-045): a Type or Provider Class references its
 parent by handle only and compiles against the release's current version; the registry ref
 (commit) is the sole intra-registry pin. The revision store behind consumer pins is the
-registry's git history — a uuid-precise pin resolves within the registry ref (or ref range) the
-consumer declares it consumes, which is how a pin can be legally *behind* the current ref while
-a pin resolving in no declared ref is refused as unknown.
+registry's git history — a `thing@version` or `thing@sha256:<hex>` pin (ADR-051) resolves within
+the registry ref (or ref range) the consumer declares it consumes, which is how a pin can be
+legally *behind* the current ref while a pin resolving in no declared ref is refused as unknown.
 
 - Reference a type by `resource_type` + a version constraint: exact (`1.2.0`), minor-floating
   (`~1.2`), or major-floating (`^1`). Default resolution returns the latest **active** version
   satisfying the constraint.
 - `deprecated` versions resolve only to consumers that pin them; `retired` versions do not resolve.
 
-## UUID rotation
+## Identity, version, digest
 
-The uuid is the **revision**; the handle (with `resource_type`/name) is the **thing**. Any
-change to a uuid-bearing definition or spec — content, docs, metadata, anything — mints a new
-v4 uuid in the same change; the version communicates compat semantics, the uuid identifies the
-exact revision. Old uuids never retire and are never reused: they name immutable revisions
-forever (which is what makes uuid-precise consumer pins exact by construction). A changed
-definition keeping its uuid, and an unchanged definition rotating its uuid, are both gate
-failures (`tests/check_uuid_rotation.py`).
+*(Supersedes the former § "UUID rotation" — ADR-051. The rotating-uuid doctrine is retired;
+uuids existing at the ruling froze in place, and history rows describing past rotations stand
+as written.)*
+
+Three fields, three jobs — never one field doing two (the Kubernetes
+`uid`/`generation`/`resourceVersion` split):
+
+- **UUID = identity.** The uuid names the thing, is frozen at creation, and is never reused.
+  No edit ever changes one; nothing about content is inferable from one.
+- **Version = the compat contract, under the publish law.** The bump table below is
+  unchanged; in addition, **(identity, version) is immutable once published** — any content
+  change ships a version bump (≥ REVISION), and republishing an already-published
+  (identity, version) with different bytes is refused (the npm publish law).
+- **Digest = change transparency.** sha256 over the RFC 8785 (JCS) canonical form of the
+  parsed document (JSON and YAML digest identically). Artifacts never carry their own digest
+  (the OCI referrer rule): digests live in the generated
+  [`pin-manifest.json`](pin-manifest.json), provenance blocks, attestations, and promotion
+  evidence.
+- **Pins are `thing@version` (human-legible) or `thing@sha256:<hex>` (exact),** both
+  first-class; a profile may require digest pins (fsi).
+- **Two document families.** Mutable-in-place documents (type specs, providers, policies,
+  profiles) keep their uuid and bump their version on edit. Immutable record streams
+  (decision records, layers, audit records, accreditations, regeneration manifests,
+  finding-routing records) change by publishing a **new record** (new identity uuid) with
+  `supersedes` naming the predecessor; editing or deleting a published record is refused.
+
+Gate failures (`tests/check_identity_integrity.py`): a changed mutable document whose uuid
+moved or whose version did not; a republished (identity, version) with different bytes; an
+edited or deleted immutable record; a changed nested provider/capability identity.
+`registry/tools/generate_pin_manifest.py --check` holds the manifest current and append-only.
 
 ## Pre-1.0 surface-change log
 
@@ -151,7 +180,7 @@ pinned to a released contract — which don't exist yet. While `0.x`:
 | Date | Version | Change | Breaking? | Migration |
 |---|---|---|---|---|
 | 2026-07-25 | `audit-record.schema.json`, `audit-leaf.schema.json`, `commit-log-entry.schema.json` (SPEC `udlm/0.1`) edited in place | **Refusal enforcement surface:** the closed audit `action` vocabulary gains `REFUSE` (`AUD-023` — a refusal is recorded as an operational fact, not inferred from an `EVALUATE` record whose outcome was negative); the closed error-code vocabulary (`contracts/error-model.md` §3.2) gains ten codes for the measured refusal surfaces (`authz.cross_tenant_unauthorized`, `validation.reference_not_found`, `validation.inline_credential_material`, `validation.binding_undeclared_output`, `validation.version_bump_insufficient`, `validation.intra_registry_version_pin`, `validation.pin_unresolvable`, `policy.sovereignty_egress_denied`, `policy.field_scope_violation`, `policy.promotion_diff_unapproved`). No existing value's semantics change. | **Yes, formally** — an addition to a closed enum is MAJOR by the bump table, since a consumer switching exhaustively on `action` or `type` meets an unhandled value. Carried in place by the pre-1.0 exception; no existing record or envelope is invalidated. | A consumer that switches exhaustively on the audit `action` enum or on the error `type` vocabulary adds a default branch; no stored record changes shape. |
-| 2026-07-25 | 18 types REVISION-bumped (`Access.IdentityEscrow` 0.1.1, `Compute.Container` 0.5.3, `Compute.VirtualMachine` 0.6.4, `Hardware.NetworkInterface` 0.9.3, `Identity.Group` 0.2.2, `Identity.Person` 0.3.2, `Identity.ServiceAccount` 0.3.2, `Network.Gateway` 0.4.4, `Network.IPAddress` 0.6.2, `Network.IPAddressPool` 0.3.2, `Network.Switch` 0.4.4, `Platform.Namespace` 0.3.5, `Platform.NodePool` 0.3.4, `Platform.ResourceQuota` 0.3.2, `Security.CredentialRef` 0.3.2, `Software.Service` 0.4.3, `Storage.FileShare` 0.3.4, `Storage.Volume` 0.5.3) | **Registry structure by class:** `resource-types/` grouped into per-class directories (dotted `resource_type` → lowercased first segment; single-word types → lowercased `family`), `providers/` grouped by `provider.kind` — rule in `resource-types/README.md`. Filenames unchanged; the only content change is the moved specs' relative `$ref`s deepening one level (`../` → `../../`), so exactly those 18 files rotate uuid + REVISION per the UUID-rotation rule; the other 32 moved files are byte-identical and keep uuid/version (the no-op rule). Complete old→new map: [`renames.yaml`](renames.yaml) — the first exercise of the rename-map discipline; the base-ref-diffing gates consult it. | **No** — file location is navigation, not identity; `$ref` targets, schema shapes, and wire/instance format are unchanged. | Resolve any hardcoded spec file path through `registry/renames.yaml`; identity references (`resource_type`, `$id`, uuid) are unaffected by the move. |
+| 2026-07-25 | 18 types REVISION-bumped (`Access.IdentityEscrow` 0.1.1, `Compute.Container` 0.5.3, `Compute.VirtualMachine` 0.6.4, `Hardware.NetworkInterface` 0.9.3, `Identity.Group` 0.2.2, `Identity.Person` 0.3.2, `Identity.ServiceAccount` 0.3.2, `Network.Gateway` 0.4.4, `Network.IPAddress` 0.6.2, `Network.IPAddressPool` 0.3.2, `Network.Switch` 0.4.4, `Platform.Namespace` 0.3.5, `Platform.NodePool` 0.3.4, `Platform.ResourceQuota` 0.3.2, `Security.CredentialRef` 0.3.2, `Software.Service` 0.4.3, `Storage.FileShare` 0.3.4, `Storage.Volume` 0.5.3) | **Registry structure by class:** `resource-types/` grouped into per-class directories (dotted `resource_type` → lowercased first segment; single-word types → lowercased `family`), `providers/` grouped by `provider.kind` — rule in `resource-types/README.md`. Filenames unchanged; the only content change is the moved specs' relative `$ref`s deepening one level (`../` → `../../`), so exactly those 18 files rotate uuid + REVISION per the UUID-rotation rule; the other 32 moved files are byte-identical and keep uuid/version (the no-op rule). Complete old→new map: [`renames.yaml`](renames.yaml) — the first exercise of the rename-map discipline; the base-ref-diffing gates consult it. **⚠️ Doctrine note (appended 2026-07-27): the UUID-rotation rule this row applied was superseded by ADR-051 — the 18 uuids minted here are now frozen identities and never rotate again; this row stands as history.** | **No** — file location is navigation, not identity; `$ref` targets, schema shapes, and wire/instance format are unchanged. | Resolve any hardcoded spec file path through `registry/renames.yaml`; identity references (`resource_type`, `$id`, uuid) are unaffected by the move. |
 | 2026-07-24 | 19 types REVISION-bumped (`Automation.Job` 0.4.1, `Compute.Cluster` 0.4.1, `Compute.Container` 0.5.1, `Compute.VirtualMachine` 0.6.1, `Hardware.BMC` 0.4.1, `Hardware.BiosProfile` 0.4.1, `Network.AddressService` 0.4.1, `Network.ConnectionProfile` 0.3.1, `Network.DNSZone` 0.3.1, `Network.Gateway` 0.4.1, `Network.Switch` 0.4.1, `Observability.LogShipper` 0.3.1, `Platform.Hub` 0.1.1, `Platform.Namespace` 0.3.2, `Platform.NodePool` 0.3.1, `Platform.StorageClass` 0.3.1, `Security.DirectoryService` 0.4.1, `Software.Service` 0.4.1, `Storage.FileShare` 0.3.1) | **Product-name neutrality sweep** (SPEC-DESIGN §35 tightening): products/vendors as actors or examples replaced with generic archetypes in descriptions, context blocks, and example values; product names remain only in `adopts[]`/`aliases[]` attribution. Description-only — no schema, field, enum, or relationship change. | **No** — description-only; wire/instance format unaffected. | None required. |
 | 2026-07-06 | `Network.Switch` → **0.1.1**; `Hardware.NetworkInterface` → **0.5.1**; `realized-entity.schema.json` (SPEC `udlm/0.1`) edited in place | Wave-2 enum/single-source unifications: **(a)** description-only rename sweep `connected_to`→`connects_to` in the two types' description strings (the relation itself was already `connects_to`; REVISION bumps); **(b)** instance provenance `source.kind` enum extended `[layer, policy, actor, provider]` → `[layer, policy, actor, provider, discovery, rehydration, override]` (data-model-core §6/§7; 'consumer' maps to 'actor') + optional `operation_type` (`set|merge|remove`) and `sequence` on provenance entries (ordered modification chains). | **No** — (a) description-only; (b) additive enum widening + optional fields (existing instances validate unchanged). | None required. |
 | 2026-07-06 | `realized-entity.schema.json` (SPEC `udlm/0.1`) edited in place; `Automation.Job` → **0.2.0**; 9 types MINOR-bumped | Wave-1 conformance-to-core sweep: **(a)** `time_source` now REQUIRED on realized/discovered snapshots (data-model-core §6 — no fabricated precision); **(b)** instance `resource_type` pattern loosened to allow single-segment names (matches the type schema); **(c)** `Automation.Job` `references` target retargeted `Compute`→`Compute.VirtualMachine` (bare category was not a registered type; edge is informational — affected entities may be any type) + named `depends_on` edges; **(d)** relationship `name`s added to the 9 multi-same-kind types (additive MINOR). | **(a) Yes** — an instance whose realized/discovered snapshot lacks `time_source` no longer validates (would be MAJOR post-1.0; carried in-place by the pre-1.0 exception). **(c) Yes** under the compat rules (relationship retarget). (b)/(d) non-breaking. | Add `time_source` (clock attribution) to realized/discovered snapshots — in-repo `instances/orders-db.json` backfilled. Instance edges citing the Automation.Job `references` edge keep working (informational; any-type note on the relationship). |

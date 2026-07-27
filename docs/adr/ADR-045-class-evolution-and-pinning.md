@@ -1,12 +1,13 @@
 # UDLM ADR-045: Class evolution and pinning — atomic recompilation, two-plane pins, portability in the compat contract
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25. **Amended by ADR-051** (identity/version/digest — the uuid is frozen identity; revision exactness moved to content digests; the pin, provenance, and provider-surface clauses below carry the amended text).
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Related — the complete picture, each cited once.** The class system this governs (ADR-038 —
 Base/Type/Provider Classes of SharedDataElements, portability derived from element scope), the
-versioning doctrine it extends (VERSIONING.md — uuid is the revision, the handle is the thing;
-any change mints a new uuid), the pin-behind precedent it generalizes (the estate's
+versioning doctrine it extends (VERSIONING.md § "Identity, version, digest" — uuid is frozen
+identity, the version bumps under the publish law, the digest names the exact bytes), the
+pin-behind precedent it generalizes (the estate's
 type-version pinning: behind is legal, enumerated debt — never silent), the consumer surface
 the blast radius reads (ADR-044 — consumers declare what they read), and the corpus that
 measures it ([`use-cases/class-versioning/`](../../use-cases/class-versioning/README.md) —
@@ -30,9 +31,10 @@ element's scope.
 
 **1. Recompilation is atomic.** A class change and every affected descendant land in one
 change set: **generated flat specs regenerate**; **authored Type and Provider Classes
-revalidate**, rotating uuid and version only where their own content actually changes (the
-rotation gate's no-op rule holds — an unchanged authored file never rotates). Every artifact
-whose content changes mints a new uuid and a bump the compat gate accepts as sufficient — which
+revalidate**, bumping version only where their own content actually changes (the identity
+gate's no-op rule holds — an unchanged authored file never re-versions; its uuid never moves
+either way, ADR-051). Every artifact whose content changes takes a bump the compat gate
+accepts as sufficient — which
 pre-1.0 means the **MINOR floor** for breaking classifications (VERSIONING.md, "the pre-1.0
 bump floor"), never a REVISION and never a jump to 1.0. Lazy
 regeneration is rejected: it would let one release carry two truths of the same element, which
@@ -55,11 +57,13 @@ pin exactly and own their upgrades. Concretely:
 - **Intra-registry references are by handle only.** A Type or Provider Class that pins a fixed
   Base version inside the registry is refused at validation — the registry ref (commit) is the
   sole intra-registry pin, and it pins everything at once.
-- **Organization-edge pins are first-class and uuid-precise.** The uuid IS the revision, so a
-  pin is exact by construction. The revision store is the registry's git history: a pin
+- **Organization-edge pins are first-class: `thing@version`, or `thing@sha256:<hex>` for
+  exact bytes** (ADR-051). The publish law makes the version pin meaningful — a published
+  (identity, version) is immutable — and the digest pin is exact by construction. The
+  revision store is the registry's git history: a pin
   resolves within the registry ref (or ref range) the estate declares it consumes — which is
   how behind-but-legal and unknown-refused are mechanically distinct. A pin carrying both
-  `version` and `uuid` must carry a matching pair; a mismatch is refused, and the uuid is
+  `version` and `digest` must carry a matching pair; a mismatch is refused, and the digest is
   authoritative. A pinned estate compiles and realizes against the pinned revision completely;
   nothing upstream propagates until the organization re-pins.
 - **Pin-behind is legal, enumerated debt.** The version distance appears per pinned artifact
@@ -97,13 +101,15 @@ plane is a re-review trigger for this ADR.
   it under their own pins.
 
 **7. Provenance is declared, verified, and two-plane.** Every generated flat spec carries a
-compilation-provenance block naming the exact revisions (handle, version, uuid) of every input
+compilation-provenance block naming the exact revisions (handle, version, digest — ADR-051's
+referrer rule puts the digest in the provenance block, never in the input artifact) of every input
 — Base, Type, and Provider classes, shared-element layers, referenced common schemas, and the
 generator version — so "the artifact contains its chain" is verifiable, not asserted. Every
 realized instance extends this with realization provenance: the provider definition/
 registration revision and engine binding version that realized it. Live provenance means the
 current artifact states its inputs; historical provenance means any past revision's full chain
-reconstructs mechanically from the revision store (immutable uuids make history a database).
+reconstructs mechanically from the revision store (immutable published revisions — each named
+by its digest — make history a database).
 Provenance is only worth carrying if verified: recompiling from the block's named inputs must
 reproduce the artifact byte-comparably, and a mismatch (a hand-edit after generation, a stale
 block) is refused at the gate as an integrity failure. Corpus: class-versioning 010–012.
@@ -112,7 +118,9 @@ block) is refused at the gate as an integrity failure. Corpus: class-versioning 
 capabilities it registers, the standards it adopts, the defaults it publishes, and the outputs
 it populates per type — is a versioned contract under exactly the standard rules: additive
 surface changes are compatible, removals and shape changes are breaking, the same bump floors
-apply, and any change to the definition rotates its uuid. Past the naturalization boundary
+apply, and any change to the definition bumps its version under the publish law (ADR-051 —
+the definition's uuid is its frozen identity, which is exactly what lets an accreditation
+stay anchored to it across edits). Past the naturalization boundary
 (dcm ADR-023 — where provider-native implementation begins), the provider is free: engine
 internals, dependencies, and implementation may change without any versioning obligation
 toward consumers, because nothing a consumer can bind to has changed. The seam is precise:
@@ -126,15 +134,16 @@ process-migration stage's engine-upgrade-regression pattern).
 
 Provider versioning is **two-plane** — the registry's own pattern (individually versioned
 types, whole-release pinned by ref), recurring: **capabilities version individually** as the
-contract unit consumers bind to, and the **provider definition revision (uuid) is the
-whole-surface pin**. All compat classification routes to the capability plane: a breaking
+contract unit consumers bind to, and the **provider definition revision — the definition
+pinned `@version` or `@sha256:<hex>` (ADR-051) — is the whole-surface pin**. All compat classification routes to the capability plane: a breaking
 change inside one capability majors *that capability* and reaches exactly the consumers bound
 through the types it covers (`covers_types` — the explicit capability↔type linkage), never
 churning consumers of the provider's other capabilities. The **envelope version carries set
 semantics only**: capability added = minor, capability removed = major, provider-wide
 defaults/standards on their own merits — a member's internal breaking change does not major
 the envelope, because the set did not change. Consumers bind and pin at the finest unit they
-consume (the capability, by `capability_uuid`); estate-wide conservatism pins the definition
+consume (the capability — identified by its frozen `capability_uuid`, pinned at a version or
+digest); estate-wide conservatism pins the definition
 revision. Realization provenance (§7) records the **capability revision** that governed a
 realization alongside the definition revision and engine binding. The operational payoff is
 **capability-level blue/green**: one capability's v2 runs green under ADR-046's promotion
