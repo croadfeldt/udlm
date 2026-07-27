@@ -1,0 +1,57 @@
+uuid: uc-20682026-ffce-4795-8ddf-e4141c6de51f
+handle: change-control/stale-duration-estimate-fails-closed
+version: 1.0.0
+scenario:
+  description: >-
+    An adoption reaches an open window, but the provider's time-to-complete estimate has not been
+    revalidated within its cadence — the actuals backing it are stale (ADR-053 §8 reuses the
+    ADR-048 freshness machinery). Because a fit decision made on an untrusted estimate is worse than
+    no decision, the gate evaluates estimate freshness before using its value and refuses, naming
+    the estimate, its last validation, and its cadence — with the expedite path (under elevated
+    approval) as the sanctioned emergency route. The stale-knowledge rule (ADR-053 §6) applied to
+    the provider's own estimate: deciding on an outdated duration is deciding blind.
+  actor:
+    persona: platform-engineer
+    profile: fsi
+  perspectives:
+    - platform-operator
+    - sre
+    - provider-owner
+    - compliance-auditor
+  intent: >-
+    Refuse to fit-check an adoption against a stale provider estimate — fail closed, naming the
+    estimate's last validation and cadence, with expedite as the only sanctioned override
+  success_criteria:
+  - The gate checks the estimate's freshness before using its value (ADR-053 §8, reusing ADR-048)
+  - A stale estimate (un-revalidated past its cadence) refuses the fit decision, not proceeds on it
+  - The refusal names the estimate, its last validation, and its cadence
+  - Expedite under elevated approval is the only sanctioned route past the refusal
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: multi_validation
+    provider_landscape: single_eligible
+    governance_context: compliance_gated
+    failure_mode: policy_violation
+  profile: fsi
+  expected_domain_interactions:
+  - domain: data
+    interaction: the estimate's freshness metadata (last validation, cadence) alongside its value
+  - domain: policy
+    interaction: freshness-before-value; a stale estimate fails closed; expedite is the sanctioned override
+  - domain: provider
+    interaction: the provider owns the estimate and its revalidation cadence (rehearsal actuals, T6)
+  - domain: audit
+    interaction: the fail-closed refusal, the stale estimate, and any expedite override are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: change-control-adr-2026-07-27
+  timestamp: '2026-07-27T21:00:00Z'
+tags:
+- change-control
+- window-fit
+- freshness
+- fail-closed
+- adr-053

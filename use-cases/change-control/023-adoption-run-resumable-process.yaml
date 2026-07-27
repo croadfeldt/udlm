@@ -1,0 +1,58 @@
+uuid: uc-2a4e1ab1-de2e-4520-9449-1c98ae303135
+handle: change-control/adoption-run-resumable-process
+version: 1.0.0
+scenario:
+  description: >-
+    The orchestrated adoption run is a Process-family job (ADR-053 boundary: UDLM defines the clause
+    vocabulary and trail; DCM runs the process). It propagates the change through downstream records
+    in dependency-derived order, in batches, each verified before the next. A batch fails
+    verification mid-run — the process does not roll the fleet back or barrel ahead: it halts with a
+    recorded, resumable partial-adoption state, so the run resumes from the failed batch once the
+    cause is fixed. The change-control counterpart of the process-migration stage: an adoption is
+    itself a governed, ordered, resumable process, not a script.
+  actor:
+    persona: platform-engineer
+    profile: prod
+  perspectives:
+    - platform-operator
+    - sre
+    - application-team-member
+    - provider-owner
+  intent: >-
+    Run an adoption as a dependency-ordered, batch-verified, resumable Process-family job that halts
+    on a batch failure with recorded state and resumes from the failed batch — never rollback, never
+    unordered rewrite
+  success_criteria:
+  - Propagation runs in dependency-derived order, in batches, each verified before the next (ADR-053 boundary)
+  - A batch verification failure halts the process with a recorded, resumable partial-adoption state
+  - The run resumes from the failed batch after the cause is fixed — no restart, no fleet rollback
+  - UDLM defines the ordering/verification/trail contract; DCM's Process engine executes it
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: orchestration_flow_static
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: component_failure
+  profile: prod
+  expected_domain_interactions:
+  - domain: data
+    interaction: the dependency-ordered batch plan, per-batch verification results, and the resumable partial-adoption state
+  - domain: policy
+    interaction: per-batch verification decides pass-or-halt; the halt is resumable, not a rollback
+  - domain: provider
+    interaction: the adoption run is a Process-family job executing the ordered, verified, resumable propagation
+  - domain: audit
+    interaction: the batch order, the failed batch, and the resumable state are recorded for the resume
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: change-control-adr-2026-07-27
+  timestamp: '2026-07-27T21:00:00Z'
+tags:
+- change-control
+- process
+- resumable
+- adoption-run
+- adr-053

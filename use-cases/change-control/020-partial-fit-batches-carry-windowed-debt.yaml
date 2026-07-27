@@ -1,0 +1,56 @@
+uuid: uc-993ca88f-71c4-4fb0-bcfd-d753311d0a06
+handle: change-control/partial-fit-batches-carry-windowed-debt
+version: 1.0.0
+scenario:
+  description: >-
+    A fleet adoption's whole-run estimate exceeds the remaining window, but the propagation is
+    dependency-ordered, batched, and resumable. Rather than refuse outright, the policy chooses
+    batch-fit (ADR-053 §8): the run executes as many verified batches as fit the window — each
+    checked against its own provider estimate — and stops cleanly at the boundary. The batches that
+    did not run are carried as `windowed` debt (ADR-053 §3) with recorded progress, and the next
+    window resumes from there. A partial-but-safe adoption, never a mid-batch overrun.
+  actor:
+    persona: platform-engineer
+    profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
+  intent: >-
+    When the whole run won't fit, run the batches that do — each against its own estimate — and
+    carry the rest as windowed debt with recorded progress, resuming next window
+  success_criteria:
+  - The whole-run estimate exceeds the window, so the policy selects batch-fit rather than a flat refusal
+  - Each batch is admitted against its own provider estimate; the run stops cleanly at the window boundary
+  - Unrun batches are classified `windowed` debt with recorded progress (ADR-053 §3/§8)
+  - The next window resumes from the recorded point — no restart, no mid-batch overrun
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: orchestration_flow_static
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: partial_fulfillment
+  profile: prod
+  expected_domain_interactions:
+  - domain: data
+    interaction: per-batch estimates, the window remaining, and the windowed-debt entries with progress
+  - domain: policy
+    interaction: the fit gate selects batch-fit; admits batches while they fit; classifies the remainder as windowed debt
+  - domain: provider
+    interaction: the adoption run executes ordered batches and reports each batch's realized duration
+  - domain: audit
+    interaction: the batches run, the boundary stop, and the carried windowed debt are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: change-control-adr-2026-07-27
+  timestamp: '2026-07-27T21:00:00Z'
+tags:
+- change-control
+- window-fit
+- batch-fit
+- windowed-debt
+- adr-053

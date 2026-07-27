@@ -1,0 +1,56 @@
+uuid: uc-a0b2ce1c-2fbf-4b80-95ba-cdbccc16256a
+handle: change-control/realization-fits-window-completes
+version: 1.0.0
+scenario:
+  description: >-
+    A breaking change clears evidence and approval and reaches an open four-hour maintenance
+    window. The provider's advertised time-to-complete estimate for this adoption is two hours;
+    with the policy's safety margin it still fits the window. The window gate checks fit
+    (`estimate + margin ≤ window_remaining`, ADR-053 §8) — it passes — and starts the orchestrated
+    adoption run, which completes within the window and closes the debt with a full trail. The
+    positive case the fit gate exists to permit: an open window that is also long enough.
+  actor:
+    persona: platform-engineer
+    profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
+  intent: >-
+    Run an adoption in a window that is both open and long enough — the provider estimate plus
+    margin fits the remaining window, so the run proceeds to completion and the debt closes
+  success_criteria:
+  - The window gate checks fit, not just openness, and passes because estimate + margin ≤ remaining
+  - The time-to-complete estimate is the provider's, carried on its advertisement (ADR-053 §8)
+  - The orchestrated adoption run completes within the window
+  - Post-adoption verification passes and the debt entry closes with a complete trail
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: multi_policy_chain
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: prod
+  expected_domain_interactions:
+  - domain: data
+    interaction: the provider's advertised estimate and the window's remaining duration
+  - domain: policy
+    interaction: the window-fit gate passes (estimate + margin ≤ remaining) and admits the run
+  - domain: provider
+    interaction: the orchestrated adoption run executes and reports its realized duration back
+  - domain: audit
+    interaction: the fit decision, the run, and the closed debt are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: change-control-adr-2026-07-27
+  timestamp: '2026-07-27T21:00:00Z'
+tags:
+- change-control
+- window-fit
+- time-to-complete
+- realization
+- adr-053
