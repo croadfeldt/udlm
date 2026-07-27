@@ -28,7 +28,8 @@
 # chain (executive, director, manager); and the stakeholders the platform's own contracts imply but
 # no persona spoke for — provider-owner (ADR-005 / OIS), cloud-operator (OSAC — building sovereign
 # cloud providers, UC-04), integrator (ADR-044 consumer surface), sovereignty-authority (the
-# sovereignty-first data model), regulator (AUD-006 external verification).
+# sovereignty-first data model), tenancy-authority (ADR-014 isolation + cross-tenant XTA), regulator
+# (AUD-006 external verification).
 # Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
 version: "1.0.0"
 
@@ -130,6 +131,13 @@ personas:
       - "residency and jurisdiction are declared constraints on the data, enforced before realization and on every cross-boundary move — not asserted after the fact"
       - "a cross-border data flow is an explicit, governable edge I can see and deny (T4), never an opaque transfer"
 
+  - id: tenancy-authority
+    tier: governance
+    framing: "the party accountable for tenant isolation and cross-tenant authorization across the whole estate"
+    objectives:
+      - "tenant isolation holds across the whole estate — no tenant can read or dispatch into another, provable from the model, not asserted per-tenant (ADR-014)"
+      - "every cross-tenant flow is an explicit, audited authorization grant (the XTA capability), never an implicit reach"
+
   - id: regulator
     tier: governance
     framing: "an external regulator or assessor validating platform behavior without trusting the operator"
@@ -161,11 +169,11 @@ personas:
       - "my team's capacity, cost, and policy posture are visible without standing up a bespoke report"
 
 # Drift → canonical. A use-case `scenario.actor.persona` may carry any key here; the PER-001 gate
-# resolves it to the canonical id. Confident folds are unmarked; the three PROVISIONAL folds are
-# single-use/variant values the maintainer should confirm or split into their own persona.
+# resolves it to the canonical id. All folds ruled 2026-07-27 — each drift value decomposes into an
+# existing persona (rationale per line), so none needed its own.
 folded_aliases:
   auditor: compliance-auditor              # by-persona.md names the role "compliance-auditor / auditor"
   compliance-officer: compliance-auditor   # single-use drift synonym
-  individual-developer: application-team-member  # PROVISIONAL (single-use) — confirm, or split as a distinct self-serve developer lens
-  storage-admin: platform-operator         # PROVISIONAL (single-use) — confirm, or split as a distinct storage-operator lens
-  sovereign-tenant-admin: tenant-admin     # PROVISIONAL — sovereignty may warrant its own lens; confirm fold vs split
+  individual-developer: application-team-member  # a solo consumer makes the same platform demands as a team consumer — no distinct lens
+  storage-admin: platform-operator         # operating one resource class is platform-operator scoped — no distinct nature
+  sovereign-tenant-admin: tenant-admin     # decomposes into tenant-admin + the sovereignty-authority lens; no separate persona
