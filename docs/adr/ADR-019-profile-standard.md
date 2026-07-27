@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-007 (profile model); ADR-018 (dev — the floor this contains); ADR-017 (per-profile-ADR template); ADR-010 (drift/graph); the record: `registry/instances/profile-standard.yaml`; `docs/profile-resolution.md` (floors nest by set-containment)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model); ADR-018 (dev — the floor this contains); ADR-017 (per-profile-ADR template); ADR-010 (drift/graph); the record: `registry/instances/profile-standard.yaml`; `docs/profile-resolution.md` (floors nest by set-containment)
 
 > Owns the *rationale* for `standard`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 

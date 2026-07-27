@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related:** ADR-035 (reference-vocabulary portability); ADR-004 (capability declaration); ADR-029 (discovery);
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 (reference-vocabulary portability); ADR-004 (capability declaration); ADR-029 (discovery);
 core-tenets **T2** (transformation is Policy) / **T5** (adopt, don't re-express); ADR-008 (naturalization
 boundary); ADR-037 (PVD)
 

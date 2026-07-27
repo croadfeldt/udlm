@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** the UDLM/DCM split (this ADR is its decision-of-record home); `CONFORMANCE.md`; ADR-002 (adopt-by-reference); `design-principles/core-tenets.md` (T5); ADR-005 §5 (cross-peer federation)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** the UDLM/DCM split (this ADR is its decision-of-record home); `CONFORMANCE.md`; ADR-002 (adopt-by-reference); `design-principles/core-tenets.md` (T5); ADR-005 §5 (cross-peer federation)
 ## Context
 
 DCM has kept two things that change for different reasons, and at different rates, in one repository:

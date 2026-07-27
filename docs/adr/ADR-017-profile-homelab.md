@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-007 (profile model — a profile is a composed *set* with a *floor*, built-ins immutable, fork-on-modify; §5 platform-scope + why); `docs/profile-resolution.md` (resolution, floor-containment, atomic onboarding §5); the record this ADR governs is `registry/instances/profile-homelab.yaml`; sibling profile records `registry/instances/profile-{dev,standard,prod,fsi,sovereign}.yaml`
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model — a profile is a composed *set* with a *floor*, built-ins immutable, fork-on-modify; §5 platform-scope + why); `docs/profile-resolution.md` (resolution, floor-containment, atomic onboarding §5); the record this ADR governs is `registry/instances/profile-homelab.yaml`; sibling profile records `registry/instances/profile-{dev,standard,prod,fsi,sovereign}.yaml`
 **Tracking:** "map a homelab profile for UDLM 1.0 to run at home" — the first of the per-profile ADRs (dev/standard/prod/fsi/sovereign to follow, same template).
 
 > This ADR owns the **rationale** for the homelab profile — its intent, target environment, and *why* its floor is what it is. The concrete floor/mechanics/config are the record's (`profile-homelab.yaml`); this document does not restate them (single-source, SPEC-DESIGN §33).

@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — records a **rejection with a defined revisit condition**.
 **Date:** 2026-07-24
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — the complete picture, each cited once.** The relation-vocabulary discipline this applies
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The relation-vocabulary discipline this applies
 ([`common-elements.md`](../../registry/common-elements.md) §9 / REL-001 — relations are declared, and an
 unnamed edge is valid), the edge model it rides
 ([`data-model-core.md`](../../foundations/data-model-core.md) §4 — `edge_type` carries ordering; graphs

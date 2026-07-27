@@ -2,7 +2,7 @@
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-008 (UDLM/DCM boundary); DCM ADR-023 (provider naturalization); ADR-013 (hardware scope — the same "transport, not SoR" spirit); reviewer feedback on `dcm-project/udlm` #40.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary); DCM ADR-023 (provider naturalization); ADR-013 (hardware scope — the same "transport, not SoR" spirit); reviewer feedback on `dcm-project/udlm` #40.
 
 ## Context
 

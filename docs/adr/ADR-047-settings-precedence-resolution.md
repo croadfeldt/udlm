@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related — each cited once.** ADR-015 (settings and config bundles — the §2a select/order/compose
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. ADR-015 (settings and config bundles — the §2a select/order/compose
 resolution algorithm this ADR ratifies as *the* answer); ADR-038 (scoped resource-type Classes —
 the scoping question that prompted this ruling); ADR-008 (the UDLM/DCM boundary test — contract in
 UDLM, assembly engine in DCM); ADR-045 §7 (compilation provenance on generated artifacts, verified

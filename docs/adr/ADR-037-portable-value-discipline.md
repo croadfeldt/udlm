@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related:** ADR-035 / ADR-036 (the two mechanisms this gate points at); ADR-012 (data-references); ADR-028
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); ADR-012 (data-references); ADR-028
 (rule-ID naming + registry); core-tenets **T5** (adopt outward) / **T7** (reduce inward); `check_single_source.py`
 + SPEC-DESIGN §33 (the single-source precedent this mirrors). **Home of the `PVD` rule family:**
 `design-principles/portable-values.md`.

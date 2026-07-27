@@ -5,7 +5,7 @@ property + a portability-strictness knob) is **consumer-gated — recorded, not 
 (ADR-032: pay to remove a future-contradiction, never pre-build a feature).
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — the complete picture, each cited once.** This decision sits on the standards-adoption mechanism
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. This decision sits on the standards-adoption mechanism
 ([`adopted-standards.md`](../../design-principles/adopted-standards.md) — the `adopts[]` / `adopted_standard_support`
 absorb/embed/adopt dispositions) and the **existing** per-standard record
 ([`standards-adoption-register.md`](../../registry/standards-adoption-register.md), rule `ADOPT-001`), whose

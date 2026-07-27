@@ -1,7 +1,7 @@
 # ADR-033: Templates — the orderable assembly, and the Pattern → Template → System lifecycle
 
 **Status:** Proposed (2026-07-19) — a post-1.0 direction (ADR-031/032) unless a September use case pulls it in; introduces **no schema change** here.
-**Related:** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-004 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-004 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
 
 ## Context
 

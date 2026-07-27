@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `design-principles/core-tenets.md` (Data⇄Policy boundary, T5 adopt-by-reference); the **cost** decision (FOCUS adopted + served, not modeled — `../design/resource-type-registry-design-notes.md` §4a); ADR-001 (`Topology`); **DCM ADR-019 (Placement Policy)** — a consumer
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `design-principles/core-tenets.md` (Data⇄Policy boundary, T5 adopt-by-reference); the **cost** decision (FOCUS adopted + served, not modeled — `../design/resource-type-registry-design-notes.md` §4a); ADR-001 (`Topology`); **DCM ADR-019 (Placement Policy)** — a consumer
 **Tracking:** placement-informing data family — "is capacity/utilization a record type, or data on the resource?"
 
 ## Context

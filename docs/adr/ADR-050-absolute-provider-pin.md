@@ -3,21 +3,17 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **drafted for decision, not decided**: the options below are stated so the ruling is a choice among them
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — each cited once.** `contracts/provider-contract.md` **PRV-009** (default-deny:
-`effective_capabilities` is the intersecting ceiling and a provider can never invoke outside it)
-and **PRV-011** (the dispatch-boundary check this ADR decides the shape of, §2b);
-ADR-004 (capability declaration — declare-and-select, where an undeclared capability discovered
-only at runtime is rejected);
-`contracts/error-model.md` §3.2 (`placement.capability_mismatch`, already in the closed
-vocabulary and already distinct from `provider.*` failures — the type exists, the enforcement
-point does not);
-`contracts/policy-contract.md` §18 (the override model: an override is a **data record** with an
-approval flow and an audit trail — the precedent Option B would reuse; note that UDLM ADR-016
-governs resource-type modeling and is *not* the override precedent, despite the number's
-familiarity from the control-plane series);
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
+once with what it settles. `contracts/provider-contract.md` — **PRV-009** (default-deny:
+`effective_capabilities` is the intersecting ceiling, never invoked outside) + **PRV-011** (the
+dispatch-boundary check this ADR shapes). ADR-004 — capability declaration (declare-and-select; an
+undeclared capability found only at runtime is rejected). `contracts/error-model.md` §3.2 —
+`placement.capability_mismatch` (already in the closed vocabulary, distinct from `provider.*`; the
+type exists, the enforcement point does not). `contracts/policy-contract.md` §18 — the override
+model (an override is a data record with approval + audit; the precedent Option B reuses).
 [`use-cases/must-reject/005-provider-capability-mismatch-refused.yaml`](../../use-cases/must-reject/005-provider-capability-mismatch-refused.yaml)
-(the case that measures this, and the one case in the refusal corpus where the model
-affirmatively specifies the hazard rather than merely omitting the guard).
+— the case that measures this, the one refusal case where the model *specifies* the hazard rather
+than omitting the guard.
 
 ## Context
 

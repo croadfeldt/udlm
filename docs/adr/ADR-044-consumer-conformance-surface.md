@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — the complete picture, each cited once.** The validation program this belongs to (dav
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The validation program this belongs to (dav
 `docs/data-model-validation-design.md` — the model, not the architecture, is the primary
 validation target), the gate pattern it copies (the type-standard baseline ratchet in
 `tests/check_type_standard.py` — every state green or red, drift is a conscious commit), and the

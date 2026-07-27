@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related:** ADR-012 (data-references — the in-field reference shape); ADR-004 (provider capability declaration);
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data-references — the in-field reference shape); ADR-004 (provider capability declaration);
 ADR-023 (host networking as data / naturalization); ADR-024 (filling provider-required inputs); ADR-037 (the PVD
 family this applies); core-tenets **T5** (adopt standards by reference); layering-and-versioning §3.7
 (reference-data kinds)

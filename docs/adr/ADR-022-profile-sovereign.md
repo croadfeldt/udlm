@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-007 (profile model — distinct sets, not levels); ADR-021 (fsi — the regulated floor this contains); `observability/universal-audit.md` AUD-012 (in-boundary key material); `governance/accreditation-and-authorization-matrix.md` §3.8 (enforcement-plane attestation); ADR-022/DCM (sovereign accreditation, attested placement); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-sovereign.yaml`
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model — distinct sets, not levels); ADR-021 (fsi — the regulated floor this contains); `observability/universal-audit.md` AUD-012 (in-boundary key material); `governance/accreditation-and-authorization-matrix.md` §3.8 (enforcement-plane attestation); ADR-022/DCM (sovereign accreditation, attested placement); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-sovereign.yaml`
 
 > Owns the *rationale* for `sovereign`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 

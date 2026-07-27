@@ -3,21 +3,19 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **drafted for decision, not decided**: the options below are stated so the ruling is a choice among them
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — each cited once.** `governance/credentials.md` **CPX-001** (credential values are
-never stored in the realization's stores) and **CPX-013/CPX-014** (the intake-time detection and
-non-persistence rules this ADR chooses the mechanism for);
-`foundations/four-states.md` (Intent is the immutable record of what was asked for — the
-constraint that makes this a design question rather than a cleanup task);
-`registry/resource-types/security.credential-ref.yaml` (the reference type — names *which*
-credential is held *where*, with no value-bearing field);
-`registry/SPEC-DESIGN-REQUIREMENTS.md` §36(h) (the authoring-time twin: secret-bearing fields are
-references, checked by review — it cannot see a value a submitter supplies at run time);
-ADR-039 / `docs/design/vocabulary-intake-ladder.md` (the match/mint/promote ladder — the model's
-existing precedent for *changing a submitted value at intake* rather than only judging it);
-`contracts/error-model.md` §8a (a refusal is itself a boundary crossing);
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
+once with what it settles. `governance/credentials.md` — **CPX-001** (values never rest in the
+realization's stores) + **CPX-013/CPX-014** (the intake detection + non-persistence rules this ADR
+picks the mechanism for). `foundations/four-states.md` — Intent is the *immutable* record of what
+was asked for, the constraint that makes this a design question, not a cleanup task.
+`registry/resource-types/security.credential-ref.yaml` — the reference type (names which credential
+is held where; no value field). `registry/SPEC-DESIGN-REQUIREMENTS.md` §36(h) — the authoring-time
+twin (review can't see a value a submitter supplies at run time). ADR-039 /
+`docs/design/vocabulary-intake-ladder.md` — the match/mint ladder, the model's precedent for
+*changing* a submitted value at intake, not just judging it. `contracts/error-model.md` §8a — a
+refusal is itself a boundary crossing.
 [`use-cases/must-reject/003-inline-credential-literal-refused.yaml`](../../use-cases/must-reject/003-inline-credential-literal-refused.yaml)
-(the case that measures this: refusal plus non-persistence, with a corrected resubmission
-passing unchanged).
+— the case that measures this.
 
 ## Context
 

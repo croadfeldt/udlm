@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `docs/host-network-and-config-model.md` (the ratified mapping this records — the standards survey, the per-type model, and the worked example); ADR-013 (hardware component scope — the adapter is a kept component); `design-principles/adopted-standards.md` (Tier-2 adopt-by-reference); the affected types `network.ip-address`, `hardware.network-interface`, `network.dhcp-scope`, `network.address-service`, and the new `network.connection-profile`
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/host-network-and-config-model.md` (the ratified mapping this records — the standards survey, the per-type model, and the worked example); ADR-013 (hardware component scope — the adapter is a kept component); `design-principles/adopted-standards.md` (Tier-2 adopt-by-reference); the affected types `network.ip-address`, `hardware.network-interface`, `network.dhcp-scope`, `network.address-service`, and the new `network.connection-profile`
 **Tracking:** the quality-sweep network cluster (R4/R5/R6) — this ADR is the coherent grounding that resolves them together instead of piecemeal.
 
 > This ADR records the **decision + grounding**; the concrete per-type mapping and worked example live in `docs/host-network-and-config-model.md` (single-source, SPEC-DESIGN §33). It records that proposal as the decision (previously "not yet an ADR — react before ratifying").

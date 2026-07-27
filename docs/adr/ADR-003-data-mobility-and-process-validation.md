@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `design-principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-004 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `design-principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-004 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
 **Tracking:** placement-data family — "how is data migration handled, and how do we pre-validate it?"
 
 ## Context

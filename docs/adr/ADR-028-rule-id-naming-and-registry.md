@@ -1,7 +1,7 @@
 # ADR-028: Rule-ID naming convention and central registry
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-18
-**Related:** ADR-026 (`<noun>_type` naming); `registry/rule-id-naming.md`; `registry/rule-id-registry.yaml`; `tests/check_single_source.py`
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-026 (`<noun>_type` naming); `registry/rule-id-naming.md`; `registry/rule-id-registry.yaml`; `tests/check_single_source.py`
 
 ## Context
 

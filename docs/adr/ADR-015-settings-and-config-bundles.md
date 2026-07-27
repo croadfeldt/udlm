@@ -2,7 +2,7 @@
 
 **Status:** Proposed (2026-07-15)
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-008 (UDLM/DCM boundary — "could a peer differ? yes → DCM"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary — "could a peer differ? yes → DCM"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).
 
 ## Context
 

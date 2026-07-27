@@ -1,7 +1,7 @@
 # ADR-029: Inventory — optional ancillary observed-resource types
 
 **Status:** Proposed (2026-07-19)
-**Related:** ADR-013 (not a hardware SoR — **refined here**); ADR-027 (families); ADR-007 (profile model); ADR-004 (provider capability declaration); ADR-002 (observational overlay precedent); the managed-vs-observed axis; must-ignore-unknown (federation forward-compat)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-013 (not a hardware SoR — **refined here**); ADR-027 (families); ADR-007 (profile model); ADR-004 (provider capability declaration); ADR-002 (observational overlay precedent); the managed-vs-observed axis; must-ignore-unknown (federation forward-compat)
 
 ## Context
 

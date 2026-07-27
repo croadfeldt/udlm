@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25. **Amended by ADR-051** (identity/version/digest — the uuid is frozen identity; revision exactness moved to content digests; the pin, provenance, and provider-surface clauses below carry the amended text).
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — the complete picture, each cited once.** The class system this governs (ADR-038 —
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The class system this governs (ADR-038 —
 Base/Type/Provider Classes of SharedDataElements, portability derived from element scope), the
 versioning doctrine it extends (VERSIONING.md § "Identity, version, digest" — uuid is frozen
 identity, the version bumps under the publish law, the digest names the exact bytes), the

@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-007 (profile model); ADR-019 (standard — the floor this contains); ADR-010 (blast-radius/impact); ADR-006 (bounded convergence); ADR-011 (validate-and-reserve); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-prod.yaml`
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model); ADR-019 (standard — the floor this contains); ADR-010 (blast-radius/impact); ADR-006 (bounded convergence); ADR-011 (validate-and-reserve); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-prod.yaml`
 
 > Owns the *rationale* for `prod`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 
