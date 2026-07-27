@@ -3,13 +3,15 @@
 # Commitment (DAV-session interface commitment): any rename of a handle, rule ID, or file
 # path ships IN THE SAME CHANGE with an explicit old -> new map, so no consumer, gate, or
 # reader is left resolving a rename by guesswork. Gates that diff against a base ref
-# (tests/ci_compat_gate.py, tests/check_uuid_rotation.py) consult this map to treat a
+# (tests/ci_compat_gate.py, tests/check_identity_integrity.py) consult this map to treat a
 # renamed file as the SAME entity as its base-ref path — a rename is never a delete+add,
 # and never an accidental exemption from a gate.
 #
 # Scope: cumulative, append-only. Each block is one renaming change (newest last); keys are
-# repo-relative old paths, values the new paths. Identity fields (resource_type, uuid
-# lineage, $id) are governed by registry/VERSIONING.md, not by file location.
+# repo-relative old paths, values the new paths. This file maps PATHS, never identities
+# (ADR-051): a document's uuid is its frozen identity and rides through any rename
+# untouched; versions, digests, and identity itself are governed by
+# registry/VERSIONING.md, not by file location.
 
 renames:
   # 2026-07-25 — registry structure by class: resource-types/ grouped by class directory

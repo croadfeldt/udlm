@@ -66,7 +66,11 @@ portably, without UDLM prescribing a fixed resource math.
 A typed cross-entity pointer to another **resource** — `resource_type` + a **handle** (`target_handle`),
 which is the authoring key. DCM resolves the handle and pins `target_uuid` at reserve (ADR-025, adopting
 **AEP-124 resource association**); resolution tolerates a not-yet-existing target — the resource stays
-`Requested` until it resolves (claim-before-define). Distinct from a
+`Requested` until it resolves (claim-before-define). The uuid is the target's frozen **identity**
+(ADR-051); a consumer that needs revision exactness carries the optional pin pair `target_version` /
+`target_digest` (the `thing@version` / `thing@sha256:<hex>` grammar), and the optional authored
+`target_authority` (dotted, ADR-038 §10 form; absent = the local estate) lets boundary policy match the
+owning authority without dereferencing (ADR-041; standing-gap §4 closure). Distinct from a
 `data_reference` (ADR-012), which points at immutable reference-**data** by uuid. The only cross-type
 binding surface besides typed `outputs` (E2). Never a provider-native id.
 

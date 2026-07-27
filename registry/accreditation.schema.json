@@ -48,6 +48,11 @@
         "exclusions": { "type": "array", "items": { "type": "string" } }
       }
     },
+    "attested_digests": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+      "description": "OPTIONAL — the exact content digest(s) of the subject revision(s) this accreditation reviewed (ADR-051; the in-toto subject shape: a claim binds to bytes, not to labels). The subject_uuid names the stable identity; these digests name exactly which published bytes were examined, so the attestation is re-checkable against the pin manifest forever. Exact-by-default: validity wider than these digests (e.g. across future revisions) is declared explicitly via the capability_scope grain, never implied."
+    },
     "certificate_ref": { "type": "string" },
     "audit_report_ref": { "type": "string" },
     "external_registry_id": { "type": "string" },
@@ -92,7 +97,7 @@
     "capability_scope_entry": {
       "type": "object",
       "additionalProperties": false,
-      "description": "One binding-grain entry (§3.3.1). Exactly one of two shapes: {provider_wide:true} attests EVERY capability the provider declares (survives capability changes, coarsest); or {capability_uuid, version?, category?} attests a specific capability — add `version` for the deterministic grain a version change EXPIRES, and `category` to narrow to one (verb × domain) category within the capability.",
+      "description": "One binding-grain entry (§3.3.1). Exactly one of two shapes: {provider_wide:true} attests EVERY capability the provider declares (survives capability changes, coarsest); or {capability_uuid, version?, category?} attests a specific capability — add `version` for the deterministic grain a version change EXPIRES, and `category` to narrow to one (verb × domain) category within the capability. EXACT-BY-DEFAULT (ADR-051): the reviewed bytes are what attested_digests names; an entry WITHOUT `version` or a {provider_wide:true} entry is the explicit declaration of validity wider than those exact bytes — a deliberate, visible widening, never an implication.",
       "properties": {
         "provider_wide": { "const": true, "description": "Attests every capability the provider declares; survives capability changes." },
         "capability_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The capability this attests (matches provider `capabilities[].capability_uuid`). Without `version` it attests that capability across versions; with `version` it binds the exact version." },
