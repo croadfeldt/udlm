@@ -4,15 +4,16 @@
 (#217); decided 2026-07-27
 **Date:** 2026-07-27
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — each cited with what it settles.** Corpus: `use-cases/change-control/` (17 UCs). Flow it
-ratifies: `docs/flows/change-control-adoption.md` (the calendar-and-ceremony stage). Design note:
-`docs/design/change-control-knowledge-sources.md` (windows as sourced knowledge). ADR-045 (atomic
-recompilation, pins, visible debt) — the change mechanics this sits on. ADR-046 (blue/green
-typed-output diff) — the evidence this must never waive. ADR-048 (staleness as a declared
-expectation) — the freshness machinery §7 reuses. ADR-051 (publish law + digest referrers) — how the
-meta-policy and approvals bind. ADR-052/048 (verdicts derived, never stored) — the debt-state
-pattern. ADR-003/T6 (RTO/RPO — a provider-backed validated time bound) — what §8 generalizes.
-ADR-008 — the UDLM/DCM boundary.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** This decision
+assumes these; each is cited once with what it settles, not re-taught here. Corpus:
+`use-cases/change-control/` (17 UCs). Flow it ratifies: `docs/flows/change-control-adoption.md` (the
+calendar-and-ceremony stage). Design note: `docs/design/change-control-knowledge-sources.md` (windows
+as sourced knowledge). ADR-045 (atomic recompilation, pins, visible debt) — the change mechanics this
+sits on. ADR-046 (blue/green typed-output diff) — the evidence this must never waive. ADR-048
+(staleness as a declared expectation) — the freshness machinery §7 reuses. ADR-051 (publish law +
+digest referrers) — how the meta-policy and approvals bind. ADR-052/048 (verdicts derived, never
+stored) — the debt-state pattern. ADR-003/T6 (RTO/RPO — a provider-backed validated time bound) —
+what §8 generalizes. ADR-008 — the UDLM/DCM boundary.
 
 ## Context
 

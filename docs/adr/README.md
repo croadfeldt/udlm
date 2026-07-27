@@ -5,6 +5,28 @@ Short, reviewable records of significant UDLM data-model decisions — the **why
 §4.5); UDLM **adopts the ADR/MADR format by reference**, it does not coin its own. DCM keeps its
 own ADRs in `architecture/adr/` (the control-plane side); UDLM ADRs here cross-reference them.
 
+## How these ADRs are written (the authoring standard)
+
+An ADR is **explanation** (Diátaxis) — it justifies one decision. It is not reference (the schema)
+or a tutorial (the model); it **points to** those, never reproduces them. The discipline, in order:
+
+1. **Orient, don't educate.** A cold reader needs *where to get* foundational context, not the
+   context re-taught inline. So every ADR opens with a **"Background — read first"** block: the
+   docs, definitions, and prior decisions a third party must read, each cited **once with what it
+   settles** (never a bare number), explicitly labeled as the on-ramp — a reader who has the context
+   skips it. Foundational material is a *denoted reading path*, not inlined prose.
+2. **Body is the decision.** Context (the specific forces — assumes domain literacy), Decision
+   (active, one decision-area), Consequences (only the non-obvious easier/harder). Cut anything that
+   doesn't move a decision; don't restate what the reader — or the ADR's own other sections —
+   already said.
+3. **Scope edges explicit.** A "what this does not decide" / boundary section (the UDLM/DCM split,
+   ADR-008) where it applies.
+4. **Immutable once Accepted.** Supersede, don't edit (the ADR-051 record discipline).
+
+This reconciles the repo's DOC-001 *cold-reader-openable* requirement with the *writing-for-humans*
+"less is more" standard: the cold reader is served by the Background on-ramp + gist-carrying
+references, not by three restatements.
+
 **Referenced DCM ADRs (external — resolve in the DCM repo `architecture/adr/`).** UDLM docs cite these
 control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
 
