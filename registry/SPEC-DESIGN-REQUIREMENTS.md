@@ -341,6 +341,22 @@ Each hard constraint cites the UDLM contract it derives from.
     analysis can detect regressions per type, not just per model. **[enforced: review; (b), (j),
     and (k) are CI-gate candidates — outputs-nonempty, example-currency, and UC-coverage checks]**
 
+37. **Derivability — a type does not store what the model already computes.** A value the model
+    can compute from records it already holds — the count of the things an edge points at, the
+    arithmetic over a declared range, the last run of a job — is computed on read, not stored as
+    an independent field. A stored copy is drift waiting to happen: the moment the underlying
+    records change, the copy is a second answer to a question that must have one. This is the
+    same compute-never-store discipline the model already applies to derived shape
+    (`has_constituents`, ADR-027 addendum), derived nature (`edge_type`, entity-relationships §6),
+    and staleness verdicts (ADR-048 — judged against declared expectation, never stored). Where a
+    realized reading genuinely is not derivable from model records — a provider watches it and
+    reports it — the type says so, so a reader can tell a rollup from an observation.
+    **[enforced: `tests/check_derivability.py`]**
+
+| Rule | Statement |
+|---|---|
+| `DRV-001` | A resource type MUST NOT declare a field whose value is derivable from other model records (relationships, instance records, declared ranges, provenance) as an independently stored fact. A field whose **name** is shaped like a history/recency fact (`last_*`, `latest_*`, `previous_*`, `runs_*`, `history_*`, `*_history`, `*_completed`) or, in `outputs`, like an aggregation (`total_*`, `num_*`, `count_*`, `sum_*`, `avg_*`, `current_*`, `*_count`, `*_total`, `*_sum`, `*_average`) MUST either declare its classification in its description — **DERIVED** (naming the source it is computed from) or **OBSERVED** (a provider-watched fact not derivable from model records) — or not exist on the type, its facts living on the instance records that own them. The gate reads names, not semantics: aggregation names are checked on `outputs` only, because in a `spec` an aggregate name can be legitimate intent; a derivable value under a neutral name is the reviewer's derivability question, not the gate's. |
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
