@@ -8,26 +8,38 @@
 # recognizes (docs/flows/by-persona.md) as a closed, single-sourced, CI-gated contract (PER-001),
 # so a consumer analyzing "from every stakeholder perspective" reads ONE list, not its own.
 #
+# `tier` groups personas by the NATURE of their stake, so a consumer's union-across-lenses can
+# treat a gap in one tier as different in kind from another:
+#   operational — build, operate, and consume the mechanism
+#   governance  — set, enforce, and validate the rules the platform must honor
+#   oversight   — accountable for outcomes; decide on risk and spend (the management chain)
+# The oversight tier demands aggregate/attestation/rollup surfaces, not per-resource mechanisms —
+# which is exactly what catches "the model surfaces a broken dependency to the operator but has no
+# portfolio-level gap rollup for the director."
+#
 # Each persona carries `objectives`: what a conforming spec must give that role — the platform
 # DEMANDS the persona makes. These are the per-lens analysis targets. Note the pleasing circularity
 # (DAV, 2026-07-27): ADR-003's own refusal-contract elements ARE implicit persona demands —
 # typed→platform-engineer, actionable→application-team-member, non-leaking→security-officer,
-# auditable→compliance-auditor, whole→application-team-member. The contract was multi-perspective
-# from the start; only a single-lens analysis prompt hid it.
+# auditable→compliance-auditor, whole→application-team-member.
 #
-# Provenance: docs/flows/by-persona.md (the 5 authored roles) + the high-frequency, clearly-distinct
-# roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst). Mirror this file
-# byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
+# Provenance: docs/flows/by-persona.md (the authored roles) + the high-frequency, clearly-distinct
+# roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst) + the oversight
+# chain (executive, director, manager). Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml
+# in croadfeldt/dcm.
 version: "1.0.0"
 
 personas:
+  # ---- operational: build, operate, and consume the mechanism ----
   - id: solution-architect
+    tier: operational
     framing: "an architect decomposing a whole architecture into ordered, portable resource requests"
     objectives:
       - "a whole architecture decomposes into typed resources with their dependency edges preserved"
       - "portability holds — the same intent realizes across providers without a rewrite"
 
   - id: application-team-member
+    tier: operational
     framing: "an application owner whose team requests and consumes platform resources"
     objectives:
       - "I ask in portable terms and the system realizes it — no provider-native detail leaks up to me"
@@ -35,24 +47,43 @@ personas:
       - "a partial outcome is a whole, coherent result, never a silent half-realization (whole — ADR-003)"
 
   - id: platform-operator
+    tier: operational
     framing: "an operator modeling, registering, and running the estate"
     objectives:
       - "the dependency graph and realization ordering are first-class data I can query, not tribal knowledge"
       - "a broken dependency surfaces with its blast radius before realization, naming the root"
 
   - id: platform-engineer
+    tier: operational
     framing: "an engineer building on and running day-2 of the platform"
     objectives:
       - "typed, stable error contracts I can branch on (typed — ADR-003)"
       - "the dependency model distinguishes request vs operational natures (ADR-052)"
 
   - id: sre
+    tier: operational
     framing: "an SRE operating the running platform"
     objectives:
       - "defined enforcement points — no check-then-act races (ADR-011 validate-and-reserve)"
       - "cascades are bounded and observable — a failure's reach is computed, not discovered in an incident"
 
+  - id: tenant-admin
+    tier: operational
+    framing: "a tenant administrator governing isolation and quota for a tenant"
+    objectives:
+      - "tenant isolation holds — no cross-tenant read or dispatch without an explicit, audited authorization"
+      - "quota and override are declared data, enforced at defined points, not ad hoc"
+
+  - id: finance-analyst
+    tier: operational
+    framing: "a finance analyst accountable for cost and usage"
+    objectives:
+      - "cost and usage are adopted from a standard (FOCUS) by reference, joinable to realized resources (T5)"
+      - "spend attributes to tenant, resource, and time without a bespoke parallel cost model"
+
+  # ---- governance: set, enforce, and validate the rules ----
   - id: compliance-auditor
+    tier: governance
     framing: "an auditor validating platform behavior after the fact"
     objectives:
       - "every decision and refusal leaves a tamper-evident record naming the identities and the deciding policy (auditable — ADR-003)"
@@ -60,22 +91,34 @@ personas:
       - "audit integrity is provable — RFC 9162 Merkle inclusion/consistency proofs, not assertion (AUD-006)"
 
   - id: security-officer
+    tier: governance
     framing: "a security officer governing data exposure and trust boundaries"
     objectives:
       - "no reference or value leaves a boundary it was not released for (non-leaking — ADR-003; the policy information firewall)"
       - "credential material is referenced, never carried inline in portable data"
 
-  - id: tenant-admin
-    framing: "a tenant administrator governing isolation and quota for a tenant"
+  # ---- oversight: accountable for outcomes; decide on risk and spend ----
+  - id: executive
+    tier: oversight
+    framing: "a CIO/CTO/CISO accountable for the platform's outcomes, risk, and spend at the organization level"
     objectives:
-      - "tenant isolation holds — no cross-tenant read or dispatch without an explicit, audited authorization"
-      - "quota and override are declared data, enforced at defined points, not ad hoc"
+      - "I can trust that what is running is what was approved — attestation and immutable provenance, not a report someone typed (ADR-051, AUD-006)"
+      - "organizational risk exposure is computed and rolled up — sovereignty posture, blast radius, unmet obligations — not assembled by hand"
+      - "cost is governed at the org level against a standard, not reconciled from spreadsheets (T5/FOCUS)"
 
-  - id: finance-analyst
-    framing: "a finance analyst accountable for cost and usage"
+  - id: director
+    tier: oversight
+    framing: "a director accountable for a portfolio of services and the teams that run them"
     objectives:
-      - "cost and usage are adopted from a standard (FOCUS) by reference, joinable to realized resources (T5)"
-      - "spend attributes to tenant, resource, and time without a bespoke parallel cost model"
+      - "my portfolio is one rolled-up view — health, compliance, and gaps across teams — derived from the graph, not chased team by team"
+      - "a gap or drift anywhere in the portfolio surfaces with its blast radius and the responsible team, before it becomes an incident"
+
+  - id: manager
+    tier: oversight
+    framing: "a manager accountable for a team's services — their delivery and operational health"
+    objectives:
+      - "my team's blocked or unsatisfiable intents surface with the root cause and owner (ADR-052 surfacing, scoped to the team)"
+      - "my team's capacity, cost, and policy posture are visible without standing up a bespoke report"
 
 # Drift → canonical. A use-case `scenario.actor.persona` may carry any key here; the PER-001 gate
 # resolves it to the canonical id. Confident folds are unmarked; the three PROVISIONAL folds are
