@@ -217,7 +217,7 @@ this is the index, not a second definition.
 | Version bump insufficient for the classification | registry validation | `validation.version_bump_insufficient` | `REG-011` (`governance/registry-governance.md`) |
 | Element scope narrowed under a compatible bump | registry validation | `validation.version_bump_insufficient` | `REG-012` (`governance/registry-governance.md`) |
 | Fixed-version class reference inside the registry | registry validation | `validation.intra_registry_version_pin` | `REG-013` (`governance/registry-governance.md`) |
-| Pin ahead of, or absent from, the consumed registry ref | estate validation | `validation.pin_unresolvable` | `REG-014` (`governance/registry-governance.md`) |
+| Pin (a `@version` or `@sha256` revision name, ADR-051) ahead of, or absent from, the consumed registry ref | estate validation | `validation.pin_unresolvable` | `REG-014` (`governance/registry-governance.md`) |
 | Promotion whose output diff contradicts the compatibility claim | promotion | `policy.promotion_diff_unapproved` | `REG-016` (`governance/registry-governance.md`) |
 
 Codes are not interchangeable across surfaces. A capability mismatch reported as

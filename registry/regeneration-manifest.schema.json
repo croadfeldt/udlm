@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/regeneration-manifest.schema.json",
   "title": "UDLM Regeneration Manifest (the durable change record of a class change)",
-  "description": "Machine-validatable regeneration manifest — the durable change record a registry class change emits. Shared building blocks are the point of the class system and also its risk: one Base element serves dozens of descendants, so changing it changes every artifact compiled from it, and every downstream consumer still reading an earlier revision starts carrying version debt. ADR-045 Decision 2 rules that the resulting ripple is computed from the class graph and never hand-listed; this record is where that computation lands so it can be read, reviewed, and audited long after the merge. It names the artifact that changed, how the compatibility classifier ruled and by which rule, the full affected set (each artifact by handle, version, and uuid, with what happened to it), the consumers now accruing debt (read from the ADR-044 manifests in registry/consumers/), the standing gate suite that re-proved the regenerated set, and the registry ref the whole change landed under — which is also the only pin an estate can take inside the registry (ADR-045 Decision 3). The per-entity commit log (commit-log-entry.schema.json) cannot carry this: it records one entity's mutation and a fingerprint, whereas a class change is one decision over a computed set of artifacts. In the surface/decide/enable division of labour (docs/design/operational-response-matrix.md), this record is the SURFACE half of the Base/Type class-change row — the platform states the blast radius; the organization's own change policy decides what to do about it.",
+  "description": "Machine-validatable regeneration manifest — the durable change record a registry class change emits. Shared building blocks are the point of the class system and also its risk: one Base element serves dozens of descendants, so changing it changes every artifact compiled from it, and every downstream consumer still reading an earlier revision starts carrying version debt. ADR-045 Decision 2 rules that the resulting ripple is computed from the class graph and never hand-listed; this record is where that computation lands so it can be read, reviewed, and audited long after the merge. It names the artifact that changed, how the compatibility classifier ruled and by which rule, the full affected set (each artifact by handle, version, and digest, with what happened to it), the consumers now accruing debt (read from the ADR-044 manifests in registry/consumers/), the standing gate suite that re-proved the regenerated set, and the registry ref the whole change landed under — which is also the only pin an estate can take inside the registry (ADR-045 Decision 3). The per-entity commit log (commit-log-entry.schema.json) cannot carry this: it records one entity's mutation and a fingerprint, whereas a class change is one decision over a computed set of artifacts. In the surface/decide/enable division of labour (docs/design/operational-response-matrix.md), this record is the SURFACE half of the Base/Type class-change row — the platform states the blast radius; the organization's own change policy decides what to do about it.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -27,7 +27,12 @@
     "uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "RFC 9562 v4 identity of this manifest. A manifest is a point-in-time fact about one change set — it is never edited; a correction is a new manifest that cites this one in metadata.notes."
+      "description": "RFC 9562 v4 identity of this manifest. A manifest is a point-in-time fact about one change set — it is never edited; a correction is a new manifest (its own uuid) that names this one in `supersedes` (the ADR-051 immutable-record family)."
+    },
+    "supersedes": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "OPTIONAL — the uuid of the manifest this record replaces (ADR-051 family rule: an immutable record changes by publishing a NEW record that names its predecessor; the identity-integrity gate refuses in-place edits). The superseded record's bytes remain in the revision store."
     },
     "handle": {
       "type": "string",
@@ -155,8 +160,8 @@
             "description": "The same artifact before the change set. Absent where the artifact is new."
           },
           "disposition": {
-            "enum": ["regenerated", "revalidated_rotated", "revalidated_unchanged"],
-            "description": "What the atomic recompilation did to it (ADR-045 Decision 1). regenerated = a generated flat spec re-rendered from the class graph; revalidated_rotated = an authored Type or Provider Class whose own content changed, so it minted a new uuid and bumped; revalidated_unchanged = an authored artifact that re-validated with no content change and therefore did NOT rotate — the rotation gate's no-op rule."
+            "enum": ["regenerated", "revalidated_bumped", "revalidated_unchanged"],
+            "description": "What the atomic recompilation did to it (ADR-045 Decision 1, on the ADR-051 model). regenerated = a generated flat spec re-rendered from the class graph; revalidated_bumped = an authored Type or Provider Class whose own content changed, so it bumped its version under the publish law (identity uuid frozen; a new digest row lands in the pin manifest); revalidated_unchanged = an authored artifact that re-validated with no content change and therefore did NOT bump — the identity gate's no-op rule."
           },
           "path": {
             "type": "string",
@@ -310,8 +315,8 @@
     "artifact_revision": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifact_kind", "handle", "version", "uuid"],
-      "description": "One artifact at one exact revision. The uuid IS the revision (VERSIONING.md — any content change mints a new one), so handle plus version plus uuid names a thing, a claim about it, and the exact bytes that claim is about.",
+      "required": ["artifact_kind", "handle", "version", "digest"],
+      "description": "One artifact at one exact revision. A published (identity, version) is immutable and its content digest names the exact bytes (ADR-051; VERSIONING.md § \"Identity, version, digest\") — so handle plus version plus digest names a thing, a claim about it, and the exact bytes that claim is about. The digest lives HERE, in the referrer, never in the artifact itself.",
       "properties": {
         "artifact_kind": {
           "enum": [
@@ -333,9 +338,10 @@
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
         },
-        "uuid": {
+        "digest": {
           "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "sha256 over the revision's RFC 8785-canonical form (the pin manifest's recorded value) — the exact-bytes half of the ADR-051 pin grammar."
         }
       }
     }

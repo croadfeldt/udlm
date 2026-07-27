@@ -1,5 +1,6 @@
 record_type: finding_routing_record
-uuid: d08a3920-c574-4f12-a73d-dbe3cb542812
+uuid: ee9f21a7-fea4-462b-bb70-6d02d5a4bd51
+supersedes: d08a3920-c574-4f12-a73d-dbe3cb542812
 handle: findings/example/compute-vm-boot-mode-output
 conforms_to: udlm/0.1
 title: Compute Base 1.1.0 → 1.2.0 was classified additive, but the candidate compilation changes two
@@ -9,12 +10,12 @@ contradicted_claim:
     artifact_kind: base_class
     handle: Compute
     version: 1.2.0
-    uuid: 3394770e-a518-45d5-88f5-0f387bdca215
+    digest: sha256:4d67aab0aa2f4dc3b9f6c110ac8b93ae61ec8dab5e550201dc0d9d90ddcd34ef
   previous:
     artifact_kind: base_class
     handle: Compute
     version: 1.1.0
-    uuid: dda18e8c-32f2-4286-8845-b230c3663031
+    digest: sha256:1917a013c2af98f11fd1196db0eba1b11b8ebc4b9d85c04626c632b64bb47323
   declared_classification: additive
   classified_by: element added (optional element, no carrier invalidated)
   registry_ref:
@@ -51,12 +52,12 @@ evidence:
     - artifact_kind: base_class
       handle: Compute
       version: 1.1.0
-      uuid: dda18e8c-32f2-4286-8845-b230c3663031
+      digest: sha256:1917a013c2af98f11fd1196db0eba1b11b8ebc4b9d85c04626c632b64bb47323
     candidate_revisions:
     - artifact_kind: base_class
       handle: Compute
       version: 1.2.0
-      uuid: 3394770e-a518-45d5-88f5-0f387bdca215
+      digest: sha256:4d67aab0aa2f4dc3b9f6c110ac8b93ae61ec8dab5e550201dc0d9d90ddcd34ef
     dry_run: true
     compared_at: '2026-07-24T09:15:00Z'
 corpus_ref:
@@ -109,3 +110,8 @@ metadata:
       Note what the reporter did not have to disclose to make it actionable — an opaque estate reference,
       output names and change kinds, and a digest were enough; the full diff stayed behind the estate's
       egress gate and was never requested.
+  - at: '2026-07-27T00:00:00Z'
+    author: udlm-maintainers
+    text: Supersedes the original example record (ADR-051 v2-file pattern) — artifact_revision moved
+      from uuid to digest when the identity/version/digest ruling landed; a finding is immutable, so
+      the migration is a new record naming its predecessor, with the prior bytes in the revision store.
