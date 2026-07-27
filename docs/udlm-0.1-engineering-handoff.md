@@ -10,7 +10,7 @@
 
 UDLM is the **data / contract / type** layer — the wire-compatible substrate. It is **not** the orchestrator; the runtime that consumes it is DCM. The boundary is one test (ADR-008): *"could a peer implement this differently and still be valid? Yes → it's DCM (runtime/policy); No → it's UDLM (data/contract)."* Every ambiguity resolves with that question. UDLM 0.1 is the substrate that **enables the 21 release use cases** (`../registry/UDLM-0.1-SCOPE.md` §3); DCM satisfies many success criteria at runtime over a UDLM shape — those are not 0.1 spec work.
 
-**Implement against the `dev` profile.** The architecture and wire contracts are identical across the five profiles; only the required *floor* differs (`registry/instances/profile-*.yaml`). September builds and validates the 21 UCs against **dev**; the `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`../registry/UDLM-0.1-SCOPE.md` §2).
+**Implement against the `dev` profile.** The architecture and wire contracts are identical across the six profiles; only the required *floor* differs (`registry/instances/profile-*.yaml`). September builds and validates the 21 UCs against **dev**; the `sovereign`/`fsi` floors exist so the architecture is provably production-grade, not to be implemented first (`../registry/UDLM-0.1-SCOPE.md` §2).
 
 **Valid-by-construction.** Everything is a typed record that validates against a JSON Schema. If it doesn't validate, it isn't UDLM. The validators are the definition of done (§5).
 

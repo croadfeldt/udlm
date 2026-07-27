@@ -1,6 +1,6 @@
 # UDLM profile-settings index — every profile-governed knob and its one home
 
-**Purpose.** One home per setting. This index lists every **profile-governed** setting (a value that varies across the `minimal | dev | standard | prod | fsi | sovereign` profiles) and the single doc/block that **owns** it. Before you write a per-profile value table, find the setting here and **reference its home** — do not restate the values. This is the settings companion to [`docs/file-index.md`](../docs/file-index.md) and the model in [ADR-015](../docs/adr/ADR-015-settings-and-config-bundles.md); the check `tests/check_single_source.py` flags a profile value table that appears for the same setting in more than one doc.
+**Purpose.** One home per setting. This index lists every **profile-governed** setting (a value that varies across the `homelab | dev | standard | prod | fsi | sovereign` profiles) and the single doc/block that **owns** it. Before you write a per-profile value table, find the setting here and **reference its home** — do not restate the values. This is the settings companion to [`docs/file-index.md`](../docs/file-index.md) and the model in [ADR-015](../docs/adr/ADR-015-settings-and-config-bundles.md); the check `tests/check_single_source.py` flags a profile value table that appears for the same setting in more than one doc.
 
 **The master overview** — the shape of profile scaling (which dimension tightens across profiles) — is the Profile Scaling Table in [`design-principles/design-priorities.md`](../design-principles/design-priorities.md). It is illustrative; the **authoritative per-profile values** live in each setting's owning bundle below.
 
@@ -8,7 +8,7 @@
 
 | Setting | Bundle / owning block | What it governs per profile |
 |---|---|---|
-| `credential.max_lifetime` (per credential type) | `governance/credentials.md` §12.1 (`max_lifetime` block) | how long a credential is valid before rotation (e.g. `dcm_interaction`: minimal PT1H … sovereign PT15M) |
+| `credential.max_lifetime` (per credential type) | `governance/credentials.md` §12.1 (`max_lifetime` block) | how long a credential is valid before rotation (e.g. `dcm_interaction`: homelab PT1H … sovereign PT15M) |
 | `credential.rotation` / algorithm baseline / FIPS level / step-up MFA | `governance/credentials.md` §12.1 + §10 | rotation interval, forbidden-vs-approved algorithm set, FIPS floor, MFA requirement |
 | `credential.callback_token_lifetime` | `contracts/provider-callback-auth.md` §5 | provider-callback token lifetime + pre-expiry rotation |
 | `registry.version_policy` (default) | `governance/registry-governance.md` §4.3 | request-time version resolution default (`latest`/`compatible`/`exact`) |
@@ -22,8 +22,8 @@
 | `time.sync_tolerance` | `contracts/time-and-clock.md` (per ADR-005) | clock-sync tolerance floor |
 | `storage.failure_policy` | `contracts/storage-providers.md` §7 (`STO-002`) | store-failure behaviour (queue / abort / degrade) tightening for fsi/sovereign |
 | `policy.min_lifecycle_scope` | `contracts/policy-contract.md` (profile minimums) | minimum lifecycle scope a compliance-class policy must cover (fsi/sovereign = `all`, cannot skip) |
-| `policy.block_timeout` / override / escalation | `contracts/policy-contract.md` (timeout-behavior block) | block auto-cancel, override, and override-escalation timeouts (e.g. minimal PT48H … sovereign PT4H) |
-| `relationship.max_depth` | `entities/entity-relationships.md` (`REL-021`) | max relationship-graph traversal depth — **distinct from `dependency.max_depth`** (e.g. 25 minimal … 10 sovereign) |
+| `policy.block_timeout` / override / escalation | `contracts/policy-contract.md` (timeout-behavior block) | block auto-cancel, override, and override-escalation timeouts (e.g. homelab PT48H … sovereign PT4H) |
+| `relationship.max_depth` | `entities/entity-relationships.md` (`REL-021`) | max relationship-graph traversal depth — **distinct from `dependency.max_depth`** (e.g. 25 homelab … 10 sovereign) |
 | `provenance.default_level` | `foundations/layering-and-versioning.md` (profile defaults) | default provenance / implementation-posture detail (`full` … `hidden`) |
 | `auth.available_modes` | `governance/auth-providers.md` §7–§8 | which authentication modes are available per profile + per-feature availability |
 | `audit.granularity` / verification / overflow | `observability/universal-audit.md` (`AUD-014/015/021`) | audit granularity (`stage`/`field`), inter-stage verification mode, commit-log overflow policy |

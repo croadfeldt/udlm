@@ -351,7 +351,7 @@ hub_policy_distribution:
   hub_peer_uuid: <uuid>
   distribution_type: push          # Hub pushes on policy change
   auto_approve_from_hub:           # profile-governed; security-first: prod+ always requires review
-    minimal: true
+    homelab: true
     dev: true
     standard: true
     prod: false         # reviewed required even from verified Hub

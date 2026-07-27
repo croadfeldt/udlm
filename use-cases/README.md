@@ -12,7 +12,7 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
 - `binding-surface/` — the typed-outputs (E2) gap class: outputs declared per type, bindings
   contract-checked, fleet coverage queryable, worked-example currency. Born from the 2026-07-24
   registry review finding the output surface systemically inadequate for binding (median: one thin
-  boolean; ~14 of 46 types binder-consumable; 5 empty and silent about why).
+  boolean; ~14 of 48 types binder-consumable; 5 empty and silent about why).
 - `type-standard/` — the rule-36 gate classes beyond outputs: reference discipline (PVD-001),
   adopts-registration parity, relationship-target integrity. Deterministic halves enforced by
   `tests/check_type_standard.py` (baseline ratchet); these UCs keep the classes gap-analyzable.

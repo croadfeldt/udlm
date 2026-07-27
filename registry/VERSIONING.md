@@ -175,8 +175,7 @@ edited or deleted immutable record; a changed nested provider/capability identit
 While the spec is `0.x` the surface is still being **defined**, so changes are *expansion of the v0.x
 surface*, not refinement of a released contract (see "Spec status" above).
 
-**Pre-1.0 we do NOT follow the full versioning rules above.** Those rules (immutable-once-published,
-MAJOR for breaking changes + deprecation window) are the *post-1.0* discipline that protects consumers
+**Pre-1.0 we do NOT follow the full versioning rules above.** Those rules (MAJOR for breaking changes + deprecation window) are the *post-1.0* discipline that protects consumers
 pinned to a released contract — which don't exist yet. While `0.x`:
 
 - Versions still **advance** (we bump the REVISION) so a reader can tell a definition changed, **but a

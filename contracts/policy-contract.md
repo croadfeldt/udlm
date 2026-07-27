@@ -132,7 +132,7 @@ These defaults can be overridden per policy. Profile-governed minimums prevent d
 
 | Profile | Minimum lifecycle scope |
 |---------|------------------------|
-| `minimal`, `dev` | No minimum — any scope permitted |
+| `homelab`, `dev` | No minimum — any scope permitted |
 | `standard`, `prod` | Compliance-class Validation Policy and Governance Matrix must be `all` |
 | `fsi`, `sovereign` | Compliance-class Validation Policy, Governance Matrix, and sovereignty-concern policies must be `all` — cannot be scoped to skip any lifecycle operation |
 

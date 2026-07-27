@@ -84,8 +84,8 @@ breaking change (string to object) could pass as trivial, or with no bump at all
 package's own walkthrough had claimed otherwise. It was fixed and verified before the package
 settled. The reviews also forced one answer where three documents had disagreed on how large a
 bump a breaking change needs; surfaced that the "every change mints a new identifier" rule —
-which the pinning design depends on — was written down nowhere official (it is now, in
-VERSIONING.md); and caught that two use cases were unimplementable until the design said
+which the pinning design then depended on — was written down nowhere official (later
+**superseded by ADR-051**: uuids are frozen identity, pin exactness relocated to `@sha256:` digests + the publish law); and caught that two use cases were unimplementable until the design said
 where pinned old revisions actually live (the registry's git history).
 
 ## Where it stands

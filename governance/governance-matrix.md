@@ -461,7 +461,7 @@ hand-authored field lock (`contracts/policy-contract.md` §10 — `field_locks` 
 | `GMX-001` | The Governance Matrix is the single enforcement point for all cross-boundary data and capability decisions. Parallel enforcement mechanisms (standalone sovereignty checks, standalone accreditation checks) are inputs to the matrix — not independent enforcement paths. |
 | `GMX-002` | Hard rules cannot be relaxed by any downstream rule at any domain level. Hard DENY is absolute. |
 | `GMX-003` | Soft rules establish defaults that can only be tightened by downstream rules. Soft DENY cannot be relaxed to ALLOW by a more-specific rule. |
-| `GMX-004` | Sovereign and classified data classifications carry hard DENY rules for all federation and external provider interactions in all profiles including minimal. This is the one rule that cannot be changed by any configuration. |
+| `GMX-004` | Sovereign and classified data classifications carry hard DENY rules for all federation and external provider interactions in all profiles including homelab. This is the one rule that cannot be changed by any configuration. |
 | `GMX-005` | Every governance matrix evaluation produces an audit record regardless of outcome. |
 | `GMX-006` | Field-level stripping (STRIP_FIELD) is always audited with the field path and the `rule_uuid` that governed the stripping. |
 | `GMX-007` | Profile default matrix rules are soft unless explicitly marked hard. Tenant and resource-type rules can tighten profile defaults but cannot relax hard rules. |

@@ -733,7 +733,7 @@ layer:
     description: "Default DNS configuration for all platform VMs and containers"
     applies_when: "All requests unless consumer declares layer exclusion or tenant has custom-dns tag"
     excludes_when: "Tenant has custom_dns tag; consumer declares explicit layer exclusion"
-    supersedes: []                  # handles of layers this replaces
+    supersedes: []                  # uuids of the layer records this replaces
     conflicts_with: []              # handles of layers this conflicts with — detected at ingestion
 
   # SOURCE OF TRUTH

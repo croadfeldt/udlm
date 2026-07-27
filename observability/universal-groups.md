@@ -339,7 +339,7 @@ Policy inheritance from parent to child Tenant is profile-governed:
 
 | Profile | Default | Meaning |
 |---------|---------|---------|
-| `minimal`, `dev` | `opt_in` | Child Tenants must explicitly adopt parent policies |
+| `homelab`, `dev` | `opt_in` | Child Tenants must explicitly adopt parent policies |
 | `standard`, `prod` | `opt_out` | Parent policies cascade to children unless child excludes |
 | `fsi`, `sovereign` | `opt_in` | Nothing crosses without consent |
 

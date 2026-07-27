@@ -554,7 +554,7 @@ commit_log_capacity:
   max_age: P7D                        # records older than 7d escalate regardless
   on_capacity_exceeded:
     profile_defaults:
-      minimal: alert_and_continue     # availability priority
+      homelab: alert_and_continue     # availability priority
       dev: alert_and_continue
       standard: alert_and_continue
       prod: alert_and_continue

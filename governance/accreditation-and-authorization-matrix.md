@@ -531,7 +531,7 @@ Interaction attempt
 
 Zero trust requires that credentials are scoped to the minimum necessary operation and expire quickly. The interaction-credential **record and its `operation_scope` operation vocabulary are defined once in [credentials.md](credentials.md) §3** (`credential_record`, `dcm_interaction` type) — this section does not restate the wire shape or the operation enum. The zero-trust properties that matter here: the credential is scoped to a single operation + entity + provider, is **non-transferable** (never delegated or relayed), MAY be **IP-bound** for `fsi`/`sovereign`, and is **short-lived** (see the profile guidance below).
 
-**Credential lifetime is profile-governed and single-sourced.** The per-profile `max_lifetime` for the interaction credential (and every credential type) is defined once in the profile config block [`credentials.md`](credentials.md) §12.1 — the `dcm_interaction` row is `minimal PT1H · dev PT30M · standard PT1H · prod PT30M · fsi PT15M · sovereign PT15M`. This section does not restate it. Shorter is the default posture because interaction credentials **auto-refresh**; a compliance overlay may tighten further (§12.3).
+**Credential lifetime is profile-governed and single-sourced.** The per-profile `max_lifetime` for the interaction credential (and every credential type) is defined once in the profile config block [`credentials.md`](credentials.md) §12.1 — the `dcm_interaction` row is `homelab PT1H · dev PT30M · standard PT1H · prod PT30M · fsi PT15M · sovereign PT15M`. This section does not restate it. Shorter is the default posture because interaction credentials **auto-refresh**; a compliance overlay may tighten further (§12.3).
 
 ### 5.4 Zero Trust Posture as a Policy Group Concern Type
 
@@ -689,7 +689,7 @@ The `sovereign` profile enforces the hardest constraint: **sovereign-classified 
 | `ACC-003` | PHI, sovereign, and classified field classifications are immutable once set. No policy may downgrade these classifications. |
 | `ACC-004` | The Data/Capability Authorization Matrix is enforced at every outbound interaction boundary before dispatch. Fields failing the matrix check are stripped (STRIP_FIELD) or the request is blocked (DENY_REQUEST) per the matrix declaration. |
 | `ACC-005` | Peer realizations themselves carry accreditations. A federation peer can verify the remote peer deployment's accreditation before accepting federation messages. |
-| `ACC-006` | `zero_trust_posture` is the sixth Policy Group concern type. Profile defaults are: minimal=none, dev/standard=boundary, prod/fsi=full, sovereign=hardware_attested. |
+| `ACC-006` | `zero_trust_posture` is the sixth Policy Group concern type. Profile defaults are: homelab=none, dev/standard=boundary, prod/fsi=full, sovereign=hardware_attested. |
 
 ---
 

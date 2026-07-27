@@ -298,7 +298,7 @@
           },
           "binding": {
             "type": "string",
-            "description": "The conforming store bound to this contract for this Tenant \u2014 a storage-provider record reference or declared carrier (e.g. the PostgreSQL reference implementation, or git at minimal profile)."
+            "description": "The conforming store bound to this contract for this Tenant \u2014 a storage-provider record reference or declared carrier (e.g. the PostgreSQL reference implementation, or git at homelab profile)."
           },
           "residency_zone": {
             "type": "string",

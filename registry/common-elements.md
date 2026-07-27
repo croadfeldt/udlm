@@ -292,12 +292,12 @@ history rides the store's carrier (git or the four-state store).
 ### 8.3 Field-level provenance is profile-implemented, never profile-optional
 
 E4 field-level provenance and G3 (audit consumes the same record) hold in **every** profile —
-foundations.md: a `minimal` profile implements the architecture with minimal operational
+foundations.md: a `homelab` profile implements the architecture with minimal operational
 overhead; it does not disable it. What varies by profile is the **implementation**:
 
 | Profile | Conforming provenance implementation |
 |---|---|
-| `minimal` / `dev` | **Derivable-carrier provenance**: records live in a git-carried store; field-level provenance entries are *materialized on demand* from the carrier's history by tooling, with the documented mapping — `source: {kind: actor, id: <commit author>}`, `timestamp` = committer instant normalized to UTC, previous value from the parent revision. The carrier must be able to produce a conforming `provenance` object for any record at any time; CI verifies derivability. |
+| `homelab` / `dev` | **Derivable-carrier provenance**: records live in a git-carried store; field-level provenance entries are *materialized on demand* from the carrier's history by tooling, with the documented mapping — `source: {kind: actor, id: <commit author>}`, `timestamp` = committer instant normalized to UTC, previous value from the parent revision. The carrier must be able to produce a conforming `provenance` object for any record at any time; CI verifies derivability. |
 | `standard` / `prod` | Materialized `provenance` written at assembly/realization time (DCM writes, UDLM carries). |
 | `fsi` / `sovereign` | Materialized provenance **plus** the tamper-evident audit chain linkage (`audit.log_head`, AUD-001/002). |
 
