@@ -1,0 +1,48 @@
+uuid: uc-7d0222fd-0a9f-4db2-9315-8c67f1c841c4
+handle: intent-fulfillment/fulfillment-policy-is-consumer-declared
+version: 1.0.0
+scenario:
+  description: 'The fulfillment policy is the consumer''s to declare on the intent: best_effort (the default
+    — converge what you can, surface the rest) or all_or_nothing (readiness barrier, deferred atomic activation).
+    The same multi-resource intent, submitted under each, behaves differently and legitimately: best_effort
+    partially realizes and surfaces the shortfall; all_or_nothing holds everything until all-ready. Neither
+    is a defect; the platform enables the consumer''s choice and never imposes one.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  intent: Have the consumer declare best_effort or all_or_nothing on the intent, with the default being
+    best_effort and each producing its correct distinct behavior
+  success_criteria:
+  - The fulfillment policy is a declared property of the intent, defaulting to best_effort when unspecified
+  - The same intent under best_effort partially realizes + surfaces; under all_or_nothing holds until
+    all-ready
+  - Both outcomes are correct — the platform enables the choice and judges neither (surface->decide->enable)
+  - The declared policy is recorded and drives the barrier/convergence behavior deterministically
+  - An unspecified policy is treated as best_effort, not as an error
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: composite_service
+    policy_complexity: multiple_interacting
+    provider_landscape: multiple_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: fulfillment policy is consumer-declared; default best_effort; enable-not-judge
+  - domain: data
+    interaction: the same intent yields different legal realized states by policy
+  - domain: audit
+    interaction: the declared policy and resulting behavior are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: intent-fulfillment-2026-07-27
+  timestamp: '2026-07-27T16:00:00Z'
+tags:
+- hammer
+- intent-fulfillment
+- fulfillment-policy
+- consumer-declared
+- enable-not-judge

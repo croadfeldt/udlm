@@ -1,0 +1,48 @@
+uuid: uc-896a246d-6102-454b-b7f4-847661bca84c
+handle: intent-fulfillment/silent-partial-without-surfacing-refused
+version: 1.0.0
+scenario:
+  description: 'A realization completes a multi-resource intent partially and reports the shortfall ONLY
+    as a structured partial_failures field, with no warning surfaced to the consumer — who can miss it
+    entirely and believe their intent was fully satisfied. This is refused as insufficient surfacing:
+    the platform did what was asked, but an unsatisfiable intent that the consumer is not actively told
+    about is a silent failure. A field is not a signal.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  intent: Refuse a partial realization whose shortfall is expressed only as a missable field and never
+    surfaced to the consumer as an actionable warning
+  success_criteria:
+  - A partial realization that surfaces its shortfall only as a structured field (no warning) is refused
+    as insufficient surfacing
+  - 'The required surface is an actionable warning: what was not realized, why, and how to resolve it'
+  - The refusal is of the SURFACING, not the partial realization itself (best_effort partial is correct)
+  - '''The consumer could have read the field'' is explicitly not a sufficient defense'
+  - The surfacing requirement holds on every partial-fulfillment path, not just the common one
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: composite_service
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: internal_audit
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: surfacing an unsatisfiable intent is mandatory, not optional; a field is not a signal
+  - domain: data
+    interaction: the warning is a first-class output, distinct from the partial_failures record
+  - domain: audit
+    interaction: the missing-surface refusal is recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: intent-fulfillment-2026-07-27
+  timestamp: '2026-07-27T16:00:00Z'
+tags:
+- hammer
+- intent-fulfillment
+- surfacing
+- must-reject
+- intent-requirement

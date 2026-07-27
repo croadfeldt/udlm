@@ -1,0 +1,47 @@
+uuid: uc-847f6e12-15db-4a34-b65f-221c4d0fb98b
+handle: intent-fulfillment/all-or-nothing-permanent-refusal-blocks-all
+version: 1.0.0
+scenario:
+  description: An all_or_nothing intent contains one member that is permanently refused (sovereignty egress
+    violation). Because the readiness barrier requires ALL members and this one can never reserve, the
+    whole intent cannot activate — and unlike a transient blocker, waiting will not help. The platform
+    refuses the intent immediately (does not hold it pending forever), naming the offending member, the
+    permanent reason, and that all_or_nothing means the whole intent is blocked by it. Nothing is realized.
+  actor:
+    persona: platform-engineer
+    profile: standard
+  intent: Refuse an all_or_nothing intent immediately when any member is permanently refused, naming the
+    member and that the barrier blocks the whole intent
+  success_criteria:
+  - A permanent refusal on any member of an all_or_nothing intent refuses the whole intent
+  - The refusal is immediate — the intent is not held pending forever on an unsatisfiable member
+  - The refusal names the offending member, the permanent reason, and the all_or_nothing coupling
+  - No member is realized (the barrier held; nothing partially activated)
+  - A transient blocker on the same intent would instead wait (converge) — the distinction is the classification
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: hard_dependencies
+    policy_complexity: governance_matrix_enforcement
+    provider_landscape: single_eligible
+    governance_context: sovereignty_enforced
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: all_or_nothing + permanent refusal = whole-intent refusal, immediate
+  - domain: data
+    interaction: no member realized; barrier held
+  - domain: audit
+    interaction: the blocking member and the coupling are named
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: intent-fulfillment-2026-07-27
+  timestamp: '2026-07-27T16:00:00Z'
+tags:
+- hammer
+- intent-fulfillment
+- all-or-nothing
+- must-reject
+- permanent-refusal
