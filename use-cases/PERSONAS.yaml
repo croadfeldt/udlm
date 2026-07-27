@@ -1,0 +1,88 @@
+# Canonical persona set — the single source of truth for `scenario.actor.persona`.
+#
+# Why this file exists: the persona a use case is written from was a free string, enforced
+# nowhere, and had drifted to 12 distinct values across udlm + dcm (auditor vs compliance-auditor
+# vs compliance-officer; storage-admin/individual-developer singletons; sovereign-tenant-admin vs
+# tenant-admin). A DAV-private persona list would be the same fork DIM-001 just closed for the
+# dimension vocabulary, under a different name. This publishes the canonical set the model already
+# recognizes (docs/flows/by-persona.md) as a closed, single-sourced, CI-gated contract (PER-001),
+# so a consumer analyzing "from every stakeholder perspective" reads ONE list, not its own.
+#
+# Each persona carries `objectives`: what a conforming spec must give that role — the platform
+# DEMANDS the persona makes. These are the per-lens analysis targets. Note the pleasing circularity
+# (DAV, 2026-07-27): ADR-003's own refusal-contract elements ARE implicit persona demands —
+# typed→platform-engineer, actionable→application-team-member, non-leaking→security-officer,
+# auditable→compliance-auditor, whole→application-team-member. The contract was multi-perspective
+# from the start; only a single-lens analysis prompt hid it.
+#
+# Provenance: docs/flows/by-persona.md (the 5 authored roles) + the high-frequency, clearly-distinct
+# roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst). Mirror this file
+# byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
+version: "1.0.0"
+
+personas:
+  - id: solution-architect
+    framing: "an architect decomposing a whole architecture into ordered, portable resource requests"
+    objectives:
+      - "a whole architecture decomposes into typed resources with their dependency edges preserved"
+      - "portability holds — the same intent realizes across providers without a rewrite"
+
+  - id: application-team-member
+    framing: "an application owner whose team requests and consumes platform resources"
+    objectives:
+      - "I ask in portable terms and the system realizes it — no provider-native detail leaks up to me"
+      - "an unsatisfiable intent is surfaced to me, not buried in a field (actionable — ADR-003)"
+      - "a partial outcome is a whole, coherent result, never a silent half-realization (whole — ADR-003)"
+
+  - id: platform-operator
+    framing: "an operator modeling, registering, and running the estate"
+    objectives:
+      - "the dependency graph and realization ordering are first-class data I can query, not tribal knowledge"
+      - "a broken dependency surfaces with its blast radius before realization, naming the root"
+
+  - id: platform-engineer
+    framing: "an engineer building on and running day-2 of the platform"
+    objectives:
+      - "typed, stable error contracts I can branch on (typed — ADR-003)"
+      - "the dependency model distinguishes request vs operational natures (ADR-052)"
+
+  - id: sre
+    framing: "an SRE operating the running platform"
+    objectives:
+      - "defined enforcement points — no check-then-act races (ADR-011 validate-and-reserve)"
+      - "cascades are bounded and observable — a failure's reach is computed, not discovered in an incident"
+
+  - id: compliance-auditor
+    framing: "an auditor validating platform behavior after the fact"
+    objectives:
+      - "every decision and refusal leaves a tamper-evident record naming the identities and the deciding policy (auditable — ADR-003)"
+      - "field-level provenance traces every realized value to its origin"
+      - "audit integrity is provable — RFC 9162 Merkle inclusion/consistency proofs, not assertion (AUD-006)"
+
+  - id: security-officer
+    framing: "a security officer governing data exposure and trust boundaries"
+    objectives:
+      - "no reference or value leaves a boundary it was not released for (non-leaking — ADR-003; the policy information firewall)"
+      - "credential material is referenced, never carried inline in portable data"
+
+  - id: tenant-admin
+    framing: "a tenant administrator governing isolation and quota for a tenant"
+    objectives:
+      - "tenant isolation holds — no cross-tenant read or dispatch without an explicit, audited authorization"
+      - "quota and override are declared data, enforced at defined points, not ad hoc"
+
+  - id: finance-analyst
+    framing: "a finance analyst accountable for cost and usage"
+    objectives:
+      - "cost and usage are adopted from a standard (FOCUS) by reference, joinable to realized resources (T5)"
+      - "spend attributes to tenant, resource, and time without a bespoke parallel cost model"
+
+# Drift → canonical. A use-case `scenario.actor.persona` may carry any key here; the PER-001 gate
+# resolves it to the canonical id. Confident folds are unmarked; the three PROVISIONAL folds are
+# single-use/variant values the maintainer should confirm or split into their own persona.
+folded_aliases:
+  auditor: compliance-auditor              # by-persona.md names the role "compliance-auditor / auditor"
+  compliance-officer: compliance-auditor   # single-use drift synonym
+  individual-developer: application-team-member  # PROVISIONAL (single-use) — confirm, or split as a distinct self-serve developer lens
+  storage-admin: platform-operator         # PROVISIONAL (single-use) — confirm, or split as a distinct storage-operator lens
+  sovereign-tenant-admin: tenant-admin     # PROVISIONAL — sovereignty may warrant its own lens; confirm fold vs split

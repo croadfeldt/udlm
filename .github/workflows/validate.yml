@@ -37,6 +37,8 @@ jobs:
       - run: python3 tests/check_derivability.py
       # UC dimension vocabulary — closed set, single-sourced (2026-07-28 sweep F1)
       - run: python3 tests/check_uc_dimensions.py
+      # UC persona vocabulary — canonical persona set, single-sourced (PER-001)
+      - run: python3 tests/check_uc_personas.py
       - run: python3 tests/check_definition_single_source.py
       # Rule-ID single-source: every normative rule-ID prefix must be registered in
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,
