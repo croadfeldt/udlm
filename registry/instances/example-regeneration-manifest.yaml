@@ -1,0 +1,125 @@
+record_type: regeneration_manifest
+uuid: 3c72e0c0-715d-4126-a143-5eeae43cb597
+handle: regeneration/example/compute-base-scope-narrowing
+conforms_to: udlm/0.1
+title: Compute Base Class 1.2.0 → 2.0.0 — `firmware` moved Base → Type scope (breaking, no shape change)
+registry_ref:
+  commit: 0a1b2c3d4e5f60718293a4b5c6d7e8f900112233
+  branch: main
+change:
+  artifact:
+    artifact_kind: base_class
+    handle: Compute
+    version: 2.0.0
+    uuid: 956304b9-7fee-45b6-9418-0dd79713d21d
+  previous:
+    artifact_kind: base_class
+    handle: Compute
+    version: 1.2.0
+    uuid: 3394770e-a518-45d5-88f5-0f387bdca215
+  summary: The `firmware` element moved out of the Compute Base Class and into the Compute.VirtualMachine
+    Type Class. No field was added, removed, or reshaped — the element's scope narrowed, so everything
+    that inherited `firmware` from the Base Class no longer carries it portably.
+classification:
+  compatibility: breaking
+  classified_by: element-scope narrowing (ADR-045 Decision 4 — portability derives from scope position,
+    so moving an element to a narrower scope shrinks every carrier's portable surface)
+  required_bump: major
+  declared_bump: major
+  reasons:
+  - level: major
+    rule: element-scope narrowing
+    detail: element `firmware` moved from Base scope to Type scope on Compute.VirtualMachine; carriers
+      outside that Type Class lose it from their portable surface
+  - level: minor
+    rule: element added
+    detail: element `firmware_settings` added at Type scope alongside the moved element
+affected_artifacts:
+- artifact:
+    artifact_kind: type_class
+    handle: Compute.VirtualMachine
+    version: 1.1.0
+    uuid: 9bb8d377-c013-4e32-8432-9860b23c85dd
+  previous:
+    artifact_kind: type_class
+    handle: Compute.VirtualMachine
+    version: 1.0.0
+    uuid: 2478bde3-db9b-4c97-86de-a459340744d3
+  disposition: revalidated_rotated
+  reached_via:
+  - Compute
+  - Compute.VirtualMachine
+- artifact:
+    artifact_kind: generated_type_spec
+    handle: Compute.VirtualMachine
+    version: 0.7.0
+    uuid: ceb44bd1-e6c6-4b0a-9b9a-5a8442bcd56c
+  previous:
+    artifact_kind: generated_type_spec
+    handle: Compute.VirtualMachine
+    version: 0.6.4
+    uuid: dba568c8-78e7-4239-8929-5917305cce17
+  disposition: regenerated
+  path: registry/resource-types/compute/compute.virtual-machine.json
+  reached_via:
+  - Compute
+  - Compute.VirtualMachine
+- artifact:
+    artifact_kind: provider_class
+    handle: Compute.VirtualMachine.ExampleHypervisor
+    version: 1.0.1
+    uuid: 6691998b-62f6-4259-8982-3ddd34e0559f
+  disposition: revalidated_unchanged
+  reached_via:
+  - Compute
+  - Compute.VirtualMachine
+  - Compute.VirtualMachine.ExampleHypervisor
+consumer_debt:
+- consumer: control-plane-servicetype-gen
+  manifest_ref: registry/consumers/control-plane-servicetype-gen.yaml
+  handle: Compute.VirtualMachine
+  noted_version: 0.6.2
+  registry_version: 0.7.0
+  debt: behind
+  distance: one minor behind, across a breaking classification
+- consumer: graph-explorer
+  manifest_ref: registry/consumers/graph-explorer.yaml
+  handle: Compute.VirtualMachine
+  debt: version_undeclared
+gate_suite:
+  runner: udlm-ci (.github/workflows/validate.yml)
+  ran_at: '2026-07-25T18:40:00Z'
+  gates:
+  - gate: registry/tools/validate.py
+    result: passed
+    covered: 3
+  - gate: tests/validate_registry.py
+    result: passed
+    covered: 1
+  - gate: registry/tools/fuzz_type_specs.py
+    result: passed
+    covered: 1
+  - gate: tests/ci_compat_gate.py
+    result: passed
+    covered: 1
+  - gate: tests/check_uuid_rotation.py
+    result: passed
+    covered: 3
+  - gate: registry/tools/generate_type_catalog.py --check
+    result: passed
+decision_refs:
+- ADR-045
+emitted_at: '2026-07-25T18:41:12Z'
+provenance:
+  enumerator: registry/tools/blast_radius.py
+  enumerator_version: 0.1.0
+  at: '2026-07-25T18:41:12Z'
+metadata:
+  display_name: Compute Base scope-narrowing regeneration manifest (example)
+  notes:
+  - at: '2026-07-25T18:41:12Z'
+    author: udlm-maintainers
+    text: Worked example authored ahead of the class tree itself — the class handles follow the shape
+      the realization plan lands in registry/classes/, while the generated spec and the consumer manifests
+      it cites are the real ones in this repo, so the wiring can be read end to end. The change it
+      depicts is illustrative.

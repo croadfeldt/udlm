@@ -243,6 +243,7 @@ the spec version at the 0.1→1.0 cutover (VERSIONING.md). The baseline includes
 
 - The record schemas — `realized-entity`, `dcm-group`, `policy`, `catalog-item`,
   `layer`, `decision-record`, `audit-record`, `audit-leaf`, `commit-log-entry`,
+  `regeneration-manifest`, `finding-routing-record`,
   `function-capability-matrix`, `provider-adopted-standards`, and the
   `resource-type-spec` meta-schema.
 - The identifier forms (`identifier-scheme.md`: UUID, handle, reference) and the

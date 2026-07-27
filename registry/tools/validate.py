@@ -38,6 +38,8 @@ AUDIT_RECORD_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-record.s
 COMMIT_LOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "commit-log-entry.schema.json").read_text()))
 AUDIT_LEAF_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-leaf.schema.json").read_text()))
 DECISION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "decision-record.schema.json").read_text()))
+REGENERATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "regeneration-manifest.schema.json").read_text()))
+FINDING_ROUTING_VALIDATOR = Draft202012Validator(json.loads((ROOT / "finding-routing-record.schema.json").read_text()))
 ACCREDITATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "accreditation.schema.json").read_text()))
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
@@ -432,6 +434,16 @@ def pick_instance(doc):
         return AUDIT_LEAF_VALIDATOR, lambda d: f"audit_leaf idx={d['leaf_index']} {d['stage']} {d['leaf_uuid'][:8]}"
     if isinstance(doc, dict) and doc.get("record_type") == "decision_record":
         return DECISION_VALIDATOR, lambda d: f"decision_record {d.get('handle', d['title'][:24])} [{d['state']}] {d['uuid'][:8]}"
+    if isinstance(doc, dict) and doc.get("record_type") == "regeneration_manifest":
+        return (REGENERATION_VALIDATOR,
+                lambda d: f"regeneration_manifest {d['change']['artifact']['handle']} "
+                          f"[{d['classification']['compatibility']}] {d['uuid'][:8]} "
+                          f"({len(d['affected_artifacts'])} affected, {len(d['consumer_debt'])} in debt)")
+    if isinstance(doc, dict) and doc.get("record_type") == "finding_routing_record":
+        return (FINDING_ROUTING_VALIDATOR,
+                lambda d: f"finding_routing_record {d['contradicted_claim']['artifact']['handle']} "
+                          f"[{d['status']}] {d['uuid'][:8]} "
+                          f"({len(d['evidence']['diff_summary']['changed_outputs'])} changed outputs)")
     if isinstance(doc, dict) and doc.get("record_type") == "accreditation":
         return ACCREDITATION_VALIDATOR, lambda d: f"accreditation {d.get('handle', d['framework'])} [{d['status']}] {d['uuid'][:8]}"
     if isinstance(doc, dict) and (doc.get("term_type") == "TaxonomyTerm" or "terms" in doc):
