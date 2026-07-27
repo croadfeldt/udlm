@@ -1,9 +1,9 @@
 # UDLM ADR-041: Policy as information firewall — boundary mediation, structural + value inspection, and the cross-domain guard
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); companion to ADR-038 §references-context + the projection mechanism
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); companion to ADR-054 (references-context + the projection mechanism), which sits on ADR-038's scoped-Class paradigm
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-038 (scoped-Class paradigm; the projection mechanism + `PROJ-P1..P5`); ADR-012 (data-references,
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-P1..P5`, to which this adds `PROJ-P6`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
 dual anchor); ADR-025 (DCM realization); ADR-008 (the UDLM/DCM peer test); ADR-011 (sovereignty & residency);
 `contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
@@ -15,7 +15,7 @@ and dialing up to a **sanitizing cross-domain guard** for high-assurance zones. 
 second role — assembly / constraint / fill — which is not firewalling.
 
 ## Context
-The projection mechanism (ADR-038 §references-context, PR #183) lets a resource pull a specific field from a
+The projection mechanism (ADR-054, PR #183) lets a resource pull a specific field from a
 related entity into its assembly by traversing a classified edge (`self.located-in.network.fabric_id`). That
 raised the governance question directly: **does data entering the pipeline by reference or projection bypass or
 hide from policy?** Answering it precisely required naming what policy *is* when data flows — and the answer
@@ -112,7 +112,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
      `dc-east.network.*` while denying `dc-east.location.residency` to a foreign-authority destination — a
      partial release / **firewall rule with a projection mask**.
 
-6. **The projection invariants are this firewall applied to a projection (`PROJ-P1..P6`).** ADR-038 states
+6. **The projection invariants are this firewall applied to a projection (`PROJ-P1..P6`).** ADR-054 states
    `PROJ-P1..P5`; this ADR adds the ingress half the directional model requires:
    - `PROJ-P1` resolve-before-policy · `PROJ-P2` **egress** gate at the target · `PROJ-P3` mandatory provenance ·
      `PROJ-P4` re-run policy on replay · `PROJ-P5` governed edge-nature.
@@ -170,7 +170,7 @@ crossing.
 - Policy review inherits the **firewall/guard discipline and failure-mode catalog** — default-deny at trust
   boundaries, least-privilege rules, rule-shadowing, the any-any anti-pattern, exfil-via-allowed-channel.
 - The **reference/edge graph becomes a first-class policy input**; this depends on the classified-edge model
-  (ADR-038 §references-context / the pending edge reframe).
+  (ADR-054 references-context / the pending edge reframe).
 - **Field-granular egress / partial-release** is the one net-new mechanism — a firewall rule with a
   projection mask, expressed on the §10 coordinate.
 - Re-convergence requires extending **provenance from spec values to policy inputs**.
