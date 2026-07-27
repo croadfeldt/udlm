@@ -78,12 +78,18 @@ elements:
     optional: true
     state: canonical
     description: >-
-      The requested storage performance class as a GOVERNED vocabulary (ADR-038 §2), not an inline
-      enum: the canonical terms are `storage_tier` reference-data records (standard / performance /
-      archive, curated proposed→canonical). Rigor is profile-driven (ADR-007 + the ADR-039 intake
-      ladder): a homelab instance MAY write a bare string (`storage_tier: performance`); a sovereign
-      instance MUST resolve to a canonical term by `data_reference`. The element declares the
-      vocabulary kind; the profile decides bare-vs-reference.
+      The requested storage performance class — the neutral `tier` of ADR-036's requirements
+      descriptor, as a GOVERNED vocabulary (ADR-038 §2), not an inline enum or a vendor class name.
+      The canonical terms are `storage_tier` reference-data records (standard / performance / archive,
+      curated proposed→canonical), and each term DENOTES A REQUIREMENTS FLOOR — its canonical
+      definition carries the minima it means (e.g. performance → min_iops 20000, min_throughput 500).
+      Selection precedence (ADR-036, ruled 2026-07-27): name-selectable but requirements-authoritative
+      — a resource may be selected by tier name alone, but explicit `storage` requirements, if given,
+      drive the match, and a tier name resolves to the same floor. One provider's "SSD" and another's
+      "performance" both qualify iff they meet the floor (portability retained); the provider records
+      its chosen native class as a realized output, never intent. Rigor is profile-driven (ADR-007 +
+      the ADR-039 intake ladder): homelab MAY write a bare string; sovereign MUST resolve to a
+      canonical term by `data_reference`.
     schema:
       type: string
     values:
