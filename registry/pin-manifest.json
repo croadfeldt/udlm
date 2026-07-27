@@ -1,0 +1,557 @@
+{
+ "accreditation:accreditations/providers/full-stack-sp/region-us-ca": {
+  "current": "1.0.0",
+  "path": "registry/instances/accreditation-region-us-ca.yaml",
+  "versions": {
+   "1.0.0": "sha256:826b53b98769c63f416f6e7f8e6a761ddd9b6dfd403e2825974168763eacd793"
+  }
+ },
+ "accreditation:accreditations/providers/full-stack-sp/state-mn-containers": {
+  "current": "1.0.0",
+  "path": "registry/instances/accreditation-state-mn.yaml",
+  "versions": {
+   "1.0.0": "sha256:c25c5b18fa269d48b801b90b23e1029de6e2a647c97f3905b74ccbf56508f496"
+  }
+ },
+ "catalog_item:org/catalog/example-three-tier-app": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-catalog-item.yaml",
+  "versions": {
+   "1.0.0": "sha256:6e0a318d621b3e431a344c12c66b3718728db702c6c4a5c30bb05915658c74ea"
+  }
+ },
+ "decision_record:ADR-AEP-001": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-aep-alignment.json",
+  "versions": {
+   "1.0.0": "sha256:7bb710ca9f8d031f656f19c4ff1c8e2c98d323778256b28e1d5b28e68723d0f7"
+  }
+ },
+ "decision_record:ADR-COST-001": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-cost-metering-placement.json",
+  "versions": {
+   "1.0.0": "sha256:663ddfefc1a3473ab2d3086bb3f1011253734e533bea3e29b9b5287b6f7ee17d"
+  }
+ },
+ "decision_record:ADR-COST-002": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-cost-metering-linkage.json",
+  "versions": {
+   "1.0.0": "sha256:6a3f8c4dd62752a4eba63cb7732134309a822187a7f2ab4a337db15622d0911e"
+  }
+ },
+ "decision_record:ADR-EXAMPLE-001": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-decision-record.yaml",
+  "versions": {
+   "1.0.0": "sha256:987e9a90db4d5ac1c855ad1f5600da0069b30469f55e672d1038f0a000ac2acd"
+  }
+ },
+ "decision_record:ADR-PROV-001": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-provider-dispatch-role.json",
+  "versions": {
+   "1.0.0": "sha256:836e080fbf35e324a494c94c7dde1d0a4a1b65b9891701a108943a0895d1c048"
+  }
+ },
+ "decision_record:ADR-PROV-002": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-provider-capabilities-categories.json",
+  "versions": {
+   "1.0.0": "sha256:42895ad225b7bd7b83f96f56a20ba474ed6347c42d452f99a096e0c986e8a75e"
+  }
+ },
+ "decision_record:ADR-PROV-003": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-provider-capability-admission.json",
+  "versions": {
+   "1.0.0": "sha256:8c08a67fd430352334ab466ce7d25375c81f735dbb2333c91ee367e62f07a8a5"
+  }
+ },
+ "decision_record:ADR-PROV-004": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-resource-type-extension.json",
+  "versions": {
+   "1.0.0": "sha256:c5c7367b5c84e82c36e5bd4401392b5c9da638faf1558a9cb4f76b6b020a1b20"
+  }
+ },
+ "decision_record:ADR-RBAC-001": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-dcm-rbac-function-matrix.json",
+  "versions": {
+   "1.0.0": "sha256:48a4c97f1be7298561642a4f63c8b17096875f9643029172ab2954db42da39a6"
+  }
+ },
+ "decision_record:ADR-UDLM-DCM-001": {
+  "current": "1.0.0",
+  "path": "registry/instances/adr-udlm-dcm-boundary.json",
+  "versions": {
+   "1.0.0": "sha256:5612aea8fb0a5c72387a455b960fd09b69cc98dfb62578bea8e395a8800fefbc"
+  }
+ },
+ "layer:base/rack-network-defaults": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-layer-multidoc.yaml",
+  "versions": {
+   "1.0.0": "sha256:b9a7d5f74419ab1ac85d44610dff406a057f20e5c976d0948858ac57d35d3133"
+  }
+ },
+ "layer:intermediate/app-tier/network-binding": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-layer-referencing.yaml",
+  "versions": {
+   "1.0.0": "sha256:a4b4b8bd5e94e6d54d5a12d236dfa56742d7815e68595c5855f1a38ef68d45a1"
+  }
+ },
+ "layer:intermediate/dc-alpha/rack-a12": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-layer-multidoc.yaml",
+  "versions": {
+   "1.0.0": "sha256:e80717d50704df4ad9cb5473e94ad8d19714840dd6d4865e3fbfa93f48169cfe"
+  }
+ },
+ "layer:intermediate/frontend/profile-binding": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-layer-referencing-app-profile.yaml",
+  "versions": {
+   "1.0.0": "sha256:6ab1a045486c3992cad9ebf0862269ad2c7073806416bbbc0ad465e34b5ed640"
+  }
+ },
+ "layer:org-eu-hardening": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-layer-intermediate.yaml",
+  "versions": {
+   "1.0.0": "sha256:b5f35895982f596e91f546339cf1f8b487469f7dc91f59c19427f4c1e16106d6"
+  }
+ },
+ "layer:platform/app-profiles/web-tier": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-reference-data-app-profile.yaml",
+  "versions": {
+   "1.0.0": "sha256:420c22b14761a9ad1c26ff4c08eb24512507d1a45e5a2026e84d9062d7c5a167"
+  }
+ },
+ "layer:platform/network-zones/dmz-restricted": {
+  "current": "2.0.0",
+  "path": "registry/instances/example-reference-data-network-zone-v2.yaml",
+  "versions": {
+   "1.0.0": "sha256:fb48e1fe5152d00b857f44358a85da08ed723b018b85c48b9106fb4b2d104f79",
+   "2.0.0": "sha256:9027444fb16d3f7510d27cde621f7cf7d739e7c45fa9bce7a502e7776f2747cf"
+  }
+ },
+ "policy:eu-data-residency-gate": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-policy.yaml",
+  "versions": {
+   "1.0.0": "sha256:25a8011533e471bd06656b7f227dd6d435a0f04eb550104d1ccabef61702179b"
+  }
+ },
+ "policy_profile:udlm/profile/dev": {
+  "current": "1.0.0",
+  "path": "registry/instances/profile-dev.yaml",
+  "versions": {
+   "1.0.0": "sha256:32706409af6b20539fd63010cee1ee857d134ff380360d8944a4f2cd8a1f3acf"
+  }
+ },
+ "policy_profile:udlm/profile/fsi": {
+  "current": "1.0.0",
+  "path": "registry/instances/profile-fsi.yaml",
+  "versions": {
+   "1.0.0": "sha256:740e7dfdcad458ce26c969be99fb416ca89a73e4209692d24f019f92b62ca216"
+  }
+ },
+ "policy_profile:udlm/profile/homelab": {
+  "current": "1.0.0",
+  "path": "registry/instances/profile-homelab.yaml",
+  "versions": {
+   "1.0.0": "sha256:b762d0be6a460046bf0c85406064b999d4122b98cf9f08d56c3b1b88ce5961c3"
+  }
+ },
+ "policy_profile:udlm/profile/prod": {
+  "current": "1.0.0",
+  "path": "registry/instances/profile-prod.yaml",
+  "versions": {
+   "1.0.0": "sha256:a99d96366d70190286aca7b9a28f658d0e2eff315c72a793a5daa748f3d187f6"
+  }
+ },
+ "policy_profile:udlm/profile/sovereign": {
+  "current": "1.0.0",
+  "path": "registry/instances/profile-sovereign.yaml",
+  "versions": {
+   "1.0.0": "sha256:0ba6fa755296fecd32463ca5b53c72dcc9a40190e69ba346ac59d9f01152a5f6"
+  }
+ },
+ "policy_profile:udlm/profile/standard": {
+  "current": "1.0.0",
+  "path": "registry/instances/profile-standard.yaml",
+  "versions": {
+   "1.0.0": "sha256:945645c1593b2edf248b0b4c6f4aed300b29ace86c2a7038e17aa632f5c8651d"
+  }
+ },
+ "provider:cost-management-sp": {
+  "current": "0.1.0",
+  "path": "registry/providers/information/cost-sp.json",
+  "versions": {
+   "0.1.0": "sha256:c3a4a6311c09a16a9715a77a0358b6dbeae4318746dadc7697045487945167d6"
+  }
+ },
+ "provider:full-stack-sp": {
+  "current": "0.1.0",
+  "path": "registry/providers/service/full-stack-sp.json",
+  "versions": {
+   "0.1.0": "sha256:51554ba4c131ce13ef9fad37d7ed9af5e7413f55203175fe37cbafe51aa926d3"
+  }
+ },
+ "resource_grouping:org/resource-group/example-orders-deployment": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-resource-group.yaml",
+  "versions": {
+   "1.0.0": "sha256:497e2397db033d4bdd26edb4debf6cb822e0a0450819e5242e259070680e1b9c"
+  }
+ },
+ "tenant_boundary:org/tenant/example-payments": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-tenant.yaml",
+  "versions": {
+   "1.0.0": "sha256:6cb429e726e0365b33e6ac19b4f63151f49bd6de3b310fc0ca48ac8eebc77b7d"
+  }
+ },
+ "type:Access.IdentityEscrow": {
+  "current": "0.1.1",
+  "path": "registry/resource-types/access/access.identity-escrow.json",
+  "versions": {
+   "0.1.1": "sha256:f57ba92461fc8524b50197806ee61c99b7bafa4484608bb075269af8869fb2f3"
+  }
+ },
+ "type:Automation.Job": {
+  "current": "0.5.3",
+  "path": "registry/resource-types/automation/automation.job.json",
+  "versions": {
+   "0.5.3": "sha256:c4e0c8590bc5fc1df25faf89a7a6e885674e687d8f9d756cf55f773a7c382d07"
+  }
+ },
+ "type:Capability": {
+  "current": "0.2.1",
+  "path": "registry/resource-types/knowledge/capability.json",
+  "versions": {
+   "0.2.1": "sha256:52ff5af2875712d89c7eea8265884ca7988411db83476e0aea4338a2add00966"
+  }
+ },
+ "type:Compute.BareMetalHost": {
+  "current": "0.7.0",
+  "path": "registry/resource-types/compute/compute.bare-metal-host.json",
+  "versions": {
+   "0.7.0": "sha256:ab73ecadc6994ea82ca0d3515809c369250859a58f5ade144ffcf97e489c991c"
+  }
+ },
+ "type:Compute.Cluster": {
+  "current": "0.4.4",
+  "path": "registry/resource-types/compute/compute.cluster.json",
+  "versions": {
+   "0.4.4": "sha256:9ffd39423da92445d258c7f65b97d4297d7d4cf57d09112e004950fd5f6bb823"
+  }
+ },
+ "type:Compute.Container": {
+  "current": "0.5.3",
+  "path": "registry/resource-types/compute/compute.container.yaml",
+  "versions": {
+   "0.5.3": "sha256:29907df2e288fa5f975674597e9853c53d02cd2adf29d561bec0286529b6fb8e"
+  }
+ },
+ "type:Compute.VirtualMachine": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-layer-base.yaml",
+  "versions": {
+   "0.6.4": "sha256:fa6d189bfa3ded29c13c753f62c0879b2daf6b7756fa52b145fbd9486ae61073",
+   "1.0.0": "sha256:a5a2471d0755a7f585822e5bd9c632405642b64f1cbba18f95324b27d1a8a147"
+  }
+ },
+ "type:Data.Database": {
+  "current": "0.4.2",
+  "path": "registry/resource-types/data/data.database.json",
+  "versions": {
+   "0.4.2": "sha256:9179520d8a077400930f5f41971789bba82dd2f1dfa55c32f91f844a263e5b62"
+  }
+ },
+ "type:Facility.Location": {
+  "current": "0.3.1",
+  "path": "registry/resource-types/facility/facility.location.yaml",
+  "versions": {
+   "0.3.1": "sha256:e15da3b51c2a45497bb5f1fc99352e753fc6c4df130614553b61e6a2c6d42ada"
+  }
+ },
+ "type:Facility.PowerFeed": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/facility/facility.power-feed.json",
+  "versions": {
+   "0.3.2": "sha256:b017cb693635d9e55b0e56c37433535a1fd155e5cf061fe73f2b719cdd61dda8"
+  }
+ },
+ "type:Hardware.BMC": {
+  "current": "0.4.2",
+  "path": "registry/resource-types/hardware/hardware.bmc.yaml",
+  "versions": {
+   "0.4.2": "sha256:196d5383a3c7af15118df1ce71cf059053450ffc0287203ca8135291f942f51e"
+  }
+ },
+ "type:Hardware.BiosProfile": {
+  "current": "0.4.1",
+  "path": "registry/resource-types/hardware/hardware.bios-profile.yaml",
+  "versions": {
+   "0.4.1": "sha256:a83a2dbda493fc03f985d747e21cddc67d9cae25783c37e786fca70aecb9c63e"
+  }
+ },
+ "type:Hardware.GraphicsProcessor": {
+  "current": "0.2.2",
+  "path": "registry/resource-types/hardware/hardware.graphics-processor.json",
+  "versions": {
+   "0.2.2": "sha256:bc8baa019d3e3f74b21bd28c4ce204027de3e0915fc713c4621575bcbc779d77"
+  }
+ },
+ "type:Hardware.NetworkInterface": {
+  "current": "0.9.3",
+  "path": "registry/resource-types/hardware/hardware.network-interface.json",
+  "versions": {
+   "0.9.3": "sha256:54643fc6945fea0438cbbf27e5d8c6b64f54700876076c38a2699a217063e8df"
+  }
+ },
+ "type:Hardware.Processor": {
+  "current": "0.2.2",
+  "path": "registry/resource-types/hardware/hardware.processor.json",
+  "versions": {
+   "0.2.2": "sha256:b986ebf8c77407ea64237e63fd3afeec0a76ed866470d3b21be1eb624aba2cf8"
+  }
+ },
+ "type:Hardware.StorageDevice": {
+  "current": "0.2.2",
+  "path": "registry/resource-types/hardware/hardware.storage-device.json",
+  "versions": {
+   "0.2.2": "sha256:76b10b900a86a2c009ec2a75bc8568c4a37f1186b97c6b2741918199255b260e"
+  }
+ },
+ "type:Identity.Group": {
+  "current": "0.2.2",
+  "path": "registry/resource-types/identity/identity.group.json",
+  "versions": {
+   "0.2.2": "sha256:6d4a638b981efb7aed5151f4351152720634c030d47425ef54a366174a837558"
+  }
+ },
+ "type:Identity.Person": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/identity/identity.person.json",
+  "versions": {
+   "0.3.2": "sha256:9d41b4f7691af6ca06540c2447f0003ecf1d2d3ca3d3d83344bf47925d175c1f"
+  }
+ },
+ "type:Identity.ServiceAccount": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/identity/identity.service-account.json",
+  "versions": {
+   "0.3.2": "sha256:86b1ce01e7cf652b533869d8a71c555062c06969893493450974a642c2775db9"
+  }
+ },
+ "type:Network.AddressService": {
+  "current": "0.4.3",
+  "path": "registry/resource-types/network/network.address-service.json",
+  "versions": {
+   "0.4.3": "sha256:b8b974457e5e1497e500db4cdef12a8156df7ca48097a962a0c28ce48ac5b1bc"
+  }
+ },
+ "type:Network.ConnectionProfile": {
+  "current": "0.3.3",
+  "path": "registry/resource-types/network/network.connection-profile.json",
+  "versions": {
+   "0.3.3": "sha256:32698046ffc360503521517694719b4cef0ae956d204a4dd14bce906fb6782ce"
+  }
+ },
+ "type:Network.DHCPScope": {
+  "current": "0.5.2",
+  "path": "registry/resource-types/network/network.dhcp-scope.json",
+  "versions": {
+   "0.5.2": "sha256:8f6280282b81dcbf615f568d125540ca1feedf3e2039588a80898fc083016ee2"
+  }
+ },
+ "type:Network.DNSZone": {
+  "current": "0.3.3",
+  "path": "registry/resource-types/network/network.dns-zone.json",
+  "versions": {
+   "0.3.3": "sha256:4e04724b4964a6c31e323968e313b284cd30d1a000566790d6113d5d1cf90f86"
+  }
+ },
+ "type:Network.Gateway": {
+  "current": "0.4.4",
+  "path": "registry/resource-types/network/network.gateway.json",
+  "versions": {
+   "0.4.4": "sha256:d642db0db05fbb7343e8ff2ef6402bd7b7a42d5015b512447fbb98edd987aec7"
+  }
+ },
+ "type:Network.IPAddress": {
+  "current": "0.6.2",
+  "path": "registry/resource-types/network/network.ip-address.json",
+  "versions": {
+   "0.6.2": "sha256:e051de8182abc05b8305ccadf72afae8a4ecfbdc01a388b1484074dabd08ba3f"
+  }
+ },
+ "type:Network.IPAddressPool": {
+  "current": "0.3.5",
+  "path": "registry/resource-types/network/network.ip-address-pool.json",
+  "versions": {
+   "0.3.5": "sha256:22a5c47296a577200fbfb9d2c57331c9832704662cf1a80b95fc487366d325f8"
+  }
+ },
+ "type:Network.Switch": {
+  "current": "0.4.4",
+  "path": "registry/resource-types/network/network.switch.json",
+  "versions": {
+   "0.4.4": "sha256:66e4c0daec183aca0ac5d51a3b5a8d5fa39699701835e0be2dd6c211c251497f"
+  }
+ },
+ "type:Network.VLAN": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/network/network.vlan.json",
+  "versions": {
+   "0.3.2": "sha256:99d73486c573b649ec37ef3164cc170ce02625438df1d1beac0abeb601c80b2e"
+  }
+ },
+ "type:Network.VirtualNetwork": {
+  "current": "0.6.2",
+  "path": "registry/resource-types/network/network.virtual-network.json",
+  "versions": {
+   "0.6.2": "sha256:91b409cfd7b17d4ebeec2549ef43012b8a5c3189a67d82a04758c12b338ca151"
+  }
+ },
+ "type:Observability.LogShipper": {
+  "current": "0.3.5",
+  "path": "registry/resource-types/observability/observability.log-shipper.json",
+  "versions": {
+   "0.3.5": "sha256:e832dbd699743000c50e04eb61347b13f97299313fef9e671679426d8dafda19"
+  }
+ },
+ "type:Platform.Hub": {
+  "current": "0.1.2",
+  "path": "registry/resource-types/platform/platform.hub.json",
+  "versions": {
+   "0.1.2": "sha256:8905012333294291f0b5e39b4ef3566f68cbe4fd952f4a9e2a49522dcaecba7b"
+  }
+ },
+ "type:Platform.Namespace": {
+  "current": "0.3.5",
+  "path": "registry/resource-types/platform/platform.namespace.json",
+  "versions": {
+   "0.3.5": "sha256:f5ed275ae9c7e3540ea6bbba365da7118b614c40fa78d49887607082a447389a"
+  }
+ },
+ "type:Platform.NodePool": {
+  "current": "0.3.4",
+  "path": "registry/resource-types/platform/platform.node-pool.json",
+  "versions": {
+   "0.3.4": "sha256:0835f34e2cb455a59acfa2fe2cb1d128f0be6455f8178cfdb3a1905ab8b23dcf"
+  }
+ },
+ "type:Platform.ResourceQuota": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/platform/platform.resource-quota.json",
+  "versions": {
+   "0.3.2": "sha256:fcedd1f1742857b1244b9efe822c449e87cea4799c70b1bbcb35ed81d55af527"
+  }
+ },
+ "type:Platform.StorageClass": {
+  "current": "0.3.3",
+  "path": "registry/resource-types/platform/platform.storage-class.json",
+  "versions": {
+   "0.3.3": "sha256:c1782d104879ef15df51b1114cc5714c74310de51ab0a2e48b291832153a582b"
+  }
+ },
+ "type:Security.CredentialRef": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/security/security.credential-ref.yaml",
+  "versions": {
+   "0.3.2": "sha256:d13551d2f7184ea480a3b4c13a34ae21358b4c206359f0d6587ea4b9a332f934"
+  }
+ },
+ "type:Security.DirectoryService": {
+  "current": "0.4.3",
+  "path": "registry/resource-types/security/security.directory-service.json",
+  "versions": {
+   "0.4.3": "sha256:c00d1eb25c384de7001459d55d7b8d3d1ebcec87d35f705dc622e3f4dbcf8ef3"
+  }
+ },
+ "type:Software.Service": {
+  "current": "0.4.3",
+  "path": "registry/resource-types/software/software.service.yaml",
+  "versions": {
+   "0.4.3": "sha256:6d8aacdba0daa30116d2dbac6f7bccf2618d6c6b2bef848022f404e0b4c32794"
+  }
+ },
+ "type:SoftwareImage": {
+  "current": "0.1.1",
+  "path": "registry/resource-types/knowledge/software-image.json",
+  "versions": {
+   "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70"
+  }
+ },
+ "type:SoftwarePackage": {
+  "current": "0.1.0",
+  "path": "registry/resource-types/knowledge/software-package.json",
+  "versions": {
+   "0.1.0": "sha256:40f7c35de3837300c7ba68155f09d3b381f397c08131d117ffd059bc92c60e6e"
+  }
+ },
+ "type:Storage.Cluster": {
+  "current": "0.4.2",
+  "path": "registry/resource-types/storage/storage.cluster.json",
+  "versions": {
+   "0.4.2": "sha256:944b19bc24b33b9f7023d101fcd7d7a84972c341c1d0a3ad6c60feeb588dd699"
+  }
+ },
+ "type:Storage.Dataset": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/storage/storage.dataset.yaml",
+  "versions": {
+   "0.3.2": "sha256:935738636a42ac35cbb951c67e0a59dcb1afa31277864eade04f28cc4f3e4b94"
+  }
+ },
+ "type:Storage.FileShare": {
+  "current": "0.3.4",
+  "path": "registry/resource-types/storage/storage.file-share.yaml",
+  "versions": {
+   "0.3.4": "sha256:a165d1433734c395a30bdc3a8e1f17267fe826a4b49fc4e4127d27539e258545"
+  }
+ },
+ "type:Storage.Pool": {
+  "current": "0.3.2",
+  "path": "registry/resource-types/storage/storage.pool.yaml",
+  "versions": {
+   "0.3.2": "sha256:7544e753039ac0e443146b6e0d90c214b14d7d28a0bf18a51051eeac4777351d"
+  }
+ },
+ "type:Storage.Volume": {
+  "current": "0.5.3",
+  "path": "registry/resource-types/storage/storage.volume.json",
+  "versions": {
+   "0.5.3": "sha256:20f85c1553b93f39ae3b07006d52edf8a2d18f7f70baa5928b73f247d488dfe4"
+  }
+ },
+ "type:TaxonomyTerm": {
+  "current": "0.2.1",
+  "path": "registry/resource-types/knowledge/taxonomy-term.json",
+  "versions": {
+   "0.2.1": "sha256:618725e3e0fd0597f29b41ed87741c7a831c828ae7c84ad68b0de883be5dcfe6"
+  }
+ },
+ "type:Topology": {
+  "current": "0.3.1",
+  "path": "registry/resource-types/resource/topology.json",
+  "versions": {
+   "0.3.1": "sha256:f2c45fab2ba0df83cae78d90be9b41d48a36347a5e9b46c45b48a105fabc6cc3"
+  }
+ },
+ "type:Vulnerability": {
+  "current": "0.1.1",
+  "path": "registry/resource-types/knowledge/vulnerability.json",
+  "versions": {
+   "0.1.1": "sha256:16e6e1c0de0d263e087a6a86de8f362198fb88af06f303725fe8bbbad82f4684"
+  }
+ }
+}
