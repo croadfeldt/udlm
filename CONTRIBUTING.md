@@ -42,6 +42,34 @@ This rule exists because the repository's precision was outrunning its readabili
 were correct, gate-enforceable, and unreadable cold. The fix is not a summary bolted on top —
 it is writing the document's own prose at this level throughout.
 
+**Concise, clear, contextual, complete — as minimally needed (the aligning principle, the
+default for every ADR and document going forward).** Cold-reader-openable and *less is more* are
+one standard, not two in tension. The reconciliation: a cold reader is served by **orientation,
+not re-teaching** — point to where foundational context lives, then stay on the decision.
+Concretely:
+
+- **Background belongs in foundational documents, referenced — not inlined.** A definition,
+  primer, or prior decision a reader needs for context lives in its home document; this one links
+  to it with a one-line gist and does not reproduce it. Every document opens with an on-ramp — a
+  **"Background — read first"** block (ADRs) or a *Prerequisites / read-first* pointer (other
+  docs): the foundational reading a third party needs, each cited once with what it settles,
+  labeled so a reader who already has the context skips it. Foundational material is a *denoted
+  reading path*, not inlined prose.
+- **Complete as *minimally* needed.** Include exactly what moves the decision or the task, and cut
+  everything else — including a point another section already made, and rhetorical flourish.
+  Precision is never cut; restatement and emphasis are.
+- **Know what the document *is* (Diátaxis).** Explanation (an ADR — *why*), reference (a
+  schema/spec — *what*), how-to (a task), or tutorial (learning). Do not blend modes — an ADR
+  *points to* the schema, it does not reproduce it. Mode-blending is the main source of bloat.
+
+**How the standards align (so they are one, not competing):** DOC-001 (above) supplies the
+*orientation* obligation — a cold reader must be able to repeat the decision back; the *aligning
+principle* supplies the *minimality* obligation — serve that with an on-ramp and gist-carrying
+references, never with inlined re-teaching or restatement. MADR/Nygard supply the ADR shape
+(Context / Decision / Consequences, one decision each); Diátaxis supplies the mode discipline; and
+decision records are **immutable once Accepted** — superseded, not edited. The ADR specialization
+of this standard is `docs/adr/README.md` § "How these ADRs are written."
+
 ## Terminology discipline (TERM-001)
 
 When a ruling retires a term, the term stops being available for new writing. It does not stop
