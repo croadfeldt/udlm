@@ -26,8 +26,9 @@
 # Provenance: docs/flows/by-persona.md (the authored roles) + the high-frequency, clearly-distinct
 # roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst); the oversight
 # chain (executive, director, manager); and the stakeholders the platform's own contracts imply but
-# no persona spoke for — provider-owner (ADR-005 / OIS), integrator (ADR-044 consumer surface),
-# sovereignty-authority (the sovereignty-first data model), regulator (AUD-006 external verification).
+# no persona spoke for — provider-owner (ADR-005 / OIS), cloud-operator (OSAC — building sovereign
+# cloud providers, UC-04), integrator (ADR-044 consumer surface), sovereignty-authority (the
+# sovereignty-first data model), regulator (AUD-006 external verification).
 # Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
 version: "1.0.0"
 
@@ -90,6 +91,14 @@ personas:
       - "a stable, typed provider contract (OIS) I implement once — capability declared as data, not hard-coded into the platform (ADR-005)"
       - "a sandbox-to-production graduation path with the conformance bar stated up front, so activation is predictable"
       - "my provider stays swappable — the substrate never bakes in my native format; naturalization happens at my edge (T9 / DCM ADR-023)"
+
+  - id: cloud-operator
+    tier: operational
+    framing: "an operator building and running a sovereign cloud (e.g. OSAC) offered to the platform as a provider"
+    objectives:
+      - "my cloud's capacity and capabilities are declared as data and advertised for placement — the platform routes intent to me on capability, not hard-coded knowledge (PRV capability/capacity advertisement, §8.1a)"
+      - "building a new cloud provider adds a placement target without changing the substrate — intent places through the portable model, I naturalize at my edge and stay swappable (UC-04 OSAC placement; T9 / DCM ADR-023)"
+      - "my cloud is itself a UDLM-modeled estate — buildable and rehydratable from declared intent, its sovereignty (residency, jurisdiction) declared and provable"
 
   - id: integrator
     tier: operational
