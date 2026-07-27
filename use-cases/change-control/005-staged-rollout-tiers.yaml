@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Roll a breaking change through dev, staging, and production estates as a policy-composed chain
     where each stage's evidence gates the next
   success_criteria:

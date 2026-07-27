@@ -9,6 +9,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have an under-declared breaking Base Class change refused at the gate with the required bump
     named
   success_criteria:

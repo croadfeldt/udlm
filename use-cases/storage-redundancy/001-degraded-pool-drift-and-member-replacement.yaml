@@ -11,6 +11,12 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
+    - compliance-auditor
   intent: Detect pool degradation as discovered drift, walk the blast radius via member references, and
     track recovery through member replacement
   success_criteria:

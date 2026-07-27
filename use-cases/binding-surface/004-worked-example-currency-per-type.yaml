@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: Adopt a resource type via its worked example and find the example exercises the type's current
     specification surface
   success_criteria:

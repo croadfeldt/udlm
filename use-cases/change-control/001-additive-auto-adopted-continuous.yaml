@@ -10,6 +10,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: dev
+  perspectives: []
   intent: Have an additive class change adopted automatically where the estate's change policy declares
     continuous adoption for compatible change classes
   success_criteria:

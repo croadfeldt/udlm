@@ -15,6 +15,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
   intent: >-
     Refuse a partial realization whose shortfall is expressed only as a missable field and never
     surfaced to the consumer as an actionable warning or refusal-with-resolution

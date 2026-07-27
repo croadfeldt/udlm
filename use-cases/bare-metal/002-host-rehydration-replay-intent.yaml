@@ -11,6 +11,12 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
+    - compliance-auditor
   intent: Rebuild a failed physical host by replaying its stored provisioning intent onto replacement
     hardware with lineage and honest drift
   success_criteria:

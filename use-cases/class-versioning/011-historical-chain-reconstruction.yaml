@@ -14,6 +14,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Reconstruct the complete class and layer chain of any historical artifact revision mechanically
     from the revision store
   success_criteria:

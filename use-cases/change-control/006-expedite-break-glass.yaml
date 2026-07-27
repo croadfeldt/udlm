@@ -10,6 +10,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: fsi
+  perspectives:
+    - compliance-auditor
+    - security-officer
   intent: Adopt a security-critical breaking change out of window through the policy's expedite clause,
     with elevated approval and undiminished evidence
   success_criteria:

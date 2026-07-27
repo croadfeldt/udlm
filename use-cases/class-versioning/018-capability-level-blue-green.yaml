@@ -11,6 +11,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Promote one capability's breaking version through blue/green while sibling capabilities serve
     untouched, with capability revisions in realization provenance
   success_criteria:

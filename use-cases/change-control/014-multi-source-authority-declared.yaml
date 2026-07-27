@@ -12,6 +12,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - sre
   intent: Declare source authority per scope for change-control knowledge, and refuse gating decisions
     on undeclared conflicts instead of silently picking a source
   success_criteria:

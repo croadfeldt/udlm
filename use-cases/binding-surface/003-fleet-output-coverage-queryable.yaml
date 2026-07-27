@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Query the registry for output-surface coverage across all resource types and receive a complete
     declared/exempt/gap classification
   success_criteria:

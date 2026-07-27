@@ -11,6 +11,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: Make a breaking Base Class change with its full downstream impact enumerated and recompiled
     atomically
   success_criteria:

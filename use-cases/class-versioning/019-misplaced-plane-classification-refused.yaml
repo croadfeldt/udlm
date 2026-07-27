@@ -14,6 +14,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have a contract change classified on the wrong versioning plane refused with the correct plane,
     bump, and affected consumers named
   success_criteria:

@@ -12,6 +12,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Have every generated flat spec declare its full compilation provenance — class chain, layers,
     referenced schemas, generator — resolvable from the artifact alone
   success_criteria:

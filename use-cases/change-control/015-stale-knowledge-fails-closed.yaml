@@ -13,6 +13,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: fsi
+  perspectives:
+    - application-team-member
+    - sre
+    - information-provider-owner
   intent: Have gates fail closed on stale change-control knowledge, decidable from the Knowledge family's
     declared freshness surface
   success_criteria:

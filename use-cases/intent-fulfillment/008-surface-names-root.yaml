@@ -15,6 +15,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
   intent: >-
     Refuse a chain-failure surface that names only the immediate member and not the root
     unsatisfied dependency plus the chain — the root and chain are the mandatory content of the

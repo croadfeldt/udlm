@@ -10,6 +10,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Detect any type whose prose claims standard adoption without a corresponding adopts[] registration
     carrying version and license disposition
   success_criteria:

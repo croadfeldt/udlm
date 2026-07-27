@@ -12,6 +12,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have an under-declared provider surface change refused with the dropped output, its bound consumers,
     and the required bump named
   success_criteria:

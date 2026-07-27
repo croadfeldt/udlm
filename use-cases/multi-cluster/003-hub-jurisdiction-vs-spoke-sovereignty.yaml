@@ -11,6 +11,12 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - provider-owner
+    - sovereignty-authority
+    - tenancy-authority
   intent: Evaluate spoke sovereignty including the managing hub's jurisdiction and reject or flag management
     from outside the required jurisdiction
   success_criteria:

@@ -17,6 +17,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: >-
     Hold ten request-coupled peer VMs as one unit — none activating while any member is
     unsatisfiable — activating all atomically when every member can, and cancelling the whole unit

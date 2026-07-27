@@ -10,6 +10,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: homelab
+  perspectives:
+    - compliance-auditor
   intent: Mint an unmatched string as a proposed SharedDataElement at current scope without interrupting
     the author
   success_criteria:

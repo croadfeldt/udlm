@@ -10,6 +10,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives: []
   intent: Provision a physical host entirely from declared intent and bind downstream ordering on its
     provisioning_state output
   success_criteria:

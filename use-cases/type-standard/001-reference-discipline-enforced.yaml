@@ -11,6 +11,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
   intent: Register a type whose cross-resource field uses a bare string and have validation require the
     canonical Reference shape
   success_criteria:

@@ -15,6 +15,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: Execute disruptive storage-array maintenance under change control with a derived impact set,
     per-client tolerance policies, DR-gated scheduling, output-surface cutover, and ordered quiesce/restart
   success_criteria:

@@ -10,6 +10,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Submit a composition binding to a nonexistent producer output and receive a validation-time
     rejection that names the declared output surface
   success_criteria:

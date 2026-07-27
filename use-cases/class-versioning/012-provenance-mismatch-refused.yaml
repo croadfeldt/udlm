@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have a generated artifact whose declared provenance does not reproduce it refused at the gate
     as an integrity failure
   success_criteria:

@@ -10,6 +10,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: dev
+  perspectives: []
   intent: Have a plain string bind automatically to an exactly-matching SharedDataElement in scope, costing
     the author nothing
   success_criteria:

@@ -11,6 +11,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives: []
   intent: Promote a usage-harvested proposed element to canonical through the standard promotion operation,
     deduplicating at promotion time
   success_criteria:

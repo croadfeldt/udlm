@@ -10,6 +10,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Have a class re-pin promotion refused when the typed-output diff contradicts the compatibility
     claim
   success_criteria:

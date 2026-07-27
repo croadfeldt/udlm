@@ -11,6 +11,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Model composed redundancy topologies and verify fault tolerance composes through the vdev tree
     identically for equivalent layouts in different personas
   success_criteria:

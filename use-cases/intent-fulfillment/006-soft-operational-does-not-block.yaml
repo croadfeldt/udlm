@@ -15,6 +15,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: >-
     Let a container converge and realize degraded when its soft operational DNS dependency is
     unrealized — never blocked, never held — surfacing the degradation with the missing dependency

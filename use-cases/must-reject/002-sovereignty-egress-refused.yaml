@@ -18,6 +18,12 @@ scenario:
   actor:
     persona: tenant-admin
     profile: sovereign
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
+    - federation-peer-operator
   intent: Realize a resource whose dependency requires projecting residency-classified data
     to a peer estate across the tenant's declared sovereignty boundary
   success_criteria:

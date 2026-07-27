@@ -12,6 +12,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Promote a new process-definition version through dev, test, and production stages with output-evidence
     gates and version rollback, exactly as an application deploys
   success_criteria:

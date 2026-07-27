@@ -10,6 +10,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Have an element scope narrowing classified as breaking because it shrinks the derived portable
     surface
   success_criteria:

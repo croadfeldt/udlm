@@ -15,6 +15,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
   intent: >-
     Have a persistent intent's blocked-transient member and its operational dependents converge to
     Realized later via reconciliation, with no re-request and the surfaced state updating

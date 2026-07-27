@@ -10,6 +10,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - platform-operator
+    - sre
   intent: Adopt a breaking class change through the estate's full ceremony — evidence, approval, window,
     verification — with each gate policy-declared and order-enforced
   success_criteria:
