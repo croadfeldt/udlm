@@ -30,12 +30,9 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    fork into one uniform mechanism: a provider-specific element is just a `SharedDataElement` at the Provider
    Class, in a first-class, versioned, validatable definition — never an opaque per-instance blob.
 
-   **Direction (vocabulary used throughout).** The hierarchy runs **Base (top) → Type → Provider (bottom)**,
-   following the standard inheritance convention (general at top, specialization descends). Movement **up** =
-   *generalize* — toward Base, more portable (this is a **promote**); movement **down** = *specialize* — toward
-   Provider, more finite. Positional shorthand: **higher** = more general (nearer Base); **lower** = more finite
-   (nearer Provider). In one line: **up/higher = more portable, down/lower = more finite** — used consistently
-   below (a "lower Class" is a more specific one; "promote up" moves an element toward Base).
+   **Direction (used throughout).** The hierarchy runs **Base (top) → Type → Provider (bottom)** — the standard
+   inheritance convention. **Up / higher = more general and portable** (toward Base; moving an element up is a
+   *promote*); **down / lower = more specialized and finite** (toward Provider).
 
 2. **`SharedDataElement` is the unit at every layer** — `{scope, element, schema, values, state}`: a data
    element + its value vocabulary, curated `proposed → canonical`. The distinctions "base field vs shared
