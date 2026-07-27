@@ -12,6 +12,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: Have a failed post-maintenance verification halt the flow resumably with DR carrying continuity
     clients and nothing restarted onto an unverified array
   success_criteria:

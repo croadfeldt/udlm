@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
+    - security-officer
   intent: Regression-test an automation engine upgrade by blue/green-diffing the same process types across
     engine versions before adopting the upgrade
   success_criteria:

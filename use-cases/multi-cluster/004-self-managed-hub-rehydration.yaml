@@ -12,6 +12,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+    - compliance-auditor
   intent: 'Rehydrate a self-managed hub after losing its host cluster: replay hub intent, re-adopt surviving
     spokes, rebuild hosted spokes from intent'
   success_criteria:

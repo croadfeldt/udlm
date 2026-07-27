@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: fsi
+  perspectives:
+    - application-team-member
+    - sre
   intent: Have vocabulary extension in canonical-only estates run through standard change control, with
     interim refusals citing pending proposals
   success_criteria:

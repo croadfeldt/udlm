@@ -11,6 +11,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Answer automation lock-in questions as structural queries over element scope, and derive a migration's
     re-binding scope from the same read
   success_criteria:

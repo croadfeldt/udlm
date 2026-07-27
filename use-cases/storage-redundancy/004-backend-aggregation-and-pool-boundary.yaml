@@ -11,6 +11,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - provider-owner
+    - compliance-auditor
   intent: Enforce the one-capacity-source pool boundary per backend aggregation semantics while keeping
     protection comparable across backends via the canonical mapping
   success_criteria:

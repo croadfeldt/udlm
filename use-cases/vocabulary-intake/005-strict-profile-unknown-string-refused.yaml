@@ -9,6 +9,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - sre
   intent: Refuse unknown strings in match-only profiles with candidates and the proposal path named
   success_criteria:
   - In a match-only profile, an unmatched string refuses — nothing mints implicitly

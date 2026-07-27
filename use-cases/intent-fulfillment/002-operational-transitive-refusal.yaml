@@ -17,6 +17,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - sovereignty-authority
   intent: >-
     Propagate a permanent refusal down the operational chain — refused PVC to blocked-permanent
     container to blocked-permanent app — and surface the whole chain as one refusal naming the

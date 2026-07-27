@@ -18,6 +18,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Request a catalog item whose constituent binds to an undeclared producer output,
     and receive a validation-time refusal before any constituent is realized
   success_criteria:

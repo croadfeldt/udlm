@@ -11,6 +11,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives: []
   intent: Promote a class re-pin through blue/green compilation with an empty-or-approved typed-output
     diff as the gate
   success_criteria:

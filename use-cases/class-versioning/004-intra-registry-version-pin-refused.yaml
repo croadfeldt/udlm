@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have a version-pinned intra-registry class reference refused so a release stays single-truth
   success_criteria:
   - A Type or Provider Class declaring a fixed-version Base Class reference fails registry validation

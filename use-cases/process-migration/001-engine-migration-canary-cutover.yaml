@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - provider-owner
+    - compliance-auditor
   intent: Migrate a declared process type from one engine to another via canary routing and placement
     cutover, with automation intent and audit continuity untouched
   success_criteria:

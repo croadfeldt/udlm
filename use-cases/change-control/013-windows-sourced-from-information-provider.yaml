@@ -12,6 +12,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - information-provider-owner
   intent: Source maintenance windows and freezes from an information provider as Knowledge-family records
     the validation policy references, never copies
   success_criteria:

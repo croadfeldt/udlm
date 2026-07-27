@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: fsi
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have a declared freeze suspend all adoptions with upstream changes queued as ordered, distinguishable
     debt that drains under normal gates when the freeze lifts
   success_criteria:

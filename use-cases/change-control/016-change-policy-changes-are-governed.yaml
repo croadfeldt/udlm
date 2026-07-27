@@ -13,6 +13,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
   intent: Govern changes to change policies themselves — versioned, meta-policy-gated, prospective, with
     evidence gates unloosenable
   success_criteria:

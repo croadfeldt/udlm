@@ -12,6 +12,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Version the capability set through the envelope while whole-provider pins ride definition revisions,
     each plane carrying its own meaning
   success_criteria:

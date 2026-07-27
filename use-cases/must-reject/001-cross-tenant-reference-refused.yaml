@@ -16,6 +16,12 @@ scenario:
   actor:
     persona: application-team-member
     profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+    - compliance-auditor
+    - security-officer
+    - tenancy-authority
   intent: Declare a resource whose hard dependency targets another tenant's resource by UUID,
     with no cross-tenant authorization grant in place
   success_criteria:

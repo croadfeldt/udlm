@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - sre
   intent: Verify a share cutover from the share's own declared outputs, not client probes alone
   success_criteria:
   - The share type declares outputs sufficient to verify serving state (state plus active endpoint), beyond

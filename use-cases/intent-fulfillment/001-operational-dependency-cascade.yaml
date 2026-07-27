@@ -17,6 +17,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
   intent: >-
     Hold a container blocked-transient while its operational PVC dependency is unrealized, let
     independent members proceed, and converge the container when the PVC realizes — surfacing the

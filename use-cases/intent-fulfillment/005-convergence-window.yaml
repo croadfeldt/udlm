@@ -17,6 +17,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
   intent: >-
     Have the same transient member behave as fail-fast at w=0, converge-then-give-up at w=N, and
     defer indefinitely at w=infinity — the window being the sole dial over how long a transient

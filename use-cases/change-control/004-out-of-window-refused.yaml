@@ -9,6 +9,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - sre
   intent: Have an out-of-window adoption attempt refused with the window, the policy, and the expedite
     path named
   success_criteria:

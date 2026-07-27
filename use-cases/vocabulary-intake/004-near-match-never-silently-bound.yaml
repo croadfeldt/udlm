@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Have near-matches surfaced with candidates named, and silent approximate binding refused in
     every profile
   success_criteria:

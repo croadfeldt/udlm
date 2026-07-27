@@ -11,6 +11,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Verify a new engine against the incumbent by running the same idempotent process type and diffing
     typed outputs, requiring an empty delta before cutover
   success_criteria:

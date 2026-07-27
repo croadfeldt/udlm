@@ -27,7 +27,9 @@
 # roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst); the oversight
 # chain (executive, director, manager); and the stakeholders the platform's own contracts imply but
 # no persona spoke for — provider-owner (ADR-005 / OIS), cloud-operator (OSAC — building sovereign
-# cloud providers, UC-04), integrator (ADR-044 consumer surface), sovereignty-authority (the
+# cloud providers, UC-04), information-provider-owner (INF- contract, change-control/013),
+# federation-peer-operator (FED- contract / peer DCMs), integrator (ADR-044 consumer surface),
+# sovereignty-authority (the
 # sovereignty-first data model), tenancy-authority (ADR-014 isolation + cross-tenant XTA), regulator
 # (AUD-006 external verification).
 # Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
@@ -100,6 +102,20 @@ personas:
       - "my cloud's capacity and capabilities are declared as data and advertised for placement — the platform routes intent to me on capability, not hard-coded knowledge (PRV capability/capacity advertisement, §8.1a)"
       - "building a new cloud provider adds a placement target without changing the substrate — intent places through the portable model, I naturalize at my edge and stay swappable (UC-04 OSAC placement; T9 / DCM ADR-023)"
       - "my cloud is itself a UDLM-modeled estate — buildable and rehydratable from declared intent, its sovereignty (residency, jurisdiction) declared and provable"
+
+  - id: information-provider-owner
+    tier: operational
+    framing: "the owner operating an Information Provider that contributes authoritative data to the platform"
+    objectives:
+      - "my authoritative data is adopted by reference, not copied — the platform carries the join key and a version-pinned conformance reference (T5)"
+      - "my authority scope is respected — consumers resolve to me for the data I own, and my layer's provenance is preserved"
+
+  - id: federation-peer-operator
+    tier: operational
+    framing: "the operator of a peer DCM in a federation, receiving dispatched intent from other instances"
+    objectives:
+      - "cross-instance dispatch is sovereignty-scoped and on-behalf-of — I receive only what a peer is authorized to send, with the requester's identity intact"
+      - "I stay forward-compatible — unknown fields from a newer peer don't break me (must-ignore-unknown, ADR-044 / federation forward-compat)"
 
   - id: integrator
     tier: operational

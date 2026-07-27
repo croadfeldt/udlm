@@ -13,6 +13,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - platform-operator
+    - sre
   intent: Pin an organization's estate to a specific class revision and retain full control with the drift
     visible as enumerated debt
   success_criteria:

@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - executive
   intent: Detach an imported cluster from one hub and import it into another with workload continuity
     and correct fleet accounting
   success_criteria:

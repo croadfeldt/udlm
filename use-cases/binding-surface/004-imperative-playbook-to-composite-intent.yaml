@@ -17,6 +17,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - provider-owner
   intent: Express a complete single-VM workload (compute, static address on an isolated
     segment, derived DNS, day-0 job) as one Composite catalog item that a provider can realize
     without any imperative provisioning logic in the intent

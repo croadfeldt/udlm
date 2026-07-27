@@ -11,6 +11,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Bind a composite constituent to a producer type's declared Realized outputs and have the binding
     validated against the type's output declaration
   success_criteria:

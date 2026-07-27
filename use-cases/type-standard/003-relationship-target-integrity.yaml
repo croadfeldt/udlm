@@ -11,6 +11,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - provider-owner
+    - compliance-auditor
   intent: Register a type whose relationships[].target does not resolve and have validation reject it;
     retire a type and have dangling inbound declarations block the retirement
   success_criteria:

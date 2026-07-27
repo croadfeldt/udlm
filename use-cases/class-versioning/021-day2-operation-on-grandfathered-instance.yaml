@@ -14,6 +14,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Operate grandfathered instances under their governing capability revision within the deprecation
     window, and refuse with a migration path after retirement
   success_criteria:

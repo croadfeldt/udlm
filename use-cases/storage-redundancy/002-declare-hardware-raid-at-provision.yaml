@@ -12,6 +12,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - platform-operator
+    - sre
   intent: Declare firmware RAID as a Pool intent on an unprovisioned host and have the provisioning provider
     build it from that declaration
   success_criteria:

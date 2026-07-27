@@ -13,6 +13,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
   intent: Version provider surface changes under the standard classification rules — additive minor, breaking
     major, a bump always (identity frozen), downstream visibility always
   success_criteria:

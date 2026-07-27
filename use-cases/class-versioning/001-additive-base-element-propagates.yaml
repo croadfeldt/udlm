@@ -11,6 +11,8 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - compliance-auditor
   intent: Evolve a Base Class additively and have every derived artifact regenerate, re-verify, and re-version
     in one atomic registry change
   success_criteria:

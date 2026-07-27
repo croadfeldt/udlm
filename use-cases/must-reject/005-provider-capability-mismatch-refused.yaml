@@ -18,6 +18,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - provider-owner
+    - compliance-auditor
   intent: Route a realization request to a provider that does not declare the required
     capability, and receive a refusal naming the capability mismatch
   success_criteria:

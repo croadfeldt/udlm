@@ -12,6 +12,9 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - sre
   intent: Derive the DR replica's identity, direction, and sync mode from a declared model surface so
     the DR gate has a target to evaluate
   success_criteria:

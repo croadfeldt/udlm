@@ -11,6 +11,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives: []
   intent: Provision a hosted-control-plane spoke cluster through a Platform.Hub and verify containment
     ordering and output binding
   success_criteria:

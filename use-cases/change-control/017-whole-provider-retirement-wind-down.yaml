@@ -14,6 +14,11 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
   intent: Retire an entire provider from an estate as a governed wind-down with derived blast radius,
     standard-machinery migrations, and no stranded instances
   success_criteria:

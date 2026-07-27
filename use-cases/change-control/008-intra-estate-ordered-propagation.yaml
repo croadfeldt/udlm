@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: Have an adoption propagate through downstream records in dependency-derived order with per-batch
     verification and a recorded halt state on failure
   success_criteria:

@@ -10,6 +10,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Have a pin that resolves to no real registry revision refused, distinct from legal pin-behind
   success_criteria:
   - A pin naming a version or digest absent from the consumed registry ref fails estate validation

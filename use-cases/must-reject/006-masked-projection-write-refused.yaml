@@ -19,6 +19,12 @@ scenario:
   actor:
     persona: application-team-member
     profile: fsi
+  perspectives:
+    - platform-operator
+    - sre
+    - compliance-auditor
+    - security-officer
+    - sovereignty-authority
   intent: Read a projection that policy scope reduces, then write back through the masked
     surface, and receive a disclosed reduction on read and a typed refusal on write
   success_criteria:

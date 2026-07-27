@@ -13,6 +13,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Evolve one capability through a breaking change with impact scoped exactly to its bound consumers
     and zero movement on sibling capabilities or the envelope
   success_criteria:

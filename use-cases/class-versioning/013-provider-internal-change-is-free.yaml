@@ -12,6 +12,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - compliance-auditor
   intent: Change provider internals freely past the naturalization boundary with no consumer-facing version
     obligation, provable by an empty output diff
   success_criteria:

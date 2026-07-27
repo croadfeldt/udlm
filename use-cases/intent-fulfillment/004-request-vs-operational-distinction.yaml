@@ -17,6 +17,10 @@ scenario:
   actor:
     persona: platform-engineer
     profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
   intent: >-
     Apply directional operational cascade (dependent blocked, independents proceed) versus mutual
     request coupling (whole unit held or cancelled) to the same two members purely by their

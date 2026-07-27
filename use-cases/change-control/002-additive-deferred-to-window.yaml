@@ -10,6 +10,7 @@ scenario:
   actor:
     persona: platform-engineer
     profile: prod
+  perspectives: []
   intent: Have a compatible class change adopted only inside the estate's declared maintenance window,
     with the wait visible as debt rather than silent lag
   success_criteria:
