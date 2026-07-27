@@ -121,6 +121,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`docs/consumer-perspective.md`** — consumer-facing walkthrough of the model (promoted 2026-07-23; maintained with the spec — the cleanliness sweep covers it).
 - **`docs/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
 - **`docs/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via Hardware.NetworkInterface; Kea/NMstate projection).
+- **`docs/design/standing-model-gaps.md`** — the open model gaps with a proposal each (demand, current surface, candidate shapes, recommendation, corpus case). *Owns:* nothing normative — every entry awaits a maintainer ruling.
 - **`docs/design/scoped-class-hierarchy/compute-class-render.md`** — worked render of the Compute Base/Type/Provider Class hierarchy (ADR-038).
 - **`docs/design/scoped-class-hierarchy/identity-class-render.md`** — worked render of the Identity class hierarchy (ADR-038).
 - **`docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`** — Provider-Class authoring best practice (search-first reuse; define at highest allowed scope).
