@@ -44,6 +44,26 @@ request-realization first.
 labeled by its Use Case number and built on request-realization. Grouped by persona in
 **[by-persona.md](by-persona.md)** — the usage-by-role view.
 
+### Intent fulfillment — dependencies (with a nature) + a convergence window
+
+One flow per case for the intent-requirement side — how a multi-resource intent behaves when it
+cannot be fully satisfied at once. They stage the permutation matrix in
+[`../design/intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (nature ×
+member-status × window) and the corpus family
+[`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md).
+
+| Flow | What it stages |
+|---|---|
+| [Operational dependency cascade](intent-fulfillment-operational-dependency-cascade.md) | container hard-depends on PVC; transient PVC → container blocked-transient, waits, converges; independents proceed; root surfaced |
+| [Operational transitive refusal](intent-fulfillment-operational-transitive-refusal.md) | permanently-refused PVC → blocked-permanent propagates up the chain (container, app); one rooted refusal |
+| [Request dependency, atomic](intent-fulfillment-request-dependency-atomic.md) | ten request-coupled peer VMs — hold-all until all can, cancel-all on permanent shortfall; both from one binding |
+| [Request vs operational, the distinction](intent-fulfillment-request-vs-operational-distinction.md) | the same two members under an operational edge (directional) vs a request edge (mutual) — the nature is what differs |
+| [The convergence window](intent-fulfillment-convergence-window.md) | the same transient member at `w=0` fail-fast, `w=N` converge-then-give-up, `w=∞` defer — the sole converge dial |
+| [Soft operational does not block](intent-fulfillment-soft-operational-does-not-block.md) | soft DNS unrealized → container converges degraded, not blocked; strength is the switch |
+| [Pending converges later](intent-fulfillment-pending-converges-later.md) | a blocked-transient member + operational dependents converge later via reconciliation, no re-request |
+| [Surface names the root](intent-fulfillment-surface-names-root.md) (must-reject) | a chain failure naming only the proximate member, not the root + chain, is refused |
+| [Surfacing is mandatory](intent-fulfillment-surfacing-mandatory.md) (must-reject) | a silent partial expressed only as a missable field, with no warning, is refused |
+
 **Planned** (same shape): decommission & teardown ordering · dependency brokering (fulfillment: provider).
 Drift detection → reconcile and rehydration are delivered — [uc-14](uc-14-drift-detection-remediation.md),
 [uc-10](uc-10-dynamic-rehydration.md) (dynamic) and [uc-18](uc-18-provider-portable-rebuild.md) (provider-portable).

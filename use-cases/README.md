@@ -39,6 +39,10 @@ the DAV instance ingests them from here (or from the mirrored dcm set) for gap a
   intra-registry pins refused (registry ref = the only internal pin), organizational
   `@version`/`@digest` pins honored with enumerated debt, blue/green typed-output-diff promotion of
   re-pins, and element scope narrowing classified breaking (portability is part of compat).
+- `intent-fulfillment/` — the intent-requirement side: intent as persistent desired state
+  converged toward (k8s-style reconciliation); pending (transient) vs refused (permanent)
+  classification; best_effort default vs all_or_nothing as deferred atomic activation;
+  mandatory consumer-facing surfacing; hard-dependency-broken is failure not warned-partial.
 - `vocabulary-intake/` — strings meet SharedDataElements under profile control: exact-match
   auto-binds free everywhere, unmatched strings mint at current scope as proposed (where the
   profile permits), promotion dedups and canonicalizes; near matches never bind silently;
