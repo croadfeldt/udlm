@@ -548,7 +548,8 @@ resource type in the registry and gets a reference, not a bare string. A bare st
 system: it can't be queried by policies, it can't be drift-detected, and impact analysis can't trace
 through it. A reference is a graph edge the system can walk.
 
-References are version-pinned via `ref_uuid` (each version mints a new UUID), but the referenced
+References are version-pinned via `ref_uuid` (each version is a new immutable record with its
+own identity uuid — the ADR-051 family rule), but the referenced
 resource's **handle** remains stable across versions — so a consumer or policy can reference
 "tenant-alpha-prod" by handle and the system resolves to the current version.
 

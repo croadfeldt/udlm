@@ -1,9 +1,10 @@
 uuid: uc-95e9dce6-001b-4b56-9ec1-308ff10dbc3e
 handle: class-versioning/generated-spec-declares-compilation-provenance
-version: 1.0.0
+version: 1.1.0
 scenario:
   description: 'A generated flat resource spec declares its complete compilation provenance in the artifact
-    itself: the exact revisions (handle, version, uuid) of every Base, Type, and Provider class it was
+    itself: the exact revisions (handle, version, digest — the provenance block is a referrer, ADR-051)
+    of every Base, Type, and Provider class it was
     compiled from, every shared-element layer and referenced common schema, and the generator version.
     An auditor holding only the flat spec resolves the full chain without consulting anything but the
     registry''s revision store — the pin guarantee (''the artifact contains its chain'') becomes verifiable
@@ -15,7 +16,7 @@ scenario:
     referenced schemas, generator — resolvable from the artifact alone
   success_criteria:
   - The flat spec carries a compilation-provenance block naming every input revision by handle, version,
-    and uuid
+    and digest
   - 'The block covers the full chain: Base, Type, and Provider classes, shared-element layers, and referenced
     common schemas'
   - A realized instance extends the chain with realization provenance — the provider definition/registration

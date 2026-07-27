@@ -13,7 +13,8 @@ every compute descendant — VirtualMachine, Container, BareMetalHost — includ
 
 **Change 1 — additive (UC-001).** The maintainer adds an optional `hugepages` sub-property to
 the `memory` element. One change set carries: the Base Class edit, every regenerated Type and
-Provider Class, every regenerated flat spec — each with a new uuid and a minor/patch bump —
+Provider Class, every regenerated flat spec — each keeping its identity uuid, taking a
+minor/patch bump, and landing a new digest row in the pin manifest (ADR-051) —
 and the regeneration manifest. The fuzz, composition, and compat gates re-prove every
 descendant in the same commit; no hand-written test exists anywhere in this flow. A pinned
 downstream estate sees nothing: its pins resolve the old revisions until it chooses otherwise.
@@ -39,21 +40,22 @@ version debt when this ships. Review reads impact, not diffs-archaeology.
 
 ## How to pin (organization edge) — UC-005
 
-Pin uuid-precise in the estate's class configuration; the uuid IS the revision, so the pin is
-exact by construction:
+Pin in the estate's class configuration with the ADR-051 grammar — `thing@version` for the
+human-legible pin (exact because a published (identity, version) is immutable), plus the
+digest where the profile demands byte-proof:
 
 ```yaml
 class_pins:
   - class: Compute                # the handle names the thing…
-    version: 0.4.1                # …the version communicates intent…
-    uuid: 2f6c1a9e-...            # …the uuid IS the pinned revision
+    version: 0.4.1                # …the version names the published revision…
+    digest: sha256:2f6c1a9e...    # …and the digest (from the pin manifest) proves the bytes
 ```
 
 The estate compiles and realizes against the pinned revision completely. The cost is a debt
 line, not a capability:
 
 ```
-PIN-BEHIND (legal): Compute pinned 0.4.1 (2f6c1a9e); registry current 1.0.0 — 1 major behind
+PIN-BEHIND (legal): Compute pinned 0.4.1 (sha256:2f6c1a9e…); registry current 1.0.0 — 1 major behind
 ```
 
 The list re-opens whenever the estate's registry ref advances. Two things are refused, typed
@@ -65,14 +67,16 @@ estate pin naming a revision the consumed registry ref does not contain.
 separately locked, but because your pinned artifact *contains* its chain: the flat spec was
 compiled from its Base/Type/Provider classes at a specific registry state, and that content is
 baked in at compilation, not looked up live. It also *declares* that chain: the compilation-provenance
-block (ADR-045 §7) names every input revision — classes, layers, schemas, generator — and for
+block (ADR-045 §7) names every input revision — classes, layers, schemas, generator, each by
+handle, version, and digest — and for
 realized instances, the provider definition revision that realized them; verified by faithful
-recompilation, so the claim is checkable, live and historically. Upstream changes mint *new* revisions (uuids are
-immutable; old ones never retire); yours is untouched by construction. The only thing that
+recompilation, so the claim is checkable, live and historically. Upstream changes publish *new*
+revisions (a published (identity, version) is immutable and its digest row is append-only —
+ADR-051); yours is untouched by construction. The only thing that
 changes on your side is the debt list — the new revision appears as visible lag until *your*
 change policy says adopt, through blue/green. And if you pin at the class level instead, the
 ancestor chain pins with it (subtree consistency, ADR-045): there is no half-locked chain.
-Corpus-tested: UC-001 ("every pin still resolves to its pre-change uuid") and UC-005 ("no
+Corpus-tested: UC-001 ("every pin still resolves to its pre-change revision") and UC-005 ("no
 registry change alters the estate's behavior until the organization re-pins").
 
 ## How to re-pin with blue/green — UC-007/008

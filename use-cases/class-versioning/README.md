@@ -8,7 +8,8 @@ blue/green typed-output diffing turns unpinning into a tested act. Mixed semanti
 
 The family encodes candidate rulings the ADRs will settle, so a gap analysis over it measures
 the decisions, not just the mechanics: intra-registry references are by handle with the
-registry ref as the only internal pin (004); organizational pins are uuid-precise, honored
+registry ref as the only internal pin (004); organizational pins are `@version`/`@digest`-exact
+(ADR-051), honored
 completely, and visible as enumerated debt (005, 006); compatibility claims are promoted on
 typed-output evidence, not trust (007, 008); and portability is part of the compat contract —
 narrowing an element's scope is breaking even when no schema shape changes (009). Cases

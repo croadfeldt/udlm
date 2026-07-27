@@ -1,10 +1,11 @@
 uuid: uc-2462fef2-d704-433b-abdb-f702133779b2
 handle: class-versioning/provider-surface-change-versions
-version: 1.0.0
+version: 1.1.0
 scenario:
   description: 'A provider extends its declared surface: it begins populating an additional declared output
     for a type it serves and registers one new capability. The surface change classifies additive, so
-    the provider definition takes a minor bump with uuid rotation, exactly as a type spec would. Later
+    the provider definition takes a minor bump under the publish law — its identity uuid frozen, its new
+    revision''s digest recorded (ADR-051) — exactly as a type spec would. Later
     it stops supporting a capability: that classifies breaking, takes the major-class bump under the standard
     floors, and downstream estates see it exactly as they see an upstream class change — a visible debt/impact
     entry, adopted under their own change policies, with blue/green available for the migration off the
@@ -13,9 +14,10 @@ scenario:
     persona: platform-engineer
     profile: standard
   intent: Version provider surface changes under the standard classification rules — additive minor, breaking
-    major, rotation always, downstream visibility always
+    major, a bump always (identity frozen), downstream visibility always
   success_criteria:
-  - Adding a populated output or capability classifies additive and takes a minor bump with uuid rotation
+  - Adding a populated output or capability classifies additive and takes a minor bump with the identity
+    uuid unchanged
   - Dropping a capability or changing a populated output's shape classifies breaking under the standard
     floors
   - The provider-surface classification uses the same rule set as type/class compat — one classifier discipline,
@@ -39,7 +41,7 @@ scenario:
   - domain: data
     interaction: surface diffs are computed over declared capabilities/standards/outputs
   - domain: audit
-    interaction: surface changes carry rotation and appear in downstream impact
+    interaction: surface changes carry a version bump + recorded digest and appear in downstream impact
 generated_by:
   mode: authoring
   source: human-authored
