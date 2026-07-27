@@ -19,7 +19,7 @@ scenario:
   - Retiring a type with inbound relationship declarations is blocked until they are updated
   - The declared relationship graph is closed over the registry at all times
   dimensions:
-    lifecycle_phase: decommissioning
+    lifecycle_phase: decommission
     resource_complexity: single_with_deps
     policy_complexity: system_defaults_only
     provider_landscape: none_eligible

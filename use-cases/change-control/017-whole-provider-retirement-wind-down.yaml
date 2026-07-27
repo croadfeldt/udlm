@@ -26,7 +26,7 @@ scenario:
   - Retirement cannot complete while any instance remains realized under the provider — the wind-down
     trail ends at a provably empty state
   dimensions:
-    lifecycle_phase: decommissioning
+    lifecycle_phase: decommission
     resource_complexity: composite_service
     policy_complexity: governance_matrix_enforcement
     provider_landscape: multiple_eligible
