@@ -36,17 +36,36 @@ def renames():
     return doc.get("renames") or {}
 
 
+def _resolves(ref) -> bool:
+    return sh("git", "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}").returncode == 0
+
+
 def main() -> int:
     base = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
-    # ensure the base ref is present (CI clones may be shallow); non-fatal if fetch fails
-    sh("git", "fetch", "--quiet", "--depth", "1", "origin",
-       base.split("/", 1)[1] if base.startswith("origin/") else base)
+    # Ensure the base ref is present. Fetch ONLY if it doesn't already resolve, and never with
+    # `--depth 1` on a full clone — that shallows the whole repo, truncating the git history the
+    # ADR-051 revision store depends on (2026-07-28 sweep, N-04). Match the fetch depth to the
+    # clone: shallow CI clone -> shallow fetch of the ref; full clone -> a normal fetch.
+    if not _resolves(base):
+        ref = base.split("/", 1)[1] if base.startswith("origin/") else base
+        shallow = sh("git", "rev-parse", "--is-shallow-repository").stdout.strip() == "true"
+        if shallow:
+            sh("git", "fetch", "--quiet", "--depth", "1", "origin", ref)
+        else:
+            sh("git", "fetch", "--quiet", "origin", ref)
+
+    # Fail CLOSED: an unresolvable base is not "no changes", it is "cannot verify" (N-04). The
+    # old code returned 0 here, so a missing base ref passed the gate silently.
+    if not _resolves(base):
+        print(f"ERROR: compat-gate base ref {base!r} does not resolve — cannot verify version "
+              f"bumps. Refusing to pass vacuously (fail-closed).", file=sys.stderr)
+        return 2
 
     diff = sh("git", "diff", "--name-only", base, "--", "registry/resource-types")
     if diff.returncode != 0:
-        print(f"compat-gate: cannot diff against {base} ({diff.stderr.strip()}); skipping "
-              f"(not a failure — base ref unavailable)")
-        return 0
+        print(f"ERROR: compat-gate cannot diff against {base} ({diff.stderr.strip()}) "
+              f"(fail-closed).", file=sys.stderr)
+        return 2
 
     changed = [f for f in diff.stdout.splitlines()
                if f.endswith((".json", ".yaml", ".yml"))]
