@@ -24,9 +24,11 @@
 # auditable→compliance-auditor, whole→application-team-member.
 #
 # Provenance: docs/flows/by-persona.md (the authored roles) + the high-frequency, clearly-distinct
-# roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst) + the oversight
-# chain (executive, director, manager). Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml
-# in croadfeldt/dcm.
+# roles already in dcm use (sre, security-officer, tenant-admin, finance-analyst); the oversight
+# chain (executive, director, manager); and the stakeholders the platform's own contracts imply but
+# no persona spoke for — provider-owner (ADR-005 / OIS), integrator (ADR-044 consumer surface),
+# sovereignty-authority (the sovereignty-first data model), regulator (AUD-006 external verification).
+# Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
 version: "1.0.0"
 
 personas:
@@ -81,6 +83,21 @@ personas:
       - "cost and usage are adopted from a standard (FOCUS) by reference, joinable to realized resources (T5)"
       - "spend attributes to tenant, resource, and time without a bespoke parallel cost model"
 
+  - id: provider-owner
+    tier: operational
+    framing: "the owner operating a Service Provider that DCM registers and dispatches to"
+    objectives:
+      - "a stable, typed provider contract (OIS) I implement once — capability declared as data, not hard-coded into the platform (ADR-005)"
+      - "a sandbox-to-production graduation path with the conformance bar stated up front, so activation is predictable"
+      - "my provider stays swappable — the substrate never bakes in my native format; naturalization happens at my edge (T9 / DCM ADR-023)"
+
+  - id: integrator
+    tier: operational
+    framing: "an integrator building an external system on the UDLM data model — consuming or federating it"
+    objectives:
+      - "I declare the read surface I depend on and the registry gates on it; unknown fields I don't consume never break me (must-ignore-unknown, ADR-044)"
+      - "the contract is versioned with a compatibility promise I can pin to (ADR-051), so forward change doesn't silently break my integration"
+
   # ---- governance: set, enforce, and validate the rules ----
   - id: compliance-auditor
     tier: governance
@@ -96,6 +113,20 @@ personas:
     objectives:
       - "no reference or value leaves a boundary it was not released for (non-leaking — ADR-003; the policy information firewall)"
       - "credential material is referenced, never carried inline in portable data"
+
+  - id: sovereignty-authority
+    tier: governance
+    framing: "a sovereignty authority accountable for where data and workloads may reside and move"
+    objectives:
+      - "residency and jurisdiction are declared constraints on the data, enforced before realization and on every cross-boundary move — not asserted after the fact"
+      - "a cross-border data flow is an explicit, governable edge I can see and deny (T4), never an opaque transfer"
+
+  - id: regulator
+    tier: governance
+    framing: "an external regulator or assessor validating platform behavior without trusting the operator"
+    objectives:
+      - "I verify audit integrity from a signed tree head and an inclusion proof alone — no access to the operator's database (RFC 9162 external verification, AUD-006)"
+      - "provenance and decisions are attributable to named identities and policies, independently checkable against the immutable record (ADR-051)"
 
   # ---- oversight: accountable for outcomes; decide on risk and spend ----
   - id: executive
