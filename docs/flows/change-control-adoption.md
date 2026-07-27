@@ -116,6 +116,6 @@ the trail; DCM's engine evaluates and runs them.
 |---|---|
 | Change classification, pins, debt | ADR-045 (class evolution and pinning) |
 | Evidence, promotion, refusal routing | ADR-046 (blue/green promotion contract) |
-| Policy clause vocabulary, debt states | proposed — the change-control ADR (pending ruling) |
+| Policy clause vocabulary, debt states | [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (ruled; JSON-Schema shape follows) |
 | Corpus cases | `use-cases/change-control/` (ride every analysis run) |
 | Worked example (three regimes) | `docs/examples/change-control-walkthrough.md` |
