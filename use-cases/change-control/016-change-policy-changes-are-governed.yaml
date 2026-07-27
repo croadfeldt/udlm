@@ -16,7 +16,7 @@ scenario:
   intent: Govern changes to change policies themselves — versioned, meta-policy-gated, prospective, with
     evidence gates unloosenable
   success_criteria:
-  - The change policy is a versioned record; changing it mints a new revision under the rotation rule
+  - The change policy is a versioned record; changing it bumps its version under the publish law (ADR-051)
   - 'A declared meta-policy governs policy changes: who may change which clauses, approval, window'
   - The proposed change is surfaced with its blast radius — the adoption paths the clause governs
   - 'Policy changes are prospective only: in-flight adoptions complete under the revision that admitted
