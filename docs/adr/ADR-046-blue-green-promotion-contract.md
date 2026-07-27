@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — the complete picture, each cited once.** The pin lifecycle this completes (ADR-045
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The pin lifecycle this completes (ADR-045
 — organizational pins are legal enumerated debt; this contract is how the debt retires), the
 binding surface it diffs (data-model-core §2 [D8.3] — declared typed outputs, the only comparable realization
 facts), the migration pattern it generalizes (the Process-family engine-swap render — the same

@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `contracts/time-and-clock.md` (the contract this governs); `contracts/identifier-scheme.md` (UUIDv7 policy); ADR-002 (adopt-by-reference / served pattern); ADR-004 (provider capability declaration); the trust/attestation model; `cross-dcm-audit-data-model` (corpus UC); `design-principles/core-tenets.md` (T5 adopt-by-reference)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `contracts/time-and-clock.md` (the contract this governs); `contracts/identifier-scheme.md` (UUIDv7 policy); ADR-002 (adopt-by-reference / served pattern); ADR-004 (provider capability declaration); the trust/attestation model; `cross-dcm-audit-data-model` (corpus UC); `design-principles/core-tenets.md` (T5 adopt-by-reference)
 **Tracking:** review feedback on udlm #18 (swapdisk: ±5 s tolerance too broad, leap-second smear over-mandated) → the broader question "how do independent peers agree on ordering and audit?"
 
 ## Context

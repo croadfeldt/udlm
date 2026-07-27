@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); companion to ADR-038 §references-context + the projection mechanism
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related:** ADR-038 (scoped-Class paradigm; the projection mechanism + `PROJ-P1..P5`); ADR-012 (data-references,
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-038 (scoped-Class paradigm; the projection mechanism + `PROJ-P1..P5`); ADR-012 (data-references,
 dual anchor); ADR-025 (DCM realization); ADR-008 (the UDLM/DCM peer test); ADR-011 (sovereignty & residency);
 `contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).

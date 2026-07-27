@@ -3,7 +3,7 @@
 **Status:** Proposed — **STUB.** Full mechanics deferred, demand-driven; starts with the `peer` root. Needs eng alignment (federation + sovereignty are cross-cutting).
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (foundational — federation)
-**Related:** ADR-038 **§10** (the addressing coordinate + routing authority this resolves); ADR-008 (peer wire-compatibility); ADR-005 §5 (cross-peer federation); **ADR-024 §1** (sovereignty hard-gate); ADR-012 (`data_reference` — `resolving_authority` + `residency`); ADR-010 (dependency-graph completion); URI (RFC 3986); DNS; JSON Pointer (RFC 6901)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-038 **§10** (the addressing coordinate + routing authority this resolves); ADR-008 (peer wire-compatibility); ADR-005 §5 (cross-peer federation); **ADR-024 §1** (sovereignty hard-gate); ADR-012 (`data_reference` — `resolving_authority` + `residency`); ADR-010 (dependency-graph completion); URI (RFC 3986); DNS; JSON Pointer (RFC 6901)
 
 **Settles (stub):** how rooted addresses *resolve* across peers / tenants / sovereignty borders — deferred, demand-driven, `peer` root first.
 

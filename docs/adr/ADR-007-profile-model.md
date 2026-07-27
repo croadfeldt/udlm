@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** `foundations/foundations.md` §Extensibility (profile scope note); `governance/governance-matrix.md` (profile-bound defaults); ADR-002 (adopt-by-reference); ADR-004 (provider capability declaration); ADR-005 (time-sync as a profile capability); ADR-006 (re-entrant policy); `contracts/policy-contract.md` (policy engine model)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `foundations/foundations.md` §Extensibility (profile scope note); `governance/governance-matrix.md` (profile-bound defaults); ADR-002 (adopt-by-reference); ADR-004 (provider capability declaration); ADR-005 (time-sync as a profile capability); ADR-006 (re-entrant policy); `contracts/policy-contract.md` (policy engine model)
 **Tracking:** review of dcm #66 — "the human-approval/escalation ladder is organization-dependent"; and "are custom/admin-defined profiles a feature?"
 
 ## Context

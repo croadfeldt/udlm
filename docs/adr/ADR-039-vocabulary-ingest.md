@@ -3,7 +3,7 @@
 **Number:** ADR-039 (the vocabulary-ingest Data leg; an application of ADR-037/PVD).
 **Status:** Proposed  **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related:** ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
 `proposed → under-review → canonical → deprecated` (`foundations/four-states.md`); ADR-004 (capability
 declaration); ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
 machine-readable reference graph this consumes); provenance `source_type` (context-and-purpose §4.4); the vocabulary-intake ladder

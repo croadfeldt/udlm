@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
 **Date:** 2026-07-27
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Related — the complete picture, each cited once.** The doctrine this replaces
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The doctrine this replaces
 (VERSIONING.md § "UUID rotation", now § "Identity, version, digest" — every change to a
 uuid-bearing document minted a new uuid); the ADR this amends (ADR-045 — class evolution and
 pinning; its pin, provenance, and provider-surface clauses are restated below and marked

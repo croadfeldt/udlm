@@ -1,7 +1,7 @@
 # ADR-031: 0.1 scope and focus — the 21 use cases as the gravity well
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-19
-**Related:** the 21 September-release use cases; ADR-030 (the model beneath — a *post-1.0* direction); ADR-032 (how we hold the future while shipping); ADR-007 (profiles).
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** the 21 September-release use cases; ADR-030 (the model beneath — a *post-1.0* direction); ADR-032 (how we hold the future while shipping); ADR-007 (profiles).
 
 ## Context
 

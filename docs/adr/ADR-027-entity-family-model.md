@@ -1,7 +1,7 @@
 # ADR-027: Entity family model — Resource | Process, and the Atomic/Composite shape
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-17
-**Related:** [ADR-026 — typed-classification naming](ADR-026-typed-classification-naming.md); `foundations/entity-types.md`; `foundations/entity-type-families.md`; ADR-013 (hardware component scope)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** [ADR-026 — typed-classification naming](ADR-026-typed-classification-naming.md); `foundations/entity-types.md`; `foundations/entity-type-families.md`; ADR-013 (hardware component scope)
 
 ## Context
 

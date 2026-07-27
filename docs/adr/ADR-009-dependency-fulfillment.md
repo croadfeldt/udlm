@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related:** ADR-006 (convergence control model — DCM drives the single re-entrant loop); ADR-011 (validate-and-reserve — two-phase RESERVE→COMMIT is the decision-of-record for the realize-time criteria mechanism this ADR only names); ADR-008 (UDLM/DCM boundary — the peer test applied in §5); ADR-004 (provider capability declaration); `contracts/provider-contract.md` §6a (reserve/commit/release verbs); `registry/catalog-item.schema.json` (constituents carry `fulfillment`); `docs/graph-integrity.md` (cycle detection)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-006 (convergence control model — DCM drives the single re-entrant loop); ADR-011 (validate-and-reserve — two-phase RESERVE→COMMIT is the decision-of-record for the realize-time criteria mechanism this ADR only names); ADR-008 (UDLM/DCM boundary — the peer test applied in §5); ADR-004 (provider capability declaration); `contracts/provider-contract.md` §6a (reserve/commit/release verbs); `registry/catalog-item.schema.json` (constituents carry `fulfillment`); `docs/graph-integrity.md` (cycle detection)
 **Tracking:** The recurring "who defines and procures a catalog item's dependencies — the request or the provider" question. This ADR is the decision-of-record so it is not re-litigated.
 
 ## Context

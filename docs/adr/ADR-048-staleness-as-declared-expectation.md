@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Related — each cited once.** `foundations/four-states.md` (Discovered state carries the
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. `foundations/four-states.md` (Discovered state carries the
 observation facts: timestamp, method, provider — last-seen is already derivable);
 `entities/service-dependencies.md` OBS-005 (the profile-governed observation TTL this ADR
 demotes to a fallback); `registry/accreditation.schema.json` `stale_after`/`stale_action`
