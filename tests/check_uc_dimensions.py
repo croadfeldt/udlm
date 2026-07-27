@@ -26,14 +26,13 @@ def main():
     allowed = {k: set(v) for k, v in spec["dimensions"].items()}
     aliases = spec.get("folded_aliases") or {}
     fails, n = [], 0
-    for path in sorted(glob.glob(os.path.join(ROOT, "use-cases", "*", "*.yaml"))):
-        base = os.path.basename(path)
-        if not base[0].isdigit():
-            continue  # skip README / vocab / non-case files
-        n += 1
-        rel = os.path.relpath(path, ROOT)
+    for path in sorted(glob.glob(os.path.join(ROOT, "use-cases", "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         dims = ((doc.get("scenario") or {}).get("dimensions")) or {}
+        if not dims:
+            continue  # not a use-case file (README, vocabulary, taxonomy)
+        n += 1
+        rel = os.path.relpath(path, ROOT)
         for dim, val in dims.items():
             if dim not in allowed:
                 fails.append(f"{rel}: unknown dimension {dim!r} — not in {os.path.basename(VOCAB)}")
