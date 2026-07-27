@@ -1,0 +1,88 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.0.0
+conforms_to: udlm/0.1
+uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
+record_type: class
+class: base
+resource_type: Compute
+version: 1.0.0
+family: Resource
+status: active
+metadata:
+  authority: canonical
+  title: Compute Base Class
+  description: >-
+    The Base Class of the Compute category (ADR-038). Every element here is a SharedDataElement at
+    `Compute` scope, inherited by every Compute Type Class (Compute.VM, Compute.BareMetalHost,
+    Compute.Container, …). Base-scope = portable across every type in the category. This is the
+    first worked Class artifact — the P0 substrate the class-gated queue composes against; the
+    generator compiles each Type Class extending it down to today's flat resource-type spec.
+  prompt_version: class-p0-keystone-2026-07-27
+elements:
+  - element: cpu
+    scope: Compute
+    state: canonical
+    description: >-
+      Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three
+      names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere
+      sockets×cores, EC2 vCPUs).
+    schema:
+      type: object
+      properties:
+        count:
+          type: integer
+          minimum: 1
+          description: vCPUs / cores.
+        sockets:
+          type: integer
+          minimum: 1
+          description: Optional topology hint; provider-support-dependent.
+        cores_per_socket:
+          type: integer
+          minimum: 1
+      required: [count]
+  - element: memory
+    scope: Compute
+    state: canonical
+    description: >-
+      Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}):
+      `hugepages` becomes an optional Base element.
+    schema:
+      type: object
+      properties:
+        size:
+          type: string
+          pattern: "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$"
+        hugepages:
+          type: object
+          properties:
+            enabled: { type: boolean }
+            page_size: { type: string, description: "e.g. 2Mi, 1Gi." }
+      required: [size]
+  - element: storage
+    scope: Compute
+    optional: true
+    state: canonical
+    description: >-
+      The reference-discipline requirements descriptor (PVD-001), unifying VM disks[].storage /
+      BareMetal storage / Container resources. The provider matches to a native backing; the realized
+      class lands in outputs.
+    schema:
+      type: object
+      properties:
+        tier: { enum: [standard, performance, archive] }
+        min_iops: { type: integer, minimum: 0 }
+        min_throughput_mbps: { type: integer, minimum: 0 }
+        min_replication: { type: integer, minimum: 1 }
+        encryption: { type: boolean }
+  - element: guest_os
+    scope: Compute
+    optional: true
+    state: proposed
+    description: >-
+      The requested operating system, as portable requirements (image family + version), not a
+      provider-native image id. Proposed pending the OS-standardization catalog work (task #30).
+    schema:
+      type: object
+      properties:
+        family: { type: string, description: "e.g. rhel, ubuntu, windows." }
+        version: { type: string }
