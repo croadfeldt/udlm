@@ -108,11 +108,14 @@
         "values": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["reference"],
-          "description": "Optional value vocabulary — reference-data (ADR-012), referenced by handle+version (never inlined enum bodies), so the vocabulary versions independently.",
+          "required": ["reference_data_type"],
+          "description": "Optional — declares that this element's values are a GOVERNED vocabulary (ADR-012 reference-data of the named kind), not an inline enum. The element names the vocabulary KIND; the canonical terms are reference-data records of that kind (curated proposed → canonical). Whether an instance MAY supply a bare literal or MUST resolve to a canonical term (a `data_reference`, ADR-012) is a PROFILE floor (ADR-007) enforced by the vocabulary-intake ladder (ADR-039 — match/mint, strict-profile-unknown-refused) — NOT a field here: homelab may write a bare string, sovereign must reference a canonical term.",
           "properties": {
-            "reference": { "type": "string", "description": "Handle of the reference-data record holding the value list." },
-            "reference_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Pinned version of the referenced vocabulary (ADR-051)." }
+            "reference_data_type": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The reference_data kind that governs this element's values (e.g. `storage_tier`, `os_image`, `vm_size`). Reference-data records of this kind hold the canonical terms; an instance binds one by `data_reference`. Never an inline enum in `schema` for a vocabulary that wants independent curation."
+            }
           }
         },
         "state": {

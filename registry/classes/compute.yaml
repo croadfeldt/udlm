@@ -63,17 +63,31 @@ elements:
     optional: true
     state: canonical
     description: >-
-      The reference-discipline requirements descriptor (PVD-001), unifying VM disks[].storage /
-      BareMetal storage / Container resources. The provider matches to a native backing; the realized
-      class lands in outputs.
+      The reference-discipline requirements descriptor (PVD-001) — the numeric storage requirements,
+      unifying VM disks[].storage / BareMetal storage / Container resources. The requested performance
+      class is the governed `storage_tier` element below, not an inline enum here.
     schema:
       type: object
       properties:
-        tier: { enum: [standard, performance, archive] }
         min_iops: { type: integer, minimum: 0 }
         min_throughput_mbps: { type: integer, minimum: 0 }
         min_replication: { type: integer, minimum: 1 }
         encryption: { type: boolean }
+  - element: storage_tier
+    scope: Compute
+    optional: true
+    state: canonical
+    description: >-
+      The requested storage performance class as a GOVERNED vocabulary (ADR-038 §2), not an inline
+      enum: the canonical terms are `storage_tier` reference-data records (standard / performance /
+      archive, curated proposed→canonical). Rigor is profile-driven (ADR-007 + the ADR-039 intake
+      ladder): a homelab instance MAY write a bare string (`storage_tier: performance`); a sovereign
+      instance MUST resolve to a canonical term by `data_reference`. The element declares the
+      vocabulary kind; the profile decides bare-vs-reference.
+    schema:
+      type: string
+    values:
+      reference_data_type: storage_tier
   - element: guest_os
     scope: Compute
     optional: true
