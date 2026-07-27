@@ -231,9 +231,23 @@ def _identity_uuids(doc, rel):
     return out
 
 
+def _base_resolves():
+    """The base ref must resolve to a commit, or the whole diff is against an empty tree and
+    every file reads as 'new' — a silent pass. Fail CLOSED: an unresolvable base is an error,
+    not a green (the 2026-07-28 sweep's AG1/N-02 finding)."""
+    return subprocess.run(["git", "-C", ROOT, "rev-parse", "--verify", "--quiet",
+                           f"{BASE}^{{commit}}"], capture_output=True, text=True).returncode == 0
+
+
 def main():
     if "--self-test" in sys.argv:
         return self_test()
+
+    if not _base_resolves():
+        print(f"ERROR: base ref {BASE!r} does not resolve to a commit — cannot verify identity "
+              f"integrity. Fetch it (CI needs fetch-depth: 0) or set IDENTITY_GATE_BASE. "
+              f"Refusing to pass vacuously (fail-closed).", file=sys.stderr)
+        return 2
 
     fails, warns = [], []
     renamed = _renames()
@@ -398,6 +412,13 @@ def self_test():
         [{"uuid": U1, "version": "1.0.0", "a": 1}, {"uuid": U2, "version": "1.0.0", "b": 1}],
         [{"uuid": U1, "version": "1.0.0", "a": 1}, {"uuid": U3, "version": "1.0.0", "b": 2}])
     report("multi-doc streams pair per document", len(pairs) == 2 and not gone and not new)
+
+    # fail-closed: an unresolvable base ref must ERROR (exit 2), never pass vacuously.
+    probe = subprocess.run(
+        [sys.executable, os.path.abspath(__file__)],
+        cwd=ROOT, capture_output=True, text=True,
+        env={**os.environ, "IDENTITY_GATE_BASE": "refs/nonexistent/base-probe-zzz"})
+    report("fail-closed on unresolvable base ref (exit 2, not vacuous 0)", probe.returncode == 2)
 
     failed = [n for n, ok in results if not ok]
     print(f"\nidentity-integrity self-test: {len(results)} case(s), {len(failed)} failure(s)")
