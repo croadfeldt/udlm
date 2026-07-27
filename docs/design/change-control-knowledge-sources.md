@@ -67,7 +67,7 @@ comes next — inherits staleness decidability. Until then it is a per-type gap.
 
 The change-calendar knowledge type and the Knowledge-family freshness elements are registry
 work (types + the family Base Class when P-phases reach Knowledge); the authority and
-staleness clause vocabulary joins the change-control ADR's decision surface; the provider
+staleness clause vocabulary is ruled by [ADR-053](../adr/ADR-053-change-control-policy-vocabulary.md) (§6–7); the provider
 declaration extension joins the provider contract. The corpus cases ride analysis runs now, so
 every one of these gaps is measured from today — closure flips the cases, and the scoreboard
 shows it.

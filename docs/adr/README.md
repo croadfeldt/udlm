@@ -5,6 +5,28 @@ Short, reviewable records of significant UDLM data-model decisions — the **why
 §4.5); UDLM **adopts the ADR/MADR format by reference**, it does not coin its own. DCM keeps its
 own ADRs in `architecture/adr/` (the control-plane side); UDLM ADRs here cross-reference them.
 
+## How these ADRs are written (the authoring standard)
+
+An ADR is **explanation** (Diátaxis) — it justifies one decision. It is not reference (the schema)
+or a tutorial (the model); it **points to** those, never reproduces them. The discipline, in order:
+
+1. **Orient, don't educate.** A cold reader needs *where to get* foundational context, not the
+   context re-taught inline. So every ADR opens with a **"Background — read first"** block: the
+   docs, definitions, and prior decisions a third party must read, each cited **once with what it
+   settles** (never a bare number), explicitly labeled as the on-ramp — a reader who has the context
+   skips it. Foundational material is a *denoted reading path*, not inlined prose.
+2. **Body is the decision.** Context (the specific forces — assumes domain literacy), Decision
+   (active, one decision-area), Consequences (only the non-obvious easier/harder). Cut anything that
+   doesn't move a decision; don't restate what the reader — or the ADR's own other sections —
+   already said.
+3. **Scope edges explicit.** A "what this does not decide" / boundary section (the UDLM/DCM split,
+   ADR-008) where it applies.
+4. **Immutable once Accepted.** Supersede, don't edit (the ADR-051 record discipline).
+
+This reconciles the repo's DOC-001 *cold-reader-openable* requirement with the *writing-for-humans*
+"less is more" standard: the cold reader is served by the Background on-ramp + gist-carrying
+references, not by three restatements.
+
 **Referenced DCM ADRs (external — resolve in the DCM repo `architecture/adr/`).** UDLM docs cite these
 control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
 
@@ -102,3 +124,4 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [050](ADR-050-absolute-provider-pin.md) | The absolute provider pin — may a pin confer eligibility, or only express preference among eligible providers? Resolves the contradiction between the PRV-009 capability ceiling and a placement pin that skips the capability filter. Three options weighed (demote to preference-within-eligible, keep absolute behind an override record, split into two fields); demotion recommended, and the ruling also settles the corpus typing split toward `placement.capability_mismatch` | Proposed — **drafted for decision** |
 | [051](ADR-051-identity-version-revision.md) | Identity, version, digest — one meaning per field: uuid = frozen identity (never rotates, never reused); version = the semver compat contract under the publish law ((identity, version) immutable once published); change transparency = sha256 over RFC 8785-canonical content, carried in generated referrers (pin manifest, provenance, attestations) never in the artifact itself; pins are `thing@version` or `thing@sha256:<hex>`; two document families (mutable-in-place bumps version, immutable record streams supersede); accreditation exact-by-default on attested digests. Retires uuid rotation; amends ADR-045; existing uuids frozen in place | Proposed |
 | [052](ADR-052-intent-fulfillment-dependency-nature.md) | Intent fulfillment — dependency **nature** (`request` \| `operational`) as the one new field, extending the existing edge, not a parallel `atomic` flag or best_effort/all_or_nothing axis: operational = realized-layer functional coupling (directional cascade, independents proceed, keeps `strength`), request = intent-layer atomicity (hold-all activation + cancel-all from one binding). Convergence **window** intent field defaulting to *defer* (the give-up bound is DCM policy — no wall-clock in the portable model); convergence status is a **derived projection** (seven verdicts, never stored, per ADR-048); mandatory surfacing must name the **root** dependency + chain + nature + verdict (+ resolution on refusal). The T7 *extend-before-net-new* exemplar; corpus-measured (nine UCs). **0.1 work — 1.0 conferred by engineering acceptance (#217)** | Proposed |
+| [053](ADR-053-change-control-policy-vocabulary.md) | Change-control — a **`schedule`** clause family (window/freeze/expedite/precondition) on the existing policy object, not a new policy_type; the **whether/when firewall** (a schedule clause governs *when*, never *whether* — no clause, expedite included, waives the ADR-046 evidence diff); **typed adoption debt** as a derived verdict (`pin_behind`\|`windowed`\|`frozen`, never stored, per ADR-048/052); approvals as a **sign-off referrer** binding approver + evidence digest (reuse the attestation shape, ADR-051); change policies are **versioned + prospective** with a governing meta-policy (UC-016); windows may be **sourced knowledge** (change-calendar Knowledge type via `provider.kind: information`, adopt-by-reference, authority-per-scope, stale-fails-closed); **freshness** reuses ADR-048 and lands on the Knowledge Base Class. The T7 exemplar (extends 8 existing surfaces, coins ~1); corpus-measured (17 UCs). **0.1 work** | Proposed |

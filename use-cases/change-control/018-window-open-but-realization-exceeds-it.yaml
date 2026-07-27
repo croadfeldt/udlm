@@ -1,0 +1,63 @@
+uuid: uc-e4e59103-3a7d-4c16-a699-387c0454a9d1
+handle: change-control/window-open-but-realization-exceeds-it
+version: 1.0.0
+scenario:
+  description: >-
+    A breaking change is cleared through evidence and approval and reaches the window gate. The
+    maintenance window is open — but only for two hours, and the provider's advertised
+    time-to-complete estimate for this realization is four. A window being open is necessary but not
+    sufficient: starting a four-hour adoption in a two-hour window guarantees an overrun that
+    guillotines the run mid-batch. Because the provider is the authority on its own realization time
+    (duration is provider- and substrate-specific), the estimate comes from the provider's
+    advertisement and is kept honest by the actuals it reports back. The window gate therefore checks
+    fit — `estimate + margin ≤ window_remaining` — not merely openness, and here it does not fit. The
+    gate refuses, naming the estimate, its source, and the remaining window; the policy's response is
+    to defer to the next window long enough to hold it, or — since propagation is dependency-ordered,
+    batched, and resumable — to run only the batches that fit and carry the rest as windowed debt with
+    recorded progress. Nothing is started that cannot finish in time.
+  actor:
+    persona: platform-engineer
+    profile: prod
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - provider-owner
+  intent: >-
+    Refuse to start an adoption whose provider-estimated time-to-complete exceeds the remaining
+    window, naming the estimate and its source, and defer or batch-fit rather than overrun
+  success_criteria:
+  - The window gate checks fit (estimate + margin ≤ remaining), not merely that the window is open
+  - The time-to-complete estimate is the provider's, carried on its advertisement — not invented by the estate
+  - A realization estimated to exceed the remaining window is refused, naming the estimate, its source, and the window remaining
+  - The policy response is deferral to a sufficient window, or batch-fit running only the batches that fit
+  - Batches that do not run are carried as windowed debt with recorded progress — a partial-but-safe adoption, never a mid-batch overrun
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: multi_policy_chain
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: timeout
+  profile: prod
+  expected_domain_interactions:
+  - domain: data
+    interaction: the provider's advertised time-to-complete estimate (with provenance + freshness) and the window's remaining duration
+  - domain: policy
+    interaction: the window-fit gate compares estimate + margin to remaining; on a miss it refuses and selects defer vs batch-fit
+  - domain: provider
+    interaction: the provider produces the estimate and reports realized duration back, keeping the estimate honest (the T6 loop)
+  - domain: audit
+    interaction: the refusal, the estimate and its source, and any batch-fit progress are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: change-control-adr-2026-07-27
+  timestamp: '2026-07-27T20:00:00Z'
+tags:
+- change-control
+- window-fit
+- time-to-complete
+- provider-estimate
+- realization

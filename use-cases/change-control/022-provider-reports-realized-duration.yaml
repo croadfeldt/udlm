@@ -1,0 +1,55 @@
+uuid: uc-5d123ff4-5848-4e4d-8451-a5407c84fe55
+handle: change-control/provider-reports-realized-duration
+version: 1.0.0
+scenario:
+  description: >-
+    An adoption run — a Process-family job (ADR-053 boundary) — completes, and the provider reports
+    its realized duration back alongside the realized state (ADR-053 §8, the realized-state callback
+    it already uses). That actual becomes validation evidence (T6) for the provider's advertised
+    time-to-complete estimate, updating it and refreshing its freshness horizon. The honesty loop:
+    the estimate the next window-fit gate reads is corrected by what the last run actually took, so
+    it tracks reality instead of drifting from a one-time guess.
+  actor:
+    persona: provider-owner
+    profile: prod
+  perspectives:
+    - platform-operator
+    - sre
+    - platform-engineer
+  intent: >-
+    Report an adoption's realized duration back through the realized-state callback so it validates
+    and refreshes the provider's time-to-complete estimate for the next fit decision
+  success_criteria:
+  - The realized duration is reported through the provider's existing realized-state callback (ADR-053 §8)
+  - The actual is recorded as validation evidence for the advertised estimate (T6 loop)
+  - The estimate and its freshness horizon are updated from the actual
+  - The next window-fit decision reads the corrected estimate — it tracks reality, not a one-time guess
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: multi_dependent
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: prod
+  expected_domain_interactions:
+  - domain: data
+    interaction: the realized-duration report + the updated estimate value and freshness horizon
+  - domain: policy
+    interaction: the estimate is refreshed; no gating decision here — this is the enrichment that feeds later fit gates
+  - domain: provider
+    interaction: the provider runs the adoption and reports realized duration back (the realized-state callback / T6 loop)
+  - domain: audit
+    interaction: the realized duration and the estimate update are recorded as provenance
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: change-control-adr-2026-07-27
+  timestamp: '2026-07-27T21:00:00Z'
+tags:
+- change-control
+- process
+- realized-duration
+- estimate-honesty
+- adr-053
