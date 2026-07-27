@@ -35,6 +35,13 @@ Until then, the SPEC `MAJOR` is `0`, and the "same-MAJOR = wire-compatible" guar
 *post-1.0* promise; pre-1.0, minor (`0.1 → 0.2`) bumps may carry breaking changes as the surface
 settles. This mirrors how FOCUS, OpenTelemetry, and most CNCF specs incubate at `0.x` and earn `1.0`.
 
+**Who confers `1.0` (maintainer ruling, 2026-07-27):** `1.0` is **not a date the maintainer picks
+and not a milestone declared unilaterally — it is conferred by engineering acceptance** (the
+ratification pass tracked at #217). A "surface complete" state — even the September surface — is
+still **`0.1` work** until engineering accepts it; readiness is a *candidacy* for that review, not a
+self-promotion. Every ADR in this repository is `Proposed` for exactly this reason: the model is
+built and measured, and 1.0 is what the acceptance confers on it, not what the authoring declares.
+
 **The pre-1.0 bump floor (one rule, gate-enforced):** a MAJOR-classified (breaking) change is
 accepted under a **MINOR** bump until 1.0 — never under a REVISION. This is exactly what
 `tests/ci_compat_gate.py` enforces ("MAJOR relaxed to MINOR"); any prose stating the bump a
