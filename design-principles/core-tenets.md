@@ -115,6 +115,20 @@ coined primitive is permanent surface — every peer must implement it and every
 this tenet aimed **outward** — don't re-express an external standard; T7 aims it **inward** — don't
 multiply internal primitives. Occam's razor as a contract obligation.
 
+**The rule, stated positively: extend before net-new — where feasible, possible, and mutually
+beneficial, while balancing complexity.** The default is to *extend an existing concept* (add an
+attribute, a nature, a scope, a tier) rather than add a parallel one — but it is a balance, not a
+dogma: extend when the existing concept genuinely covers the need and the extension keeps it
+coherent; go net-new when forcing the fit would *over-complicate* the existing concept or bend its
+meaning. The test is total surface and clarity, not primitive count for its own sake. Worked
+exemplar (2026-07-27): the intent-fulfillment model needed "peer atomicity" (all-or-none over
+members that don't operationally depend on each other). The first instinct was a parallel
+`atomic` flag; asking *"do we already have something that expresses this?"* reduced it to a
+**nature on the existing dependency edge** (request vs operational) — atomicity became a
+request-layer dependency, not a new mechanism, and the whole best_effort/all_or_nothing axis
+dissolved. Extending the dependency concept was feasible, mutually beneficial (it also gave
+hold-all activation for free), and *lowered* complexity — exactly the balance this tenet asks for.
+
 ## T8 — Adopt tools by reference: orchestrate, don't reimplement
 Where a mature tool already owns a **mechanism** — building, scanning, signing, deploying, orchestrating
 CI/CD — the realization (DCM) **wraps it as a Provider** and **never reimplements it**. This is the
