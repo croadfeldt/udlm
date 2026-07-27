@@ -42,8 +42,7 @@ The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (
   "retryable": false,
   "retry_after_seconds": null,
   "timestamp": "2026-05-26T14:32:18.456Z",
-  "scope_attempted": "tenant-foo",
-  "scopes_known": ["tenant-a", "tenant-b"]
+  "scope_attempted": "tenant-foo"
 }
 ```
 
@@ -67,7 +66,7 @@ The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (
 | `retryable` | yes | boolean | Whether the operation can safely be retried (§4). |
 | `retry_after_seconds` | optional | number \| null | If retryable, suggested minimum delay; mirrors the HTTP `Retry-After` header. |
 | `timestamp` | yes | RFC 3339 UTC | When the error occurred. |
-| *(context)* | optional | any | Error-specific structured context as **top-level** members (e.g. `scope_attempted`, `scopes_known`) — the former nested `details.*`, flattened per AEP-193. |
+| *(context)* | optional | any | Error-specific structured context as **top-level** members (e.g. `scope_attempted`) — the former nested `details.*`, flattened per AEP-193. Context members pass the §8a egress guard: they may echo what the actor submitted, never enumerate what the actor did not (a `scopes_known` list is the canonical violation). |
 
 Peers MUST reject problem objects missing required members with `type: validation.error_envelope_malformed`.
 
@@ -328,10 +327,11 @@ something. It is therefore a payload leaving a boundary, and it gets the same tr
 other payload leaving that boundary: **the refusal passes the egress guard that produced it.**
 This is the exfiltration-via-the-error-channel problem, and it is not hypothetical in this
 model — the substrate's own error surfaces reach for exactly the content the refusal was
-protecting. A policy denial's structural-validation output enumerates failing field paths
-(`contracts/policy-contract.md` §11 — `field_results` "included in consumer error response"),
-and §2's worked example above enumerates every known scope in `scopes_known` to explain that
-one was not recognized. Both are helpful and both are enumerations of protected structure.
+protecting. A policy denial's structural-validation output names failing field paths
+(`contracts/policy-contract.md` §11 — `field_results` "included in consumer error response",
+now guarded by §11's egress clause), and this document's own §2 example originally explained an
+unrecognized scope by enumerating every known one in a `scopes_known` member — helpful, and an
+enumeration of protected structure. Both shapes are the reason this rule exists.
 
 The rule, applied to every refusal on every surface:
 

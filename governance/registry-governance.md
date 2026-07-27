@@ -456,7 +456,7 @@ intent corpus under both, at the same recorded corpus ref, and diff the declared
 diff that is neither empty nor explicitly approved refuses the promotion outright — nothing
 partially promotes — and, because the diff contradicts the upstream compatibility claim, it
 routes home as a finding with the diff as provenance. That upstream route is the part with no
-carrier today: neither the promotion-evidence record nor the finding-routing record exists as a
+carrier today: the promotion-evidence record has no schema today, and the finding-routing record's schema (`registry/finding-routing-record.schema.json`) lands as its own change — this rule binds regardless of carrier availability, and a refusal that cannot yet file the record queues the filing rather than dropping it. Formerly: neither record existed as a
 registry kind, and ADR-046's Consequences names both as owed before P0 freezes. `REG-016` states
 the refusal contract; the record shapes remain to be defined.
 
