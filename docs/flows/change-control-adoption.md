@@ -35,8 +35,8 @@ flowchart TD
     E -->|no| E1[Refuse promotion\ndiff is the reason] --> X1[Finding routed upstream]
     E -->|yes| F[Approval gate:\nnamed approver signs diff]
     F --> D
-    D --> G{Window open?\nor expedite authorized?}
-    G -->|no| G1[Refuse: window violation\nnames policy + next window + expedite path]
+    D --> G{Window open AND fits?\nprovider estimate ≤ remaining\nor expedite authorized?}
+    G -->|no| G1[Refuse: window violation or won't-fit\nnames policy + estimate + next window + expedite path]
     G -->|yes| H[Orchestrated adoption run\ndependency-ordered batches]
     C --> H
     H --> I{Per-batch verification}
@@ -81,6 +81,11 @@ requires a surface that is neither present nor already on the build list.
 - **The policy is data.** Adoption mode, gates, windows, freezes, and expedite paths are
   clauses of a declared policy object the orchestration evaluates — never tribal process. The
   human decision is made once, in the policy, not once per change.
+- **A window must *fit*, not just be open.** The provider gives a realization time-to-complete
+  estimate (its own duration is provider-specific); the window gate proceeds only if
+  `estimate + margin ≤ window_remaining`. A 2-hour window cannot hold a 4-hour realization — a
+  job that won't finish is not started; it defers, batch-fits, or expedites (ADR-053 §8; the
+  estimate reuses the RTO/T6 validated-time-bound machinery).
 - **Scheduling gates control when; evidence gates control whether.** An expedite clause
   compresses the calendar under elevated approval and a flagged audit record; nothing waives
   the evidence gate. There is no path to a promoted breaking change without its diff.

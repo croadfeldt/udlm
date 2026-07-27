@@ -117,6 +117,37 @@ class-realization program), inherited by every knowledge domain. Ruling: freshne
 when it exists, and until then is a **declared per-type stopgap** on the change-calendar type so
 UC-015 is enforceable now.
 
+### 8. The window gate checks *fit*, not just openness — and the **provider** estimates
+
+A window being open is **necessary but not sufficient**: an adoption that will not complete within
+the remaining window must not be started in it (a 2-hour window cannot hold a 4-hour realization).
+So the window gate evaluates **fit** — `estimated_time_to_complete + margin ≤ window_remaining` —
+not merely openness. The three roles split cleanly (the maintainer's framing):
+
+- **Provider — gives the estimate.** Realization time is **provider-and-substrate-specific** (the
+  same intent takes different times on different providers and hardware), so the **provider is the
+  authority on its own duration** — no one else can know it. The provider **advertises** an expected
+  time-to-complete per type/operation (the capability/capacity-advertisement precedent, PRV) and
+  **reports the realized duration back** after each run (the realized-state callback precedent).
+  Those reported actuals are the **validation evidence** (T6) that keeps the advertised estimate
+  honest and drive its **freshness** (ADR-048 — an estimate un-revalidated within its cadence is
+  stale, and a stale estimate is treated as low-confidence / fail-closed, exactly like §6).
+- **UDLM — encodes it in the model.** UDLM adds the **estimate datum** on the provider capability
+  advertisement, the **realized-duration** field on the provider's realized-state report, and the
+  provenance/freshness contract over them. This is not a new mechanism: an **RTO/RPO** (ADR-003) is
+  already a provider-backed, validated time bound — realization time-to-complete **generalizes** it
+  from *recovery* to *any* realization, and RTO becomes a special case. UDLM defines the datum and
+  the fit *obligation*; it computes nothing.
+- **DCM / policy — acts on it.** The window-fit gate reads the advertised estimate, checks fit, and
+  on a miss **refuses** (naming the estimate, its source, and the window remaining) and applies the
+  policy's chosen response — defer to a longer window, **batch-fit**, or expedite. The safety
+  margin and the response are DCM policy.
+
+**Batch-fit and resumability.** Because propagation is dependency-ordered, batched, and resumable,
+the gate may run as many verified batches as fit the remaining window — using each batch's own
+provider estimate — and leave the rest as **`windowed` debt with recorded progress**: a
+partial-but-safe adoption, never an overrun that guillotines mid-batch.
+
 ## The UDLM / DCM boundary (ADR-008)
 
 | UDLM — data points + contracts | DCM — operationalize, via policies + Process |
@@ -125,6 +156,7 @@ UC-015 is enforceable now.
 | the whether/when firewall (evidence gates are separate, un-waivable) | enforcing it at evaluation; emitting the typed window-violation / stale-knowledge refusals |
 | the derived adoption-debt verdicts + the change-calendar Knowledge type + freshness | computing the verdicts; ingesting/refreshing calendar knowledge via the information provider |
 | the approval sign-off record shape + the meta-policy contract | the orchestrated adoption **run** — a Process-family job: dependency-ordered, batch-verified, resumable propagation |
+| the realization **time-to-complete estimate** datum (on the provider's advertisement), the realized-duration report field, and the window-**fit** obligation (§8) | evaluating fit (`estimate + margin ≤ remaining`), the safety margin, and the fit-miss response (defer / batch-fit / expedite) — and the provider *producing* the estimate + reporting actuals |
 
 ## Grounding — what already exists (the T7 exemplar)
 
@@ -132,9 +164,13 @@ Policy object + `gating`/`orchestration_flow`/`override` types, the class graph 
 (blast radius), `dependencies[]` ordering (propagation order — the shutdown-order machinery),
 declared `outputs` (batch verification), the audit-record model (the trail), the Knowledge family +
 `provider.kind: information` (sourced calendars), ADR-045 (pins/debt), ADR-046 (evidence/refusal
-routing), ADR-048 (staleness/freshness), ADR-051 (publish law + digest referrers). The ADR adds one
-clause family, three derived verdict names, one Knowledge type, and reuses two record shapes.
-Nothing here needs a surface that is neither present nor already on the build list.
+routing), ADR-048 (staleness/freshness), ADR-051 (publish law + digest referrers). For §8: **RTO/RPO
+(ADR-003/T6)** — the provider-backed, rehearsal-validated time bound that realization
+time-to-complete generalizes; the **provider capability/capacity advertisement (PRV)** — where the
+estimate rides; and the **realized-state callback** — where the provider returns actuals. The ADR
+adds one clause family, three derived verdict names, one Knowledge type, and one estimate datum, and
+reuses two record shapes plus the RTO/advertisement machinery. Nothing here needs a surface that is
+neither present nor already on the build list.
 
 ## Consequences
 
@@ -161,3 +197,6 @@ once ratified. The genuinely open calls flagged for the ruling: the exact debt-v
 waits for the Knowledge Base Class, and the elevation shape for expedite approval (a named higher
 authority tier vs a dual-approval requirement). DCM's policy defaults — the actual window values,
 freeze calendars, and approver ladders — are DCM's per the boundary, never in the portable model.
+For §8 specifically: the provider *produces* the estimate and reports actuals, DCM's policy owns the
+safety margin and the fit-miss response (defer / batch-fit / expedite); UDLM carries only the
+estimate datum, its provenance/freshness, and the fit obligation.
