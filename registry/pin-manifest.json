@@ -140,6 +140,13 @@
    "2.0.0": "sha256:9027444fb16d3f7510d27cde621f7cf7d739e7c45fa9bce7a502e7776f2747cf"
   }
  },
+ "layer:platform/storage-tiers/performance": {
+  "current": "1.0.0",
+  "path": "registry/instances/example-reference-data-storage-tier.yaml",
+  "versions": {
+   "1.0.0": "sha256:3d233668b5c2cb9edc729aac2f59d8817eaf7bd68c903b6f65e81524366ea3a9"
+  }
+ },
  "policy:eu-data-residency-gate": {
   "current": "1.0.0",
   "path": "registry/instances/example-policy.yaml",
@@ -238,6 +245,13 @@
    "0.2.1": "sha256:52ff5af2875712d89c7eea8265884ca7988411db83476e0aea4338a2add00966"
   }
  },
+ "type:Compute": {
+  "current": "1.0.0",
+  "path": "registry/classes/compute.yaml",
+  "versions": {
+   "1.0.0": "sha256:e08b92ed9111a2db31dd98e25628e0fa843a1e8190fb524fe3e2efc07c79c63a"
+  }
+ },
  "type:Compute.BareMetalHost": {
   "current": "0.7.0",
   "path": "registry/resource-types/compute/compute.bare-metal-host.json",
@@ -257,6 +271,13 @@
   "path": "registry/resource-types/compute/compute.container.yaml",
   "versions": {
    "0.5.3": "sha256:29907df2e288fa5f975674597e9853c53d02cd2adf29d561bec0286529b6fb8e"
+  }
+ },
+ "type:Compute.VM": {
+  "current": "1.0.0",
+  "path": "registry/classes/compute.vm.yaml",
+  "versions": {
+   "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7"
   }
  },
  "type:Compute.VirtualMachine": {

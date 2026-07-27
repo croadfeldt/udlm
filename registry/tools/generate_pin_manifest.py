@@ -164,6 +164,11 @@ def tree_rows():
         rel = os.path.relpath(p, ROOT)
         if os.path.abspath(p) == os.path.abspath(MANIFEST):
             continue
+        # Generated artifacts (registry/generated/*) are compiled from Class sources, not authored —
+        # they regenerate deterministically and are gated by generate_class_specs.py --check, so they
+        # carry no independent publish-law identity here (a source-Class edit would otherwise trip it).
+        if (os.sep + "generated" + os.sep) in (os.sep + rel + os.sep):
+            continue
         for doc in parse_documents(open(p, encoding="utf-8").read(), p):
             qh = qualified_handle(doc)
             if qh:

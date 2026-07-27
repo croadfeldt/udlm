@@ -57,6 +57,9 @@ jobs:
       - run: python3 tests/check_identity_integrity.py
       # Pin manifest (the digest referrer, ADR-051): current vs the tree, append-only vs base.
       - run: python3 registry/tools/generate_pin_manifest.py --check
+      # Scoped-Class substrate (ADR-038 / P0): Liskov extension gate + generated-spec freshness
+      - run: python3 tests/check_class_liskov.py
+      - run: python3 registry/tools/generate_class_specs.py --check
       # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).

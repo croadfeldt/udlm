@@ -1,0 +1,40 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.0.0
+conforms_to: udlm/0.1
+uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
+record_type: class
+class: type
+resource_type: Compute.VM
+parent: Compute
+version: 1.0.0
+family: Resource
+status: active
+metadata:
+  authority: canonical
+  display_name: Compute.VM Type Class
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-07-27T21:00:00Z'
+  title: Compute.VM Type Class
+  description: >-
+    The VM Type Class — extends the Compute Base Class (cpu/memory/storage/storage_tier/guest_os,
+    inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never
+    contradict). A provider Class (Compute.VM.OCPVirt, …) extends this further. The generator compiles
+    this class + its ancestors into today's flat Compute.VM resource-type spec.
+  prompt_version: class-p0-keystone-2026-07-27
+elements:
+  - element: firmware
+    scope: Compute.VM
+    optional: true
+    state: canonical
+    description: The boot firmware the VM requests. A governed neutral vocabulary; the provider naturalizes to its native setting.
+    values:
+      reference_data_type: vm_firmware
+    schema:
+      type: string
+  - element: boot_order
+    scope: Compute.VM
+    optional: true
+    state: proposed
+    description: Ordered boot device preference (VM-specific; not meaningful for BareMetal or Container).
+    schema:
+      type: array
+      items: { type: string }
