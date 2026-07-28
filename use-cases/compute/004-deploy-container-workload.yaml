@@ -1,0 +1,60 @@
+uuid: uc-184f95c5-f7b1-4684-b566-1016815b9b7c
+handle: compute/deploy-container-workload
+version: 1.0.0
+scenario:
+  description: 'A platform engineer deploys a Compute.Container workload by intent — a container image
+    reference, the resource limits it runs under (CPU and memory), and its replica count — without naming a
+    scheduling node or a runtime handle. The compute provider pulls the declared image, admits it under the
+    declared limits, schedules the declared replicas, and the workload reaches Realized with those properties
+    published on its outputs (running image digest, applied limits, ready replicas). This stresses that a
+    Container is portable workload intent: the declared image and limits ARE the deployment instruction, the
+    realized run-state is readable from the record rather than inferred from the orchestrator, and the
+    workload rehydrates by replaying the same image-and-limits intent against an eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Deploy a Container workload from a declared image with resource limits and replica count, and have
+    it realize with those properties published on its outputs
+  success_criteria:
+  - The request carries the image reference, resource limits, and replica count from the record alone; no
+    scheduling node or runtime handle leaks into the intent
+  - The provider pulls the declared image, admits it under the declared limits, and schedules the declared
+    replicas; the workload reaches Realized
+  - The running image digest, applied limits, and ready-replica count are readable from the workload's
+    declared outputs, not inferred from the orchestrator
+  - A downstream consumer binds on the ready-replica output, contract-checked, rather than polling the
+    runtime
+  - The workload rehydrates by replaying the same image-and-limits intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared image, limits, and replica count are the complete, portable deployment record
+  - domain: policy
+    interaction: validation confirms the image reference and an admitted provider before dispatch
+  - domain: provider
+    interaction: the container provider (Kubernetes/OCI-class) pulls the image and schedules under the
+      declared limits
+  - domain: audit
+    interaction: the deployment path and the realized run-state are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: compute-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- compute-container
+- provisioning-intent
+- portability
+- binding

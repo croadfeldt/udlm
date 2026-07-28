@@ -1,0 +1,60 @@
+uuid: uc-6f003d84-a6c9-4028-bb06-42c68986570c
+handle: compute/provision-vm-standard
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Compute.VirtualMachine by intent alone — a size (vCPU and
+    memory), an OS image, and the network it attaches to — without naming a hypervisor host, a disk path,
+    or any provider-native placement. The compute provider selects an eligible backend, realizes the VM
+    to the declared size on the declared OS image, attaches it to the declared network, and the VM reaches
+    Realized with those properties published on its outputs (assigned size, OS image, network attachment,
+    power state). This stresses that a VirtualMachine is portable intent, not a provider-native handle: the
+    declared size/OS/network ARE the build instruction, the realized properties are readable from the
+    record rather than inferred from the hypervisor, and the VM rehydrates by replaying the same intent
+    against an eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a VirtualMachine by declared size, OS image, and network, and have it realize with those
+    properties published on its outputs
+  success_criteria:
+  - The request carries the size, OS image, and network attachment from the record alone; no provider-native
+    host or disk path leaks into the intent
+  - The provider realizes the VM to the declared size on the declared OS image and attaches the declared
+    network; the VM reaches Realized
+  - The assigned size, OS image, network attachment, and power state are readable from the VM's declared
+    outputs, not inferred provider-side
+  - A downstream consumer binds on the VM's power-state output, contract-checked, rather than polling the
+    hypervisor
+  - The VM rehydrates by replaying the same intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared size, OS image, and network attachment are the complete, portable build record
+  - domain: policy
+    interaction: validation confirms the OS image and an admitted provider before dispatch
+  - domain: provider
+    interaction: the compute provider (KubeVirt/libvirt-class) realizes the VM to the declared intent
+  - domain: audit
+    interaction: the provision path and the realized properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: compute-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- compute-virtualmachine
+- provisioning-intent
+- portability
+- binding

@@ -1,0 +1,66 @@
+uuid: uc-48f0cc96-35a4-42a0-8384-7e5dfc56c9ce
+handle: compute/vm-provision-provider-failure-refused
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Compute.VirtualMachine that validates and dispatches, but
+    the selected compute provider fails mid-provision — the backend errors after accepting the work, before
+    the VM reaches Realized. Success for this use case is that the failure is SURFACED, not swallowed: the
+    request must be driven to a typed terminal failure state with a resolution the requester can act on,
+    never left silently Pending indefinitely waiting on a provider that is not going to finish, and never
+    reported Realized when nothing usable exists. The failure must be typed as a provider failure —
+    machine-matchable and distinct from a capability mismatch (the provider WAS eligible and accepted) and
+    from a policy denial — and it must name the failing provider and the stage it failed at, so the reader
+    can tell a retryable transient from an unsatisfiable placement. Any partial artifact the provider left
+    is reconciled — the intent does not report success over a half-built VM — and an audit record carries
+    the dispatch, the provider''s failure, and the resolution offered.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
+  intent: Dispatch a VirtualMachine request whose provider fails mid-provision, and have the failure
+    surfaced as a typed terminal state with a resolution rather than left Pending
+  success_criteria:
+  - The request reaches a typed terminal failure state; it is never left Pending indefinitely awaiting a
+    provider that will not finish
+  - The failure is typed as a provider failure, distinct from a capability mismatch and from a policy denial
+  - The intent is never reported Realized over a half-built VM; any partial provider artifact is reconciled,
+    not left dangling
+  - The failure names the failing provider and the stage it failed at, so a retryable transient is
+    distinguishable from an unsatisfiable placement, and carries an actionable resolution
+  - An audit record of the dispatch, the provider failure, and the offered resolution exists
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: provider_failure
+  profile: standard
+  expected_domain_interactions:
+  - domain: provider
+    interaction: the provider fails after accepting the work; its failure and stage are the surfaced signal,
+      not an internal state
+  - domain: policy
+    interaction: the failure-handling rule drives the request to a typed terminal state rather than leaving
+      it Pending
+  - domain: data
+    interaction: the failing provider, the failed stage, and any partial artifact are resolvable records the
+      failure cites
+  - domain: audit
+    interaction: the dispatch, the provider failure, and the offered resolution are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: compute-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- compute-virtualmachine
+- provider-failure
+- provisioning-intent

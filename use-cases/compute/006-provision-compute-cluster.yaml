@@ -1,0 +1,61 @@
+uuid: uc-0741a98b-92ca-489f-85f3-2dc0ef2898cc
+handle: compute/provision-compute-cluster
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Compute.Cluster by intent — a node count and a Kubernetes
+    version — without naming individual nodes, a control-plane host, or provider-native cluster internals.
+    The compute provider provisions the control plane and the declared number of worker nodes at the declared
+    version, and the cluster reaches Realized with those properties published on its outputs (Kubernetes
+    version, ready node count, API endpoint). This stresses that a Cluster is portable intent expressed as a
+    node count and version, not an enumeration of machines: the declared count/version ARE the build
+    instruction, the realized topology is readable from the record rather than inferred from the provider, a
+    downstream consumer binds on the ready-node output, and the cluster rehydrates by replaying the same
+    count-and-version intent against an eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a Cluster by declared node count and version, and have it realize with those properties
+    published on its outputs
+  success_criteria:
+  - The request carries the node count and Kubernetes version from the record alone; no individual node or
+    control-plane host is enumerated in the intent
+  - The provider provisions the control plane and the declared worker count at the declared version; the
+    cluster reaches Realized
+  - The Kubernetes version, ready node count, and API endpoint are readable from the cluster's declared
+    outputs, not inferred provider-side
+  - A downstream consumer binds on the ready-node-count output, contract-checked, rather than polling the
+    provider
+  - The cluster rehydrates by replaying the same count-and-version intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared node count and version are the complete, portable build record
+  - domain: policy
+    interaction: validation confirms the requested version and an admitted provider before dispatch
+  - domain: provider
+    interaction: the cluster provider (OCM/CAPI-class) realizes the control plane and worker nodes to the
+      declared intent
+  - domain: audit
+    interaction: the provision path and the realized topology are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: compute-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- compute-cluster
+- provisioning-intent
+- portability
+- binding

@@ -3,10 +3,6 @@
 # dropped here (the gate refuses to re-add it). New specs are NEVER added — they ship an example.
 # Burn down family-by-family; target is an empty file.
 Capability
-Compute.BareMetalHost
-Compute.Cluster
-Compute.Container
-Compute.VirtualMachine
 Data.Database
 Facility.Location
 Facility.PowerFeed

@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3349,
-    "mutations_rejected": 3349,
+    "mutations_attempted": 3485,
+    "mutations_rejected": 3485,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -28,20 +28,20 @@
         "rejected": 36
       },
       "Compute.BareMetalHost": {
-        "attempted": 170,
-        "rejected": 170
+        "attempted": 182,
+        "rejected": 182
       },
       "Compute.Cluster": {
-        "attempted": 74,
-        "rejected": 74
+        "attempted": 104,
+        "rejected": 104
       },
       "Compute.Container": {
-        "attempted": 198,
-        "rejected": 198
+        "attempted": 240,
+        "rejected": 240
       },
       "Compute.VirtualMachine": {
-        "attempted": 186,
-        "rejected": 186
+        "attempted": 238,
+        "rejected": 238
       },
       "Data.Database": {
         "attempted": 68,
@@ -314,10 +314,13 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 108,
+    "files_scanned": 115,
     "covered": [
       "Capability",
+      "Compute.BareMetalHost",
       "Compute.Cluster",
+      "Compute.Container",
+      "Compute.VirtualMachine",
       "Platform.Hub",
       "Security.CredentialRef",
       "Storage.Dataset",
@@ -328,9 +331,6 @@
     "uncovered": [
       "Access.IdentityEscrow",
       "Automation.Job",
-      "Compute.BareMetalHost",
-      "Compute.Container",
-      "Compute.VirtualMachine",
       "Data.Database",
       "Facility.Location",
       "Facility.PowerFeed",
