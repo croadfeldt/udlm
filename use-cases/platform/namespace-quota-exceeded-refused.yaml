@@ -1,0 +1,66 @@
+uuid: uc-05bdc11f-e143-47fa-987c-b8f1d8f3dcce
+handle: platform/namespace-quota-exceeded-refused
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a workload into a Platform.Namespace whose aggregate demand
+    would exceed the namespace''s Platform.ResourceQuota — the requested CPU or memory pushes the namespace
+    total past a declared hard limit. Success for this use case is that the request is REFUSED at admission,
+    not admitted over-quota: it must be driven to a typed terminal refusal that names the exceeded limit and
+    by how much, never quietly admitted to overcommit the namespace (which would starve co-tenants or evict
+    live pods), and never left Pending waiting on capacity the quota will not grant. The refusal must be
+    typed as a policy violation — machine-matchable and distinct from a provider failure and from a
+    capability mismatch — and carry an actionable resolution (reduce the request, or raise the quota through
+    the governed path). It must name the exceeded limit without leaking the resource usage of other tenants
+    in the namespace, and it must leave a tamper-evident audit record of the denied request and the deciding
+    quota rule.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
+  intent: Request a workload that would exceed a namespace ResourceQuota, and have it refused as a typed
+    policy violation naming the exceeded limit rather than admitted over-quota
+  success_criteria:
+  - 'typed: the request reaches a typed terminal refusal typed as a policy violation, distinct from a
+    provider failure and from a capability mismatch — never admitted over-quota and never left Pending on
+    capacity the quota will not grant'
+  - 'actionable: the refusal names the exceeded limit and the amount over, and carries a resolution the
+    requester can act on (reduce the request, or raise the quota through the governed path)'
+  - 'whole: no partial workload is admitted — the request is refused as a unit, never left half-scheduled
+    against an overcommitted namespace'
+  - 'non-leaking: the refusal names only the exceeded limit and the requester''s own demand, not the
+    resource usage of other tenants sharing the namespace'
+  - 'auditable: the denied request, the exceeded limit, and the deciding quota rule leave a tamper-evident
+    audit record'
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: the quota rule denies the request at admission and drives it to a typed refusal
+  - domain: data
+    interaction: the exceeded limit and the namespace's committed total are resolvable records the refusal cites
+  - domain: provider
+    interaction: no provider is dispatched — the over-quota request is caught at admission, not after scheduling
+  - domain: audit
+    interaction: the denied request, the exceeded limit, and the deciding quota rule are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: platform-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- platform-namespace
+- platform-resourcequota
+- policy-violation

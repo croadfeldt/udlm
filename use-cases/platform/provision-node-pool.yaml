@@ -1,0 +1,58 @@
+uuid: uc-30d25fda-ee89-4617-9c18-ba499072f761
+handle: platform/provision-node-pool
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Platform.NodePool by intent alone — a homogeneous slice of
+    cluster compute declared by node count and instance type (the shared capabilities, labels, and
+    scheduling constraints of its members) — without naming a machine set, a cloud API, or any
+    provider-native node handle. The platform provider selects an eligible backend, realizes the pool to the
+    declared count on the declared instance type, and it reaches Realized with its properties published on
+    its outputs (node count, instance type, ready nodes). This stresses that a NodePool is portable capacity
+    intent, not a provider-native machine set: the declared count and instance type ARE the build
+    instruction, the realized capacity is readable from the record rather than counted from the cloud API,
+    and the pool rehydrates by replaying the same intent against an eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+  intent: Request a NodePool by declared count and instance type, and have it realize with its capacity
+    published on its outputs
+  success_criteria:
+  - The request carries the node count and instance type from the record alone; no machine set or cloud API
+    handle leaks into the intent
+  - The provider realizes the pool to the declared count on the declared instance type; the pool reaches
+    Realized
+  - The node count, instance type, and ready-node count are readable from the pool's declared outputs, not
+    counted from the cloud API
+  - A downstream scheduler places onto the pool by binding on its published ready capacity
+  - The pool rehydrates by replaying the same intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_no_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared count and instance type are the complete, portable capacity record
+  - domain: policy
+    interaction: validation confirms the instance type is admissible before dispatch
+  - domain: provider
+    interaction: the platform provider (Cluster API/machine-set-class) realizes the pool to intent
+  - domain: audit
+    interaction: the provision path and the realized capacity are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: platform-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- platform-nodepool
+- provisioning-intent
+- portability
+- binding

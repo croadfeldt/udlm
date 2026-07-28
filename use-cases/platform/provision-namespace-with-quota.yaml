@@ -1,0 +1,60 @@
+uuid: uc-0ad9d534-585e-437f-a77e-45085db215db
+handle: platform/provision-namespace-with-quota
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Platform.Namespace by intent alone — the isolation boundary
+    workloads are placed into — together with a Platform.ResourceQuota that caps its aggregate consumption
+    (CPU, memory, pods, storage). The quota references the namespace it bounds as a first-class edge; the
+    request names no cluster-native object, admission controller, or provider handle. The platform provider
+    realizes the namespace and its quota, and both reach Realized with their properties published on their
+    outputs (namespace name, quota limits). This stresses that a Namespace and its ResourceQuota are
+    portable intent — the declared boundary and its caps ARE the build instruction, the realized limits are
+    readable from the record rather than queried from the cluster — and that the pair rehydrates by
+    replaying the same intent against an eligible platform provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a Namespace with a ResourceQuota, and have both realize with the boundary and its caps
+    published on their outputs
+  success_criteria:
+  - The request declares the quota's edge as first-class — the ResourceQuota references the Namespace it
+    bounds; no cluster-native object or admission controller leaks into the intent
+  - The provider realizes the namespace and its quota; both reach Realized
+  - The namespace name and the quota's limits are readable from the resources' declared outputs, not queried
+    from the cluster
+  - A downstream workload places into the namespace by binding on its published boundary, within the
+    declared quota
+  - The namespace and quota rehydrate by replaying the same intent against an eligible platform provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the ResourceQuota's reference to the Namespace is the boundary edge; the caps are the record
+  - domain: policy
+    interaction: validation confirms the quota is well-formed against the namespace before dispatch
+  - domain: provider
+    interaction: the platform provider (Kubernetes-class) realizes the namespace and its quota
+  - domain: audit
+    interaction: the provision path and the realized boundary and caps are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: platform-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- platform-namespace
+- platform-resourcequota
+- provisioning-intent
+- portability
+- binding

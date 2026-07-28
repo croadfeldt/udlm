@@ -46,7 +46,13 @@
         "description": "Whether this hub hosts spoke control planes inside itself (the hosted-control-planes pattern). Hosted spokes are contained_by this hub; imported spokes are depends_on (soft)."
       }
     },
-    "required": []
+    "required": [],
+    "examples": [
+      {
+        "api_endpoint": "https://fleet-manager.internal:6443",
+        "hosted_control_planes": true
+      }
+    ]
   },
   "outputs": {
     "hub_ready": {
@@ -92,5 +98,15 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "platform/composite-hub-provisions-spoke",
+      "platform/provision-namespace-with-quota",
+      "platform/provision-node-pool"
+    ],
+    "flows": [
+      "docs/flows/platform-provisioning-lifecycle.md"
+    ]
+  }
 }

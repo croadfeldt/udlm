@@ -1,0 +1,61 @@
+uuid: uc-806b9109-9404-4d54-9d41-c397bd5b8825
+handle: network/provision-virtual-network
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Network.VirtualNetwork by intent alone — the VLAN it is
+    backed by, the subnet (CIDR) workloads on it receive, and a Network.Gateway as the segment''s routed
+    edge — without naming a bridge device, a host interface, or any provider-native network handle. The
+    network provider selects an eligible backend, realizes the virtual network on the declared VLAN with
+    the declared subnet, stands up the gateway as the segment''s exit, and both reach Realized with their
+    properties published on their outputs (VLAN id, subnet, gateway address). This stresses that a
+    VirtualNetwork is portable intent, not a provider-native bridge: the declared VLAN and subnet ARE the
+    build instruction, the realized attachment point is readable from the record rather than inferred from
+    the host L2 stack, and the segment rehydrates by replaying the same intent against an eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a VirtualNetwork by declared VLAN, subnet, and gateway, and have it realize with those
+    properties published on its outputs
+  success_criteria:
+  - The request carries the VLAN, subnet, and gateway from the record alone; no provider-native bridge or
+    host interface leaks into the intent
+  - The provider realizes the virtual network on the declared VLAN with the declared subnet and stands up
+    the gateway; both reach Realized
+  - The assigned VLAN id, subnet, and gateway address are readable from the resources' declared outputs, not
+    inferred provider-side
+  - A downstream workload attaches by binding on the VirtualNetwork's published attachment point, rather than
+    resolving a host bridge name
+  - The segment rehydrates by replaying the same intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared VLAN, subnet, and gateway edge are the complete, portable build record
+  - domain: policy
+    interaction: validation confirms the VLAN and subnet are admissible before dispatch
+  - domain: provider
+    interaction: the network provider (libvirt/OVN-class) realizes the virtual network and gateway to intent
+  - domain: audit
+    interaction: the provision path and the realized network properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: network-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- network-virtualnetwork
+- network-gateway
+- provisioning-intent
+- portability
+- binding

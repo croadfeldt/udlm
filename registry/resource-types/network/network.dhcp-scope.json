@@ -96,7 +96,28 @@
         "minimum": 1,
         "description": "Default lease time in seconds."
       }
-    }
+    },
+    "examples": [
+      {
+        "subnet": "192.0.2.0/24",
+        "ip_family": "ipv4",
+        "pools": [
+          {
+            "start": "192.0.2.100",
+            "end": "192.0.2.200"
+          }
+        ],
+        "options": {
+          "router": "192.0.2.1",
+          "dns_servers": [
+            "192.0.2.53",
+            "198.51.100.53"
+          ],
+          "domain_name": "example.com"
+        },
+        "lease_time": 86400
+      }
+    ]
   },
   "outputs": {
     "reservations": {
@@ -152,5 +173,15 @@
       "standard": "Microsoft",
       "note": "Windows DHCP 'scope'"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/configure-dhcp-scope",
+      "network/composite-segment-with-services",
+      "network/overlapping-subnet-refused"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

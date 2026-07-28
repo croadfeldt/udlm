@@ -54,7 +54,57 @@
         "additionalProperties": true,
         "description": "Opaque NMstate desired-state body — `state`, `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`), the type sub-objects (`vlan`/`link-aggregation`/`bridge`/`mac-vlan`), `routes.config[]`, `dns-resolver.config`. NOT restated field-by-field (adopt-by-reference); interpreted against `nmstate_schema_version`. 1:1 with NNCP.spec.desiredState."
       }
-    }
+    },
+    "examples": [
+      {
+        "nmstate_schema_version": "2.2",
+        "desired_state": {
+          "interfaces": [
+            {
+              "name": "bond0.100",
+              "type": "vlan",
+              "state": "up",
+              "vlan": {
+                "base-iface": "bond0",
+                "id": 100
+              },
+              "ipv4": {
+                "enabled": true,
+                "dhcp": false,
+                "address": [
+                  {
+                    "ip": "192.0.2.10",
+                    "prefix-length": 24
+                  }
+                ]
+              },
+              "ipv6": {
+                "enabled": false
+              }
+            }
+          ],
+          "routes": {
+            "config": [
+              {
+                "destination": "0.0.0.0/0",
+                "next-hop-address": "192.0.2.1",
+                "next-hop-interface": "bond0.100"
+              }
+            ]
+          },
+          "dns-resolver": {
+            "config": {
+              "server": [
+                "192.0.2.53"
+              ],
+              "search": [
+                "example.com"
+              ]
+            }
+          }
+        }
+      }
+    ]
   },
   "outputs": {
     "applied": {
@@ -86,5 +136,15 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier2_record"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/provision-virtual-network",
+      "network/composite-segment-with-services",
+      "network/allocate-ip-from-pool"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

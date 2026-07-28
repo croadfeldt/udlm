@@ -113,7 +113,24 @@
         },
         "description": "Addresses withheld from allocation (gateway, broadcast, known-static, avoid-buggy). Not carved even if inside a range."
       }
-    }
+    },
+    "examples": [
+      {
+        "prefix": "192.0.2.0/24",
+        "ip_family": "ipv4",
+        "ranges": [
+          {
+            "start": "192.0.2.100",
+            "end": "192.0.2.200"
+          }
+        ],
+        "allocation_mode": "dynamic",
+        "exclusions": [
+          "192.0.2.1",
+          "192.0.2.255"
+        ]
+      }
+    ]
   },
   "immutable": [
     "ip_family"
@@ -144,5 +161,15 @@
       "cardinality": "0..1",
       "description": "The network segment this pool serves. A pool is scoped to one L2/L3 segment (VirtualNetwork/VLAN); addresses carved from it are reachable on that segment."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/configure-dhcp-scope",
+      "network/allocate-ip-from-pool",
+      "network/overlapping-subnet-refused"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

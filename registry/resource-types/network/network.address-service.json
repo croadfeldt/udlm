@@ -51,7 +51,16 @@
         "type": "boolean",
         "description": "Served redundantly (e.g. an HA pair)."
       }
-    }
+    },
+    "examples": [
+      {
+        "services": [
+          "dhcp",
+          "dns"
+        ],
+        "ha": true
+      }
+    ]
   },
   "outputs": {
     "serving": {
@@ -96,5 +105,15 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/configure-dhcp-scope",
+      "network/configure-dns-zone",
+      "network/composite-segment-with-services"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

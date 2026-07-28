@@ -1,0 +1,60 @@
+uuid: uc-a765babe-bc4e-4866-be23-f801ee227223
+handle: platform/composite-hub-provisions-spoke
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a fleet slice as one composite intent: a Platform.Hub — the
+    multi-cluster management plane — provisions a spoke Platform.Namespace onto a managed cluster it governs.
+    The two resources form a hub-to-spoke dependency: the spoke namespace references the hub as its managing
+    plane, so the spoke cannot bind until the hub is Realized and able to accept the provisioning request.
+    The dependency edge is first-class, so realization ordering (hub first, then the spoke it provisions) is
+    computed from the graph rather than scripted by hand, and a failure at the hub tier bounds the blast
+    radius to the spoke that depends on it rather than orphaning a half-provisioned namespace with no
+    managing plane. This stresses that a hub-managed fleet is one composite whose ordering and reach derive
+    from the declared hub-spoke edge, and rehydrates by replaying the edge in the same order — hub, then
+    spoke.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a Hub that provisions a spoke Namespace, and have the hub-to-spoke dependency realize in
+    order — hub first, then the spoke it manages
+  success_criteria:
+  - The composite declares the dependency as a first-class edge — the spoke Namespace references the Hub as
+    its managing plane
+  - Realization ordering (hub first, then the spoke it provisions) is computed from the graph, not scripted
+  - The spoke does not bind until the hub is Realized and able to accept the provisioning request
+  - A failure at the hub tier bounds the blast radius to the spoke that depends on it — no orphaned namespace
+    with no managing plane
+  - The composite rehydrates by replaying the hub-to-spoke edge in the same dependency order
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: composite_service
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the spoke Namespace's reference to the Hub is the edge from which ordering is computed
+  - domain: policy
+    interaction: the spoke's dependency is checked — the hub Realized — before the spoke dispatches
+  - domain: provider
+    interaction: the hub realizes first; it then provisions the spoke namespace onto a managed cluster
+  - domain: audit
+    interaction: the realization order and the hub-to-spoke outcome are recorded against the graph
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: platform-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- platform-hub
+- platform-namespace
+- composite-service
+- dependency-chain
+- hub-spoke

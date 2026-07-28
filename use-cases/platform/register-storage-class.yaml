@@ -1,0 +1,58 @@
+uuid: uc-2aa0365f-8c4c-4df4-b8f2-4234ae87b62a
+handle: platform/register-storage-class
+version: 1.0.0
+scenario:
+  description: 'A platform engineer registers a Platform.StorageClass by intent alone — the named policy by
+    which the platform provisions volumes: a provisioner, a reclaim policy, and a volume-binding mode —
+    without naming a CSI driver deployment, a cluster object, or any provider-native handle. The platform
+    provider realizes the storage class as an available provisioning policy, and it reaches Realized with
+    its properties published on its outputs (class name, provisioner, reclaim policy, binding mode). This
+    stresses that a StorageClass is portable policy intent, not a provider-native cluster object: the
+    declared provisioner and policy ARE the registration, the realized class is readable from the record
+    rather than listed from the cluster, and a downstream volume claim binds on the registered class by name
+    — so the class rehydrates by replaying the same intent against an eligible platform provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Register a StorageClass by declared provisioner, reclaim policy, and binding mode, and have it
+    realize as an available provisioning policy published on its outputs
+  success_criteria:
+  - The request carries the class name, provisioner, reclaim policy, and binding mode from the record alone;
+    no CSI driver deployment or cluster object leaks into the intent
+  - The provider realizes the storage class as an available provisioning policy; the class reaches Realized
+  - The class name, provisioner, reclaim policy, and binding mode are readable from the class's declared
+    outputs, not listed from the cluster
+  - A downstream volume claim binds on the registered class by name, rather than resolving a cluster object
+  - The class rehydrates by replaying the same intent against an eligible platform provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_no_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared provisioner and policy are the complete, portable registration record
+  - domain: policy
+    interaction: validation confirms the provisioner and policy are well-formed before dispatch
+  - domain: provider
+    interaction: the platform provider (Kubernetes StorageClass-class) registers the class as available
+  - domain: audit
+    interaction: the registration path and the realized class properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: platform-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- platform-storageclass
+- provisioning-intent
+- portability
+- binding

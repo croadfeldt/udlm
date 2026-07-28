@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3568,
-    "mutations_rejected": 3568,
+    "mutations_attempted": 3786,
+    "mutations_rejected": 3786,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -92,32 +92,32 @@
         "rejected": 34
       },
       "Network.AddressService": {
-        "attempted": 24,
-        "rejected": 24
+        "attempted": 32,
+        "rejected": 32
       },
       "Network.ConnectionProfile": {
         "attempted": 25,
         "rejected": 25
       },
       "Network.DHCPScope": {
-        "attempted": 76,
-        "rejected": 76
+        "attempted": 85,
+        "rejected": 85
       },
       "Network.DNSZone": {
-        "attempted": 56,
-        "rejected": 56
+        "attempted": 142,
+        "rejected": 142
       },
       "Network.Gateway": {
-        "attempted": 47,
-        "rejected": 47
+        "attempted": 130,
+        "rejected": 130
       },
       "Network.IPAddress": {
-        "attempted": 28,
-        "rejected": 28
+        "attempted": 29,
+        "rejected": 29
       },
       "Network.IPAddressPool": {
-        "attempted": 68,
-        "rejected": 68
+        "attempted": 77,
+        "rejected": 77
       },
       "Network.Switch": {
         "attempted": 79,
@@ -128,32 +128,32 @@
         "rejected": 32
       },
       "Network.VirtualNetwork": {
-        "attempted": 35,
-        "rejected": 35
+        "attempted": 38,
+        "rejected": 38
       },
       "Observability.LogShipper": {
         "attempted": 50,
         "rejected": 50
       },
       "Platform.Hub": {
-        "attempted": 20,
-        "rejected": 20
+        "attempted": 22,
+        "rejected": 22
       },
       "Platform.Namespace": {
-        "attempted": 32,
-        "rejected": 32
+        "attempted": 35,
+        "rejected": 35
       },
       "Platform.NodePool": {
-        "attempted": 96,
-        "rejected": 96
+        "attempted": 105,
+        "rejected": 105
       },
       "Platform.ResourceQuota": {
         "attempted": 43,
         "rejected": 43
       },
       "Platform.StorageClass": {
-        "attempted": 78,
-        "rejected": 78
+        "attempted": 83,
+        "rejected": 83
       },
       "Security.CredentialRef": {
         "attempted": 56,
@@ -314,7 +314,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 127,
+    "files_scanned": 138,
     "covered": [
       "Capability",
       "Compute.BareMetalHost",
@@ -322,7 +322,19 @@
       "Compute.Container",
       "Compute.VirtualMachine",
       "Data.Database",
+      "Network.AddressService",
+      "Network.ConnectionProfile",
+      "Network.DHCPScope",
+      "Network.DNSZone",
+      "Network.Gateway",
+      "Network.IPAddress",
+      "Network.IPAddressPool",
+      "Network.VirtualNetwork",
       "Platform.Hub",
+      "Platform.Namespace",
+      "Platform.NodePool",
+      "Platform.ResourceQuota",
+      "Platform.StorageClass",
       "Security.CredentialRef",
       "Software.Service",
       "SoftwareImage",
@@ -347,21 +359,9 @@
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
-      "Network.AddressService",
-      "Network.ConnectionProfile",
-      "Network.DHCPScope",
-      "Network.DNSZone",
-      "Network.Gateway",
-      "Network.IPAddress",
-      "Network.IPAddressPool",
       "Network.Switch",
       "Network.VLAN",
-      "Network.VirtualNetwork",
       "Observability.LogShipper",
-      "Platform.Namespace",
-      "Platform.NodePool",
-      "Platform.ResourceQuota",
-      "Platform.StorageClass",
       "Security.DirectoryService",
       "Storage.Cluster",
       "TaxonomyTerm",

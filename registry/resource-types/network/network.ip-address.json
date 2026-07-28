@@ -53,7 +53,14 @@
         "default": "dhcp",
         "description": "Origin discriminator (RFC 8344 `origin` = NMstate). `static` = a fixed reservation bound to the interface (== a static DHCP reservation); `dhcp` = leased; `link-layer`/`random` = SLAAC/privacy."
       }
-    }
+    },
+    "examples": [
+      {
+        "address": "192.0.2.10/24",
+        "ip_family": "ipv4",
+        "allocation": "static"
+      }
+    ]
   },
   "immutable": [
     "ip_family"
@@ -112,5 +119,15 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier2_record"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/allocate-ip-from-pool",
+      "network/composite-segment-with-services",
+      "network/overlapping-subnet-refused"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }
