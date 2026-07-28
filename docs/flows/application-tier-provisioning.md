@@ -26,17 +26,17 @@ must-reject naming its root, never a silent admit-with-warning or half-up servic
 
 ```mermaid
 flowchart TD
-    P[Reference package\nname + version + digest] --> PG{CVE posture ≤\nprofile threshold?}
-    PG -->|disallowed-severity CVE| PG1[Refuse — name the CVE +\nseverity (SBOM gate)]
-    PG -->|clears| I[Reference image\nby digest]
-    I --> IG{Signature verifies?}
-    IG -->|absent / unverifiable| IG1[Refuse — name the failed\nverification (supply-chain gate)]
-    IG -->|verified| S[Deploy service from image\ndeclare database dependency]
-    S --> DB{Database realizable?\nengine + HA floor met}
-    DB -->|HA required, no eligible provider| DB1[Refuse — name the unmet\nrequirement (capability mismatch)]
-    DB -->|realizes| BIND{Dependency satisfied\nat bind time?}
-    BIND -->|database unrealizable| BIND1[Block/refuse service —\nname the root dependency, ADR-052]
-    BIND -->|satisfied| R[Realize service bound to database\nrecord the chain + provenance]
+    P["Reference package<br/>name + version + digest"] --> PG{"CVE posture ≤<br/>profile threshold?"}
+    PG -->|disallowed-severity CVE| PG1["Refuse — name the CVE +<br/>severity (SBOM gate)"]
+    PG -->|clears| I["Reference image<br/>by digest"]
+    I --> IG{"Signature verifies?"}
+    IG -->|absent / unverifiable| IG1["Refuse — name the failed<br/>verification (supply-chain gate)"]
+    IG -->|verified| S["Deploy service from image<br/>declare database dependency"]
+    S --> DB{"Database realizable?<br/>engine + HA floor met"}
+    DB -->|HA required, no eligible provider| DB1["Refuse — name the unmet<br/>requirement (capability mismatch)"]
+    DB -->|realizes| BIND{"Dependency satisfied<br/>at bind time?"}
+    BIND -->|database unrealizable| BIND1["Block/refuse service —<br/>name the root dependency, ADR-052"]
+    BIND -->|satisfied| R["Realize service bound to database<br/>record the chain + provenance"]
 ```
 
 ## What the application tier adds

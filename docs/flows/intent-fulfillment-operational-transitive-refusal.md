@@ -28,13 +28,13 @@ sequenceDiagram
     participant PVC as PVC (root)
     participant Ct as Container
     participant App as App
-    C->>P: Intent {app --operational--> container --operational--> PVC}
-    P->>PVC: validate → permanent policy violation
-    Note over PVC: status = refused (immediate; window inert)
-    P->>Ct: dependency refused → blocked-permanent
-    P->>App: dependency (container) blocked-permanent → blocked-permanent
-    Note over App,Ct: inherited transitively down the operational chain; nothing realized dangling
-    P-->>C: REFUSAL-with-resolution — root = PVC + violated rule; chain = container, app
+    C->>P: Intent (app operationalto container operationalto PVC)
+    P->>PVC: validate to permanent policy violation
+    Note over PVC: status = refused (immediate, window inert)
+    P->>Ct: dependency refused to blocked-permanent
+    P->>App: dependency (container) blocked-permanent to blocked-permanent
+    Note over App,Ct: inherited transitively down the operational chain, nothing realized dangling
+    P-->>C: REFUSAL-with-resolution — root = PVC + violated rule, chain = container, app
     P->>P: members outside this chain realize normally
 ```
 

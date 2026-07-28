@@ -29,10 +29,10 @@ sequenceDiagram
     loop reconciliation over time
         P->>PVC: re-attempt reserve
     end
-    PVC-->>P: capacity freed → Realized
-    P->>Ct: recompute-dependents → reserve + realize
+    PVC-->>P: capacity freed to Realized
+    P->>Ct: recompute-dependents to reserve + realize
     Ct-->>C: Realized (converged — no re-request)
-    P-->>C: surfaced state: blocked-transient → realized; warning clears
+    P-->>C: surfaced state: blocked-transient to realized, warning clears
     Note over P,C: convergence traces to the original intent (auditable)
 ```
 

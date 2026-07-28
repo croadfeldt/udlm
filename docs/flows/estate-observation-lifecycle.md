@@ -24,13 +24,13 @@ along the way emits an audit record — auditability is stated once here, not re
 
 ```mermaid
 flowchart TD
-    A[Provider observes a real resource\nHardware / Facility / Identity / fabric] --> B[Ingest as realized/observed\n+ observation provenance]
-    B --> C{Values in the published\nmodel vocabulary?}
-    C -->|off-vocabulary field/value| Q[Quarantine — name the field + value;\nhold for reconciliation, never admit as valid]
-    Q --> AUD[Emit audit record\n(refusal ⇒ audit, single-source)]
-    C -->|conforms| D[Normalize to model vocabulary]
-    D --> E[Link into the dependency graph\nrealized edges + provenance]
-    E --> F[Observed record queryable\n(blast-radius, SBOM/CVE, topology)]
+    A["Provider observes a real resource<br/>Hardware / Facility / Identity / fabric"] --> B["Ingest as realized/observed<br/>+ observation provenance"]
+    B --> C{"Values in the published<br/>model vocabulary?"}
+    C -->|off-vocabulary field/value| Q["Quarantine — name the field + value;<br/>hold for reconciliation, never admit as valid"]
+    Q --> AUD["Emit audit record<br/>(refusal ⇒ audit, single-source)"]
+    C -->|conforms| D["Normalize to model vocabulary"]
+    D --> E["Link into the dependency graph<br/>realized edges + provenance"]
+    E --> F["Observed record queryable<br/>(blast-radius, SBOM/CVE, topology)"]
 ```
 
 ## What observation adds

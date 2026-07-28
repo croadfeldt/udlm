@@ -21,17 +21,17 @@ declaring one Type is the payoff — engine migration becomes a provider swap on
 
 ```mermaid
 flowchart TD
-    A[Author a Class\nSharedDataElements at one scope] --> B{Liskov gate\nchild vs parent}
-    B -->|contradicts:\ntype change / enum widen /\nlooser bound / dropped required| B1[Refuse — name element + violation]
-    B -->|adds or refines\n(narrows)| C[Generator: compile Type Class + ancestors]
-    C --> D{Compiled spec valid?\n(resource-type-spec meta-schema)}
-    D -->|no| D1[Refuse — not a conformant flat spec]
-    D -->|yes| E[registry/generated/<Type>.json\nsame wire contract consumers read today]
-    E --> F{--check: faithful recompilation}
-    F -->|stale| F1[Refuse — regenerate]
-    F -->|fresh| G[Consumers read the flat spec\nunchanged; cut over to class-aware\nreads at their own pace]
-    G --> H[Address any element\nCompute.VM#cpu or\nhttps://auth/Compute/VM#cpu]
-    H --> I[Portability derived from\nmost-specific populated scope]
+    A["Author a Class<br/>SharedDataElements at one scope"] --> B{"Liskov gate<br/>child vs parent"}
+    B -->|"contradicts:<br/>type change / enum widen /<br/>looser bound / dropped required"| B1["Refuse — name element + violation"]
+    B -->|"adds or refines<br/>(narrows)"| C["Generator: compile Type Class + ancestors"]
+    C --> D{"Compiled spec valid?<br/>(resource-type-spec meta-schema)"}
+    D -->|"no"| D1["Refuse — not a conformant flat spec"]
+    D -->|"yes"| E["registry/generated/<Type>.json<br/>same wire contract consumers read today"]
+    E --> F{"--check: faithful recompilation"}
+    F -->|"stale"| F1["Refuse — regenerate"]
+    F -->|"fresh"| G["Consumers read the flat spec<br/>unchanged; cut over to class-aware<br/>reads at their own pace"]
+    G --> H["Address any element<br/>Compute.VM#cpu or<br/>https://auth/Compute/VM#cpu"]
+    H --> I["Portability derived from<br/>most-specific populated scope"]
 ```
 
 ## The invariants

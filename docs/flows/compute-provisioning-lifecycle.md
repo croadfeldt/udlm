@@ -26,14 +26,14 @@ hardware requirement → refuse naming the unmet capability; **an unresolvable i
 
 ```mermaid
 flowchart TD
-    A[Compute intent\nsize + OS/image + hardware requirements] --> B{Eligible provider/host?\ncapabilities ⊇ requirements}
-    B -->|none satisfies\na hardware requirement| B1[Refuse — name the unmet\ncapability (mismatch, ADR-050)]
-    B -->|eligible set| C{Image / source resolvable?}
-    C -->|unresolvable| C1[Refuse — name the missing\nimage; never crash-loop / Pending]
-    C -->|resolvable| D[Reserve on the selected provider\nADR-011 reserve-not-activate]
-    D --> E{Provider realizes?}
-    E -->|fails mid-realize| E1[Surface FAILURE + resolution\n(not silently Pending), uc-11]
-    E -->|succeeds| F[Realize VM / container / cluster / host\nrecord placement + provenance]
+    A["Compute intent<br/>size + OS/image + hardware requirements"] --> B{"Eligible provider/host?<br/>capabilities ⊇ requirements"}
+    B -->|none satisfies<br/>a hardware requirement| B1["Refuse — name the unmet<br/>capability (mismatch, ADR-050)"]
+    B -->|eligible set| C{"Image / source resolvable?"}
+    C -->|unresolvable| C1["Refuse — name the missing<br/>image; never crash-loop / Pending"]
+    C -->|resolvable| D["Reserve on the selected provider<br/>ADR-011 reserve-not-activate"]
+    D --> E{"Provider realizes?"}
+    E -->|fails mid-realize| E1["Surface FAILURE + resolution<br/>(not silently Pending), uc-11"]
+    E -->|succeeds| F["Realize VM / container / cluster / host<br/>record placement + provenance"]
 ```
 
 ## What compute placement adds over request-realization

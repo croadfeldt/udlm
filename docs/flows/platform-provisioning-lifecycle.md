@@ -20,11 +20,11 @@ of the hub; a hub-provisioned spoke realizes the dependency in order.
 
 ```mermaid
 flowchart TD
-    A[Hub provisions namespace\n+ resource quota] --> B[Bind node pool + storage class\nas the namespace's capacity sources]
-    B --> C{Workload request within\nthe namespace quota?}
-    C -->|exceeds cpu/memory/pods limit| C1[Refuse — name the exceeded\nquota limit (not admitted over-quota)]
-    C -->|within| D[Admit workload\ndraw from node pool / storage class]
-    D --> E[Record namespace + quota accounting\n+ hub→namespace provenance]
+    A["Hub provisions namespace<br/>+ resource quota"] --> B["Bind node pool + storage class<br/>as the namespace's capacity sources"]
+    B --> C{"Workload request within<br/>the namespace quota?"}
+    C -->|exceeds cpu/memory/pods limit| C1["Refuse — name the exceeded<br/>quota limit (not admitted over-quota)"]
+    C -->|within| D["Admit workload<br/>draw from node pool / storage class"]
+    D --> E["Record namespace + quota accounting<br/>+ hub→namespace provenance"]
 ```
 
 ## What platform provisioning adds
