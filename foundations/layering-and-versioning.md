@@ -21,6 +21,19 @@
 
 ---
 
+## In one breath (start here)
+
+A **layer** is a reusable, independently-owned set of field values — platform defaults, org standards,
+service config, the consumer's request. At request time UDLM **merges the layers in a fixed authority
+order** (lowest first), and each layer declares whether lower or higher owners may override its value
+(`allow` | `constrained` | `immutable`, `LAY-005`). The merged result — with **per-field provenance**
+(`LAY-008`) recording which layer set each value — becomes the **Requested state** (§12, and
+[four-states.md](four-states.md)). **Policies apply _over_ the merged result; they are not layers** (§1b).
+
+→ **§1a** shows the whole mechanism on one field (the fastest way in); **§7** is the assembly diagram.
+
+---
+
 ## 1. Purpose
 
 Data Layers are the mechanism by which DCM assembles a complete, contextually correct request payload from a set of composable, reusable data definitions. Rather than requiring consumers to specify every field of every resource they request, layers allow standards, organizational context, service-specific configuration, and consumer intent to be declared independently and merged into a unified payload at request time.
