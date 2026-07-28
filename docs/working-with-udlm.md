@@ -23,6 +23,7 @@ can't make — is it UDLM or DCM, did it reduce-to-existing, should it exist, is
 You're a **consumer / system builder**. You read and build on the model rather than authoring registry
 artifacts; you declare and pin what you read.
 - **[docs/consuming.md](consuming.md)** — how to read it, consume it safely, and extend it as a provider.
+- **[docs/implementing-a-resource-type.md](implementing-a-resource-type.md)** — a worked, end-to-end walkthrough of building provider support for one type (`Compute.VirtualMachine`), each step citing the obligation that governs it, with a "could you build from this?" self-test.
 
 ### ▸ Contribute to the project — the process, expectations, and guidelines
 You're a **contributor**. Here's how contribution works: the PR lifecycle, what's expected, and the
