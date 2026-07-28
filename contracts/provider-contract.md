@@ -408,7 +408,7 @@ POST {dcm_lifecycle_endpoint}
 
 ## 6a. Base Contract — Two-phase realization (reserve / commit / release)
 
-Implementation is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, reconciles the reserved graph to a fixed point, checks it against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria from the reserved parent's facts **before any resource is built**, and makes abort a hold-drop, not a teardown.
+Realization is **two-phase** (reserve → commit). The *data-model* contract — the guarantee, the first-class reservation artifact, and the all-or-nothing commit barrier — is defined once in [four-states.md §2.3a](../foundations/four-states.md) (UDLM ADR-011). **This section specifies only the _provider's_ obligations** for that contract: the three dispatch operations, TTL negotiation, and expiry handling.
 
 **Every provider that implements `realize_resources` MUST support three dispatch request types** — `reserve`, `commit`, `release` — alongside `converge` / `decommission`. They are **operations on the dispatch channel** (an `operation` discriminator on the dispatch payload, §8.1), a base-floor obligation (§1a item 4), not optional extensions:
 
