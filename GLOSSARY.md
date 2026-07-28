@@ -2,7 +2,13 @@
 
 Defines the load-bearing terms used across the UDLM specification, so readers (and
 conformance reviewers) share one vocabulary. Where a term is overloaded in common usage,
-this glossary states the **single sense UDLM means**.
+this glossary states the **single sense UDLM means**. Each entry gives a one-line plain-language
+sense and points to the term's **authoritative home** — the glossary orients; it does not redefine.
+
+> **New here? Read these six first**, then skim the rest: **UDLM**, the **four states**
+> (Intent → Requested → Realized → Discovered), **implementation vs. Realized** (a *system that
+> implements UDLM* vs. a *lifecycle state* — different things sharing no meaning), **sovereignty**,
+> the **information firewall**, and the **scoped Class**. Everything else builds on those.
 
 | Term | Definition |
 |---|---|
@@ -19,6 +25,21 @@ this glossary states the **single sense UDLM means**.
 | **concern_type** | A Policy Group artifact classifier (e.g., `data_authorization_boundary`) naming which governance concern a policy matrix addresses. |
 | **DCM** | Data Center Management — the example implementation of the **Resource** (infrastructure) family. **Non-normative** with respect to this spec: UDLM is implementation-neutral; DCM is the primary driver but is not required to define, validate, or use UDLM. |
 | **DAV** | An open-source architecture-assessment tool, cited in this spec **only as a non-normative example implementation** of the **Knowledge** family (the peer demonstration to DCM's Resource family — see `docs/examples/case-study-dav-knowledge-realization.md`). **Nothing in UDLM's definition, validation, or use depends on DAV.** It is illustrative, included to show UDLM holds outside infrastructure. |
+| **Intent** (state) | The first lifecycle state: the desired outcome, expressed **independently of any provider** — "what is wanted," not "what exists." Defined in [`foundations/four-states.md`](foundations/four-states.md). |
+| **Requested** (state) | The second lifecycle state: intent accepted and **reserved** for realization — held, not yet active. See *reserve phase*. [`foundations/four-states.md`](foundations/four-states.md); ADR-011. |
+| **Realized** (state) | The third lifecycle state: intent made real by a provider — "what exists." **Distinct from _implementation_** (above), which is a *system* that implements UDLM. This word is a **state**. [`foundations/four-states.md`](foundations/four-states.md). |
+| **Discovered** (state) | The fourth lifecycle state: pre-existing (brownfield / observed) resources ingested into the model **without a prior intent**. [`foundations/four-states.md`](foundations/four-states.md). |
+| **intent vs. realized** | The core split UDLM keeps: provider-independent *intent* stays separate from provider-produced *realized* state, so intent is **portable** and can be re-realized elsewhere (e.g., rehydration after loss). [`foundations/four-states.md`](foundations/four-states.md). |
+| **convergence** | Closing the gap between intent and realized state — the single lifecycle loop that reconciles the two (*Intent + Realized → Converge*). Authoritative: ADR-030. |
+| **reserve / reserve phase** | Realization's **first phase** (two-phase realization, ADR-011): resources are *held/reserved* and the reserved graph reconciles to a fixed point **before the commit barrier** — reserved, not yet active. [`contracts/policy-contract.md`](contracts/policy-contract.md) §7.6; ADR-011. |
+| **sovereignty** (zone / boundary) | The requirement that **anything** — resources, processes, information, data — stays bound to its **approved zones / boundaries**, *and* that an entity's **provenance is approved** for the boundary (did it come from an approved source; is this server, image, or firewall on the approved list for my zone?). **UDLM's role is to let this requirement be *codified* — as immutable, structural (not advisory) data (`sovereignty_zone` / `data_classification` / jurisdiction), attestation-backed — and *communicated* to whoever enforces it. UDLM does not vet or enforce; DCM gets the decisions made and enables enforcement.** [`design-principles/cross-cutting-requirements.md`](design-principles/cross-cutting-requirements.md) (P4). |
+| **attestation** | Cryptographic proof binding a claim (identity, realized state, capability, operation) to the party that made it; **mechanism-neutral** (mTLS, signed JWT, HSM-attested key). [`contracts/provider-callback-auth.md`](contracts/provider-callback-auth.md). |
+| **policy** | The rules an estate applies to **decide and govern** — what is allowed or required, and how trade-offs resolve. The **acting** side of the Data·Policy·Provider split: policy evaluates and enforces; the data model only carries the record it acts on. Mechanics: [`contracts/policy-contract.md`](contracts/policy-contract.md). |
+| **information firewall** (also **guard**) | The **control of information flow** across a boundary — what information may cross, and to / from whom, when, where, and why. A **function, not a mechanism**: UDLM **carries the contract**; **policy** (enforced by DCM) is the primary control (ADR-041), and *anything* that governs the flow — a sovereignty boundary, field projection, a structural constraint — can serve the role. Distinct from acting on the data itself. Authoritative: ADR-041. |
+| **scoped Class** (Base / Type / Provider) | The layered resource-type meta-model: a type is defined in scopes — **Base → Type → Provider** — each *extending* (add / refine, never contradict) the one above. Authoritative: ADR-038. |
+| **SharedDataElement** | A named, reusable data element defined at a Class scope (e.g., provider-authored, scoped to that provider); the modern carrier for provider-specific data on a resource type, **superseding the retired per-provider extension field**. Authoritative: ADR-038. |
+| **adopt-by-reference** | Bringing an external standard in by **referencing** it (absorb / embed / adopt dispositions) rather than copying its text, so the standard's owner stays authoritative. Core tenet **T5**; [`design-principles/adopted-standards.md`](design-principles/adopted-standards.md). |
+| **touch-trigger** | An estate's **declared stance** on whether a "touch" (any re-evaluation or rebuild) re-runs policies against current rules (*adopt-current*) or replays *pinned* revisions. Authoritative: ADR-045 §8. |
 
 > **Implementation-neutrality (normative):** UDLM is defined, validated, and used independently
 > of any implementation. Where DCM or DAV are named, they are **examples**, never requirements.
