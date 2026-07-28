@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-"""Dotted-address resolution for the scoped-Class hierarchy (ADR-038 / realization-plan P0).
+"""Address resolution for the scoped-Class hierarchy (ADR-038 / realization-plan P0).
 
-An address `<ClassName>#<element>` (e.g. `Compute.VM#cpu`) resolves to the element as seen from that
-Class — walking the inheritance chain to find the *owning* Class (the nearest scope, self→Base, that
-declares the element) and its effective schema. This is the coordinate the ADR-054 projection axis
-traverses, and what query, impact, and RBAC scope against — one resolver, reused.
+An address names an element as seen from a Class, in either of the two ADR-038 notations — they are
+the same coordinate and resolve identically:
+  - **dot / compact**:  `Compute.VM#cpu`                              (segments dotted; element after `#`)
+  - **URL** (preferred): `https://udlm.dev/class/Compute/VM#cpu`      (segments slashed; element as fragment)
+The URL form follows OData/Redfish addressing (`@odata.id`) and the ADR-038 `https://<authority>/Compute/VM`
+convention; any authority is accepted on input (federated addressing), and the canonical URL is emitted.
 
-  resolve(address) -> {"address", "via_class", "owning_class", "scope", "element", "schema",
-                       "inherited": bool}   (raises KeyError on an unknown Class / element)
-  CLI:  resolve_class_address.py Compute.VM#cpu Process.OSPatch#idempotency   (JSON per address)
+Resolution walks the inheritance chain to the *owning* Class (the nearest scope, self→Base, that
+declares the element) and its effective schema — the coordinate the ADR-054 projection axis traverses,
+and what query, impact, and RBAC scope against. One resolver, both notations.
+
+  resolve(address) -> {"address", "url", "authority", "via_class", "owning_class", "scope",
+                       "element", "schema", "inherited": bool}   (raises KeyError on unknown Class/element)
+  CLI:  resolve_class_address.py Compute.VM#cpu https://udlm.dev/class/Process/OSPatch#idempotency
 
 Resolution rules:
 - The element is looked up from the addressed Class upward; the *nearest* declaring Class owns it
@@ -52,17 +58,37 @@ def _chain(name, by_name):
     return order
 
 
+def _parse_address(address):
+    """(authority, class_name, element) from either notation. class_name is always the dotted form."""
+    if "#" not in address:
+        raise KeyError(f"not a class address (missing '#<element>'): {address!r}")
+    head, element = address.rsplit("#", 1)
+    if head.startswith("http://") or head.startswith("https://"):
+        rest = head.split("://", 1)[1]
+        authority, _, path = rest.partition("/")
+        segs = [s for s in path.split("/") if s and s not in ("registry", "class", "udlm")
+                and not s[0].isdigit()]  # drop registry/class/udlm/<spec-version> scaffolding
+        if not segs:
+            raise KeyError(f"URL address names no Class path: {address!r}")
+        return authority, ".".join(segs), element
+    return None, head, element  # dot notation — segments already dotted
+
+
+def canonical_url(class_name, element, authority="udlm.dev"):
+    return f"https://{authority}/class/{'/'.join(class_name.split('.'))}#{element}"
+
+
 def resolve(address, by_name=None):
     by_name = by_name or load_classes()
-    if "#" not in address:
-        raise KeyError(f"not a class address (expected <ClassName>#<element>): {address!r}")
-    cls_name, element = address.split("#", 1)
+    authority, cls_name, element = _parse_address(address)
     chain = _chain(cls_name, by_name)  # self → Base; raises on unknown Class
     for depth, cls in enumerate(chain):
         for el in cls.get("elements") or []:
             if el["element"] == element:
                 return {
-                    "address": address,
+                    "address": f"{cls_name}#{element}",                       # canonical dot form
+                    "url": canonical_url(cls_name, element, authority or "udlm.dev"),  # canonical URL form
+                    "authority": authority,                                   # None for a local dot address
                     "via_class": cls_name,
                     "owning_class": cls["resource_type"],
                     "scope": el.get("scope"),

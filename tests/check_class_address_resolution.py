@@ -18,6 +18,7 @@ by_name = R.load_classes()
 
 CASES = [
     # address                              owning_class          inherited
+    # --- dot / compact notation ---
     ("Compute#cpu",                        "Compute",            False),   # declared on the Base itself
     ("Compute.VM#cpu",                     "Compute",            True),    # inherited from Base
     ("Compute.VM#firmware",                "Compute.VM",         False),   # declared on the Type
@@ -26,6 +27,11 @@ CASES = [
     ("Process.OSPatch#patch_policy",       "Process.OSPatch",    False),   # declared on the Type
     ("Process.OSPatch.EngineBlue#definition_ref", "Process.OSPatch.EngineBlue", False),  # provider-scope
     ("Process.OSPatch.EngineBlue#idempotency",    "Process",     True),    # inherited two levels up
+    # --- URL notation (the same coordinates, ADR-038's preferred form) ---
+    ("https://udlm.dev/class/Compute/VM#cpu",              "Compute",         True),   # local URL
+    ("https://state.mn/Compute/VM#firmware",              "Compute.VM",      False),  # federated authority
+    ("https://udlm.dev/registry/udlm/0.1/class/Process/OSPatch#idempotency", "Process", True),  # $id-scaffolded URL
+    ("https://peer.dcm.east/Process/OSPatch/EngineBlue#definition_ref", "Process.OSPatch.EngineBlue", False),
 ]
 UNRESOLVABLE = [
     "Compute.VM#does_not_exist",   # no such element
@@ -54,6 +60,12 @@ def main():
             fails.append(f"{addr}: expected UNRESOLVED, but it resolved")
         except KeyError:
             pass
+    # the two notations are the same coordinate — they must resolve identically
+    for dot, url in [("Compute.VM#cpu", "https://udlm.dev/class/Compute/VM#cpu"),
+                     ("Process.OSPatch.EngineBlue#idempotency", "https://x/Process/OSPatch/EngineBlue#idempotency")]:
+        rd, ru = R.resolve(dot, by_name), R.resolve(url, by_name)
+        if (rd["owning_class"], rd["element"], rd["scope"]) != (ru["owning_class"], ru["element"], ru["scope"]):
+            fails.append(f"notation mismatch: {dot} vs {url} resolve differently")
     for f in fails:
         print("FAIL [ADR-RES] " + f)
     print(f"{len(CASES)} resolution(s) + {len(UNRESOLVABLE)} unresolvable case(s) checked, {len(fails)} failure(s)")
