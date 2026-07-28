@@ -42,7 +42,8 @@ request-realization first.
 
 **The 21 September-release use cases** are documented as flows here, each
 labeled by its Use Case number and built on request-realization. Grouped by persona in
-**[by-persona.md](by-persona.md)** — the usage-by-role view.
+**[by-persona.md](by-persona.md)** — the usage-by-role view. **UC-22 (governed automation)** extends the
+set — governing an automation by its *effect*, not just the artifact (inspect → govern → tenancy).
 
 ### Intent fulfillment — dependencies (with a nature) + a convergence window
 
