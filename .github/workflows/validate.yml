@@ -61,11 +61,11 @@ jobs:
       - run: python3 tests/check_class_liskov.py
       - run: python3 registry/tools/generate_class_specs.py --check
       - run: python3 tests/check_class_address_resolution.py
-      # Spec-completeness scoreboard (every spec ships with a UC + example + flow): a report
-      # today (heuristic name-match), surfacing the coverage gap each run. The review sweep
-      # enforces at signoff; a structural coverage link (spec `coverage:` block or manifest)
-      # upgrades this to `--strict` and a hard gate.
-      - run: python3 registry/tools/spec_coverage.py
+      # Spec-completeness gate (rule-36 — every spec ships with a UC + example + flow, declared in
+      # its structural `coverage:` block): every declared referent must resolve (COV-001), and the
+      # backfill backlog (spec-coverage-backlog.yaml) must match the tree so a new uncovered spec
+      # can't slip in silently (COV-002) — it declares coverage or visibly joins the backlog.
+      - run: python3 registry/tools/spec_coverage.py --check
       # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).

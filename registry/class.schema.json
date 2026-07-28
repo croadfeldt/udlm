@@ -75,6 +75,20 @@
       "type": "array",
       "description": "The SharedDataElements this Class contributes at its scope — the composable units (ADR-038 §2). A Type Class's compiled flat spec is its elements plus every ancestor's, landed under `spec.properties`.",
       "items": { "$ref": "#/$defs/shared_data_element" }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["use_cases", "flows"],
+      "description": "Spec-completeness link (rule-36 — CONTRIBUTING 'a spec travels with its story'): the Use Case(s) and flow(s) that exercise this Class. A Class is its own worked example, so `examples` is not required here; spec_coverage.py resolves each referent and fails on a dangling one in --strict.",
+      "properties": {
+        "use_cases": { "type": "array", "minItems": 1, "items": { "type": "string" },
+          "description": "UC handle(s) or use-cases/ path(s) that exercise this Class." },
+        "examples": { "type": "array", "items": { "type": "string" },
+          "description": "Optional additional worked example(s) beyond the Class artifact itself." },
+        "flows": { "type": "array", "minItems": 1, "items": { "type": "string" },
+          "description": "docs/flows/ doc(s) that place this Class in a lifecycle." }
+      }
     }
   },
   "allOf": [

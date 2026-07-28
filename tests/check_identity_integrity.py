@@ -84,9 +84,18 @@ def _supersedes(doc):
     return out
 
 
+def _identity_view(doc):
+    """The doc as it counts for identity — documentation-completeness pointers (ADR-051
+    IDENTITY_EXCLUDED_FIELDS, e.g. `coverage`) stripped, so a coverage-only edit is not a
+    content change and does not oblige a version bump."""
+    if isinstance(doc, dict) and any(k in doc for k in _pin.IDENTITY_EXCLUDED_FIELDS):
+        return {k: v for k, v in doc.items() if k not in _pin.IDENTITY_EXCLUDED_FIELDS}
+    return doc
+
+
 def check_pair(rel, old_doc, new_doc, fails, warns):
     """Family rules for one (base, working) document pair from the same file."""
-    if old_doc == new_doc:
+    if _identity_view(old_doc) == _identity_view(new_doc):
         return
     family = classify(new_doc, warns, rel)
     old_uuid, new_uuid = old_doc.get("uuid"), new_doc.get("uuid")

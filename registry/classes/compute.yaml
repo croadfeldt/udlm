@@ -109,3 +109,11 @@ elements:
       properties:
         family: { type: string, description: "e.g. rhel, ubuntu, windows." }
         version: { type: string }
+
+coverage:
+  use_cases:
+    - scoped-class/author-scoped-class
+    - scoped-class/compile-type-to-flat-spec
+    - scoped-class/portability-derived-from-scope
+  flows:
+    - docs/flows/scoped-class-lifecycle.md

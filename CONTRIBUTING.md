@@ -139,10 +139,12 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
   (with its source) or **OBSERVED**, or does not exist on the type.
 - **Registered standards** — `check_standards_registered.py`: a standard cited in prose has a register row
   (`adopted-standards.md` §8).
-- **Spec completeness — UC + example + flow (scoreboard)** — `registry/tools/spec_coverage.py`: every
-  resource-type spec and Class ships with a **Use Case** (`use-cases/`), a **worked example** (an instance,
-  or the Class artifact itself), and a **flow** (`docs/flows/`). A report today — it prints the coverage gap
-  each run; the judgment check below enforces it, and a structural coverage link makes it blocking.
+- **Spec completeness — UC + example + flow** — `registry/tools/spec_coverage.py --check`: every
+  resource-type spec and Class declares its story in a structural **`coverage:` block** — the **Use Case(s)**
+  (`use-cases/`), **worked example(s)** (an instance; a Class is its own example), and **flow(s)**
+  (`docs/flows/`) that exercise it. Every declared referent must resolve (`COV-001`), and the backfill
+  backlog (`registry/spec-coverage-backlog.yaml`) must match the tree (`COV-002`) so a new spec can't ship
+  uncovered without either declaring coverage or visibly joining the backlog in its diff.
 
 **Judgment (reviewer + author self-check).**
 - **Scope — DCM vs UDLM (the peer test, `docs/adr/ADR-008`):** *could an independent conformant peer decide

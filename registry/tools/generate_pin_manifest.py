@@ -131,7 +131,18 @@ def jcs_bytes(value):
     return "".join(out).encode("utf-8")
 
 
+# Fields excluded from the identity digest (ADR-051 §"what identity covers"): a spec's identity is
+# its NORMATIVE bytes. `coverage` is a documentation-completeness pointer — the UCs / examples /
+# flows that exercise the spec — and the corpus grows over the spec's life; adding a UC that
+# exercises an UNCHANGED spec must not rev its identity. Stripping an absent field is a no-op, so
+# only specs that declare coverage are affected, and for them the digest equals their pre-coverage
+# published value (no republish, no manifest churn).
+IDENTITY_EXCLUDED_FIELDS = ("coverage",)
+
+
 def digest(doc):
+    if any(k in doc for k in IDENTITY_EXCLUDED_FIELDS):
+        doc = {k: v for k, v in doc.items() if k not in IDENTITY_EXCLUDED_FIELDS}
     return "sha256:" + hashlib.sha256(jcs_bytes(doc)).hexdigest()
 
 
