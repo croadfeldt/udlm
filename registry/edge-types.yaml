@@ -1,0 +1,27 @@
+# Edge-type registry — the closed set of dependency-graph edge types and their DERIVED inverses.
+#
+# The dependency graph is declared ONE-SIDED on purpose: an edge is declared once, on its natural
+# owner (e.g. a pool declares `contained_by BareMetalHost`), and the reverse direction is NOT stored
+# on the other endpoint — storing both sides would duplicate the fact and drift (the single-source
+# gate would reject it). The reverse is *derived* by inverting the edge: `A contained_by B` yields
+# `B contains A`. This registry is the single source for that inversion — consumed by the
+# graph-integrity gate (tests/check_graph_integrity.py) and by any consumer that materializes the
+# two-sided graph. It MUST stay in sync with the `edge_type` enum in resource-type-spec.schema.json
+# (the gate enforces that they match).
+
+record_type: edge_type_registry
+version: 1.0.0
+
+edge_types:
+  - edge_type: depends_on
+    inverse: required_by
+    description: A operationally requires B to function; deriving the inverse, B is required_by A.
+  - edge_type: references
+    inverse: referenced_by
+    description: A points at B (a classified, dereferenceable reference, ADR-054); B is referenced_by A.
+  - edge_type: contained_by
+    inverse: contains
+    description: A is contained by B (part-of / locality — a pool in a host); B contains A.
+  - edge_type: binds_to
+    inverse: bound_by
+    description: A binds to B at runtime (e.g. a consumed output); B is bound_by A.
