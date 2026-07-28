@@ -1,6 +1,6 @@
 # UDLM ADR-049: Credential material at intent intake — the rejecting path must not be where the secret lands
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **drafted for decision, not decided**: the options below are stated so the ruling is a choice among them
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the invariant is UDLM; the enforcement mechanism and its rigor are delegated to policy/profile — a DCM obligation, tracked in the DCM policy-obligations register.** The mechanism catalogue below is *informative* — shapes a realization may implement, not a choice UDLM makes.
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
@@ -52,14 +52,30 @@ carelessly writes the secret into the audit store too, which retains for years b
 
 ## Decision
 
-**The rule is fixed; the mechanism is the open choice.** Fixed, as `CPX-013`/`CPX-014` state it:
-inline credential material submitted where a reference is required is detected and refused, the
-detection is ordered before the intent is persisted, and the rejecting path persists neither the
-material nor an echo of it. What follows is *how* the intake path is arranged to make that true,
-with the cost of each shape stated. **The recommendation is Option A as the floor, with Option D
-available as a profile-priced upgrade — but this is drafted for the maintainer's ruling.**
+**UDLM fixes the invariant; policy and profile own the mechanism.** The peer test (ADR-008) settles
+where the line falls: two conformant realizations could satisfy this by scanning or by coercing and
+both be correct, so the *mechanism* is not UDLM's to choose — the *guarantee* is.
 
-### Option A — Scan before persist *(recommended as the floor)*
+**The UDLM invariant** (`CPX-013`/`CPX-014`, restated, not new): inline credential material submitted
+where a reference is required is detected and refused; the detection is **ordered before** the intent
+is persisted; and the rejecting path persists neither the material nor an echo of it (in the store, the
+error payload, or the audit `detail`). Every conformant realization must meet this. Ordering is part of
+the invariant, not an implementation detail — a correct decision taken *after* the write is a failed
+decision, because the store is immutable.
+
+**Delegated to policy/profile (a DCM obligation).** *How* intake meets the invariant — and *how strictly*
+— is a policy decision the realization makes, and its rigor is a **profile floor**:
+
+- A profile may accept **detect-and-refuse-before-persist** (mechanism A below) as the floor, or **raise
+  the floor to coercion-to-a-reference** (mechanism D) where the stakes warrant — the same profile-priced
+  rigor as bare-vs-governed vocabulary (ADR-007). UDLM names the *knob*; the profile sets it.
+- The realization (DCM) picks the mechanism that satisfies the invariant at its profile's floor.
+
+UDLM does **not** rule scan-vs-coerce-vs-quarantine. The catalogue that follows is informative — the
+shapes a realization may implement and their honest costs, recorded so DCM's policy work weighs them
+rather than rediscovering them. **This is registered as a DCM policy item** (see *Delegated work* below).
+
+### Mechanism A — Scan before persist *(the common floor)*
 
 Intake runs the credential-material check on the submitted body before any write, and a positive
 result short-circuits: nothing is stored, the typed refusal is returned, and the audit record
@@ -79,7 +95,7 @@ a value they believe is correct. And scanning is heuristic by nature: a secret i
 scanner does not recognize passes, so the check reduces exposure rather than eliminating it.
 Presenting it as a guarantee would be dishonest; it is a strong default with a known ceiling.
 
-### Option B — Quarantine buffer
+### Mechanism B — Quarantine buffer
 
 The intent is written first, to a short-lived quarantine store that is *not* the Intent store —
 mutable, retention-bounded, permitted to delete — and promoted into the Intent store only after
@@ -96,7 +112,7 @@ is neither Intent nor rejected. Every consumer of "what was asked for" now has t
 pre-Intent stage. The mechanism reduces the *duration* of exposure and increases the *number of
 places* exposure can occur, which is a poor trade for a value that must not be stored at all.
 
-### Option C — Provider-side redaction
+### Mechanism C — Provider-side redaction
 
 Persist the intent as submitted, and rely on redaction at every read: the state store holds the
 literal, and readers receive a masked view.
@@ -110,7 +126,7 @@ values do not enter the realization's stores at all rather than entering and bei
 because it is the shape a team reaches for when the immutability constraint is discovered late,
 and it should be explicitly rejected rather than silently available.
 
-### Option D — Intake-time coercion to a reference *(recommended as the upgrade, not the floor)*
+### Mechanism D — Intake-time coercion to a reference *(a profile may require this)*
 
 Rather than only judging the submitted value, intake *transforms* it: the literal is handed to the
 credential provider, which stores it and returns a reference; the intent that is persisted carries
@@ -145,6 +161,20 @@ inherit it. The audit record names the field path and the violation class. This 
 leaf discipline the audit model already applies to field values, extended to the error path that
 feeds it, and it is stated in `contracts/error-model.md` §6a rather than here so it applies to
 every refusal rather than only this one.
+
+## Delegated work — the DCM policy obligation
+
+Registered in the DCM policy-obligations register. **DCM must** decide and implement, as a policy
+governed by the profile:
+- **the mechanism** (a Mechanism above, or another that satisfies the invariant): where the check sits in
+  the intake pipeline, the detector (formats, entropy thresholds, tuning), and its false-positive remedy —
+  most plausibly a per-field opt-out declared on the type, itself reviewable;
+- **the profile floor**: which profiles accept detect-and-refuse (A) and which require coercion-to-a-
+  reference (D). Under coercion, DCM must record the transformation and its provenance (the vocabulary-
+  ladder discipline), and price the narrow `CPX-001` exception (hand-off only, never at rest, never logged).
+
+UDLM will not accept a UC or conformance claim that asserts a *specific* mechanism as the portable
+requirement; the portable requirement is the invariant. The mechanism belongs to DCM.
 
 ## Data · Policy · Provider
 

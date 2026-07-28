@@ -1,6 +1,6 @@
 # UDLM ADR-050: The absolute provider pin — whether a pin may confer eligibility, or only express preference
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **drafted for decision, not decided**: the options below are stated so the ruling is a choice among them
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the ceiling is a UDLM invariant; whether a pin may bypass it is an operational policy — a DCM obligation, tracked in the DCM policy-obligations register.** The option catalogue below is *informative* — the policy shapes DCM may adopt, not a choice UDLM makes.
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
@@ -52,12 +52,31 @@ That disagreement should be resolved by the same ruling.
 
 ## Decision
 
-**The open question:** may a pin confer eligibility, or only express preference among providers
-that are already eligible? `PRV-011` states that every dispatch re-checks the ceiling; what
-remains is whether the pin is a legitimate exception to it, and if so, at what price.
-**The recommendation is Option A — but this is drafted for the maintainer's ruling.**
+**UDLM holds the ceiling; whether a pin may bypass it is policy.** The peer test (ADR-008) settles it:
+whether an operator may deliberately dispatch outside a provider's declared capabilities is an
+operational choice a conformant realization is *entitled* to make differently — so it is not a substrate
+law. What UDLM fixes is the invariant a bypass would be an exception *to*.
 
-### Option A — Demote the pin to preference within the eligible set *(recommended)*
+**The UDLM invariant** (`PRV-009`/`PRV-011`, restated, not new): the `effective_capabilities` ceiling
+**always applies at the dispatch boundary, on every path**. A pin is therefore **preference among eligible
+providers** — it decides *which* eligible provider, never *whether* an ineligible one is reached. A pin
+naming an ineligible provider yields `placement.capability_mismatch` **before dispatch**, carrying the
+required-versus-declared comparison. The pin stays absolute over the *choice*; it is not absolute over
+*capability*. This makes one sentence true everywhere instead of true-with-an-exception.
+
+**Delegated to policy (a DCM obligation).** A *deliberate* eligibility bypass — the genuine case of a
+provider that can do the work but never declared it — is not forbidden; it is **priced as policy**,
+through the existing override-record flow (an approver, a reason, a scope, a time bound —
+`policy-contract.md` §18). No new mechanism: an override is already a first-class, approved, audited data
+record. UDLM does **not** bake an absolute-bypass into the model, and does not choose whether a given
+profile permits the override at all — that is DCM's policy call. **This is registered as a DCM policy
+item** (see *Delegated work* below).
+
+**The corpus typing, settled by the same ruling:** a capability mismatch is a `policy_violation`
+(`placement.capability_mismatch`) — an eligibility fact known *before* dispatch — never a `provider.*`
+failure. The provider did not break; it was never eligible.
+
+### Shape A — Preference-only, no policy bypass (the substrate default)
 
 The pin selects; it does not exempt. The eligibility filters always run, and the pin decides among
 what survives them. A pin naming an ineligible provider yields `placement.capability_mismatch`
@@ -80,7 +99,7 @@ the declaration, which is cheap and is the mechanism the whole model rests on. B
 behavior change with an operational tail, and the transition deserves a deprecation window rather
 than a flag day.
 
-### Option B — Keep the pin absolute, behind an explicit override record
+### Shape B — A policy bypass via an override record
 
 The pin may bypass eligibility, but only when accompanied by an override record: an approver, a
 reason, a scope, and a time bound, through the existing override-approval flow. Absent the
@@ -99,7 +118,7 @@ so the practical outcome may be a standing blanket override, which is the bypass
 And it does not actually fix the underlying declaration defect; it institutionalizes working
 around it.
 
-### Option C — Split the field in two
+### Shape C — Two fields (preference vs bypass)
 
 Retire the single field in favor of two differently-named ones: one expressing preference among
 eligible providers, one expressing a deliberate eligibility bypass. The name carries the
@@ -122,6 +141,22 @@ capability mismatch is an **eligibility** outcome — `placement.capability_mism
 pre-dispatch — and not a provider failure, because the provider did not break; it was never
 eligible. `provider.unavailable` and its neighbours remain reserved for providers that were
 eligible and then failed.
+
+## Delegated work — the DCM policy obligation
+
+Registered in the DCM policy-obligations register. UDLM guarantees the ceiling; **DCM must** decide, as
+policy governed by the profile:
+- **whether a deliberate bypass exists at all** in a given profile, and if so its shape — the override-
+  record flow (Shape B) is the priced default; the two-field split (Shape C) is an alternative DCM may
+  adopt if authorship clarity outweighs the larger surface;
+- **the deprecation window** for operators relying on today's absolute-pin behaviour, and the declaration-
+  defect remedy (fix the stale declaration) named in the same change, so no operator's pin simply "stops
+  working" without a path;
+- **the placement algorithm text** that currently describes the pin as skipping the remaining steps — DCM
+  amends it so the eligibility check is unconditional at the dispatch boundary.
+
+UDLM will not accept a UC or conformance claim in which a pin reaches dispatch outside the ceiling; a
+bypass is only ever a recorded, approved policy override, and its permissibility is DCM's to set per profile.
 
 ## Data · Policy · Provider
 
