@@ -4,6 +4,10 @@ UDLM is a wire-compatible substrate for systems that manage data through its
 lifecycle from intent to realization. Any system conformant to UDLM produces
 data that any other conformant system can read, interpret, and exchange.
 
+> **Working with UDLM?** Start at **[`docs/working-with-udlm.md`](docs/working-with-udlm.md)** — it
+> routes you by what you're here to do: author an artifact, review a contribution, build a system that
+> consumes the model, or contribute to the project.
+
 ## Layers
 
 UDLM is the substrate layer. Above it sit **realizations** — operational

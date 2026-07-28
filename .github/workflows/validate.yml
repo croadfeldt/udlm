@@ -47,6 +47,10 @@ jobs:
       # Repo-cleanliness gates (the nine questions — dav docs/repo-cleanliness-review.md):
       # referential integrity (Q8) + CI/signoff parity (these two ran only in signoff.sh before).
       - run: python3 tests/check_links.py
+      # Guide-integrity (DOC-002): the contributor guides (docs/working-with-udlm.md, docs/authoring/**,
+      # docs/{reviewing,consuming,contributing-guide}.md) must not rot — every file/schema/gate they
+      # reference must exist, so a newcomer following them verbatim never hits a dead pointer.
+      - run: python3 tests/check_authoring_docs.py
       - run: python3 tests/check_profile_tables.py
       # Rule-36 base-standard gates (G1/G2/G3/G5/G6, 2026-07-25 fleet review) with the
       # burn-down baseline ratchet — new violations fail; baselined ones warn until fixed.

@@ -1,5 +1,9 @@
 # Contributing to UDLM
 
+> **New here? Start with [`docs/working-with-udlm.md`](docs/working-with-udlm.md)** — it routes you by
+> what you're here to do (author · review · consume/build · contribute). This file is the canonical
+> *rules*; the guide is the *procedure* that satisfies them.
+
 UDLM — the Universal Data Lifecycle Model — is a vendor-neutral data substrate, released under
 Apache License 2.0. Both specification/prose and registry/schema contributions are welcome. Project
 governance lives in `governance/` (see `federated-contribution-model.md` and `registry-governance.md`);
