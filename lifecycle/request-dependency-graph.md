@@ -10,7 +10,7 @@
 >
 > **Distinction from existing dependency models:**
 > - Service Dependencies: *type-level* dependencies — the substrate knows that a VM *type* requires an IP type. Resolved automatically during layer assembly.
-> - Composite Service Model: *composite service* dependencies — a composite service definition declares its own constituents and the realization sequences them. Consumer does not manage this.
+> - Composite Service Model: *composite service* dependencies — a composite service definition declares its own constituents and the implementation sequences them. Consumer does not manage this.
 > - **This document**: *consumer-declared cross-request ordering* — a consumer submitting multiple independent requests says "Request B may not dispatch until Request A is realized." These are requests for different resource types that have no type-level dependency; the consumer is expressing an ordering constraint for their specific deployment.
 
 ---
@@ -75,7 +75,7 @@ The `inject_fields` mechanism passes realized output fields from a dependency di
 ```
 Dependency realized → Realized State written
   │
-  ▼ The realization reads inject_fields declarations for dependent requests
+  ▼ The implementation reads inject_fields declarations for dependent requests
   │   For each injection: extract from_field from Realized State
   │   Inject into dependent request's field at to_field path
   │
@@ -165,7 +165,7 @@ When a standard composite service exists as a composite service definition, cons
 
 | Policy | Rule |
 |--------|------|
-| `RDG-001` | Circular dependencies within a request group MUST be rejected at submission time (422 Unprocessable Entity). The realization MUST validate the dependency graph is a DAG before acknowledging the group. |
+| `RDG-001` | Circular dependencies within a request group MUST be rejected at submission time (422 Unprocessable Entity). The implementation MUST validate the dependency graph is a DAG before acknowledging the group. |
 | `RDG-002` | Maximum group size is 50 requests by substrate default. Profile may set a lower limit; groups exceeding the limit must use composite service definition composition or be split into multiple groups. |
 | `RDG-003` | Field injection (`inject_fields`) is subject to all active Transformation policies. Injected values are NOT exempt from policy evaluation. |
 | `RDG-004` | `PENDING_DEPENDENCY` requests count against the consumer's quota. Resources are reserved at group submission, not at dispatch time. |
@@ -174,4 +174,4 @@ When a standard composite service exists as a composite service definition, cons
 
 ---
 
-*UDLM substrate document. Realization-specific group submission/parsing, dependency resolution and dispatch orchestration, PENDING_DEPENDENCY lifecycle internals, failure handling execution code, group timeout enforcement, consumer API endpoint additions, new event implementations, and profile-governed dependency group constraints live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific group submission/parsing, dependency resolution and dispatch orchestration, PENDING_DEPENDENCY lifecycle internals, failure handling execution code, group timeout enforcement, consumer API endpoint additions, new event implementations, and profile-governed dependency group constraints live in the consuming implementation's documentation.*

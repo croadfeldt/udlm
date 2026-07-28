@@ -8,7 +8,7 @@ and documents only what this case adds.
 > **Use Case:** `compute/vm-intent-osac-placement`. **Persona:** application-team-member · **Profile:** standard.
 
 **In one breath.** A consumer submits a VM intent through the DCM API; validation policies run; the placement
-engine selects the OSAC-backed provider; the request is dispatched to OSAC for realization; and the `Realized`
+engine selects the OSAC-backed provider; the request is dispatched to OSAC for implementation; and the `Realized`
 state records provider provenance identifying OSAC — the whole intent-to-realized path auditable end to end.
 
 ## What this adds over request-realization
@@ -36,7 +36,7 @@ Everything else (assemble, enrich, reserve, commit, converge) is request-realiza
 - Consumer submits the VM intent through the DCM API.
 - Validation policies are evaluated **before** placement.
 - The placement engine selects the OSAC-backed service provider.
-- The request is dispatched to OSAC for realization.
+- The request is dispatched to OSAC for implementation.
 - `Realized` state is recorded with provider provenance identifying OSAC.
 - The provisioned VM is reachable and operational; the full intent-to-realized lifecycle is auditable.
 

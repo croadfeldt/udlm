@@ -5,11 +5,11 @@
 **Established:** 2026-05-26
 **Maps to:** DATA (umbrella)
 
-> Defines what a realization MUST implement to be **udlm-conformant**. A
-> conformant realization is wire-compatible with any other conformant
-> realization of the same major udlm version — its data can be read, its
+> Defines what an implementation MUST implement to be **udlm-conformant**. A
+> conformant implementation is wire-compatible with any other conformant
+> implementation of the same major udlm version — its data can be read, its
 > events can be parsed, its contracts can be honored by peers without
-> per-realization adapters. This document is the conformance surface that
+> per-implementation adapters. This document is the conformance surface that
 > an independent verifier tests against.
 
 ---
@@ -18,7 +18,7 @@
 
 ### 1.1 The conformance commitment
 
-A peer realization that claims udlm conformance commits to:
+A peer implementation that claims udlm conformance commits to:
 
 - Producing data, events, and errors that any other conformant peer can
   deserialize and act on.
@@ -51,17 +51,17 @@ and adds the meta-rules (declaration format, versioning, certification).
 ## 2. What conformance certifies
 
 Conformance certifies **wire-level interoperability** within a major udlm
-version. Specifically, a conformant realization:
+version. Specifically, a conformant implementation:
 
 | Certifies | Does NOT certify |
 |---|---|
-| Wire-compatible data exchange with peers | Implementation portability across realizations |
+| Wire-compatible data exchange with peers | Implementation portability across implementations |
 | Schema-compatible extensions via schema-sharing | Internal storage, APIs, or runtime mechanics |
 | Closed-vocabulary errors and codes on interop surfaces | Operational performance, scale, or reliability |
 | Conformant identifier, timestamp, and event formats | Specific deployment topology |
 | Honoring the lifecycle state machine | UX, ergonomics, or operator tooling |
 
-Two conformant realizations with disjoint runtime implementations can federate
+Two conformant implementations with disjoint runtime implementations can federate
 and exchange data; they cannot necessarily swap controllers or share storage.
 
 Requiring a document in [§5](#5-required-contracts) — including
@@ -82,7 +82,7 @@ Publishes a conformance declaration with `level: "full"` and no exclusions.
 
 ### 3.2 Declared Partial Conformance
 
-Implements a documented subset of required contracts. The realization MUST:
+Implements a documented subset of required contracts. The implementation MUST:
 
 - Publish a conformance declaration with `level: "partial"`.
 - Enumerate excluded contracts in the `exclusions` field.
@@ -90,7 +90,7 @@ Implements a documented subset of required contracts. The realization MUST:
   (see [§7](#7-new-error-code-added-by-this-contract)).
 - NOT silently fail or partially implement an excluded contract.
 
-A peer interacting with a partially-conformant realization MUST check the
+A peer interacting with a partially-conformant implementation MUST check the
 conformance declaration before depending on an excluded feature.
 
 ### 3.3 Conformance with Extensions
@@ -99,7 +99,7 @@ Implements full conformance AND publishes extensions (custom resource types,
 custom event types, custom credential types, etc.) via the schema-sharing
 protocol. Extensions MUST:
 
-- Be published in the realization's schema bundle.
+- Be published in the implementation's schema bundle.
 - Use only allowed extension points (e.g., custom resource types within the
   resource type registry, not redefinitions of core types).
 - Not break existing contracts.
@@ -112,7 +112,7 @@ the schema bundle.
 
 ## 4. Conformance declaration
 
-Every conformant realization MUST publish a conformance declaration. Over the
+Every conformant implementation MUST publish a conformance declaration. Over the
 HTTP binding (the normative v1 binding — see the transport-binding note in §1)
 it is served at:
 
@@ -127,8 +127,8 @@ following shape:
 
 ```json
 {
-  "realization": {
-    "name": "example-realization",
+  "implementation": {
+    "name": "example-implementation",
     "vendor": "example-org",
     "version": "1.4.2"
   },
@@ -139,7 +139,7 @@ following shape:
   "extensions_published": true,
   "schema_bundle_url": "/.well-known/udlm/schema-bundle",
   "interop_surfaces": {
-    "consumer_api": { "available": true, "transport": "http", "base_url": "https://example-realization/api/v1" },
+    "consumer_api": { "available": true, "transport": "http", "base_url": "https://example-implementation/api/v1" },
     "provider_callbacks": { "available": true, "transport": "http", "auth": "mtls+credential" },
     "federation": { "available": true, "transport": "http", "auth": "mtls+credential" },
     "audit_export": { "available": true, "transport": "http" }
@@ -162,9 +162,9 @@ following shape:
 
 | Field | Required | Description |
 |---|---|---|
-| `realization` | yes | Self-identification |
-| `udlm_version` | yes | udlm semver this realization conforms to |
-| `profile` | yes | The realization's active **base profile** (from the [profile vocabulary](design-principles/design-priorities.md)). In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). `fsi`/`sovereign` compose as overlays on the base profile. |
+| `implementation` | yes | Self-identification |
+| `udlm_version` | yes | udlm semver this implementation conforms to |
+| `profile` | yes | The implementation's active **base profile** (from the [profile vocabulary](design-principles/design-priorities.md)). In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). `fsi`/`sovereign` compose as overlays on the base profile. |
 | `level` | yes | `"full"` or `"partial"` |
 | `exclusions` | required if level=partial | List of contract names not implemented |
 | `extensions_published` | yes | Whether schema bundle includes extensions |
@@ -178,16 +178,16 @@ following shape:
 
 ### 4.3 Declaring multiple major versions
 
-A realization MAY conform to more than one major udlm version concurrently
+An implementation MAY conform to more than one major udlm version concurrently
 (see [§9.2](#92-compatibility-windows)). The conformance declaration is a
 **single document** that expresses **all** supported majors: its top-level
 `declarations` field is a list of per-major declaration objects, each object
 carrying the §4.1 shape (`udlm_version`, `profile`, `level`, `exclusions`,
-`interop_surfaces`, and the rest). A realization that supports exactly one major
+`interop_surfaces`, and the rest). An implementation that supports exactly one major
 MAY serve the bare §4.1 object directly.
 
 Whether that single document is served at one `/.well-known/udlm/conformance`
-path or split across per-major paths is a **realization choice at the HTTP
+path or split across per-major paths is a **implementation choice at the HTTP
 binding** (§1), not part of the data model. The **v1 HTTP binding is one path**:
 `GET /.well-known/udlm/conformance` returns the multi-version document.
 
@@ -195,9 +195,9 @@ binding** (§1), not part of the data model. The **v1 HTTP binding is one path**
 
 ## 5. Required contracts
 
-A Full Conformance realization MUST implement every contract below. Each
+A Full Conformance implementation MUST implement every contract below. Each
 contract is either **required (not excludable)** or **excludable (must
-declare)** — a partial-conformance realization MAY omit an excludable contract
+declare)** — a partial-conformance implementation MAY omit an excludable contract
 only if it enumerates the exclusion in its declaration (§3.2).
 
 > Resource and entity **types** referenced by these contracts are defined
@@ -218,7 +218,7 @@ only if it enumerates the exclusion in its declaration (§3.2).
 ### 5.2 Wire-compatibility contracts (required — not excludable)
 
 These are the contracts that make wire-compatibility work. Excluding any of
-them disqualifies the realization from any conformance level.
+them disqualifies the implementation from any conformance level.
 
 - `contracts/identifier-scheme.md`
 - `contracts/time-and-clock.md`
@@ -264,9 +264,9 @@ them disqualifies the realization from any conformance level.
 
 ### 5.7 Topology and design principles
 
-- `topology/location-topology-layers.md` — required (the layered-topology contract; specific hierarchies are realization choice)
+- `topology/location-topology-layers.md` — required (the layered-topology contract; specific hierarchies are implementation choice)
 - `design-principles/design-priorities.md` — required (the four principles as contracts)
-- `design-principles/data-contracts.md` — required (the data-contract principle; persistence required, technology is realization choice)
+- `design-principles/data-contracts.md` — required (the data-contract principle; persistence required, technology is implementation choice)
 
 ### 5.8 Reference
 
@@ -276,7 +276,7 @@ them disqualifies the realization from any conformance level.
 
 ## 6. Wire-compatibility checklist
 
-Consolidated MUSTs from all wire-compat contract docs. A conformant realization
+Consolidated MUSTs from all wire-compat contract docs. A conformant implementation
 MUST satisfy every item.
 
 ### Identifiers ([`identifier-scheme.md`](contracts/identifier-scheme.md))
@@ -362,24 +362,24 @@ error vocabulary in [`error-model.md`](contracts/error-model.md).
 Conformance is verified by the udlm conformance test suite. The suite:
 
 - Is specified in [`tests/test-framework-specification.md`](tests/test-framework-specification.md).
-- Is executable: it issues operations against a realization's interop surfaces
+- Is executable: it issues operations against an implementation's interop surfaces
   and validates responses against the contracts.
 - Is versioned with the udlm spec — test suite version maps to udlm version.
 - Covers every checklist item in §6.
 
-Realizations MUST run the test suite as part of self-certification. The test
+Implementations MUST run the test suite as part of self-certification. The test
 suite version is recorded in the conformance declaration
 (`conformance_test_suite_version`).
 
-A realization MAY undergo **independent verification** by a third-party
+An implementation MAY undergo **independent verification** by a third-party
 verifier. Independent verification:
 
-- Runs the same test suite from outside the realization's trust boundary.
+- Runs the same test suite from outside the implementation's trust boundary.
 - Produces a verification report linked from the conformance declaration.
 - Carries more weight for peers evaluating whether to federate.
 
 **Certification progression.** Self-certification is the **v0 baseline** — a
-realization runs the suite and records the suite version and results in its
+implementation runs the suite and records the suite version and results in its
 declaration. Independent verification is **optional at 0.x** but **carries more
 weight** for peers deciding whether to federate. A **required run of the shared
 certified suite** is the **1.0 conformance bar**: at 1.0, self-certification
@@ -402,15 +402,15 @@ udlm follows semver — the two-axis (SPEC / ENTITY) definition is owned by [`re
 
 ### 9.2 Compatibility windows
 
-- Two realizations conformant to the **same major version** of udlm are
+- Two implementations conformant to the **same major version** of udlm are
   wire-compatible. Schema version negotiation per
   [`schema-sharing.md`](contracts/schema-sharing.md) handles minor-version
   differences.
-- Cross-major-version interoperation is NOT guaranteed. Realizations MAY
+- Cross-major-version interoperation is NOT guaranteed. Implementations MAY
   support multiple major versions concurrently by publishing schemas for each
   and expressing every supported major in the single conformance declaration
   (see [§4.3](#43-declaring-multiple-major-versions)).
-- A realization deprecating support for an older major version MUST give peers
+- An implementation deprecating support for an older major version MUST give peers
   at least **6 months** notice via federation events
   (`conformance.version_deprecated`; see [`event-catalog.md`](contracts/event-catalog.md)).
 
@@ -425,12 +425,12 @@ udlm follows semver — the two-axis (SPEC / ENTITY) definition is owned by [`re
 
 ## 10. Self-certification process
 
-A realization claiming conformance follows this process:
+An implementation claiming conformance follows this process:
 
 1. **Implement** the required contracts per §5.
 2. **Publish** schema bundle, capability declarations, and conformance
    declaration at the well-known endpoints.
-3. **Run** the conformance test suite against the running realization.
+3. **Run** the conformance test suite against the running implementation.
 4. **Record** the test results, suite version, and timestamp in the conformance
    declaration.
 5. **Make public** the conformance declaration URL so peers can verify before
@@ -448,8 +448,8 @@ suite run becomes the 1.0 bar (see the certification progression in §8).
 
 Before federating, a peer SHOULD:
 
-1. Fetch the remote realization's conformance declaration.
-2. Verify `udlm_version` is compatible with the local realization's version.
+1. Fetch the remote implementation's conformance declaration.
+2. Verify `udlm_version` is compatible with the local implementation's version.
 3. Check `profile` compatibility — confirm the remote's advertised base profile
    (and any overlays) satisfies local policy for federation (e.g. a `sovereign`
    peer may refuse to federate with a `homelab` peer).
@@ -465,7 +465,7 @@ Before federating, a peer SHOULD:
 8. Proceed with federation per the relevant contracts.
 
 The substrate carries the **declaration and the compatibility check**; how a
-realization orchestrates the resulting federation is a realization concern.
+implementation orchestrates the resulting federation is an implementation concern.
 
 If any check fails, the peer MUST refuse federation with the appropriate
 error (`conformance.version_unsupported`, `conformance.feature_not_implemented`,
@@ -475,15 +475,15 @@ or `federation.peer_version_incompatible`).
 
 ## 12. Conformance state and reporting
 
-The conformance state of a realization is **public** by design. Peers and
+The conformance state of an implementation is **public** by design. Peers and
 operators can:
 
 - Fetch `/.well-known/udlm/conformance` at any time.
 - Subscribe to the `conformance.*` federation events (see
   [`event-catalog.md`](contracts/event-catalog.md)) for change notifications.
-- Compare independent verification reports across realizations.
+- Compare independent verification reports across implementations.
 
-A realization MUST NOT misrepresent its conformance state. False claims are
+An implementation MUST NOT misrepresent its conformance state. False claims are
 detectable by running the test suite; verifiers MAY publish discrepancies.
 
 ---

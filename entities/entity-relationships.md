@@ -25,7 +25,7 @@
 
 The DCM Entity Relationship model is the **universal mechanism for expressing relationships between any two entities in DCM** — whether between two Resource/Service Entities, between an entity and external business data, or between entities at the service definition level.
 
-A single relationship model is used everywhere. There is no separate binding mechanism for storage, no separate dependency graph structure, no separate business data association mechanism. One model serves all relationship types across the full lifecycle — from pre-realization planning through to post-realization management, drift detection, cost rollup, and rehydration.
+A single relationship model is used everywhere. There is no separate binding mechanism for storage, no separate dependency graph structure, no separate business data association mechanism. One model serves all relationship types across the full lifecycle — from pre-realization planning through to post-implementation management, drift detection, cost rollup, and rehydration.
 
 This document defines the Entity Relationship Graph, which is the data structure underlying service dependency declaration ([service-dependencies.md](service-dependencies.md)) and rehydration ordering. The Service Dependencies document retains content on rehydration ordering and failure handling, which operate on the relationship graph defined here.
 
@@ -1051,7 +1051,7 @@ The minimum stake strength threshold per event type is declared in the resource 
 
 ### 13.3 Notification Traversal and Graph Depth
 
-What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared in the Resource Type Specification (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) declare depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is realization concern (foundations §5 lists notification routing as realization machinery); it consumes these declarations.
+What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared in the Resource Type Specification (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) declare depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
 
 ### 13.4 Notification Traversal Policies
 

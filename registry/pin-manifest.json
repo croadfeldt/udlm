@@ -359,17 +359,19 @@
   }
  },
  "type:Identity.Person": {
-  "current": "0.3.2",
+  "current": "0.3.3",
   "path": "registry/resource-types/identity/identity.person.json",
   "versions": {
-   "0.3.2": "sha256:9d41b4f7691af6ca06540c2447f0003ecf1d2d3ca3d3d83344bf47925d175c1f"
+   "0.3.2": "sha256:9d41b4f7691af6ca06540c2447f0003ecf1d2d3ca3d3d83344bf47925d175c1f",
+   "0.3.3": "sha256:132b1c0b6bbe7de3fa392d2d282982adb56a66348b2a5ff22667bc72c4fc18e7"
   }
  },
  "type:Identity.ServiceAccount": {
-  "current": "0.3.2",
+  "current": "0.3.3",
   "path": "registry/resource-types/identity/identity.service-account.json",
   "versions": {
-   "0.3.2": "sha256:86b1ce01e7cf652b533869d8a71c555062c06969893493450974a642c2775db9"
+   "0.3.2": "sha256:86b1ce01e7cf652b533869d8a71c555062c06969893493450974a642c2775db9",
+   "0.3.3": "sha256:9c0995f151533a93d74b40741014d234f1e5c89a3f61aa1b7bee01b49ca13786"
   }
  },
  "type:Network.AddressService": {
@@ -387,10 +389,11 @@
   }
  },
  "type:Network.DHCPScope": {
-  "current": "0.5.2",
+  "current": "0.5.3",
   "path": "registry/resource-types/network/network.dhcp-scope.json",
   "versions": {
-   "0.5.2": "sha256:8f6280282b81dcbf615f568d125540ca1feedf3e2039588a80898fc083016ee2"
+   "0.5.2": "sha256:8f6280282b81dcbf615f568d125540ca1feedf3e2039588a80898fc083016ee2",
+   "0.5.3": "sha256:520f6296668b2c3d0b9445c3eb290558c4a3c5a9ffc71d4e6f5062954b77dbb4"
   }
  },
  "type:Network.DNSZone": {
@@ -548,10 +551,11 @@
   }
  },
  "type:Storage.Cluster": {
-  "current": "0.4.2",
+  "current": "0.4.3",
   "path": "registry/resource-types/storage/storage.cluster.json",
   "versions": {
-   "0.4.2": "sha256:944b19bc24b33b9f7023d101fcd7d7a84972c341c1d0a3ad6c60feeb588dd699"
+   "0.4.2": "sha256:944b19bc24b33b9f7023d101fcd7d7a84972c341c1d0a3ad6c60feeb588dd699",
+   "0.4.3": "sha256:6395cc031a8612a7772c1c594a89cb4ffc924f0023154b8e38a8e95ad16f1d5e"
   }
  },
  "type:Storage.Dataset": {

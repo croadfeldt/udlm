@@ -521,7 +521,7 @@ spec:
       ip_mode: dynamic
 
 # Provider-specific references are Provider-Class `SharedDataElement`s (ADR-038), declared by
-# the provider's Class; schema realization is tracked in #199 (the retired provider_extensions
+# the provider's Class; schema implementation is tracked in #199 (the retired provider_extensions
 # carrier is removed). For k8s-prod-east, addressed compute.vm.k8s-prod-east#<element>:
 #   namespace_ref     → Platform.Namespace     "tenant-alpha-prod"  (e2f3a4b5-...)
 #   storage_class_ref → Platform.StorageClass  "ceph-rbd-fast"      (c6d7e8f9-...)
@@ -634,7 +634,7 @@ correlation, the system sets the edges in the graph.
 
 ## Phase 6 — Ongoing: keep the system informed
 
-After realization, the provider has ongoing obligations:
+After implementation, the provider has ongoing obligations:
 
 **Discovered-state reporting.** Periodically (or on change), report the current state of every resource
 the provider manages. The system compares discovered state against realized state — mismatches are drift,

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.5.3",
   "conforms_to": "udlm/0.1",
   "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42",
   "resource_type": "Network.DHCPScope",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -156,7 +156,7 @@
       "standard": "ISC-Kea",
       "version": "2.x",
       "standard_name": "subnet4",
-      "role": "reference realization — one DHCP provider's subnet/pool/reservation model (MPL-2.0, referenced by name only, not the type's grounding)",
+      "role": "reference implementation — one DHCP provider's subnet/pool/reservation model (MPL-2.0, referenced by name only, not the type's grounding)",
       "source": "https://kea.readthedocs.io/",
       "license": "MPL-2.0",
       "license_compatibility": "reference-only",

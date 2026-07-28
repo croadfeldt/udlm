@@ -79,4 +79,4 @@ python3 tests/check_estate_tokens.py       # no private/estate tokens leaked int
 3. `../registry/UDLM-0.1-SCOPE.md` (what 0.1 is) → `docs/adr/` for the *why* of whatever you're touching.
 4. The schema + contract for your area (§3), then write records and run the gates (§5).
 
-The substrate is realization-neutral: implement to the schemas and contracts, not to DCM. If a decision feels like runtime behavior, apply the ADR-008 test — it probably belongs to DCM, not here.
+The substrate is implementation-neutral: implement to the schemas and contracts, not to DCM. If a decision feels like runtime behavior, apply the ADR-008 test — it probably belongs to DCM, not here.

@@ -4,7 +4,7 @@
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `entities/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (UDLM/DCM boundary)
-**Tracking:** September 0.1 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before realization").
+**Tracking:** September 0.1 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before implementation").
 
 ## Context
 
@@ -38,7 +38,7 @@ SharedFaultDomain: { anchor: <foundational resource ref>, kind: location|power|h
 
 ### 3. `UnmetDependency` — the first-class sibling of `DependencyCycle`
 
-A dependency edge that cannot be satisfied — the target **does not resolve** (no such resource), **is ambiguous** (more than one match, none authoritative), **is not yet realized**, is **decommissioned**, violates a **locality** constraint (wrong fault-domain / jurisdiction / co-residency), fails a **capability or protocol** match, or is **unreachable at runtime** despite being Realized — is exposed as a diagnostic, so it is caught **before realization** where possible (ADR-006 terminal surface), not discovered mid-dispatch. The closed `reason` vocabulary is what makes the failure *attributable* (a peer must name it the same way, or the diagnostic can't be acted on):
+A dependency edge that cannot be satisfied — the target **does not resolve** (no such resource), **is ambiguous** (more than one match, none authoritative), **is not yet realized**, is **decommissioned**, violates a **locality** constraint (wrong fault-domain / jurisdiction / co-residency), fails a **capability or protocol** match, or is **unreachable at runtime** despite being Realized — is exposed as a diagnostic, so it is caught **before implementation** where possible (ADR-006 terminal surface), not discovered mid-dispatch. The closed `reason` vocabulary is what makes the failure *attributable* (a peer must name it the same way, or the diagnostic can't be acted on):
 
 ```
 UnmetDependency: { dependent: <ref>, edge: {kind, target|target_ref},
@@ -49,7 +49,7 @@ UnmetDependency: { dependent: <ref>, edge: {kind, target|target_ref},
                    blast_radius: [<refs>] }
 ```
 
-Same shape family as `DependencyCycle`: members + the offending edge + severity-from-strength + the reach. A **blocking** `UnmetDependency` denies realization by default (org-configurable, like the cycle case).
+Same shape family as `DependencyCycle`: members + the offending edge + severity-from-strength + the reach. A **blocking** `UnmetDependency` denies implementation by default (org-configurable, like the cycle case).
 
 ### 4. Policy addresses all three (Data · Policy · Provider)
 
@@ -65,7 +65,7 @@ The **diagnostic shapes and the derivation definitions** are UDLM (a peer must i
 
 - **Author fault domains as their own edge kind (or a first-class `FaultDomain` type).** Rejected — a fault domain is fully determined by which foundational resources members co-reference; authoring it separately is redundant work that drifts from the edges it should track. Derived from foundational-resource references, no new authored edges.
 - **Compute blast radius / redundancy imperatively, outside the graph.** Rejected — impact analysis, ordered-shutdown, rehydration, and policy would each derive reach independently and disagree. It must fall out of the one graph so every consumer agrees by construction.
-- **Surface unmet dependencies only at dispatch time (fail the realization when the edge can't be resolved).** Rejected — that discovers the break mid-dispatch. `UnmetDependency` surfaces it pre-realization as a diagnostic siblings act on (ADR-006 terminal surface), like `DependencyCycle`.
+- **Surface unmet dependencies only at dispatch time (fail the implementation when the edge can't be resolved).** Rejected — that discovers the break mid-dispatch. `UnmetDependency` surfaces it pre-realization as a diagnostic siblings act on (ADR-006 terminal surface), like `DependencyCycle`.
 - **Coin a fixed type vocabulary the shapes require (e.g. mandate `Network.VirtualNetwork`).** Rejected — the shapes read whatever typed edges exist; the org ratifies anchors and providers offer base/variant types via policy. Fixing the vocabulary would break the guidance-plus-policy-hook principle and provider variation (ADR-009).
 
 ## Consequences
@@ -73,4 +73,4 @@ The **diagnostic shapes and the derivation definitions** are UDLM (a peer must i
 - The dependency graph is now first-class in **all four** of its consumers (cycles, fault domains, blast radius, unmet deps) — UC-73071912 satisfied; the estate-explorer/ordered-shutdown, impact analysis, and rehydration read one graph.
 - **Broken cross-resource dependencies surface pre-realization** as `UnmetDependency` (UC-4908573a) — not as a mid-dispatch failure.
 - **Fault-domain reasoning falls out of foundational-resource references** — no new authored edges, and the org tunes the anchor set + severity by policy.
-- Reference realizations extend the estate CI (a CYCLE-001 sibling for unmet deps) and the estate-explorer (`/api/order` gains `unmet[]` + fault-domain overlay), same as `graph-integrity` shipped for cycles.
+- Reference implementations extend the estate CI (a CYCLE-001 sibling for unmet deps) and the estate-explorer (`/api/order` gains `unmet[]` + fault-domain overlay), same as `graph-integrity` shipped for cycles.

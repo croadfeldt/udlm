@@ -3,7 +3,7 @@ handle: intent-fulfillment/surfacing-mandatory
 version: 1.0.0
 scenario:
   description: >-
-    A realization completes an intent partially and reports the shortfall ONLY as a structured
+    An implementation completes an intent partially and reports the shortfall ONLY as a structured
     partial_failures field, with no warning surfaced to the consumer — who can miss it entirely
     and believe the intent was fully satisfied. This is REFUSED as insufficient surfacing: an
     unsatisfiable intent the consumer is not actively told about is a silent failure, whatever the

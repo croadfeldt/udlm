@@ -10,7 +10,7 @@ scenario:
     output-resolves bindings when a catalog item is admitted. A catalog gate alone is
     insufficient: a producer type can be re-versioned after admission, or the request can
     compose items the catalog never checked together, so the same declaration-or-refuse
-    check must run against the request. Success is refusal BEFORE any realization: no
+    check must run against the request. Success is refusal BEFORE any implementation: no
     constituent of the composite is provisioned and then rolled back — the invalid binding
     is caught while the request is still data. The refusal is typed as a binding-contract
     violation, actionable per the sibling family''s message contract, and auditable, citing

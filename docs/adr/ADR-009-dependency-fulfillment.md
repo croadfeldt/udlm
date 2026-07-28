@@ -12,7 +12,7 @@ A catalog item composes resources — a VM that needs storage, a network attachm
 
 - The **catalog item** (authored by the provider) declares that a *structural* dependency exists and which inputs the consumer must supply.
 - The **consumer** knows the *intent parameters* — segment, location, sovereignty zone — but not the mechanics.
-- The **realizing provider** knows the *realization-time specifics that do not exist until placement* — the segment a placement can actually reach, the host it landed on, driver constraints.
+- The **realizing provider** knows the *implementation-time specifics that do not exist until placement* — the segment a placement can actually reach, the host it landed on, driver constraints.
 
 So the real question is not "who procures it" but **"who contributes which fields, when, and who drives the loop."** The last part has one answer under ADR-006, and it collapses the rest of the debate.
 
@@ -32,7 +32,7 @@ Each constituent declares a **`fulfillment`** mode, orthogonal to `provided_by` 
 | **`provider`** | the parent provider **computes the dependency's request criteria** from the request + realize-time facts and supplies them to DCM, which fulfills the *catalog-declared* dependency | realize-time | `self` | deps whose criteria the parent must compute, or that only exist post-placement |
 | **`consumer`** | the consumer supplies an existing resource reference (BYO) | request-time | — | deps the consumer owns (BYO IP, DNS zone) |
 
-`provider` mode is **not a separate provider request** and **not a passive output**. The dependency is *declared in the catalog* so DCM plans, places, governs, and cycle-checks it in advance; at realize-time the parent provider computes the specific criteria — which segment, which constraints — and hands them to DCM, which fulfills. DCM is always the fulfiller; `fulfillment` only says where the criteria originate — `consumer_fields` at assembly (`platform`) or the parent's computation at realize-time (`provider`). Declaring the dependency in the catalog is what lets **placement and policy act on it in advance** rather than discover it mid-realization; the catalog declaration *is* the request, made ahead of time (same mechanism as a Composite Service Definition, provider-contract §8.3).
+`provider` mode is **not a separate provider request** and **not a passive output**. The dependency is *declared in the catalog* so DCM plans, places, governs, and cycle-checks it in advance; at realize-time the parent provider computes the specific criteria — which segment, which constraints — and hands them to DCM, which fulfills. DCM is always the fulfiller; `fulfillment` only says where the criteria originate — `consumer_fields` at assembly (`platform`) or the parent's computation at realize-time (`provider`). Declaring the dependency in the catalog is what lets **placement and policy act on it in advance** rather than discover it mid-implementation; the catalog declaration *is* the request, made ahead of time (same mechanism as a Composite Service Definition, provider-contract §8.3).
 
 ### 3. A brokered dependency's target type MUST accommodate the broker's custom information
 
@@ -49,7 +49,7 @@ Because a broker may attach requirements a type author never anticipated, a type
 
 ### 5. Boundary placement (ADR-008 test)
 
-Applying ADR-008's peer test — *could a peer do this differently and still be a valid realization of the same data?*
+Applying ADR-008's peer test — *could a peer do this differently and still be a valid implementation of the same data?*
 
 - The **`fulfillment` field, the three modes' wire meaning, and the extension mechanism** are **UDLM** — a peer must interpret a `fulfillment: provider` constituent and a provider-extension identically, or interop breaks.
 - **How DCM's loop implements brokering, placement, and cycle detection** is **DCM** — a peer may orchestrate differently.
@@ -57,7 +57,7 @@ Applying ADR-008's peer test — *could a peer do this differently and still be 
 ## Options considered
 
 - **The request defines the dependency.** Incomplete — the consumer knows intent parameters but not the realize-time specifics (reachable segment, driver constraints) that only exist after placement.
-- **The provider defines the dependency.** Incomplete — the provider knows realization mechanics but not the consumer's intent, and if the dependency is undeclared, DCM cannot plan, place, or cycle-check it in advance. Rejected as the sole model; folded in as `fulfillment: provider`, where the provider computes *criteria* for a *catalog-declared* dependency.
+- **The provider defines the dependency.** Incomplete — the provider knows implementation mechanics but not the consumer's intent, and if the dependency is undeclared, DCM cannot plan, place, or cycle-check it in advance. Rejected as the sole model; folded in as `fulfillment: provider`, where the provider computes *criteria* for a *catalog-declared* dependency.
 - **A provider→provider path that bypasses DCM.** Rejected: it breaks the single convergent loop. Only DCM sees the whole graph, so only DCM can apply uniform policy, detect cycles, and co-optimize across resources. Every mode therefore routes through DCM (§1); modes differ only in who contributes content.
 
 ## Illustration — a VM that needs an IP
@@ -88,7 +88,7 @@ The IP case needs **no accommodation mechanism (§3)** — the broker conveys on
 
 ## Chicken-and-egg → ADR-011
 
-`fulfillment: provider` creates an apparent circularity: the IP criteria derive from the VM's realize-time facts, but the VM depends on the IP. This is **not a modeled cycle** (the `depends_on` edge is one-directional; the mutuality is in realization ordering). **ADR-011 (validate-and-reserve) owns the resolution in full** — a side-effect-free RESERVE phase computes each dependent's criteria from its parent's *reserved* facts, a commit barrier validates the whole graph, then COMMIT builds in dependency order; a genuine hard cycle surfaces as `RESERVE_QUERY_ALL_EXHAUSTED` / `DependencyCycle` and is denied. Do not re-derive that loop here.
+`fulfillment: provider` creates an apparent circularity: the IP criteria derive from the VM's realize-time facts, but the VM depends on the IP. This is **not a modeled cycle** (the `depends_on` edge is one-directional; the mutuality is in implementation ordering). **ADR-011 (validate-and-reserve) owns the resolution in full** — a side-effect-free RESERVE phase computes each dependent's criteria from its parent's *reserved* facts, a commit barrier validates the whole graph, then COMMIT builds in dependency order; a genuine hard cycle surfaces as `RESERVE_QUERY_ALL_EXHAUSTED` / `DependencyCycle` and is denied. Do not re-derive that loop here.
 
 ## Data · Policy · Provider
 
@@ -102,4 +102,4 @@ The IP case needs **no accommodation mechanism (§3)** — the broker conveys on
 - **Schema companions:** `catalog-item.schema.json` gains `fulfillment` on constituents; `resource-type-spec.schema.json` gains the `enforcement` marker and states the extension-accommodation requirement; `provider-contract.md` gains §1b (intent vs realized) and the §3 extensibility obligation.
 - **`provider` mode has a trust cost:** brokering a sub-intent on the consumer's behalf requires delegated authority/attestation. Flag it per-dependency; it is a deliberate choice, not a default.
 - **Cycle safety:** brokered sub-intents are ordinary DCM requests, so `graph-integrity.md` covers them; the composite `depends_on` graph is acyclic-enforced (CMP-002).
-- **Use cases** (brokered dependency, BYO dependency, extension-vs-custom-type) are captured in the DAV validation corpus so a realization is tested against them.
+- **Use cases** (brokered dependency, BYO dependency, extension-vs-custom-type) are captured in the DAV validation corpus so an implementation is tested against them.

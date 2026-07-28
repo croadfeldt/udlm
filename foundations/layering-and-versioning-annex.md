@@ -184,7 +184,7 @@ flowchart TD
 **Result:** 3 × 3 × 4 = **36 layer definitions** govern **40,000 VM configurations**. Each VM's realized entity is a lightweight reference to its layer chain — not a copy of all the configuration data.
 
 This also means:
-- Updating the CIS Benchmark base layer creates one new layer version that cascades to all 40,000 VMs at their next realization
+- Updating the CIS Benchmark base layer creates one new layer version that cascades to all 40,000 VMs at their next implementation
 - Drift detection compares each VM's discovered state against its realized entity's layer chain
 - Any VM can be reproduced exactly by replaying its layer chain through the assembly process
 
@@ -238,7 +238,7 @@ provider_registration:
       compatible_versions: "~1.2"      # any 1.2.x revision
 ```
 
-**Version lifecycle:** Service Layers follow the standard five-status artifact lifecycle. A deprecated Service Layer continues to work for existing realizations until retired. If a provider bumps to a new major version and updates its compatibility declaration, the old layer version is no longer used for new requests via that provider but continues to work for existing realizations.
+**Version lifecycle:** Service Layers follow the standard five-status artifact lifecycle. A deprecated Service Layer continues to work for existing implementations until retired. If a provider bumps to a new major version and updates its compatibility declaration, the old layer version is no longer used for new requests via that provider but continues to work for existing implementations.
 
 **Cache invalidation:** Service Layer Cache entries carry the layer version. When the registered layer version increments, the cache entry is invalidated and refreshed before the next assembly.
 

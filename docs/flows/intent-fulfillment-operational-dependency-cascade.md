@@ -5,7 +5,7 @@ cannot realize now for a **transient** reason — the container-needs-PVC case. 
 *nature* is **operational** (a Realized-layer "can't function without" coupling, directional), so
 the dependent is **blocked** while its dependency is unsatisfied, and — the window being open
 (`w>0`) — it **converges** the moment the dependency does. It builds on
-[request-realization](request-realization.md); the new twist is that a member's realization is
+[request-realization](request-realization.md); the new twist is that a member's implementation is
 gated on another member's, and the block is *transient*, not a failure. The model this flow stages
 is [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (the operational ·
 transient rows).

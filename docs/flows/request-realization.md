@@ -1,4 +1,4 @@
-# Request realization — the stage
+# Request implementation — the stage
 
 **What this settles:** how an abstract, portable request becomes one a *specific* provider can actually
 build — filled in and checked before anything is created. This is the model's telling: the pieces in play

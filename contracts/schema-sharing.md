@@ -16,14 +16,14 @@
 ## 1. Purpose
 
 Schema-sharing is a **peer-to-peer, machine-to-machine** protocol between
-realizations — not a user-facing surface. Consumers use the service catalog and
+implementations — not a user-facing surface. Consumers use the service catalog and
 admins/SREs author types in their own deployment; this contract exists so that
-when one realization federates or ingests data carrying a type another peer was
+when one implementation federates or ingests data carrying a type another peer was
 never compiled against, the receiving peer can fetch the sender's schema (from
 `/.well-known/udlm/schema-bundle`) and validate it on the fly. It is the
 interop layer under the catalog, not a replacement for it.
 
-A peer realization may extend udlm with custom resource types, custom event
+A peer implementation may extend udlm with custom resource types, custom event
 types, custom credential types, custom location layers, or other extensions
 allowed by the relevant base contract. Wire-compatibility requires that any
 other peer can:
@@ -41,7 +41,7 @@ add domain-specific extensions.
 
 ## 2. Schema format
 
-A conformant realization MUST publish schemas in **JSON Schema Draft 2020-12**
+A conformant implementation MUST publish schemas in **JSON Schema Draft 2020-12**
 format. JSON Schema is the normative wire format for:
 
 - Entity type definitions
@@ -56,7 +56,7 @@ format. JSON Schema is the normative wire format for:
 JSON Schema is chosen for: maturity, broad tooling support, ability to express
 references between schemas, declarative validation semantics, machine readability.
 
-A realization MAY translate JSON Schemas to other formats internally (e.g., for
+An implementation MAY translate JSON Schemas to other formats internally (e.g., for
 storage or runtime validation). The **wire format** between peers is always
 JSON Schema 2020-12.
 
@@ -73,7 +73,7 @@ that catalogs all its declared types and extensions.
 {
   "bundle_uuid": "f3b64dda-...",
   "bundle_version": "2.4.1",
-  "realization": {
+  "implementation": {
     "name": "DCM",
     "vendor": "example-org",
     "udlm_version": "udlm/0.1"
@@ -103,8 +103,8 @@ that catalogs all its declared types and extensions.
 |---|---|
 | `bundle_uuid` | UUID identifying this bundle release |
 | `bundle_version` | Semver for the bundle as a whole |
-| `realization` | Self-description of the publishing peer |
-| `realization.udlm_version` | Which udlm SPEC version this bundle conforms to — the `conforms_to` form `udlm/<MAJOR.MINOR>` (VERSIONING.md; SPEC is `MAJOR.MINOR`, not `MAJOR.MINOR.REVISION`) |
+| `implementation` | Self-description of the publishing peer |
+| `implementation.udlm_version` | Which udlm SPEC version this bundle conforms to — the `conforms_to` form `udlm/<MAJOR.MINOR>` (VERSIONING.md; SPEC is `MAJOR.MINOR`, not `MAJOR.MINOR.REVISION`) |
 | `published_at` | RFC 3339 instant, UTC-normalized (`Z`), seconds precision minimum (common-elements.md §8) |
 | `manifest` | Categorized list of all schemas in the bundle, with per-schema versions |
 
@@ -116,22 +116,22 @@ A peer MUST be able to publish its bundle and to fetch a remote peer's bundle.
 
 ## 4. Standardized endpoints
 
-Conformant realizations expose schema-sharing at well-known paths:
+Conformant implementations expose schema-sharing at well-known paths:
 
 | Endpoint | Returns |
 |---|---|
-| `GET /.well-known/udlm/schema-bundle` | Latest schema bundle for this realization |
+| `GET /.well-known/udlm/schema-bundle` | Latest schema bundle for this implementation |
 | `GET /.well-known/udlm/schema-bundle?version=2.4.1` | Specific bundle version |
 | `GET /schemas/{category}/{id}/{version}` | Individual schema by category, id, version |
 | `GET /schemas/{category}/{id}/versions` | All available versions of a schema |
 | `GET /.well-known/udlm/conformance` | Conformance declaration (see [`CONFORMANCE.md`](../CONFORMANCE.md)) |
 
-These endpoints MUST be accessible to authenticated peers per the realization's
-federation auth contract. They MAY be public-readable at the realization's
+These endpoints MUST be accessible to authenticated peers per the implementation's
+federation auth contract. They MAY be public-readable at the implementation's
 discretion.
 
 Non-HTTP transports (gRPC, message bus) MUST provide equivalent operations
-documented in the realization's conformance declaration.
+documented in the implementation's conformance declaration.
 
 ---
 
@@ -196,7 +196,7 @@ To avoid round-trips on every interaction:
 
 ## 8. Conformance declaration
 
-Beyond schema bundles, every conformant realization publishes a **conformance
+Beyond schema bundles, every conformant implementation publishes a **conformance
 declaration** at `/.well-known/udlm/conformance` describing:
 
 - Which udlm version it conforms to.
@@ -219,7 +219,7 @@ A schema in a published bundle MUST:
 - Declare `$schema` (the meta-schema URL).
 - Be self-contained or reference only other schemas in the same bundle or in
   the udlm core schemas.
-- NOT reference internal-only schemas (those scoped to the realization).
+- NOT reference internal-only schemas (those scoped to the implementation).
 
 A schema MAY:
 
@@ -231,7 +231,7 @@ A schema MAY:
 
 ## 10. Core udlm schemas
 
-The udlm specification publishes a baseline set of schemas every realization's
+The udlm specification publishes a baseline set of schemas every implementation's
 bundle implicitly depends on. These are **not hypothetical** — they are the
 record schemas in `registry/*.schema.json` and the resource-type specs in
 `registry/resource-types/`, each already carrying a canonical `$id` of the form
@@ -251,7 +251,7 @@ the spec version at the 0.1→1.0 cutover (VERSIONING.md). The baseline includes
   `common-elements.md` §8), enforced by `pattern` in the schemas above.
 - Every Tier-1 resource-type spec in `registry/resource-types/`.
 
-These are the **shared vocabulary** every peer can assume. A realization's bundle
+These are the **shared vocabulary** every peer can assume. An implementation's bundle
 manifest lists only its *own* extensions on top of this baseline; it does not
 re-publish the core. The bundle-manifest shape itself (§3) is the normative
 structure; publishing it as a machine-validatable `schema-bundle.schema.json` is
@@ -261,7 +261,7 @@ a tracked follow-on tied to the conformance suite (../registry/UDLM-0.1-SCOPE.md
 
 ## 11. Validation rules (conformance checks)
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Publish a schema bundle at `/.well-known/udlm/schema-bundle`.
 - Publish individual schemas at the URLs declared in the bundle manifest.

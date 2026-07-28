@@ -189,7 +189,7 @@ Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its cano
 inspected-but-unprovisioned state). See `foundations/four-states.md` §2.4 (raw / discovered-first entry)
 and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
 
-## 7. `device_class` — device realization (Hardware.* types)
+## 7. `device_class` — device implementation (Hardware.* types)
 
 A `Hardware.*` component is the **device/component layer** and may be physical, virtualized, passed
 through to a guest, a slice carved from a physical parent, or a composite built from several interfaces.
@@ -298,7 +298,7 @@ overhead; it does not disable it. What varies by profile is the **implementation
 | Profile | Conforming provenance implementation |
 |---|---|
 | `homelab` / `dev` | **Derivable-carrier provenance**: records live in a git-carried store; field-level provenance entries are *materialized on demand* from the carrier's history by tooling, with the documented mapping — `source: {kind: actor, id: <commit author>}`, `timestamp` = committer instant normalized to UTC, previous value from the parent revision. The carrier must be able to produce a conforming `provenance` object for any record at any time; CI verifies derivability. |
-| `standard` / `prod` | Materialized `provenance` written at assembly/realization time (DCM writes, UDLM carries). |
+| `standard` / `prod` | Materialized `provenance` written at assembly/implementation time (DCM writes, UDLM carries). |
 | `fsi` / `sovereign` | Materialized provenance **plus** the tamper-evident audit chain linkage (`audit.log_head`, AUD-001/002). |
 
 A store that can neither carry nor derive field-level provenance for its records does not

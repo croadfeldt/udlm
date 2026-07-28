@@ -45,7 +45,7 @@ Intent is the one root, and reality is its expression.
 **Adoption (greening the brownfield) is convergence with a *backported* intent — and the backport is itself convergence, run dry:**
 1. **Build** a candidate intent from the discovered state + provider criteria.
 2. **Run convergence in no-op (dry-run)** — the full policy pipeline fires (enrichment, validation, transformation, placement); nothing is acted on.
-3. **Compare** the projected realization to the discovered state; **tweak the intent** and repeat until the projection is exact, or close, per the **faithfulness knob**.
+3. **Compare** the projected implementation to the discovered state; **tweak the intent** and repeat until the projection is exact, or close, per the **faithfulness knob**.
 4. **Approve** the resulting target intent.
 5. **Converge for real** — reality is driven to the approved intent; the discovered parts that don't fit are **decommissioned**.
 

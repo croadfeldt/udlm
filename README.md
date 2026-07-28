@@ -10,11 +10,11 @@ data that any other conformant system can read, interpret, and exchange.
 
 ## Layers
 
-UDLM is the substrate layer. Above it sit **realizations** — operational
+UDLM is the substrate layer. Above it sit **implementations** — operational
 platforms that consume UDLM and turn it into a running system. The reference
-realization is **DCM** (`github.com/dcm-project/dcm`), but UDLM is realization-
+implementation is **DCM** (`github.com/dcm-project/dcm`), but UDLM is implementation-
 neutral: any operational platform that honors the UDLM interfaces is a peer.
-Named realizations (DCM for the Resource family, DAV for the Knowledge family)
+Named implementations (DCM for the Resource family, DAV for the Knowledge family)
 are **non-normative examples** — UDLM's definition, validation, and use depend
 on none of them. Term definitions: [`GLOSSARY.md`](GLOSSARY.md).
 
@@ -22,7 +22,7 @@ on none of them. Term definitions: [`GLOSSARY.md`](GLOSSARY.md).
 
 ```
 udlm/
-├── CONFORMANCE.md           What a conformant realization must provide
+├── CONFORMANCE.md           What a conformant implementation must provide
 ├── foundations/             Context, entity types, four-state lifecycle
 ├── entities/                Resource and service entity model
 ├── contracts/               Wire-compatibility contracts (identifier, time,
@@ -46,7 +46,7 @@ For a per-file breakdown — what each document *owns*, so a rule lives in exact
 
 ## Conformance
 
-A realization that claims UDLM conformance:
+An implementation that claims UDLM conformance:
 
 1. Implements every required contract in `contracts/`, `foundations/`,
    `entities/`, `lifecycle/`, `governance/`, `observability/`, `topology/`,
@@ -69,7 +69,7 @@ milestone — cut when the surface is complete, the conformance suite passes, an
 commits to backward compatibility. See [`registry/VERSIONING.md`](registry/VERSIONING.md) for
 the two version axes (SPEC vs ENTITY) and the full positioning.
 
-Post-1.0, UDLM follows semver: two realizations conformant to the same major version are
+Post-1.0, UDLM follows semver: two implementations conformant to the same major version are
 wire-compatible, and cross-major interop requires a peer to support multiple majors
 concurrently. See [`CONFORMANCE.md`](CONFORMANCE.md) §9.
 

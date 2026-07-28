@@ -23,7 +23,7 @@
 
 ## 1. Purpose
 
-The Unified Governance Matrix is the **single, declarative, multi-dimensional control surface** that governs every cross-boundary interaction in a UDLM-conformant realization. It answers one question at every interaction point:
+The Unified Governance Matrix is the **single, declarative, multi-dimensional control surface** that governs every cross-boundary interaction in a UDLM-conformant implementation. It answers one question at every interaction point:
 
 > **Given this subject, this data, this target, and this context — is this interaction permitted, and under what conditions?**
 
@@ -67,7 +67,7 @@ subject:
   # Subject types (closed substrate vocabulary):
   # actor                — human or service account making a request
   # service_provider     — Service Provider sending/receiving data
-  # peer_realization     — federated peer realization
+  # peer_implementation     — federated peer implementation
   # external_policy_evaluation — External Policy Evaluator receiving payload data
   # data_store           — data store receiving/returning state data
   # notification_service — notification service receiving notification envelopes
@@ -124,12 +124,12 @@ data:
 
 ### 2.3 Axis 3 — Target (Where)
 
-The target is where the data is going — provider, peer realization, storage, notification endpoint.
+The target is where the data is going — provider, peer implementation, storage, notification endpoint.
 
 ```yaml
 target:
   type: <target_type>
-  # service_provider | peer_realization | data_store | notification_service |
+  # service_provider | peer_implementation | data_store | notification_service |
   # information_provider | external_policy_evaluation | external_endpoint
 
   # Identity
@@ -282,7 +282,7 @@ governance_matrix_rule:
 
 ## 4. Evaluation Contract (Substrate Required)
 
-A conformant realization MUST evaluate matching rules and produce a single terminal decision according to the following substrate-required precedence:
+A conformant implementation MUST evaluate matching rules and produce a single terminal decision according to the following substrate-required precedence:
 
 1. **Collect** all active governance matrix rules whose `match` axes are satisfied by the interaction.
 2. **Evaluate hard constraints first.** Any hard DENY that matches produces an immediate terminal DENY; no further evaluation is required.
@@ -292,7 +292,7 @@ A conformant realization MUST evaluate matching rules and produce a single termi
 6. **Produce an audit record.** Record interaction_uuid, all matching rules, terminal decision, fields stripped/redacted, and the rule that governed the decision. Notification fires for decisions listed in the rule's `notification_on`.
 7. **Enforce the decision.** ALLOW / ALLOW_WITH_CONDITIONS: interaction proceeds with permitted fields. DENY: interaction blocked with 403 and `governance_matrix_rule_uuid`. STRIP_FIELD / REDACT: interaction proceeds with modified payload. AUDIT_ONLY: interaction proceeds with flagged audit record.
 
-The specific algorithm by which a realization performs collection, sorting, and caching is a realization choice; the precedence and decision-monotonicity above are the substrate contract.
+The specific algorithm by which an implementation performs collection, sorting, and caching is an implementation choice; the precedence and decision-monotonicity above are the substrate contract.
 
 ---
 
@@ -329,7 +329,7 @@ sovereignty_zone:
   required_provider_accreditation_minimum_type: third_party
 ```
 
-Zone instances and their inter-zone agreements are realization/organization data — but the artifact contract above is normative.
+Zone instances and their inter-zone agreements are implementation/organization data — but the artifact contract above is normative.
 
 ---
 
@@ -355,7 +355,7 @@ provenance.<field_name>                  # provenance fields (rarely restricted)
 # Block ALL phi fields from crossing to non-HIPAA peers
 match:
   data.classification: phi
-  target.type: peer_realization
+  target.type: peer_implementation
   target.accreditation_held.not_includes: hipaa
 decision: DENY
 enforcement: hard
@@ -380,7 +380,7 @@ field_permissions:
 # Allow federated phi-accredited peers to receive limited PHI fields only
 match:
   data.classification: phi
-  target.type: peer_realization
+  target.type: peer_implementation
   target.accreditation_held.includes: hipaa
   target.trust_posture: verified
 decision: ALLOW_WITH_CONDITIONS
@@ -468,10 +468,10 @@ hand-authored field lock (`contracts/policy-contract.md` §10 — `field_locks` 
 | `GMX-008` | Compliance domain matrix rules are automatically added to the active rule set when the compliance domain is active. They compose with profile rules — they do not replace them. |
 | `GMX-009` | The Governance Matrix is evaluated before provider dispatch, before federation tunnel data transmission, before notification delivery, and before any cross-boundary capability invocation. |
 | `GMX-010` | A STRIP_FIELD decision that removes a required field escalates to DENY_REQUEST automatically. Optional fields may be stripped without blocking the interaction. |
-| `GMX-011` | A refusal to cross a sovereignty boundary is emitted as `policy.sovereignty_egress_denied` and names the **declared boundary** and the **refusing rule** (`governance_matrix_rule_uuid`), so the requester can seek an in-boundary alternative. The decision is taken on the structural surface — the target authority carried in the reference — without dereferencing the protected data (ADR-041's ruling that policy in its information-flow role matches the unresolved pointer, so sovereignty is enforced on the address, never by first reading what it points at). The refusal payload names no protected field and carries no protected value: a refusal is itself a boundary crossing and passes the same egress guard as any other payload ([`contracts/error-model.md`](../contracts/error-model.md) §8a). Timing is `GMX-009`'s — before dispatch, before transmission, before serialization — because a refusal issued after the crossing is a disclosure that cannot be withdrawn. **Datum dependency, ledgered:** the authority component this rule decides on does not exist on the canonical `Reference` today (standing gap F14; closure proposed in `docs/design/standing-model-gaps.md` — `target_authority`). Until that ruling lands, realizations enforce on the boundary derivable without dereference (the target's declared scope resolved from the local index); the full structural-surface contract activates with F14. |
+| `GMX-011` | A refusal to cross a sovereignty boundary is emitted as `policy.sovereignty_egress_denied` and names the **declared boundary** and the **refusing rule** (`governance_matrix_rule_uuid`), so the requester can seek an in-boundary alternative. The decision is taken on the structural surface — the target authority carried in the reference — without dereferencing the protected data (ADR-041's ruling that policy in its information-flow role matches the unresolved pointer, so sovereignty is enforced on the address, never by first reading what it points at). The refusal payload names no protected field and carries no protected value: a refusal is itself a boundary crossing and passes the same egress guard as any other payload ([`contracts/error-model.md`](../contracts/error-model.md) §8a). Timing is `GMX-009`'s — before dispatch, before transmission, before serialization — because a refusal issued after the crossing is a disclosure that cannot be withdrawn. **Datum dependency, ledgered:** the authority component this rule decides on does not exist on the canonical `Reference` today (standing gap F14; closure proposed in `docs/design/standing-model-gaps.md` — `target_authority`). Until that ruling lands, implementations enforce on the boundary derivable without dereference (the target's declared scope resolved from the local index); the full structural-surface contract activates with F14. |
 | `GMX-012` | A payload reduced by a field-level decision is served with a **reduction disclosure**: the response states that policy reduced it and how many fields were affected, and names the governing rule. The disclosure MUST NOT enumerate the withheld field paths or values. Absence of the disclosure asserts a complete payload, so a consumer may treat an undisclosed absence as ground truth — which is why serving a reduced payload without it is a contract violation, not a cosmetic omission. The serve is auditable through the evaluation that reduced it: the field-level decision is recorded (`EVALUATE`, naming the governing rule and the affected-field count, joined by `request_id` to the served response) — a reduced payload with no such record is an unaudited disclosure-shape, the read-side twin of `AUD-023`'s unaudited denial (§6.4). |
 | `GMX-013` | One scope governs both directions: a field excluded from an actor's **read** scope is refused on **write** from that actor, emitted as `policy.field_scope_violation` naming the field path and the excluding scope. This holds for a write that sets the field and for a write that would clear it by omitting it from a round-tripped reduced projection — an omitted field an actor may not read is never merged as a deletion. The refusal names the field path and the scope; it carries neither the submitted value nor the masked one. |
 
 ---
 
-*UDLM substrate document. Realization-specific evaluation algorithm internals, hard/soft enforcement execution mechanics, sovereignty zone management runtime, profile-governed policy bundles and the registration-time evaluation pipeline, and policy caching/invalidation live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific evaluation algorithm internals, hard/soft enforcement execution mechanics, sovereignty zone management runtime, profile-governed policy bundles and the registration-time evaluation pipeline, and policy caching/invalidation live in the consuming implementation's documentation.*

@@ -73,7 +73,7 @@ already carries the needed primitive: `precedence_order` within a `precedence_cl
   visible authoring defect at resolution time, instead of a latent ordering bug.
 - What this ADR does *not* do: it does not realize the unbuilt carriers. The ADR-015 Setting
   schema, the per-field override ceiling/direction in machine form, and the ADR-038
-  `covers`/`skip` selectors remain schema work tracked by the class-realization program — that
+  `covers`/`skip` selectors remain schema work tracked by the class-implementation program — that
   is missing *carrier*, not missing *semantics*, and nothing in this ruling changes shape when
   those land.
 - Corpus anchors: the adopter's scoped-configuration and blast-radius cases, and

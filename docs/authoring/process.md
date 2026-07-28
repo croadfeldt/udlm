@@ -23,7 +23,7 @@ Read both schemas and both worked examples before choosing.
 **Author a Process-family Class** when the recurring problem is **platform-to-platform automation
 migration**: two engines (blue today, green tomorrow) must run *the same* OS-patch or backup definition,
 org policy gates the portable definition, and lock-in should be readable as exactly the elements sitting
-at engine scope. This is the shape the realization-plan flags as most-used — resource-provider migration
+at engine scope. This is the shape the implementation-plan flags as most-used — resource-provider migration
 is episodic, automation-engine migration is recurring.
 
 **Author an `Automation.Job` resource type** when you need **a job as a graph node with real

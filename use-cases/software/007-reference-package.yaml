@@ -45,7 +45,7 @@ scenario:
     interaction: the admission gate confirms the digest binds the name+version before the package is
       referenceable
   - domain: provider
-    interaction: no realization provider is dispatched; admission is a catalog-reference operation
+    interaction: no implementation provider is dispatched; admission is a catalog-reference operation
   - domain: audit
     interaction: the admission and the recorded coordinates are logged against the package
 generated_by:

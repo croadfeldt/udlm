@@ -14,13 +14,13 @@ example, and its coverage block to learn intended behavior; reading the **intent
 **realized** plane deliberately (they are separate); declaring your read surface in a one-file consumer
 manifest; and pinning each type you read by version or digest. If you go further and *realize* intent,
 you do it as a provider at the naturalization boundary — you wrap a native backend and report realized
-state back; you never push realization mechanism into the portable model.
+state back; you never push implementation mechanism into the portable model.
 
 ---
 
 ## 1. What the model gives you
 
-Four things you can build on, all portable across any conformant realization:
+Four things you can build on, all portable across any conformant implementation:
 
 - **Resource types** — the declarative shapes for the things a system provisions (a VM, a Volume, a
   Database, a DNSZone). Each type spec lives under `registry/resource-types/<family>/`, validates
@@ -37,7 +37,7 @@ Four things you can build on, all portable across any conformant realization:
   behavior* as executable scenarios: a happy path, a refusal, a composite. This is the model telling you
   what it is supposed to do, not just what fields it has.
 
-Everything above is **portable** (no realization's runtime is baked in — ADR-008, the peer test:
+Everything above is **portable** (no implementation's runtime is baked in — ADR-008, the peer test:
 *could an independent conformant peer decide this differently and still be valid? yes → it isn't in the
 substrate*), **versioned** (semver, with the publish law — §4), and **digest-addressable** (every
 published revision has a recorded sha256 — §4).
@@ -164,9 +164,9 @@ form (the terms are defined in [`GLOSSARY.md`](../GLOSSARY.md)). The contract yo
 [`contracts/provider-contract.md`](../contracts/provider-contract.md).
 
 The load-bearing rule: **you wrap a native backend and populate the realized plane; you do not put
-realization mechanism into the portable model.** UDLM is the portable intent plus the estate graph; a
-realization (DCM, or any independent peer) is the engine that makes intent real. The line is the ADR-008
-peer test — *anything a conformant peer could do differently is realization, and stays out of the
+implementation mechanism into the portable model.** UDLM is the portable intent plus the estate graph; a
+implementation (DCM, or any independent peer) is the engine that makes intent real. The line is the ADR-008
+peer test — *anything a conformant peer could do differently is implementation, and stays out of the
 substrate*; the tenet form is T8 in [`CONTRIBUTING.md`](../CONTRIBUTING.md) (*adopt tools by reference —
 wrap the mature tool as a Provider, don't have the control plane reimplement it*). Concretely, a
 provider MUST report realized/discovered state back per resource with an identity correlation (your

@@ -7,7 +7,7 @@
 
 > Defines how entities, requests, policies, events, and other first-class
 > artifacts are identified, scoped, and referenced across a udlm-conformant
-> realization and between peers. Wire-compatible: any conformant peer MUST
+> implementation and between peers. Wire-compatible: any conformant peer MUST
 > produce identifiers that any other conformant peer can deserialize, scope-resolve,
 > and reference.
 
@@ -15,27 +15,27 @@
 
 ## 1. Purpose
 
-A peer realization that consumes data emitted by another peer must be able to:
+A peer implementation that consumes data emitted by another peer must be able to:
 
 - Recognize what kind of thing an identifier refers to.
-- Determine the identifier's scope (global vs tenant vs realization).
-- Decide whether the identifier is portable across realizations or local-only.
+- Determine the identifier's scope (global vs tenant vs implementation).
+- Decide whether the identifier is portable across implementations or local-only.
 - Resolve cross-references between artifacts without prior knowledge of the
   emitting system's internals.
 
 *Worked example.* Peer A emits a VM entity that references a `Network.VirtualNetwork` by handle. Peer B,
 receiving it, must recognize the reference *kind* (a network), determine its *scope* (a global, portable
-handle — not A's realization-local uuid), resolve it to B's own copy of that network, and reject it if the
+handle — not A's implementation-local uuid), resolve it to B's own copy of that network, and reject it if the
 scope doesn't match — all without knowing A's internals. The rules below make that mechanical.
 
-This document defines the rules every conformant realization MUST follow when
+This document defines the rules every conformant implementation MUST follow when
 generating, formatting, scoping, and referencing identifiers.
 
 ---
 
 ## 2. Identifier types
 
-A conformant realization MUST distinguish three identifier types:
+A conformant implementation MUST distinguish three identifier types:
 
 | Type | Form | Scope | Mutability | Portable across peers |
 |---|---|---|---|---|
@@ -55,10 +55,10 @@ v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 
   | Version | Status | Use | Why |
   |---|---|---|---|
-  | **v4** | **REQUIRED** | entity/artifact IDENTITY (resources, types, policies, providers, requests) | unpredictable (CSPRNG), leaks nothing, collision-safe across independent realizations; the Kubernetes-uid pattern |
+  | **v4** | **REQUIRED** | entity/artifact IDENTITY (resources, types, policies, providers, requests) | unpredictable (CSPRNG), leaks nothing, collision-safe across independent implementations; the Kubernetes-uid pattern |
   | **v7** | **REQUIRED** | TIME-ORDERED artifacts only (audit-chain leaves, event ids) — declared in the field schema | millisecond-ordered → index locality + total order for the audit chain |
   | v1/v6 | PROHIBITED | — | embed MAC/timestamp (information leak); ordering need is served by v7 |
-  | v3/v5 | PROHIBITED | — | name-derived/deterministic: two realizations hashing the same name mint the SAME uuid — violates the identity-is-minted-once model and §5 no-reassignment |
+  | v3/v5 | PROHIBITED | — | name-derived/deterministic: two implementations hashing the same name mint the SAME uuid — violates the identity-is-minted-once model and §5 no-reassignment |
   | v8 | PROHIBITED | — | vendor-defined layout: not interoperable across peers |
 
 - **Generation**: v4 from a cryptographically secure RNG (the platform's standard source —
@@ -66,13 +66,13 @@ v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 - **Validation**: peers MUST reject at ingest any malformed UUID and any version outside
   {v4, v7-where-declared} — checking BOTH the version nibble and the variant bits
   (`^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`, version per field).
-- **Uniqueness**: globally unique across all realizations. Collision probability is assumed zero
+- **Uniqueness**: globally unique across all implementations. Collision probability is assumed zero
   for v4; v7 collisions handled by the audit-chain ordering rule.
 
 ### 2.2 Handle
 
 - **Format**: `[namespace/]name` where `name` matches `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` and `namespace` follows the same pattern with `/` separators allowed.
-- **Scope**: tenant-scoped by default; realization-scoped if explicitly declared.
+- **Scope**: tenant-scoped by default; implementation-scoped if explicitly declared.
 - **Mutability**: handles MAY change. Every change MUST be audited (old handle, new handle, timestamp, actor).
 - **Portability**: handles are NOT portable across peers. On import from another peer, a handle MUST be rebound (the target keeps its UUID; the importing peer assigns its own handle if needed).
 - **Resolution**: a handle resolves to exactly one UUID within its scope. Reverse resolution (UUID → current handle) is always available.
@@ -98,13 +98,13 @@ A reference is a typed pointer to another artifact. Wire format:
 
 ## 3. Scope rules
 
-Every identifier carries an implicit scope. A conformant realization MUST be
+Every identifier carries an implicit scope. A conformant implementation MUST be
 able to express and honor these scopes:
 
 | Scope | Holders | Cross-scope resolution |
 |---|---|---|
 | **Global** | UUIDs | Always resolvable across peers |
-| **Realization** | Internal-only handles, internal credentials | NOT exported to peers; opaque outside |
+| **Implementation** | Internal-only handles, internal credentials | NOT exported to peers; opaque outside |
 | **Tenant** | Tenant-scoped handles, tenant artifacts | Resolved within the tenant; cross-tenant requires explicit authorization |
 | **Request-local** | Field-injection bindings within a request group | Exists only for the lifetime of the request |
 
@@ -127,7 +127,7 @@ peering):
 3. **References are preserved by UUID.** Reference handles MAY be re-rendered
    to match the importing peer's bindings, but the underlying UUID is canonical.
 4. **Internal-scope identifiers MUST NOT be exported.** A peer that exports
-   data MUST omit fields scoped to its own realization.
+   data MUST omit fields scoped to its own implementation.
 
 ---
 
@@ -138,8 +138,8 @@ Some operational scenarios reassign an artifact's owner or scope:
 - **Tenant migration**: an entity moves from tenant A to tenant B. The
   `entity_uuid` is preserved. The tenant-scoped handle MAY change. An audit
   record MUST be written.
-- **Realization migration** (rare): an artifact moves between peer realizations.
-  The UUID is preserved. The new realization treats it as imported (rule 4 above).
+- **Implementation migration** (rare): an artifact moves between peer implementations.
+  The UUID is preserved. The new implementation treats it as imported (rule 4 above).
 - **Decommissioning**: an artifact transitions to a terminal lifecycle state.
   Its UUID remains valid for historical resolution; the handle MAY be released
   for reuse after the retention period defined in the audit policy.
@@ -163,7 +163,7 @@ When serialized for transport between peers:
 
 ## 7. Validation rules (conformance checks)
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Reject malformed UUIDs at ingest.
 - Reject handles violating the format pattern.

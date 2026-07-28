@@ -45,7 +45,7 @@ The **base level** is the minimum a provider must implement for **DCM/UDLM to ow
 1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). DCM places/matches against this.
 2. **Required data** — the input schema it needs to realize/manage each target resource, so DCM can collect intent and own the lifecycle.
 3. **Config-projection detail** — the provider supplies enough config schema/detail for a DCM to project a configuration interface at the provider's supported scale (basic text passthrough → typed; DCM ADR-023 §6). **If the provider exposes its OWN editor** (rather than being edited through DCM's projected interface), the contract binds it to keep the audit loop closed — a provider editor is **not** an audit bypass. It MUST: **(a)** report the resulting **realized-state updates** back to DCM (denaturalized, per-resource, §1a.5 read-back) so the config **state** is recorded (UDLM is the state system-of-record — ADR-016 §3); **(b)** submit every edit to DCM's **actor authorization**, so the applied change is attributed to a DCM-validated actor (item 8); and **(c)** carry its `data_classification` and `tenant_uuid` and stay **within tenant and sovereignty bounds** — an edit is governed exactly as any other boundary crossing (§4). The invariant the contract guarantees: **no config change reaches Realized without an authorized in-tenant actor, a governance-cleared edit, a read-back, and an audit leaf.** *How* a DCM projects the interface, sequences before/after actor validation, and evaluates the Governance Matrix on an edit is DCM's to implement (a peer may differ — ADR-008); see the DCM **config-projection** spec (`dcm/docs/specifications/dcm-config-projection.md`).
-4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommission`: execute the four-state transitions DCM drives (§6, §6a dispatch). Realization is **reserve-then-commit** (ADR-011): `reserve` validates + holds with **no side effects**; `commit` builds the held reservation; nothing is committed until the whole reserved graph validates. All MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
+4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommission`: execute the four-state transitions DCM drives (§6, §6a dispatch). Implementation is **reserve-then-commit** (ADR-011): `reserve` validates + holds with **no side effects**; `commit` builds the held reservation; nothing is committed until the whole reserved graph validates. All MUST be **idempotent / re-entrant** (ADR-006 convergence) so DCM can re-drive.
 5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization, DCM ADR-023 §1), with an **identity correlation** (UDLM `uuid` ↔ the provider's native id). *Without this read-back DCM is blind to reality and cannot own the lifecycle* — it is the load-bearing function that closes the loop and feeds drift/convergence/rehydrate.
 6. **Audit** — emit audit events for its actions (state transitions, relationship mutations) into the chain (SPEC-DESIGN §18d; §7).
 7. **Relationships** — declare and maintain the target resources' relationships: one authoritative direction, targets that resolve, mutations as explicit forward audit events (SPEC-DESIGN §18a–e).
@@ -178,10 +178,10 @@ provider_base_registration:
   # role the provider requested; it can never widen beyond this declaration.
   accepts_roles: [execution]             # e.g. [execution, assembly]
 
-  # What the provider needs FROM the realization (optional). Matched against the realization's
+  # What the provider needs FROM the implementation (optional). Matched against the implementation's
   # own capability advertisement at registration; the provider gets a matched-capabilities
   # response and explicitly opts in to subscriptions (§10.2 — never auto-subscribed, DISC-004).
-  needs_from_realization:
+  needs_from_implementation:
     - domain: cost
       description: "Cost estimation and attribution data"
 
@@ -258,7 +258,7 @@ ACTIVE → SUSPENDED | DEREGISTERING → DEREGISTERED | FORCED_DEREGISTERED
 
 The rules the `sovereignty_declaration` (§2) puts on every provider — all providers, all
 capabilities (A4 landed 2026-07-23: these moved here from storage-providers.md because they are
-registration obligations, not storage behavior). How a realization *executes* the responses
+registration obligations, not storage behavior). How an implementation *executes* the responses
 (pause, migrate, quarantine) is control-plane, owned by the DCM architecture docs.
 
 | ID | Policy |
@@ -385,7 +385,7 @@ Higher profiles add: certificate pinning, per-message signing, hardware attestat
 
 ## 6. Base Contract — Provider Lifecycle Events
 
-Providers must report changes to the **lifecycle state of the realized resources they host** — drift from requested state, degradation, capacity events, or an unsanctioned out-of-band change — via lifecycle events. (This is why the base registration payload carries no `state` field: realized state is reported through this channel after realization, not declared at registration.) This is a base contract obligation — not optional:
+Providers must report changes to the **lifecycle state of the realized resources they host** — drift from requested state, degradation, capacity events, or an unsanctioned out-of-band change — via lifecycle events. (This is why the base registration payload carries no `state` field: realized state is reported through this channel after implementation, not declared at registration.) This is a base contract obligation — not optional:
 
 ```json
 POST {dcm_lifecycle_endpoint}
@@ -408,7 +408,7 @@ POST {dcm_lifecycle_endpoint}
 
 ## 6a. Base Contract — Two-phase realization (reserve / commit / release)
 
-Realization is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, reconciles the reserved graph to a fixed point, checks it against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria from the reserved parent's facts **before any resource is built**, and makes abort a hold-drop, not a teardown.
+Implementation is **two-phase** (UDLM ADR-011): DCM validates and **reserves** every target across the dependency graph, reconciles the reserved graph to a fixed point, checks it against policy, and only then **commits**. This is what lets `fulfillment: provider` (§1b, ADR-009) compute a dependency's realize-time criteria from the reserved parent's facts **before any resource is built**, and makes abort a hold-drop, not a teardown.
 
 **Every provider that implements `realize_resources` MUST support three dispatch request types** — `reserve`, `commit`, `release` — alongside `converge` / `decommission`. They are **operations on the dispatch channel** (an `operation` discriminator on the dispatch payload, §8.1), a base-floor obligation (§1a item 4), not optional extensions:
 
@@ -573,7 +573,7 @@ service_provider_capabilities:
     supported: true | false
     # If supported: provider returns the observed dependency edges for any
     # entity it hosts when the substrate calls {dependency_introspection_endpoint}.
-    # Observation is post-realization and observational only — it is NOT
+    # Observation is post-implementation and observational only — it is NOT
     # consulted for orchestration. See entities/service-dependencies.md §3a
     # and policies OBS-001..OBS-005 for the contract.
     methods:
@@ -695,7 +695,7 @@ composite_service_capabilities:
   constituent_provider_types: [service_provider, information_provider]
   composition_model:
     execution: dependency_ordered
-    max_concurrent_realizations: 10
+    max_concurrent_implementations: 10
     max_constituent_count: 20
     max_nesting_depth: 3
   partial_delivery_supported: true
@@ -749,7 +749,7 @@ auth_capability:                 # declared on any provider; not a provider_type
 
 **Data direction:** Consumer sends credentials → the auth-capable provider validates → returns token + claims → DCM extracts actor identity.
 
-> **Credential capability.** Credential issuance is the sibling capability, declared via `Credential.*` + a `credential_capability` block (assurance + attestation level the realization selects against). Its full contract — issuance, rotation, revocation, declare-and-select, the broker model — lives in [Credentials](../governance/credentials.md). Like auth, it is a declared capability, not a separate provider type; DCM brokers it and never holds the value (CPX-001).
+> **Credential capability.** Credential issuance is the sibling capability, declared via `Credential.*` + a `credential_capability` block (assurance + attestation level the implementation selects against). Its full contract — issuance, rotation, revocation, declare-and-select, the broker model — lives in [Credentials](../governance/credentials.md). Like auth, it is a declared capability, not a separate provider type; DCM brokers it and never holds the value (CPX-001).
 
 ---
 
@@ -841,35 +841,35 @@ A provider registers with a **capability set** (each `verb × domain`), verified
 
 ## 10. Capability Discovery — Wire Protocol (bidirectional)
 
-How the two sides of the contract learn each other's surface: the realization advertises its own
+How the two sides of the contract learn each other's surface: the implementation advertises its own
 capabilities to providers and external consumers (§10.1), and a provider declares what it needs from
-the realization at registration and gets a matched-capabilities answer (§10.2). Folded in from
+the implementation at registration and gets a matched-capabilities answer (§10.2). Folded in from
 `capability-discovery.md` (2026-07-23) — this contract is the owner; the capability *model* itself
 (verbs, categories, admission) lives in §§2, 8–9.
 
-### 10.1 The Realization's Capability Advertisement (Wire Contract)
+### 10.1 The Implementation's Capability Advertisement (Wire Contract)
 
 #### 10.1a The Advertisement Endpoint
 
-A UDLM-conformant realization MUST expose a machine-readable endpoint that describes what it can do:
+A UDLM-conformant implementation MUST expose a machine-readable endpoint that describes what it can do:
 
 ```
 GET /api/v1/capabilities
 ```
 
-The response **envelope** is normative; the capability **inventory is realization-owned** (the
-boundary, ADR-008: what a realization can do is the realization's to declare — the substrate
+The response **envelope** is normative; the capability **inventory is implementation-owned** (the
+boundary, ADR-008: what an implementation can do is the implementation's to declare — the substrate
 defines *how it is advertised*, never *what it is*). Each advertised capability carries a
 description, its API endpoint(s), and/or its `data_streams` (payload schema + subscribe endpoint
 per stream). **Substrate stream names are the event catalog's**
-([event-catalog.md](event-catalog.md)) — the advertisement may not rename them. A realization MAY
-additionally advertise realization-defined streams (e.g. placement scoring, or cost streams
+([event-catalog.md](event-catalog.md)) — the advertisement may not rename them. An implementation MAY
+additionally advertise implementation-defined streams (e.g. placement scoring, or cost streams
 relayed from a metering engine per [cost-metering-linkage.md](cost-metering-linkage.md)).
 Endpoints are illustrative, not contractual.
 
 ```json
 {
-  "realization_instance": "<instance-handle>",
+  "implementation_instance": "<instance-handle>",
   "version": "1.0.0",
   "capabilities": {
     "<capability-key>": {
@@ -890,9 +890,9 @@ Endpoints are illustrative, not contractual.
 }
 ```
 
-A realization's actual capability inventory lives with the realization — for DCM it is the
+An implementation's actual capability inventory lives with the implementation — for DCM it is the
 [DCM Capabilities Matrix](https://github.com/croadfeldt/dcm/blob/main/architecture/DCM-Capabilities-Matrix.md)
-(one advertisement key per matrix capability, kept current by the realization, versioned per
+(one advertisement key per matrix capability, kept current by the implementation, versioned per
 DISC-005).
 
 #### 10.1b Capability Query (Substrate Required)
@@ -910,12 +910,12 @@ The response MUST include only matching capabilities with their API endpoints an
 
 #### 10.1c The Integration Flow (Substrate Pattern)
 
-A consuming system integrating with a UDLM-conformant realization:
+A consuming system integrating with a UDLM-conformant implementation:
 
 ```
 1. Consumer queries:  GET /api/v1/capabilities?domain=cost
 
-2. Realization responds with:
+2. Implementation responds with:
    - cost.estimated event stream (subscribe via webhook)
    - cost.attributed event stream (subscribe via webhook)
    - the query API the capability advertises (`api_endpoint`)
@@ -935,7 +935,7 @@ A consuming system integrating with a UDLM-conformant realization:
 
 ### 10.2 Provider Needs and Matched Capabilities (Wire Contract)
 
-When a provider registers, it MAY declare what it offers AND what it needs from the realization:
+When a provider registers, it MAY declare what it offers AND what it needs from the implementation:
 
 ```yaml
 provider_base_registration:            # canonical shape — §2; only the discovery-relevant
@@ -944,7 +944,7 @@ provider_base_registration:            # canonical shape — §2; only the disco
   display_name: "Acme FinOps Platform"
   capabilities: [serve_data/Cost]      # verb × domain (§8.2 profile carries the data_domains detail)
 
-  needs_from_realization:
+  needs_from_implementation:
     - domain: cost
       description: "Cost estimation and attribution data"
     - domain: entity_lifecycle
@@ -955,7 +955,7 @@ provider_base_registration:            # canonical shape — §2; only the disco
 
 #### 10.2a Matched-Capabilities Response
 
-When a provider registers with `needs_from_realization`, the realization MUST match the declared needs against its capability advertisement and offer subscription endpoints in the registration response:
+When a provider registers with `needs_from_implementation`, the implementation MUST match the declared needs against its capability advertisement and offer subscription endpoints in the registration response:
 
 ```json
 {
@@ -982,18 +982,18 @@ When a provider registers with `needs_from_realization`, the realization MUST ma
 ```
 
 Substrate invariants:
-- The provider then activates the subscriptions it wants. The realization MUST NEVER auto-subscribe — the provider explicitly opts in.
-- The realization MUST advertise exactly what's available and how to obtain it.
+- The provider then activates the subscriptions it wants. The implementation MUST NEVER auto-subscribe — the provider explicitly opts in.
+- The implementation MUST advertise exactly what's available and how to obtain it.
 
 #### 10.2b Bidirectional Discovery Pattern
 
 The pattern works in both directions:
 
 ```
-Provider → Realization: "Here's what I can do" (capabilities)
-Provider → Realization: "Here's what I need from you" (needs_from_realization)
-Realization → Provider: "Here's what I have that matches your needs" (matched_capabilities)
-Realization → Provider: "Here's what I need from you" (dispatch payloads via the provider contract)
+Provider → Implementation: "Here's what I can do" (capabilities)
+Provider → Implementation: "Here's what I need from you" (needs_from_implementation)
+Implementation → Provider: "Here's what I have that matches your needs" (matched_capabilities)
+Implementation → Provider: "Here's what I need from you" (dispatch payloads via the provider contract)
 ```
 
 ---
@@ -1002,10 +1002,10 @@ Realization → Provider: "Here's what I need from you" (dispatch payloads via t
 
 The substrate requires the following invariants on capability discovery interactions:
 
-- **Catalog separation:** The capability advertisement endpoint exposes resource types the realization manages, but NOT the tenant-scoped, RBAC-filtered service catalog itself.
+- **Catalog separation:** The capability advertisement endpoint exposes resource types the implementation manages, but NOT the tenant-scoped, RBAC-filtered service catalog itself.
 - **Policy enforcement:** Capability discovery MUST NOT bypass policy. A provider that discovers a data stream and subscribes to it still has its webhook authenticated, its data filtered by tenant scope, and its subscription audited.
 - **Audit:** Every capability query, subscription establishment, and data stream delivery MUST be audited. The audit trail shows: who queried capabilities, what they subscribed to, and what data was delivered.
-- **Federation use:** A peer realization (`federate` capability) MAY use capability discovery to understand what a remote instance can do before establishing a federation tunnel. This replaces static federation scope declarations with dynamic capability negotiation.
+- **Federation use:** A peer implementation (`federate` capability) MAY use capability discovery to understand what a remote instance can do before establishing a federation tunnel. This replaces static federation scope declarations with dynamic capability negotiation.
 
 ---
 
@@ -1016,7 +1016,7 @@ The substrate requires the following invariants on capability discovery interact
 | `DISC-001` | Capability advertisement is read-only and requires authentication. No anonymous capability queries. |
 | `DISC-002` | Webhook subscriptions MUST be tenant-scoped. A provider's subscription only receives events for entities in its authorized scope. |
 | `DISC-003` | Capability query MUST be rate-limited. Prevents enumeration attacks. |
-| `DISC-004` | `needs_from_realization` matching is advisory, not automatic. The realization suggests matches; the provider activates subscriptions explicitly. |
+| `DISC-004` | `needs_from_implementation` matching is advisory, not automatic. The implementation suggests matches; the provider activates subscriptions explicitly. |
 | `DISC-005` | Capability schema versions follow the substrate's API versioning strategy. Capability response format is versioned and backward-compatible. |
 
 ---
@@ -1034,7 +1034,7 @@ The substrate requires the following invariants on capability discovery interact
 | `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. DCM MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 | `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the DCM→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
 | `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration DCM records each declared capability/category in the DCM-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: DCM registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). DCM enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in §2's `dcm_registration_verdict` (`effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`; mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
-| `PRV-010` | **Retired 2026-07-23 (#202 executed).** Provider-specific data is a Provider-Class `SharedDataElement` (ADR-038; schema realization #199) — the interim `provider_extensions` carrier is removed from the realized-entity schema and the validator rejects it. The enduring obligations moved with the model: additive-only (the base type-spec stays closed — no override of base elements), declared by the provider at registration, and any provider-specific data computes a portability degradation with mandatory consumer notification (realized-entity `portability` block; resource-type-hierarchy Transparency principle). |
+| `PRV-010` | **Retired 2026-07-23 (#202 executed).** Provider-specific data is a Provider-Class `SharedDataElement` (ADR-038; schema implementation #199) — the interim `provider_extensions` carrier is removed from the realized-entity schema and the validator rejects it. The enduring obligations moved with the model: additive-only (the base type-spec stays closed — no override of base elements), declared by the provider at registration, and any provider-specific data computes a portability degradation with mandatory consumer notification (realized-entity `portability` block; resource-type-hierarchy Transparency principle). |
 | `PRV-011` | **The `effective_capabilities` ceiling (`PRV-009`) is enforced at the dispatch boundary.** Every dispatch — placed, routed, pinned, or operator-overridden — re-checks that the target provider's `effective_capabilities` covers the required capability at the required grain (resource type at the required `spec_version`, §8.1) before any work is handed over. No routing mechanism, pin, or override exempts a dispatch from this check; a pin selects among eligible providers, it does not confer eligibility (§2b). A mismatch refuses **pre-dispatch** with `placement.capability_mismatch` — an eligibility outcome, distinct from `provider.unavailable`, which reports a provider that broke — carrying the required-versus-declared comparison so a mis-routed request is distinguishable from an unsatisfiable one. Eligibility is decided from the provider's registration declarations, never by attempting the operation and observing failure. |
 
 ---

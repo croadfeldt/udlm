@@ -160,7 +160,7 @@ Resource Type Specifications use the two-axis versioning defined once in [`regis
 
 ### 4.2 Version Resolution Policy
 
-Version constraints in requests are **strictly enforced** — a conformant realization MUST NEVER silently resolve to a different version than declared. The resolution policy governs how much flexibility a consumer has; its names map onto the constraint grammar in [`VERSIONING.md`](../registry/VERSIONING.md) (`compatible` ≡ `^` same-major, `latest_minor` ≡ `~` same-minor, `exact` ≡ a pinned version) — same concept, this is the request-time selector:
+Version constraints in requests are **strictly enforced** — a conformant implementation MUST NEVER silently resolve to a different version than declared. The resolution policy governs how much flexibility a consumer has; its names map onto the constraint grammar in [`VERSIONING.md`](../registry/VERSIONING.md) (`compatible` ≡ `^` same-major, `latest_minor` ≡ `~` same-minor, `exact` ≡ a pinned version) — same concept, this is the request-time selector:
 
 ```yaml
 resource_type_version_constraint:
@@ -173,7 +173,7 @@ resource_type_version_constraint:
   pinned_version: "1.2.3"   # required if version_policy: exact
 ```
 
-**A conformant realization MUST NEVER automatically upgrade across major versions regardless of `version_policy`.** Moving from v1.x to v2.x always requires explicit consumer action.
+**A conformant implementation MUST NEVER automatically upgrade across major versions regardless of `version_policy`.** Moving from v1.x to v2.x always requires explicit consumer action.
 
 ### 4.3 Profile-Governed Version Policy Defaults
 
@@ -216,7 +216,7 @@ deprecation_lifecycle_policies:
 
   REG-DP-003:
     name: "Default migration window after retirement"
-    value: P90D           # 90 days after retirement — realizations enter DEPRECATED_RUNTIME
+    value: P90D           # 90 days after retirement — implementations enter DEPRECATED_RUNTIME
     override: allow
 
   REG-DP-004:
@@ -231,9 +231,9 @@ deprecation_lifecycle_policies:
     override: not_permitted   # this is structural — cannot be changed
 
   REG-DP-006:
-    name: "Behavior on retirement — existing realizations"
+    name: "Behavior on retirement — existing implementations"
     value: deprecated_runtime_state
-    # Existing realizations enter DEPRECATED_RUNTIME state:
+    # Existing implementations enter DEPRECATED_RUNTIME state:
     # - Eligible for: modify, decommission, drift detection
     # - Not eligible for: rehydration using deprecated type
     # - Not automatically destroyed
@@ -254,22 +254,22 @@ Resource Type in active status
 Status: deprecated
   │  Notification dispatched to:
   │  - All registered providers implementing this type
-  │  - All organizations with active realizations
+  │  - All organizations with active implementations
   │  - All webhook registrations subscribed to registry events
   │
   ▼  Sunset period (P12M Tier 1 / P6M Tier 2 — per REG-DP-002)
   │  During sunset:
   │  - New requests: succeed with deprecation warning
-  │  - Existing realizations: unaffected
+  │  - Existing implementations: unaffected
   │  - Drift detection: continues
   │  - Provider implementations: remain valid
   │
   ▼  Retirement (status: retired)
-  │  Existing realizations → DEPRECATED_RUNTIME state
+  │  Existing implementations → DEPRECATED_RUNTIME state
   │  New requests → rejected (REG-DP-005)
   │
   ▼  Migration window (P90D — per REG-DP-003)
-  │  Organizations migrate realizations to successor type
+  │  Organizations migrate implementations to successor type
   │  DEPRECATED_RUNTIME entities can be decommissioned or migrated
   │
   ▼  Post-migration window
@@ -403,8 +403,8 @@ form the rest of the model uses — typed, actionable, non-leaking, auditable
 
 **A caveat that belongs at the top, not in a footnote.** Class artifacts do not exist in the
 registry yet: there is no class-artifact schema, no class-compat classifier, and no estate-side
-pin resolver. Those are the P0 substrate items of the class realization plan
-(`docs/design/scoped-class-hierarchy/realization-plan.md`). `REG-011` through `REG-016` are
+pin resolver. Those are the P0 substrate items of the class implementation plan
+(`docs/design/scoped-class-hierarchy/implementation-plan.md`). `REG-011` through `REG-016` are
 therefore **specification, not enforcement** — they state the contract the P0 gates must satisfy
 when they are built, in the same way the rest of this repository specifies behavior that DCM
 realizes. The honest-enforcement ledger is
@@ -491,7 +491,7 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 | `REG-001` | Resource Type proposals follow an artifact-based workflow with automated validation gates (schema, FQN conflict, dependency resolution, breaking change detection) that must all pass before review begins. |
 | `REG-002` | All registry changes require a minimum review period by change type and a mandatory shadow validation period in `proposed` status before promotion to `active`. |
 | `REG-003` | Deprecation lifecycle is governed by default policies REG-DP-001 through REG-DP-007. These defaults are overridable via standard policy priority except where locked by active profile. |
-| `REG-004` | Version constraints in requests are strictly enforced. A conformant realization MUST NEVER automatically upgrade across major versions regardless of `version_policy`. Version resolution policy is profile-governed. |
+| `REG-004` | Version constraints in requests are strictly enforced. A conformant implementation MUST NEVER automatically upgrade across major versions regardless of `version_policy`. Version resolution policy is profile-governed. |
 | `REG-006` | The registry uses a federated model. Air-gapped and sovereign deployments use offline registries populated via signed bundles verified against the organization's public key. |
 | `REG-007` | The Resource Type Registry is policy-governed. Profile-appropriate registry policy groups are activated by default. Organizations may extend or replace these groups using standard Policy Group composition. |
 | `REG-008` | A formal fourth registry tier is not introduced. Resource Type Specifications in any tier may carry certification metadata from recognized certifying bodies. Certification metadata is a filter criterion — not a structural tier boundary. |
@@ -508,7 +508,7 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 | `REG-DP-003` | Default migration window after retirement: P90D. Overridable. |
 | `REG-DP-004` | Deprecation notices must declare a successor type or explicit migration guidance. Overridable. |
 | `REG-DP-005` | Retired resource types reject new requests. Not overridable — structural. |
-| `REG-DP-006` | Existing realizations of retired types enter DEPRECATED_RUNTIME state — eligible for modify and decommission, not rehydration. Overridable. |
+| `REG-DP-006` | Existing implementations of retired types enter DEPRECATED_RUNTIME state — eligible for modify and decommission, not rehydration. Overridable. |
 | `REG-DP-007` | Emergency deprecation minimum migration window: P30D. Not overridable — floor cannot be removed. |
 
 ---
@@ -522,4 +522,4 @@ registry gates emit, so that the recording story is uniform rather than per-gate
 
 ---
 
-*UDLM substrate document. Realization-specific registry enforcement, provider selection tie-breaking algorithms, artifact lifecycle storage and warning mechanisms, and review queue / approval workflow mechanics live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific registry enforcement, provider selection tie-breaking algorithms, artifact lifecycle storage and warning mechanisms, and review queue / approval workflow mechanics live in the consuming implementation's documentation.*

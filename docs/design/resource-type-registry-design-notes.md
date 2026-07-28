@@ -173,7 +173,7 @@ is dropped — each is assigned to the domain that owns it.
 
 | Capability | **Data domain — UDLM carries** | **Policy domain — DCM applies** |
 |---|---|---|
-| Four states | the 4 immutable state records + legal-shape | the act of transitioning / realization |
+| Four states | the 4 immutable state records + legal-shape | the act of transitioning / implementation |
 | Versioning (R1) | `$id`, `conforms_to`, `version`, compat rules as data | resolving a version constraint; conversion |
 | E1 Constraint Profile | the narrowed contract (a data artifact) | applying profile defaults at Intent→Requested |
 | E2 Typed outputs | the output schema + realized values | publishing (provider) + binding resolution |

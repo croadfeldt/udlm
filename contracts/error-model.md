@@ -20,7 +20,7 @@ federation-facing — must have a closed, predictable shape so peers can:
 - Categorize errors as retryable or permanent without parsing message strings.
 - Link errors back to audit records for forensic analysis.
 - Localize messages without changing semantics.
-- Coordinate retry, backoff, and escalation across realizations.
+- Coordinate retry, backoff, and escalation across implementations.
 
 This document defines the error envelope, code namespaces, status mappings,
 and validation rules.
@@ -36,7 +36,7 @@ The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (
   "type": "validation.scope_not_recognized",
   "status": 400,
   "title": "Scope not recognized",
-  "detail": "Scope 'tenant-foo' is not recognized by this realization.",
+  "detail": "Scope 'tenant-foo' is not recognized by this implementation.",
   "instance": "urn:udlm:audit:a1b2c3d4-2c95-4a1b-8d3e-7a9c1b2e4f8d",
   "request_id": "f3b64dda-2c95-4a1b-8d3e-7a9c1b2e4f8d",
   "retryable": false,
@@ -109,7 +109,7 @@ namespaces require a udlm spec change.
 
 ### 3.2 Required codes (minimum conformance set)
 
-Every conformant realization MUST recognize and may emit these codes:
+Every conformant implementation MUST recognize and may emit these codes:
 
 | Code | Retryable | HTTP status |
 |---|---|---|
@@ -158,7 +158,7 @@ Every conformant realization MUST recognize and may emit these codes:
 | `conformance.version_unsupported` | no | 409 |
 | `conformance.declaration_unavailable` | yes | 503 |
 
-Realizations MAY define additional codes within these namespaces for
+Implementations MAY define additional codes within these namespaces for
 implementation-specific scenarios, provided they:
 
 - Honor the `retryable` flag accurately.
@@ -179,7 +179,7 @@ at a time. Both concerns are real, so the rule is directional rather than a choi
   `validation.reference_not_found`. The actor is entitled to know the thing is absent.
 - **Outside it**, the refusal is the authorization code — `authz.cross_tenant_unauthorized` for
   a tenancy crossing, `authz.forbidden` otherwise — **whether or not the target exists**. A
-  realization MUST NOT vary the emitted `type`, `status`, `detail`, or timing on the existence
+  implementation MUST NOT vary the emitted `type`, `status`, `detail`, or timing on the existence
   of an out-of-scope target. This is the web's standard 403-over-404 existence-hiding posture,
   stated once here so every surface inherits it.
 
@@ -189,7 +189,7 @@ mechanism that would make the reference legal (the grant), never the target's at
 The same directional rule covers the create-time collision oracle: `validation.uuid_collision`
 (409) reveals that *some* entity holds a submitted identifier, and an actor who deliberately
 submits foreign UUIDs at create time can probe existence one identifier at a time. A
-realization MUST emit `validation.uuid_collision` identically — same `type`, `status`,
+implementation MUST emit `validation.uuid_collision` identically — same `type`, `status`,
 `detail`, timing — whether the colliding entity is inside or outside the actor's scope, and
 each such refusal writes its `REFUSE` record, so a probing pattern is legible in audit as an
 enumeration attempt rather than invisible in an error branch. (Legitimate v4 collisions are
@@ -247,7 +247,7 @@ For HTTP-transport interop surfaces, the mapping in §3.2 is normative. Peers
 MUST emit the prescribed status alongside the envelope. The envelope is the
 authoritative description; the HTTP status is the transport-level summary.
 
-For non-HTTP transports (gRPC, message bus), realizations map to equivalent
+For non-HTTP transports (gRPC, message bus), implementations map to equivalent
 transport-level error codes per the transport's conventions.
 
 ---
@@ -322,7 +322,7 @@ for example) MAY use free-form representation. Only errors that flow to:
 
 - Consumers (consumer API)
 - Providers (provider callbacks)
-- Peer realizations (federation)
+- Peer implementations (federation)
 - Audit log (always)
 
 ...are required to conform to this contract. The audit-log requirement
@@ -368,7 +368,7 @@ permitted, and here is the mechanism that would permit it".
 
 ## 9. Validation rules (conformance checks)
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Emit only error codes in the closed vocabulary (or declared extensions).
 - Set `retryable` correctly per the code semantics.

@@ -5,8 +5,8 @@
 **Related Documents:** [Data Model Context](context-and-purpose.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 
 > **Scope.** This document defines the three abstractions the **data model** is built from and their
-> universal properties. How a realization *connects* them at runtime — the event loop, the policy
-> evaluator, the control-plane components — is realization architecture, not the data model; it is owned by
+> universal properties. How an implementation *connects* them at runtime — the event loop, the policy
+> evaluator, the control-plane components — is implementation architecture, not the data model; it is owned by
 > the DCM architecture docs, and this document points to it rather than specifying it (the UDLM/DCM boundary,
 > [ADR-008](../docs/adr/ADR-008-udlm-dcm-boundary.md): if a peer could realize it differently and still be
 > valid, it is DCM, not UDLM).
@@ -21,7 +21,7 @@ one of these three — or a combination of them. There is no fourth.
 ```mermaid
 flowchart TD
     DATA["<b>DATA</b><br/>Everything that exists, is stored, has a lifecycle, and is versioned. Entities, layers, policies, accreditations, audit records, groups, relationships — all Data."]
-    PROVIDER["<b>PROVIDER</b><br/>Every external component a realization calls, or that calls it.<br/>Typed capability extensions.<br/>One base contract."]
+    PROVIDER["<b>PROVIDER</b><br/>Every external component an implementation calls, or that calls it.<br/>Typed capability extensions.<br/>One base contract."]
     POLICY["<b>POLICY</b><br/>Every rule that fires on Data, decides what happens, transforms values, or enforces constraints.<br/>Typed output schemas.<br/>One evaluation contract."]
 ```
 
@@ -31,10 +31,10 @@ a Provider is how external reality is reached under contract; a Policy is how a 
 **Connecting them at runtime is DCM's concern.** At runtime these operate as a trigger-driven,
 re-entrant convergence loop — an event (a Data state change, a provider outcome, a denial) re-evaluates the
 matching Policies, whose results invoke Providers or produce new Data, which emit new events, until the
-target state converges. That loop is the **operational model of a realization**, not part of the data model:
+target state converges. That loop is the **operational model of an implementation**, not part of the data model:
 it is specified in the DCM architecture docs, with its soundness rules (bounded convergence, idempotent
 re-entry, causal audit of every trigger) in [ADR-006 — Convergence control model](../docs/adr/ADR-006-convergence-control-model.md).
-UDLM defines the three abstractions and their contracts; a realization wires them into a running system.
+UDLM defines the three abstractions and their contracts; an implementation wires them into a running system.
 
 ---
 
@@ -52,7 +52,7 @@ describing where each field value came from.
 - **Provenance** — every field in every Data artifact carries lineage metadata describing its origin and all modifications
 - **Data classification** — every field carries a classification (public → classified) governing what may cross interaction boundaries
 - **Immutability if versioned** — once a version is published, it cannot be modified; changes produce new versions
-- **Contributor identity** — every Data artifact records who contributed it (platform admin, consumer/tenant, service provider, or peer realization) and what review it received before activation. The model defaults to a federated contribution model — all authorized actor types can create Data within the bounds their role permits. See [Federated Contribution Model](../governance/federated-contribution-model.md).
+- **Contributor identity** — every Data artifact records who contributed it (platform admin, consumer/tenant, service provider, or peer implementation) and what review it received before activation. The model defaults to a federated contribution model — all authorized actor types can create Data within the bounds their role permits. See [Federated Contribution Model](../governance/federated-contribution-model.md).
 
 **The Data taxonomy** — the enumerated Data/resource types (resource and process entities, the four states,
 data layers, policies and policy groups, accreditations, groups, tokens, drift and audit records, and the
@@ -100,7 +100,7 @@ does internally.
 
 **The universal properties of all Providers:**
 - **Registration** — every Provider registers, declaring its capabilities, sovereignty, and accreditation
-- **Health check** — every Provider exposes a health endpoint that a realization can monitor
+- **Health check** — every Provider exposes a health endpoint that an implementation can monitor
 - **Sovereignty declaration** — every Provider declares where it operates and what jurisdictions it covers
 - **Accreditation** — every Provider declares its compliance certifications, enforced via the Governance Matrix
 - **Governance Matrix enforcement** — every interaction with a Provider is subject to the Governance Matrix before data crosses the boundary
@@ -112,7 +112,7 @@ distinguishes one Provider type from another — is defined in [provider-contrac
 
 **The Provider taxonomy** — the enumerated Provider types (Service Provider, Information Provider, data
 store, External Policy Evaluator, credential management service, Auth Provider, notification service, event
-routing service, Resource Type Registry, Peer realization, ITSM integration, …) and their capability
+routing service, Resource Type Registry, Peer implementation, ITSM integration, …) and their capability
 declarations are defined canonically in the **[Provider Contract](../contracts/provider-contract.md)**. This
 document defines the Provider *abstraction* and its universal properties; the member list lives in one place
 there, not restated here.
@@ -121,7 +121,7 @@ there, not restated here.
 All Provider types implement this base contract. What varies is the capability declaration — what operations
 the Provider exposes and what data flows in which direction.
 
-**Peer realization as Provider:** A federated peer instance is a typed Provider. The federation tunnel is
+**Peer implementation as Provider:** A federated peer instance is a typed Provider. The federation tunnel is
 the Provider's communication channel; federation routing is policy-governed provider selection. There is no
 separate "federation abstraction" — federation is the Provider abstraction applied across instances.
 
@@ -169,7 +169,7 @@ Recovery, and Governance Matrix Policies fire when their match conditions are sa
 alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a
 dynamic policy.
 
-Both levels are *data* — Policy artifacts with typed output schemas. How a realization evaluates and
+Both levels are *data* — Policy artifacts with typed output schemas. How an implementation evaluates and
 sequences them (the policy evaluator, the event bus) is DCM runtime; the two levels compose naturally
 because a named workflow provides the sequence skeleton and dynamic policies provide conditional behavior
 within it.
@@ -184,7 +184,7 @@ is the Policy abstraction applied at interaction boundaries.
 
 ## 5. Connecting the three at runtime — DCM's concern
 
-The three abstractions are connected, at runtime, by machinery that is **realization architecture, not the
+The three abstractions are connected, at runtime, by machinery that is **implementation architecture, not the
 data model**: an event bus that routes Data state-changes to a policy evaluator, the evaluator that fires
 matching Policies, the results that invoke Providers or produce new Data, and the control-plane components
 that specialize this loop (placement, discovery scheduling, drift reconciliation, notification routing, a
@@ -194,11 +194,11 @@ By the boundary test ([ADR-008](../docs/adr/ADR-008-udlm-dcm-boundary.md)), all 
 implement the event bus, the evaluator, and each control-plane component differently and still honor the
 same Data, Provider, and Policy contracts. So it is **specified in the DCM architecture docs, not here.**
 
-What UDLM fixes — and what any conforming realization must preserve — is the *contract* the runtime operates
+What UDLM fixes — and what any conforming implementation must preserve — is the *contract* the runtime operates
 over: the four states and their transitions ([four-states.md](four-states.md)), the layer-assembly precedence
 ([layering-and-versioning.md](layering-and-versioning.md)), the Provider base contract
 ([provider-contract.md](../contracts/provider-contract.md)), and the Policy evaluation contract
-([policy-contract.md](../contracts/policy-contract.md)). Given those, the runtime is a realization concern.
+([policy-contract.md](../contracts/policy-contract.md)). Given those, the runtime is an implementation concern.
 
 ---
 
@@ -236,7 +236,7 @@ Policy abstraction ensures every decision is declared, reproducible, and auditab
 happens without consumers needing to understand them; Providers handle the implementation details.
 
 **Easy to implement.** Implementors implement one base contract (Provider) with a typed capability
-extension; a realization's policy evaluator handles all policy evaluation; the Data model handles all
+extension; an implementation's policy evaluator handles all policy evaluation; the Data model handles all
 storage and provenance.
 
 **Easy to extend and integrate.** Add a new provider type by implementing the base contract; a new policy

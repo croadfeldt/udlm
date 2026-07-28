@@ -6,13 +6,13 @@
 
 > **This document maps to: DATA + PROVIDER + POLICY**
 >
-> Design priorities govern every decision across all three abstractions. They are not guidelines — they are the decision framework used when priorities conflict. Every contributor, implementer, and reviewer of a UDLM realization should apply this framework.
+> Design priorities govern every decision across all three abstractions. They are not guidelines — they are the decision framework used when priorities conflict. Every contributor, implementer, and reviewer of a UDLM implementation should apply this framework.
 
 ---
 
 ## Design Principles as Interoperability Substrate
 
-The four principles below are **invariant**. Any realization conformant to UDLM must honor them; they are the **immutable ground rules** of the [substrate](../GLOSSARY.md) — the shared, realization-neutral layer every conformant peer binds to. Specific enforcement strictness, threshold values, and operational trade-offs are realization choices (a peer implementation could pick differently and still be a valid UDLM peer). The principles themselves are not negotiable.
+The four principles below are **invariant**. Any implementation conformant to UDLM must honor them; they are the **immutable ground rules** of the [substrate](../GLOSSARY.md) — the shared, implementation-neutral layer every conformant peer binds to. Specific enforcement strictness, threshold values, and operational trade-offs are implementation choices (a peer implementation could pick differently and still be a valid UDLM peer). The principles themselves are not negotiable.
 
 When priorities conflict, higher priorities win. When there is no conflict, all four apply simultaneously.
 
@@ -28,7 +28,7 @@ Security properties — value separation, rotation, audit trails, idle detection
 
 **The `homelab` profile is "security with minimal operational overhead" — not "minimal security."**
 
-A `homelab` profile realization keeps every one of these properties, only scaled down. Here a *[credential](../governance/credentials.md)* is a consumer-facing secret brokered under the credential contract:
+A `homelab` profile implementation keeps every one of these properties, only scaled down. Here a *[credential](../governance/credentials.md)* is a consumer-facing secret brokered under the credential contract:
 
 - Rotates credentials (at longer intervals with manual triggers acceptable — not never)
 - Detects idle credentials (at a generous threshold — not never)
@@ -45,7 +45,7 @@ Every one of these security properties is present in `homelab`; only its enforce
 
 | Property | Rule | Reference |
 |----------|------|-----------|
-| Credential values never in realization-internal stores of consumer-facing credentials | Absolute, no profile exception | [credentials](../governance/credentials.md) |
+| Credential values never in implementation-internal stores of consumer-facing credentials | Absolute, no profile exception | [credentials](../governance/credentials.md) |
 | Governance Matrix always boolean | Scoring never applies to boundary decisions | [governance-matrix](../governance/governance-matrix.md) |
 | Every provider dispatch requires scoped interaction credential | Substrate requirement | [credentials](../governance/credentials.md) |
 | Shadow mode on all contributed policies | Substrate requirement | [federated-contribution-model](../governance/federated-contribution-model.md) |
@@ -58,7 +58,7 @@ Every one of these security properties is present in `homelab`; only its enforce
 
 ### Priority 2 — Ease of Use
 
-A UDLM realization exists to enable self-service for consumers. If the right path is also the hard path, consumers will find other paths — and those other paths are ungoverned.
+A UDLM implementation exists to enable self-service for consumers. If the right path is also the hard path, consumers will find other paths — and those other paths are ungoverned.
 
 **What this means:**
 
@@ -95,7 +95,7 @@ New compliance requirements should be expressible as policy additions within the
 
 ### Priority 4 — Fit for Purpose
 
-A UDLM realization must manage data center infrastructure lifecycle. All of the above is in service of this purpose. An architecturally beautiful system that cannot provision a VM, track its drift, and decommission it cleanly has failed at its reason for existing.
+A UDLM implementation must manage data center infrastructure lifecycle. All of the above is in service of this purpose. An architecturally beautiful system that cannot provision a VM, track its drift, and decommission it cleanly has failed at its reason for existing.
 
 **What this means:**
 
@@ -107,7 +107,7 @@ Fit for purpose is not a fourth priority that can be traded against the first th
 
 ## Applying the Priorities — Decision Framework
 
-The sequence below is **descriptive design rationale** — it records how the priority order resolves a conflict, so a reader can reconstruct *why* a decision went the way it did. It is not a runbook and not enforced by tooling: the concrete, testable thresholds a realization must meet live in [CONFORMANCE](../CONFORMANCE.md), and this document stays at the level of *principle*. Read the steps as "the priority order implies…", not as commands.
+The sequence below is **descriptive design rationale** — it records how the priority order resolves a conflict, so a reader can reconstruct *why* a decision went the way it did. It is not a runbook and not enforced by tooling: the concrete, testable thresholds an implementation must meet live in [CONFORMANCE](../CONFORMANCE.md), and this document stays at the level of *principle*. Read the steps as "the priority order implies…", not as commands.
 
 When priorities seem to conflict, the resolution follows this order:
 
@@ -164,7 +164,7 @@ The profile system is the primary mechanism for expressing priorities 1–3 simu
 
 ### Named Profiles (Substrate Vocabulary)
 
-UDLM defines the following named profiles as the substrate vocabulary. Realizations may extend with additional named profiles but must support the substrate set so that artifacts and contributions referencing these names interoperate across peers.
+UDLM defines the following named profiles as the substrate vocabulary. Implementations may extend with additional named profiles but must support the substrate set so that artifacts and contributions referencing these names interoperate across peers.
 
 - `homelab` — security with minimal operational overhead
 - `dev` — developer/lab settings with relaxed thresholds
@@ -175,7 +175,7 @@ UDLM defines the following named profiles as the substrate vocabulary. Realizati
 
 ### Profile Scaling Table (Reference)
 
-The table below illustrates the **shape** of profile scaling — each profile's posture per dimension. Threshold values are realization-defined (a peer MAY pick different absolute values). Profiles are **composed sets, not ordered levels** ([ADR-007](../docs/adr/ADR-007-profile-model.md)): `sovereign` is not "more of" `standard`, and there is **no monotonic total order across profiles**. Read the table *down a column* — one profile's coherent posture — not as a ranking across columns. Each *dimension* has a direction (it runs loose→tight); which point a profile takes on it is that profile's composed choice, and `fsi`/`sovereign` are **overlays** on a base profile, not stricter points on one scale. "Present" means the property is architecturally required — what varies is the configuration.
+The table below illustrates the **shape** of profile scaling — each profile's posture per dimension. Threshold values are implementation-defined (a peer MAY pick different absolute values). Profiles are **composed sets, not ordered levels** ([ADR-007](../docs/adr/ADR-007-profile-model.md)): `sovereign` is not "more of" `standard`, and there is **no monotonic total order across profiles**. Read the table *down a column* — one profile's coherent posture — not as a ranking across columns. Each *dimension* has a direction (it runs loose→tight); which point a profile takes on it is that profile's composed choice, and `fsi`/`sovereign` are **overlays** on a base profile, not stricter points on one scale. "Present" means the property is architecturally required — what varies is the configuration.
 
 | Security Property | homelab | dev | standard | prod | fsi | sovereign |
 |------------------|---------|-----|----------|------|-----|-----------|
@@ -195,7 +195,7 @@ The table below illustrates the **shape** of profile scaling — each profile's 
 
 ## Authority Tiers (Model Definition)
 
-UDLM defines an ordered authority tier vocabulary that applies to requests, policy contributions, provider registrations, and any pipeline decision requiring human authorization. The tier vocabulary is the substrate; the runtime enforcement mechanisms are realization choices.
+UDLM defines an ordered authority tier vocabulary that applies to requests, policy contributions, provider registrations, and any pipeline decision requiring human authorization. The tier vocabulary is the substrate; the runtime enforcement mechanisms are implementation choices.
 
 > **Full specification:** See [Authority Tier Model](../governance/authority-tier-model.md) for the complete ordered tier list, custom tier contribution model, dynamic threshold format, and tier-governing system policies.
 
@@ -216,7 +216,7 @@ The ordered tier vocabulary is extensible: custom tiers may be inserted into the
 
 ### Deadline and Escalation (Substrate Vocabulary)
 
-UDLM defines the vocabulary for approval windows and on-expiry policies. Specific window durations are realization-configurable:
+UDLM defines the vocabulary for approval windows and on-expiry policies. Specific window durations are implementation-configurable:
 
 ```yaml
 approval_window:
@@ -229,7 +229,7 @@ approval_window:
     authorized:    escalate | reject
 ```
 
-The `on_expiry` action vocabulary (`escalate`, `reject`) is closed at the substrate. Realizations MUST implement both; window durations MAY vary per realization and per profile.
+The `on_expiry` action vocabulary (`escalate`, `reject`) is closed at the substrate. Implementations MUST implement both; window durations MAY vary per implementation and per profile.
 
 ---
 
@@ -247,4 +247,4 @@ The `on_expiry` action vocabulary (`escalate`, `reject`) is closed at the substr
 
 ---
 
-*UDLM substrate document. Realization implementation details (specific thresholds, enforcement code, profile-governed runtime constraints, policy-as-code engine integration, documentation discipline) live in the consuming realization's repository.*
+*UDLM substrate document. Implementation implementation details (specific thresholds, enforcement code, profile-governed runtime constraints, policy-as-code engine integration, documentation discipline) live in the consuming implementation's repository.*

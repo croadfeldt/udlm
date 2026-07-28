@@ -35,7 +35,7 @@ re-expressing an adopted standard inline (PVD-002).
 2. **The chosen native class is a realized fact, not intent.** The provider records which native backing it
    selected in an output (`outputs.storage_backing` — a k8s SC name, a datastore, a ZFS dataset). Captured,
    auditable, vendor-specific — never in the portable intent.
-3. **`Platform.StorageClass` is honestly a k8s realization type** (it `adopts: Kubernetes`). It stays valid as a
+3. **`Platform.StorageClass` is honestly a k8s implementation type** (it `adopts: Kubernetes`). It stays valid as a
    k8s provider's advertised/discovered vocabulary; it is simply **not referenced by portable intent**.
 
 ## Data · Policy · Provider

@@ -45,7 +45,7 @@ scenario:
     interaction: the admission gate verifies the signature against the trusted signer before the image is
       referenceable
   - domain: provider
-    interaction: no realization provider is dispatched; admission is a catalog-reference operation
+    interaction: no implementation provider is dispatched; admission is a catalog-reference operation
   - domain: audit
     interaction: the admission and the verified-signature outcome are recorded against the image
 generated_by:

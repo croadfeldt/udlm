@@ -9,7 +9,7 @@ end-to-end (in the DCM repo). A **lighter** flow: it **builds on
 > **Use Case:** `cross-domain/dynamic-rehydration`. **Persona:** platform-engineer · **Profile:** standard.
 
 **Three words, one act.** *Rehydration* is the **operation** — replay a stored Intent / Requested / Realized
-record against a target. *Rebuild* is its **mechanism** — the target stands up a fresh, native realization
+record against a target. *Rebuild* is its **mechanism** — the target stands up a fresh, native implementation
 from that intent, never a lift-and-shift of the source construct (the technically correct word). *Migration*
 is the **effect** the user sees — the workload now runs on a new provider. **Migration and rehydration are
 the same operation with different triggers:** a planned move (migration) vs a loss / DR event (rehydration).
@@ -35,7 +35,7 @@ dependents re-pointed. (A restore while the provider still stands is the Faithfu
 is transactional either way — a failed target leaves the pre-rehydration state intact.
 
 ## What this adds over request-realization
-- **Many realizations, ordered by the graph** — request-realization run once per resource, sequenced by the
+- **Many implementations, ordered by the graph** — request-realization run once per resource, sequenced by the
   stored dependency graph so dependencies come up before dependents. The per-resource flow is unchanged.
 - **The plan is derived, not replayed** — there is no recorded action log to re-run; the order is computed
   from the graph at rebuild time, so a changed policy or a departed provider is honored automatically.
@@ -90,5 +90,5 @@ Everything inside each rebuild step is request-realization.
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Measured and validated by
-  [UC-12](uc-12-rehydration-rto-measurement.md). End-to-end realization walkthrough: the DCM how-to
+  [UC-12](uc-12-rehydration-rto-measurement.md). End-to-end implementation walkthrough: the DCM how-to
   `workload-migration-and-rehydration-example`. UC source: `cross-domain/dynamic-rehydration`.

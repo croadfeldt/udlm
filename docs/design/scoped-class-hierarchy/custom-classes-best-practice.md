@@ -1,7 +1,7 @@
 # Best practices — authoring custom Base, Type, and Provider classes
 
 **Audience:** an organization (or provider) standing up its **own** classes under the scoped-Class paradigm.
-**Status:** design guidance (non-normative) applying ADR-038 (*Authorship & domain*) and its DCM realization
+**Status:** design guidance (non-normative) applying ADR-038 (*Authorship & domain*) and its DCM implementation
 (ADR-025). Not a rule family — it cites existing rules, defines none.
 
 UDLM defines the **spec** for Base/Type classes and ships a **canonical library**; **any authority may author its

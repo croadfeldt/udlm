@@ -8,9 +8,9 @@
 >
 > This document specifies the enforcement contracts for the four data domains and the audit
 > domain. Stores are defined by CONTRACT, not technology ([data-model-core](../foundations/data-model-core.md)
-> §6, ruling D1) — a conforming realization binds these contracts to concrete stores per profile
+> §6, ruling D1) — a conforming implementation binds these contracts to concrete stores per profile
 > and sovereignty/tenancy policy. The concrete enforcement mechanism (the reference PostgreSQL
-> implementation, its SQL schema, RLS, and operators) is realization architecture — see the DCM
+> implementation, its SQL schema, RLS, and operators) is implementation architecture — see the DCM
 > architecture documentation.
 >
 > **This document maps to: DATA**
@@ -77,12 +77,12 @@ Audit records have the strictest contract — they are the compliance evidence t
 
 **Contract:**
 - **Append-only** — no actor may update or delete an audit record, including privileged roles.
-- **Tamper-evident (Merkle)** — audit records are the leaves of an RFC 9162 (Certificate Transparency v2.0) Merkle tree — per-leaf signatures, signed tree heads, O(log n) inclusion and consistency proofs (ruling D2; the normative model is [universal-audit](../observability/universal-audit.md) `AUD-006`). Breaking the chain is detectable by verifying inclusion/consistency proofs; a conforming realization exposes a chain-verification operation.
+- **Tamper-evident (Merkle)** — audit records are the leaves of an RFC 9162 (Certificate Transparency v2.0) Merkle tree — per-leaf signatures, signed tree heads, O(log n) inclusion and consistency proofs (ruling D2; the normative model is [universal-audit](../observability/universal-audit.md) `AUD-006`). Breaking the chain is detectable by verifying inclusion/consistency proofs; a conforming implementation exposes a chain-verification operation.
 - **Non-repudiable** — every record captures `immediate_actor_uuid`, `authorized_by_uuid`, `session_uuid`, and the complete before/after state.
 - **Retention** — minimum P365D across all deployment profiles; `fsi`/`sovereign` profiles may require P2555D (7 years).
 - **Separated privilege** — the roles that write audit records may INSERT and SELECT only; no role may UPDATE or DELETE.
 
-*The tamper-evident property means a store restored to a point before the latest audit record produces a detectable chain break; how a realization detects and records that break is operational (see the DCM architecture documentation).*
+*The tamper-evident property means a store restored to a point before the latest audit record produces a detectable chain break; how an implementation detects and records that break is operational (see the DCM architecture documentation).*
 
 ---
 
@@ -90,7 +90,7 @@ Audit records have the strictest contract — they are the compliance evidence t
 
 Every tenant-scoped domain enforces the same isolation contract: **within a given tenant context, a reader or writer can see and modify only that tenant's rows.** Platform administration may operate across tenants, but only through a separately-audited path.
 
-The tenant-scoped domains are: Intent, Requested, Realized, Discovered, Operations, Audit, and the subscription domains. *The mechanism that establishes tenant context (token claims → per-connection tenant binding → row filtering) is realization architecture.*
+The tenant-scoped domains are: Intent, Requested, Realized, Discovered, Operations, Audit, and the subscription domains. *The mechanism that establishes tenant context (token claims → per-connection tenant binding → row filtering) is implementation architecture.*
 
 ---
 
@@ -100,9 +100,9 @@ For deployments spanning multiple sovereignty zones, the contract is: **data doe
 
 - Each sovereignty zone's data is bound to a store instance for that zone.
 - Cross-zone reads are prohibited — a query in Zone A cannot read data from Zone B.
-- Federation between zones uses the peer-realization protocol, which transfers only the minimum data required and is subject to sovereignty policy evaluation.
+- Federation between zones uses the peer-implementation protocol, which transfers only the minimum data required and is subject to sovereignty policy evaluation.
 
-Store bindings satisfy this per profile ([D1]): a single instance at `homelab`/`standard`; per-zone instances with no cross-zone replication at `sovereign`. *The concrete per-zone deployment topology is realization architecture.*
+Store bindings satisfy this per profile ([D1]): a single instance at `homelab`/`standard`; per-zone instances with no cross-zone replication at `sovereign`. *The concrete per-zone deployment topology is implementation architecture.*
 
 ---
 

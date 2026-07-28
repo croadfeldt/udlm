@@ -3,7 +3,7 @@
 **What this is.** The procedure for declaring a **provider** — a backend that naturalizes portable UDLM
 intent into some native form (a KubeVirt VM, a ZFS dataset, a cost feed). You author a *capability
 declaration*: which external standards the provider speaks and which versioned, accreditable capabilities it
-offers. UDLM carries the declaration as data; DCM matches, negotiates, and drives realization.
+offers. UDLM carries the declaration as data; DCM matches, negotiates, and drives implementation.
 
 > **Read once first:** [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) and [`README.md`](README.md) (the
 > universal contract).

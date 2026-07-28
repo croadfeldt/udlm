@@ -19,7 +19,7 @@ no filed issue behind it is not in this note.
 
 **Two of the seven arrived already narrowed, and the note says so rather than restating the audit's
 snapshot.** The output-exempt discriminator is materially closed by gates that landed on
-2026-07-25; rebuild lineage turns out to be *ruled* already, with only the schema realization
+2026-07-25; rebuild lineage turns out to be *ruled* already, with only the schema implementation
 missing. Both entries below are rewritten to the residue that actually remains.
 
 ## Summary
@@ -70,7 +70,7 @@ members behind it.
   the registry already applies to `Network.Gateway`. Backends become the consumer surface: a member
   entry references a producer and carries the address and port fields a binding writes into.
 - **C. A `Network.LoadBalancer` type.** Matches how operators speak, but names a *mechanism* rather
-  than the intent: a load balancer is one realization of "route these requests to these members"
+  than the intent: a load balancer is one implementation of "route these requests to these members"
   alongside a cloud service, a proxy, and a mesh. The reference-discipline lesson — requirements and
   references, never the vendor-native or mechanism-native noun — argues against making the mechanism
   the type.
@@ -95,7 +95,7 @@ Sketch, for the ruling to accept or reshape:
   `Security.CredentialRef` for TLS material, which the cross-walk found already expressible.
 - **Exclusions to document:** controller-specific rewrite, timeout, and body-size annotations
   (per-controller vocabulary — the canonical-accretion trap), session affinity and external traffic
-  policy (realization mechanics), and class selection (a realized fact, not portable intent).
+  policy (implementation mechanics), and class selection (a realized fact, not portable intent).
 
 **Corpus case.** `binding-surface/001` re-run against a registered consumer, plus the two the base
 standard would require with the type: a portability case (the same route intent realized by two
@@ -193,10 +193,10 @@ mistaken for the answer here.
 
 **Recommendation: A**, plus `provider_entity_id_history` for the restore-in-place half of `RHY-005`,
 which today has the same problem for the same reason. Two notes for the ruling. First, this touches
-the versioning epoch's provenance contract (ADR-045 §7 — every realized instance carries realization
+the versioning epoch's provenance contract (ADR-045 §7 — every realized instance carries implementation
 provenance naming the class, provider, and engine revisions that governed it): rebuild lineage is a
-*different* axis and must not be folded into it. Realization provenance answers "what governed this
-realization"; lineage answers "what did this replace". The rebuilt entity has fresh realization
+*different* axis and must not be folded into it. Implementation provenance answers "what governed this
+implementation"; lineage answers "what did this replace". The rebuilt entity has fresh implementation
 provenance by construction — that is the point of replaying intent — so a reader who conflates them
 will conclude, wrongly, that the predecessor is unrecoverable. Second, the corpus's phrase "new
 correlation identity" is already satisfied: `correlation_ids[]` carries the replacement's discovered
@@ -309,7 +309,7 @@ the current model never tells.
 **Recommendation: A for the disclosure floor; defer the path-enumeration half.** And this is the one
 place in this note where a gap is genuinely blocked on the class system (issue #230). ADR-041's own
 consequences put the field-granular mask "expressed on the §10 coordinate" — the addressing grammar
-that the scoped-Class realization owns and that has no machine surface today. **The contract P0 must
+that the scoped-Class implementation owns and that has no machine surface today. **The contract P0 must
 satisfy for the deferred half to close:** a machine-validatable form for the §10 coordinate — a
 declared grammar plus a validator that can accept or reject a coordinate string against a type's
 element set — so a mask can name reduced locations portably, a disclosure can cite them without
@@ -451,7 +451,7 @@ Seven decisions, each independently rulable:
 | Issue | Relation to this note |
 |---|---|
 | #239 — Hardware.Processor has no aggregate/socket-count surface | **Closed by section 7** on either ruling; the proposal is the documented exclusion plus an ingest mapping note |
-| #230 — class-system realization program | The blocker section 5 names: the deferred half of reduction disclosure needs the addressing coordinate to be machine-validatable |
+| #230 — class-system implementation program | The blocker section 5 names: the deferred half of reduction disclosure needs the addressing coordinate to be machine-validatable |
 | #241 vCPU hot-resize ceiling · #243 day-0 bootstrap · #244 thin-provisioning intent | The VM intent-completion set — field rulings on `Compute.VirtualMachine`, not proposed here |
 | #242 — CPU passthrough/mode intent | Same VM set, but it shares section 5's dependency: the type's own spec defers it to a Provider-Class element, and that carrier is unrealized |
 | #250 — no DR-pairing/replication surface on Storage types | The same shape as section 1 — a consumer/relationship surface the corpus demands and no type declares — in a different family; not closed here |

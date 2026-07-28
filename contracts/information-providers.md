@@ -45,11 +45,11 @@ Information Providers solve this by giving DCM a standard, stable, governed inte
 
 All providers implement one unified base contract and declare **capabilities** rather than belonging to a fixed type (the capability vocabulary — `realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows` — is defined in [provider-contract.md](provider-contract.md); legacy type names remain as convenience labels for common capability profiles). The `serve_data` capability contrasts with the others by data direction and ownership:
 
-| Capability (legacy label) | Purpose | Data Direction | Realization Owns Result? |
+| Capability (legacy label) | Purpose | Data Direction | Implementation Owns Result? |
 |--------------|---------|---------------|-----------------|
-| **`realize_resources`** (Service Provider) | Executes work, realizes resources | realization → provider → realization | Yes — the realization owns the realized entity |
-| **`serve_data`** (Information Provider) | Serves authoritative external data | realization → provider (lookup only) | No — the external system is authoritative |
-| **composite service definition** | Composes multiple providers | realization → meta → child providers → realization | Yes — the realization owns the composite result |
+| **`realize_resources`** (Service Provider) | Executes work, realizes resources | implementation → provider → implementation | Yes — the implementation owns the realized entity |
+| **`serve_data`** (Information Provider) | Serves authoritative external data | implementation → provider (lookup only) | No — the external system is authoritative |
+| **composite service definition** | Composes multiple providers | implementation → meta → child providers → implementation | Yes — the implementation owns the composite result |
 
 ---
 

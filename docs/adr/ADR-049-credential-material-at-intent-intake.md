@@ -1,11 +1,11 @@
 # UDLM ADR-049: Credential material at intent intake — the rejecting path must not be where the secret lands
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the invariant is UDLM; the enforcement mechanism and its rigor are delegated to policy/profile — a DCM obligation, tracked in the DCM policy-obligations register.** The mechanism catalogue below is *informative* — shapes a realization may implement, not a choice UDLM makes.
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the invariant is UDLM; the enforcement mechanism and its rigor are delegated to policy/profile — a DCM obligation, tracked in the DCM policy-obligations register.** The mechanism catalogue below is *informative* — shapes an implementation may implement, not a choice UDLM makes.
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
 once with what it settles. `governance/credentials.md` — **CPX-001** (values never rest in the
-realization's stores) + **CPX-013/CPX-014** (the intake detection + non-persistence rules this ADR
+implementation's stores) + **CPX-013/CPX-014** (the intake detection + non-persistence rules this ADR
 picks the mechanism for). `foundations/four-states.md` — Intent is the *immutable* record of what
 was asked for, the constraint that makes this a design question, not a cleanup task.
 `registry/resource-types/security.credential-ref.yaml` — the reference type (names which credential
@@ -37,7 +37,7 @@ telling the submitter nothing about the fact that they have just transmitted a l
 The hard part is not detection. It is that the path which *rejects* the request is also the path
 that stores it. The Intent record is written verbatim and never modified afterwards — that
 immutability is deliberate, it is what makes "what was actually asked for" answerable months
-later, and in a realization it is enforced at the storage layer by revoking update and delete
+later, and in an implementation it is enforced at the storage layer by revoking update and delete
 rather than by convention. So an intent containing a pasted password, refused for containing a
 pasted password, is nonetheless *persisted with it*, permanently, in the store whose whole
 guarantee is that nothing can take it back out. There is no scrub step to add. The refusal
@@ -53,26 +53,26 @@ carelessly writes the secret into the audit store too, which retains for years b
 ## Decision
 
 **UDLM fixes the invariant; policy and profile own the mechanism.** The peer test (ADR-008) settles
-where the line falls: two conformant realizations could satisfy this by scanning or by coercing and
+where the line falls: two conformant implementations could satisfy this by scanning or by coercing and
 both be correct, so the *mechanism* is not UDLM's to choose — the *guarantee* is.
 
 **The UDLM invariant** (`CPX-013`/`CPX-014`, restated, not new): inline credential material submitted
 where a reference is required is detected and refused; the detection is **ordered before** the intent
 is persisted; and the rejecting path persists neither the material nor an echo of it (in the store, the
-error payload, or the audit `detail`). Every conformant realization must meet this. Ordering is part of
+error payload, or the audit `detail`). Every conformant implementation must meet this. Ordering is part of
 the invariant, not an implementation detail — a correct decision taken *after* the write is a failed
 decision, because the store is immutable.
 
 **Delegated to policy/profile (a DCM obligation).** *How* intake meets the invariant — and *how strictly*
-— is a policy decision the realization makes, and its rigor is a **profile floor**:
+— is a policy decision the implementation makes, and its rigor is a **profile floor**:
 
 - A profile may accept **detect-and-refuse-before-persist** (mechanism A below) as the floor, or **raise
   the floor to coercion-to-a-reference** (mechanism D) where the stakes warrant — the same profile-priced
   rigor as bare-vs-governed vocabulary (ADR-007). UDLM names the *knob*; the profile sets it.
-- The realization (DCM) picks the mechanism that satisfies the invariant at its profile's floor.
+- The implementation (DCM) picks the mechanism that satisfies the invariant at its profile's floor.
 
 UDLM does **not** rule scan-vs-coerce-vs-quarantine. The catalogue that follows is informative — the
-shapes a realization may implement and their honest costs, recorded so DCM's policy work weighs them
+shapes an implementation may implement and their honest costs, recorded so DCM's policy work weighs them
 rather than rediscovering them. **This is registered as a DCM policy item** (see *Delegated work* below).
 
 ### Mechanism A — Scan before persist *(the common floor)*
@@ -122,7 +122,7 @@ literal, and readers receive a masked view.
 *Its costs:* it does not satisfy the requirement — the secret *is* stored, in the append-only
 store, forever, and masking on read is a display property that any operator with store access,
 any backup, and any replica bypasses. It also inverts the model's own posture, which is that
-values do not enter the realization's stores at all rather than entering and being hidden. Listed
+values do not enter the implementation's stores at all rather than entering and being hidden. Listed
 because it is the shape a team reaches for when the immutability constraint is discovered late,
 and it should be explicitly rejected rather than silently available.
 

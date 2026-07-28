@@ -46,7 +46,7 @@ each in its *Why*, and your job is to confirm the argument holds — or name whe
 - **The boundary — is this UDLM or DCM? (ADR-008 — the peer test: could an independent conformant
   peer decide this differently and still be valid? yes → DCM/Policy, no → UDLM portable substrate).**
   This is the single most important call you make. Portable data and *declarative* constraints are
-  UDLM; anything computed, negotiated, or executed is DCM. A realization mechanism smuggled into the
+  UDLM; anything computed, negotiated, or executed is DCM. An implementation mechanism smuggled into the
   portable model is a finding, however cleanly it validates. See
   [`docs/adr/ADR-008-udlm-dcm-boundary.md`](adr/ADR-008-udlm-dcm-boundary.md).
 - **Reduce to existing before coining a mechanism (tenet T7 — reach for an existing mechanism before
@@ -101,7 +101,7 @@ A finding lands when the author sees the standard behind it, not your preference
   got right (the boundary call it navigated, the refusal case it thought through), not boilerplate
   praise. You are reviewing a colleague's work, not grading it.
 - **Every finding names the tenet or gate it comes from**, so it is the standard talking, not taste.
-  "This reads as a DCM realization mechanism in the portable model — ADR-008 peer test: a conformant
+  "This reads as a DCM implementation mechanism in the portable model — ADR-008 peer test: a conformant
   peer could realize this differently" is reviewable. "I'd do this differently" is not. Cite the rule
   (ADR-008, T7, T5, T8, DOC-001, sizing) and, where it helps, the one-line gist of what it decided.
 

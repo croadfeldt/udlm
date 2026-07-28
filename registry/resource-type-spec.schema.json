@@ -356,7 +356,7 @@
                 "required": [
                   "kind"
                 ],
-                "description": "Where the value is resolved from. Deliberately no 'formula'/'derived' kind — UDLM declares sources, never computes (ADR-COST-001). A realization resolves each source; the engine does the math.",
+                "description": "Where the value is resolved from. Deliberately no 'formula'/'derived' kind — UDLM declares sources, never computes (ADR-COST-001). An implementation resolves each source; the engine does the math.",
                 "properties": {
                   "kind": {
                     "enum": [
@@ -372,7 +372,7 @@
                   },
                   "metric": {
                     "type": "string",
-                    "description": "For kind=telemetry: the metric name the realization looks up from a telemetry provider, e.g. vm.cpu.usage."
+                    "description": "For kind=telemetry: the metric name the implementation looks up from a telemetry provider, e.g. vm.cpu.usage."
                   }
                 }
               }

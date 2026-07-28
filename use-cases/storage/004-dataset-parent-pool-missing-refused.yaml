@@ -39,7 +39,7 @@ scenario:
   expected_domain_interactions:
   - domain: data
     interaction: the dataset's parent-pool reference is resolved and found absent or unrealizable before
-      any realization
+      any implementation
   - domain: policy
     interaction: the dependency rule refuses the request on the missing operational parent, not by
       attempting and failing

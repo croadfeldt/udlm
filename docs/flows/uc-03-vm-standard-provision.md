@@ -1,6 +1,6 @@
 # UC-03 · Standard VM provision — the stage
 
-**What this settles:** the plainest realization there is — a standard-profile VM, one eligible provider, one
+**What this settles:** the plainest implementation there is — a standard-profile VM, one eligible provider, one
 policy check — and the two guarantees that ride along with it: an **audit record** of who asked for what and
 what happened, and **idempotency** (re-asking doesn't build a second VM). A **lighter** flow — it **builds on
 [request-realization](request-realization.md)** and documents only what this case adds.
@@ -16,7 +16,7 @@ and outcome — and if the same request comes again, it converges onto the exist
   exactly one candidate and enrichment fills the provider's required fields as always.
 - **Policy runs before allocation** — the *resolved-profile* policies (the standard profile's set) are
   evaluated before anything is reserved. Single validation, not gating branches.
-- **Audit is a first-class outcome** — the realization event is recorded with **actor · intent · outcome**,
+- **Audit is a first-class outcome** — the implementation event is recorded with **actor · intent · outcome**,
   not just the resulting `Realized` record. This is a success criterion, not a side effect.
 - **Idempotency is required** — repeating the request matches the existing resource and is a no-op. The
   mechanics of that match live in [UC-13](uc-13-idempotent-reconvergence.md); here it's just a stated guarantee.
@@ -39,7 +39,7 @@ Everything else (assemble, place, enrich, reserve, commit, converge) is request-
 
 ## Data · Policy · Provider
 - **Data:** the portable `Compute.VirtualMachine`, its four states, and the audit record binding actor ·
-  intent · outcome to the realization event.
+  intent · outcome to the implementation event.
 - **Policy:** the standard profile's resolved policy set, evaluated as a single validation before allocation.
 - **Provider:** the one eligible service provider allocates the VM and reports its native id back.
 

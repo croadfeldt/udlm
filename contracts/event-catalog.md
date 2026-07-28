@@ -107,7 +107,7 @@ links:
 | `request.dispatched` | info | Payload dispatched to provider(s) |
 | `request.compound_assembled` | info | Compound service payload assembled (composite service composite request) |
 | `request.dependencies_resolved` | info | Constituent dependencies resolved (composite service) |
-| `request.realized` | medium | Provider confirmed realization; Realized State written |
+| `request.realized` | medium | Provider confirmed implementation; Realized State written |
 | `request.failed` | high | Request failed at any stage |
 | `request.gating_rejected` | high | Compliance-class Validation Policy denied the request |
 | `request.cancelled` | low | Consumer cancelled; pipeline terminated |
@@ -724,7 +724,7 @@ policy that drives these events, and
 #### `conformance.version_deprecated`
 ```yaml
 payload:
-  realization:
+  implementation:
     name: <string>             # e.g., "DCM"
     vendor: <string>
     version: <semver>
@@ -738,7 +738,7 @@ payload:
 #### `conformance.level_changed`
 ```yaml
 payload:
-  realization:
+  implementation:
     name: <string>
     vendor: <string>
     version: <semver>
@@ -753,7 +753,7 @@ payload:
 #### `conformance.declaration_updated`
 ```yaml
 payload:
-  realization:
+  implementation:
     name: <string>
     vendor: <string>
     version: <semver>
@@ -767,7 +767,7 @@ payload:
 #### `schema.bundle_updated`
 ```yaml
 payload:
-  realization:
+  implementation:
     name: <string>
     vendor: <string>
     version: <semver>

@@ -39,7 +39,7 @@ For any reference kind whose vocabulary must **federate across providers**:
 
 **Boundary (peer test, ADR-008).** The reference *kind*, the *adopted identity standard*, and the *obligation to
 advertise* are substrate invariants a peer must honor to interoperate → **UDLM**. Negotiating, matching, and
-validating membership are realization choices → **DCM**.
+validating membership are implementation choices → **DCM**.
 
 ## Data · Policy · Provider (SPEC-DESIGN §29)
 - **Data** — the `reference_data` vocabulary + its adopted identity; the provider's advertised set (capability data).

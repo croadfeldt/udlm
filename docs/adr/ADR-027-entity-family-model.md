@@ -27,7 +27,7 @@ The entity taxonomy previously named its primary Resource-family types `Infrastr
 ### Shape — `entity_type ∈ { Atomic, Composite }` for Resource and Process
 `entity_type` records the coarse shape: **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is *not* a separate kind or family — it is a shape either a Resource or a Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery, plus a `composite_health` axis and declared constituents.
 
-**The Atomic/Composite line is drawn from the realization's (DCM's) perspective — its orchestration scope — not the entity's internal complexity:**
+**The Atomic/Composite line is drawn from the implementation's (DCM's) perspective — its orchestration scope — not the entity's internal complexity:**
 - **Atomic** = a single thing DCM manages / a single call DCM makes. A VM is Atomic; an Ansible/AWX workflow *invoked as one call* is Atomic (the provider orchestrates its internal jobs, opaque to DCM).
 - **Composite** = DCM owns/orchestrates more than one constituent — several managed resources, or several process calls DCM itself sequences.
 

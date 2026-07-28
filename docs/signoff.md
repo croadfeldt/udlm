@@ -32,7 +32,7 @@ are where most review findings actually come from.
 The recurring review findings, distilled. A good PR self-checks these in its *Why*.
 
 - **Scope — the peer test (ADR-008).** Could an independent conformant peer decide this differently and still
-  be valid? *Yes → DCM* (Policy/realization); *No → UDLM* (portable substrate). Realization mechanism in the
+  be valid? *Yes → DCM* (Policy/implementation); *No → UDLM* (portable substrate). Implementation mechanism in the
   portable model is a finding.
 - **Reduce to existing (T7).** No net-new mechanism unless the *Why* shows nothing existing composes to cover it.
 - **Adopt by reference (T5).** Don't re-express a concept a credible external standard already solves.

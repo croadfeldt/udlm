@@ -13,7 +13,7 @@ Sovereignty is not a stronger version of regulation — it is a *spatial* guaran
 
 ## Decision
 
-**`sovereign` is the data-sovereignty profile — the strictest built-in floor.** It contains `fsi`'s floor and adds the sovereignty dimension (see the record for the authoritative list): **in-boundary key material** (audit signing keys never leave the sovereignty boundary, AUD-012); **sovereign-only placement** (realization confined to authorized jurisdictions/zones, the sovereignty declaration *attested*, not self-asserted); **data-plane-attested residency** (data-at-rest residency conveyed to and attested by the enforcing provider — `enforcement_plane`, matrix §3.8); and **sub-processor restriction** (no data access by unauthorized sub-processors).
+**`sovereign` is the data-sovereignty profile — the strictest built-in floor.** It contains `fsi`'s floor and adds the sovereignty dimension (see the record for the authoritative list): **in-boundary key material** (audit signing keys never leave the sovereignty boundary, AUD-012); **sovereign-only placement** (implementation confined to authorized jurisdictions/zones, the sovereignty declaration *attested*, not self-asserted); **data-plane-attested residency** (data-at-rest residency conveyed to and attested by the enforcing provider — `enforcement_plane`, matrix §3.8); and **sub-processor restriction** (no data access by unauthorized sub-processors).
 
 Per ADR-007 this is a distinct *kind* of set, not "fsi + a bit more": it adds spatial confinement, a concern `fsi` does not carry. Target demographic: workloads under data-residency / sovereignty mandates (public-sector, sovereign-cloud, data-localization regimes). It is **architected, not the September implementation target** — production-grade, exercised against `dev` in September.
 
@@ -28,7 +28,7 @@ Per ADR-007 this is a distinct *kind* of set, not "fsi + a bit more": it adds sp
 
 - **Data (UDLM):** `policy_profile` record, `is_builtin: true`, `approved: true`, `default: false`; the record names the in-boundary-key, sovereign-attestation, data-plane-attested, and sub-processor mechanics.
 - **Policy (DCM):** placement is confined to authorized zones; sovereignty declarations are verified as attested; sub-processor access is denied by default.
-- **Provider:** must present a **sovereign accreditation** (attested, verifiable) and attest **data-plane residency** at the enforcement plane; a provider that cannot attest in-boundary realization is inadmissible.
+- **Provider:** must present a **sovereign accreditation** (attested, verifiable) and attest **data-plane residency** at the enforcement plane; a provider that cannot attest in-boundary implementation is inadmissible.
 
 ## Consequences
 

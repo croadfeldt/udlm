@@ -398,26 +398,26 @@ engine gets there:
 3. **Apply + re-validate** — the resolved constraint set is applied and the assembled payload re-validated
    against it; an unmet check becomes a new constraint and evaluation re-enters.
 
-Two invariants bind any conforming realization: a `hard` constraint cannot be overridden downstream (a
+Two invariants bind any conforming implementation: a `hard` constraint cannot be overridden downstream (a
 `soft` one is a default a more-specific policy may tighten); and re-evaluation is **idempotent** (ADR-006 —
-re-evaluating unchanged state must not double-apply). Given the same context, two realizations must reach
+re-evaluating unchanged state must not double-apply). Given the same context, two implementations must reach
 the same resolved constraint set.
 
 *How* an engine reaches convergence — the multi-pass loop, its pass bound, the concrete
 collection→resolution→application scheduling, and the worked convergence/escalation traces — is a
-**realization concern**, specified in the DCM architecture docs, not fixed here (§7.2a: built-in or
+**implementation concern**, specified in the DCM architecture docs, not fixed here (§7.2a: built-in or
 delegated, the contract is identical).
 
 ### 7.2a Policy engine — built-in vs. delegated (external)
 
-This document is the policy **contract**. *Where* policies live and *who* evaluates them is a realization choice, in one of two modes — the contract is identical either way:
+This document is the policy **contract**. *Where* policies live and *who* evaluates them is an implementation choice, in one of two modes — the contract is identical either way:
 
-- **Built-in engine (default).** A realization evaluates with its own engine, and its policies are **first-class, realization-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For DCM specifically, **policies are DCM-controlled**: the policy engine is a core DCM component and its policy store sits under DCM's governance. Whether that store is *physically* the same database as other DCM Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
-- **Delegated to an external engine.** A realization MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the realization sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
+- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For DCM specifically, **policies are DCM-controlled**: the policy engine is a core DCM component and its policy store sits under DCM's governance. Whether that store is *physically* the same database as other DCM Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
+- **Delegated to an external engine.** An implementation MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the implementation sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
 
 Wire-compatibility holds regardless: a peer cannot tell — and need not care — whether a decision came from a built-in or a delegated engine, only that it conforms to §2–§5 and the re-entrant, convergent evaluation contract (§7.2; ADR-006).
 
-If evaluation cannot converge, the request fails with a full conflict report — every constraint, every conflict, and every attempted resolution. The convergence bound itself (e.g. a maximum pass count) is an engine parameter, set by the realization (DCM), not by this contract.
+If evaluation cannot converge, the request fails with a full conflict report — every constraint, every conflict, and every attempted resolution. The convergence bound itself (e.g. a maximum pass count) is an engine parameter, set by the implementation (DCM), not by this contract.
 
 ### 7.3 Constraint Emission
 
@@ -508,7 +508,7 @@ Every pass, every constraint, every hint, every resolution — fully auditable. 
 
 ### 7.6 Reserve-phase reconciliation participation
 
-Realization is two-phase (ADR-011): the **reserve phase** is a reconciliation loop in which holds land incrementally, each yielding new reserved facts (a reserved segment, a placement), converging to a fixed point before the commit barrier. Policy evaluation is **re-entrant** (ADR-006) — but a policy **declares whether it participates in that loop**, via the `reconciliation` block (`registry/policy.schema.json`):
+Implementation is two-phase (ADR-011): the **reserve phase** is a reconciliation loop in which holds land incrementally, each yielding new reserved facts (a reserved segment, a placement), converging to a fixed point before the commit barrier. Policy evaluation is **re-entrant** (ADR-006) — but a policy **declares whether it participates in that loop**, via the `reconciliation` block (`registry/policy.schema.json`):
 
 - **`participates: true`** — the policy is **re-evaluated as new reserved data arrives** during reconciliation (filtered by `reevaluate_on`: `reservation_added` | `reservation_changed` | `reservation_released` | `fact_updated`). This is the right setting for rules that must act on the *enriched* reserved graph as it converges — **placement**, **cycle/graph** integrity, **quota** (running totals across landing holds), and **governance-matrix** boundary rules whose inputs are reserved facts. Reserved facts are addressable as `reserved.*` match sources.
 - **`participates: false` (default)** — the policy is evaluated **once, at the commit barrier**, against the completed reserved graph. Correct for cheap, static, or request-only checks (a data-residency `deny`, a fixed compliance gate) that gain nothing from re-running each iteration and would only add cost.
@@ -617,7 +617,7 @@ If any check fails, the policy cannot be activated. Vocabulary mismatches are ca
 
 ## 9. Policy Templates
 
-Policy templates separate reusable policy logic from instance-specific configuration, following the OPA Gatekeeper ConstraintTemplate pattern as the reference model. A template declares its parameter schema, emitted constraint types, and consumed constraint types — the contract — and carries the logic in the realization's policy language. Rego/OPA is shown throughout this section as the reference example, not a mandate: a delegated engine may express the same logic differently (§7.2a). A policy artifact is an instance of a template with bound parameters and match conditions.
+Policy templates separate reusable policy logic from instance-specific configuration, following the OPA Gatekeeper ConstraintTemplate pattern as the reference model. A template declares its parameter schema, emitted constraint types, and consumed constraint types — the contract — and carries the logic in the implementation's policy language. Rego/OPA is shown throughout this section as the reference example, not a mandate: a delegated engine may express the same logic differently (§7.2a). A policy artifact is an instance of a template with bound parameters and match conditions.
 
 ### 9.1 Template Definition
 
@@ -693,13 +693,13 @@ policy_artifact:
     default: deny
 ```
 
-### 9.3 Constraint-type constructor libraries (realization-provided)
+### 9.3 Constraint-type constructor libraries (implementation-provided)
 
 The contract is that every emitted constraint references a **registered constraint type** (§8) — freeform
-constraint objects are not permitted. *How* a realization makes that ergonomic for policy authors — e.g.
+constraint objects are not permitted. *How* an implementation makes that ergonomic for policy authors — e.g.
 auto-generating an engine-native constructor library from the Constraint Type Registry so wrong field
-names/types are caught at bundle-compile time rather than at runtime — is a realization concern. The DCM
-realization ships such a library for its engine; that library and its packaging live in the DCM
+names/types are caught at bundle-compile time rather than at runtime — is an implementation concern. The DCM
+implementation ships such a library for its engine; that library and its packaging live in the DCM
 architecture docs, not in this contract.
 
 ### 9.4 Template Registration Validation
@@ -710,7 +710,7 @@ When a template is registered:
 2. Parameter schema is valid OpenAPI v3
 3. All emitted constraint types are registered in the Constraint Type Registry
 4. All consumed constraint types are registered
-5. Emitted constraints reference registered constraint types (§8), not freeform objects (however the realization's engine enforces this)
+5. Emitted constraints reference registered constraint types (§8), not freeform objects (however the implementation's engine enforces this)
 
 When a policy artifact is created from a template:
 
@@ -825,7 +825,7 @@ Orchestration operates at two levels that compose through the same policy-evalua
 - **Level 1 — Named Workflow Artifacts:** Orchestration Flow Policies with `ordered: true` declare an explicit, visible, auditable sequence of steps. Each step references a payload type from the closed vocabulary. This is what operators see and reason about. Adding a step = adding to a workflow Policy.
 - **Level 2 — Dynamic Policies:** Validation, Transformation, Recovery, and Governance Matrix Policies fire when their conditions match, within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
 
-Both named workflow steps and dynamic policies evaluate against the same payload-type events, through the same evaluation contract; a realization's event bus routes them (DCM). The workflow provides the skeleton; dynamic policies fill in conditional behavior.
+Both named workflow steps and dynamic policies evaluate against the same payload-type events, through the same evaluation contract; an implementation's event bus routes them (DCM). The workflow provides the skeleton; dynamic policies fill in conditional behavior.
 
 **Fires on:** Pipeline payload type events.
 **Produces:** A flow directive governing step ordering.
@@ -858,7 +858,7 @@ orchestration_flow_output:
 
 Custom steps extend this vocabulary by publishing new payload types.
 
-**Application semantics:** When `ordered: true`, steps execute in declared sequence. When `ordered: false`, steps with no data dependencies may execute in parallel (the scheduling is a realization detail). Orchestration Flow policies compose with standard Validation and Transformation policies — both types evaluate in the same pipeline.
+**Application semantics:** When `ordered: true`, steps execute in declared sequence. When `ordered: false`, steps with no data dependencies may execute in parallel (the scheduling is an implementation detail). Orchestration Flow policies compose with standard Validation and Transformation policies — both types evaluate in the same pipeline.
 
 ---
 
@@ -1097,7 +1097,7 @@ When a policy blocks a request and no automatic resolution exists, DCM does not 
 **Resolution precedence (contract).** When a policy blocks a request, automatic resolution is attempted in
 a fixed order — an active **Override Policy**, then an **Exception Grant**, then a **Compensating Control**
 covering the scope; the first that applies lets the request continue. If none applies, the request takes the
-`POLICY_BLOCKED` outcome (§7.7), carrying the resolution guidance below. *How* a realization then surfaces
+`POLICY_BLOCKED` outcome (§7.7), carrying the resolution guidance below. *How* an implementation then surfaces
 the block and drives the consumer's choice — the events it publishes, the notifications it routes, the API
 it exposes — is control-plane, specified in the DCM architecture docs, not fixed by this contract.
 
@@ -1145,16 +1145,16 @@ policy_block_resolution:
   timeout_at: <ISO 8601>                     # how long the request stays in POLICY_BLOCKED before auto-cancel
 ```
 
-The `compliant_values` guidance is derived from the blocking policy's constraint output: a sovereignty policy with `allowed_zones: [eu-west-1, eu-central-1]` yields those as the suggestion; a Validation Policy with `max_cpu: 32` against a request for 64 yields values ≤ 32. For complex multi-policy interactions the guidance provides what can be determined and flags when manual review is needed. (Producing it is a realization function; the shape above is the contract.)
+The `compliant_values` guidance is derived from the blocking policy's constraint output: a sovereignty policy with `allowed_zones: [eu-west-1, eu-central-1]` yields those as the suggestion; a Validation Policy with `max_cpu: 32` against a request for 64 yields values ≤ 32. For complex multi-policy interactions the guidance provides what can be determined and flags when manual review is needed. (Producing it is an implementation function; the shape above is the contract.)
 
 The consumer-facing resolution API (`GET …/resolution`, `POST …:resolve` with a `modify` / `request_override`
 / `cancel` / `escalate` action) and the `request.policy_blocked` / `request.resolution_chosen` / `override.*`
-lifecycle events are the realization's control-plane surface — specified in the DCM architecture docs and the
+lifecycle events are the implementation's control-plane surface — specified in the DCM architecture docs and the
 [event catalog](event-catalog.md), not fixed by this contract.
 
 ### 18.9 Override Approval Flow
 
-When the consumer chooses "request override," the request moves from `POLICY_BLOCKED` to `PENDING_OVERRIDE` and an approval flow begins. The realization provides the approval gate, the audit trail, and the API; the organization provides the deliberation process. The override itself is a **data record** (below); the flow that drives it is control-plane.
+When the consumer chooses "request override," the request moves from `POLICY_BLOCKED` to `PENDING_OVERRIDE` and an approval flow begins. The implementation provides the approval gate, the audit trail, and the API; the organization provides the deliberation process. The override itself is a **data record** (below); the flow that drives it is control-plane.
 
 **Override request record:**
 
@@ -1183,16 +1183,16 @@ override_request:
     approved_at: <ISO 8601>
 ```
 
-**Control-plane surface (realization / DCM).** The approver Admin API
+**Control-plane surface (implementation / DCM).** The approver Admin API
 (`POST …/overrides/{id}/approve|reject`, `GET …/overrides`), the notification routing (which roles and
 webhooks are notified per policy domain and enforcement level), and the block/override **timeout values**
-are realization control-plane — specified in the DCM architecture docs, not fixed by this contract.
+are implementation control-plane — specified in the DCM architecture docs, not fixed by this contract.
 
 Three facts the contract *does* fix:
 - **Timeouts are profile-governed.** A `POLICY_BLOCKED` request has a bounded window for a consumer action
   before auto-cancel, and a `PENDING_OVERRIDE` request a bounded window for approver action; stricter
   profiles cut both (see [ADR-007 — Profile model](../docs/adr/ADR-007-profile-model.md)). The concrete
-  per-profile durations are a realization/profile setting.
+  per-profile durations are an implementation/profile setting.
 - **Resume is deterministic.** On approval the pipeline resumes **from the stage where it was blocked** —
   the assembled payload, earlier policy evaluations, and the Evaluation Context are preserved — with the
   approved override injected into the Evaluation Context as a constraint modification before the blocked

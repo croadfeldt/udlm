@@ -29,7 +29,7 @@ scenario:
   success_criteria:
   - The window gate checks fit (estimate + margin ≤ remaining), not merely that the window is open
   - The time-to-complete estimate is the provider's, carried on its advertisement — not invented by the estate
-  - A realization estimated to exceed the remaining window is refused, naming the estimate, its source, and the window remaining
+  - An implementation estimated to exceed the remaining window is refused, naming the estimate, its source, and the window remaining
   - The policy response is deferral to a sufficient window, or batch-fit running only the batches that fit
   - Batches that do not run are carried as windowed debt with recorded progress — a partial-but-safe adoption, never a mid-batch overrun
   dimensions:

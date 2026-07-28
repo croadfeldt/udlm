@@ -38,5 +38,5 @@ contract is `Access.IdentityEscrow`; these are its rules.
   model, audit, source control, or logs). The escrow adds obligations *about* the reference —
   capture-on, restore-on, required — it never re-carries material or custody semantics.
 - **The ADR-008 peer test** (computed/negotiated/executed → DCM): *which* provider performs
-  capture and restore, and how, is realization. UDLM carries the contract (the items, the
+  capture and restore, and how, is implementation. UDLM carries the contract (the items, the
   moments, the gate) and the typed evidence outputs; any conformant engine may execute it.

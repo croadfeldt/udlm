@@ -56,7 +56,7 @@ YAML — the two serializations of one document digest identically) and canonica
 RFC 8785 before hashing, so the digest names the document's *meaning*, not its whitespace.
 **The referrer rule (OCI): an artifact never carries its own digest.** Digests live in
 generated referrers — the pin manifest (`registry/pin-manifest.json`), compilation and
-realization provenance, attestations, promotion evidence — never in the artifact itself.
+implementation provenance, attestations, promotion evidence — never in the artifact itself.
 What used to be rotation bookkeeping is now recomputation: a change produces a new digest by
 construction, with nothing to remember to mint.
 

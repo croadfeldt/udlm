@@ -14,7 +14,7 @@ Validate-and-reserve is the right shape and was in the original design, but it g
 
 ## Decision
 
-**Realization is two-phase: RESERVE, then COMMIT. Nothing is built until the whole reserved graph validates.**
+**Implementation is two-phase: RESERVE, then COMMIT. Nothing is built until the whole reserved graph validates.**
 
 1. **Two phases with a commit barrier.** DCM **reserves** every target across the dependency graph — each reserve validates against the provider's capacity/identity/policy, **holds** the result, and returns a `reservation_hold_uuid` plus the provider's **computed realize-time facts**, with **no side effects**. The **reconciliation loop is relocated into reserve, not removed**: reserved facts feed each other (reserve the VM → yields its port → compute the IP criteria → reserve the IP), iterating to a fixed point over holds rather than built resources. At the **commit barrier**, DCM commits nothing until every hold is valid and mutually consistent and every applicable policy is green against the *fully reserved* graph. Only then does **commit** execute the holds in dependency order — the sole phase that mutates infrastructure. Any hold not committed is **released** (validation failure, cancellation, or TTL expiry). Transition mechanics: `foundations/four-states.md` §2.3a; the `reserve`/`commit`/`release` verbs, idempotency, and TTL negotiation: `contracts/provider-contract.md` §6a.
 

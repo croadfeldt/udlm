@@ -74,7 +74,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    dead-end: it is a function of requirements, and requirements are updatable.
 
    **Operational expectations — enablement, not execution.** A re-port across providers (a VMware VM →
-   `Compute.VM.OCPVirt`) is a "cast" at the *intent* level; realization is a separate, bounded effort:
+   `Compute.VM.OCPVirt`) is a "cast" at the *intent* level; implementation is a separate, bounded effort:
    - **Enablement over execution.** UDLM supplies the *data framework* that makes a re-port **expressible and
      analysable** — the requirements, the dependency set (networking / storage / compute), and the eligible
      target providers. It does **not** perform the migration. Execution is DCM + the provider + **third-party
@@ -90,9 +90,9 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    - **The data is the lever.** Minimal Base/Type classes + scoped `SharedDataElement`s carry the data to
      (a) evaluate vendor-lock-in vs flexibility and (b) drive the **downstream automation** for the complex cases
      (the NSX→OVN class). Scoping an element higher extends portability wherever a target can honour it.
-   - **`how` is the realization's concern.** The migration/rebuild mechanics, per-source/target limitations, and
+   - **`how` is the implementation's concern.** The migration/rebuild mechanics, per-source/target limitations, and
      automation live in **DCM ADR-025** (engine), migration **ADR-003**, and naturalization **ADR-023**. This
-     section defines what re-porting *means*; the realization docs carry the concrete process and its limits.
+     section defines what re-porting *means*; the implementation docs carry the concrete process and its limits.
 
 5. **Policy-fill completes the blanks (ADR-024).** Type/provider-specific elements left blank at instantiation
    are filled by policy for the resolved Class — precedence **consumer-set ≻ policy-fill ≻ provider-default**,
@@ -224,13 +224,13 @@ this settles the meta-model: **resource types are layered Classes composed of sc
   lineage. All declarative.
 - **Policy** — Placement resolves the Class path; policy-fill completes blanks; promotion/canonicalization and
   upward-contribution gating are governance.
-- **Provider** — a Provider Class *is* the provider's declared realization surface; realization naturalizes to
+- **Provider** — a Provider Class *is* the provider's declared implementation surface; implementation naturalizes to
   native and records the resolution.
 
 ## UDLM vs DCM — what lands where (the peer test, ADR-008)
 Apply ADR-008 to every piece: *could an independent conformant peer of DCM do this differently and still be
 valid?* **No → UDLM** (a substrate invariant, wire-compatible — a peer MUST honor it). **Yes → DCM** (a
-realization choice — Policy/Provider). This determines the repo each piece lands in.
+implementation choice — Policy/Provider). This determines the repo each piece lands in.
 
 | Piece | **UDLM** — model / grammar / data (a peer MUST honor) | **DCM** — engine / decision (a peer MAY differ) |
 |---|---|---|
@@ -262,7 +262,7 @@ test (ADR-008) along the **authorship** axis:
   Base/Type classes** (`Compute`, `Compute.VM`, …) as the shared, portable baseline. UDLM defines the spec and
   **instructs DCM what to do with instances of it**; it does not itself author org/provider content.
 - **Provider Classes are provider-authored.** A `Compute.VM.OCPVirt` definition is **by its nature a
-  provider-created artifact** — the provider declares its realization surface as scoped `SharedDataElement`s
+  provider-created artifact** — the provider declares its implementation surface as scoped `SharedDataElement`s
   under the Class spec. UDLM ships **no** concrete Provider Class; the `Compute.VM.OCPVirt` used throughout this
   ADR is **illustrative of the spec**, not a UDLM-owned definition.
 - **Organizations may author their own Base, Type, and Provider classes — a DCM policy/profile feature.** When

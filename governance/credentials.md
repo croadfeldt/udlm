@@ -6,7 +6,7 @@
 
 > **Foundation Document Reference**
 >
-> Credentials in UDLM are first-class Data artifacts. Credential issuance is a **capability** a provider declares (`credential_capability`), not a separate provider kind (§1). The Zero Trust model in [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) governs credential scope and lifetime — this document specifies the substrate contract that any conformant realization MUST honor.
+> Credentials in UDLM are first-class Data artifacts. Credential issuance is a **capability** a provider declares (`credential_capability`), not a separate provider kind (§1). The Zero Trust model in [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) governs credential scope and lifetime — this document specifies the substrate contract that any conformant implementation MUST honor.
 >
 > **This document maps to: DATA + PROVIDER**
 
@@ -16,13 +16,13 @@
 
 ## 1. Credential Scope
 
-> **The realization brokers credentials; it does not hold or issue them.**
+> **The implementation brokers credentials; it does not hold or issue them.**
 > Credential **values** are produced and held by a registered Credential Provider and flow **directly** to the
-> authorized consumer (CPX-001) — the realization (DCM) never sees, stores, or relays a value. The realization's
+> authorized consumer (CPX-001) — the implementation (DCM) never sees, stores, or relays a value. The implementation's
 > role is to **select** a provider, **scope** the request, **gate** on attestation, and **audit** — the same
 > declare → select → attest pattern the Placement Engine uses for any resource. A request **declares** what it
 > needs (credential type, scope, assurance); each candidate provider **declares** what it can issue and to what
-> assurance level (its credential capability); the realization **selects** the provider that meets the profile's
+> assurance level (its credential capability); the implementation **selects** the provider that meets the profile's
 > trust floor. This is the credential expression of the DCM Trust Model (DCM `DCM ADR-022`): DCM is a trust **broker**,
 > not a credential authority. See the DCM trust documents for the cross-plane model; this document specifies the
 > UDLM substrate contract — the data model, lifecycle, and provider interface — that the brokering rests on.
@@ -34,17 +34,17 @@
 
 UDLM distinguishes two scopes of credential management. Both share the same data model, lifecycle vocabulary, and substrate contracts.
 
-### 1.1 Realization-Internal Credentials
+### 1.1 Implementation-Internal Credentials
 
-The realization maintains its own operational secrets — provider authentication credentials, encryption keys for data-at-rest on sensitive fields, audit signing keys, internal service credentials. UDLM does not mandate a specific storage technology, but it does mandate substrate invariants:
+The implementation maintains its own operational secrets — provider authentication credentials, encryption keys for data-at-rest on sensitive fields, audit signing keys, internal service credentials. UDLM does not mandate a specific storage technology, but it does mandate substrate invariants:
 
-- Credential **values** MUST NEVER appear in the realization's data model, artifact stores, Realized State Store, or Audit Store.
-- Credential **metadata** (UUID, type, scope, expiry, status) MAY appear in the realization's stores.
+- Credential **values** MUST NEVER appear in the implementation's data model, artifact stores, Realized State Store, or Audit Store.
+- Credential **metadata** (UUID, type, scope, expiry, status) MAY appear in the implementation's stores.
 - Credential values are held exclusively by a registered Credential Provider.
 
 ### 1.2 Consumer-Facing Credentials
 
-When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a provider that declares the **credential capability** — `Credential.*` in `supported_resource_types` plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the realization **selects against** (declare-and-select): it states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing — so the realization can pick a provider that satisfies the active profile's trust floor.
+When consumers request credential resources (API keys, certificates, SSH keys, secrets) or when realized resources require credentials (kubeconfigs, database passwords, service account tokens), the substrate requires that the credentials are issued by a provider that declares the **credential capability** — `Credential.*` in `supported_resource_types` plus a `credential_capability` block. Any provider that declares this capability handles such requests through the standard provider dispatch pipeline; there is no separate provider *kind*. The capability declaration is what the implementation **selects against** (declare-and-select): it states which credential types the provider can issue, the assurance it can reach, and the secret-engine/attestation backing — so the implementation can pick a provider that satisfies the active profile's trust floor.
 
 ```yaml
 provider:
@@ -68,7 +68,7 @@ provider:
     supported_algorithms: [rsa-2048, rsa-4096, ecdsa-p256, ecdsa-p384, ed25519]
 ```
 
-The realization **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see DCM `DCM ADR-022`, attestation ladder).
+The implementation **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see DCM `DCM ADR-022`, attestation ladder).
 
 ---
 
@@ -97,7 +97,7 @@ The credential-type identifiers above are closed substrate vocabulary used in cr
 
 ## 3. Credential Data Model (Wire Contract)
 
-A credential is a UDLM Data artifact. Credential metadata is stored by the realization; credential **values** are held only by the Credential Provider (never in the realization's stores).
+A credential is a UDLM Data artifact. Credential metadata is stored by the implementation; credential **values** are held only by the Credential Provider (never in the implementation's stores).
 
 ```yaml
 credential_record:
@@ -118,7 +118,7 @@ credential_record:
   issued_to:
     actor_uuid: <uuid | null>          # consumer credential: issued to an actor
     entity_uuid: <uuid | null>         # resource credential: scoped to an entity
-    component_uuid: <uuid | null>      # interaction credential: issued to a realization component
+    component_uuid: <uuid | null>      # interaction credential: issued to an implementation component
     provider_uuid: <uuid | null>       # interaction credential: scoped to a provider
   scope:
     operations: [dispatch, discover, query, read, write, admin]  # allowed operations
@@ -133,7 +133,7 @@ credential_record:
   entity_uuid: <uuid | null>           # the realized entity this credential accesses
   rotation_of: <credential_uuid | null>  # parent credential UUID if this is a rotation
 
-  # Storage (values never in the realization's stores)
+  # Storage (values never in the implementation's stores)
   value_held_by: <credential_provider_uuid>
   value_retrieval_endpoint: <url>      # how the authorized consumer retrieves the value
   value_retrieval_auth: bearer_token | mtls | step_up_mfa
@@ -146,11 +146,11 @@ credential_record:
 
 ### 3.1 Credential Value Separation
 
-Credential values are never stored in the realization's data model, artifact stores, or Realized State Store. The realization stores only the credential metadata record. The credential value is held exclusively by the Credential Provider.
+Credential values are never stored in the implementation's data model, artifact stores, or Realized State Store. The implementation stores only the credential metadata record. The credential value is held exclusively by the Credential Provider.
 
 **`scope.resource_types` is not a read-grant.** It records which resource *types* a credential is valid *for* (e.g. a credential usable when acting on `Compute.VirtualMachine`) — it does **not** mean every resource of that type can read the value. Reading a value is a separate, per-credential authenticated and authorized act (next paragraph): the requester must be the credential's `issued_to` actor/entity, satisfy `value_retrieval_auth`, and pass the Governance Matrix. Scope narrows what a credential *authorizes*; it never widens who can *retrieve* it.
 
-Authorized consumers retrieve the credential value via `value_retrieval_endpoint` — which resolves to the **registered Credential Provider that holds the value**, not a realization-core endpoint (the value flows producer → consumer directly; the realization is never on the value path, CPX-001). Retrieval uses `value_retrieval_auth`, is itself authenticated — typically a short-lived bearer token or mTLS — and is audited.
+Authorized consumers retrieve the credential value via `value_retrieval_endpoint` — which resolves to the **registered Credential Provider that holds the value**, not an implementation-core endpoint (the value flows producer → consumer directly; the implementation is never on the value path, CPX-001). Retrieval uses `value_retrieval_auth`, is itself authenticated — typically a short-lived bearer token or mTLS — and is audited.
 
 ### 3.2 Credential material arriving where a reference belongs
 
@@ -196,7 +196,7 @@ redaction, and intake-time coercion to a reference.**
 > issuance, rotation, and revocation must **produce and guarantee**: the states below, the credential
 > scopes, the transition-window and propagation SLAs, broker-not-issue, and metadata-only return. The
 > step-by-step **routing** and the components that execute it — dependency-resolution and placement
-> sequencing, the revocation registry, cache propagation — are realization runtime (DCM). The ASCII
+> sequencing, the revocation registry, cache propagation — are implementation runtime (DCM). The ASCII
 > sequences in this section are **illustrative of the contract**, not a required implementation; a peer
 > that upholds the same states, scopes, and SLAs conforms however it routes.
 
@@ -218,7 +218,7 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../entities/entity-relationships.md)): the dependent declares a `requires` edge to a `Credential.*` resource type, and Dependency Resolution issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
 
-> **Worked example (grounds the use case).** A consumer requests `Compute.VirtualMachine`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the realization — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the realization **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). A realization never issues a credential itself.
+> **Worked example (grounds the use case).** A consumer requests `Compute.VirtualMachine`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
 
 ```
 Consumer requests resource (e.g., Compute.VirtualMachine)
@@ -232,7 +232,7 @@ Consumer requests resource (e.g., Compute.VirtualMachine)
   │
   ▼ Placement selects the Service Provider for the VM
   │
-  ▼ After VM realization: credential sub-request placed against
+  ▼ After VM implementation: credential sub-request placed against
   │   providers declaring the Credential.SSHKey capability
   │   Placement filters on credential_capability (type + assurance +
   │   attestation level ≥ profile trust floor), then scores + selects
@@ -246,9 +246,9 @@ Consumer requests resource (e.g., Compute.VirtualMachine)
   │     expires_at: <now + profile_lifetime>
   │
   ▼ Credential Provider issues credential; returns credential_record
-  │   (value held by provider; only metadata returned to the realization)
+  │   (value held by provider; only metadata returned to the implementation)
   │
-  ▼ The realization writes credential_record to Realized State
+  ▼ The implementation writes credential_record to Realized State
   │   Links credential_uuid to entity_uuid (the dependency edge)
   │
   ▼ Consumer receives realized entity + credential_record metadata
@@ -261,7 +261,7 @@ Consumer requests resource (e.g., Compute.VirtualMachine)
 Interaction credentials carry the **same zero-standing-trust rationale** as every other dispatch in the system (see [Provider Contract](../contracts/provider-contract.md) §provider auth): each interaction presents a freshly issued, narrowly scoped, short-lived credential rather than a long-lived shared key, so a leaked credential expires fast and every use is attributable and audited. They are issued automatically before each provider interaction:
 
 ```
-The realization prepares to dispatch to a provider
+The implementation prepares to dispatch to a provider
   │
   ▼ Request interaction credential from Credential Provider:
   │   credential_type: dcm_interaction
@@ -283,15 +283,15 @@ The realization prepares to dispatch to a provider
 
 ### 4.3 Bootstrap Credential Issuance
 
-Credential issuance has a chicken-and-egg problem: the realization needs a credential to talk to the first Credential Provider, but a Credential Provider cannot have issued it yet. The substrate resolves this with a one-time **bootstrap credential** — a short-lived, single-purpose anchor (a kubeadm/SPIRE-style bootstrap token or a pre-placed mTLS identity; the anchor type is profile-governed) whose **only** authorized scope is registering and authenticating to the first Credential Provider. The handoff is explicit and one-way:
+Credential issuance has a chicken-and-egg problem: the implementation needs a credential to talk to the first Credential Provider, but a Credential Provider cannot have issued it yet. The substrate resolves this with a one-time **bootstrap credential** — a short-lived, single-purpose anchor (a kubeadm/SPIRE-style bootstrap token or a pre-placed mTLS identity; the anchor type is profile-governed) whose **only** authorized scope is registering and authenticating to the first Credential Provider. The handoff is explicit and one-way:
 
 ```
 Bootstrap anchor present (out-of-band; single-purpose; short TTL)
   │
-  ▼ Realization registers + authenticates to the first Credential Provider
+  ▼ Implementation registers + authenticates to the first Credential Provider
   │   using the bootstrap credential (its only permitted use)
   │
-  ▼ Provider registered → realization requests its real interaction credential
+  ▼ Provider registered → implementation requests its real interaction credential
   │   from the now-registered Credential Provider
   │
   ▼ Bootstrap credential revoked/expired (no further use)
@@ -312,7 +312,7 @@ Rotation is the primary mechanism for maintaining credential hygiene. The substr
 |---------|-------------|-----------------|
 | `scheduled` | Regular rotation on a declared schedule | Most credential types; interval is credential-type specific |
 | `pre_expiry` | Rotation initiated before the current credential expires | x509: P14D before expiry; ssh_key: P7D; dcm_interaction: PT5M |
-| `provider_initiated` | Credential Provider notifies the realization of a rotation requirement | Handled via provider update notification model |
+| `provider_initiated` | Credential Provider notifies the implementation of a rotation requirement | Handled via provider update notification model |
 | `security_event` | Rotation triggered by a security signal (compromise, anomaly, policy change) | Immediate; see §5.4 |
 | `actor_request` | Consumer requests rotation of their own credential | Subject to rate limiting and policy |
 
@@ -323,7 +323,7 @@ Rotation uses a transition window to prevent downtime. The old credential remain
 ```
 Rotation initiated (by any trigger):
   │
-  ▼ The realization requests a new credential from Credential Provider
+  ▼ The implementation requests a new credential from Credential Provider
   │   rotation_of: <old_credential_uuid>
   │   same scope as original; new expires_at
   │
@@ -349,7 +349,7 @@ Rotation initiated (by any trigger):
 
 ### 5.3 Rotation Notification (Wire Contract)
 
-Before the old credential is revoked, the realization sends a rotation notification to any entity or actor whose credential is rotating:
+Before the old credential is revoked, the implementation sends a rotation notification to any entity or actor whose credential is rotating:
 
 ```yaml
 rotation_notification:
@@ -363,7 +363,7 @@ rotation_notification:
 
 ### 5.4 Emergency Rotation (Security Event)
 
-On detection of a compromise or security event, the realization MUST trigger emergency rotation:
+On detection of a compromise or security event, the implementation MUST trigger emergency rotation:
 
 - No transition window — old credential revoked immediately
 - New credential issued and delivered via the fastest available notification channel
@@ -374,7 +374,7 @@ On detection of a compromise or security event, the realization MUST trigger eme
 Closed substrate vocabulary for emergency rotation triggers:
 
 ```
-security.credential_compromised      # realization or provider reports compromise
+security.credential_compromised      # implementation or provider reports compromise
 security.anomalous_usage_detected    # unusual access pattern detected
 actor.deprovisioned                  # actor removed; all their credentials revoked
 provider.deregistered                # provider leaving; all its interaction creds revoked
@@ -400,7 +400,7 @@ Revocation makes a credential permanently invalid before its natural expiry. Unl
 
 ### 6.2 Revocation Propagation Contract
 
-The revocation **contract**: a revoked credential MUST be detectable at **each use** (not only at issuance time), and a revocation MUST propagate within the profile-governed SLA (CPX-003). *How* a realization makes revocations fast-queryable — a revocation registry/store, the event-and-cache propagation sequence below — is realization runtime; the propagation SLA, the cache-TTL floors, and the check-at-use obligation (§6.3) are the contract.
+The revocation **contract**: a revoked credential MUST be detectable at **each use** (not only at issuance time), and a revocation MUST propagate within the profile-governed SLA (CPX-003). *How* an implementation makes revocations fast-queryable — a revocation registry/store, the event-and-cache propagation sequence below — is implementation runtime; the propagation SLA, the cache-TTL floors, and the check-at-use obligation (§6.3) are the contract.
 
 ```
 Credential revoked:
@@ -408,7 +408,7 @@ Credential revoked:
   ▼ Credential record status: active → revoked
   │   revoked_at, revocation_reason written
   │
-  ▼ Revocation event published to the realization's event bus
+  ▼ Revocation event published to the implementation's event bus
   │   event_type: credential.revoked
   │   credential_uuid: <uuid>
   │   effective_at: <ISO 8601>
@@ -443,7 +443,7 @@ A credential that passes issuance validation but fails use-time validation MUST 
 
 ### 7.1 The Delivery Contract
 
-Consumers never receive credential values directly through the substrate's API surface. Instead, the realization returns a **credential reference** — a provider-issued retrieval endpoint that the consumer's application resolves at runtime.
+Consumers never receive credential values directly through the substrate's API surface. Instead, the implementation returns a **credential reference** — a provider-issued retrieval endpoint that the consumer's application resolves at runtime.
 
 The consumer's application uses its own authentication (Kubernetes service account, AppRole, etc.) to retrieve the actual value. The audit trail records that the credential reference was issued — not the credential value.
 
@@ -649,7 +649,7 @@ Response 200:
 
 ## 9. Credential Provider Registration (Wire Contract)
 
-This is the full `credential_capability` declaration a provider registers (the summary form appears in §1.2). It is a **capability block on an ordinary provider**, not a distinct provider kind — `max_assurance` and `attestation` are what the realization selects against (declare-and-select; §4.1).
+This is the full `credential_capability` declaration a provider registers (the summary form appears in §1.2). It is a **capability block on an ordinary provider**, not a distinct provider kind — `max_assurance` and `attestation` are what the implementation selects against (declare-and-select; §4.1).
 
 ```yaml
 credential_capability:        # declared on any provider that issues Credential.* types
@@ -756,8 +756,8 @@ credential_capability:
     # If true:
     escrow_model: m_of_n       # m-of-n key shares; Shamir's Secret Sharing
     escrow_quorum: "3 of 5"
-    escrow_record_stored_by: hsm   # never by the realization
-    role: audit_only               # realization audits escrow access; does not participate
+    escrow_record_stored_by: hsm   # never by the implementation
+    role: audit_only               # implementation audits escrow access; does not participate
 ```
 
 ---
@@ -782,13 +782,13 @@ When an idle alert fires:
 - Credential is NOT automatically revoked — it remains valid until its `expires_at`
 - If still idle after 2× the threshold: optional auto-revocation per profile configuration
 
-Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; the detection MUST be present. The idle record and its threshold are data (CPX-010); *when and how* the alert fires and is routed to admin/consumer is realization runtime (DCM).
+Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; the detection MUST be present. The idle record and its threshold are data (CPX-010); *when and how* the alert fires and is routed to admin/consumer is implementation runtime (DCM).
 
 ---
 
 ## 12. Registration + Profile-Governed Configuration Vocabulary
 
-Every credential security dimension is controlled by the active profile. This is the substrate-defined configuration vocabulary. Specific values within each dimension MAY vary per realization; the dimensions themselves are normative.
+Every credential security dimension is controlled by the active profile. This is the substrate-defined configuration vocabulary. Specific values within each dimension MAY vary per implementation; the dimensions themselves are normative.
 
 ### 12.1 Credential Profile Configuration Block
 
@@ -971,7 +971,7 @@ UDLM's design priority order applies directly to credential management:
 
 Profile variation applies only to **enforcement level and required features** — never to the underlying protocol or data model. A credential issued under the `homelab` profile has the same data structure, the same API contract, the same revocation mechanism, and the same audit record format as one issued under the `sovereign` profile.
 
-**CPX-001 (values never in the realization's stores) is non-negotiable in every profile including `homelab`.**
+**CPX-001 (values never in the implementation's stores) is non-negotiable in every profile including `homelab`.**
 
 ---
 
@@ -1025,21 +1025,21 @@ credential_provider_registration:
 
 | Policy | Rule |
 |--------|------|
-| `CPX-001` | Credential values are never stored in the realization's data model, artifact stores, Realized State Store, or Audit Store. Only credential metadata (UUID, type, scope, expiry, status) is stored. |
+| `CPX-001` | Credential values are never stored in the implementation's data model, artifact stores, Realized State Store, or Audit Store. Only credential metadata (UUID, type, scope, expiry, status) is stored. |
 | `CPX-002` | Every interaction with a provider must present a scoped, short-lived `dcm_interaction` credential. A provider that receives an interaction without a valid scoped credential MUST reject it with `403 Forbidden`. |
 | `CPX-003` | Credential revocation must propagate within the declared `revocation_sla`, and a revoked credential must be detectable at each use. Components must refresh their revocation cache no less frequently than the profile-governed cache TTL (PT1M standard; PT30S fsi/sovereign). |
 | `CPX-004` | Emergency rotation (security_event trigger) has no transition window. The old credential is revoked immediately. The new credential is delivered via the fastest available notification channel. |
 | `CPX-005` | The first credential value retrieval is audited in ALL profiles (credential_uuid, actor_uuid, retrieved_at, retrieval_uuid). Subsequent retrievals are audited in standard+ profiles. Emergency retrievals (rotation, security event) are always audited regardless of profile. |
-| `CPX-006` | Actor deprovisioning triggers immediate revocation of all credentials issued to that actor. Revocation events are published to the realization's event bus before the deprovisioning event is acknowledged. |
+| `CPX-006` | Actor deprovisioning triggers immediate revocation of all credentials issued to that actor. Revocation events are published to the implementation's event bus before the deprovisioning event is acknowledged. |
 | `CPX-007` | Entity decommissioning triggers revocation of all credentials scoped to that entity before the decommission is confirmed. A decommission that cannot revoke all credentials enters `COMPENSATION_IN_PROGRESS` state. |
 | `CPX-008` | Credentials issued for `fsi` and `sovereign` profiles must be IP-bound (`bound_to_ip`) or hardware-attested (`hsm_backed_key`). Unbound credentials are rejected by the Governance Matrix for these profiles. |
 | `CPX-009` | `algorithm` and `key_usage` must be declared on every credential record at issuance (standard+ profiles). The Credential Provider must validate `key_usage` at the validate endpoint — a credential issued for `authentication` cannot be used for `signing`. |
 | `CPX-010` | Idle credential detection fires at the profile-governed threshold. Idle credentials are NOT automatically revoked — they trigger notification only. Auto-revocation after 2× threshold is profile-configurable. |
 | `CPX-011` | Profile credential requirements are additive when compliance domains are active (HIPAA, PCI DSS, FedRAMP, DoD IL4). Compliance overlay requirements always tighten, never relax, the base profile. |
-| `CPX-012` | CPX-001 (values never in the realization's stores) applies in ALL profiles including `homelab`. There is no profile that permits credential values to be stored by the realization. |
+| `CPX-012` | CPX-001 (values never in the implementation's stores) applies in ALL profiles including `homelab`. There is no profile that permits credential values to be stored by the implementation. |
 | `CPX-013` | Inline credential material submitted where the model requires a credential reference is detected and refused **at intent intake, ordered before the Intent record is written**. The Intent store is append-only and never modified after write (four-states), so a detection that runs after persistence cannot be remediated — sequencing is part of the rule, not an implementation detail. The refusal is emitted as `validation.inline_credential_material` and names the offending field path and the conversion (declare a `Security.CredentialRef`; the issuer resolves the value directly to the authorized consumer). Detection covers the same surface as the existing store-side scanners — known credential formats, private-key and certificate blocks, and high-entropy strings in fields typed as references. |
 | `CPX-014` | The rejecting path does not persist the material it refused. The refusal payload MUST NOT echo the submitted value; request/error logs MUST NOT capture the raw body of an intent refused under `CPX-013`; and the `REFUSE` audit record carries the field path and the violation class only (`AUD-023`, `AUD-024` — refusal records name rules, paths, and subjects, never protected content). A corrected resubmission carrying a `Security.CredentialRef` in the same field passes the same validation unchanged. |
 
 ---
 
-*UDLM substrate document. Realization-specific credential storage and access control implementation, credential generation code, issuance flow orchestration, rotation job scheduling, revocation enforcement code, consumer delivery mechanics, provider authentication validation pipelines, profile-governed enforcement, and integration with specific external services live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific credential storage and access control implementation, credential generation code, issuance flow orchestration, rotation job scheduling, revocation enforcement code, consumer delivery mechanics, provider authentication validation pipelines, profile-governed enforcement, and integration with specific external services live in the consuming implementation's documentation.*

@@ -69,7 +69,7 @@ Run these in order:
 4. **No clean fit? → adopt the principles + format, and supersede.** Extend the standard rather than inventing from
    zero; take its vocabulary/shape and go beyond it where the domain requires. **Don't force** a poor fit.
 5. **Ground in producers & consumers.** A definition earns its fields only if real producers write them and real
-   consumers read them; that same flow defines the validation the realization must do. No field without a
+   consumers read them; that same flow defines the validation the implementation must do. No field without a
    produce/consume path.
 
 > **In one line:** *use wide standards where they cleanly fit, otherwise roll our own; don't force, adopt if
@@ -77,7 +77,7 @@ Run these in order:
 
 **Worked example (DecisionRecord / ADR).** The decision-record need → adopt the **ADR / MADR** standard (don't coin
 a new term); it is *complementary* to UDLM audit/provenance/versioning (reuse, step 1); it cleanly *consolidates*
-two homegrown forms a realization built twice — DAV's self-improvement `improvement_proposals` and its architecture
+two homegrown forms an implementation built twice — DAV's self-improvement `improvement_proposals` and its architecture
 resolutions — into **one target-parameterized Resolution/Decision Record** (step 3, net-negative); **SARIF** does not
 cleanly fit architecture findings → adopt its principles only (step 4); the Knowledge-family `Antipattern` is related
 but not the same → don't force. Defined as a Knowledge entity type in `../entities/knowledge-family.md` §4.5.

@@ -255,7 +255,7 @@ often and with pre-negotiated terms. The contract: a provider pushes an update t
 is `auto_apply` within its declared bounds (§5.2), the update is applied without consumer intervention,
 otherwise it requires consumer approval; either way it is policy-evaluated and audited
 (`source_type: subscription_update`) and emits the subscription update events (§7). The concrete routing —
-the callback endpoint and the evaluation/dispatch steps — is realization runtime (DCM).
+the callback endpoint and the evaluation/dispatch steps — is implementation runtime (DCM).
 
 ### 5.2 Pre-Authorization via Subscription Terms
 
@@ -301,18 +301,18 @@ These obligations are enforced by the existing Provider Contract mechanisms — 
 
 A subscription request is an ordinary request whose fields carry the subscription intent
 (`consumption_model: subscription`, `subscription_tier`, `auto_renew` — §2, §3), submitted through the
-standard request channel. A realization then assembles layers (profile → tier defaults → consumer overrides
+standard request channel. An implementation then assembles layers (profile → tier defaults → consumer overrides
 → subscription terms), evaluates the subscription Validation/Transformation policies (§8), places a provider
 if needed, writes the subscription artifact, and dispatches the provider to create the initial managed
 entities — each linked back by the `subscription_binding` relationship (§2.2). That **pipeline is
-realization architecture**: the intent-store layout, the assembly/evaluation/placement/dispatch steps, and
+implementation architecture**: the intent-store layout, the assembly/evaluation/placement/dispatch steps, and
 the request API are specified in the DCM architecture docs, not here.
 
 ---
 
 ## 7. Subscription Events
 
-All subscription events use the standard event envelope ([event-catalog.md](../contracts/event-catalog.md)); the transport (event bus / topic) is a realization concern.
+All subscription events use the standard event envelope ([event-catalog.md](../contracts/event-catalog.md)); the transport (event bus / topic) is an implementation concern.
 
 | Event Type | Fires When | Urgency |
 |------------|-----------|---------|
@@ -374,7 +374,7 @@ Subscriptions are governed by the same policy contract as all other operations. 
 
 Subscription management (create, list, get, change tier, cancel, renew, suspend, resume, list managed
 entities, approve/reject updates) and the admin extensions (list-all, expiring, force-cancel) are exposed
-through a realization's Consumer/Admin API. That API surface is control-plane, specified in the DCM
+through an implementation's Consumer/Admin API. That API surface is control-plane, specified in the DCM
 architecture docs — the data it operates over (the subscription artifact, its states, its updates) is
 defined in §2–§4 and §7.
 
@@ -386,7 +386,7 @@ The subscription artifact, its managed-entity bindings, and its update records a
 persisted like any other artifact under the store-by-contract rule
 ([data-store-contracts.md](../contracts/data-store-contracts.md)). The **data shapes** are defined in §2
 (artifact), §2.2 (`subscription_binding`), §4 (states), and §5.2 (update channels); the concrete
-operational-store schema (tables, indexes, row-level tenant isolation) is realization architecture,
+operational-store schema (tables, indexes, row-level tenant isolation) is implementation architecture,
 specified in the DCM architecture docs.
 
 ---

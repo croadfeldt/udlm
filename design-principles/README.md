@@ -4,7 +4,7 @@ This directory holds UDLM's normative principles. They are split into five files
 
 | File | Answers | ID namespace | Read it when you need… |
 |------|---------|--------------|------------------------|
-| [`core-tenets.md`](core-tenets.md) | *What is UDLM forbidden from doing?* — the hard boundaries that separate the data model from Policy and from realization | `T1`–`T6` | to know whether a behavior belongs in UDLM at all (custodian-not-mutator, transformation-is-Policy, adopt-by-reference) |
+| [`core-tenets.md`](core-tenets.md) | *What is UDLM forbidden from doing?* — the hard boundaries that separate the data model from Policy and from implementation | `T1`–`T6` | to know whether a behavior belongs in UDLM at all (custodian-not-mutator, transformation-is-Policy, adopt-by-reference) |
 | [`design-priorities.md`](design-priorities.md) | *When principles conflict, how do we choose?* — the four ranked priorities and the decision framework, plus the profile and authority-tier vocabularies | `Priority 1`–`4` | to resolve a trade-off (security vs ease-of-use), or to look up the profile / authority-tier vocabulary |
 | [`cross-cutting-requirements.md`](cross-cutting-requirements.md) | *What must hold everywhere, on every entity?* — the cross-cutting non-functional obligations | `P0`–`P4` | to check an always-on obligation (auditability, observability, typed dependency graph, structural sovereignty) |
 | [`adopted-standards.md`](adopted-standards.md) | *How does an external standard enter UDLM?* — the absorb / embed / adopt disposition and the net-negative test | — (procedure + constructs) | to bring in an industry standard (FOCUS, OIDC, TOSCA) by reference rather than absorption |

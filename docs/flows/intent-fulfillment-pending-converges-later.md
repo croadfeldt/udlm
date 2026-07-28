@@ -15,7 +15,7 @@ operational · transient · `w=∞` cell of
 then the container behind it — no new request is submitted, because the original intent persisted as
 desired state across the gap. The consumer's surfaced state updates from `blocked-transient` to
 `realized`, the shortfall warning clears, and the whole convergence is auditable back to the original
-intent, with no duplicate or conflicting realization.
+intent, with no duplicate or conflicting implementation.
 
 ## The flow — only what's different
 
@@ -44,7 +44,7 @@ sequenceDiagram
   blocker cleared and the loop re-attempted it — the consumer submits nothing new.
 - **The chain converges in order.** The PVC realizes, then the operational dependent behind it — the
   held chain proceeds automatically.
-- **No duplicate realization.** The deferred convergence produces exactly one realized member per
+- **No duplicate implementation.** The deferred convergence produces exactly one realized member per
   intent member, traceable to the original intent.
 
 ## What UDLM does not decide

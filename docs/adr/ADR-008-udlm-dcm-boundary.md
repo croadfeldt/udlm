@@ -9,7 +9,7 @@
 DCM has kept two things that change for different reasons, and at different rates, in one repository:
 
 - a universal **substrate** — the entity types, the four-state lifecycle, the provider/policy/event/data-store contracts, provenance, identity, conformance; and
-- **one operational realization** of it — the convergence engine, control plane, runtime, and integrations.
+- **one operational implementation** of it — the convergence engine, control plane, runtime, and integrations.
 
 While they share a repo, two things we need are impossible. **No one can point at the substrate** — you cannot reference, version, or conformance-test it on its own, so "what must any system honor to interoperate?" has no artifact behind it. And **a peer has nothing to build against** — without a standalone substrate, federation decays into "two architecturally similar systems and a pile of adapters" instead of literal interop. The split proposal has lived as an enhancement (#58); the review correctly notes it is a boundary **decision**, so it belongs here.
 
@@ -17,7 +17,7 @@ While they share a repo, two things we need are impossible. **No one can point a
 
 **1. The boundary test.** Applied to every file or section:
 
-> Could a peer of DCM, built independently, do this differently and still be a valid realization of the same data?
+> Could a peer of DCM, built independently, do this differently and still be a valid implementation of the same data?
 > - **Yes** → an implementation choice → **DCM**.
 > - **No** — it would break interop or invalidate the data → a substrate invariant → **UDLM**.
 
@@ -25,21 +25,21 @@ While they share a repo, two things we need are impossible. **No one can point a
 
 **3. The compatibility rule (load-bearing).** **UDLM guarantees wire compatibility, not implementation portability.** Two systems on the same UDLM major version can read and exchange each other's data — but their storage, internal APIs, and runtime are their own business. This is the Kubernetes precedent: the API and CRDs are wire-compatible across every distribution; the controllers are not portable. UDLM is the API-and-CRD layer; DCM is one distribution's controllers.
 
-**4. The line held under pressure.** Where a hard design question arose mid-extraction, the answer reinforced the line: **cost** — UDLM carries only a *reference* to external metering; it models no prices and no formulas, while the realization computes and prices. The data that crosses to a provider is an *execution slice only*, never the whole record. Both were tempting to fold into the substrate; both stayed out, because a peer would do them differently.
+**4. The line held under pressure.** Where a hard design question arose mid-extraction, the answer reinforced the line: **cost** — UDLM carries only a *reference* to external metering; it models no prices and no formulas, while the implementation computes and prices. The data that crosses to a provider is an *execution slice only*, never the whole record. Both were tempting to fold into the substrate; both stayed out, because a peer would do them differently.
 
-**5. What this does not assert.** Not a higher-order "universal model" above UDLM (that waits until a real second realization creates the pressure to find what is genuinely shared); not implementation portability; not a re-litigation of DCM's internal design.
+**5. What this does not assert.** Not a higher-order "universal model" above UDLM (that waits until a real second implementation creates the pressure to find what is genuinely shared); not implementation portability; not a re-litigation of DCM's internal design.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
-- **Data** — UDLM *is* the Data substrate (types, states, provenance, identity); the boundary is literally "which Data and contracts are invariant across realizations."
+- **Data** — UDLM *is* the Data substrate (types, states, provenance, identity); the boundary is literally "which Data and contracts are invariant across implementations."
 - **Policy** — the boundary test is the governing rule; `CONFORMANCE.md` gates what counts as substrate (what must be honored vs. advised).
-- **Provider** — a realization (DCM, or an independent peer) provides behavior over the substrate; realizations/peers interoperate at the **wire**, not by sharing controllers or storage.
+- **Provider** — an implementation (DCM, or an independent peer) provides behavior over the substrate; implementations/peers interoperate at the **wire**, not by sharing controllers or storage.
 
 ## Options considered
 
-- **(A) Keep substrate + realization in one repo.** Rejected: no referenceable/versionable/conformance-testable interop surface; a peer has nothing to build against.
-- **(B) Guarantee implementation portability (portable controllers).** Rejected: over-constrains realizations, isn't needed for interop, and isn't the Kubernetes model that already works at scale.
-- **(C) [chosen] A standalone, wire-compatible substrate (UDLM) + one realization (DCM), boundary drawn by the peer test.**
+- **(A) Keep substrate + implementation in one repo.** Rejected: no referenceable/versionable/conformance-testable interop surface; a peer has nothing to build against.
+- **(B) Guarantee implementation portability (portable controllers).** Rejected: over-constrains implementations, isn't needed for interop, and isn't the Kubernetes model that already works at scale.
+- **(C) [chosen] A standalone, wire-compatible substrate (UDLM) + one implementation (DCM), boundary drawn by the peer test.**
 
 ## Consequences
 

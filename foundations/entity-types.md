@@ -30,7 +30,7 @@
 
 ## 1. Purpose
 
-This document defines the complete taxonomy of entity types in UDLM. Every resource, service, group, and process a realization manages is an entity — and every entity belongs to one of the types defined here. The entity type determines the lifecycle state machine, the ownership model, the decommission behavior, and which data model fields are applicable — i.e. it is the discriminator a consumer uses to know how an entity behaves.
+This document defines the complete taxonomy of entity types in UDLM. Every resource, service, group, and process an implementation manages is an entity — and every entity belongs to one of the types defined here. The entity type determines the lifecycle state machine, the ownership model, the decommission behavior, and which data model fields are applicable — i.e. it is the discriminator a consumer uses to know how an entity behaves.
 
 Understanding entity types is prerequisite to understanding:
 - How lifecycle states are assigned and transition
@@ -69,7 +69,7 @@ stateDiagram-v2
     [*] --> REQUESTED
     REQUESTED --> PENDING: provider dispatch
     PENDING --> PROVISIONING: provider begins work
-    PROVISIONING --> REALIZED: provider confirms realization
+    PROVISIONING --> REALIZED: provider confirms implementation
     REALIZED --> OPERATIONAL: passes health checks
     OPERATIONAL --> SUSPENDED: suspend request
     SUSPENDED --> OPERATIONAL: resume
@@ -100,7 +100,7 @@ State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDI
 
 #### 2.1.1 Resource Data Model
 
-The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. A realization that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
+The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. An implementation that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
 
 ```yaml
 resource_entity:
@@ -218,7 +218,7 @@ composite_entity:
 
 A **Process** is a bounded execution — an automation job, playbook, pipeline, workflow, or script run. It is defined by its *form*, not its effect: it runs to a terminal outcome (COMPLETED, FAILED, or CANCELLED) and is never a maintained state — no drift, no suspend, no reconciliation. It may read or change Resources (and records which entity UUIDs it affected), but a Process itself is not kept. Automation is the archetype.
 
-Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored) — and the line is drawn from the **realization's (DCM's) perspective**, its orchestration scope, *not* the process's internal complexity: **Atomic** is a *single call DCM makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; DCM made a single call, so it is still Atomic). **Composite** is when *DCM itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Automation.Job`) — vendor-specifics like "playbook" live there, at the finer gate.
+Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored) — and the line is drawn from the **implementation's (DCM's) perspective**, its orchestration scope, *not* the process's internal complexity: **Atomic** is a *single call DCM makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; DCM made a single call, so it is still Atomic). **Composite** is when *DCM itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Automation.Job`) — vendor-specifics like "playbook" live there, at the finer gate.
 
 **Characteristics:**
 - Does not persist after reaching a terminal state — no ongoing Realized State to manage
@@ -328,7 +328,7 @@ resource_type_spec:
 ## 6. Entity-Type Invariants
 
 These `ENT-00x` rows are invariants of the entity-type model — constraints a
-conformant realization guarantees, not runtime governance policy.
+conformant implementation guarantees, not runtime governance policy.
 
 | Invariant | Rule |
 |--------|------|
