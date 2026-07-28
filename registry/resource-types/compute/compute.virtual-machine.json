@@ -272,6 +272,59 @@
         }
       }
     },
+    "examples": [
+      {
+        "vcpu": {
+          "count": 4,
+          "sockets": 2,
+          "cores_per_socket": 2
+        },
+        "memory": {
+          "size": "16GB"
+        },
+        "guest_os": {
+          "type": "linux-server-9",
+          "version": "9.4"
+        },
+        "disks": [
+          {
+            "size": "100GB",
+            "storage_class": "ceph-rbd-ssd",
+            "boot_order": 0
+          },
+          {
+            "size": "500GB",
+            "storage_class": "ceph-rbd-hdd"
+          }
+        ],
+        "placement": {
+          "location_ref": "dc-west-rack-3",
+          "zone": "zone-a",
+          "affinity": [
+            {
+              "target": "web-tier",
+              "rule": "anti_affinity"
+            }
+          ]
+        },
+        "networks": [
+          {
+            "name": "eth0",
+            "network_ref": "app-net",
+            "mac": "00:11:22:33:44:55",
+            "ip_address_ref": "vm-mgmt-ip"
+          }
+        ],
+        "run_state": {
+          "desired_state": "running"
+        },
+        "firmware": {
+          "type": "uefi",
+          "secure_boot": true,
+          "vtpm": true
+        }
+      }
+    ],
     "oneOf": [
       {
         "required": [
@@ -398,6 +451,18 @@
       "Storage.Volume — the volumes behind the VM's disks.",
       "Facility.Location — where the VM is placed (selected from existing places, policy-governed).",
       "Network.IPAddress — pre-allocated addresses the VM consumes."
+    ]
+  },
+  "coverage": {
+    "use_cases": [
+      "compute/provision-vm-standard",
+      "compute/vm-provision-provider-failure-refused",
+      "compute/composite-vm-with-attached-volume"
+    ],
+    "flows": [
+      "docs/flows/uc-03-vm-standard-provision.md",
+      "docs/flows/uc-11-vm-provision-with-provider-failure.md",
+      "docs/flows/compute-provisioning-lifecycle.md"
     ]
   }
 }

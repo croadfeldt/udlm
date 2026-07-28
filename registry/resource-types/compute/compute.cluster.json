@@ -85,7 +85,29 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "release": "1.30",
+        "node_pools": [
+          {
+            "name": "control-plane",
+            "host_type": "standard-8c-32g",
+            "count": 3
+          },
+          {
+            "name": "workers",
+            "host_type": "standard-16c-64g",
+            "count": 5,
+            "instance_size": "large"
+          }
+        ],
+        "network": {
+          "pod_cidr": "198.51.100.0/24",
+          "service_cidr": "203.0.113.0/24"
+        }
+      }
+    ]
   },
   "immutable": [
     "network.pod_cidr",
@@ -157,5 +179,14 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier2_record"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "compute/provision-compute-cluster",
+      "multi-cluster/provision-spoke-via-hub"
+    ],
+    "flows": [
+      "docs/flows/compute-provisioning-lifecycle.md"
+    ]
+  }
 }
