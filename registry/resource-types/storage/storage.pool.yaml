@@ -249,3 +249,12 @@ context:
   - Compute.BareMetalHost — the host whose drives form the pool.
   - Storage.Dataset — the datasets carved from the pool.
   - Hardware.StorageDevice — the physical member drives of the vdevs.
+
+coverage:
+  use_cases:
+    - storage-redundancy/declare-hardware-raid-at-provision
+    - storage-redundancy/degraded-pool-drift-and-member-replacement
+    - storage-redundancy/composed-topology-fault-tolerance
+  flows:
+    - docs/flows/storage-provisioning-lifecycle.md
+    - docs/flows/storage-array-maintenance-dr.md

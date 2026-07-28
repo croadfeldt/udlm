@@ -1,0 +1,60 @@
+uuid: uc-55c7bfe6-2a99-4f37-9cc1-70256e61c177
+handle: storage/provision-volume-bound-to-pool
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a persistent Storage.Volume — the PVC-like unit an
+    application consumes — declaring its size, access mode, and retain policy. The volume binds to
+    capacity from an existing Storage.Pool via a member reference to that pool; the pool is the
+    single capacity source the volume draws from. The storage provider carves the requested size
+    from the pool, honors the declared access mode and retain policy, and the volume reaches
+    Realized with those properties published on its outputs (bound pool, provisioned size, access
+    mode, retain policy). This stresses that a Volume is intent bound to a Pool, not a free-floating
+    allocation: the binding edge is first-class, the declared properties are what realize, and the
+    volume rehydrates by replaying the same request against the same pool.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a persistent Volume bound to a Pool's capacity and have it realize with its
+    declared size, access mode, and retain policy
+  success_criteria:
+  - The volume declares a member reference to the pool it binds to; the pool is its single capacity
+    source
+  - The provider carves the requested size from the bound pool and the volume reaches Realized
+  - The declared access mode and retain policy are the realized properties, published on the volume's
+    outputs
+  - The bound-pool identity and provisioned size are readable from the volume's declared outputs, not
+    inferred client-side
+  - The volume rehydrates by replaying the same request against the same pool
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the volume's member reference to the pool is the single home of the binding intent
+  - domain: policy
+    interaction: validation confirms the pool has capacity for the requested size before dispatch
+  - domain: provider
+    interaction: the storage provider carves the size from the bound pool and honors access mode and
+      retain policy
+  - domain: audit
+    interaction: the binding, the provisioned size, and the realized properties are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: storage-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- storage-volume
+- storage-pool
+- capacity-binding
+- provisioning-intent

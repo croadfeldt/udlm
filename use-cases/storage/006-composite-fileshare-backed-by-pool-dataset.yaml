@@ -1,0 +1,61 @@
+uuid: uc-af411538-276c-48e5-8238-22773a51b971
+handle: storage/composite-fileshare-backed-by-pool-dataset
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a file-serving stack as one composite intent: a
+    Storage.Pool provides capacity, a Storage.Dataset is carved from that pool with its mountpoint and
+    quota, and a Storage.FileShare exports that dataset. The three resources form a dependency chain —
+    Pool -> Dataset -> FileShare — and must realize in that order: the dataset cannot bind until the
+    pool is Realized, and the share cannot export until the dataset is Realized and mounted. The
+    dependency edges are first-class (the dataset references the pool, the share references the dataset),
+    so realization ordering is computed from the graph, not scripted by hand, and a failure at any tier
+    bounds the blast radius to itself and its dependents rather than half-building the stack. This
+    stresses that a multi-resource storage service is one composite whose ordering and reach derive from
+    the declared chain, and rehydrates by replaying the chain in the same order.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a file share composed over a dataset carved from a pool, and have the Pool -> Dataset
+    -> FileShare chain realize in dependency order
+  success_criteria:
+  - The composite declares the chain as first-class edges — the dataset references the pool, the share
+    references the dataset
+  - Realization ordering (pool, then dataset, then share) is computed from the graph, not scripted
+  - The dataset does not bind until the pool is Realized; the share does not export until the dataset is
+    Realized and mounted
+  - A failure at any tier bounds the blast radius to that resource and its dependents — the stack is
+    never left half-built
+  - The composite rehydrates by replaying the chain in the same dependency order
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: composite_service
+    policy_complexity: system_defaults_only
+    provider_landscape: multiple_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Pool -> Dataset -> FileShare edges are the chain from which ordering is computed
+  - domain: policy
+    interaction: each tier's dependency is checked Realized before the next tier dispatches
+  - domain: provider
+    interaction: each backend realizes its tier in turn; the share exports only after the dataset mounts
+  - domain: audit
+    interaction: the realization order and per-tier outcomes are recorded against the chain
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: storage-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- storage-fileshare
+- storage-dataset
+- storage-pool
+- composite-service
+- dependency-chain

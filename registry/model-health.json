@@ -314,13 +314,16 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 102,
+    "files_scanned": 108,
     "covered": [
       "Capability",
       "Compute.Cluster",
       "Platform.Hub",
       "Security.CredentialRef",
-      "Storage.Pool"
+      "Storage.Dataset",
+      "Storage.FileShare",
+      "Storage.Pool",
+      "Storage.Volume"
     ],
     "uncovered": [
       "Access.IdentityEscrow",
@@ -360,9 +363,6 @@
       "SoftwareImage",
       "SoftwarePackage",
       "Storage.Cluster",
-      "Storage.Dataset",
-      "Storage.FileShare",
-      "Storage.Volume",
       "TaxonomyTerm",
       "Topology",
       "Vulnerability"

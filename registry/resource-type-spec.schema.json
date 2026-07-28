@@ -448,10 +448,9 @@
       "additionalProperties": false,
       "required": [
         "use_cases",
-        "examples",
         "flows"
       ],
-      "description": "Spec-completeness link (rule-36 — CONTRIBUTING 'a spec travels with its story'): the Use Case(s) that exercise this spec, the worked example(s), and the flow(s) that place it in a lifecycle. registry/tools/spec_coverage.py resolves each referent and, in --strict, fails on a dangling one; a spec with no coverage block is carried in registry/spec-coverage-backlog.yaml (the backfill list), never silently uncovered.",
+      "description": "Spec-completeness link (rule-36 — CONTRIBUTING 'a spec travels with its story'): the Use Case(s) and flow(s) that exercise this spec. The worked example lives in `spec.examples` (ADR-055), so `examples` here is optional — spec_coverage.py satisfies the example leg from spec.examples and only needs `examples` when an external instance is also cited. It resolves each referent and, in --check, fails on a dangling one; a spec with no coverage block is carried in registry/spec-coverage-backlog.yaml (the backfill list), never silently uncovered.",
       "properties": {
         "use_cases": {
           "type": "array",
