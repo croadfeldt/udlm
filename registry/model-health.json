@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3400,
-    "mutations_rejected": 3400,
+    "mutations_attempted": 3568,
+    "mutations_rejected": 3568,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -48,48 +48,48 @@
         "rejected": 70
       },
       "Facility.Location": {
-        "attempted": 28,
-        "rejected": 28
+        "attempted": 30,
+        "rejected": 30
       },
       "Facility.PowerFeed": {
-        "attempted": 50,
-        "rejected": 50
+        "attempted": 52,
+        "rejected": 52
       },
       "Hardware.BMC": {
-        "attempted": 33,
-        "rejected": 33
+        "attempted": 36,
+        "rejected": 36
       },
       "Hardware.BiosProfile": {
-        "attempted": 31,
-        "rejected": 31
+        "attempted": 32,
+        "rejected": 32
       },
       "Hardware.GraphicsProcessor": {
-        "attempted": 70,
-        "rejected": 70
+        "attempted": 74,
+        "rejected": 74
       },
       "Hardware.NetworkInterface": {
-        "attempted": 141,
-        "rejected": 141
+        "attempted": 151,
+        "rejected": 151
       },
       "Hardware.Processor": {
-        "attempted": 80,
-        "rejected": 80
-      },
-      "Hardware.StorageDevice": {
         "attempted": 85,
         "rejected": 85
       },
+      "Hardware.StorageDevice": {
+        "attempted": 90,
+        "rejected": 90
+      },
       "Identity.Group": {
-        "attempted": 35,
-        "rejected": 35
+        "attempted": 37,
+        "rejected": 37
       },
       "Identity.Person": {
-        "attempted": 42,
-        "rejected": 42
+        "attempted": 46,
+        "rejected": 46
       },
       "Identity.ServiceAccount": {
-        "attempted": 32,
-        "rejected": 32
+        "attempted": 34,
+        "rejected": 34
       },
       "Network.AddressService": {
         "attempted": 24,
@@ -120,12 +120,12 @@
         "rejected": 68
       },
       "Network.Switch": {
-        "attempted": 69,
-        "rejected": 69
+        "attempted": 79,
+        "rejected": 79
       },
       "Network.VLAN": {
-        "attempted": 30,
-        "rejected": 30
+        "attempted": 32,
+        "rejected": 32
       },
       "Network.VirtualNetwork": {
         "attempted": 35,
@@ -200,8 +200,8 @@
         "rejected": 51
       },
       "Topology": {
-        "attempted": 55,
-        "rejected": 55
+        "attempted": 171,
+        "rejected": 171
       },
       "Vulnerability": {
         "attempted": 61,
@@ -314,7 +314,7 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 124,
+    "files_scanned": 127,
     "covered": [
       "Capability",
       "Compute.BareMetalHost",
@@ -330,7 +330,8 @@
       "Storage.Dataset",
       "Storage.FileShare",
       "Storage.Pool",
-      "Storage.Volume"
+      "Storage.Volume",
+      "Topology"
     ],
     "uncovered": [
       "Access.IdentityEscrow",
@@ -364,7 +365,6 @@
       "Security.DirectoryService",
       "Storage.Cluster",
       "TaxonomyTerm",
-      "Topology",
       "Vulnerability"
     ]
   },

@@ -64,6 +64,11 @@ spec:
     dns_name:
       type: string
       description: Management DNS name (e.g. ipmi-host01.example.com).
+  examples:
+    - management_address: 192.0.2.20
+      protocol: redfish+ipmi
+      vendor: ASPEED
+      dns_name: bmc-node01.example.com
 outputs:
   power_state:
     type: string
@@ -105,3 +110,12 @@ context:
       Security.CredentialRef — the BMC credential, by reference.
     - >-
       Hardware.BiosProfile — firmware profiles applied over the BMC's out-of-band path.
+
+coverage:
+  use_cases:
+    - observed/estate-resource-observed
+    - observed/observation-off-vocabulary-quarantined
+    - audit/refusal-emits-audit-record
+  flows:
+    - docs/flows/estate-observation-lifecycle.md
+    - docs/flows/uc-07-udlm-dependency-graph-data-model.md

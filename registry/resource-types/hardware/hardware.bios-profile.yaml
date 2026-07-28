@@ -62,6 +62,14 @@ spec:
         Desired settings as Redfish Bios `Attributes` (name->value). OPAQUE passthrough — UDLM does not
         model or type these; they are the adopted standard's data, interpreted via `attribute_registry`
         and naturalized by the provider. Vendor/firmware-specific; lives only in the instance (the estate repo).
+  examples:
+    - attribute_registry: BiosAttributeRegistry.v1_0_0
+      management_interface: redfish
+      attributes:
+        BootMode: Uefi
+        SriovGlobalEnable: Enabled
+        ProcTurboMode: Enabled
+        NumaNodesPerSocket: 4
 outputs:
   applied_generation:
     type: integer
@@ -103,3 +111,12 @@ context:
       Hardware.BiosProfile — an optional base profile this one derives from.
     - >-
       Hardware.BMC — the out-of-band path the profile is applied through.
+
+coverage:
+  use_cases:
+    - observed/estate-resource-observed
+    - observed/observation-off-vocabulary-quarantined
+    - audit/refusal-emits-audit-record
+  flows:
+    - docs/flows/estate-observation-lifecycle.md
+    - docs/flows/uc-07-udlm-dependency-graph-data-model.md

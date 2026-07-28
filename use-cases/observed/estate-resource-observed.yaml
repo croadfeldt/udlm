@@ -1,0 +1,74 @@
+uuid: uc-6f3ac8d8-6080-4aa3-8b98-6f5944c721f7
+handle: observed/estate-resource-observed
+version: 1.0.0
+scenario:
+  description: 'An information provider OBSERVES a resource that already exists in the real
+    estate — a hardware component, a facility location, or a directory identity — and ingests it
+    into the UDLM estate graph as a realized, observed record. This is not a provisioning request:
+    nothing is being built or dispatched. The provider reads what is already there, normalizes it
+    to the model''s vocabulary (device class, location type, identity kind — the closed enums the
+    corpus publishes, never the provider''s native strings), and admits it as a record whose
+    lifecycle is already Realized. The observed record links into the dependency graph — the
+    component under its host, the identity under its authority, the location under its parent — so
+    the estate a consumer queries includes what was discovered, not only what was requested through
+    intent. Every observed record carries its provenance: which provider observed it, when, and that
+    its authority for the value is the observation itself, not a declared intent. This is the shared
+    "how observed inventory enters the model" story that Hardware, Facility, Identity, and Topology
+    types all reference rather than each re-deriving an ingestion path: an observed record is a
+    first-class, provenance-carrying, graph-linked estate member normalized to the published
+    vocabulary, distinct in origin from an intent-realized one but equal in standing in the graph.'
+  actor:
+    persona: platform-operator
+    profile: standard
+  perspectives:
+    - information-provider-owner
+    - provider-owner
+    - sre
+    - compliance-auditor
+  intent: Observe a resource that already exists in the estate and ingest it as a realized,
+    observed record — normalized to the model's vocabulary, linked into the dependency graph, and
+    carrying its observation provenance — not as a provisioning request
+  success_criteria:
+  - The record is admitted as observed/realized, not dispatched — no provider is asked to build
+    anything; the resource already exists and is being read into the model
+  - The observed value is normalized to the model's published vocabulary (device class, location
+    type, or identity kind), not carried as the provider's native string
+  - The observed record links into the dependency graph under its parent — component under host,
+    identity under authority, location under parent — so it is queryable as part of the estate
+  - The record carries its observation provenance — the observing provider, the observation, and
+    that its authority is the observation itself, not a declared intent
+  - An observed record and an intent-realized record are equal members of the graph but distinct in
+    origin — a consumer can tell how each entered the model
+  dimensions:
+    lifecycle_phase: brownfield_ingestion
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: provider
+    interaction: the information provider observes an already-existing resource and contributes it
+      as data; no provisioning provider is dispatched
+  - domain: data
+    interaction: the observed value is normalized to the model's published vocabulary and linked
+      into the dependency graph under its parent
+  - domain: policy
+    interaction: validation confirms the normalized value is in-vocabulary and the observing
+      provider is authorized before admission
+  - domain: audit
+    interaction: the observing provider, the observation, and the observation-derived provenance are
+      recorded against the realized record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: observed-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- observed-inventory
+- brownfield-ingestion
+- provenance
+- cross-cutting
+- estate-graph

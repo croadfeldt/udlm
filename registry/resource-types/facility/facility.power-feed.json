@@ -80,7 +80,18 @@
         "default": "none",
         "description": "Feed redundancy level."
       }
-    }
+    },
+    "examples": [
+      {
+        "feed_type": "pdu",
+        "capacity": {
+          "watts": 5000,
+          "voltage": 208,
+          "phases": 3
+        },
+        "redundancy": "n+1"
+      }
+    ]
   },
   "outputs": {
     "status": {
@@ -133,5 +144,16 @@
       "standard": "Redfish",
       "note": "Redfish DCIM Outlet, for a per-outlet feed"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

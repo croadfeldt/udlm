@@ -69,7 +69,14 @@
         "type": "string",
         "description": "Human name for the segment, e.g. dmz."
       }
-    }
+    },
+    "examples": [
+      {
+        "encapsulation": "vlan",
+        "segment_id": 100,
+        "name": "mgmt"
+      }
+    ]
   },
   "outputs": {
     "segment_ready": {
@@ -92,5 +99,16 @@
       "cardinality": "0..1",
       "description": "Optional cluster/fabric scope the segment is defined within."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }
