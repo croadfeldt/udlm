@@ -77,6 +77,13 @@ boundaries.
   data** any host runs offline — never a dependency on a reachable central authority.
 - **Boundary-crossing is visible.** Cross-scope edges (P3) make any dependency that crosses a
   sovereignty boundary explicit and enforceable by the Matrix.
+- **Provenance / admission (Proposed — [ADR-057](../docs/adr/ADR-057-sovereignty-placement-and-provenance.md)).**
+  Sovereignty governs not only *where an entity lives* but *where it comes from*: an estate may require
+  that an entity — and the sources that realize it — be **approved for the boundary** (the
+  approved-source / approved-list dimension: "did this server come from an approved source; is this
+  firewall on the approved list?"). UDLM **codifies** this requirement as data and **communicates** it —
+  by reference to accreditation subjects + attestation evidence, not a new primitive — and does **not**
+  vet or enforce; DCM's Governance Matrix decides and enables enforcement. Pending ratification (ADR-057).
 
 ---
 
