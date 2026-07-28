@@ -442,6 +442,42 @@
           "description": "The types it most commonly appears beside, one line of why each."
         }
       }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "use_cases",
+        "examples",
+        "flows"
+      ],
+      "description": "Spec-completeness link (rule-36 — CONTRIBUTING 'a spec travels with its story'): the Use Case(s) that exercise this spec, the worked example(s), and the flow(s) that place it in a lifecycle. registry/tools/spec_coverage.py resolves each referent and, in --strict, fails on a dangling one; a spec with no coverage block is carried in registry/spec-coverage-backlog.yaml (the backfill list), never silently uncovered.",
+      "properties": {
+        "use_cases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "UC handle(s) (e.g. 'scoped-class/compile-type-to-flat-spec') or use-cases/ path(s) that exercise this spec."
+        },
+        "examples": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Worked example(s): a registry/instances/ handle or path — an instance of this type."
+        },
+        "flows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "docs/flows/ doc(s) that place this spec in a lifecycle."
+        }
+      }
     }
   },
   "allOf": [

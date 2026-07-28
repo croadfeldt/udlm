@@ -1,0 +1,47 @@
+uuid: uc-df70bc9c-b479-44d0-978b-670f8fc83414
+handle: scoped-class/compile-type-to-flat-spec
+version: 1.0.0
+scenario:
+  description: >-
+    Classes are the authoring layer; the flat type specs become generated artifacts. A generator compiles a Type Class plus ancestors into exactly the flat resource-type-spec shape consumers read today — merged properties, required from non-optional elements, compilation provenance — validated as conformant. Nothing downstream breaks; consumers cut over to class-aware reads at their own pace. A --check gate verifies by faithful recompilation.
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - provider-owner
+    - integrator
+    - platform-operator
+  intent: >-
+    Compile a Type Class and its ancestors into the flat resource-type spec consumers already read — same meta-schema, same wire contract, nothing downstream broken
+  success_criteria:
+  - A Type Class compiles to a valid resource-type-spec: merged properties, required from non-optional, provenance
+  - The compiled spec is the same shape consumers read today — no wire break on day one
+  - A --check gate fails if a changed class's generated descendant was not regenerated
+  dimensions:
+    lifecycle_phase: modification
+    resource_complexity: composite_service
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Class artifact + its SharedDataElements (scope, schema, values, state)
+  - domain: policy
+    interaction: the assembly/placement engine reads the compiled spec; portability derives from scope
+  - domain: provider
+    interaction: a provider naturalizes the class's elements at its edge (T9 / ADR-023)
+  - domain: audit
+    interaction: the class version, its elements, and any promotion/compile are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: scoped-class-corpus-2026-07-27
+  timestamp: '2026-07-27T23:00:00Z'
+tags:
+- scoped-class
+- generator
+- cutover
+- adr-038

@@ -60,6 +60,15 @@ realization provenance, attestations, promotion evidence — never in the artifa
 What used to be rotation bookkeeping is now recomputation: a change produces a new digest by
 construction, with nothing to remember to mint.
 
+*What identity covers.* The digest is taken over the document's **normative** bytes. A small,
+named set of **documentation-completeness pointers is excluded** — today just `coverage`, the
+Use Cases / examples / flows that exercise a spec (rule-36, CONTRIBUTING). These grow over a
+spec's life: adding a UC that exercises an **unchanged** spec must not rev its identity or force a
+version bump. The exclusion is one list (`IDENTITY_EXCLUDED_FIELDS` in
+`registry/tools/generate_pin_manifest.py`), consulted by both the pin manifest and the identity
+gate, so a coverage-only edit is provably digest-invariant. Everything not on that list is
+identity; the list is deliberately tiny and additions are an ADR-level call.
+
 **5. Two document families, one uuid meaning.**
 - **Mutable-in-place documents** (type specs, provider definitions, policies, profiles,
   catalog items, consumer manifests): the uuid is frozen; edits bump the version under the

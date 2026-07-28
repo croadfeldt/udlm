@@ -1,0 +1,48 @@
+uuid: uc-b72e2784-56c8-41c2-9796-7caf1b829bd0
+handle: scoped-class/multi-provider-engine-swap
+version: 1.0.0
+scenario:
+  description: >-
+    Two automation engines each author a Provider Class extending the same portable Type Class (Process.OSPatch), engine-specific elements only, each Liskov-valid against the untouched Type; both declare the same capability against it. Engine migration is therefore a PROVIDER SWAP on an untouched Type — same operation, machinery, and audit continuity as moving a VM between providers.
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - provider-owner
+    - sre
+    - platform-operator
+  intent: >-
+    Declare one portable Type Class from two provider engines, so engine migration is a provider swap on an untouched Type — same machinery and audit continuity as a VM provider move
+  success_criteria:
+  - Two Provider Classes extend one Type, each adding only engine-specific elements (Liskov-valid)
+  - Both declare the same capability against the untouched Type
+  - Engine migration is a provider swap on the Type — no change to the definition, full audit continuity
+  dimensions:
+    lifecycle_phase: rehydration_provider_portable
+    resource_complexity: composite_service
+    policy_complexity: orchestration_flow_static
+    provider_landscape: peer_dcm_required
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Class artifact + its SharedDataElements (scope, schema, values, state)
+  - domain: policy
+    interaction: the assembly/placement engine reads the compiled spec; portability derives from scope
+  - domain: provider
+    interaction: a provider naturalizes the class's elements at its edge (T9 / ADR-023)
+  - domain: audit
+    interaction: the class version, its elements, and any promotion/compile are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: scoped-class-corpus-2026-07-27
+  timestamp: '2026-07-27T23:00:00Z'
+tags:
+- scoped-class
+- process
+- multi-provider
+- engine-migration
+- adr-038

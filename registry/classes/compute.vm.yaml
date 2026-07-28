@@ -38,3 +38,11 @@ elements:
     schema:
       type: array
       items: { type: string }
+
+coverage:
+  use_cases:
+    - scoped-class/compile-type-to-flat-spec
+    - scoped-class/portability-derived-from-scope
+    - scoped-class/liskov-refine-accepted
+  flows:
+    - docs/flows/scoped-class-lifecycle.md

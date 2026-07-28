@@ -38,3 +38,9 @@ elements:
     state: canonical
     description: Per-host start-time spread (duration).
     schema: { type: string, pattern: "^P" }
+
+coverage:
+  use_cases:
+    - scoped-class/multi-provider-engine-swap
+  flows:
+    - docs/flows/scoped-class-lifecycle.md
