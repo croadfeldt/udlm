@@ -8,6 +8,7 @@ telling); the links below resolve to the docs in *this* repo.
 
 ## application-team-member — request and consume resources
 The everyday consumer: asks for what they need in portable terms and lets the system realize it.
+- [Governed automation, end to end — the consumer journey](governed-automation-end-to-end.md)
 - [UC-03 · Standard VM provision](uc-03-vm-standard-provision.md)
 - [UC-04 · VM intent onto OSAC](uc-04-vm-intent-osac-placement.md)
 - [UC-06 · Persistent volume with attach](uc-06-persistent-volume-provision.md)
