@@ -39,12 +39,14 @@ def specs():
         if p.endswith((".json", ".yaml", ".yml")):
             d = load(p)
             if d.get("resource_type") and "record_type" not in d:
-                # a type's example leg is satisfied by in-spec spec.examples (ADR-055), folded into
-                # the coverage view so the examples referent need not name an external instance.
-                cov = dict(d.get("coverage") or {})
-                if (d.get("spec") or {}).get("examples"):
-                    cov.setdefault("examples", ["spec.examples"])
-                out.append(("type", d["resource_type"], p, cov or None))
+                # A type's example leg is satisfied by in-spec spec.examples (ADR-055) — but only
+                # AUGMENT an existing coverage block, never synthesize one: a spec with examples but
+                # no coverage block stays in the backlog (its UCs/flows are still owed) rather than
+                # looking partially covered and demanding the other legs early.
+                cov = d.get("coverage")
+                if cov and (d.get("spec") or {}).get("examples"):
+                    cov = {**cov, "examples": (cov.get("examples") or []) + ["spec.examples"]}
+                out.append(("type", d["resource_type"], p, cov))
     for p in glob.glob(os.path.join(ROOT, "registry", "classes", "*.yaml")):
         d = load(p)
         if d.get("record_type") == "class":
