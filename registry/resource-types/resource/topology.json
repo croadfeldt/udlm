@@ -101,7 +101,42 @@
         }
       }
     },
-    "additionalProperties": false
+    "additionalProperties": false,
+    "examples": [
+      {
+        "scope": "facility",
+        "domains": [
+          {
+            "id": "region-1",
+            "kind": "region",
+            "labels": {
+              "jurisdiction": "EU",
+              "residency": "eu-west"
+            }
+          },
+          {
+            "id": "az-a",
+            "kind": "availability-zone",
+            "parent": "region-1"
+          },
+          {
+            "id": "ups-a",
+            "kind": "power-domain",
+            "parent": "az-a"
+          },
+          {
+            "id": "rack-1",
+            "kind": "rack",
+            "parent": "az-a"
+          },
+          {
+            "id": "host-01",
+            "kind": "host",
+            "parent": "rack-1"
+          }
+        ]
+      }
+    ]
   },
   "immutable": [],
   "outputs": {
@@ -110,5 +145,16 @@
       "description": "Observed (Discovered) per-domain state — array of { id (→ spec.domains[].id), availability: active|draining|unavailable, member_count }. `draining` gates maintenance; `unavailable` drops the domain from placement candidates."
     }
   },
-  "relationships": []
+  "relationships": [],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

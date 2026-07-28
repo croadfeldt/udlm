@@ -191,7 +191,21 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "device_class": "physical",
+        "identity": {
+          "location": "0000:41:00.0",
+          "mac_address": "00:11:22:33:44:55",
+          "model": "ConnectX-6 Dx",
+          "manufacturer": "NVIDIA",
+          "role": "storage"
+        },
+        "speed": "25Gbps",
+        "mtu": 9000
+      }
+    ]
   },
   "outputs": {
     "mac_address": {
@@ -314,5 +328,16 @@
       "license_compatibility": "reference-only",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

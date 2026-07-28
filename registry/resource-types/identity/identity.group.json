@@ -70,7 +70,18 @@
         },
         "description": "For source=built_in: actor_uuids of Identity.Person / Identity.ServiceAccount members. For source=external: resolved from the directory (referenced)."
       }
-    }
+    },
+    "examples": [
+      {
+        "handle": "platform-admins",
+        "display_name": "Platform Administrators",
+        "source": "external",
+        "external_group_ref": "corp-directory-platform-admins",
+        "members": [
+          "679b14ef-f169-441e-968d-dacafffe1966"
+        ]
+      }
+    ]
   },
   "outputs": {
     "group_ref": {
@@ -97,5 +108,16 @@
       "cardinality": "0..1",
       "description": "The directory this group is sourced from (for source=external)."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

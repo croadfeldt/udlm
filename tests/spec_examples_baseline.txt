@@ -3,22 +3,6 @@
 # dropped here (the gate refuses to re-add it). New specs are NEVER added — they ship an example.
 # Burn down family-by-family; target is an empty file.
 Capability
-Compute.BareMetalHost
-Compute.Cluster
-Compute.Container
-Compute.VirtualMachine
-Data.Database
-Facility.Location
-Facility.PowerFeed
-Hardware.BMC
-Hardware.BiosProfile
-Hardware.GraphicsProcessor
-Hardware.NetworkInterface
-Hardware.Processor
-Hardware.StorageDevice
-Identity.Group
-Identity.Person
-Identity.ServiceAccount
 Network.AddressService
 Network.ConnectionProfile
 Network.DHCPScope
@@ -26,8 +10,6 @@ Network.DNSZone
 Network.Gateway
 Network.IPAddress
 Network.IPAddressPool
-Network.Switch
-Network.VLAN
 Network.VirtualNetwork
 Observability.LogShipper
 Platform.Hub
@@ -37,9 +19,5 @@ Platform.ResourceQuota
 Platform.StorageClass
 Security.CredentialRef
 Security.DirectoryService
-Software.Service
-SoftwareImage
-SoftwarePackage
 TaxonomyTerm
-Topology
 Vulnerability

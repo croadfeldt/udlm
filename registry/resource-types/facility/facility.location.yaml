@@ -64,6 +64,10 @@ spec:
     position:
       type: string
       description: Placement within the parent (e.g. rack units "U20-U21", a grid cell).
+  examples:
+    - kind: rack
+      label: Lab compute rack A
+      position: Row 2, Grid C7
 outputs:
   occupant_count:
     type: integer
@@ -101,3 +105,12 @@ context:
       Compute.BareMetalHost — the equipment that declares its location.
     - >-
       Topology — the failure-domain view of the same physical reality.
+
+coverage:
+  use_cases:
+    - observed/estate-resource-observed
+    - observed/observation-off-vocabulary-quarantined
+    - audit/refusal-emits-audit-record
+  flows:
+    - docs/flows/estate-observation-lifecycle.md
+    - docs/flows/uc-07-udlm-dependency-graph-data-model.md

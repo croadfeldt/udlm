@@ -213,7 +213,47 @@
         "default": "uefi",
         "description": "Firmware boot mode (Metal3 bootMode / Redfish Boot). Fleet note: converging this with the VM's firmware block into a common element is a candidate next MINOR — adopted vocabulary kept verbatim until then."
       }
-    }
+    },
+    "examples": [
+      {
+        "lifecycle_state": "allocated",
+        "composition_visibility": "selective",
+        "identity": {
+          "serial_number": "SN-EXAMPLE-0001",
+          "asset_tag": "ASSET-0042",
+          "manufacturer": "ExampleCorp",
+          "model": "ExampleServer R1",
+          "sku": "EX-R1-2U"
+        },
+        "cpu": {
+          "sockets": 2,
+          "cores": 64,
+          "threads": 128
+        },
+        "memory": {
+          "size": "512GB"
+        },
+        "storage": {
+          "capacity": "8TB"
+        },
+        "architecture": "x86-64",
+        "bios_version": "2.10.1",
+        "image": {
+          "url": "https://images.example.com/rhcos-9.qcow2",
+          "checksum": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+          "checksum_type": "sha256",
+          "format": "qcow2"
+        },
+        "root_device_hints": {
+          "device_name": "/dev/sda",
+          "serial_number": "DISK-EX-0001",
+          "min_size_gigabytes": 480
+        },
+        "boot_mac_address": "00:11:22:33:44:55",
+        "online": true,
+        "boot_mode": "uefi"
+      }
+    ]
   },
   "outputs": {
     "power_state": {
@@ -344,5 +384,15 @@
   "priced_by": {
     "information_provider_uuid": "c1a2b3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
     "external_model_id": "onprem-baremetal-2026-q3"
+  },
+  "coverage": {
+    "use_cases": [
+      "bare-metal/provision-host-from-intent",
+      "compute/baremetal-host-hardware-mismatch-refused",
+      "bare-metal/host-rehydration-replay-intent"
+    ],
+    "flows": [
+      "docs/flows/compute-provisioning-lifecycle.md"
+    ]
   }
 }

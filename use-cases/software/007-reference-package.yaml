@@ -1,0 +1,61 @@
+uuid: uc-f831191b-7f55-4135-919e-52e80303ba53
+handle: software/reference-package
+version: 1.0.0
+scenario:
+  description: 'A platform engineer references a SoftwarePackage into the catalog by its coordinates — name,
+    version, and an immutable digest over its contents — without copying the artifact into the platform. The
+    admission gate resolves the coordinates and confirms the digest pins exactly which bytes the name+version
+    denote, so the reference is unambiguous and tamper-evident. Success is that the package is admitted to the
+    catalog as a referenceable dependency, its name, version, and digest recorded on its record, so any later
+    resource that depends on it binds to the same pinned bytes. This stresses that a SoftwarePackage is
+    admitted by reference rather than by copy, that the digest makes the name+version binding tamper-evident
+    rather than trust-on-first-use, and that the coordinates are readable from the catalog record rather than
+    re-resolved by every consumer.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - security-officer
+  intent: Reference a SoftwarePackage by name, version, and digest, and have it admitted to the catalog as a
+    referenceable, pinned dependency
+  success_criteria:
+  - The package is referenced by name, version, and immutable digest — the exact bytes are pinned, not copied
+    into the catalog
+  - The admission gate confirms the digest pins which bytes the name+version denote, so the reference is
+    tamper-evident, not trust-on-first-use
+  - The package is admitted and its name, version, and digest are recorded on its catalog record
+  - A downstream resource that depends on the package binds to the same pinned bytes, readable from the
+    record rather than re-resolved
+  - The admission is recorded against the package
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_no_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the name, version, and digest are the portable admission record; the digest pins the
+      admitted bytes
+  - domain: policy
+    interaction: the admission gate confirms the digest binds the name+version before the package is
+      referenceable
+  - domain: provider
+    interaction: no realization provider is dispatched; admission is a catalog-reference operation
+  - domain: audit
+    interaction: the admission and the recorded coordinates are logged against the package
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: software-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- software-package
+- supply-chain
+- catalog-admission
+- reference
