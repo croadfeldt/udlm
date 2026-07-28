@@ -16,7 +16,7 @@ Between the evaluation floor (`dev`) and hardened/regulated production there is 
 **`standard` is the baseline production profile.** By set-containment it is `dev`'s floor **plus** the three things that separate "runs" from "operates" (see the record for the authoritative list):
 
 - **`policy/governance-matrix`** — boundary enforcement on every DCM→Provider crossing, so provider interactions are governed, not implicit.
-- **`policy/recovery`** — partial-realization and timeout handling, so a failed dispatch resolves deterministically.
+- **`policy/recovery`** — partial-implementation and timeout handling, so a failed dispatch resolves deterministically.
 - **`policy/drift-reconciliation`** (+ `discovery/scheduled`) — discovered-vs-realized drift is detected and remediated on a cadence.
 
 Target demographic: a team running production workloads with no specific regulatory overlay.

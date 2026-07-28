@@ -14,7 +14,7 @@
 
 ## 1. Purpose and Principle
 
-A UDLM realization is a multi-user, multi-contributor system. Platform admins are not the only actors who create data. Consumers define their own service configurations, resource groups, and policy overlays. Service Providers publish their own resource type specs and catalog items. Peer realizations contribute registry entries across federation boundaries. Organizations extend with their own artifact types.
+A UDLM implementation is a multi-user, multi-contributor system. Platform admins are not the only actors who create data. Consumers define their own service configurations, resource groups, and policy overlays. Service Providers publish their own resource type specs and catalog items. Peer implementations contribute registry entries across federation boundaries. Organizations extend with their own artifact types.
 
 **The federated contribution model** is the substrate framework for how all of these actors create, review, activate, and lifecycle-manage data artifacts. It extends the Data abstraction with one additional universal property:
 
@@ -24,7 +24,7 @@ This is not a special model for special cases. It is the same artifact lifecycle
 
 **The core substrate principle:** UDLM defaults to a federated model for data creation, import, usage, and lifecycle. Every authorized actor can contribute within the bounds their role permits. The Governance Matrix governs the boundaries. Profile-bound auto-approval policies determine what needs human review and what does not.
 
-The specific transport (GitOps PR, REST API, message bus) is a realization choice. The substrate requires only that there be a reviewable, auditable contribution channel that honors the contributor permission table and the universal pipeline.
+The specific transport (GitOps PR, REST API, message bus) is an implementation choice. The substrate requires only that there be a reviewable, auditable contribution channel that honors the contributor permission table and the universal pipeline.
 
 ---
 
@@ -34,10 +34,10 @@ The specific transport (GitOps PR, REST API, message bus) is a realization choic
 
 | Contributor | Examples | Default domain scope |
 |-------------|---------|---------------------|
-| **Platform Admin** | Realization operators, SRE team | system, platform — all artifact types |
+| **Platform Admin** | Implementation operators, SRE team | system, platform — all artifact types |
 | **Consumer / Tenant** | Application teams, developers, Tenant admins | tenant — scoped to their Tenant |
 | **Service Provider** | Infrastructure teams, automation platforms | provider — resource types they offer |
-| **Peer Realization** | Federated peer realizations, Hub peer, community registry | federated — governed by federation trust posture |
+| **Peer Implementation** | Federated peer implementations, Hub peer, community registry | federated — governed by federation trust posture |
 
 ### 2.2 What Each Contributor Can Contribute
 
@@ -60,7 +60,7 @@ The specific transport (GitOps PR, REST API, message bus) is a realization choic
 - Cost metadata updates
 - Sovereignty declaration updates
 
-**Peer Realization:**
+**Peer Implementation:**
 - Registry entries (Resource Type Specs, provider type definitions) contributed through federation channels
 - Policy bundles contributed through verified federation relationships
 - Layer contributions through Hub-governed federation
@@ -72,7 +72,7 @@ The specific transport (GitOps PR, REST API, message bus) is a realization choic
 |-------------|-----------------|
 | Consumer | System or platform domain policies; core layers; resource type specs (unless granted elevated role); provider catalog items for other providers |
 | Service Provider | Policies outside their resource type domain; core layers; other providers' catalog items; tenant-domain policies for specific Tenants |
-| Peer Realization | Artifacts above the federation trust level granted; system-domain policies without authorized approval; sovereignty zones for jurisdictions not in their declared scope |
+| Peer Implementation | Artifacts above the federation trust level granted; system-domain policies without authorized approval; sovereignty zones for jurisdictions not in their declared scope |
 
 ---
 
@@ -80,7 +80,7 @@ The specific transport (GitOps PR, REST API, message bus) is a realization choic
 
 Every UDLM data artifact type has a declared set of contributor permissions. The following matrix is normative:
 
-| Artifact Type | Platform Admin | Consumer/Tenant | Service Provider | Peer Realization |
+| Artifact Type | Platform Admin | Consumer/Tenant | Service Provider | Peer Implementation |
 |--------------|---------------|-----------------|-----------------|---------|
 | Resource Type Specification | All tiers | ❌ | Org + Community tiers | Community tier (via federation) |
 | Provider Catalog Item | All | ❌ | Their resource types only | ❌ |
@@ -113,7 +113,7 @@ All contributions — regardless of contributor type — MUST flow through the s
 ```
 Contributor authors a data artifact
   │
-  │ Via a contribution surface offered by the realization
+  │ Via a contribution surface offered by the implementation
   │ (GUI, API, source-control PR, message bus, etc.)
   │
   ▼ Artifact submitted → status: developing (local only)
@@ -178,7 +178,7 @@ Consumers are not passive requesters. Tenant admins and designated Tenant member
 - An Operations team defining their own expiry Transformation: "All dev VMs get a 30-day TTL injected"
 - A Security team defining their own governance matrix rule: "Our Tenant never sends confidential data to unaccredited providers"
 
-**The scope constraint MUST be enforced by the substrate, not by convention.** When a consumer submits a policy with `domain: tenant`, the realization MUST validate that the contributing actor belongs to that Tenant. Attempts to submit platform or system domain policies MUST be rejected by the Governance Matrix at contribution time.
+**The scope constraint MUST be enforced by the substrate, not by convention.** When a consumer submits a policy with `domain: tenant`, the implementation MUST validate that the contributing actor belongs to that Tenant. Attempts to submit platform or system domain policies MUST be rejected by the Governance Matrix at contribution time.
 
 ### 5.2 Consumer Contribution Wire Shape (Normative)
 
@@ -299,11 +299,11 @@ POST /api/v1/provider/contribute/service-layer
 
 ## 7. Federation Contribution Model (Contract)
 
-### 7.1 Peer Realization as Contributor
+### 7.1 Peer Implementation as Contributor
 
-A federated peer realization is a contributor to the receiving realization's artifact stores, subject to the federation trust posture. This enables:
+A federated peer implementation is a contributor to the receiving implementation's artifact stores, subject to the federation trust posture. This enables:
 
-- **Hub realization contributing policy templates** to Regional peers — standard compliance policies distributed from a central Hub
+- **Hub implementation contributing policy templates** to Regional peers — standard compliance policies distributed from a central Hub
 - **Community registry contributions** — a community-maintained peer publishing Verified Community resource type specs to subscribing organizations
 - **Provider contributions across peer boundaries** — a provider registered with Peer-A contributing its resource type specs to Peer-B through a verified federation relationship
 
@@ -317,28 +317,28 @@ Federation contributions inherit the federation trust posture of the contributin
 | `vouched` | reviewed always | Registry entries, service layers only |
 | `provisional` | `authorized` tier approval | Registry entries only (no policies) |
 
-**Hard substrate rule:** A peer realization MUST NOT contribute artifacts at a higher domain level than its trust posture permits. A `vouched` peer cannot contribute system-domain policies. This is enforced by the Governance Matrix at the federation contribution boundary.
+**Hard substrate rule:** A peer implementation MUST NOT contribute artifacts at a higher domain level than its trust posture permits. A `vouched` peer cannot contribute system-domain policies. This is enforced by the Governance Matrix at the federation contribution boundary.
 
 ### 7.3 Federation Contribution Flow
 
 ```
-Peer realization publishes a contribution bundle:
+Peer implementation publishes a contribution bundle:
   Content: resource type specs, policy templates, or layers
   Transport: federation tunnel (mTLS, signed, scoped credential)
   Metadata: contributing_peer_uuid, trust_posture, artifact_list
 
-Receiving realization evaluates:
+Receiving implementation evaluates:
   1. Governance Matrix: is this peer permitted to contribute this artifact type?
   2. Signature verification: bundle signed by peer's private key?
   3. Structural validation: artifacts conform to substrate schemas?
   4. Domain scope check: artifacts within peer's permitted domain?
 
 On validation pass:
-  Artifacts enter proposed status in receiving realization's policy/registry store
-  Review flow per receiving realization's profile + peer trust posture
+  Artifacts enter proposed status in receiving implementation's policy/registry store
+  Review flow per receiving implementation's profile + peer trust posture
 
 On approval:
-  Artifacts become active in receiving realization
+  Artifacts become active in receiving implementation
   Source attribution: contributed_by.peer_uuid, contributed_by.trust_posture
 ```
 
@@ -373,7 +373,7 @@ hub_policy_distribution:
 Every artifact is owned by its contributor at creation. Ownership can be transferred:
 - Consumer-authored policies transfer to a new Tenant admin when the original actor departs
 - Provider-contributed catalog items remain owned by the provider registration
-- Federation-contributed artifacts are owned by the contributing peer realization
+- Federation-contributed artifacts are owned by the contributing peer implementation
 
 Ownership transfer requires the receiving owner's explicit acceptance (same model as entity ownership transfer in the Consumer API).
 
@@ -416,12 +416,12 @@ artifact_metadata:
   version: "1.0.0"
   status: active
   contributed_by:
-    contributor_type: consumer       # platform_admin | consumer | service_provider | peer_realization
+    contributor_type: consumer       # platform_admin | consumer | service_provider | peer_implementation
     actor_uuid: <uuid>               # for consumer/platform_admin contributions
     tenant_uuid: <uuid>              # for consumer contributions
     provider_uuid: <uuid>            # for provider contributions
     peer_uuid: <uuid>                # for federation contributions
-    contribution_method: api         # realization-specific (api | gui | git_pr | federation_push | ...)
+    contribution_method: api         # implementation-specific (api | gui | git_pr | federation_push | ...)
     pr_url: "https://..."            # if submitted via a source-control PR
     reviewed_by: [<actor_uuid>]      # actors who approved
     reviewed_at: <ISO 8601>
@@ -439,9 +439,9 @@ artifact_metadata:
 | `FCM-004` | Policies submitted by any contributor enter proposed (shadow) status by default. Shadow mode results must be available before the active profile's shadow review period expires. |
 | `FCM-005` | Platform admins may override any contributor's artifact lifecycle at any time. Override actions are audited. |
 | `FCM-006` | Orphaned artifacts (contributor access revoked) do not automatically deactivate. A platform admin assigns a new owner or explicitly retires them. Exception: sovereign profile auto-retires orphaned artifacts. |
-| `FCM-007` | Federation contributions from peer realizations are scoped by the peer's federation trust posture. Verified peers: reviewed (standard+). Vouched peers: reviewed always. Provisional peers: authorized approval. |
+| `FCM-007` | Federation contributions from peer implementations are scoped by the peer's federation trust posture. Verified peers: reviewed (standard+). Vouched peers: reviewed always. Provisional peers: authorized approval. |
 | `FCM-008` | Contributor-tier scope limits are absolute. A consumer-authored policy in the tenant domain cannot affect the system or platform domain regardless of the policy's declared match conditions. |
 
 ---
 
-*UDLM substrate document. Realization-specific contribution store structure, review queue / approval workflow mechanics (GitOps PR transport, branch protection rules), contribution pipeline orchestration, consumer/provider contribution enforcement code, and federation contribution synchronization mechanics live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific contribution store structure, review queue / approval workflow mechanics (GitOps PR transport, branch protection rules), contribution pipeline orchestration, consumer/provider contribution enforcement code, and federation contribution synchronization mechanics live in the consuming implementation's documentation.*

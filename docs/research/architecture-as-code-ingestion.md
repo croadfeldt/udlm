@@ -48,7 +48,7 @@ detection — without re-expressing the topology language itself.
 
 **Architecture-as-code becomes a topology source — an Information Provider.**
 The topology tool produces a validated architecture document (CALM JSON or
-LikeC4 model). A UDLM-conformant realization ingests that document through
+LikeC4 model). A UDLM-conformant implementation ingests that document through
 an Information Provider contract, translating the topology graph into UDLM
 entities and relationships. UDLM then owns lifecycle, governance, and audit
 from that point forward.
@@ -106,7 +106,7 @@ CALM controls (e.g., "only allow HTTPS") are declarative annotations.
 On ingestion they become **seed data for Policy match conditions** or
 **layer values** on the entity — not policies themselves, because UDLM
 policies are executable with typed output schemas and evaluation semantics
-that controls do not carry. The realization maps each control type to the
+that controls do not carry. The implementation maps each control type to the
 appropriate policy template.
 
 ### Metadata → Layer values

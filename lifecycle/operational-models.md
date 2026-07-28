@@ -36,7 +36,7 @@ The Recovery Policy Model is the foundational concept. Timeouts, cancellation ou
 
 ### 2.1 Three Timeout Scopes (Substrate Contract)
 
-The substrate defines three distinct timeout concerns. Each is independently configurable and independently audited. Specific default durations are realization-configurable; the contract is that these three scopes exist and each has profile-governed defaults.
+The substrate defines three distinct timeout concerns. Each is independently configurable and independently audited. Specific default durations are implementation-configurable; the contract is that these three scopes exist and each has profile-governed defaults.
 
 ```yaml
 timeout_declarations:
@@ -53,7 +53,7 @@ timeout_declarations:
     includes: layer_resolution, policy_evaluation, placement_loop
 
   dispatch_timeout:
-    description: "Maximum time to wait for provider realization after dispatch"
+    description: "Maximum time to wait for provider implementation after dispatch"
     profile_defaults:
       minimal: PT2H
       dev: PT1H
@@ -129,7 +129,7 @@ audit_record:
   actor:
     type: system
     system_actor:
-      component: <realization-named component>
+      component: <implementation-named component>
       trigger: timeout
   entity_uuid: <uuid>
   details:
@@ -169,7 +169,7 @@ Consumer submits cancellation
 Consumer submits cancellation
   │
   ▼ Entity state: DISPATCHED (provider received payload but has not started)
-  │   Realization sends cancellation payload to provider cancel endpoint
+  │   Implementation sends cancellation payload to provider cancel endpoint
   │   Provider acknowledges: "not started, cancellation clean"
   │   Entity enters CANCELLED state (terminal)
   │   Recovery Policy: not triggered (clean cancel)
@@ -184,10 +184,10 @@ Consumer submits cancellation
 Consumer submits cancellation
   │
   ▼ Entity state: PROVISIONING
-  │   Realization checks provider.supports_cancellation
+  │   Implementation checks provider.supports_cancellation
   │
   ├── Provider supports cancellation:
-  │   Realization sends cancellation payload
+  │   Implementation sends cancellation payload
   │   Provider attempts rollback
   │   ├── Rollback clean: entity → CANCELLED (terminal)
   │   ├── Rollback partial: trigger CANCELLATION_FAILED recovery policy
@@ -195,7 +195,7 @@ Consumer submits cancellation
   │
   └── Provider does not support cancellation:
       Entity enters CANCEL_PENDING state
-      Realization waits for provider to complete
+      Implementation waits for provider to complete
       On provider REALIZED response:
         Recovery Policy LATE_RESPONSE_RECEIVED fires
         (configured action: typically DISCARD_AND_REQUEUE for cancellation context)
@@ -233,7 +233,7 @@ provider_cancellation_capabilities:
 }
 ```
 
-`best_effort: true` is always set — a UDLM-conformant realization MUST NEVER guarantee cancellation success. The provider makes a best-effort attempt; outcomes flow through the Recovery Policy model.
+`best_effort: true` is always set — a UDLM-conformant implementation MUST NEVER guarantee cancellation success. The provider makes a best-effort attempt; outcomes flow through the Recovery Policy model.
 
 ---
 
@@ -241,13 +241,13 @@ provider_cancellation_capabilities:
 
 ### 4.1 Discovery Scheduling Substrate
 
-The substrate requires that any UDLM-conformant realization provide discovery scheduling capable of triggering discovery cycles by three independent mechanisms (Sections 4.2-4.4). The implementation (a "Discovery Scheduler" control-plane component, etc.) is a realization choice; the existence of the three trigger types and the audit contract is the substrate.
+The substrate requires that any UDLM-conformant implementation provide discovery scheduling capable of triggering discovery cycles by three independent mechanisms (Sections 4.2-4.4). The implementation (a "Discovery Scheduler" control-plane component, etc.) is an implementation choice; the existence of the three trigger types and the audit contract is the substrate.
 
 Discovery scheduling is distinct from drift detection. Discovery scheduling triggers discovery and writes Discovered State. Drift Detection reads Discovered State and compares it to Realized State. These are separate concerns.
 
 ### 4.2 Trigger Type 1 — Scheduled (cron-based)
 
-Discovery schedules are declared in the Resource Type Specification and in provider registrations. The realization runs these on the declared cadence.
+Discovery schedules are declared in the Resource Type Specification and in provider registrations. The implementation runs these on the declared cadence.
 
 ```yaml
 resource_type_spec:
@@ -286,7 +286,7 @@ event_triggered_discovery:
     - event: entity.realized
       discovery_delay: PT30S           # allow provider to stabilize
       scope: this_entity
-      reason: "Confirm realization matches Requested State"
+      reason: "Confirm implementation matches Requested State"
 
     - event: drift.resolved
       discovery_delay: PT60S
@@ -339,7 +339,7 @@ On-demand discovery is also used by:
 
 ### 4.5 Discovery Priority Bands (Closed Substrate Vocabulary)
 
-The substrate defines a closed priority vocabulary. Realizations MUST honor the relative ordering. Queue depth and drop policy are realization-configurable.
+The substrate defines a closed priority vocabulary. Implementations MUST honor the relative ordering. Queue depth and drop policy are implementation-configurable.
 
 1. **Critical** — COMPENSATION_FAILED orphan detection, sovereignty violation assessment
 2. **High** — on-demand from platform admin, event-triggered (`provider.degraded`)
@@ -356,7 +356,7 @@ audit_record:
   actor:
     type: system
     system_actor:
-      component: <realization-named component>
+      component: <implementation-named component>
       trigger: scheduled | event_triggered | on_demand
       trigger_event_uuid: <uuid|null>
   entity_uuid: <uuid|null>          # null for batch discovery
@@ -441,7 +441,7 @@ recovery_policy:
 
 ### 5.4 The Four Built-in Recovery Profile Groups (Substrate Defaults)
 
-The substrate defines four named recovery posture groups. Any conformant realization MUST recognize these names and SHOULD ship them as defaults. Specific durations and thresholds within each are realization-configurable.
+The substrate defines four named recovery posture groups. Any conformant implementation MUST recognize these names and SHOULD ship them as defaults. Specific durations and thresholds within each are implementation-configurable.
 
 #### recovery-automated-reconciliation
 
@@ -725,7 +725,7 @@ Compensation of vm FAILED
 
 ## 7. Orphan Detection Pipeline (Substrate Contract)
 
-When cleanup cannot be guaranteed, an orphan detection pass MUST run to find resources that may have been provisioned but have no corresponding Realized State record. Any UDLM-conformant realization MUST implement orphan detection.
+When cleanup cannot be guaranteed, an orphan detection pass MUST run to find resources that may have been provisioned but have no corresponding Realized State record. Any UDLM-conformant implementation MUST implement orphan detection.
 
 ### 7.1 Orphan Detection Triggers (Closed Substrate Vocabulary)
 
@@ -750,7 +750,7 @@ orphan_detection_query:
       size_class: <cpu/memory range>
       tags: <tags from request>
   exclude:
-    known_realized_state_uuids: [<uuid>, ...]   # entities the realization knows about
+    known_realized_state_uuids: [<uuid>, ...]   # entities the implementation knows about
 ```
 
 ### 7.3 Orphan Candidate Lifecycle (Wire Contract)
@@ -776,7 +776,7 @@ Orphan candidates MUST be surfaced to platform admin and generate a NOTIFICATION
 
 ## 8. Recovery Lifecycle States (Substrate Vocabulary)
 
-Five additional lifecycle states are part of the substrate vocabulary. Any conformant realization MUST recognize and propagate these:
+Five additional lifecycle states are part of the substrate vocabulary. Any conformant implementation MUST recognize and propagate these:
 
 | State | Meaning | Recovery Policy Trigger |
 |-------|---------|------------------------|
@@ -818,7 +818,7 @@ COMPENSATION_FAILED → [human resolves] → FAILED (after manual cleanup)
 | Policy | Rule |
 |--------|------|
 | `OPS-010` | Assembly timeout, dispatch timeout, and reserve-query timeout are independently configurable. All are profile-governed with resource-type overrides permitted for types with legitimately long provisioning times. |
-| `OPS-011` | Cancellation is always best-effort. A conformant realization MUST NEVER guarantee cancellation success. All cancellation outcomes flow through the Recovery Policy model. |
+| `OPS-011` | Cancellation is always best-effort. A conformant implementation MUST NEVER guarantee cancellation success. All cancellation outcomes flow through the Recovery Policy model. |
 | `OPS-012` | Provider cancellation capability is declared at registration. Providers that do not support cancellation use the CANCEL_PENDING → LATE_RESPONSE_RECEIVED path when a cancel is requested during PROVISIONING. |
 | `OPS-013` | Discovery is triggered by three independent mechanisms: scheduled (cron), event-triggered, and on-demand. All three write to the Discovered Store independently. |
 | `OPS-014` | Recovery Policies are a formal UDLM policy type. They use the same authoring, activation, shadow mode, and audit model as Validation and Transformation policies. |
@@ -830,4 +830,4 @@ COMPENSATION_FAILED → [human resolves] → FAILED (after manual cleanup)
 
 ---
 
-*UDLM substrate document. Realization-specific timeout enforcement mechanisms, cancellation execution code, orphan detection implementation, discovery job scheduling internals, recovery policy evaluation runtime, and compensation execution live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific timeout enforcement mechanisms, cancellation execution code, orphan detection implementation, discovery job scheduling internals, recovery policy evaluation runtime, and compensation execution live in the consuming implementation's documentation.*

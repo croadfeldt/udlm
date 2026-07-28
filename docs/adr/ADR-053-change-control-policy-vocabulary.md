@@ -76,21 +76,21 @@ emergency route.
 Knowledge type carries `as_of` / `valid_until` / `refresh_cadence` today, so a stale calendar and a
 stale CVE feed fail the same undetectable way. It is the KB-tier twin ADR-048 already named: it
 reuses that machinery (no parallel staleness model) and belongs once on the Knowledge Base Class
-(class-realization program), inherited by every domain — a per-type stopgap on the change-calendar
+(class-implementation program), inherited by every domain — a per-type stopgap on the change-calendar
 type until then, so UC-015 is enforceable now.
 
 **8. The window gate checks *fit*, not openness — and the provider estimates.** An open window is
-necessary but not sufficient: a realization that won't complete in the time remaining must not start.
+necessary but not sufficient: an implementation that won't complete in the time remaining must not start.
 The gate evaluates `estimate + margin ≤ window_remaining`, and the three roles split:
 
-- **Provider gives the estimate.** Realization time is provider- and substrate-specific, so the
+- **Provider gives the estimate.** Implementation time is provider- and substrate-specific, so the
   provider is the only authority on its own duration. It advertises an expected time-to-complete (the
   capacity-advertisement precedent) and reports the realized duration back (the realized-state
   callback). Those actuals are the T6 evidence that keeps the estimate honest and drive its freshness
   (ADR-048; a stale estimate is low-confidence / fail-closed, as in §6).
 - **UDLM encodes it.** The estimate datum on the provider advertisement, the realized-duration field
   on its realized-state report, and the provenance/freshness contract. Not a new mechanism: an RTO is
-  already a provider-backed validated time bound, and realization time-to-complete generalizes it
+  already a provider-backed validated time bound, and implementation time-to-complete generalizes it
   (RTO becomes a special case).
 - **DCM/policy acts.** The fit gate reads the estimate, and on a miss refuses (naming estimate,
   source, remaining) and applies the policy's response — defer, batch-fit, or expedite. Because

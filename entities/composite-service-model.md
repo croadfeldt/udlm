@@ -404,7 +404,7 @@ Compensation in nested composites runs bottom-up: the innermost composite compen
 
 ## 9. Scoring Model Integration
 
-The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is realization concern (see the DCM architecture documentation).
+The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see the DCM architecture documentation).
 
 ---
 

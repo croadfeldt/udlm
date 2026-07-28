@@ -50,7 +50,7 @@ governance is worth it.
 
 ## What this asks of the model (the ruling surface)
 
-The element store, scoped visibility, and promotion already belong to the class realization
+The element store, scoped visibility, and promotion already belong to the class implementation
 (P0/P1). Genuinely new and needing a ruling: the `proposed | canonical` status on
 SharedDataElements with minted-from provenance; the intake-mode policy vocabulary
 (mint-on-write / mint-with-review / match-only / canonical-only); the exact-only auto-bind

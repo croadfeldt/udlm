@@ -3,17 +3,17 @@
 **Document Status:** Draft (introduced 2026-06-08)
 **Document Type:** Entity Reference
 **Family:** Knowledge (architecture / capability knowledge) — first exercised by the **DAV**
-realization (a non-normative example; UDLM depends on no realization — see `GLOSSARY.md`)
+implementation (a non-normative example; UDLM depends on no implementation — see `GLOSSARY.md`)
 
 > The three foundational abstractions are in [foundations.md](../foundations/foundations.md);
 > the family concept in [Entity-Type Families](../foundations/entity-type-families.md).
 > **This document maps to: DATA.**
 > **Universality:** these are UDLM definitions grouped here for organization. They are
-> **free to use by any realization, regardless of family** — DCM or any peer may use a
+> **free to use by any implementation, regardless of family** — DCM or any peer may use a
 > `Capability` exactly as DAV does. Constraints apply to *instances* (ownership,
 > classification, scope), never to these definitions.
 >
-> **Realization:** `dav/docs/capability-catalog-design.md`. Case study:
+> **Implementation:** `dav/docs/capability-catalog-design.md`. Case study:
 > [`../docs/examples/case-study-dav-knowledge-realization.md`](../docs/examples/case-study-dav-knowledge-realization.md).
 
 ---
@@ -123,7 +123,7 @@ Record) is the architecture-scoped kind** — expressed as a first-class UDLM en
 and lifecycle by reference** (per the "adopt, don't absorb" tenet, [core-tenets.md](../design-principles/core-tenets.md))
 and add only what a loose markdown ADR lacks: **structure, anchoring, provenance, and (where applicable)
 validation**. It records *why* a decision was made — the rationale resolving a Finding (or class) about a
-Capability / dependency / spec element — so any realization carries decision provenance natively (pairs with
+Capability / dependency / spec element — so any implementation carries decision provenance natively (pairs with
 [Universal Audit](../observability/universal-audit.md) + field-level provenance). **An ADR = a DecisionRecord whose
 anchor is architecture;** process/enablement decisions are DecisionRecords too.
 - **Fields:** title (handle, e.g. `ADR-017`-style within an owning scope), **`rationale` / body (the prose ADR
@@ -135,7 +135,7 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
   "n/a, because…") isn't fully scoped.**
 - **Relationships:** `decides` → Finding(s) *(future member; M:N — one record closes a class)*;
   `about` → Capability / TaxonomyTerm / spec element (the anchor it justifies); `produces` → a change/proposal
-  *(realization-specific)*; `supersedes` → DecisionRecord.
+  *(implementation-specific)*; `supersedes` → DecisionRecord.
 - **States (curation = ADR status):** `PROPOSED` (drafted) → `UNDER_REVIEW` → `CANONICAL` (accepted / the
   authoritative WHY) → re-`OBSERVED` if its premises drift; `DEPRECATED`/superseded when a later record replaces
   it (ADR's "never edit, supersede" rule *is* UDLM immutability + `supersedes`).
@@ -143,7 +143,7 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
   `CANONICAL` **only with passing use-case validation** (evaluated against UCs — submitted + generated-with-
   variance — on the same engine that finds gaps) — the WHY is *earned, not asserted*. Non-validatable decisions
   (e.g. a naming choice) may be `CANONICAL` without it, preserving compatibility with ordinary ADRs.
-  Realization: `dav/docs/findings-resolution-design.md`; answers the "`depends_on` says *what* but not *why*"
+  Implementation: `dav/docs/findings-resolution-design.md`; answers the "`depends_on` says *what* but not *why*"
   feedback by making the WHY a first-class, queryable record.
 - **Scope & scope-appropriate validation.** A record's anchor places it in one of three scopes (the
   `Data · Policy · Provider` triad), and each reaches `CANONICAL` through *its own* mechanism — there is **no single
@@ -200,7 +200,7 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 A pattern to follow — the reusable "what a thing of this kind IS" at type level: Antipattern's
 twin, positive polarity. ADR-033 places Pattern in Knowledge as **type-level intent** (the
 Pattern → Template → System tier ladder: Pattern is the Intent tier at assembly scale) and
-deliberately deferred the schema realization "unless a use case pulls it in" — the pull
+deliberately deferred the schema implementation "unless a use case pulls it in" — the pull
 arrived: an external field-device fleet adopter models "what a field device of role X is"
 (the capabilities a role requires, the shape a season build asserts) as reusable role
 definitions, exactly this member.
@@ -224,10 +224,10 @@ definitions, exactly this member.
 ## 6. Future members
 `Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as DAV's UDLM-conformance
 expands beyond the capability catalog (the pilot). Each follows the curation archetype and
-the universal contracts; all remain universal definitions, free to use by any realization.
+the universal contracts; all remain universal definitions, free to use by any implementation.
 (`SoftwareImage` / `SoftwarePackage` / `Vulnerability` have landed — §4.6.)
 
-> **`Finding` / `Resolution`** arrive with the **Findings & Resolutions** realization
+> **`Finding` / `Resolution`** arrive with the **Findings & Resolutions** implementation
 > (`dav/docs/findings-resolution-design.md`): a `Finding` is an externally-surfaced observation about the
 > architecture (a review comment, a gap, an assessment finding); a `Resolution`/**`DecisionRecord`** (§4.5, defined
 > now) is its validation-backed, capability-anchored answer — the **WHY**. Together they make this family the

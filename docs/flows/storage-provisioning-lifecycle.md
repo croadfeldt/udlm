@@ -1,6 +1,6 @@
 # Storage provisioning — pool → dataset → volume / share (the flow)
 
-**What this settles:** how the storage family composes into one realization — a **pool** yields capacity, a
+**What this settles:** how the storage family composes into one implementation — a **pool** yields capacity, a
 **dataset** carves a bounded, policied slice of it, and a **volume** or **file share** exposes that slice to a
 consumer. A **lighter** flow: it **builds on [request-realization](request-realization.md)** and
 [uc-06-persistent-volume-provision](uc-06-persistent-volume-provision.md) (the single-volume case), and
@@ -29,12 +29,12 @@ flowchart TD
     D -->|fits| E{Consumer principal within\nauthorized directory scope?}
     E -->|out of scope| E1[Refuse share export —\nname the unauthorized principal]
     E -->|authorized| F[Realize volume / share\nbind to dataset, decrement quota]
-    F --> G[Record realization + the\npool→dataset→share chain]
+    F --> G[Record implementation + the\npool→dataset→share chain]
 ```
 
 ## What the chain adds over the single-volume case
 
-- **An ordered operational dependency** — share **depends_on** dataset **depends_on** pool; realization is
+- **An ordered operational dependency** — share **depends_on** dataset **depends_on** pool; implementation is
   bottom-up and each link cascades its failure upward, naming the *root* (ADR-052), never a bare field.
 - **Requirements-floor capacity, not a native tier** — the pool's tier is a named requirements bundle
   (min_iops / min_throughput), name-selectable but requirements-authoritative (ADR-036); portability is retained

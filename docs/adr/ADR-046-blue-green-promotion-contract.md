@@ -5,7 +5,7 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The pin lifecycle this completes (ADR-045
 — organizational pins are legal enumerated debt; this contract is how the debt retires), the
-binding surface it diffs (data-model-core §2 [D8.3] — declared typed outputs, the only comparable realization
+binding surface it diffs (data-model-core §2 [D8.3] — declared typed outputs, the only comparable implementation
 facts), the migration pattern it generalizes (the Process-family engine-swap render — the same
 machinery serves provider swap and class upgrade), the evidence pipeline it feeds (validation
 results as signable attestation input, per the model-health emission), and the corpus that
@@ -41,7 +41,7 @@ matrix's open taxonomy treats every other response.
    compiles under blue (the pinned class revisions) and green (the candidate revisions) side by
    side — at the **same recorded corpus ref**. A corpus that moved between the two compilations
    voids the comparison; the evidence record carries the ref.
-2. **Dry-run realization, typed-output diff.** Both sides realize in dry-run; their declared
+2. **Dry-run implementation, typed-output diff.** Both sides realize in dry-run; their declared
    typed outputs — never provider internals — are diffed mechanically. Outputs declared
    **volatile** (timestamps, generated identifiers) are excluded by declaration, never ad hoc,
    so non-determinism cannot manufacture perpetually-dirty diffs. When the changed axis is the
@@ -73,7 +73,7 @@ must not fork these paths.
 - The diff is only as good as the output surface — thin-output types (the standing scoreboard
   finding) are invisible to this contract, which makes output adequacy a prerequisite, not a
   nicety.
-- Gate work this creates (realization-plan **P1**, consistently — the harness is pilot
+- Gate work this creates (implementation-plan **P1**, consistently — the harness is pilot
   work): the dual-compile harness, the typed-output diff tool, and two **named record shapes
   the registry must define before P0 freezes**: the promotion-evidence record (corpus ref,
   both revision sets, diff, approvals) and the upstream **finding-routing record** — the

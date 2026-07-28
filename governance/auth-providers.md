@@ -24,9 +24,9 @@ UDLM defines a unified **auth capability**. Authentication/authorization is a **
 1. **Authentication** — is this identity who they claim to be?
 2. **Authorization** — what is this identity permitted to do?
 
-Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant realization MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The realization **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (`DCM ADR-022`).
+Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Directory, OIDC, mTLS — is a way a provider exercises the auth capability. The built-in auth capability is a substrate-required default that any conformant implementation MUST ship with, enabling immediate evaluation and home-lab use without requiring an external identity system. Externally-provided auth is a registered artifact, versioned, lifecycle-managed, and audited. The implementation **consumes** this capability (including for its own user auth) the same way it consumes any other yield — it brokers/consumes; it does not have to *be* the authenticator (`DCM ADR-022`).
 
-**UDLM defines the contract authentication resolves against — the capability, the mode vocabulary, the registration shape, and the identity types. It never performs authentication; the realization does (`DCM ADR-022`).** This is the substrate/realization boundary (ADR-008): the vocabulary two independent realizations must share to federate, not the act of authenticating an actor.
+**UDLM defines the contract authentication resolves against — the capability, the mode vocabulary, the registration shape, and the identity types. It never performs authentication; the implementation does (`DCM ADR-022`).** This is the substrate/implementation boundary (ADR-008): the vocabulary two independent implementations must share to federate, not the act of authenticating an actor.
 
 **Authentication is always required — there is no anonymous access in any UDLM profile.** The difference between profiles is how much effort authentication setup requires, not whether it exists.
 
@@ -36,15 +36,15 @@ Every authentication mode UDLM admits — static API key, local users, GitHub OA
 
 Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary, capability categories, and registration floor are [provider-contract](../contracts/provider-contract.md) §§2, 8–9. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
 
-> **Identity-model authority (UDLM vs a realization's auth architecture).** This document and the
+> **Identity-model authority (UDLM vs an implementation's auth architecture).** This document and the
 > `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, ADR-RBAC-001)
 > are the **authoritative data contract** for actors/identities and the actor-type vocabulary (incl. the
-> `provider` actor). A realization's authentication *implementation* — e.g. DCM's IDM/IAM Authentication
+> `provider` actor). An implementation's authentication *implementation* — e.g. DCM's IDM/IAM Authentication
 > Layer (`dcm-project/enhancements/.../authentication/authentication.md`: Keycloak/IdP, middleware,
 > OpenAPI security, flows, and its internal `Actor`/`Actor Identity` tables + status enforcement) — is
-> **realization architecture** (ADR-008): it owns *how* actors authenticate and the external-identity
+> **implementation architecture** (ADR-008): it owns *how* actors authenticate and the external-identity
 > binding/session/status state, which are deliberately **not** substrate data. Where the two meet — the
-> actor/identity entity itself — **UDLM is authoritative**: a realization's `Actor` record is the
+> actor/identity entity itself — **UDLM is authoritative**: an implementation's `Actor` record is the
 > *realized projection* of `Identity.Person`/`ServiceAccount`, and MUST reuse the UDLM identity types and
 > actor-type vocabulary (`person` / `service_account` / `group` / `provider`) rather than define a parallel
 > identity model. UDLM carries the contract that supports authentication; it does not prescribe the
@@ -54,7 +54,7 @@ Authentication and credential issuance are **capabilities** (yields) a provider 
 
 ## 3. Auth Provider Registration (Wire Contract)
 
-The registration shape is normative — any conformant realization MUST accept registrations in this form:
+The registration shape is normative — any conformant implementation MUST accept registrations in this form:
 
 ```yaml
 auth_provider_registration:
@@ -92,9 +92,9 @@ auth_provider_registration:
   # IGNORED — only a platform admin sets it (default: advisory). Mirrors the dcm_registration_verdict
   # pattern in provider-contract.md §2.
   trust_level: <authoritative|verified|advisory>
-  # authoritative: realization accepts all decisions without re-evaluation
-  # verified:      realization accepts with additional Policy Engine checks
-  # advisory:      realization treats decisions as input — full re-evaluation always (default)
+  # authoritative: implementation accepts all decisions without re-evaluation
+  # verified:      implementation accepts with additional Policy Engine checks
+  # advisory:      implementation treats decisions as input — full re-evaluation always (default)
 
   # Connection credentials
   connection_credentials_ref:
@@ -114,7 +114,7 @@ auth_provider_registration:
     refresh_ttl: P7D
     concurrent_sessions: 3
 
-  # Role mapping — external groups → realization roles. `role` values are governed access-role
+  # Role mapping — external groups → implementation roles. `role` values are governed access-role
   # TaxonomyTerms (ADR-RBAC-001; registry/instances/access-role-taxonomy.yaml) — the ONE role
   # vocabulary, not free strings. An external-group→role map is one way to ASSIGN a role; the
   # authoritative record is a role_assignment (function-capability-matrix.schema.json).
@@ -145,7 +145,7 @@ auth_provider_registration:
 
 ## 4. Authentication Modes (Taxonomy)
 
-The substrate defines a closed taxonomy of authentication modes. Any conformant realization MUST recognize these mode identifiers and SHOULD support the modes appropriate for its target deployment profile. Realizations MAY extend with custom modes registered via the `custom` provider_type.
+The substrate defines a closed taxonomy of authentication modes. Any conformant implementation MUST recognize these mode identifiers and SHOULD support the modes appropriate for its target deployment profile. Implementations MAY extend with custom modes registered via the `custom` provider_type.
 
 ### 4.1 Built-In Auth Provider (zero configuration)
 
@@ -161,7 +161,7 @@ built_in_auth_provider:
     static_api_key:
       enabled: true             # generated at bootstrap — shown once
     local_users:
-      enabled: true             # managed via realization-provided CLI
+      enabled: true             # managed via implementation-provided CLI
     github_oauth:
       enabled: false            # opt-in: requires client_id + secret
     gitlab_oauth:
@@ -315,7 +315,7 @@ auth_provider:
 
 ## 5. Multiple Auth Providers — Routing Contract
 
-Multiple Auth Providers MAY be registered simultaneously. The substrate requires that the realization route an inbound request to the appropriate Auth Provider based on the authentication signal present. The routing-order data structure is normative:
+Multiple Auth Providers MAY be registered simultaneously. The substrate requires that the implementation route an inbound request to the appropriate Auth Provider based on the authentication signal present. The routing-order data structure is normative:
 
 ```yaml
 auth_provider_resolution:
@@ -352,7 +352,7 @@ auth_provider_chain:
 
 ## 6. Credential Types and Issuance (Data Model)
 
-Credential issuance is a **capability** a provider declares (`credential_capability` + `Credential.*` resource types — [credentials.md](credentials.md) §9), **not** a separate provider kind (§2; PROV-002/PROV-003 capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any realization component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the realization; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
+Credential issuance is a **capability** a provider declares (`credential_capability` + `Credential.*` resource types — [credentials.md](credentials.md) §9), **not** a separate provider kind (§2; PROV-002/PROV-003 capability-not-kind). "Credential Provider" here means *a provider that declares that capability* — a cross-cutting dependency any implementation component or provider registration references for secret resolution. The substrate REQUIRES that credentials are never stored directly by the implementation; they are always referenced. The canonical capability declaration (assurance, attestation, credential types, secret engines) is defined once in [credentials.md](credentials.md) §9; the block below adds only the backend-connection specifics.
 
 The registration shape is owned by [credentials.md](credentials.md) — the `credential_capability`
 declaration (§8 summary, §13 full shape incl. external-CA config) and the closed `credential_types`
@@ -430,7 +430,7 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 | `AUTH-008` | There is no anonymous access in any profile. Homelab and dev profiles support lightweight authenticated modes requiring minimal setup. |
 | `AUTH-009` | Webhook and message bus inbound surfaces always require authentication regardless of active profile. Anonymous actors are never permitted on these surfaces. |
 | `AUTH-010` | Rate limiting is enforced per authenticated actor. Limits are declared on the Auth Provider or webhook actor registration. |
-| `AUTH-011` | Git PR actor identity resolution must use the registered Auth Provider. The realization trusts the Git server's verified identity assertion — not user-declared Git configuration. The resolved actor carries the same role, group, and tenant scope as any other user authenticated via the same Auth Provider. |
+| `AUTH-011` | Git PR actor identity resolution must use the registered Auth Provider. The implementation trusts the Git server's verified identity assertion — not user-declared Git configuration. The resolved actor carries the same role, group, and tenant scope as any other user authenticated via the same Auth Provider. |
 | `AUTH-012` | SCIM 2.0 is supported as an optional Auth Provider capability. SCIM provisions and deprovisions actors and group memberships. Roles are not SCIM-provisioned — they require explicit policy authorization: a role is a governed **access-role** TaxonomyTerm (ADR-RBAC-001), assigned by an admin-gated `role_assignment` (`function-capability-matrix.schema.json`; function `access.role.assign`, append-only audited) — never a free string and never SCIM-set. SCIM deprovisioning suspends actors by default; in-flight requests complete before suspension. |
 | `AUTH-013` | In-flight requests authenticated before Auth Provider failure continue using cached session tokens. New requests follow the declared failover chain. Sessions remain valid for their declared TTL during outages. All providers unavailable → new authentication rejected. |
 | `AUTH-014` | MFA enforcement is two-tier: per-session MFA (captured in `mfa_verified` field) and step-up MFA (additional challenge at sensitive operations). Policy declares which operations require step-up regardless of session MFA status. Step-up tokens are short-lived. Profile governs default requirements. |
@@ -440,11 +440,11 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 
 ## 10. Git Identity Resolution Contract
 
-When a UDLM realization processes Git PR ingress, it MUST resolve the Git server's verified actor identity to a substrate actor with full role, group, and tenant scope context — identical to web UI or API login for the same user.
+When a UDLM implementation processes Git PR ingress, it MUST resolve the Git server's verified actor identity to a substrate actor with full role, group, and tenant scope context — identical to web UI or API login for the same user.
 
 ### 10.1 The Trust Model
 
-The realization trusts the **Git server's authentication assertion** — not user-declared Git configuration. The Git server has already authenticated the user (via SSH key, OAuth token, or LDAP password). The realization receives the Git server's verified identity from the PR merge webhook and resolves it through the registered Auth Provider.
+The implementation trusts the **Git server's authentication assertion** — not user-declared Git configuration. The Git server has already authenticated the user (via SSH key, OAuth token, or LDAP password). The implementation receives the Git server's verified identity from the PR merge webhook and resolves it through the registered Auth Provider.
 
 ```
 Git server authenticates user → PR merge webhook → Auth Provider resolution → substrate actor
@@ -454,7 +454,7 @@ Git server authenticates user → PR merge webhook → Auth Provider resolution 
 
 | Method | When Used | Auth Provider |
 |--------|----------|--------------|
-| `oidc_subject_lookup` | Git server uses same OIDC/OAuth IdP as the realization | OIDC Auth Provider |
+| `oidc_subject_lookup` | Git server uses same OIDC/OAuth IdP as the implementation | OIDC Auth Provider |
 | `ldap_username_lookup` | Git server authenticates via LDAP/AD | LDAP/AD Auth Provider |
 | `ssh_key_fingerprint` | SSH key-authenticated Git workflows | SSH key registry |
 | `webhook_service_account` | Automated CI/CD Git workflows | Registered webhook actor |
@@ -503,7 +503,7 @@ Substrate invariant: roles are NOT SCIM-provisioned. This prevents privilege esc
 
 ## 12. Related Concepts
 
-- **Webhooks and Messaging** — ingress/egress actor model; webhook actor registration (realization-side)
+- **Webhooks and Messaging** — ingress/egress actor model; webhook actor registration (implementation-side)
 - **Credentials** ([credentials.md](credentials.md)) — full credential lifecycle and types
 - **Universal Audit Model** ([../observability/universal-audit.md](../observability/universal-audit.md)) — auth provider and ingress context in every audit record
 - **Credential Provider** — resolves all Auth Provider connection secrets
@@ -511,4 +511,4 @@ Substrate invariant: roles are NOT SCIM-provisioned. This prevents privilege esc
 
 ---
 
-*UDLM substrate document. Realization-specific authentication implementation (library choices, integration mechanics, session management runtime, routing logic, token lifecycle enforcement, storage backend selection, step-up MFA enforcement code) lives in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific authentication implementation (library choices, integration mechanics, session management runtime, routing logic, token lifecycle enforcement, storage backend selection, step-up MFA enforcement code) lives in the consuming implementation's documentation.*

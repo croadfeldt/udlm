@@ -7,7 +7,7 @@ scenario:
     dry-run under compute-capability v1 (blue) and v2 (green), declared typed outputs diff, and promotion
     of the capability re-pin happens only on a clean-or-approved diff — while the storage capability serves
     live traffic on its current version throughout, unaware anything happened. Realization provenance
-    records which capability revision governed each realization, so the transition window is fully reconstructible.'
+    records which capability revision governed each implementation, so the transition window is fully reconstructible.'
   actor:
     persona: platform-engineer
     profile: standard
@@ -21,7 +21,7 @@ scenario:
   - Promotion of the capability re-pin requires a clean-or-approved diff (the standard evidence gate,
     unwaived)
   - Sibling capabilities serve on their current versions throughout, with no movement
-  - Realization provenance records the capability revision governing each realization across the transition
+  - Realization provenance records the capability revision governing each implementation across the transition
   - A dirty diff refuses the capability promotion and routes the contradicted claim upstream — scoped
     to the capability
   dimensions:

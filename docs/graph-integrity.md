@@ -10,7 +10,7 @@ the shape and the invariant.
 
 Every typed dependency edge (`depends_on`, `contained_by`, `binds_to` — the ordering kinds, aligned to
 TOSCA `DependsOn`/`HostedOn`/`BindsTo`) contributes to one directed graph over the estate. That graph
-**must be acyclic**: an ordered shutdown/startup, an impact/blast-radius traversal, and a realization
+**must be acyclic**: an ordered shutdown/startup, an impact/blast-radius traversal, and an implementation
 plan all require a topological order, which exists **iff** the graph is a DAG. A cycle means no such
 order exists — the estate cannot be safely sequenced. Acyclicity is therefore a modeled invariant of
 the estate, not an implementation detail of any one consumer.
@@ -87,7 +87,7 @@ Policy `match` sources (see `policy.schema.json`): `graph.has_cycle` (bool), `gr
 and `graph.cycle_mechanisms` (e.g. deny only cycles that a discovered or policy-injected edge closed).
 
 Example policy intents this enables (authored as records, not code):
-- *default-deny blocking cycles* — `graph.cycle_severity eq blocking` → deny realization.
+- *default-deny blocking cycles* — `graph.cycle_severity eq blocking` → deny implementation.
 - *warn on degraded* — `graph.cycle_severity eq degraded` → advisory finding, allow.
 - *quarantine an intent/reality conflict* — `graph.cycle_mechanisms in [discovered]` → hold the members
   for review.
@@ -97,5 +97,5 @@ Example policy intents this enables (authored as records, not code):
 The invariant is what every graph consumer already relies on — ordered shutdown/startup, topology
 rendering, blast-radius. Exposing its violation as severity-ranked, provenance-tagged, policy-governed
 data turns "the estate won't order" from an opaque dead end into an actionable signal. Reference
-realizations today: the estate CI's **CYCLE-001** gate (fails the build and prints the offending chain)
+implementations today: the estate CI's **CYCLE-001** gate (fails the build and prints the offending chain)
 and the estate-explorer `/api/order` `cycles[]` output.

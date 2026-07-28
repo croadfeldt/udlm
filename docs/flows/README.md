@@ -12,8 +12,8 @@ A flow has two tellings, and this repo owns one of them:
 
 - **UDLM sets the stage.** The UDLM flow defines the outcome in terms of the *model*: the abstractions
   in play, the four-state transitions, the contract obligations, and the **invariant every phase must
-  uphold** — provider-neutral and realization-neutral. It is the script and the rules of the stage: *any*
-  conformant realization performing this flow must honor these, whatever engine it uses.
+  uphold** — provider-neutral and implementation-neutral. It is the script and the rules of the stage: *any*
+  conformant implementation performing this flow must honor these, whatever engine it uses.
 - **DCM is the actors creating the play.** The companion flow in
   [dcm-project/dcm `docs/flows/`](https://github.com/dcm-project/dcm/tree/main/docs/flows) tells the *same*
   flow as a concrete performance: which components run, in what sequence, with what data, and what an
@@ -27,7 +27,7 @@ made true*. Each UDLM flow links its DCM counterpart and vice versa.
 | Flow | What it stages | DCM counterpart |
 |---|---|---|
 | [Lifecycle convergence](lifecycle-convergence.md) | The one loop beneath every entity — Intent vs Realized, a gap, and Converge closing it; realize/reconcile/rehydrate/teardown as one act, archetypes and day-0/1/2 as parameters | `docs/flows/lifecycle-convergence.md` |
-| [Request realization](request-realization.md) | An abstract, portable request becomes a provider-ready one — filled and validated before anything is created | `docs/flows/request-realization.md` |
+| [Request implementation](request-realization.md) | An abstract, portable request becomes a provider-ready one — filled and validated before anything is created | `docs/flows/request-realization.md` |
 | [Provider lifecycle](provider-lifecycle.md) | The provider's side of the same story — register, declare the inputs it needs (namespaces, storage classes, …), get dispatched, report realized state — so placement and enrichment have the data to fill a request | `docs/flows/provider-lifecycle.md` |
 | [Template assembly](template-assembly.md) | Pattern → Template → System — a reusable design becomes an orderable definition becomes a running instance; the assembly-scale projection of Intent → Requested → Realized (ADR-033) | `docs/flows/template-assembly.md` |
 | [Automation migration & promotion](automation-migration-and-promotion.md) | Automation moves like everything else — engines declare a shared process type, a green engine verifies against blue by typed-output diff, cutover is a placement preference, and versions promote through stages like an application release. |

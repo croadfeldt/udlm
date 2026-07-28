@@ -11,19 +11,19 @@ the surfacing constraint that gates every cell of
 > **Use Case:** `intent-fulfillment/surfacing-mandatory` (must-reject). **Persona:** platform-engineer
 > · **Profile:** standard.
 
-**In one breath.** A realization completes an intent partially and records the shortfall only as a
+**In one breath.** An implementation completes an intent partially and records the shortfall only as a
 structured field — no warning surfaced. The consumer can miss it entirely and believe the intent was
 fully satisfied. That is a silent failure, whatever the nature or window that produced the shortfall.
 The mandatory surface is a warning (transient) or a refusal-with-resolution (permanent): what was not
 realized, why, and how to resolve it. The refusal is of the **surfacing**, not of the partial
-realization itself — converging the satisfiable members while a transient member stays pending is
+implementation itself — converging the satisfiable members while a transient member stays pending is
 correct; hiding that behind a missable field is not.
 
 ## The flow — only what's different
 
 ```mermaid
 flowchart TD
-    PR["Partial realization (a member unrealized)"] --> H{"How is the shortfall expressed?"}
+    PR["Partial implementation (a member unrealized)"] --> H{"How is the shortfall expressed?"}
     H -->|"only a structured partial_failures field (silent)"| X["REFUSED — insufficient surfacing;\nconsumer can miss it"]
     H -->|"warning (transient) / refusal-with-resolution (permanent)"| OK["ACCEPTED — what/why/how surfaced"]
     Note["The partial realization itself is correct;\nthe SURFACING is what is refused"] --- H

@@ -58,7 +58,7 @@ envelope; staleness verdicts are derived from it, never stored.**
    *record or feed* fresh?" is the same shape at the Knowledge family level
    (`as_of` / `valid_until` / `refresh_cadence`), already logged as missing on every
    Knowledge type by the change-control corpus. That element lands once, on the Knowledge
-   Base Class, when the class realization program delivers the carrier — two independent
+   Base Class, when the class implementation program delivers the carrier — two independent
    corpora demanding one element is exactly the ADR-038 promotion signal. This ADR reserves
    the destination; it does not pre-build it.
 

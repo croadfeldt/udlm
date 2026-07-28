@@ -13,7 +13,7 @@ template.
 
 Author a flow when a capability spans **more than one type or more than one step** and the ordering,
 the branch points, and the refusal paths are the thing worth documenting — how a pool, a dataset, and
-a share compose into one realization; how an observed resource is normalized or quarantined.
+a share compose into one implementation; how an observed resource is normalized or quarantined.
 
 Do **not** reach here for:
 
@@ -70,7 +70,7 @@ flow has not done its job.
 
 Copy the closest of these two:
 
-- A **provisioning** family (compose several types into one ordered realization):
+- A **provisioning** family (compose several types into one ordered implementation):
   [`../flows/storage-provisioning-lifecycle.md`](../flows/storage-provisioning-lifecycle.md) — pool →
   dataset → volume/share, three refusals with three roots drawn inline, builds on
   `request-realization.md` and `uc-06-persistent-volume-provision.md`.

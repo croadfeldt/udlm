@@ -310,7 +310,7 @@
     },
     "key_bindings": {
       "type": "array",
-      "description": "Per-tenant cryptographic key bindings \u2014 the crypto-shredding / BYOK PRIMITIVE (docs/research/tenancy-model-prior-art.md; GRP-013). Each binds this Tenant to key material BY REFERENCE, making the key ADDRESSABLE so a realization can rotate it, keep it in-boundary (sovereign profile key-material/in-boundary, AUD-012), and CRYPTO-SHRED it on decommission \u2014 destroying the key renders the Tenant's data-at-rest unrecoverable while the immutable audit ledger survives (GDPR Art. 17). UDLM carries the binding (DATA); the realization manages the key lifecycle (DCM ADR-014). May be present on a tenant_boundary group; the required grain (e.g. for store_per_tenant_zone / sovereign) is profile-governed. This is a data primitive, not an implementation.",
+      "description": "Per-tenant cryptographic key bindings \u2014 the crypto-shredding / BYOK PRIMITIVE (docs/research/tenancy-model-prior-art.md; GRP-013). Each binds this Tenant to key material BY REFERENCE, making the key ADDRESSABLE so an implementation can rotate it, keep it in-boundary (sovereign profile key-material/in-boundary, AUD-012), and CRYPTO-SHRED it on decommission \u2014 destroying the key renders the Tenant's data-at-rest unrecoverable while the immutable audit ledger survives (GDPR Art. 17). UDLM carries the binding (DATA); the realization manages the key lifecycle (DCM ADR-014). May be present on a tenant_boundary group; the required grain (e.g. for store_per_tenant_zone / sovereign) is profile-governed. This is a data primitive, not an implementation.",
       "items": {
         "type": "object",
         "additionalProperties": false,

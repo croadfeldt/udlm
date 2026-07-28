@@ -6,7 +6,7 @@ coupled to any other integration or partner.
 
 A LikeC4 model and a UDLM Composite Service are **two serializations of the same composite graph** — LikeC4
 is the human/visual one (design-time); the Composite Service is the operational/data one (runtime), and only
-it carries the graph through realization, governance, and audit. So **a LikeC4 system *is* a Composite
+it carries the graph through implementation, governance, and audit. So **a LikeC4 system *is* a Composite
 Service** (`entities/composite-service-model.md`): design in LikeC4 → it maps to a UDLM Composite Service →
 DCM realizes each component via a separate provider → the live diagram re-projects from Realized state.
 Sections: the worked example (§1–4), translation gaps (§5), and what UDLM does / doesn't represent (§6).
@@ -135,7 +135,7 @@ api -> db 'reads/writes' {
 
 UDLM **can** represent LikeC4's *structural* model: elements → entities (mostly **Knowledge-family** —
 architecture *descriptions*; the provisionable subset *also* maps to **Resource-family** types for
-realization), relationships → typed edges, nesting → `contained_by`, tags / technology / description →
+implementation), relationships → typed edges, nesting → `contained_by`, tags / technology / description →
 attributes. So a LikeC4 model spans both families: descriptive architecture (Knowledge) with a realizable
 projection (Resource).
 
@@ -154,7 +154,7 @@ projection layer — the same place DAV's lenses live. Correct boundary, not a d
 | Step | Domain |
 |---|---|
 | LikeC4 model / Composite Service / bindings / edges | **Data** (UDLM) — declarative nouns |
-| LikeC4→Composite-Service mapping, assembly, placement, DAG, realization, audit | **Policy / DCM** — the verbs |
+| LikeC4→Composite-Service mapping, assembly, placement, DAG, implementation, audit | **Policy / DCM** — the verbs |
 | Realize each primitive | **Providers** |
 | Realized state → LikeC4 diagram | **Data projection** (a view) |
 

@@ -1,7 +1,7 @@
 # UDLM Design Principles — Cross-Cutting Requirements
 
 UDLM is a **substrate**, not just a schema. Beyond the four-state lifecycle, every Resource Type
-Specification and every conformant realization must serve a set of cross-cutting requirements that
+Specification and every conformant implementation must serve a set of cross-cutting requirements that
 DCM — the canonical operationalizer — holds as **hard** requirements: **auditability, observability,
 an explicit dependency graph, and sovereignty.** These are design principles, not options; they
 shape how specs are authored and how providers realize them.
@@ -17,7 +17,7 @@ the provider/policy contracts, and the per-entity authoring rubric
 The four states **Intent → Requested → Realized → Discovered** are distinct, typed, immutable
 records — never collapsed into one reconciled object. Every principle below hangs off this: audit
 chains the transitions, observability compares Discovered against Requested, the dependency graph
-orders realization, and sovereignty governs where each state may live. (`foundations/four-states.md`)
+orders implementation, and sovereignty governs where each state may live. (`foundations/four-states.md`)
 
 ## P1 — Auditability by construction
 **DCM requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
@@ -39,7 +39,7 @@ records that **survive at least as long as any referenced resource**.
 ## P2 — Observability as a base obligation
 **DCM requirement:** provider-contract **§7** — observability (metrics, logs, telemetry) is a *base*
 provider obligation; DCM MAY be the authoritative telemetry arbiter; observed dependencies are
-**provider-introspected, post-realization**.
+**provider-introspected, post-implementation**.
 
 - **Declared vs observed.** Relationships and outputs are declared in the spec so DCM can reconcile
   the provider-introspected reality against the declared contract — drift on **data and topology**.
@@ -47,7 +47,7 @@ provider obligation; DCM MAY be the authoritative telemetry arbiter; observed de
 - **Offline-capable.** Output/telemetry schemas resolve offline (bundling, P4) for disconnected sites.
 
 ## P3 — Explicit, typed dependency graph
-**DCM requirement:** `RDG-001` — the realization MUST validate the dependency graph is a **DAG**
+**DCM requirement:** `RDG-001` — the implementation MUST validate the dependency graph is a **DAG**
 before acknowledging; circular dependencies are rejected (422); rehydration runs in dependency
 order, compensation in reverse.
 
@@ -96,7 +96,7 @@ boundaries.
   dependencies, and policy inputs; **DCM operationalizes it** (the Merkle audit log, the DAG engine,
   the Governance Matrix). One model — never a competing UDLM-side implementation.
 - **G4 — Universal definitions.** Entity-type families *organize*; they do not *bound*. Definitions
-  are free to use across realizations (`foundations/entity-type-families.md`).
+  are free to use across implementations (`foundations/entity-type-families.md`).
 
 ## Casing note — JSON-Schema-keyword-adjacent markers
 

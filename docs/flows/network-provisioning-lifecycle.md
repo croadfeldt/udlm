@@ -1,6 +1,6 @@
 # Network provisioning — segment → gateway → address services → allocation (the flow)
 
-**What this settles:** how the network family composes into one realization — a **virtual network**
+**What this settles:** how the network family composes into one implementation — a **virtual network**
 segment (VLAN-backed) gets a **gateway**, address services (**DHCP scope** over an **IP address pool**,
 a **DNS zone**, an **address service**) attach, and **IP addresses** allocate from the pool. A **lighter**
 flow: it **builds on [request-realization](request-realization.md)** and documents only what network

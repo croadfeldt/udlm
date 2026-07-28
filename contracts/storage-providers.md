@@ -12,7 +12,7 @@
 > capability it declares, the obligations it must meet, and the store sub-profiles it may occupy. The
 > **portable store invariants** (write-once realized, append-only audit, caches-are-projections) are owned
 > by [data-store-contracts.md](data-store-contracts.md); the **concrete store mechanisms** (Git/Kafka/search
-> engines, file layouts, replication and migration topology, failure handling) are realization architecture,
+> engines, file layouts, replication and migration topology, failure handling) are implementation architecture,
 > owned by the DCM architecture docs. A peer that persists the same data under the same invariants, by any
 > mechanism, conforms.
 
@@ -24,7 +24,7 @@ In the unified provider model ([provider-contract.md](provider-contract.md) §8;
 **Storage Provider** is *not* a provider type — it is a provider that declares the **`realize_resources`
 capability over the `Storage` domain** (the `realize_resources/Storage`, *storage-provisioning*, capability
 category), and typically **`serve_data`** over what it stores as well. It is the interface through which a
-realization persists, retrieves, and streams state data. The contract defines *what* each store must
+implementation persists, retrieves, and streams state data. The contract defines *what* each store must
 guarantee; the implementation technology is a deployment choice. A provider MAY declare storage capabilities
 alongside others; fixed provider *types* are superseded by capability declarations, and "Storage Provider"
 is the convenience label for this capability profile.
@@ -52,7 +52,7 @@ pattern and consistency requirement (a provider may occupy several):
 
 The **invariant** each must uphold is owned by [data-store-contracts.md](data-store-contracts.md). The
 **concrete API, file layout, wire envelope, retention mechanism, replication and failure topology** for each
-store are realization architecture — specified in the DCM architecture docs, not here.
+store are implementation architecture — specified in the DCM architecture docs, not here.
 
 ---
 
@@ -100,17 +100,17 @@ consistency_declaration:
 ```
 
 Multi-region replication is a **declared capability** in registration (a profile sets the minimum), not a
-fixed requirement; how a store replicates, fails over, or migrates is realization architecture.
+fixed requirement; how a store replicates, fails over, or migrates is implementation architecture.
 
 ---
 
-## 4. Caches are realization-internal
+## 4. Caches are implementation-internal
 
-A realization MAY maintain internal performance caches in front of the authoritative stores. The only
+An implementation MAY maintain internal performance caches in front of the authoritative stores. The only
 data-model invariant is the one from D1: **caches are non-authoritative projections** — the authoritative
 store always wins, a cache hit is never ground truth, and any cache is rebuildable from its authoritative
 store. Cache topology, patterns (cache-aside, invalidation-on-write), staleness windows, and which
-components cache what are realization concerns (see the DCM architecture docs) — they require no
+components cache what are implementation concerns (see the DCM architecture docs) — they require no
 registration or trust and are not Storage Providers.
 
 ---
@@ -140,7 +140,7 @@ declared action, with auto-migration via provider-portable rehydration; expiring
 at P30D.
 
 Storage-specific: a store holding state in a jurisdiction that falls out of compliance is a **data-at-rest**
-sovereignty incident. SOV-002/003/004 state the *policy*; *how* a realization executes the response (pause,
+sovereignty incident. SOV-002/003/004 state the *policy*; *how* an implementation executes the response (pause,
 migrate, quarantine) is control-plane, owned by the DCM architecture docs.
 
 ---
@@ -148,12 +148,12 @@ migrate, quarantine) is control-plane, owned by the DCM architecture docs.
 ## 7. System policies (storage)
 
 These profile-governed policies are UDLM data (a profile tightens them); the *mechanism* by which a
-realization enforces them is DCM.
+implementation enforces them is DCM.
 
 | ID | Policy |
 |----|--------|
 | `STO-001` | Storage Providers must declare replication capabilities. The active profile determines the minimum replication requirement; a provider below the profile minimum cannot be activated for that profile's stores. |
-| `STO-002` | Storage Provider failure behavior is declared per store sub-profile and governed by the active profile: writes are queued, never silently dropped; a quorum loss on a strongly-consistent store aborts the triggering operation; audit unavailability accumulates rather than loses; a search-index outage degrades queries without impacting writes. The concrete per-store handling is realization architecture (DCM). |
+| `STO-002` | Storage Provider failure behavior is declared per store sub-profile and governed by the active profile: writes are queued, never silently dropped; a quorum loss on a strongly-consistent store aborts the triggering operation; audit unavailability accumulates rather than loses; a search-index outage degrades queries without impacting writes. The concrete per-store handling is implementation architecture (DCM). |
 | `STO-003` | The Search Index is a distinct store sub-profile — non-authoritative and rebuildable. A query may request `freshness: authoritative` to bypass the index. |
 
 ---
@@ -166,7 +166,7 @@ To keep one home per concern, the following are **not** in this contract:
   audit-record-vs-object-history) → [data-store-contracts.md](data-store-contracts.md).
 - **Concrete store mechanisms** — GitOps repo layout and APIs, event-stream naming/envelope/retention,
   snapshot-store APIs, search-index fields/queries, multi-region replication and failure-handling topology,
-  auto-migration flow → the **DCM architecture docs** (realization architecture; a peer implements them
+  auto-migration flow → the **DCM architecture docs** (implementation architecture; a peer implements them
   differently and still conforms).
 - **Sovereignty declaration structure + change response** → [provider-contract.md](provider-contract.md).
 - **Storage-architecture system policies** (`STO-*`, `SOV-*`) → the policy store; this document does not

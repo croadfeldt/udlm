@@ -127,8 +127,8 @@ and the tamper-evidence (Merkle / RFC 9162) contract are defined canonically in
 
 What is provenance-specific and stays here: audit *queries provenance* to answer field-level "why"
 questions, and any store holding state has the **provenance-emission obligation** (§2.3) — it emits an event
-to the audit store on every write. How a realization implements the audit store, the audit query API, and
-the synchronous-commit / async-enrich write path is realization architecture (see
+to the audit store on every write. How an implementation implements the audit store, the audit query API, and
+the synchronous-commit / async-enrich write path is implementation architecture (see
 [universal-audit.md](universal-audit.md) §7 and the DCM architecture docs).
 
 ---
@@ -138,7 +138,7 @@ the synchronous-commit / async-enrich write path is realization architecture (se
 Observability answers "is the system healthy and performing?" — forward-looking, real-time, for SRE. It
 operates on **event streams and metrics**, not on provenance or the audit trail.
 
-Observability is almost entirely **realization architecture**: the metrics surface (metric names, labels),
+Observability is almost entirely **implementation architecture**: the metrics surface (metric names, labels),
 the collection pipeline, the dashboards, and the telemetry backends are owned by the DCM architecture docs,
 not by the data model. The one durable data-model point is the **audit-vs-observability distinction**,
 stated canonically in [universal-audit.md](universal-audit.md) §11 — audit is the tamper-evident record of
@@ -151,7 +151,7 @@ separation exists to prevent.
 
 ## 5. System policies (audit / observability)
 
-These are UDLM data (profile-governed where noted); the mechanism a realization uses to satisfy them lives
+These are UDLM data (profile-governed where noted); the mechanism an implementation uses to satisfy them lives
 in the DCM architecture docs.
 
 | ID | Policy |
@@ -159,7 +159,7 @@ in the DCM architecture docs.
 | `APO-001` | The audit store is a specialized store contract — append-only, RFC 9162 Merkle integrity ([D2]/AUD-006), reference-based retention, compliance-grade queries. The event stream is the delivery channel only, not the compliance destination. |
 | `APO-002` | Audit records are replicated by live sync (regional peers) or signed-bundle export (sovereign peers); sovereignty checks are required before any replication, and Merkle integrity ([D2]) is preserved across transport. A fully isolated sovereign peer keeps a local-only audit store with manual export. |
 | `APO-003` | Store failures are themselves recorded via the synchronous commit-log entry (a consensus-durable store independent of all data stores); an audit-store self-failure produces `pending_forward` records, and on recovery a gap record (`AUDIT_STORE_UNAVAILABLE`) with the outage window is inserted, so the audit-tree gap is explicit and auditable. |
-| `APO-004` | A realization ships a default observability dashboard (e.g. Grafana-based) for homelab/dev/standard profiles; standard+ may substitute enterprise platforms, FSI requires enterprise observability, and a sovereign peer uses a local dashboard only with no external connections. |
+| `APO-004` | An implementation ships a default observability dashboard (e.g. Grafana-based) for homelab/dev/standard profiles; standard+ may substitute enterprise platforms, FSI requires enterprise observability, and a sovereign peer uses a local dashboard only with no external connections. |
 | `APO-005` | Observability artifacts — dashboards, reporting, alerting, and their management — are scoped to the appropriate business/operational groups (DCMGroup) by entity attribution alone, with no side-channel scoping configuration. |
 
 ---
@@ -170,5 +170,5 @@ in the DCM architecture docs.
   [universal-audit.md](universal-audit.md).
 - The **audit store architecture, the audit query API / API gateway, the two-stage write pipeline,
   cross-site audit replication, and the observability metrics surface + collection pipeline + dashboards**
-  → the DCM architecture docs (realization architecture; a peer implements them differently and still
+  → the DCM architecture docs (implementation architecture; a peer implements them differently and still
   conforms).

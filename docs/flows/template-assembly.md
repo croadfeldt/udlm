@@ -98,7 +98,7 @@ flowchart LR
 ## What UDLM decides, and what it hands to DCM
 
 - **UDLM (the stage):** the three tiers, the edges (`contained_by` for the Composite, `binds_to` for the bound processes), and the invariant that a System is a Template Realized — nothing more, nothing less than its intent plus the provider's output.
-- **DCM (the actors):** *how* a Pattern resolves into a Template (profile + placement + enrichment — the Intent → Requested policy), and *how* a Template converges into a System (the provider mechanism). Both are realization; a conformant peer may do either differently.
+- **DCM (the actors):** *how* a Pattern resolves into a Template (profile + placement + enrichment — the Intent → Requested policy), and *how* a Template converges into a System (the provider mechanism). Both are implementation; a conformant peer may do either differently.
 
 ## Data · Policy · Provider
 - **Data** — Pattern is Knowledge (type-level intent); Template is a catalog definition (Requested); System is a realized composite + bound-activity records (Realized).

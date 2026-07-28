@@ -10,7 +10,7 @@ Maps to: UDLM consumption
 > This is the consumer-side companion to DCM's `architecture/operator-perspective.md`
 > (the operator's manual). Together the two perspectives cover the system from
 > both sides — the **consumer** who submits intent and waits for realized state,
-> and the **operator** who runs the platform that makes realization happen.
+> and the **operator** who runs the platform that makes implementation happen.
 
 This document is for people who **use** a UDLM-conformant system. Not implement
 it (that's the operator perspective in DCM); **consume** it as a user, tenant,
@@ -28,19 +28,19 @@ other conformant peer can read.
 
 The driving analogy: UDLM is the **rules of the road** — what destinations exist,
 what your vehicle must carry, what licenses you must hold, what signals mean.
-DCM (or any peer realization) is the **road and the cars and the DMV**. You're
+DCM (or any peer implementation) is the **road and the cars and the DMV**. You're
 the driver. You don't need to know how the asphalt was poured; you need to know
 where you're going, what you're allowed to ask for, and how to read the signs.
 
 What this gets you:
 
-- **Portability of intent.** The intent you submit to one conformant realization
+- **Portability of intent.** The intent you submit to one conformant implementation
   can be submitted to another. Your declarations aren't tied to a specific
   vendor's runtime.
 - **Predictable lifecycle.** Every resource passes through the same four states
   (intent → requested → realized; discovered runs alongside as ground truth).
   You know what state your stuff is in, regardless of who runs the platform.
-- **Federation by default.** If your data needs to flow to a peer realization
+- **Federation by default.** If your data needs to flow to a peer implementation
   (different team, different region, different vendor), the wire format means
   it just works — no adapters.
 - **Auditability.** Every change is recorded against a tamper-evident chain.
@@ -48,9 +48,9 @@ What this gets you:
 
 What this does NOT promise:
 
-- That every realization performs the same. DCM and a peer might both be
+- That every implementation performs the same. DCM and a peer might both be
   conformant but have different latency, scale, or operational ergonomics.
-- That every realization implements every optional contract. A realization
+- That every implementation implements every optional contract. An implementation
   with `level: "partial"` conformance excludes some contracts (e.g., maybe no
   scheduled requests, or no brownfield ingestion). Check the conformance
   declaration before depending on a feature.
@@ -69,9 +69,9 @@ build it. Concretely, intent takes the form of:
 
 You do NOT specify:
 
-- Which provider should fulfill the request (the realization picks based on capability)
+- Which provider should fulfill the request (the implementation picks based on capability)
 - How the resource is implemented (provider's choice)
-- Internal IDs, audit UUIDs, sequencing — the realization assigns these
+- Internal IDs, audit UUIDs, sequencing — the implementation assigns these
 
 The wire format for requests is part of the substrate. Every conformant peer
 accepts the same request shape. See
@@ -133,10 +133,10 @@ All timestamps you see on the wire are **UTC, ISO 8601, millisecond precision**.
 Examples: `2026-05-26T14:32:18.456Z`.
 
 If you submit a `not_before` time for a scheduled request, use UTC. If you
-submit a timestamp from a provider callback, use UTC. The realization will
+submit a timestamp from a provider callback, use UTC. The implementation will
 reject anything else.
 
-Skew tolerance between you and the realization is **±5 seconds**. If your
+Skew tolerance between you and the implementation is **±5 seconds**. If your
 clock is more than 5 seconds off, you'll see `validation.timestamp_skew_exceeded`
 errors. Run NTP.
 
@@ -186,11 +186,11 @@ Retry rules:
 1. Only retry errors with `retryable: true`.
 2. Honor `retry_after_seconds` as a minimum wait.
 3. **Reuse the original `Idempotency-Key`** on every retry. This is how the
-   realization deduplicates and avoids creating duplicate effects.
+   implementation deduplicates and avoids creating duplicate effects.
 4. Use exponential backoff with jitter: base 1s, multiplier 2, max 60s, max 5 attempts.
 5. The deduplication window is at least 24 hours from your first submission.
 
-If you reuse an `Idempotency-Key` with a different payload, the realization
+If you reuse an `Idempotency-Key` with a different payload, the implementation
 will reject it with `validation.idempotency_key_mismatch`. Treat your
 idempotency keys as bound to a specific request payload.
 
@@ -200,7 +200,7 @@ See [`contracts/retry-semantics.md`](../contracts/retry-semantics.md).
 
 ## 8. Rate limits — how to read 429 responses
 
-Conformant realizations rate-limit. When you exceed a limit, you get:
+Conformant implementations rate-limit. When you exceed a limit, you get:
 
 - HTTP status `429 Too Many Requests` (HTTP transport)
 - Error code `rate_limit.exceeded`
@@ -210,12 +210,12 @@ Conformant realizations rate-limit. When you exceed a limit, you get:
 Two ways to be a good citizen:
 
 1. **Reactive**: honor 429s and back off as instructed.
-2. **Proactive**: discover the realization's rate-limit declarations via the
+2. **Proactive**: discover the implementation's rate-limit declarations via the
    capability endpoint (`GET /.well-known/udlm/schema-bundle` exposes them),
    then plan your request rate to stay below limits.
 
 If you cross **warning** or **critical** soft thresholds (typically 75% / 90%
-of limit), the realization MAY return an `X-Capacity-Level` advisory header.
+of limit), the implementation MAY return an `X-Capacity-Level` advisory header.
 Use it to slow down before you hit the hard limit.
 
 See [`contracts/rate-limit-and-backpressure.md`](../contracts/rate-limit-and-backpressure.md).
@@ -224,7 +224,7 @@ See [`contracts/rate-limit-and-backpressure.md`](../contracts/rate-limit-and-bac
 
 ## 9. Schemas — how to interpret peer data
 
-If you receive data from a peer realization (federation, brownfield ingestion,
+If you receive data from a peer implementation (federation, brownfield ingestion,
 import), the data may contain types you don't know natively. The substrate
 provides **schema sharing** so you can learn:
 
@@ -234,15 +234,15 @@ provides **schema sharing** so you can learn:
 3. Locate the schema for the unknown type.
 4. Validate the data against the schema.
 
-Your realization should do this automatically. If you're building a consumer
+Your implementation should do this automatically. If you're building a consumer
 that needs to interpret peer data directly, the contract is in
 [`contracts/schema-sharing.md`](../contracts/schema-sharing.md).
 
 ---
 
-## 10. Conformance — how to know what a realization supports
+## 10. Conformance — how to know what an implementation supports
 
-Before depending on any non-trivial feature of a realization, check its
+Before depending on any non-trivial feature of an implementation, check its
 conformance declaration:
 
 ```
@@ -251,16 +251,16 @@ GET /.well-known/udlm/conformance
 
 What you'll see:
 
-- `udlm_version` — which major version of UDLM the realization conforms to.
+- `udlm_version` — which major version of UDLM the implementation conforms to.
   You're compatible if you target the same major.
 - `level` — `full` or `partial`. If partial, the `exclusions` field tells you
-  which contracts the realization does NOT implement. Don't depend on those.
+  which contracts the implementation does NOT implement. Don't depend on those.
 - `interop_surfaces` — which surfaces (consumer API, provider callbacks,
   federation, audit export) are available and how to reach them.
 - `independent_verification` — if present, an independent verifier (e.g., DAV)
   has validated. More trust than self-certification alone.
 
-A realization that excludes, say, `scheduled-requests` will reject your
+An implementation that excludes, say, `scheduled-requests` will reject your
 scheduled-request submissions with `conformance.feature_not_implemented`. Check
 the declaration so you don't waste time submitting things that will be rejected.
 
@@ -272,7 +272,7 @@ See [`CONFORMANCE.md`](../CONFORMANCE.md).
 
 ### 11.1 "I want to provision a VM"
 
-1. Identify the resource type for VMs in the realization's catalog
+1. Identify the resource type for VMs in the implementation's catalog
    (`Compute.VirtualMachine` typically).
 2. Submit a request with required fields (size, image, network, location).
 3. Subscribe to `request.*` and `entity.*` events for your request UUID.
@@ -283,7 +283,7 @@ See [`CONFORMANCE.md`](../CONFORMANCE.md).
 ### 11.2 "I want N things at once with ordering"
 
 Use a **request dependency group**. Submit multiple requests with `wait_for`
-clauses pointing at each other. The realization holds dependent requests in
+clauses pointing at each other. The implementation holds dependent requests in
 `PENDING_DEPENDENCY` until the things they wait for reach the declared state
 (`acknowledged`, `approved`, `dispatched`, or `realized`).
 
@@ -302,7 +302,7 @@ scheduling:
 ```
 
 The request stays in `SCHEDULED` state until activation time. If the
-realization excludes scheduled requests, you'll get `conformance.feature_not_implemented`.
+implementation excludes scheduled requests, you'll get `conformance.feature_not_implemented`.
 
 See [`lifecycle/scheduled-requests.md`](../lifecycle/scheduled-requests.md).
 
@@ -317,7 +317,7 @@ Read the error:
 - `rate_limit.*` → you're submitting too fast; back off.
 - `lifecycle.*` → invalid state transition (e.g., trying to cancel a request
   that's already terminal).
-- `conformance.feature_not_implemented` → the realization doesn't support
+- `conformance.feature_not_implemented` → the implementation doesn't support
   this feature; check its conformance declaration.
 
 The `audit_uuid` in the error lets you (or an operator) find the full audit
@@ -345,10 +345,10 @@ See [`lifecycle/operational-models.md`](../lifecycle/operational-models.md).
 | Request stuck in `PENDING_DEPENDENCY` | Dependency hasn't reached declared state | Check the requests it's waiting on |
 | Repeated `rate_limit.exceeded` | You're hot-looping | Add jitter; honor `retry_after_seconds`; check rate-limit declarations |
 | Repeated `validation.timestamp_skew_exceeded` | Clock skew | Run NTP; check your timestamps are UTC |
-| `conformance.feature_not_implemented` on a feature you need | Realization doesn't support it | Read the conformance declaration; pick a different realization OR change your approach |
+| `conformance.feature_not_implemented` on a feature you need | Implementation doesn't support it | Read the conformance declaration; pick a different implementation OR change your approach |
 | Realized state never arrives, no failure event | Provider may be stuck | Check `entity.*` events; an operator may need to investigate |
 | Errors with `message` you can't interpret | Localization mismatch | Match on `error_code`, not `message`; codes are normative |
-| Audit query returns nothing for a UUID | Wrong tenant scope or audit retention expired | Check tenant; check retention policy in the realization's docs |
+| Audit query returns nothing for a UUID | Wrong tenant scope or audit retention expired | Check tenant; check retention policy in the implementation's docs |
 
 ---
 
@@ -369,6 +369,6 @@ Once you've absorbed this perspective, the substrate docs you'll reach for most:
 6. [`CONFORMANCE.md`](../CONFORMANCE.md) — what conformance means and how to
    verify it
 
-For the operator side (running a realization), see DCM's
+For the operator side (running an implementation), see DCM's
 `architecture/operator-perspective.md` at
 [github.com/dcm-project/dcm](https://github.com/dcm-project/dcm).

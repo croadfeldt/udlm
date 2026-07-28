@@ -4,7 +4,7 @@
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-P1..P5`, to which this adds `PROJ-P6`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
-dual anchor); ADR-025 (DCM realization); ADR-008 (the UDLM/DCM peer test); ADR-011 (sovereignty & residency);
+dual anchor); ADR-025 (DCM implementation); ADR-008 (the UDLM/DCM peer test); ADR-011 (sovereignty & residency);
 `contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
 
@@ -136,7 +136,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
 - **Data** — the flows and their provenance (spec-value provenance *and* policy-input provenance).
 - **Policy** — the firewall/guard itself: the decision over every crossing. This ADR *is* the Policy leg for the
   flow role.
-- **Provider** — the endpoints a flow crosses to/from; realization honors the disposition (released / redacted /
+- **Provider** — the endpoints a flow crosses to/from; implementation honors the disposition (released / redacted /
   denied) the guard emits.
 
 ## UDLM vs DCM — what lands where (the peer test, ADR-008)

@@ -67,7 +67,7 @@ archetype — an identity is maintained, not one-shot.)*
 ## The tiers and the triad (unchanged — just naming them once)
 
 - **Data · Policy · Provider** — the invariant decomposition. UDLM = Data (substrate); DCM = Policy
-  (realization); Provider = mechanism (wraps tools, T8). Every decision decomposes across all three.
+  (implementation); Provider = mechanism (wraps tools, T8). Every decision decomposes across all three.
 - **Pattern → Template → System** — roles, not new things (above). **Composite Service = Template**
   (ADR-034); **Blueprint** is retired → Template.
 
@@ -83,6 +83,7 @@ archetype — an identity is maintained, not one-shot.)*
 | **has_constituents** (derived) | constituent shape (is it a composite?) | the stored `entity_type` shape · Atomic/Composite · single/multi — all retired (derived, ADR-027 addendum) |
 | **edge_type** | the relationship-kind field | `kind` (for edges) |
 | **Converge** | the single lifecycle act | realize/reconcile/rehydrate/teardown (colloquial shortcuts, not distinct acts) |
+| **implementation** | a system that implements UDLM's interfaces (UDLM is *implementation-neutral*); DCM/DAV are examples | *realization* (system sense) — retired 2026-07-28 (ADR-056). The lifecycle sense is unchanged: **realize** (verb), **Realized** (state), **two-phase realization** (act) all keep their names |
 | **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (ADR-017; registry `profile-homelab.yaml`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine; `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
 
 *(Note a residual collision to resolve: "family" is also used for a **rule-ID prefix family** — an unrelated

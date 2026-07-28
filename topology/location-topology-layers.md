@@ -12,7 +12,7 @@ Location layers are one application of the **Reference Data Layer** pattern (see
 
 The substrate concepts in this document — layer instances as field constraint sources, hierarchy assembly, authority ownership, lifecycle governance — apply equally to all Reference Data Layer types. Location is specified in detail here because it has the richest internal hierarchy and the most complex assembly behaviour of all the standard reference data types.
 
-The substrate is **abstract**: it defines that topology is layered and how layers compose, but it does NOT prescribe the specific layers a deployment uses. A consuming realization (e.g., DCM) declares its canonical layer hierarchy (DCM's canonical default is a 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme). A peer realization could pick a different scheme and still be UDLM-conformant.
+The substrate is **abstract**: it defines that topology is layered and how layers compose, but it does NOT prescribe the specific layers a deployment uses. A consuming implementation (e.g., DCM) declares its canonical layer hierarchy (DCM's canonical default is a 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme). A peer implementation could pick a different scheme and still be UDLM-conformant.
 
 ---
 
@@ -27,16 +27,16 @@ The substrate requires that every resource allocation be located *somewhere*, an
 
 **What the substrate does NOT specify:**
 
-- The specific layer types in the hierarchy (Country, Region, Zone, etc.) — these are a realization choice
-- The number of layers in the hierarchy — realizations MAY have 3 layers or 12
-- The specific fields each layer type carries — these are realization-declared via the schema-sharing protocol
-- Placement engine algorithms — those are realization mechanics
+- The specific layer types in the hierarchy (Country, Region, Zone, etc.) — these are an implementation choice
+- The number of layers in the hierarchy — implementations MAY have 3 layers or 12
+- The specific fields each layer type carries — these are implementation-declared via the schema-sharing protocol
+- Placement engine algorithms — those are implementation mechanics
 
 ---
 
 ## 2. Design Principles (Substrate)
 
-**Configurable names, standard composition rules.** The names and types of topology nodes are realization-defined. The *composition rules* — that layers form a hierarchy, that each layer has at most one parent, that ancestry is assembled into the request payload — are substrate-normative.
+**Configurable names, standard composition rules.** The names and types of topology nodes are implementation-defined. The *composition rules* — that layers form a hierarchy, that each layer has at most one parent, that ancestry is assembled into the request payload — are substrate-normative.
 
 **Hierarchical and composable.** Topology layers form a hierarchy from broadest to most specific. A resource allocated to a leaf layer inherits data from every ancestor layer — the full chain is assembled and merged in precedence order.
 
@@ -66,7 +66,7 @@ Each topology layer instance is a first-class UDLM Data artifact:
 
 Each layer type declares a schema of typed fields. Layer instances populate those fields. Field types follow the substrate's standard data-type vocabulary.
 
-The specific set of layer types and their field schemas is declared by the consuming realization (or by the deploying organization) and exchanged via the [schema-sharing protocol](../contracts/schema-sharing.md). A federation peer can resolve a remote realization's layer types and field schemas by consulting the peer's published schema bundle.
+The specific set of layer types and their field schemas is declared by the consuming implementation (or by the deploying organization) and exchanged via the [schema-sharing protocol](../contracts/schema-sharing.md). A federation peer can resolve a remote implementation's layer types and field schemas by consulting the peer's published schema bundle.
 
 ### 3.3 Parent/Child Relationships
 
@@ -78,7 +78,7 @@ Layers form a hierarchy via `parent_handle` references:
 
 ### 3.4 Ancestry Assembly Rules (Normative)
 
-When a consumer selects a leaf layer, the realization MUST assemble the full ancestor chain into the request payload in hierarchy order. The substrate-required assembly rules are:
+When a consumer selects a leaf layer, the implementation MUST assemble the full ancestor chain into the request payload in hierarchy order. The substrate-required assembly rules are:
 
 1. The leaf layer's ancestor chain is resolved by walking `parent_handle` references.
 2. Each layer's data is merged into the payload in **precedence order**, lowest precedence first (root) to highest precedence last (leaf).
@@ -116,12 +116,12 @@ layer:
 
   # Layer classification
   layer_type: core                        # always 'core' for location layers
-  location_type: <type-name>              # realization-declared type identifier
+  location_type: <type-name>              # implementation-declared type identifier
   scope: type_agnostic                    # location layers apply to all resource types
 
   # Priority — location layers occupy a dedicated band in the priority space
   priority:
-    value: "<priority-value>"             # specific bands realization-declared
+    value: "<priority-value>"             # specific bands implementation-declared
     label: "core.location.<type>.<code>"
     category: core_location
     rationale: "<human-readable rationale>"
@@ -137,7 +137,7 @@ layer:
 
   # The location data — fields from the type definition
   data:
-    # Fields declared in the layer-type schema; specific fields are realization-declared
+    # Fields declared in the layer-type schema; specific fields are implementation-declared
     <field_name>: <value>
 
   # Sovereignty — consumed directly by the Governance Matrix
@@ -161,7 +161,7 @@ layer:
 
 ## 5. Hierarchy Assembly Rules (Normative)
 
-When a consumer selects a location, the realization MUST resolve the full ancestor chain and assemble all location layers into the request payload in hierarchy order (lowest precedence first — root → leaf).
+When a consumer selects a location, the implementation MUST resolve the full ancestor chain and assemble all location layers into the request payload in hierarchy order (lowest precedence first — root → leaf).
 
 **Substrate-required assembly behavior:**
 
@@ -170,12 +170,12 @@ When a consumer selects a location, the realization MUST resolve the full ancest
 3. **Merge layer data** into the payload in that order; later (more-specific) layers override earlier (more-general) layers for the same field path.
 4. **Expose the full chain** in the assembled payload so policies and providers can reason about every level.
 
-**Illustrative example (the specific layer types are realization-declared; the substrate requires only that the assembly rules above are followed):**
+**Illustrative example (the specific layer types are implementation-declared; the substrate requires only that the assembly rules above are followed):**
 
 ```
 Consumer selects: a leaf layer
   │
-  ▼ Realization resolves ancestor chain: root → ... → leaf
+  ▼ Implementation resolves ancestor chain: root → ... → leaf
   │
   ▼ Layer data merged into payload (lowest precedence first)
   │
@@ -199,7 +199,7 @@ developing → proposed → active → deprecated → retired
 
 **Substrate-required lifecycle behaviors:**
 
-- **Decommissioning a layer:** When a layer is being decommissioned, its layer transitions to `deprecated`. During the deprecation window, the realization MUST stop routing new requests to entities placed at or below that layer. Existing resources MUST receive a `location.decommission_warning` notification. The layer transitions to `retired` when all resources have been migrated.
+- **Decommissioning a layer:** When a layer is being decommissioned, its layer transitions to `deprecated`. During the deprecation window, the implementation MUST stop routing new requests to entities placed at or below that layer. Existing resources MUST receive a `location.decommission_warning` notification. The layer transitions to `retired` when all resources have been migrated.
 
 - **Layer data changes:** When layer data changes (a new property added, a certification achieved, etc.), a new version of the layer MUST be published. The Requested State for existing resources is NOT retroactively updated — provenance is preserved. Future requests and re-realizations pick up the new data.
 
@@ -243,9 +243,9 @@ custom_location_type:
 |--------|------|
 | `LOC-001` | Every resource entity MUST have a resolved leaf-layer UUID. Requests without a resolvable location are rejected at validation time. |
 | `LOC-002` | Location layers are Core Layers. They MUST NOT contain service-specific or provider-specific data. Location layers that include resource-type-scoped fields are invalid. |
-| `LOC-003` | The location hierarchy MUST be acyclic. A location node cannot be its own ancestor. The realization MUST validate acyclicity at layer submission time. |
+| `LOC-003` | The location hierarchy MUST be acyclic. A location node cannot be its own ancestor. The implementation MUST validate acyclicity at layer submission time. |
 | `LOC-004` | Location layer handles follow the pattern `locations/{type}/{code}`. Any location layer with a non-conforming handle MUST be rejected at registration. |
-| `LOC-005` | When a consumer selects a location at a level above leaf, the realization MUST resolve to a specific leaf during placement. A request MAY NOT remain at an abstract location level after dispatch. |
+| `LOC-005` | When a consumer selects a location at a level above leaf, the implementation MUST resolve to a specific leaf during placement. A request MAY NOT remain at an abstract location level after dispatch. |
 | `LOC-006` | `max_data_classification` declared by a location layer is an upper bound. A request carrying data classified above the location's maximum MUST be rejected before provider contact. |
 | `LOC-007` | Location layer changes (new versions) MUST be propagated to the consuming registries within the next sync cycle. Consumers see updated location data on next catalog query. |
 | `LOC-008` | Custom location types MUST declare their level as a value (decimal allowed) that orders them within the existing hierarchy. Level values MUST be unique across all registered types (substrate-defined and custom). |
@@ -253,4 +253,4 @@ custom_location_type:
 
 ---
 
-*UDLM substrate document. The specific layer hierarchy (e.g., DCM's canonical 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme), placement engine algorithms, priority band allocations, consumer selection mechanics, authority-and-ownership models, and capacity-tracking implementations are realization choices. The DCM realization's canonical hierarchy and operational mechanics live in the DCM realization's documentation.*
+*UDLM substrate document. The specific layer hierarchy (e.g., DCM's canonical 9-layer Country → Region → Zone → Site → Data Center → Hall → Cage → Rack → Unit scheme), placement engine algorithms, priority band allocations, consumer selection mechanics, authority-and-ownership models, and capacity-tracking implementations are implementation choices. The DCM implementation's canonical hierarchy and operational mechanics live in the DCM implementation's documentation.*

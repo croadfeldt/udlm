@@ -153,7 +153,7 @@ Nothing above is a new mechanism; each piece names an existing surface:
 - **`dependencies[].strength: hard | soft`.** The operational nature's block-versus-degrade
   behavior *is* strength: hard operational blocks the dependent; soft operational lets it converge
   degraded. The nature names the layer; strength names the blocking behavior at that layer.
-- **`DEGRADED` / `partial_delivery` (provider-contract).** A soft-degraded realization and a
+- **`DEGRADED` / `partial_delivery` (provider-contract).** A soft-degraded implementation and a
   surfaced partial are expressed through the provider contract's existing degraded/partial vocabulary,
   not a new status.
 

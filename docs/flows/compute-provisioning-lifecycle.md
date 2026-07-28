@@ -1,7 +1,7 @@
 # Compute provisioning — intent → placement → capability → realize (the flow)
 
 **What this settles:** how a compute resource (VM, container, cluster, bare-metal host) goes from intent
-to realization through **capability-gated placement** — the compute family's distinguishing stage. A
+to implementation through **capability-gated placement** — the compute family's distinguishing stage. A
 **lighter** flow: it **builds on [request-realization](request-realization.md)** (the generic
 validate → place → reserve → realize spine) and the VM cases
 ([uc-03-vm-standard-provision](uc-03-vm-standard-provision.md),

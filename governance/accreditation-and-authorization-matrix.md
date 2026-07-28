@@ -23,9 +23,9 @@
 
 ## 1. Purpose
 
-This document defines three interconnected substrate models that together govern how a UDLM-conformant realization handles trust, data handling obligations, and compliance verification across all interaction boundaries:
+This document defines three interconnected substrate models that together govern how a UDLM-conformant implementation handles trust, data handling obligations, and compliance verification across all interaction boundaries:
 
-1. **Accreditation Model** — how the substrate records, verifies, and enforces third-party compliance certifications for providers, policy engines, and peer realizations themselves
+1. **Accreditation Model** — how the substrate records, verifies, and enforces third-party compliance certifications for providers, policy engines, and peer implementations themselves
 2. **Data/Capability Authorization Matrix** — what data and capabilities are permitted across any interaction boundary given a component's accreditation level and the data's classification
 3. **Zero Trust Interaction Model** — the authentication, authorization, and verification requirements for every interaction, regardless of network position
 
@@ -94,7 +94,7 @@ Fields classified as `phi`, `sovereign`, or `classified` cannot be downgraded by
 
 ### 3.1 What Accreditation Is
 
-An **Accreditation** is a formal, versioned, time-bounded attestation that a substrate-managed component — a Service Provider, an External Policy Evaluator, a data store, a notification service, or a peer realization itself — satisfies the requirements of a specific compliance framework. Accreditations are issued by an **Accreditor** and registered as first-class artifacts.
+An **Accreditation** is a formal, versioned, time-bounded attestation that a substrate-managed component — a Service Provider, an External Policy Evaluator, a data store, a notification service, or a peer implementation itself — satisfies the requirements of a specific compliance framework. Accreditations are issued by an **Accreditor** and registered as first-class artifacts.
 
 Accreditation answers: **"Is this component certified to handle this type of data?"**
 
@@ -103,7 +103,7 @@ Accreditation answers: **"Is this component certified to handle this type of dat
 | Type | Issued By | Trust Level | Examples |
 |------|-----------|-------------|---------|
 | `self_declared` | Component itself | Lowest | Dev/homelab; provider asserts own compliance |
-| `first_party` | Realization's own audit team | Low-Medium | Internal compliance review |
+| `first_party` | Implementation's own audit team | Low-Medium | Internal compliance review |
 | `third_party` | Independent certifying body | High | ISO 27001, SOC 2 Type II |
 | `qsa_assessment` | Qualified Security Assessor | High | PCI-DSS QSA report |
 | `baa` | Legal BAA with covered entity | High | HIPAA Business Associate Agreement |
@@ -124,7 +124,7 @@ accreditation:
 
   subject_uuid: <provider-uuid>          # what is being accredited
   subject_type: service_provider | external_policy_evaluation |
-                credential_provider | peer_realization
+                credential_provider | peer_implementation
 
   accreditation_type: <type from 3.2>
   framework: fedramp_high | fedramp_moderate | hipaa | pci_dss_v4 |
@@ -141,7 +141,7 @@ accreditation:
   issued_at: <ISO 8601>
   expires_at: <ISO 8601|null>            # null = perpetual until revoked
   renewal_warning_before: P90D
-  last_verified_at: <ISO 8601>            # when the realization last confirmed still active
+  last_verified_at: <ISO 8601>            # when the implementation last confirmed still active
 
   # What the accreditation covers — EXPLICITLY keyed to provider + capability so the sovereignty
   # 1-1 match (UDLM ADR-004 §4) is machine-checkable. `subject_uuid` above names the PROVIDER; the
@@ -194,7 +194,7 @@ For the appraisal, an **active, verified accreditation** must match the claim **
 - **data classification** — `scope.data_classifications` covers the claim (a `sovereign`-data claim is not vouched for by an `internal`-scoped accreditation);
 - **plane** — `scope.plane` covers the claim's `enforcement_plane` (§3.8): data-plane residency and control-plane operator-access are attested separately.
 
-No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes ADR-004 §4's **pipeline propagation** enforceable: each downstream hop in a capability's realization pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
+No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes ADR-004 §4's **pipeline propagation** enforceable: each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
 
 **This generalizes beyond sovereignty (§3.7).** The same claim→attestation link governs every `conformance_claim` a subject declares: a declared adherence (ISO 27001, SOC 2, FedRAMP-Moderate, SecNumCloud, …) is `self_asserted` until an accreditation whose `framework` matches attests it for the scope.
 
@@ -259,16 +259,16 @@ accreditation_gap_record:
   # Default: NOTIFY_AND_WAIT for fsi/sovereign; ESCALATE for standard/prod
 ```
 
-### 3.6 Peer Realization Accreditation
+### 3.6 Peer Implementation Accreditation
 
-Peer realizations themselves can carry accreditations — a FedRAMP-authorized realization deployment, for example. This enables cross-organization trust: a consuming organization's realization can verify the providing organization's realization holds the required accreditation before federating with it.
+Peer implementations themselves can carry accreditations — a FedRAMP-authorized implementation deployment, for example. This enables cross-organization trust: a consuming organization's implementation can verify the providing organization's implementation holds the required accreditation before federating with it.
 
 ```yaml
 deployment_accreditation:
-  subject_type: peer_realization
+  subject_type: peer_implementation
   subject_uuid: <peer-instance-uuid>
   framework: fedramp_high
-  # The peer realization itself is accredited, not just the providers it manages
+  # The peer implementation itself is accredited, not just the providers it manages
 ```
 
 ### 3.7 Verifiability, the two-gate decision, and the declaration→attestation link
@@ -281,7 +281,7 @@ Trust is therefore a **two-gate decision**, and the gates are kept separate:
 
 This mirrors W3C VC's **verification-vs-validation** ("verifiability does not imply truth") and RATS's split between the Verifier's Evidence appraisal and the Relying Party's Result appraisal. **An accreditation with no `proof` is `self_asserted`** — usable at dev/eval, never honored for sovereign/fsi.
 
-**Declaration → attestation.** A subject (provider or peer realization) DECLARES the standards it adheres to as `conformance_claims` (provider capability declaration; the Gaia-X self-description / OSCAL SSP model). Each is a **claim**, `self_asserted` until an accreditation whose `framework` matches attests it for the scope. So the estate carries both halves — the subject's self-declaration and the third party's verifiable attestation — linked by `framework` + scope, exactly as sovereignty links a `sovereignty` stance to its accreditation.
+**Declaration → attestation.** A subject (provider or peer implementation) DECLARES the standards it adheres to as `conformance_claims` (provider capability declaration; the Gaia-X self-description / OSCAL SSP model). Each is a **claim**, `self_asserted` until an accreditation whose `framework` matches attests it for the scope. So the estate carries both halves — the subject's self-declaration and the third party's verifiable attestation — linked by `framework` + scope, exactly as sovereignty links a `sovereignty` stance to its accreditation.
 
 ### 3.8 Residency vs sovereignty, planes, and the jurisdiction hierarchy
 
@@ -342,7 +342,7 @@ data_authorization_matrix:
   concern_type: data_authorization_boundary
   applicable_compliance_domains: [hipaa]
 
-  # OUTBOUND: what the realization may send to a provider
+  # OUTBOUND: what the implementation may send to a provider
   outbound_data_permissions:
     - data_classification: phi
       required_accreditation_type: baa
@@ -388,7 +388,7 @@ data_authorization_matrix:
       required_accreditation_type: baa
       on_missing_accreditation: DENY_CAPABILITY
 
-  # INBOUND: what the provider may return to the realization
+  # INBOUND: what the provider may return to the implementation
   inbound_data_permissions:
     - data_classification: phi
       provider_must_strip_before_return: false
@@ -441,7 +441,7 @@ federation_boundary_matrix:
 
 ### 4.4 Matrix Evaluation Contract (Substrate-Required)
 
-The authorization matrix check MUST execute at every interaction boundary — **as Governance-Matrix axes within the single boundary evaluation (GMX-009), not a parallel enforcement path (GMX-001)**. Any conformant realization performs it as:
+The authorization matrix check MUST execute at every interaction boundary — **as Governance-Matrix axes within the single boundary evaluation (GMX-009), not a parallel enforcement path (GMX-001)**. Any conformant implementation performs it as:
 
 ```
 Outbound interaction assembled (peer → Provider OR peer → peer)
@@ -563,7 +563,7 @@ zero_trust_policy_group:
 
 ### 6.1 Federation Tunnel as a Zero Trust Boundary
 
-A federation tunnel between peer realizations is a **mutually authenticated, encrypted, scoped channel** where both sides verify each other on every interaction. It is not a VPN — it does not establish perimeter trust. Every message crossing the tunnel is authenticated, authorized, and subject to the five-check model.
+A federation tunnel between peer implementations is a **mutually authenticated, encrypted, scoped channel** where both sides verify each other on every interaction. It is not a VPN — it does not establish perimeter trust. Every message crossing the tunnel is authenticated, authorized, and subject to the five-check model.
 
 **"Zero trust to any outside peer/provider"** is implemented by: the remote peer has no implicit access to local resources. Every cross-instance operation requires a scoped federation credential. The tunnel establishes secure transport — it does not establish trust.
 
@@ -688,9 +688,9 @@ The `sovereign` profile enforces the hardest constraint: **sovereign-classified 
 | `ACC-002` | Accreditation gaps (missing, expired, or revoked accreditations required for active interactions) are always high or critical severity. The Recovery Policy governs the response. |
 | `ACC-003` | PHI, sovereign, and classified field classifications are immutable once set. No policy may downgrade these classifications. |
 | `ACC-004` | The Data/Capability Authorization Matrix is enforced at every outbound interaction boundary before dispatch. Fields failing the matrix check are stripped (STRIP_FIELD) or the request is blocked (DENY_REQUEST) per the matrix declaration. |
-| `ACC-005` | Peer realizations themselves carry accreditations. A federation peer can verify the remote peer deployment's accreditation before accepting federation messages. |
+| `ACC-005` | Peer implementations themselves carry accreditations. A federation peer can verify the remote peer deployment's accreditation before accepting federation messages. |
 | `ACC-006` | `zero_trust_posture` is the sixth Policy Group concern type. Profile defaults are: homelab=none, dev/standard=boundary, prod/fsi=full, sovereign=hardware_attested. |
 
 ---
 
-*UDLM substrate document. Realization-specific accreditation governance enforcement, authorization evaluation runtime, zero trust boundary implementation, federation tunnel establishment and maintenance, and profile-governed accreditation enforcement live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific accreditation governance enforcement, authorization evaluation runtime, zero trust boundary implementation, federation tunnel establishment and maintenance, and profile-governed accreditation enforcement live in the consuming implementation's documentation.*

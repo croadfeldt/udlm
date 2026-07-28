@@ -28,7 +28,7 @@ A per-capability `sovereignty` block overrides the provider-wide `sovereignty_de
 
 ### 4. A per-capability sovereignty claim is a pipeline-wide obligation
 
-Declaring sovereignty at the capability scope obligates the provider to **guarantee it the whole way down that capability's realization pipeline** — every brokered dependency (ADR-009), sub-processor, and downstream hop must satisfy the same stance, **re-attested 1-1 at its own hop**. The *constraint* propagates along the fulfillment/dependency graph (ADR-009/010); **trust never inherits** — only the constraint does. It is proven across the reserved graph at the commit barrier (ADR-011), before anything is built. This is a *stronger* commitment than provider-scope and MUST be available. Enforcement is platform policy (DCM, ADR-022); UDLM carries the propagation + per-hop-attestation data (ADR-008 boundary).
+Declaring sovereignty at the capability scope obligates the provider to **guarantee it the whole way down that capability's implementation pipeline** — every brokered dependency (ADR-009), sub-processor, and downstream hop must satisfy the same stance, **re-attested 1-1 at its own hop**. The *constraint* propagates along the fulfillment/dependency graph (ADR-009/010); **trust never inherits** — only the constraint does. It is proven across the reserved graph at the commit barrier (ADR-011), before anything is built. This is a *stronger* commitment than provider-scope and MUST be available. Enforcement is platform policy (DCM, ADR-022); UDLM carries the propagation + per-hop-attestation data (ADR-008 boundary).
 
 ### 5. Determinism is a configurable platform-admin dial
 

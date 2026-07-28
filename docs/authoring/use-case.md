@@ -73,7 +73,7 @@ schema-invalid), **actionable** (surfaced, naming the constraint and its resolut
 silent partial or truncation), **non-leaking** (no reference escapes a boundary it was not released
 for — ADR-041), and **auditable** (an immutable record of the decision). Write those five into
 `success_criteria`, and tag the file `must-reject` + `refusal-contract`. The exemplar 002 does exactly
-this: it refuses before realization, types the error as quota exhaustion, forbids silent truncation and
+this: it refuses before implementation, types the error as quota exhaustion, forbids silent truncation and
 indefinite Pending, names requested-vs-available, and records the comparison.
 
 **Estate-neutrality.** Keep every scenario estate-neutral: no personal host or site names, and use

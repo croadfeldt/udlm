@@ -7,7 +7,7 @@ only the recovery this case adds after commit.
 
 > **Use Case:** `compute/vm-provision-with-provider-failure`. **Persona:** application-team-member · **Profile:** standard.
 
-**In one breath.** Policy passes and the provider accepts the dispatch, but mid-realization the provider
+**In one breath.** Policy passes and the provider accepts the dispatch, but mid-implementation the provider
 becomes unreachable. A recovery policy detects it within the dispatch timeout, classifies the partial state,
 and decides — requeue against another eligible provider, hold pending recovery, or fail and release what was
 allocated — with the decision recorded and no orphaned partial state left behind.
@@ -17,7 +17,7 @@ allocated — with the decision recorded and no orphaned partial state left behi
   request-realization. The new surface is *after* commit begins and the provider drops.
 - **Bounded failure detection** — unreachability is caught within the **dispatch timeout**, not left pending
   indefinitely.
-- **A recovery policy with an explicit decision** — it classifies the partial-realization state and picks one
+- **A recovery policy with an explicit decision** — it classifies the partial-implementation state and picks one
   of **requeue / hold / fail**; the decision is audit-recorded.
 - **Multiple eligible providers** — because more than one provider qualifies, requeue onto an alternate is a
   real option when policy permits.
@@ -44,7 +44,7 @@ Everything up to commit (assemble, place, enrich, reserve) is request-realizatio
 - The tenant's requested state never shows a resource in an indeterminate state without a matching recovery record.
 
 ## Data · Policy · Provider
-- **Data:** the partial-realization state, tracked and then reconciled or released; the recovery record.
+- **Data:** the partial-implementation state, tracked and then reconciled or released; the recovery record.
 - **Policy:** the recovery policy — classify the partial state, choose requeue / hold / fail.
 - **Provider:** the primary accepts dispatch then goes unreachable; an alternate eligible provider may take the requeue.
 

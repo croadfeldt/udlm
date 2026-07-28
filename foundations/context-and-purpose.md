@@ -23,19 +23,19 @@
 
 ## 1. Purpose
 
-UDLM is the foundational data model upon which a conformant realization (e.g. DCM) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of a realization communicates: reading, writing, validating, enriching, transforming, or comparing data.
+UDLM is the foundational data model upon which a conformant implementation (e.g. DCM) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of an implementation communicates: reading, writing, validating, enriching, transforming, or comparing data.
 
 The data model exists to solve a problem that is endemic to enterprise IT: **there is no single, trustworthy, consistent representation of infrastructure state**. Tools proliferate, CMDBs diverge, and the result is that no one knows with confidence what exists, what was requested, what was provisioned, or whether the current state matches the intended state.
 
-UDLM establishes a **unified, versioned, declarative single source of truth** for all infrastructure state across the full lifecycle of every resource a realization manages.
+UDLM establishes a **unified, versioned, declarative single source of truth** for all infrastructure state across the full lifecycle of every resource an implementation manages.
 
 ---
 
 ## 2. The Data Model as Inter-Component Contract
 
-The data model is not owned by any single component — it is the **contract between all of them**. Every component of a realization acts on the data in some well-defined way (assembling a request payload, evaluating policy, provisioning via a provider, recording audit at each state transition, comparing states for drift, attributing cost, discovering current state, gating access, exposing a catalog), and even components that never talk directly are coupled through the shared data model. This is what lets each component be built, tested, and evolved independently.
+The data model is not owned by any single component — it is the **contract between all of them**. Every component of an implementation acts on the data in some well-defined way (assembling a request payload, evaluating policy, provisioning via a provider, recording audit at each state transition, comparing states for drift, attributing cost, discovering current state, gating access, exposing a catalog), and even components that never talk directly are coupled through the shared data model. This is what lets each component be built, tested, and evolved independently.
 
-*How a specific realization's components consume the data model — the component roster and each one's read/write relationship to the data — is realization architecture, not part of the data model. See the DCM architecture documentation for that mapping.*
+*How a specific implementation's components consume the data model — the component roster and each one's read/write relationship to the data — is implementation architecture, not part of the data model. See the DCM architecture documentation for that mapping.*
 
 ---
 
@@ -53,7 +53,7 @@ One of the most critical requirements of UDLM is the ability to trace the comple
 
 ### 4.1 The Requirement
 
-At any point in a realization's pipeline, for any field in any data object, it must be possible to answer:
+At any point in an implementation's pipeline, for any field in any data object, it must be possible to answer:
 
 - What is the current value of this field?
 - Where did this value originate? (catalog item, base layer, intermediate layer, policy, consumer input, discovery)
@@ -89,7 +89,7 @@ What is **normative** is that a field's evolution is *reconstructable*: for any 
 - Provenance survives data export, migration, and portability scenarios
 - The audit capability reads lineage that was recorded at the point of change, not reconstructed from logs
 
-**Where** provenance is stored is a realization choice. It MAY be carried inline with the field, or content-addressed/tiered so the object is not bloated — `layering-and-versioning.md` §3a defines the deduplicated and tiered storage models, and LAY-008 guarantees full reconstruction regardless of model. The obligation is reconstructability; inline co-location is not required.
+**Where** provenance is stored is an implementation choice. It MAY be carried inline with the field, or content-addressed/tiered so the object is not bloated — `layering-and-versioning.md` §3a defines the deduplicated and tiered storage models, and LAY-008 guarantees full reconstruction regardless of model. The obligation is reconstructability; inline co-location is not required.
 
 ### 4.4 Provenance Metadata Structure
 
@@ -140,11 +140,11 @@ Provenance recording is a **data-model obligation, not optional**: any entity th
 
 This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (LAY-00x / OPS-00x), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
 
-*Which specific realization components carry this obligation, and exactly what each records, is realization architecture — see the DCM architecture documentation.*
+*Which specific implementation components carry this obligation, and exactly what each records, is implementation architecture — see the DCM architecture documentation.*
 
 ### 4.6 Relationship to Audit
 
-A realization's audit capability reads provenance data that is intrinsic to every data object. This means:
+An implementation's audit capability reads provenance data that is intrinsic to every data object. This means:
 
 - Audit does not reconstruct history from logs — it reads lineage that was recorded at the point of change
 - Any data object can be audited at any time, in any state, by any authorized persona
@@ -248,14 +248,14 @@ The four states, their definitions, storage contracts, and the operations across
 
 ## 7. Data as the Provider Contract Boundary
 
-The data model defines the boundary between a realization and its providers. The realization is explicitly **not concerned with how a provider accomplishes its work** — only with the data that crosses the boundary in both directions. This is a data-model property:
+The data model defines the boundary between an implementation and its providers. The implementation is explicitly **not concerned with how a provider accomplishes its work** — only with the data that crosses the boundary in both directions. This is a data-model property:
 
 - Providers are interchangeable as long as they honor the data contract
 - New providers can be added without changing the core data model
-- Provider implementation can evolve independently of the realization
+- Provider implementation can evolve independently of the implementation
 - The contract is enforced at the data level — conformant data in, conformant data out
 
-This separation of concerns is what makes a realization technology-agnostic while maintaining a consistent and trustworthy data model across all providers.
+This separation of concerns is what makes an implementation technology-agnostic while maintaining a consistent and trustworthy data model across all providers.
 
 *The wire protocol that carries data across this boundary — how a provider transforms unified data into its own tool-specific format and back (naturalization / denaturalization) — is the provider INTERFACE. See [Provider Contract](../contracts/provider-contract.md) and the DCM architecture documentation.*
 
@@ -263,14 +263,14 @@ This separation of concerns is what makes a realization technology-agnostic whil
 
 > Normative home: [core-tenets **T9**](../design-principles/core-tenets.md). This section is the narrative rationale.
 
-**A realization carries only generic intent, typed data, and denaturalized realized results. It never
+**An implementation carries only generic intent, typed data, and denaturalized realized results. It never
 translates intent into — or stores — a provider's native/vendor spec.** The provider does that at its edge
 (naturalize in, denaturalize out — DCM ADR-023); the native form never enters the substrate. Two reasons,
 and they compound:
 
 1. **Peer portability.** A native spec in the substrate breaks wire-compatibility — a peer that realizes the
    *same* intent with a *different* tool could no longer read the data. Keeping the substrate generic is what
-   lets any conformant realization or provider participate (ADR-008; core tenet T1).
+   lets any conformant implementation or provider participate (ADR-008; core tenet T1).
 2. **Ramification ownership.** The substrate cannot translate intent into a third-party spec **and** fully
    understand that translation's *current and continuing* ramifications — the side effects, the ongoing
    lifecycle behavior, how it drifts as the provider's platform evolves. **Only the provider knows its own

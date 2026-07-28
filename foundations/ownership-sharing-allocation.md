@@ -102,7 +102,7 @@ resource_type_spec:
   fqn: Network.IPAddress
   ownership_model: allocation          # each instance is an allocation from a pool
   allocated_from_pool_type: Network.IPAddressPool
-  # When a consumer requests Network.IPAddress, a realization:
+  # When a consumer requests Network.IPAddress, an implementation:
   # 1. Runs placement to find an eligible IPAddressPool
   # 2. The pool provider carves out a specific IP
   # 3. Creates a new IPAddress entity owned by the requesting Tenant
@@ -282,7 +282,7 @@ model guarantees, not runtime governance policy.
 
 | Invariant | Rule |
 |--------|------|
-| `OWN-001` | `whole_allocation` resources are owned entirely by the requesting Tenant from the moment of realization. The providing platform Tenant has no ownership claim. |
+| `OWN-001` | `whole_allocation` resources are owned entirely by the requesting Tenant from the moment of implementation. The providing platform Tenant has no ownership claim. |
 | `OWN-002` | `allocation` resources are owned entirely by the requesting Tenant. The pool owner retains ownership of the pool entity only. AllocationRecord relationships are the only cross-Tenant link. |
 | `OWN-003` | `shareable` resources are owned by a single Tenant. Consumers hold stakes (relationships) only. No consumer owns any portion of a shareable resource. |
 | `OWN-004` | Decommission of a shareable resource is deferred while any `required` strength stakes are active. Optional stakes are terminated automatically on shareable resource decommission. |

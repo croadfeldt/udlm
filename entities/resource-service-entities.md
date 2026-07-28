@@ -21,7 +21,7 @@
 
 This document defines the two fundamental transactional concepts in UDLM — the **Resource/Service Request** and the **Resource/Service Entity** — and establishes the ownership models, lifecycle principles, and provider relationship rules that govern them.
 
-Understanding the distinction between a Request and an Entity, and the principle that the realization is the authoritative system of record for all resource data regardless of operational ownership, is essential to understanding how a conformant UDLM peer achieves its core goals of auditability, lifecycle management, and sovereignty.
+Understanding the distinction between a Request and an Entity, and the principle that the implementation is the authoritative system of record for all resource data regardless of operational ownership, is essential to understanding how a conformant UDLM peer achieves its core goals of auditability, lifecycle management, and sovereignty.
 
 ---
 
@@ -29,7 +29,7 @@ Understanding the distinction between a Request and an Entity, and the principle
 
 ### 2.1 Resource/Service Request
 
-A **Resource/Service Request** is what a consumer submits to a UDLM realization — the declared intent to consume a resource or service. It is the consumer side of the transaction.
+A **Resource/Service Request** is what a consumer submits to a UDLM implementation — the declared intent to consume a resource or service. It is the consumer side of the transaction.
 
 - Created when a consumer submits a request via a supported ingress surface (Web UI, Consumer API)
 - Captured as the **Intent State** before any processing
@@ -43,36 +43,36 @@ A Request is not a thing — it is an **instruction**. It describes what the con
 A **Resource/Service Entity** is the "thing" produced by a provider as a result of fulfilling a Resource/Service Request. It is the provider side of the transaction — the allocation made real.
 
 - Created when a provider fulfills a Requested State payload
-- Returned to the realization in unified data model format via Denaturalization
+- Returned to the implementation in unified data model format via Denaturalization
 - Captured as the **Realized State** in the Realized Store
 - Assigned to a **Tenant** — the ownership boundary
 - Has a UUID, full provenance chain, and complete lifecycle from creation to decommission
 - Is the unit of consumption, cost attribution, drift detection, and audit
 
-A Resource/Service Entity IS a thing — it exists, it has state, it has an owner, and the realization manages its lifecycle.
+A Resource/Service Entity IS a thing — it exists, it has state, it has an owner, and the implementation manages its lifecycle.
 
 ### 2.3 The Critical Distinction
 
 ```
 Consumer submits        →  Resource/Service REQUEST  →  Intent/Requested State
 Provider fulfills       →  Resource/Service ENTITY   →  Realized State
-Realization manages     →  ENTITY persists            →  Drift/Audit/Cost/Rehydration
+Implementation manages     →  ENTITY persists            →  Drift/Audit/Cost/Rehydration
 ```
 
 ---
 
-## 3. The Realization as Authoritative Owner of All Resource Data
+## 3. The Implementation as Authoritative Owner of All Resource Data
 
 This is the most fundamental principle governing Resource/Service Entities:
 
-**The UDLM realization is ALWAYS the system of record for Resource/Service Entity data. The realization is ALWAYS authoritative for the resource definition. The realization ALWAYS owns the lifecycle. This applies regardless of the operational ownership model.**
+**The UDLM implementation is ALWAYS the system of record for Resource/Service Entity data. The implementation is ALWAYS authoritative for the resource definition. The implementation ALWAYS owns the lifecycle. This applies regardless of the operational ownership model.**
 
-The operational ownership model (described in Section 4) determines who has authority to operate on a Resource/Service Entity. It does not affect the realization's data ownership. Specifically:
+The operational ownership model (described in Section 4) determines who has authority to operate on a Resource/Service Entity. It does not affect the implementation's data ownership. Specifically:
 
-- The realization owns the **data definition** of every Resource/Service Entity — what it is, what it should be, what it was
-- The realization owns the **lifecycle** — from Requested through Realized to Decommissioned
-- The realization is **authoritative** — if a provider reports a change the realization was not aware of, the realization acts on it according to policy
-- The realization acts as the **Tenant advocate** — it protects the Tenant's interests in all provider interactions
+- The implementation owns the **data definition** of every Resource/Service Entity — what it is, what it should be, what it was
+- The implementation owns the **lifecycle** — from Requested through Realized to Decommissioned
+- The implementation is **authoritative** — if a provider reports a change the implementation was not aware of, the implementation acts on it according to policy
+- The implementation acts as the **Tenant advocate** — it protects the Tenant's interests in all provider interactions
 - Providers are **custodians** of the underlying infrastructure — they are not the system of record
 
 **Unsanctioned change response vocabulary (typed interop baseline):**
@@ -110,7 +110,7 @@ The provider retains internal ownership of the underlying infrastructure. The co
 - Consumer owns the allocation — the Entity in their Tenant
 - Provider has reclaim rights on decommission
 - Underlying infrastructure may be shared or subdivided
-- The realization manages the Entity lifecycle; provider manages the underlying resource
+- The implementation manages the Entity lifecycle; provider manages the underlying resource
 
 **Examples:** Virtual Machine, Container, Network Port, IP Address, Firewall Rule, Database Instance
 
@@ -125,7 +125,7 @@ The entire physical or logical resource is allocated as a single indivisible uni
 - Consumer has exclusive, indivisible use
 - The resource is not shared or subdivided
 - Provider has reclaim rights on decommission
-- The realization manages the Entity lifecycle
+- The implementation manages the Entity lifecycle
 
 **Examples:** Dedicated Bare Metal server (provider-owned), Dedicated Network appliance, Whole storage array allocation
 
@@ -152,7 +152,7 @@ ownership_transfer:
 
 - The current owner is always exactly one Tenant; ownership can be reassigned any number of times.
 - Every transfer is Policy-validated and the receiving Tenant must accept it — it cannot be forced.
-- The realization remains authoritative for data and lifecycle through all transfers.
+- The implementation remains authoritative for data and lifecycle through all transfers.
 
 **Examples:** a bare-metal server handed from procurement to a hosting team, then that team offering VMs on it; a hardware asset reassigned between business units.
 
@@ -282,14 +282,14 @@ If a Process Resource modifies the state of a Resource/Service Entity, that Enti
 
 ## 7. Provider Internal Lifecycle Model
 
-Providers have their own internal infrastructure that underpins the Resource/Service Entities they create. While that internal infrastructure is opaque to consumers, the realization needs visibility into it for placement, cost analysis, and operational governance. The substrate defines the contracts a provider must honor.
+Providers have their own internal infrastructure that underpins the Resource/Service Entities they create. While that internal infrastructure is opaque to consumers, the implementation needs visibility into it for placement, cost analysis, and operational governance. The substrate defines the contracts a provider must honor.
 
 ### 7.1 Provider Capacity Model
 
 UDLM defines three capacity information modes. Mode 3 is mandatory for all providers. Modes 1 and 2 are configurable per provider registration.
 
 **Mode 1 — Dynamic Query (on-demand)**
-The realization queries the provider for current capacity as part of request processing. Used when real-time accuracy is critical or when the provider cannot maintain a registration schedule.
+The implementation queries the provider for current capacity as part of request processing. Used when real-time accuracy is critical or when the provider cannot maintain a registration schedule.
 
 ```yaml
 capacity_query_response:
@@ -304,7 +304,7 @@ capacity_query_response:
 ```
 
 **Mode 2 — Provider Registration (scheduled, preferred)**
-Provider registers capacity data with the realization on a configurable schedule. The realization maintains an internal capacity rating per provider, per Resource Type, per location. Default minimum update frequency: twice daily. Update frequency is configurable per provider registration.
+Provider registers capacity data with the implementation on a configurable schedule. The implementation maintains an internal capacity rating per provider, per Resource Type, per location. Default minimum update frequency: twice daily. Update frequency is configurable per provider registration.
 
 ```yaml
 capacity_registration:
@@ -321,7 +321,7 @@ capacity_registration:
 ```
 
 **Mode 3 — Provider Denial (reactive, mandatory)**
-The provider validates it can fulfill a request before executing. If it cannot, it denies the request with reason `INSUFFICIENT_RESOURCES`. The realization receives the denial and can retry with an alternative provider. The denial triggers an immediate update to the realization's internal capacity rating for that provider.
+The provider validates it can fulfill a request before executing. If it cannot, it denies the request with reason `INSUFFICIENT_RESOURCES`. The implementation receives the denial and can retry with an alternative provider. The denial triggers an immediate update to the implementation's internal capacity rating for that provider.
 
 ```yaml
 provider_denial:
@@ -336,7 +336,7 @@ provider_denial:
 
 ### 7.2 Provider Lifecycle Events
 
-Any provider event that affects Resource/Service Entity availability or operational characteristics MUST be reported to the realization immediately. Providers have a contractual obligation to report these events — this is non-negotiable.
+Any provider event that affects Resource/Service Entity availability or operational characteristics MUST be reported to the implementation immediately. Providers have a contractual obligation to report these events — this is non-negotiable.
 
 **Reportable Event Types (closed substrate vocabulary):**
 
@@ -347,7 +347,7 @@ Any provider event that affects Resource/Service Entity availability or operatio
 | `MAINTENANCE_SCHEDULED` | Planned maintenance window declared |
 | `MAINTENANCE_STARTED` | Maintenance has begun |
 | `MAINTENANCE_COMPLETED` | Maintenance completed |
-| `UNSANCTIONED_CHANGE` | Change occurred that was not initiated by the realization |
+| `UNSANCTIONED_CHANGE` | Change occurred that was not initiated by the implementation |
 | `ENTITY_HEALTH_CHANGE` | Entity health status changed |
 | `PROVIDER_DEGRADATION` | Provider itself is degraded |
 | `DECOMMISSION_NOTICE` | Provider is decommissioning underlying resource |
@@ -374,7 +374,7 @@ Providers must report lifecycle events within the timeframe declared in their pr
 
 ### 7.3 Provider Capacity — declaration vs rating
 
-What UDLM carries is the provider's **capacity declaration** — reported at registration and refreshed on the provider's declared schedule (part of the provider contract). What a realization does with it — maintaining an **internal capacity rating** per provider/type/location, its freshness/confidence bookkeeping, and the placement logic that consumes it — is a runtime optimization (a non-authoritative placement cache), not part of the data model. See the DCM architecture documentation for the rating structure and refresh mechanics.
+What UDLM carries is the provider's **capacity declaration** — reported at registration and refreshed on the provider's declared schedule (part of the provider contract). What an implementation does with it — maintaining an **internal capacity rating** per provider/type/location, its freshness/confidence bookkeeping, and the placement logic that consumes it — is a runtime optimization (a non-authoritative placement cache), not part of the data model. See the DCM architecture documentation for the rating structure and refresh mechanics.
 
 ---
 
@@ -390,7 +390,7 @@ This constraint unifies all state change pathways and eliminates ambiguity:
 
 - **Drift is always unsanctioned** — if Discovered State differs from Realized State and there is no corresponding Requested State record explaining the difference, it is drift. There is no such thing as "legitimate drift."
 - **Discovery does not update Realized State** — discovery writes only to the Discovered Store. It never updates the Realized Store, even if discovery shows an authorized change (the authorization produces its own Requested State and Realized State records).
-- **Providers cannot write directly to Realized State** — providers report changes via the Provider Update Notification contract. The realization evaluates the notification and creates a Requested State record if approved. Only then does a new Realized State record get written.
+- **Providers cannot write directly to Realized State** — providers report changes via the Provider Update Notification contract. The implementation evaluates the notification and creates a Requested State record if approved. Only then does a new Realized State record get written.
 
 ### 7a.2 Provider Update Notification
 
@@ -401,14 +401,14 @@ A **Provider Update Notification** is the formal mechanism by which a Service Pr
 | Scenario | Correct mechanism | Why |
 |----------|------------------|-----|
 | Provider auto-heals a failed disk | Provider Update Notification | Authorized maintenance action; new disk is the correct state |
-| Provider scales resources per pre-authorized auto-scale policy | Provider Update Notification | The realization pre-authorized the scaling policy; each scaling event is an authorized change |
+| Provider scales resources per pre-authorized auto-scale policy | Provider Update Notification | The implementation pre-authorized the scaling policy; each scaling event is an authorized change |
 | Provider performs planned maintenance that changes an IP assignment | Provider Update Notification | Planned, coordinated change |
-| Unauthorized human modifies VM configuration at provider console | Drift event | No realization authorization; treated as unsanctioned change |
-| Provider silently changes configuration without notifying the realization | Drift event (detected by discovery) | Unreported change is unsanctioned until evaluated |
+| Unauthorized human modifies VM configuration at provider console | Drift event | No implementation authorization; treated as unsanctioned change |
+| Provider silently changes configuration without notifying the implementation | Drift event (detected by discovery) | Unreported change is unsanctioned until evaluated |
 
 ### 7a.3 Provider Update Notification Contract
 
-Service Providers submit update notifications via a dedicated endpoint on the realization's API surface. The wire payload is normative:
+Service Providers submit update notifications via a dedicated endpoint on the implementation's API surface. The wire payload is normative:
 
 ```
 POST /api/v1/provider/entities/{entity_uuid}/update-notification
@@ -434,13 +434,13 @@ Request body:
 
 ### 7a.4 Notification Outcomes (Typed Vocabulary)
 
-The substrate defines the typed outcome vocabulary for Provider Update Notifications — the interop baseline; which outcomes an estate's policies select is the organization's declaration (`docs/design/operational-response-matrix.md`). The realization evaluates the notification against policy and returns one of:
+The substrate defines the typed outcome vocabulary for Provider Update Notifications — the interop baseline; which outcomes an estate's policies select is the organization's declaration (`docs/design/operational-response-matrix.md`). The implementation evaluates the notification against policy and returns one of:
 
 | Outcome | Meaning |
 |---------|---------|
 | `REJECTED` | The change is not authorized. Realized State is NOT updated. The discrepancy becomes drift. The provider receives a rejection response. |
 | `REQUIRES_CONSUMER_APPROVAL` | The change is plausible but requires consumer sign-off. The entity enters a pending-review state. The provider receives a "pending_approval" response. |
-| `APPROVED` | The realization creates a Requested State record (source_type: provider_update) and writes a new Realized State snapshot referencing the new Requested State. |
+| `APPROVED` | The implementation creates a Requested State record (source_type: provider_update) and writes a new Realized State snapshot referencing the new Requested State. |
 
 ### 7a.5 Pre-Authorization of Provider Updates (Contract)
 
@@ -559,7 +559,7 @@ resource_service_entity:
 
 ## 9. UDLM System Policies for Resource/Service Entities
 
-The following are **non-overridable UDLM substrate policies** that apply to all Resource/Service Entities. Any conformant realization MUST enforce these:
+The following are **non-overridable UDLM substrate policies** that apply to all Resource/Service Entities. Any conformant implementation MUST enforce these:
 
 | Policy | Rule |
 |--------|------|
@@ -625,7 +625,7 @@ Base Layer (lowest — e.g., no TTL by default)
 
 ### 9a.4 Expiry Enforcement Contract
 
-The substrate requires that a conformant realization provide a Lifecycle Constraint Enforcer (or equivalent) that monitors realized entities, fires `on_expiry` actions when constraints are reached, and records all enforcement in provenance and the Audit Store. Entities whose `on_expiry` action fails to execute MUST enter `PENDING_EXPIRY_ACTION` state and trigger an escalation (LTC-005). The mechanism by which this enforcement is implemented is a realization choice.
+The substrate requires that a conformant implementation provide a Lifecycle Constraint Enforcer (or equivalent) that monitors realized entities, fires `on_expiry` actions when constraints are reached, and records all enforcement in provenance and the Audit Store. Entities whose `on_expiry` action fails to execute MUST enter `PENDING_EXPIRY_ACTION` state and trigger an escalation (LTC-005). The mechanism by which this enforcement is implemented is an implementation choice.
 
 ### 9a.5 System Policies
 
@@ -641,7 +641,7 @@ The substrate requires that a conformant realization provide a Lifecycle Constra
 
 ## 9a-process. Lifecycle Time Constraints — Processes
 
-Process Resource entities must declare a maximum execution time. This is a mandatory field — not optional. A Process Resource with no execution time limit creates operational blindness (the realization cannot know if it is hung).
+Process Resource entities must declare a maximum execution time. This is a mandatory field — not optional. A Process Resource with no execution time limit creates operational blindness (the implementation cannot know if it is hung).
 
 ```yaml
 process_entity:
@@ -659,7 +659,7 @@ process_entity:
 
 Process execution time is a `lifecycle_constraint.ttl` with `reference_point: realization_timestamp`. The `on_max_exceeded` action maps to the standard `on_expiry` lifecycle action vocabulary.
 
-Profile-governed defaults for `on_max_exceeded` are realization-configurable; the substrate requires that profiles in the stricter direction (e.g., `fsi`, `sovereign`) default to deterministic termination, while looser profiles MAY default to `notify`.
+Profile-governed defaults for `on_max_exceeded` are implementation-configurable; the substrate requires that profiles in the stricter direction (e.g., `fsi`, `sovereign`) default to deterministic termination, while looser profiles MAY default to `notify`.
 
 ---
 
@@ -715,7 +715,7 @@ provider_contract_obligations:
 
 ## 9d. Capacity Confidence — Automatic Actions
 
-Capacity confidence ratings trigger policy-governed automatic actions. Policy determines the action per confidence level. The substrate defines the closed action vocabulary; specific defaults per profile are realization-configurable.
+Capacity confidence ratings trigger policy-governed automatic actions. Policy determines the action per confidence level. The substrate defines the closed action vocabulary; specific defaults per profile are implementation-configurable.
 
 ```yaml
 capacity_confidence_policy:
@@ -786,4 +786,4 @@ policy:
 
 ---
 
-*UDLM substrate document. Realization-specific request/entity management mechanics, ownership enforcement at dispatch, provider notification consumption pipelines, and entity lifecycle monitoring implementations live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific request/entity management mechanics, ownership enforcement at dispatch, provider notification consumption pipelines, and entity lifecycle monitoring implementations live in the consuming implementation's documentation.*

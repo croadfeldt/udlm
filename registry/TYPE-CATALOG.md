@@ -360,7 +360,7 @@ A named set of person and service-account identities, keyed by its required `han
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.3.2)
+### Identity.Person (0.3.3)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -380,7 +380,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.3.2)
+### Identity.ServiceAccount (0.3.3)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -439,7 +439,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 - Hardware.NetworkInterface — the adapter or port the profile applies to.
 - Network.VLAN — the segments the configured VLANs and sub-interfaces ride.
 
-### Network.DHCPScope (0.5.2)
+### Network.DHCPScope (0.5.3)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -823,11 +823,11 @@ One package at one version — identified by its purl (Package URL), the portabl
 
 ## Storage
 
-### Storage.Cluster (0.4.2)
+### Storage.Cluster (0.4.3)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
-A multi-node storage system — Ceph is the reference realization, but the technology is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure-coding`, plus replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.
+A multi-node storage system — Ceph is the reference implementation, but the technology is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`, `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB, not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication` or `erasure-coding`, plus replica count), and publishes the consumption surfaces: the block and file storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes are hosts or VMs it depends on — the cluster needs its quorum up.
 
 **Use when:**
 - You need the storage platform in the graph so volumes and their consumers order correctly against it and its member nodes.

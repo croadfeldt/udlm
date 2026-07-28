@@ -51,7 +51,7 @@ flowchart TD
 
 Each decision node reads a named UDLM surface. Every row below was resolved against the
 current registry (validated here, not assumed); the status column is honest about what exists
-today versus what the pending change-control ADR and the class-realization P0 phase must
+today versus what the pending change-control ADR and the class-implementation P0 phase must
 supply. The **policy role** column states whether a policy *decides* (gates, refuses, selects)
 or *enriches* (adds data other steps read) at that node, and which `policy_type` from the
 policy schema's existing vocabulary carries it.
@@ -81,9 +81,9 @@ requires a surface that is neither present nor already on the build list.
 - **The policy is data.** Adoption mode, gates, windows, freezes, and expedite paths are
   clauses of a declared policy object the orchestration evaluates — never tribal process. The
   human decision is made once, in the policy, not once per change.
-- **A window must *fit*, not just be open.** The provider gives a realization time-to-complete
+- **A window must *fit*, not just be open.** The provider gives an implementation time-to-complete
   estimate (its own duration is provider-specific); the window gate proceeds only if
-  `estimate + margin ≤ window_remaining`. A 2-hour window cannot hold a 4-hour realization — a
+  `estimate + margin ≤ window_remaining`. A 2-hour window cannot hold a 4-hour implementation — a
   job that won't finish is not started; it defers, batch-fits, or expedites (ADR-053 §8; the
   estimate reuses the RTO/T6 validated-time-bound machinery).
 - **Scheduling gates control when; evidence gates control whether.** An expedite clause

@@ -6,7 +6,7 @@
 **Maps to:** DATA
 
 > Defines the substrate contract for declaring capacity, signaling backpressure,
-> and coordinating load between consumers, realizations, providers, and peers.
+> and coordinating load between consumers, implementations, providers, and peers.
 > Wire-compatible: any conformant peer MUST recognize the `rate_limit.*` signals
 > any other peer emits and respond per this contract.
 
@@ -52,14 +52,14 @@ A rate limit declaration:
 | `burst` | Brief allowance above `limit`; consumed faster than refill |
 | `soft_thresholds` | Optional: percentages that trigger advisory signals |
 
-A peer MAY query a realization's rate limit declarations to plan request
+A peer MAY query an implementation's rate limit declarations to plan request
 patterns proactively.
 
 ---
 
 ## 3. Hard limit response (429)
 
-When a request would exceed the limit, the conformant realization MUST:
+When a request would exceed the limit, the conformant implementation MUST:
 
 1. Reject the request with `rate_limit.exceeded` per the error envelope
    ([`error-model.md`](error-model.md)).
@@ -98,12 +98,12 @@ Example response:
 Soft thresholds enable proactive load shedding. When utilization crosses a soft
 threshold:
 
-1. The realization SHOULD include an advisory header (HTTP) or envelope field
+1. The implementation SHOULD include an advisory header (HTTP) or envelope field
    indicating the level. HTTP header: `X-Capacity-Level: warning|critical`.
-2. The realization MAY emit an audit event `rate_limit.threshold_crossed` for
+2. The implementation MAY emit an audit event `rate_limit.threshold_crossed` for
    the audit chain.
 3. The consumer SHOULD reduce request rate but is not blocked.
-4. The realization MUST NOT delay response delivery as a backpressure mechanism
+4. The implementation MUST NOT delay response delivery as a backpressure mechanism
    below the hard limit — only flag it.
 
 ---
@@ -129,7 +129,7 @@ A consumer SHOULD:
 ## 6. Provider capacity declaration
 
 Information providers and service providers MAY declare their query/operation
-capacity to the realization via the provider registration mechanism (see
+capacity to the implementation via the provider registration mechanism (see
 [`provider-contract.md`](provider-contract.md)):
 
 ```json
@@ -142,14 +142,14 @@ capacity to the realization via the provider registration mechanism (see
 }
 ```
 
-The realization uses these declarations to:
+The implementation uses these declarations to:
 
 - Throttle dispatched requests to the provider.
 - Schedule scheduled requests within provider capacity.
 - Surface capacity exhaustion to consumers as `provider.unavailable` (retryable).
 
 A provider that finds itself overloaded MAY respond with `rate_limit.exceeded`
-itself; the realization treats this as a transient provider failure and
+itself; the implementation treats this as a transient provider failure and
 applies retry semantics.
 
 ---
@@ -166,7 +166,7 @@ Cross-peer federation surfaces MUST honor the same contract:
 
 ## 8. Fairness
 
-A realization that hosts multiple consumers MUST NOT permit one consumer to
+An implementation that hosts multiple consumers MUST NOT permit one consumer to
 starve others:
 
 - Per-scope limits (per_consumer, per_tenant) ensure isolation.
@@ -191,7 +191,7 @@ fair allocation across consumers.
 
 ## 10. Validation rules (conformance checks)
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Publish rate limit declarations via capability discovery if any surface is
   limited.

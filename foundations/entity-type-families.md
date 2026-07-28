@@ -18,7 +18,7 @@
 
 ## 1. Purpose
 
-UDLM is a realization-neutral substrate whose universal contracts (identifier, four-state
+UDLM is a implementation-neutral substrate whose universal contracts (identifier, four-state
 lifecycle, provenance, classification, events) are domain-independent. Its **entity-type
 definitions** are not domain-independent in *meaning* — an `Resource` is
 about the infrastructure domain, a `Capability` about the architecture/knowledge domain —
@@ -33,18 +33,18 @@ discovery and coherence. It is **not** a boundary on who may use them.
 > **Entity-Type Family**
 > A **logical grouping** of UDLM entity-type definitions, named for the domain in whose
 > context they were first defined (e.g. the **Resource** family, first exercised by the DCM
-> realization; the **Knowledge** family, first exercised by the DAV realization). A family
+> implementation; the **Knowledge** family, first exercised by the DAV implementation). A family
 > organizes definitions; **it is not a usage boundary, a scope, a permission, or an
-> ownership.** The named realizations are **non-normative examples** (`GLOSSARY.md`) —
-> a family is defined by UDLM and depends on no realization.
+> ownership.** The named implementations are **non-normative examples** (`GLOSSARY.md`) —
+> a family is defined by UDLM and depends on no implementation.
 
 The governing principle:
 
-> **Grouping ≠ boundary. Definitions are universal — free to use by all realizations,
+> **Grouping ≠ boundary. Definitions are universal — free to use by all implementations,
 > regardless of family.**
 
 A `Capability` definition that emerged in the context of DAV is equally available to DCM,
-or to any peer realization, with no special status. Grouping it under the "Knowledge
+or to any peer implementation, with no special status. Grouping it under the "Knowledge
 family" records *where it came from and what it relates to* — nothing more. UDLM's entire
 value is exchange; an organizational scheme must never fragment that.
 
@@ -81,16 +81,16 @@ Modeling a non-infrastructure system (DAV) on UDLM showed the universality lives
 substrate/contracts while the entity-type *definitions* are domain-specific in meaning
 (see the case study). Families are simply the catalog structure that follows: **one
 universal substrate; a growing, universally-usable set of definitions; organized into
-domain-named families for findability.** A realization does not "own" or "gate" a family —
+domain-named families for findability.** An implementation does not "own" or "gate" a family —
 it may *contribute* definitions (which then belong to everyone) and *use* any definition
-from any family. This is what makes "realization-neutral; any conformant realization is a
+from any family. This is what makes "implementation-neutral; any conformant implementation is a
 peer" concrete and non-fragmenting.
 
 ## 4. Family registry
 
 Families name the domain a set of definitions was organized under; usage is open to all.
 
-| Family | Domain (organizing context) | Example realization (non-normative) | Entity-type definitions | Lifecycle archetype |
+| Family | Domain (organizing context) | Example implementation (non-normative) | Entity-type definitions | Lifecycle archetype |
 |--------|------------------------------|-------------|-------------------------|---------------------|
 | **Resource** | Maintained-state resources (provisioned, reconciled) | DCM | shape (derived, `has_constituents`): Atomic \| Composite (+ ownership sub-types) — [Entity Types](entity-types.md) | Provisioning: REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL … |
 | **Process** | Bounded executions (automation runs) | DCM | shape (derived, `has_constituents`): Atomic \| Composite — [Entity Types](entity-types.md) §2.3 | Provisioning (terminal): REQUESTED → INITIATED → EXECUTING → COMPLETED / FAILED / CANCELLED |
@@ -100,7 +100,7 @@ Families name the domain a set of definitions was organized under; usage is open
 The **Resource** family is the founding set (UDLM's original definitions, retroactively
 grouped). The **Knowledge** family is the first proof that the same substrate organizes a
 domain UDLM did not originally anticipate. A family may be referred to by its domain name
-(Resource, Knowledge) or by its anchoring realization ("the DCM family", "the DAV family")
+(Resource, Knowledge) or by its anchoring implementation ("the DCM family", "the DAV family")
 — they denote the same grouping. Future domains (People/Process, Enablement — see
 `../docs/research/holistic-vision.md`) would be organized as additional families, their
 definitions equally universal.
@@ -108,14 +108,14 @@ definitions equally universal.
 ## 5. What a family definition document specifies
 
 A document defining a family states, at minimum:
-1. The **domain** (organizing context) and the realization(s) that anchor it.
+1. The **domain** (organizing context) and the implementation(s) that anchor it.
 2. The **lifecycle archetype** — how the four states are interpreted in this domain and
    the shared state-machine skeleton its definitions typically use (descriptive coherence,
    not a constraint on reuse).
 3. The **entity-type definitions** grouped here — for each: definition, field set,
    relationships, classification defaults, terminal behavior, per-type state machine.
 4. A reminder that definitions are **universal** — listed here for organization, usable by
-   any realization; constraints apply to *instances* (ownership/classification/scope), not
+   any implementation; constraints apply to *instances* (ownership/classification/scope), not
    to the definitions.
 5. Confirmation that all **universal contracts** are honored (identifier, four-state,
    provenance, classification, events, contributor identity).
@@ -149,7 +149,7 @@ Mechanics:
 |------|---------|---------|
 | **family** | Whose vocabulary defines this meaning? | `Drive [Computing]` |
 | **domain / domain_prefix** | Which sub-domain within the family? | capability domain `PRV`, `automation` |
-| **pillar** | Which realization pillar (DAV)? | platform / people-process / enablement |
+| **pillar** | Which implementation pillar (DAV)? | platform / people-process / enablement |
 | **scope** (instances) | Who may see/own this artifact? | global / shared / domain / project |
 
 **Recommendation:** `family` should be a **standard tag on all UDLM Data** (a candidate for

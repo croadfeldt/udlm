@@ -157,9 +157,9 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
 
 **Judgment (reviewer + author self-check).**
 - **Scope — DCM vs UDLM (the peer test, `docs/adr/ADR-008`):** *could an independent conformant peer decide
-  this differently and still be valid?* **Yes → DCM** (Policy / realization); **No → UDLM** (the portable
+  this differently and still be valid?* **Yes → DCM** (Policy / implementation); **No → UDLM** (the portable
   substrate). Portable data and *declarative* constraints are UDLM; anything computed, negotiated, or
-  executed is DCM. Putting realization mechanism into the portable model is a finding.
+  executed is DCM. Putting implementation mechanism into the portable model is a finding.
 - **Reduce to existing (tenet T7):** does this coin a net-new mechanism (a "module", a new envelope, a
   parallel type)? If so, the *Why* must show that no existing mechanism — classification, profiles,
   capability declaration, conformance tier, references, edges — composes to cover it.

@@ -21,7 +21,7 @@
 
 The UDLM Ingestion Model is the **unified substrate contract for bringing entities that exist outside lifecycle control into governance**. It applies to multiple distinct sources:
 
-- **Brownfield Discovery** — entities discovered by a Service Provider that already exist in the infrastructure but are unknown to the realization
+- **Brownfield Discovery** — entities discovered by a Service Provider that already exist in the infrastructure but are unknown to the implementation
 - **Manual Import** — entities imported from external systems (CMDBs, spreadsheets, legacy records) during onboarding
 - **Legacy Import** — entities migrated from a prior incompatible system
 
@@ -93,7 +93,7 @@ Before an entity can be promoted, the following must be satisfied:
 
 ## 4. The `__transitional__` Tenant
 
-The `__transitional__` Tenant is a substrate-required system artifact — a system-managed holding area for entities that have been ingested but not yet assigned to a real Tenant. Any UDLM-conformant realization MUST provide this Tenant.
+The `__transitional__` Tenant is a substrate-required system artifact — a system-managed holding area for entities that have been ingested but not yet assigned to a real Tenant. Any UDLM-conformant implementation MUST provide this Tenant.
 
 ```yaml
 tenant:
@@ -184,7 +184,7 @@ ingestion_record:
 
 ## 6. Auto-Assignment Signals (Substrate Contract)
 
-When an entity is ingested, the realization attempts auto-assignment to a real Tenant using the following signal taxonomy (closed substrate vocabulary):
+When an entity is ingested, the implementation attempts auto-assignment to a real Tenant using the following signal taxonomy (closed substrate vocabulary):
 
 | Signal | Confidence | Description |
 |--------|-----------|-------------|
@@ -198,10 +198,10 @@ When an entity is ingested, the realization attempts auto-assignment to a real T
 
 Multiple signals can be combined. If signals conflict, the higher-confidence signal wins and the conflict is recorded in the ingestion record with `ingestion_confidence: medium` regardless of individual signal strengths.
 
-The **priority order** in which signals are evaluated is a realization configuration choice (declared in a platform-domain layer), but the substrate requires:
+The **priority order** in which signals are evaluated is an implementation configuration choice (declared in a platform-domain layer), but the substrate requires:
 - `explicit_tenant_tag` MUST always have highest priority when present.
 - `default_tenant` MUST always have lowest priority.
-- Middle signals MAY be reordered per realization or deployment.
+- Middle signals MAY be reordered per implementation or deployment.
 
 ---
 
@@ -220,14 +220,14 @@ Service Provider performs discovery scan
   │  Interrogates existing infrastructure
   │  Creates Discovered State records for all found entities
   │
-  ▼  The realization identifies "unmanaged" discovered entities
+  ▼  The implementation identifies "unmanaged" discovered entities
   │  Discovered State records with no matching Realized State = unmanaged
   │  These are brownfield candidates
   │
   ▼  Ingestion initiation
   │  Platform admin or automated policy initiates ingestion
-  │  The realization creates entity stubs with:
-  │    - New UUID (realization-assigned)
+  │  The implementation creates entity stubs with:
+  │    - New UUID (implementation-assigned)
   │    - ingestion_source: brownfield_discovery
   │    - State: INGESTED
   │    - Tenant: __transitional__ (pending enrichment)
@@ -242,18 +242,18 @@ Service Provider performs discovery scan
   ▼  Promotion
   │  Review and authorization by responsible actor
   │  State: ENRICHING → PROMOTED
-  │  The realization assumes lifecycle ownership:
+  │  The implementation assumes lifecycle ownership:
   │    - Discovered State record becomes the initial Realized State
   │    - Entity enters standard lifecycle (OPERATIONAL)
   │    - Drift detection active from this point forward
   │
   ▼  OPERATIONAL
-     The realization now manages the full lifecycle of this previously unmanaged entity
+     The implementation now manages the full lifecycle of this previously unmanaged entity
 ```
 
 ### 8.3 Discovered → Realized Promotion Contract
 
-When a brownfield entity is promoted, its Discovered State record is promoted to become the initial Realized State. This is the moment the realization assumes lifecycle authority. The wire shape of the promotion record is normative:
+When a brownfield entity is promoted, its Discovered State record is promoted to become the initial Realized State. This is the moment the implementation assumes lifecycle authority. The wire shape of the promotion record is normative:
 
 ```yaml
 realized_state_record:
@@ -300,7 +300,7 @@ In all cases: once an entity reaches `PROMOTED`, it has a Realized State record 
 | `ING-004` | Every ingested entity must carry an `ingestion_record` in its provenance chain. |
 | `ING-005` | Entities in `__transitional__` beyond `max_residency_days` must trigger the configured escalation action. |
 | `ING-006` | A brownfield entity may not be promoted to `PROMOTED` state without explicit actor authorization. |
-| `ING-007` | At promotion, the Discovered State record must be promoted to Realized State — this is the moment the realization assumes lifecycle ownership. |
+| `ING-007` | At promotion, the Discovered State record must be promoted to Realized State — this is the moment the implementation assumes lifecycle ownership. |
 | `ING-012` | Ingestion signal priority order is declared in a platform domain layer and configurable per deployment. `explicit_tenant_tag` always has highest priority. `default_tenant` always has lowest priority. Middle signals are reorderable. |
 | `ING-013` | Bulk entity promotion is supported with profile-governed maximum batch sizes and approval requirements. Preview required before confirmation. Rollback window applies. Single `BULK_PROMOTE` audit record with full member list. |
 | `ING-014` | Maximum ingestion sources per entity is profile-governed. Exceeding the maximum triggers `warn` or `reject` per policy. |
@@ -319,4 +319,4 @@ In all cases: once an entity reaches `PROMOTED`, it has a Realized State record 
 
 ---
 
-*UDLM substrate document. Realization-specific ingestion engine implementation, Information Provider polling/webhook integration mechanics, enrichment policy enforcement code, auto-assignment execution, and ingestion scheduling live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific ingestion engine implementation, Information Provider polling/webhook integration mechanics, enrichment policy enforcement code, auto-assignment execution, and ingestion scheduling live in the consuming implementation's documentation.*

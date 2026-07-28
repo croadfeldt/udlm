@@ -33,7 +33,7 @@ A consumer or peer MUST NOT:
 - Infer retryability from HTTP status codes alone.
 - Retry without honoring the `retry_after_seconds` minimum delay.
 
-A conformant realization MUST set the `retryable` flag correctly per the
+A conformant implementation MUST set the `retryable` flag correctly per the
 error-code definitions.
 
 ---
@@ -50,7 +50,7 @@ Retried operations MUST be idempotent across attempts. The contract:
    - Resume in-flight if the previous attempt is still pending.
    - Process freshly if no prior attempt is on record (within the deduplication window).
 3. The deduplication window is at least **24 hours** (PT24H) from the first
-   submission. Realizations MAY extend; MUST NOT shorten.
+   submission. Implementations MAY extend; MUST NOT shorten.
 4. Idempotency-Key reuse with a **different payload** MUST be rejected with
    `validation.idempotency_key_mismatch`.
 
@@ -75,7 +75,7 @@ Normative parameters:
 If the error response includes `retry_after_seconds`, the consumer MUST wait
 at least that long, then apply jitter on the remainder if necessary.
 
-Realizations MAY use stricter parameters (more attempts, longer caps) per
+Implementations MAY use stricter parameters (more attempts, longer caps) per
 profile. They MUST NOT use looser ones at interop boundaries — peers count
 on the parameters as ceilings.
 
@@ -130,8 +130,8 @@ is **the failed step**, not the whole operation:
 ## 8. Provider-side retries
 
 A provider executing a request MAY internally retry transient failures before
-reporting back to the realization. Provider-side retries are opaque to the
-realization. The realization counts only the externally-visible retries (its
+reporting back to the implementation. Provider-side retries are opaque to the
+implementation. The implementation counts only the externally-visible retries (its
 own request attempts to the provider).
 
 A provider that has exhausted internal retries MUST report failure via the
@@ -153,7 +153,7 @@ Cross-peer federation requests follow the same contract:
 
 ## 10. Validation rules (conformance checks)
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Honor `retryable: false` (never retry permanent errors).
 - Honor `retry_after_seconds`.

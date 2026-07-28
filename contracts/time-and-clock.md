@@ -33,7 +33,7 @@ time models go wrong:
 
 ## 2. Time representation
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Use **UTC** for all timestamps crossing interop boundaries. Local time is
   permitted only in UI rendering, converted to UTC before persistence or transport.
@@ -85,7 +85,7 @@ the basis of ordering — see §4.
 
 ## 4. Ordering is structural (not temporal)
 
-Ordering MUST NOT depend on wall-clock comparison. A conformant realization
+Ordering MUST NOT depend on wall-clock comparison. A conformant implementation
 orders as follows:
 
 1. **Within an audit stream — a total order by construction.** The audit chain
@@ -116,7 +116,7 @@ orders as follows:
 
 ## 5. Cross-peer agreement and attestation
 
-When two independent realizations exchange or co-observe events, they reconcile
+When two independent implementations exchange or co-observe events, they reconcile
 by causality and prove integrity by mutual attestation:
 
 1. **Reconcile to the causal DAG** (§4.2). "Peer A says XYZ, peer B says YXZ" is
@@ -192,7 +192,7 @@ leap-handling strategy, because there is no interoperable standard for one (smea
 public-cloud providers) and a peer's choice is not observable on the wire (timestamps are millisecond UTC
 either way, §2).
 
-A conformant realization MUST:
+A conformant implementation MUST:
 - Keep its clock **UTC-traceable** across a leap-second event — it stays within its profile's
   `max_divergence` bound (§6); the leap does not push it out of tolerance.
 - **Declare its leap-handling strategy** in its conformance declaration.
@@ -215,7 +215,7 @@ is fine precisely because order never comes from the clock.
 
 ## 10. Validation rules (conformance checks)
 
-A conformant realization MUST:
+A conformant implementation MUST:
 
 - Reject non-UTC timestamps, and timestamps lacking explicit timezone, at ingest.
 - Reject timestamps whose divergence exceeds the **applicable profile bound** (§6),

@@ -3,7 +3,7 @@
 **Document Status:** 🟡 PROPOSED — a possible method; see [ADR-COST-002](../registry/instances/adr-cost-metering-linkage.json)
 **Related:** [ADR-COST-001](../registry/instances/adr-cost-metering-placement.json) (placement) | [information-providers.md](information-providers.md) | [capability-discovery.md](capability-discovery.md) | [ownership-sharing-allocation.md](../foundations/ownership-sharing-allocation.md)
 
-> **This document maps to: DATA + PROVIDER.** It defines the *hooks* UDLM carries so a realization
+> **This document maps to: DATA + PROVIDER.** It defines the *hooks* UDLM carries so an implementation
 > can exchange cost with an external cost engine. It defines no rates and no calculation — those are
 > the engine's ([ADR-COST-001](../registry/instances/adr-cost-metering-placement.json)).
 
@@ -11,11 +11,11 @@
 
 ## 1. The reciprocal contract
 
-Cost is a **two-way** contract between a UDLM-conformant realization (e.g. DCM) and a cost engine — neither side owns both halves:
+Cost is a **two-way** contract between a UDLM-conformant implementation (e.g. DCM) and a cost engine — neither side owns both halves:
 
 ```
                  outbound: metering inputs
-   realization ───────────────────────────────▶  cost engine (serve_data:cost)
+   implementation ───────────────────────────────▶  cost engine (serve_data:cost)
    (DCM)         resource ref + priced_by +          applies its cost model
                  resolved meterable dimensions        (rates, capex/opex math)
         ▲                                                     │
@@ -23,10 +23,10 @@ Cost is a **two-way** contract between a UDLM-conformant realization (e.g. DCM) 
                  inbound: cost.attributed {capex, opex}
 ```
 
-- **Outbound (UDLM/DCM → engine):** for a resource, the realization hands the engine (a) the `priced_by` cost-model reference and (b) the resolved values of the resource's meterable dimensions. This is the "give the engine a method to look up resource data."
-- **Inbound (engine → UDLM/DCM):** the engine returns cost (`cost.attributed`, provider-contract §10), which the realization **consumes** — attributing it to the owning tenant, and OPTIONALLY feeding it into its own decisions (placement, budgets). 
+- **Outbound (UDLM/DCM → engine):** for a resource, the implementation hands the engine (a) the `priced_by` cost-model reference and (b) the resolved values of the resource's meterable dimensions. This is the "give the engine a method to look up resource data."
+- **Inbound (engine → UDLM/DCM):** the engine returns cost (`cost.attributed`, provider-contract §10), which the implementation **consumes** — attributing it to the owning tenant, and OPTIONALLY feeding it into its own decisions (placement, budgets). 
 
-**The engine computes; it never decides.** No placement, budget, or quota decision is delegated into the cost calculation. Those decisions stay in the realization as **policy** ([ADR-COST-001](../registry/instances/adr-cost-metering-placement.json)), using returned cost as an *input*. The cost engine is a pure function: `(resource dimensions + cost model) → cost`.
+**The engine computes; it never decides.** No placement, budget, or quota decision is delegated into the cost calculation. Those decisions stay in the implementation as **policy** ([ADR-COST-001](../registry/instances/adr-cost-metering-placement.json)), using returned cost as an *input*. The cost engine is a pure function: `(resource dimensions + cost model) → cost`.
 
 ---
 
@@ -36,7 +36,7 @@ Cost is a **two-way** contract between a UDLM-conformant realization (e.g. DCM) 
 
 On a Resource Type Spec, a `metering.dimensions[]` list declares **what** about the resource is measurable and **where** each value is resolved from. Each dimension: `name`, `unit`, `cost_class` (**capex** = capital/allocation, amortized; **opex** = operational/usage), and a `source`:
 
-| `source.kind` | Meaning | Resolved by the realization from |
+| `source.kind` | Meaning | Resolved by the implementation from |
 |---------------|---------|----------------------------------|
 | `field` | a declared field/output | direct read of the Realized-state field named by `source.ref` |
 | `lifecycle` | a time interval | the four-state clock (e.g. `realized_to_decommissioned`) — the amortization / usage window |
@@ -61,7 +61,7 @@ priced_by:
 
 ### 2.3 The lookup contract (resolution)
 
-Given an `entity_uuid`, a conformant realization MUST be able to resolve every declared meterable dimension to a value using its `source` (field read / lifecycle interval / telemetry lookup). That resolved set + `priced_by` is exactly the outbound half of §1. UDLM declares WHAT is meterable and WHERE each value comes from; the realization performs the resolution; the engine does the math.
+Given an `entity_uuid`, a conformant implementation MUST be able to resolve every declared meterable dimension to a value using its `source` (field read / lifecycle interval / telemetry lookup). That resolved set + `priced_by` is exactly the outbound half of §1. UDLM declares WHAT is meterable and WHERE each value comes from; the implementation performs the resolution; the engine does the math.
 
 ---
 
@@ -89,7 +89,7 @@ The cost engine registers as a provider declaring the reciprocal need:
 provider:
   name: "cost engine"
   capabilities: { serve_data: { data_domains: [cost] } }
-  needs_from_realization:
+  needs_from_implementation:
     - domain: entity_lifecycle    # realized/decommissioned → amortization windows
     - domain: metering            # the meterable dimensions
 ```
@@ -101,5 +101,5 @@ DCM's metering resolver walks each Resource Type's `metering.dimensions`, resolv
 ## 5. Data · Policy · Provider
 
 - **Data:** `spec.metering` (the meterable surface) + `priced_by` (the cost-model reference). No rates, no formulas.
-- **Policy:** which `priced_by` wins (type default vs per-customer instance override); whether returned cost gates placement/budget/quota — all admin policy in the realization.
-- **Provider:** the cost engine (`serve_data:cost`) computes; a telemetry provider (`serve_data`) supplies opex usage. The realization consumes; neither decides on the engine's behalf.
+- **Policy:** which `priced_by` wins (type default vs per-customer instance override); whether returned cost gates placement/budget/quota — all admin policy in the implementation.
+- **Provider:** the cost engine (`serve_data:cost`) computes; a telemetry provider (`serve_data`) supplies opex usage. The implementation consumes; neither decides on the engine's behalf.

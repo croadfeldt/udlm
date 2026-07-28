@@ -9,7 +9,7 @@ two fit and how they would compose._
 **OSAC provisions platforms. UDLM is the universal data substrate that describes them. DCM operationalizes
 that data.** OSAC is the *runtime that makes real*; UDLM/DCM is the *portable, governed, auditable data
 lifecycle around it*. Each is strong alone; together they cover the whole arc from a consumer's intent to a
-sovereign, audited, drift-checked realization — with neither locked to the other.
+sovereign, audited, drift-checked implementation — with neither locked to the other.
 
 ## Why they fit (the reasons)
 
@@ -39,7 +39,7 @@ sovereign, audited, drift-checked realization — with neither locked to the oth
 ## How they compose
 
 **OSAC becomes a DCM Provider.** DCM owns the four state stores and the governance; OSAC's Fulfillment API is
-the realization target.
+the implementation target.
 
 ```
 Consumer intent ─► DCM: Intent (immutable)
@@ -82,7 +82,7 @@ cluster" (HA, sovereign region) are two profiles over one contract, each governe
 
 - **OSAC gains:** lifecycle history, drift detection, tamper-evident audit, sovereignty governance, and
   provider-neutral portability (its catalog items become portable UDLM contracts, not OSAC-only).
-- **UDLM/DCM gains:** a real, open, production-grade provisioning realization that *proves* the model end to
-  end — the reference realization the whitepaper describes.
+- **UDLM/DCM gains:** a real, open, production-grade provisioning implementation that *proves* the model end to
+  end — the reference implementation the whitepaper describes.
 - **Customers gain:** capabilities out of the box and time-to-value — a governed, sovereign, audited
   self-service platform without building the substrate themselves.

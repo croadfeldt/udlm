@@ -14,7 +14,7 @@ info, warning, or critical — and the recovery policy decides what to do about 
 result is recorded and verified, and the cycle stays inside the profile's reconciliation window.
 
 ## What this adds over request-realization
-- **A fifth read: discovered state.** Realization ends at realized. This loop introduces *discovered* — the
+- **A fifth read: discovered state.** Implementation ends at realized. This loop introduces *discovered* — the
   provider's actual current state, probed live — and makes realized-vs-discovered the thing under watch.
 - **Drift is a first-class record.** A divergence is not just a log line: it is a record with a field-by-field
   comparison and a **severity classification** (info / warning / critical) that the recovery policy keys on.
@@ -23,7 +23,7 @@ result is recorded and verified, and the cycle stays inside the profile's reconc
 - **Remediation is verified, not fire-and-forget.** After the action runs, its result is recorded and checked,
   closing the loop rather than assuming success.
 - **It is bounded in time.** The whole detect-classify-remediate cycle must complete within the
-  profile-governed reconciliation window — a timing guarantee realization itself never makes.
+  profile-governed reconciliation window — a timing guarantee implementation itself never makes.
 
 ## The flow — only what's different
 ```mermaid

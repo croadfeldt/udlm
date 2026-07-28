@@ -345,9 +345,9 @@ commit_log_entry:
 - Every entry is **eventually enriched** into a full `audit_record` the Merkle tree covers, and any
   un-forwarded entries are replayed on restart before new operations proceed (AUD-009/011).
 
-*How* a realization implements this — the two-stage synchronous-commit / asynchronous-forward pipeline, the
+*How* an implementation implements this — the two-stage synchronous-commit / asynchronous-forward pipeline, the
 quorum/consensus store (e.g. a Raft-class store such as etcd), the forward-service retry and recovery
-handling, and the latency budget — is realization architecture, specified in the DCM architecture docs.
+handling, and the latency budget — is implementation architecture, specified in the DCM architecture docs.
 
 ## 8. Tamper-Evidence and Payload Integrity — Merkle Tree
 
@@ -445,7 +445,7 @@ At **field** granularity, both are populated. Full forensic detail.
 
 ### 8.3 Signed Tree Heads
 
-The audit tree's root of trust is a signed Merkle root, recomputed and signed periodically (the interval is profile-governed; the computing component is a realization concern):
+The audit tree's root of trust is a signed Merkle root, recomputed and signed periodically (the interval is profile-governed; the computing component is an implementation concern):
 
 ```yaml
 signed_tree_head:
@@ -459,8 +459,8 @@ Signed Tree Heads are computed every N leaves or every T seconds (configurable).
 
 ### 8.4 Verification
 
-Three proofs are the verification contract (RFC 9162). A conforming realization MUST be able to produce
-them; how it exposes them (the API surface) is realization control-plane, not fixed here.
+Three proofs are the verification contract (RFC 9162). A conforming implementation MUST be able to produce
+them; how it exposes them (the API surface) is implementation control-plane, not fixed here.
 
 - **Inclusion proof** — proves a specific record exists in the tree: an O(log n) proof path from leaf to
   root, checkable against a signed tree head without database access.
@@ -501,10 +501,10 @@ them; how it exposes them (the API surface) is realization control-plane, not fi
 | `AUD-006` | Audit records form a Merkle tree (RFC 9162 pattern). Each leaf carries a signature from the producing service and a payload hash linking it to adjacent leaves in the request chain. |
 | `AUD-007` | The action field must use the closed vocabulary — free-text action fields are invalid and must be rejected at write time. |
 | `AUD-008` | Audit Store implementations must support queries by: entity_uuid, actor_uuid, action, timestamp range, tenant_uuid, request_uuid, leaf_index, and retention_status. |
-| `AUD-009` | Every commit-log entry must be delivered to the audit store with retry; an entry may only be cleared after both (a) the audit store confirms receipt AND (b) the entry has aged beyond the commit-log retention window. (The delivery/forward process is a realization concern.) |
+| `AUD-009` | Every commit-log entry must be delivered to the audit store with retry; an entry may only be cleared after both (a) the audit store confirms receipt AND (b) the entry has aged beyond the commit-log retention window. (The delivery/forward process is an implementation concern.) |
 | `AUD-010` | Merkle-tree verification (inclusion, consistency, request-chain proofs) must be available as a first-class operation; verification failures trigger immediate security alerts. |
-| `AUD-011` | On restart, a realization must replay all `status: pending_forward` commit-log entries before accepting new operations. |
-| `AUD-012` | Signed Tree Heads must be computed at the interval configured by the deployment profile. The STH signing key is held by a **Credential Provider** ([governance/credentials.md](../governance/credentials.md) — a capability-declaring provider selected against the profile's assurance/attestation floor); key values are NEVER stored in realization stores (CPX-001). The substrate carries only the key reference and signature. |
+| `AUD-011` | On restart, an implementation must replay all `status: pending_forward` commit-log entries before accepting new operations. |
+| `AUD-012` | Signed Tree Heads must be computed at the interval configured by the deployment profile. The STH signing key is held by a **Credential Provider** ([governance/credentials.md](../governance/credentials.md) — a capability-declaring provider selected against the profile's assurance/attestation floor); key values are NEVER stored in implementation stores (CPX-001). The substrate carries only the key reference and signature. |
 | `AUD-013` | The Stage 1 timestamp in the Commit Log is the authoritative audit timestamp. Stage 2 enrichment timestamps record when the full audit record became queryable — not when the change occurred. |
 | `AUD-014` | Audit granularity level is configured per deployment profile. `fsi` and `sovereign` profiles require `field` granularity — this cannot be downgraded. |
 | `AUD-015` | Inter-stage verification mode is configured per deployment profile. `fsi` and `sovereign` profiles require `synchronous` verification — the pipeline halts if any signature verification fails. |

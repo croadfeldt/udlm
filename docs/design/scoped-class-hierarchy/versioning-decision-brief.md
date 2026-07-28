@@ -90,7 +90,7 @@ where pinned old revisions actually live (the registry's git history).
 
 ## Where it stands
 
-The realization plan's first phase carries the gates these rulings require — the
+The implementation plan's first phase carries the gates these rulings require — the
 compatibility classifier with the scope rule, the impact enumerator, pin validation on both
 planes, and two new record schemas (the regeneration manifest and the finding-routing record).
 The blue/green harness lands with the pilot migration. Enforcement today is honestly zero of

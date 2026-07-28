@@ -11,7 +11,7 @@ The everyday consumer: asks for what they need in portable terms and lets the sy
 - [UC-03 · Standard VM provision](uc-03-vm-standard-provision.md)
 - [UC-04 · VM intent onto OSAC](uc-04-vm-intent-osac-placement.md)
 - [UC-06 · Persistent volume with attach](uc-06-persistent-volume-provision.md)
-- [UC-11 · VM provision, provider fails mid-realization](uc-11-vm-provision-with-provider-failure.md)
+- [UC-11 · VM provision, provider fails mid-implementation](uc-11-vm-provision-with-provider-failure.md)
 - [UC-13 · Idempotent reconvergence](uc-13-idempotent-reconvergence.md)
 
 ## platform-operator — model, register, and operate the estate

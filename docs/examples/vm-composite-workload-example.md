@@ -98,7 +98,7 @@ constituents:
 | Disk placed by literal filesystem path, with a comment noting the intended future migration | `storage_class` carries the tier intent; the migration is a one-line spec edit with version history |
 
 Provider mechanics in the playbook — hypervisor package install, bridge/VLAN plumbing on the
-host, image download, guest customization, the create command — are exactly the realization a
+host, image download, guest customization, the create command — are exactly the implementation a
 VM provider owns. The host-side segment plumbing is modeled once (the host's bridge and bond
 as `Hardware.NetworkInterface` records with `parent_device`), not re-created per workload.
 

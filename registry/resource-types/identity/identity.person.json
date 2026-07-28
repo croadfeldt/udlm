@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.3.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.3.3",
   "conforms_to": "udlm/0.1",
   "uuid": "679b14ef-f169-441e-968d-dacafffe1966",
   "resource_type": "Identity.Person",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "family": "Access",
   "entity_type": "Identity",
   "status": "active",
@@ -41,7 +41,7 @@
     "properties": {
       "handle": {
         "type": "string",
-        "description": "Login handle / username, unique within the realization."
+        "description": "Login handle / username, unique within the implementation."
       },
       "display_name": {
         "type": "string"

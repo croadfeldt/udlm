@@ -1,4 +1,4 @@
-# Class-system realization — the program plan
+# Class-system implementation — the program plan
 
 **What this settles:** the execution plan for the maintainer's ruling (2026-07-25): *the
 portability we want requires moving resource types AND provider types onto the class system.*
@@ -66,7 +66,7 @@ producers: the enumerator that emits a manifest and the estate-side reporter tha
 finding. The generator also emits the **compilation-provenance block**
 (ADR-045 §7) into every generated spec — full input-revision chain incl. layers, schemas, and
 generator version — and the `--check` gate verifies it by faithful recompilation (a mismatch
-is an integrity refusal, UC-012); realized entities extend it with realization provenance
+is an integrity refusal, UC-012); realized entities extend it with implementation provenance
 (provider definition revision + engine binding version). Provider definitions are versioned
 contracts from now (schema requires `provider.version`; ADR-045 §8): the P0 classifier's
 provider-surface variant (declared capabilities/standards/outputs diffed under the same rules)

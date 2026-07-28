@@ -38,9 +38,9 @@ Each hard constraint cites the UDLM contract it derives from.
 12. Conforms to the **four states** Intent → Requested → Realized → Discovered (`foundations/four-states.md`).
 13. **`spec` = desired state** (Intent/Requested, consumer-authored); **`outputs` = observed state**
     (Realized/Discovered, provider-authored). Never blurred (the K8s spec/status discipline).
-14. **Realization is the authoritative system of record** for realized data — the basis of sovereignty
+14. **Implementation is the authoritative system of record** for realized data — the basis of sovereignty
     and audit (`entities/resource-service-entities.md`).
-15. **Realization is two-phase — validate-and-reserve, then commit** (`foundations/four-states.md` §2.3a;
+15. **Implementation is two-phase — validate-and-reserve, then commit** (`foundations/four-states.md` §2.3a;
     ADR-011). The Requested → Realized transition MUST **reserve** every target (validate + hold, **no
     side effects**, returning computed realize-time facts) and reconcile the reserved graph to a fixed
     point, MUST NOT **commit** (build) any target until the **whole reserved graph is held-and-valid and
@@ -279,7 +279,7 @@ Each hard constraint cites the UDLM contract it derives from.
     provider-specific**, not config-vs-not: portable config that defines the resource is base;
     **provider-specific** config is declared by the provider, projected as a config interface DCM offers
     (`contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
-    `SharedDataElement`s (ADR-038; schema realization #199 — the `provider_extensions` carrier is retired, #202 executed) across Requested/Realized, portability-flagged. **DCM stores the config
+    `SharedDataElement`s (ADR-038; schema implementation #199 — the `provider_extensions` carrier is retired, #202 executed) across Requested/Realized, portability-flagged. **DCM stores the config
     *state* — base and extra — because it is the state system-of-record and drift is a diff; there is no
     "store a pointer instead of the values".** The provider owns the *schema*; the *mechanism* stays out of
     the substrate (DCM ADR-023); the *state* is always recorded. **Corollary:** every resource DCM manages
@@ -289,7 +289,7 @@ Each hard constraint cites the UDLM contract it derives from.
     fact is, never *how* or *by what* it is realized, and MUST NOT imply a particular mechanism or provider
     is *the* or *preferred* way. (An IP address's origin is a field — `static`/`dhcp`/`link-layer`/`random`;
     UDLM neither prescribes DHCP as the way to serve it nor names Kea/dnsmasq/BIND as the way to run it.)
-    Concrete providers appear only as **examples** ("e.g. …") or reference realizations — never as the type's
+    Concrete providers appear only as **examples** ("e.g. …") or reference implementations — never as the type's
     grounding, its normative text, or an adopted "the model." And **no estate/deployment-specific references
     in the portable spec** (host names, a site's tool choice, `group_vars`, generator scripts) — those live
     in the estate's own repo. Extends §17 (no provider-specific data in the universal spec).

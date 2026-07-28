@@ -42,7 +42,7 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 | `host-a` | `Compute.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
 | `br0@host-a` | `Hardware.NetworkInterface` `device_class: bridge`, vlan_membership→`net-vlan-20` (tagged) | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
 
-**Created by realization (provider-reported, ADR-009 / provider-contract §1b):**
+**Created by implementation (provider-reported, ADR-009 / provider-contract §1b):**
 
 | handle | type | key relationships |
 |---|---|---|

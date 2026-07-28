@@ -2,7 +2,7 @@ uuid: uc-a9a1b387-978b-4cd4-9537-aed00b2e872f
 handle: must-reject/provider-capability-mismatch-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer submits a realization request that an operator error (a
+  description: 'A platform engineer submits an implementation request that an operator error (a
     pinned placement, a stale routing rule) routes to provider-north — a provider whose
     registration does not declare the capability the intent requires: the resource type at
     the required version of its adopted standard. Under declare-and-select, a provider''s
@@ -23,10 +23,10 @@ scenario:
     - sre
     - provider-owner
     - compliance-auditor
-  intent: Route a realization request to a provider that does not declare the required
+  intent: Route an implementation request to a provider that does not declare the required
     capability, and receive a refusal naming the capability mismatch
   success_criteria:
-  - The dispatch is refused before the provider performs any realization work
+  - The dispatch is refused before the provider performs any implementation work
   - The refusal is typed as a capability mismatch, distinct from provider failure and
     from policy denial
   - The refusal names the required capability and standard version, and the provider's

@@ -1446,7 +1446,7 @@ Pre-placement policies produce **placement constraints** — declarative require
 
 ### Step 6 — Placement
 
-Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is realization concern (see the DCM operational model and the provider contract). What the data model retains from this step is two records:
+Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is implementation concern (see the DCM operational model and the provider contract). What the data model retains from this step is two records:
 
 - **Policy-gap record** — when a field is absent and *no* policy declares `required_context` for it, an `implicit_approval` record is written (field, `provider_uuid`, reason, `recorded_at`, `resolution_expected: realized_payload`). This is the same road-not-taken provenance discipline UDLM applies elsewhere: the fact that a field went un-evaluated is recorded, not silently dropped.
 - **Metadata completeness** — metadata a provider cannot supply at placement is completed later via the **realized payload** (primary) or **discovery** (fallback); the realized entity carries `enrichment_status: pending | partial | complete`. Same pattern as the ingestion model.

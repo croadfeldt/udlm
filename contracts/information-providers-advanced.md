@@ -21,7 +21,7 @@
 
 This document extends the base Information Provider model with the substrate concepts required for enterprise-grade information governance: confidence scoring for all provider-supplied data, authority and priority declarations as layer-defined organizational knowledge, the schema versioning contract for extended Information Provider schemas, and the well-known Information Provider Registry contract.
 
-Realization-specific enforcement (ingestion-time conflict detection mechanics, write-back execution, air-gapped verification orchestration, provider priority and fallback logic) lives in the consuming realization's documentation.
+Implementation-specific enforcement (ingestion-time conflict detection mechanics, write-back execution, air-gapped verification orchestration, provider priority and fallback logic) lives in the consuming implementation's documentation.
 
 ---
 
@@ -29,7 +29,7 @@ Realization-specific enforcement (ingestion-time conflict detection mechanics, w
 
 ### 2.1 Purpose and Design Goals
 
-Every field value supplied by an Information Provider carries a confidence descriptor. A UDLM realization aggregates data from multiple external sources — CMDB, HR systems, IPAM, asset management, monitoring tools — each with different freshness, authority, and reliability. The confidence model answers: **how much should you trust this field value?**
+Every field value supplied by an Information Provider carries a confidence descriptor. A UDLM implementation aggregates data from multiple external sources — CMDB, HR systems, IPAM, asset management, monitoring tools — each with different freshness, authority, and reliability. The confidence model answers: **how much should you trust this field value?**
 
 Three goals drive the design:
 - **Accuracy** — each dimension of confidence is independently meaningful and auditable
@@ -61,14 +61,14 @@ field_confidence:
 | Field | Set By | When | How |
 |-------|--------|------|-----|
 | `authority_level` | Authority declaration layer | Provider registration | Organizational knowledge — static per field per provider |
-| `corroboration` | Realization ingestion pipeline | Each push event | Compared against existing values from other providers |
-| `source_trust` | Realization trust scoring system | Event-triggered + scheduled | Push failures, schema errors, health check, re-verification |
-| `last_updated_at` | Realization ingestion pipeline | Each push event | Timestamp of the push event |
-| `freshness` | Realization — derived | Query time | Computed from `now - last_updated_at` vs thresholds |
-| `score` | Realization — derived | Query time | Computed from descriptor components |
-| `band` | Realization — derived | Query time | Computed from score vs band thresholds |
+| `corroboration` | Implementation ingestion pipeline | Each push event | Compared against existing values from other providers |
+| `source_trust` | Implementation trust scoring system | Event-triggered + scheduled | Push failures, schema errors, health check, re-verification |
+| `last_updated_at` | Implementation ingestion pipeline | Each push event | Timestamp of the push event |
+| `freshness` | Implementation — derived | Query time | Computed from `now - last_updated_at` vs thresholds |
+| `score` | Implementation — derived | Query time | Computed from descriptor components |
+| `band` | Implementation — derived | Query time | Computed from score vs band thresholds |
 
-**The realization computes all derived values — providers never self-declare confidence.**
+**The implementation computes all derived values — providers never self-declare confidence.**
 
 ### 2.4 Descriptor Component Values
 
@@ -99,7 +99,7 @@ field_confidence:
 | `degraded` | Provider has elevated error/conflict rate | Reduced confidence |
 | `suspended` | Provider below trust threshold; pushes stopped | No new data |
 
-**`freshness`** — closed substrate vocabulary; computed from `data_age_minutes`. The specific age thresholds below are the substrate defaults; realizations MAY adjust them via configuration (see §2.8):
+**`freshness`** — closed substrate vocabulary; computed from `data_age_minutes`. The specific age thresholds below are the substrate defaults; implementations MAY adjust them via configuration (see §2.8):
 
 | Value | Age Threshold (default) |
 |-------|-------------|
@@ -110,7 +110,7 @@ field_confidence:
 
 ### 2.5 The Score Derivation Formula (Substrate Default)
 
-The score is a convenience number derived deterministically from the descriptor. It enables mathematical composition (cross-peer scoring, conflict resolution ordering) where a single number is needed. The substrate defines the default formula; realizations MAY adjust component weights via Policy Group (see §2.8).
+The score is a convenience number derived deterministically from the descriptor. It enables mathematical composition (cross-peer scoring, conflict resolution ordering) where a single number is needed. The substrate defines the default formula; implementations MAY adjust component weights via Policy Group (see §2.8).
 
 ```
 score = min(100, base(authority_level)
@@ -352,7 +352,7 @@ information_provider_registration:
 | New optional field added | **Minor** | Compatible — additive |
 | Description or constraint changed | **Revision** | Compatible — no structural change |
 
-A conformant realization MUST validate incoming push data against the declared schema version. Major version bumps require a declared migration plan before the new schema version activates.
+A conformant implementation MUST validate incoming push data against the declared schema version. Major version bumps require a declared migration plan before the new schema version activates.
 
 ---
 
@@ -380,7 +380,7 @@ The Information Provider Registry is **distinct from the Resource Type Registry*
 
 ## 6. Trust Score Model (Substrate Contract)
 
-A UDLM realization MUST maintain a trust score per Information Provider. The substrate defines the score's role in the confidence model and the closed `source_trust` vocabulary it maps to. Specific event triggers, scheduling intervals, and remediation actions are realization choices.
+A UDLM implementation MUST maintain a trust score per Information Provider. The substrate defines the score's role in the confidence model and the closed `source_trust` vocabulary it maps to. Specific event triggers, scheduling intervals, and remediation actions are implementation choices.
 
 ### 6.1 Trust Score Structure
 
@@ -420,7 +420,7 @@ information_provider_trust_score:
 
 ## 7. Confidence Aggregation Contract
 
-A UDLM-conformant realization MUST expose a per-entity confidence aggregation endpoint. The aggregation response shape is normative:
+A UDLM-conformant implementation MUST expose a per-entity confidence aggregation endpoint. The aggregation response shape is normative:
 
 ```yaml
 confidence_aggregation_api:
@@ -472,7 +472,7 @@ information_provider_registration:
 
 Substrate invariants:
 - Notification triggers (`value_overridden`, `value_contested`, `authority_superseded`) are closed substrate vocabulary.
-- The overriding value MAY be confidential. The notification payload contents are policy-governed; the realization MUST honor policy-declared redaction.
+- The overriding value MAY be confidential. The notification payload contents are policy-governed; the implementation MUST honor policy-declared redaction.
 
 ---
 
@@ -481,14 +481,14 @@ Substrate invariants:
 | Policy | Rule |
 |--------|------|
 | `INF-001` | Information Providers declare `authority_level` (primary, secondary, advisory) and `authority_scope` (resource types and fields). Conflicting authority scope declarations are detected at registration time. Conflicting field values from different providers at ingestion time are resolved per declared strategy. All conflicts produce audit records. |
-| `INF-003` | Information Provider extended schemas are versioned using semver. Removing a field or changing a field type is a major (breaking) version bump requiring a declared migration plan. Adding an optional field is a minor bump. A conformant realization validates incoming push data against the declared schema version. |
-| `INF-004` | A UDLM realization maintains a three-tier Information Provider Registry (Core, Verified Community, Organization) following the same governance model as the Resource Type Registry. |
-| `INF-006` | Information Provider field values carry a confidence score (0-100) computed from: source authority level, data freshness, and corroboration. The realization computes scores — providers do not self-declare confidence. Scores decay with data age. |
+| `INF-003` | Information Provider extended schemas are versioned using semver. Removing a field or changing a field type is a major (breaking) version bump requiring a declared migration plan. Adding an optional field is a minor bump. A conformant implementation validates incoming push data against the declared schema version. |
+| `INF-004` | A UDLM implementation maintains a three-tier Information Provider Registry (Core, Verified Community, Organization) following the same governance model as the Resource Type Registry. |
+| `INF-006` | Information Provider field values carry a confidence score (0-100) computed from: source authority level, data freshness, and corroboration. The implementation computes scores — providers do not self-declare confidence. Scores decay with data age. |
 | `INF-007` | Authority scope and priority for Information Providers are declared in platform or system domain layers. Policy acts on confidence scores and bands — gating, filtering, and escalating based on threshold declarations. |
 | `INF-009` | Information Provider trust scores (0-100) are maintained per provider with event-triggered updates and scheduled re-verification. Trust score degradation transitions `source_trust` to `degraded` (reduced confidence multiplier). Suspension stops accepting pushes. Policy governs thresholds and actions per provider. |
-| `INF-010` | A UDLM realization exposes a confidence aggregation endpoint per entity (GET /api/v1/entities/{uuid}/confidence). The overall confidence band reflects the lowest (most conservative) field band. Aggregations are computed on demand — never stored. The response identifies contested and stale fields requiring attention. |
+| `INF-010` | A UDLM implementation exposes a confidence aggregation endpoint per entity (GET /api/v1/entities/{uuid}/confidence). The overall confidence band reflects the lowest (most conservative) field band. Aggregations are computed on demand — never stored. The response identifies contested and stale fields requiring attention. |
 | `INF-011` | Information Providers may opt in to override notifications by declaring `conflict_notification` in their registration. Notifications sent via webhook or Message Bus. The notification payload is policy-governed — the overriding value may be redacted for confidentiality reasons. |
 
 ---
 
-*UDLM substrate document. Realization-specific ingestion-time conflict detection mechanics, write-back execution, air-gapped verification orchestration, and provider priority/fallback logic live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific ingestion-time conflict detection mechanics, write-back execution, air-gapped verification orchestration, and provider priority/fallback logic live in the consuming implementation's documentation.*

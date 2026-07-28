@@ -23,13 +23,13 @@
 
 This document provides end-to-end worked examples that make the UDLM data model concrete. Each example traces the complete lifecycle of a resource through the substrate — from consumer intent through the four states, showing exactly what data exists at each stage.
 
-These examples describe substrate-level behavior. Specific orchestration scenarios, runtime mechanics, and realization-specific composite flows live in the consuming realization's documentation (for example, DCM's `orchestration-scenarios.md`).
+These examples describe substrate-level behavior. Specific orchestration scenarios, runtime mechanics, and implementation-specific composite flows live in the consuming implementation's documentation (for example, DCM's `orchestration-scenarios.md`).
 
 ---
 
 ## 2. Optional Git-Backed Ingress Layout (Illustrative)
 
-> **Note:** Git is one possible ingress adapter, not a required state store. UDLM does not mandate Git for any of the four data domains (Intent, Requested, Realized, Discovered); a conformant realization MAY use Git as an ingress surface or as a working store, or it MAY not. The layouts below are illustrative — they show one way to organize handle-based directories when Git ingress is enabled.
+> **Note:** Git is one possible ingress adapter, not a required state store. UDLM does not mandate Git for any of the four data domains (Intent, Requested, Realized, Discovered); a conformant implementation MAY use Git as an ingress surface or as a working store, or it MAY not. The layouts below are illustrative — they show one way to organize handle-based directories when Git ingress is enabled.
 
 The Intent store can use a handle-based directory structure within Git when Git ingress is enabled. Tenant isolation is enforced at the directory level. Provider selection is recorded in the assembled payload, not in the directory structure — so the directory structure is independent of which provider was selected.
 
@@ -62,7 +62,7 @@ intent-store/
 
 **Branch naming (illustrative):** `intent/{tenant-uuid}/{entity-uuid}` for new requests. `intent/{tenant-uuid}/{entity-uuid}/v{n}` for revisions.
 
-**Merge to main (illustrative):** Triggers downstream assembly — the realization's Request Payload Processor begins assembly.
+**Merge to main (illustrative):** Triggers downstream assembly — the implementation's Request Payload Processor begins assembly.
 
 ### 2.2 Requested Store Layout (Illustrative)
 
@@ -293,7 +293,7 @@ cpu_count: { value: 4, provenance: { ...plus provider attribution } }
 memory_gb: { value: 8, provenance: {...} }
 storage_gb: { value: 100, provenance: {...} }
 
-# Provider-added fields (not in Requested State — added by provider after realization)
+# Provider-added fields (not in Requested State — added by provider after implementation)
 provider_entity_id: "vm-0a1b2c3d"              # OpenStack's internal VM ID
 assigned_ip_address: "10.1.45.23"              # IP assigned by provider at realization
 hypervisor_host: "compute-node-07.eu-west"      # where the VM was physically placed
@@ -303,7 +303,7 @@ console_url: "https://console.eu-west.example.com/vm/0a1b2c3d"
 
 ### 3.4 Discovery Cycle (Discovered State)
 
-24 hours after realization, the discovery cycle runs:
+24 hours after implementation, the discovery cycle runs:
 
 ```yaml
 # Snapshot written to Discovered Store
@@ -399,7 +399,7 @@ relationship:
 
 ## 6. Example 4 — Brownfield Ingestion
 
-A VM discovered by the provider that the realization did not provision is brought under UDLM lifecycle management.
+A VM discovered by the provider that the implementation did not provision is brought under UDLM lifecycle management.
 
 ```yaml
 # Step 1: INGEST — discovery finds unknown VM
@@ -481,4 +481,4 @@ The consumer reviews and chooses UPDATE_DEFINITION — the memory was legitimate
 
 ---
 
-*UDLM substrate document. Realization-specific orchestration scenarios (e.g., composite three-tier application flows, retry-driven recovery scenarios, scoring-driven placement walkthroughs) live in the consuming realization's `orchestration-scenarios` documentation.*
+*UDLM substrate document. Implementation-specific orchestration scenarios (e.g., composite three-tier application flows, retry-driven recovery scenarios, scoring-driven placement walkthroughs) live in the consuming implementation's `orchestration-scenarios` documentation.*

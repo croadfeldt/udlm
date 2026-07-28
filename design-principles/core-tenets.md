@@ -28,7 +28,7 @@ roles:
 | Domain | Owner | Responsibility |
 |---|---|---|
 | **Data** | UDLM | Custody of data through its lifecycle: identity, the four states, versioning, relationships, provenance, audit, sovereignty. *Hold, move, reference, version, audit.* |
-| **Policy** | DCM (the realization) | Transformation, enrichment, derivation, decision, governance. *Compute, derive, evaluate, decide.* |
+| **Policy** | DCM (the implementation) | Transformation, enrichment, derivation, decision, governance. *Compute, derive, evaluate, decide.* |
 
 UDLM *defines* the contracts (Data, Provider, **and** Policy); **DCM is where Policy is applied** — it
 evaluates and enforces policy and performs all transformation and enrichment. UDLM never applies policy;
@@ -51,7 +51,7 @@ translation's ramifications (`foundations/context-and-purpose.md` §7.1; DCM ADR
 
 ## T2 — Transformation and enrichment are Policy
 All logic that **derives, computes, modifies, or enriches** data is the **Policy** abstraction's
-responsibility — evaluated and audited by the realization (DCM), never embedded in the portable data.
+responsibility — evaluated and audited by the implementation (DCM), never embedded in the portable data.
 *Layers are data; Policies are logic.* If you find yourself wanting an expression inside the data, you
 want a Policy.
 
@@ -131,9 +131,9 @@ hold-all activation for free), and *lowered* complexity — exactly the balance 
 
 ## T8 — Adopt tools by reference: orchestrate, don't reimplement
 Where a mature tool already owns a **mechanism** — building, scanning, signing, deploying, orchestrating
-CI/CD — the realization (DCM) **wraps it as a Provider** and **never reimplements it**. This is the
+CI/CD — the implementation (DCM) **wraps it as a Provider** and **never reimplements it**. This is the
 tool-level twin of T5 and T7: T5 keeps the data model from re-expressing an external *standard*'s schema;
-T7 keeps it from coining a redundant *primitive*; T8 keeps the *realization* from rebuilding a *mechanism*
+T7 keeps it from coining a redundant *primitive*; T8 keeps the *implementation* from rebuilding a *mechanism*
 a best-of-breed tool already provides. The **naturalization boundary** (DCM ADR-023) is the wrap point — a
 Provider translates generic intent into the tool's native form and reports realized state back, so the tool
 stays swappable and the substrate stays generic. **This is an active review gate, not advice:** a proposal
@@ -159,7 +159,7 @@ See `cross-cutting-requirements.md` for the pillar requirements these tenets ser
 ## T9 — The substrate never translates into a provider's native spec
 
 UDLM data crosses the provider boundary in UDLM form; **naturalization into a provider's
-native format happens at the provider edge, never in the substrate** (the DCM realization
+native format happens at the provider edge, never in the substrate** (the DCM implementation
 records this as ADR-023). The substrate carries conformant data in and conformant data out —
 it has no per-provider translation layer, so providers stay interchangeable and the data
 model stays free of any provider's vocabulary. The narrative *why* is

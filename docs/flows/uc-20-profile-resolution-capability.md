@@ -15,7 +15,7 @@ compliance or sovereignty overlay is *composed with* the profile, not folded int
 compared as capability sets by set-containment — never ranked.
 
 ## What this adds over request-realization
-- **Supplies the profile the base flow assumes.** Request-realization resolves policies from a profile; this
+- **Supplies the profile the base flow assumes.** Request-implementation resolves policies from a profile; this
   UC is where that profile is *resolved* — from the instance's approved list and default.
 - **Profiles are capability sets, compared by containment.** One profile is "more" than another only if its
   capability set contains the other's — there is no numeric rank. Comparison is by content, not by tier.

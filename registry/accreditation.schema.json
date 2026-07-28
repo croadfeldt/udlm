@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/accreditation.schema.json",
   "title": "UDLM Accreditation record",
-  "description": "Machine-validatable Accreditation record (governance/accreditation-and-authorization-matrix.md §3.3). A formal, versioned, time-bounded attestation that a subject (a provider, policy evaluator, credential provider, or peer realization) satisfies a compliance framework — EXPLICITLY scoped to provider + capability + jurisdiction so the sovereignty 1-1 match (UDLM ADR-004 §4; §3.3.1) is machine-checkable. UDLM carries the record; DCM's Governance Matrix consumes it. The `scope.capability_scope` binding grain (provider-wide | category | exact capability version) is org/platform-admin policy.",
+  "description": "Machine-validatable Accreditation record (governance/accreditation-and-authorization-matrix.md §3.3). A formal, versioned, time-bounded attestation that a subject (a provider, policy evaluator, credential provider, or peer implementation) satisfies a compliance framework — EXPLICITLY scoped to provider + capability + jurisdiction so the sovereignty 1-1 match (UDLM ADR-004 §4; §3.3.1) is machine-checkable. UDLM carries the record; DCM's Governance Matrix consumes it. The `scope.capability_scope` binding grain (provider-wide | category | exact capability version) is org/platform-admin policy.",
   "type": "object",
   "additionalProperties": false,
   "required": ["record_type", "uuid", "conforms_to", "subject_uuid", "subject_type", "accreditation_type", "framework", "accreditor", "issued_at", "scope", "status"],
@@ -13,7 +13,7 @@
     "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
     "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
     "subject_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The subject this attests — the PROVIDER uuid for a service_provider (axis 1 of the sovereignty 1-1 match, §3.3.1)." },
-    "subject_type": { "enum": ["service_provider", "external_policy_evaluation", "credential_provider", "peer_realization"] },
+    "subject_type": { "enum": ["service_provider", "external_policy_evaluation", "credential_provider", "peer_implementation"] },
     "accreditation_type": { "enum": ["self_declared", "first_party", "third_party", "qsa_assessment", "baa", "regulatory_certification", "sovereign_authorization"], "description": "Trust level (§3.2)." },
     "framework": { "type": "string", "description": "fedramp_high | fedramp_moderate | hipaa | pci_dss_v4 | iso_27001 | soc2_type2 | dod_il4 | dod_il5 | dod_il6 | sovereign | classified | <custom> (open string, §3.3)." },
     "accreditor": {

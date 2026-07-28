@@ -54,7 +54,7 @@ That disagreement should be resolved by the same ruling.
 
 **UDLM holds the ceiling; whether a pin may bypass it is policy.** The peer test (ADR-008) settles it:
 whether an operator may deliberately dispatch outside a provider's declared capabilities is an
-operational choice a conformant realization is *entitled* to make differently — so it is not a substrate
+operational choice a conformant implementation is *entitled* to make differently — so it is not a substrate
 law. What UDLM fixes is the invariant a bypass would be an exception *to*.
 
 **The UDLM invariant** (`PRV-009`/`PRV-011`, restated, not new): the `effective_capabilities` ceiling

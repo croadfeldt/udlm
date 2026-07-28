@@ -40,7 +40,7 @@ lifecycle/        Operational models, recovery state machine
   `registry/SPEC-DESIGN-REQUIREMENTS.md`. The load-bearing ones:
   - **No vendor-exclusive data in the portable spec** (§17, §24). Provider-specific data is a
     **Provider-Class `SharedDataElement`** (ADR-038); the old `provider_extensions`/`provider_hints`
-    carriers are removed — the validator rejects them (schema realization tracked in #199).
+    carriers are removed — the validator rejects them (schema implementation tracked in #199).
   - **Reuse canonical common-elements** (§24–25) — **snake_case** (settled 2026-06-27; never re-litigate), explicit-unit `Quantity`, RFC 3339.
   - **Adopt standards by reference, record provenance + license** (§22–23): every `adopts[]` entry
     carries `source` (name/version/URL) and `license` + `license_compatibility`
@@ -99,7 +99,7 @@ engineering team (issue #217) — never claim Accepted/ratified status.
 
 **In flight:** engineering ratification pass (#217); the dcm-project downstream publishing wave
 (UC-priority split per the Jordi criteria — 21-UC-required PRs first); `SharedDataElement` schema
-realization (#199); Ansible estate discovery feeding Discovered state (croadfeldt/dcm#79).
+implementation (#199); Ansible estate discovery feeding Discovered state (croadfeldt/dcm#79).
 
 **Navigation:** `docs/file-index.md` (ownership per file) · `registry/UDLM-0.1-SCOPE.md` (the 21
 UCs + tag gate) · `docs/adr/README.md` (decision index) · `CONTRIBUTING.md` (the checklist).

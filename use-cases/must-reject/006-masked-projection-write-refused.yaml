@@ -54,7 +54,7 @@ scenario:
     interaction: the reduction is disclosed as metadata so absence is never mistaken for
       ground truth
   - domain: provider
-    interaction: no realization of the refused write reaches any provider
+    interaction: no implementation of the refused write reaches any provider
   - domain: audit
     interaction: both the reduced read and the refused write are recorded with field and
       scope, values excluded

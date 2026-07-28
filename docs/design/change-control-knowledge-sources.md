@@ -59,7 +59,7 @@ it read.
 
 The freshness row is the finding with reach beyond change control: it is a **family-level
 element** — exactly the shape the class system's Base tier exists for. When the Knowledge
-family gets its Base Class (the class-realization program), freshness elements belong there
+family gets its Base Class (the class-implementation program), freshness elements belong there
 once, and every knowledge domain — calendars, vulnerabilities, software inventory, whatever
 comes next — inherits staleness decidability. Until then it is a per-type gap.
 

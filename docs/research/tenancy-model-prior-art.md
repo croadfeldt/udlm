@@ -10,7 +10,7 @@ Before 1.0 locks the tenancy model, this checks it against how the industry actu
 
 ## The model, in one line
 
-A **Tenant is a DCMGroup** with `group_class: tenant_boundary` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (ADR-014). UDLM defines the isolation *contract*; the realization supplies the mechanism (the ADR-008 split).
+A **Tenant is a DCMGroup** with `group_class: tenant_boundary` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
 
 ## Model ↔ standards
 
@@ -21,7 +21,7 @@ A **Tenant is a DCMGroup** with `group_class: tenant_boundary` (`data-model-core
 | **Kubernetes hierarchical namespaces (HNC)** — org→team | DCMGroup `nesting` (org→dept→team), depth profile-governed, cycles rejected (GRP-INV-005/006) | Matches |
 | **Google Zanzibar / ReBAC** cross-tenant sharing | `cross_tenant_authorization` group_class — a scoped, time-bound grant (granting/consuming tenant, authorized types, `expires_at`, purpose) + the §10 authorization lifecycle | Matches |
 | **Noisy-neighbor control** — quota + throttling | `quota` (consumption ceiling) + `rate-limit-and-backpressure` `per_tenant` scope (runtime fairness) | Matches |
-| **Tenant context propagation** (JWT claim → session → row filter) | `data-store-contracts`: "token claims → per-connection tenant binding → row filtering"; the isolation contract is UDLM, the mechanism is realization | Matches |
+| **Tenant context propagation** (JWT claim → session → row filter) | `data-store-contracts`: "token claims → per-connection tenant binding → row filtering"; the isolation contract is UDLM, the mechanism is implementation | Matches |
 | **Tenant lifecycle / offboarding** | GRP-013 four-phase staged decommission (pre-validation → resource → membership → audit archival; children resolved first; **audit never destroyed**) | Matches |
 | **Data residency per tenant** | `sovereignty_constraints` — a `tenant_boundary` structurally never spans a sovereignty boundary (GRP-012) | Matches |
 | **Policy scoping by tenant** | policy domain precedence `system > platform > tenant > resource_type > entity` (ADR-014) | Matches |

@@ -2,10 +2,10 @@
 
 **Document Status:** ✅ Stable — UDLM substrate reference
 **Document Type:** Substrate Reference — Normative External Standards
-**Purpose:** Single authoritative source for all RFCs, protocols, specifications, and compliance frameworks referenced by the UDLM substrate. For each standard: what it is, where the substrate uses it, and what obligation it places on conformant realizations.
+**Purpose:** Single authoritative source for all RFCs, protocols, specifications, and compliance frameworks referenced by the UDLM substrate. For each standard: what it is, where the substrate uses it, and what obligation it places on conformant implementations.
 
 > **How to read this document:**
-> - **Normative** — UDLM-conformant realizations MUST comply with this standard in the specified context
+> - **Normative** — UDLM-conformant implementations MUST comply with this standard in the specified context
 > - **Informative** — UDLM draws on this standard as guidance or reference without strict compliance
 > - **Optional** — UDLM supports this standard in applicable profiles or configurations
 
@@ -72,7 +72,7 @@
 |----------|--------------|-----------|-----------|
 | **OIDC / OpenID Connect** | OpenID Foundation Core 1.0 | Primary enterprise Auth Provider type; ID token format; JWKS endpoint for key verification; userinfo endpoint for actor enrichment | Normative |
 | **SAML 2.0** | OASIS SAML 2.0 | Auth Provider type for organizations without OIDC; assertion format for role mapping | Optional |
-| **mTLS** | RFC 8446 + RFC 5280 | All internal component-to-component communication; provider-to-realization authentication in zero-trust model | Normative |
+| **mTLS** | RFC 8446 + RFC 5280 | All internal component-to-component communication; provider-to-implementation authentication in zero-trust model | Normative |
 | **LDAP v3** | RFC 4511 | FreeIPA, Active Directory, OpenLDAP Auth Provider types; group membership queries for RBAC | Normative |
 | **SCIM 2.0** | RFC 7643 + RFC 7644 | Optional enterprise provisioning; actor creation, update, deprovision; deprovision triggers parallel session + credential revocation | Optional |
 
@@ -117,8 +117,8 @@ The substrate prohibits the following algorithms in all profiles:
 |----------|--------------|-----------|-----------|
 | **Prometheus / OpenMetrics** | Prometheus exposition format; OpenMetrics spec | `GET /metrics` scrape endpoint; all metric families; provider health metrics | Normative |
 | **OpenTelemetry (OTel)** | CNCF OpenTelemetry specification | Distributed tracing for request pipeline; correlation ID propagation; span context for audit provenance | Informative |
-| **Kubernetes API** | kubernetes.io API conventions | Resource type spec format mirrors k8s YAML; CRD-based realization integration; probe endpoints (/livez, /readyz) | Normative (k8s deployments) |
-| **GitOps / OpenGitOps** | OpenGitOps principles (v1.0) | UDLM data model artifacts MAY be stored in Git; PR-based contribution model is one realization transport; Git as source of truth for policy and layer definitions where adopted | Informative |
+| **Kubernetes API** | kubernetes.io API conventions | Resource type spec format mirrors k8s YAML; CRD-based implementation integration; probe endpoints (/livez, /readyz) | Normative (k8s deployments) |
+| **GitOps / OpenGitOps** | OpenGitOps principles (v1.0) | UDLM data model artifacts MAY be stored in Git; PR-based contribution model is one implementation transport; Git as source of truth for policy and layer definitions where adopted | Informative |
 | **Unix cron** | POSIX cron expression format | Recurring schedule expressions in scheduled requests and maintenance window definitions | Normative |
 | **IANA health+json** | RFC 8615 + IANA media type registry | Health response format for `/livez`, `/readyz`, and substrate health endpoints | Normative |
 | **W3C Server-Sent Events (SSE)** | W3C Living Standard | Optional live request status stream; alternative to polling for browser/CLI consumers | Normative (where supported) |
@@ -130,7 +130,7 @@ The substrate prohibits the following algorithms in all profiles:
 
 ## 5. Compliance Frameworks
 
-These frameworks drive specific UDLM profiles, overlays, and policy constraints. UDLM does not certify compliance — it provides the substrate primitives that enable compliant realizations.
+These frameworks drive specific UDLM profiles, overlays, and policy constraints. UDLM does not certify compliance — it provides the substrate primitives that enable compliant implementations.
 
 ### 5.1 US Federal and Defense
 
@@ -168,7 +168,7 @@ UDLM is designed for CNCF ecosystem compatibility. The following CNCF projects a
 
 | Project | CNCF Status | UDLM Reference |
 |---------|------------|---------|
-| **Kubernetes** | Graduated | Deployment target; CRD-based realization integration; resource model inspiration |
+| **Kubernetes** | Graduated | Deployment target; CRD-based implementation integration; resource model inspiration |
 | **Open Policy Agent (OPA)** | Graduated | Policy engine backend option; Rego policies for UDLM Validation policy types |
 | **Prometheus** | Graduated | Metrics exposition format; substrate scrape endpoint |
 | **OpenTelemetry** | Graduated | Distributed tracing; correlation ID propagation |
@@ -192,4 +192,4 @@ UDLM maps profile security postures to NIST Authentication Assurance Levels:
 
 ---
 
-*UDLM substrate reference document. Realization-specific implementation choices (which TLS libraries, which OAuth libraries, which Prometheus exporters, which Kubernetes CRDs, which compliance frameworks are enforced per profile, certificate and key management procedures, etc.) live in the consuming realization's documentation.*
+*UDLM substrate reference document. Implementation-specific implementation choices (which TLS libraries, which OAuth libraries, which Prometheus exporters, which Kubernetes CRDs, which compliance frameworks are enforced per profile, certificate and key management procedures, etc.) live in the consuming implementation's documentation.*

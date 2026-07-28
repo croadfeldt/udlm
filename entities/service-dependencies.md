@@ -41,7 +41,7 @@ Dependencies must be declared in the data model — not discovered at runtime by
 
 **Idempotency and Consistency** — if dependencies are declared in the service definition, the same request always produces the same dependency graph. Provider-driven dependency discovery at runtime breaks idempotency — different provider implementations could produce different dependency graphs for the same logical request.
 
-> **Scope of this prohibition:** This section forbids provider-driven discovery as **orchestration input** — i.e., as input that decides what to provision. It does NOT forbid providers from reporting what a *realized* resource actually depends on, after the fact, for drift detection, blast-radius analysis, and federation reconciliation. That post-realization observation channel is defined in §3a and is recorded as a distinct edge nature in the Entity Relationship Graph so the two cannot be conflated.
+> **Scope of this prohibition:** This section forbids provider-driven discovery as **orchestration input** — i.e., as input that decides what to provision. It does NOT forbid providers from reporting what a *realized* resource actually depends on, after the fact, for drift detection, blast-radius analysis, and federation reconciliation. That post-implementation observation channel is defined in §3a and is recorded as a distinct edge nature in the Entity Relationship Graph so the two cannot be conflated.
 
 ---
 
@@ -146,9 +146,9 @@ Observed dependencies are **observational, not orchestrational**:
 - They are not consulted by the Policy Engine for placement or cost decisions.
 - They are not consulted by the Request Payload Processor during assembly.
 - They are not consulted by rehydration to decide what to recreate.
-- They flow only into post-realization workflows: drift detection, blast-radius analysis, deregister-safety checks, and federation reconciliation.
+- They flow only into post-implementation workflows: drift detection, blast-radius analysis, deregister-safety checks, and federation reconciliation.
 
-Two different Service Providers hosting equivalent realizations of the same Request MAY legitimately report different observed dependency sets — that asymmetry is a useful signal, not a bug. The Request's idempotency is preserved by §3 because the *declared* graph (used as orchestration input) is identical in both cases.
+Two different Service Providers hosting equivalent implementations of the same Request MAY legitimately report different observed dependency sets — that asymmetry is a useful signal, not a bug. The Request's idempotency is preserved by §3 because the *declared* graph (used as orchestration input) is identical in both cases.
 
 ### 3a.4 Drift Signal
 
@@ -161,7 +161,7 @@ The substrate compares observed dependencies against the declared graph attached
 | Both present, `strength` disagrees | Provider classifies the strength differently than the spec | `dependency.drift_detected` event (info) |
 | Both present, agree | No drift | No event |
 
-The substrate stores both edge natures side-by-side; the realization decides whether drift triggers automated remediation, opens a review, or merely accrues to audit.
+The substrate stores both edge natures side-by-side; the implementation decides whether drift triggers automated remediation, opens a review, or merely accrues to audit.
 
 ### 3a.5 UDLM System Policies
 
@@ -342,7 +342,7 @@ Dependency failure handling is **configurable per request or per policy**:
 | `retry` | Failed dependencies are retried before failing. |
 | `partial_complete` | Request is marked partially complete; failed nodes await retry or manual resolution. |
 
-The failure **mode** is a declared choice — set in the request payload or an applicable organizational policy (this enum is data). How a realization *executes* a mode — retry counts, same-vs-alternative provider re-selection, node flagging, and compensation/rollback — is governed by **Recovery Policy** at runtime, not fixed by the data model.
+The failure **mode** is a declared choice — set in the request payload or an applicable organizational policy (this enum is data). How an implementation *executes* a mode — retry counts, same-vs-alternative provider re-selection, node flagging, and compensation/rollback — is governed by **Recovery Policy** at runtime, not fixed by the data model.
 
 ---
 
@@ -463,7 +463,7 @@ Dependency graphs are versioned as properties of their parent catalog item — n
 
 **At request time:** The catalog item version determines the dependency graph. A consumer pinning to `catalog_item_version: "1.5.3"` gets exactly the dependency graph declared in that version.
 
-**For existing realizations:** The dependency graph version is captured in the Requested State assembly provenance. Rehydration with `re_evaluate: false` replays from the Requested State. Rehydration with `re_evaluate: true` uses the current dependency graph for the selected version.
+**For existing implementations:** The dependency graph version is captured in the Requested State assembly provenance. Rehydration with `re_evaluate: false` replays from the Requested State. Rehydration with `re_evaluate: true` uses the current dependency graph for the selected version.
 
 ---
 
@@ -565,7 +565,7 @@ composite_service_registration:
 
 | Policy | Rule |
 |--------|------|
-| `DEP-013` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in a realization is captured in assembly provenance. |
+| `DEP-013` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in an implementation is captured in assembly provenance. |
 | `DEP-014` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
 | `DEP-015` | Dependency graph depth is limited to a profile-governed maximum (default: 10 for standard/prod; 7 for fsi/sovereign). Requests exceeding the maximum depth are rejected with a clear error. Circular dependency detection is always enforced regardless of depth configuration. |
 | `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as DCM entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |

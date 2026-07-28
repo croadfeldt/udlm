@@ -15,7 +15,7 @@ suppressed event is audit-linked. Hard policies never reach an approval attempt.
 
 ## What this adds over request-realization
 - **A new object on the policy-application state** — an `override_request` that *modifies* how policies apply
-  to one matched request scope. Realization (assemble → place → enrich → reserve → commit) is unchanged; what
+  to one matched request scope. Implementation (assemble → place → enrich → reserve → commit) is unchanged; what
   changes is the outcome of a failing policy evaluation.
 - **Eligibility is per-policy, not global** — the override is checked against *that policy's* declared
   override rules. A policy that declares itself unoverridable (hard enforcement) is rejected up front, with no

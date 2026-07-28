@@ -75,7 +75,7 @@ Submit request with schedule.dispatch: at
   │   If approved: request enters scheduled queue
   │
   ▼ SCHEDULED (new status within Intent State)
-  │   stored in the realization's scheduled-request queue
+  │   stored in the implementation's scheduled-request queue
   │   visible via status endpoint
   │   cancellable via standard cancellation endpoint
   │
@@ -142,7 +142,7 @@ not_after reached without dispatch
   ▼ Intent State marked terminal — no further retries
 ```
 
-The realization MUST emit a `request.schedule_deadline_missed` event when a `not_after` deadline expires before dispatch. The `failure_reason: schedule_deadline_missed` value is part of the closed substrate vocabulary.
+The implementation MUST emit a `request.schedule_deadline_missed` event when a `not_after` deadline expires before dispatch. The `failure_reason: schedule_deadline_missed` value is part of the closed substrate vocabulary.
 
 ---
 
@@ -151,12 +151,12 @@ The realization MUST emit a `request.schedule_deadline_missed` event when a `not
 | Policy | Rule |
 |--------|------|
 | `SCH-001` | Scheduled requests undergo compliance-class Validation policy evaluation at declaration time (to catch rejections early) and again at dispatch time (to validate against current state). Both evaluations must pass. |
-| `SCH-002` | The `not_before` field must be a future timestamp at submission time. The realization rejects scheduled requests with a past `not_before` (returns 422). |
+| `SCH-002` | The `not_before` field must be a future timestamp at submission time. The implementation rejects scheduled requests with a past `not_before` (returns 422). |
 | `SCH-003` | Requests that fail dispatch-time policy re-evaluation enter FAILED state with `failure_reason: schedule_policy_rejection`. Consumers receive a `request.failed` event with the rejection detail. |
-| `SCH-004` | Scheduled requests are cancellable at any time before dispatch. Once the realization has accepted the dispatch handoff (status moves beyond SCHEDULED), cancellation follows the standard cancellation model. |
+| `SCH-004` | Scheduled requests are cancellable at any time before dispatch. Once the implementation has accepted the dispatch handoff (status moves beyond SCHEDULED), cancellation follows the standard cancellation model. |
 | `SCH-005` | If `not_after` is set and passes without dispatch, the request enters FAILED state with `failure_reason: schedule_deadline_missed`. No retry is attempted. |
 | `SCH-006` | Maintenance Windows are platform-level or tenant-scoped artifacts requiring platform admin approval. Window schedules are versioned artifacts subject to the standard substrate lifecycle. |
 
 ---
 
-*UDLM substrate document. Realization-specific request scheduler component design, deferred request lifecycle management mechanics, maintenance window scheduling logic, deadline evaluation/enforcement code, consumer API endpoint additions, new event implementations, and profile-governed scheduling constraint enforcement live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific request scheduler component design, deferred request lifecycle management mechanics, maintenance window scheduling logic, deadline evaluation/enforcement code, consumer API endpoint additions, new event implementations, and profile-governed scheduling constraint enforcement live in the consuming implementation's documentation.*

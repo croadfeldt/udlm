@@ -57,7 +57,7 @@ Each step names the file you touch and the artifact it produces. Copy the worked
    contract — what the type must refuse and how it names the cause), and optionally a composite. Give
    each a `handle` (e.g. `storage/provision-volume-bound-to-pool`) and fill the required `dimensions`.
    **Produces:** the corpus that exercises the type.
-7. **Author or point a flow** in `docs/flows/` — the lifecycle doc that places the type in a realization
+7. **Author or point a flow** in `docs/flows/` — the lifecycle doc that places the type in an implementation
    story. A new type in an existing family usually *points at* an existing flow rather than writing one.
    **Produces:** the flow leg of coverage.
 8. **Add the `coverage:` block** to the spec, naming `use_cases:` and `flows:`. `examples` is optional
@@ -93,7 +93,7 @@ every part in one file: the `spec` with a recursive `$defs.vdev` tree, typed `ou
 `use-cases/storage/002-volume-request-exceeds-quota-refused.yaml` (the must-reject, whose success *is*
 the refusal). For the flow,
 see `docs/flows/storage-provisioning-lifecycle.md` — how pool → dataset → volume composes into one
-realization.
+implementation.
 
 ## 5. Run the gates
 

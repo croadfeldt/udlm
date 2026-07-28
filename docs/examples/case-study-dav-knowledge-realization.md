@@ -1,22 +1,22 @@
-# Case Study — DAV as a UDLM realization in a non-infrastructure domain
+# Case Study — DAV as a UDLM implementation in a non-infrastructure domain
 
 > **Non-normative.** Illustrative case study. **UDLM does not depend on DAV** — DAV is one
-> *example* realization, cited to show UDLM holds outside infrastructure (see `GLOSSARY.md`).
+> *example* implementation, cited to show UDLM holds outside infrastructure (see `GLOSSARY.md`).
 >
 > **Outcome (2026-07):** the recommendation landed — the Knowledge entity-type family now exists
 > (`entities/knowledge-family.md`, five types in the registry). §5's type-gap and the "Composite"
 > primary-type framing are historical (the shape is derived, ADR-027 addendum).
 
-_An effectiveness analysis: does UDLM's "realization-neutral universal substrate" claim
+_An effectiveness analysis: does UDLM's "implementation-neutral universal substrate" claim
 hold when a system in a domain UDLM was **not** designed around adopts it? Written
 2026-06-08 from the DAV capability-catalog modeling exercise. Companion:
 `dav/docs/capability-catalog-design.md` (UDLM CONFORMANCE), `../research/holistic-vision.md`._
 
 ## 1. The test
 
-UDLM claims to be a **realization-neutral** substrate: "any system conformant to UDLM
+UDLM claims to be a **implementation-neutral** substrate: "any system conformant to UDLM
 produces data that any other conformant system can read, interpret, and exchange." The
-reference realization — **DCM** — manages **resources** (VMs, IPs, VLANs)
+reference implementation — **DCM** — manages **resources** (VMs, IPs, VLANs)
 through a provisioning lifecycle. That is UDLM's home turf, so DCM conforming proves
 little about *universality*.
 
@@ -29,7 +29,7 @@ genuine cross-domain standard. This case study examines the mapping that emerged
 went to model DAV's keystone — the capability catalog ↔ taxonomy — and asked "what is the
 definition of Data in UDLM?"
 
-## 2. Two realizations, opposite ends of the spectrum
+## 2. Two implementations, opposite ends of the spectrum
 
 | | DCM (reference) | DAV (this study) |
 |---|---|---|
@@ -109,7 +109,7 @@ infrastructure — they are about **intent vs reality with provenance**, which i
 This last point is the most useful finding for UDLM itself: **the universality lives in
 the substrate and contracts (identifier, lifecycle, provenance, classification,
 four-state, drift), not in the entity-type catalog.** Types are domain extensions layered
-on a universal base. UDLM is "realization-neutral" precisely because a new realization is
+on a universal base. UDLM is "implementation-neutral" precisely because a new implementation is
 expected to bring its own types while honoring the contracts — DAV is the proof that this
 extension path works for a domain UDLM never anticipated.
 
@@ -130,5 +130,5 @@ as naturally as it describes provisioning, and DAV's signature operation turned 
 UDLM drift detection in a new domain. The one boundary is healthy and expected — entity
 types are domain-specific extensions on a universal substrate. The recommendation that
 follows: define a knowledge entity-type family in UDLM and make **DAV a first-class UDLM
-realization, peer to DCM** — which both validates UDLM and gives DAV a consistent,
+implementation, peer to DCM** — which both validates UDLM and gives DAV a consistent,
 exchangeable data model it would otherwise have reinvented.

@@ -31,7 +31,7 @@ authority_tier_registry:
       decision_gravity: none
       description: >
         No human judgment required. System confidence — scoring, validation,
-        governance matrix checks — is sufficient to proceed. The realization
+        governance matrix checks — is sufficient to proceed. The implementation
         activates automatically on pass.
       dcm_gate: All structural and governance validation checks pass
       organization_provides: Nothing — fully automated
@@ -97,7 +97,7 @@ Given the default list: auto(1) → reviewed(2) → verified(3) → authorized(4
 If an organization inserts a custom tier:
   auto(1) → reviewed(2) → verified(3) → compliance_reviewed(4) → authorized(5)
 
-The realization resolves:
+The implementation resolves:
   weight("reviewed")            = 2
   weight("verified")            = 3
   weight("compliance_reviewed") = 4
@@ -159,7 +159,7 @@ Custom tier contributions MUST require `verified` tier approval (two independent
 
 ### 2.3 External Tier Registries
 
-For federation deployments, peer realizations may have different custom tier lists. When a federated request requires approval from a peer's tier, the realization resolves the equivalent gravity level from the local list:
+For federation deployments, peer implementations may have different custom tier lists. When a federated request requires approval from a peer's tier, the implementation resolves the equivalent gravity level from the local list:
 
 ```yaml
 federation_tier_resolution:
@@ -172,13 +172,13 @@ federation_tier_resolution:
 
 ## 3. Tier Registry Change Impact Detection (Approval Continuity Contract)
 
-When the authority tier registry is modified — a new tier inserted, a tier removed, a tier's `decision_gravity` changed, or a tier's position changed — a UDLM-conformant realization MUST evaluate the impact on all items that reference tier names before activating the change. This section specifies the substrate-required detection model.
+When the authority tier registry is modified — a new tier inserted, a tier removed, a tier's `decision_gravity` changed, or a tier's position changed — a UDLM-conformant implementation MUST evaluate the impact on all items that reference tier names before activating the change. This section specifies the substrate-required detection model.
 
 > **Substrate note:** The impact detection pipeline described here is required, not an optional audit feature. A tier registry change that creates security degradations MUST NOT activate until each degradation is explicitly acknowledged by a reviewer at `verified` tier or above. The detection mechanism itself is an implementation detail; this specification defines the required behavior and data model.
 
 ### 3.1 Tier Impact Diff (Wire Contract)
 
-Before activating a tier registry change, the realization computes a **tier impact diff** by comparing the proposed ordered list to the current ordered list.
+Before activating a tier registry change, the implementation computes a **tier impact diff** by comparing the proposed ordered list to the current ordered list.
 
 ```yaml
 tier_impact_diff:
@@ -228,7 +228,7 @@ tier_impact_diff:
 
 ### 3.2 Affected Item Query (Substrate Required)
 
-After computing the tier impact diff, the realization MUST query for all items affected by each changed tier. The query categories are normative:
+After computing the tier impact diff, the implementation MUST query for all items affected by each changed tier. The query categories are normative:
 
 ```
 Affected item categories:
@@ -294,11 +294,11 @@ POST /api/v1/admin/tier-registry/{change_uuid}:accept-degradation
 }
 ```
 
-Broken references cannot be accepted — they must be resolved. The realization MUST NOT activate a tier registry change that leaves unresolvable tier references.
+Broken references cannot be accepted — they must be resolved. The implementation MUST NOT activate a tier registry change that leaves unresolvable tier references.
 
 ### 3.5 Impact Report (Wire Contract)
 
-Whether or not the change requires a degradation review gate, the realization MUST generate a tier registry impact report at proposed time and again at activation time:
+Whether or not the change requires a degradation review gate, the implementation MUST generate a tier registry impact report at proposed time and again at activation time:
 
 ```yaml
 tier_registry_impact_report:
@@ -374,4 +374,4 @@ Historical approval records MUST retain their `stored_tier_weight` from time of 
 
 ---
 
-*UDLM substrate document. Realization-specific tier evaluation runtime, approval authority mapping, profile threshold configuration mechanics, Group assignment internals, tier enforcement at decision points, and degradation review orchestration live in the consuming realization's documentation.*
+*UDLM substrate document. Implementation-specific tier evaluation runtime, approval authority mapping, profile threshold configuration mechanics, Group assignment internals, tier enforcement at decision points, and degradation review orchestration live in the consuming implementation's documentation.*

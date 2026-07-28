@@ -36,7 +36,7 @@ Each node's own build is request-realization; this UC is the *ordering* between 
 
 - **Data:** `depends_on` edges (from UC-07) pointing at resources in other providers; each carries the prerequisite's identity.
 - **Policy:** cross-domain constraint — convergence order is derived from the graph, not per-provider.
-- **Provider:** multiple eligible; each owns its own resource's realization, DCM owns the ordering between them.
+- **Provider:** multiple eligible; each owns its own resource's implementation, DCM owns the ordering between them.
 
 ## Pointers
 

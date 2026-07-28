@@ -105,7 +105,7 @@ compilation-provenance block naming the exact revisions (handle, version, digest
 referrer rule puts the digest in the provenance block, never in the input artifact) of every input
 — Base, Type, and Provider classes, shared-element layers, referenced common schemas, and the
 generator version — so "the artifact contains its chain" is verifiable, not asserted. Every
-realized instance extends this with realization provenance: the provider definition/
+realized instance extends this with implementation provenance: the provider definition/
 registration revision and engine binding version that realized it. Live provenance means the
 current artifact states its inputs; historical provenance means any past revision's full chain
 reconstructs mechanically from the revision store (immutable published revisions — each named
@@ -126,8 +126,8 @@ internals, dependencies, and implementation may change without any versioning ob
 toward consumers, because nothing a consumer can bind to has changed. The seam is precise:
 an internal change that alters a populated output's observable shape *is* a surface change and
 versions accordingly. Individual capabilities remain their own accreditation/version units
-(ADR-004), nested within the definition's version; the engine binding version a realization
-actually used is recorded in realization provenance (§7). Pins, debt, and blue/green promotion
+(ADR-004), nested within the definition's version; the engine binding version an implementation
+actually used is recorded in implementation provenance (§7). Pins, debt, and blue/green promotion
 apply to provider definitions unchanged — an estate pins a provider definition revision the
 same way it pins a class revision, and an engine upgrade verifies by output diff (the
 process-migration stage's engine-upgrade-regression pattern).
@@ -144,18 +144,18 @@ defaults/standards on their own merits — a member's internal breaking change d
 the envelope, because the set did not change. Consumers bind and pin at the finest unit they
 consume (the capability — identified by its frozen `capability_uuid`, pinned at a version or
 digest); estate-wide conservatism pins the definition
-revision. Realization provenance (§7) records the **capability revision** that governed a
-realization alongside the definition revision and engine binding. The operational payoff is
+revision. Implementation provenance (§7) records the **capability revision** that governed a
+implementation alongside the definition revision and engine binding. The operational payoff is
 **capability-level blue/green**: one capability's v2 runs green under ADR-046's promotion
 contract while sibling capabilities keep serving on their current versions — staged provider
 evolution without whole-provider upgrades. **Realized instances are stable under capability movement.** A capability version change —
 compatible or breaking — never triggers a redeploy, update, or reconciliation of instances
-already realized under an earlier capability revision: realization provenance is immutable
-fact, and a running instance's contract is the revision that governed its realization. The
+already realized under an earlier capability revision: implementation provenance is immutable
+fact, and a running instance's contract is the revision that governed its implementation. The
 movement is *surfaced* at instance level (realized-under vs current-capability distance, typed
 distinctly from spec pin-lag) and the organization's change policy decides — update, re-realize
 under the new revision (blue/green when breaking), or deliberately nothing, which is
-legitimate. Breaking-ness matters at the *next* realization, never retroactively to a running
+legitimate. Breaking-ness matters at the *next* implementation, never retroactively to a running
 one. The industry's own version of this rule is building codes: a house built to the
 2019 code is not upgraded when the 2022 code publishes — once built, the object has a life of
 its own — but a *renovation* is where current-code adoption gets decided. Mapped here:
@@ -191,5 +191,5 @@ untouched by the envelope. Corpus: class-versioning 013–020.
 - Organizations can be arbitrarily conservative without forking: a fully-pinned estate is a
   supported state whose cost is a visible debt list, and ADR-046's blue/green contract is the
   instrument that retires the debt with evidence.
-- Gate work this creates (realization-plan P0): the class-compat classifier (including the
+- Gate work this creates (implementation-plan P0): the class-compat classifier (including the
   scope rule), the blast-radius enumerator, and pin resolution validation on both planes.
