@@ -183,6 +183,15 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
     the multi-resource story (not duplicated per spec) + a **separate negative/rollback flow only where the
     failure path is substantive** (DR, mid-maintenance failure). Observed types lean on the dependency-graph flow.
   The scoreboard shows the gap; the reviewer confirms the story is present, not just the schema.
+- **Claims match their governing rule (flow/doc ⟷ rule consistency):** a flow, example, or doc that asserts
+  *rule-governed* behavior must **cite the rule-ID and state it consistently with the rule's home** — never
+  paraphrase a rule into a contradiction. The exemplar: `uc-10-dynamic-rehydration` once flatly said "UUIDs
+  are preserved," contradicting **`RHY-005`** (UUID preserved *only* on a Faithful restore; a Provider-Portable
+  rebuild mints a **new** UUID kept traceable by lineage). A claim that omits its governing rule, or restates
+  it wrongly, is a finding. The *semantic* version of this — does the corpus as a whole cohere with the model
+  — is measured by the **DAV coherence analysis** against this corpus; a per-rule-ID citation-integrity CI
+  gate is buildable once a complete rule-ID definition index exists (today ~3% of citations resolve only by
+  heuristic, too noisy to hard-gate).
 - **Document the why:** the rationale lives in the repo (design note / tenet / ADR pointer), not just the
   diff.
 
