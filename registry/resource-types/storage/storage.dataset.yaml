@@ -132,3 +132,10 @@ context:
       Compute.BareMetalHost — the host the dataset is local to.
     - >-
       Storage.Dataset — the parent dataset, when nested.
+
+coverage:
+  use_cases:
+    - storage/provision-dataset-with-quota-compression
+    - storage/dataset-parent-pool-missing-refused
+  flows:
+    - docs/flows/storage-provisioning-lifecycle.md

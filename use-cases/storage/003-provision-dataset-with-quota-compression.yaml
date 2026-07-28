@@ -1,0 +1,60 @@
+uuid: uc-136d21a4-488f-4093-a45a-928e89dcdaf0
+handle: storage/provision-dataset-with-quota-compression
+version: 1.0.0
+scenario:
+  description: 'A platform engineer creates a Storage.Dataset (ZFS-style) on an existing Storage.Pool,
+    declaring a mountpoint, a quota, and a compression setting. The dataset references its parent pool
+    as its capacity source and carries these as declared intent properties, not provider-native tunables
+    smuggled through a free-form field. The storage provider realizes the dataset on the named pool,
+    applies the mountpoint, enforces the quota, enables compression as declared, and the dataset reaches
+    Realized with those properties published on its outputs (parent pool, mountpoint, effective quota,
+    compression state). This stresses that a Dataset is a first-class typed child of a Pool whose
+    space-management and mount properties are replayable intent — the same Dataset model that describes
+    a live ZFS dataset IS its provisioning declaration.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Create a Dataset on a Pool with a declared mountpoint, quota, and compression, and have it
+    realize with those properties
+  success_criteria:
+  - The dataset references its parent pool as its capacity source, resolvable as a first-class edge
+  - Mountpoint, quota, and compression are declared intent properties, not provider-native tunables in
+    a free-form field
+  - The provider realizes the dataset on the named pool and applies mountpoint, quota, and compression
+    as declared
+  - The realized properties (parent pool, mountpoint, effective quota, compression state) are published
+    on the dataset's outputs
+  - The dataset rehydrates by replaying the same declaration against the same pool
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the dataset's parent-pool reference and its space/mount properties are the declared record
+  - domain: policy
+    interaction: validation confirms the parent pool exists and can host the declared quota before dispatch
+  - domain: provider
+    interaction: the storage provider realizes the dataset and applies mountpoint, quota, and compression
+  - domain: audit
+    interaction: the creation and the realized properties are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: storage-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- storage-dataset
+- storage-pool
+- quota
+- compression
+- provisioning-intent

@@ -163,5 +163,16 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "storage-redundancy/backend-aggregation-and-pool-boundary",
+      "change-control/storage-array-maintenance-ordered",
+      "storage-redundancy/composed-topology-fault-tolerance"
+    ],
+    "flows": [
+      "docs/flows/storage-array-maintenance-dr.md",
+      "docs/flows/storage-provisioning-lifecycle.md"
+    ]
+  }
 }

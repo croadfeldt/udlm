@@ -1,0 +1,63 @@
+uuid: uc-eb98bd5e-091b-4dcc-8e08-23e54c580c25
+handle: storage/fileshare-export-to-unauthorized-principal-refused
+version: 1.0.0
+scenario:
+  description: 'A platform engineer declares an export on a Storage.FileShare that grants access to a
+    principal outside the share''s authorized directory scope — a subject that resolves to no entry, or
+    to an entry outside the group the share is authorized to serve. Success for this use case is the
+    REFUSAL: the export must be rejected before it takes effect, never applied optimistically and walked
+    back later, and never silently narrowed to only the authorized principals (a grant the operator did
+    not declare). The refusal must be a typed authorization error — machine-matchable as an
+    out-of-scope principal, distinct from a not-found share or a schema-invalid export — and it must name
+    the offending principal and the authorized scope it falls outside, WITHOUT leaking the directory''s
+    membership beyond the fact that the named principal is out of scope. No export is applied to the
+    provider, and an audit record carries both the refused grant and the scope that refused it.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - sre
+    - security-officer
+    - compliance-auditor
+  intent: Declare a FileShare export to a principal outside the authorized directory scope, and receive
+    a refusal naming the out-of-scope grant
+  success_criteria:
+  - The export is refused before it takes effect; no access is granted to the out-of-scope principal
+  - The refusal is typed as an out-of-scope authorization error, distinct from not-found and from
+    schema-invalid
+  - The export is not silently narrowed to the authorized principals — refusal of the declared grant,
+    not partial application
+  - The refusal names the offending principal and the authorized scope it falls outside, without leaking
+    the directory's membership
+  - An audit record of the refusal exists, carrying the refused grant and the scope that refused it
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the share's authorized directory scope and the requested principal are resolvable
+      records the refusal cites
+  - domain: policy
+    interaction: the authorization rule refuses the out-of-scope grant without leaking directory membership
+  - domain: provider
+    interaction: no export is applied to the share provider for the refused grant
+  - domain: audit
+    interaction: the refused grant and the authorized scope that refused it are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: storage-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- storage-fileshare
+- export-authorization
+- non-leaking

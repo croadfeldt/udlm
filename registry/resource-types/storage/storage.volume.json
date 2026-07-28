@@ -150,5 +150,15 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "storage/provision-volume-bound-to-pool",
+      "storage/volume-request-exceeds-quota-refused"
+    ],
+    "flows": [
+      "docs/flows/uc-06-persistent-volume-provision.md",
+      "docs/flows/storage-provisioning-lifecycle.md"
+    ]
+  }
 }
