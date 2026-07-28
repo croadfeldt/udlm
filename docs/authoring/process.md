@@ -99,10 +99,10 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
 | `outputs` **or** an `outputs-exempt:` note, a `context` block, resolvable relationship targets, `adopts[]` backing adoption prose | `tests/check_type_standard.py` — rule-36 **G1/G2/G5/G7** |
 | `coverage:` block resolves (or the spec visibly joins the backlog) | `registry/tools/spec_coverage.py --check` — **COV-001/002** |
 
-> **Honest state of the tree:** `Automation.Job` currently ships an `outputs-exempt:` note and a full
-> `context` block, but has **no `coverage:` block yet** — it sits in `registry/spec-coverage-backlog.yaml`
-> (the shrinking backfill list), which COV-002 permits as long as the backlog file stays in sync. A *new*
-> process you author should not lean on that grace: declare a `coverage:` block.
+> **On the backlog grace:** `spec_coverage` COV-002 permits a spec to sit in
+> `registry/spec-coverage-backlog.yaml` (the shrinking backfill list) *only* as long as the backlog file
+> stays in sync — this is how a large migration burns down without blocking. The tree is now fully covered
+> (backlog empty), so a *new* process you author gets no grace: declare a `coverage:` block, or CI refuses it.
 
 ## 4. A worked pointer
 
@@ -112,7 +112,9 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
   that make migration a provider swap).
 - **`Automation.Job` resource type:** copy `registry/resource-types/automation/automation.job.json` — the
   first Process-family resource type, with `depends_on` graph edges, the portable-intent block
-  (`definition_ref` / `parameters` / `targets` / `schedule`), and the `outputs-exempt` stance.
+  (`definition_ref` / `parameters` / `targets` / `schedule`), the `outputs-exempt` stance, its
+  `spec.examples`, and its `coverage:` block naming `use-cases/automation/run-automation-job.yaml`
+  (idempotent run with a declared blast-radius) and `docs/flows/automation-migration-and-promotion.md`.
 - **Corpus and flow:** `use-cases/process-migration/` (`automation-staged-promotion`,
   `blue-green-engine-verification`, `engine-migration-canary-cutover`, `engine-upgrade-regression`,
   `process-portability-structural-query`) and `docs/flows/automation-migration-and-promotion.md` — how
