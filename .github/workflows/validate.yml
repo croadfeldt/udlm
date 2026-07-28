@@ -60,6 +60,7 @@ jobs:
       # Scoped-Class substrate (ADR-038 / P0): Liskov extension gate + generated-spec freshness
       - run: python3 tests/check_class_liskov.py
       - run: python3 registry/tools/generate_class_specs.py --check
+      - run: python3 tests/check_class_address_resolution.py
       # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).
