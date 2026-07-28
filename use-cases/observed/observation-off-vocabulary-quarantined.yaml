@@ -1,0 +1,74 @@
+uuid: uc-a59364e4-0a27-41db-b8f0-81de304ab600
+handle: observed/observation-off-vocabulary-quarantined
+version: 1.0.0
+scenario:
+  description: 'An information provider submits an observed record whose value falls OUTSIDE the
+    model''s published vocabulary — a device class, location type, or identity kind the model does
+    not define. Success for this use case is the QUARANTINE: the record is held for reconciliation,
+    never admitted into the estate graph as if the off-vocabulary value were valid. The alternative
+    — silently coercing it to the nearest enum, or admitting the raw value as a new de-facto member —
+    is the exact failure the published-vocabulary discipline exists to prevent: a wrong enum blessed
+    on ingestion becomes a value every downstream consumer miscounts against. The surface must name
+    the offending field and its off-vocabulary value so a human can reconcile it — either map it to a
+    real vocabulary member or make the deliberate edit that adds the value to the vocabulary first —
+    but the refusal must be typed and machine-matchable as an off-vocabulary quarantine, distinct
+    from a schema-invalid record and from a provider-authorization failure. Nothing enters the graph
+    on the quarantined record''s account; no consumer sees the off-vocabulary value as a live estate
+    member; and the held record, the offending field, and its value are recorded so the reconciliation
+    is auditable and the record can be re-admitted once corrected.'
+  actor:
+    persona: platform-operator
+    profile: standard
+  perspectives:
+    - information-provider-owner
+    - sre
+    - compliance-auditor
+    - security-officer
+  intent: Ingest an observed record carrying an off-vocabulary value, and have it quarantined for
+    reconciliation with the offending field and value named — not silently coerced or admitted as a
+    new de-facto vocabulary member
+  success_criteria:
+  - The off-vocabulary record is quarantined; it does not enter the estate graph, and specifically it
+    is not coerced to the nearest enum nor admitted as a new de-facto vocabulary member
+  - The refusal is typed as an off-vocabulary quarantine, distinct from a schema-invalid record and
+    from a provider-authorization failure
+  - The surface names the offending field and its off-vocabulary value, so a human can reconcile it —
+    map it to a real member or add the value to the vocabulary first — and carries an actionable
+    resolution
+  - No consumer observes the off-vocabulary value as a live estate member; the held record is not a
+    partial admission with a warning
+  - The quarantined record, the offending field, and its value are recorded so the reconciliation is
+    auditable and the record can be re-admitted once corrected
+  dimensions:
+    lifecycle_phase: brownfield_ingestion
+    resource_complexity: single_no_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: internal_audit
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: the vocabulary gate quarantines the record when a value is off the published
+      vocabulary, rather than coercing it or admitting it as a new member
+  - domain: data
+    interaction: the offending field and its off-vocabulary value are the records the quarantine
+      cites; nothing is linked into the graph on this record's account
+  - domain: provider
+    interaction: the observing provider's other records are unaffected; only the off-vocabulary
+      record is held for reconciliation
+  - domain: audit
+    interaction: the held record, the offending field, and its value are recorded so the
+      reconciliation and any re-admission are auditable
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: observed-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- observed-inventory
+- vocabulary-discipline
+- quarantine

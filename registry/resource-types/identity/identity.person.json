@@ -81,7 +81,18 @@
         ],
         "default": "active"
       }
-    }
+    },
+    "examples": [
+      {
+        "handle": "adoe",
+        "display_name": "Alex Doe",
+        "email": "adoe@cexample.com",
+        "actor_type": "human",
+        "authenticated_by": "corp-directory",
+        "external_subject": "uid=adoe,ou=people,dc=cexample,dc=com",
+        "status": "active"
+      }
+    ]
   },
   "outputs": {
     "actor_uuid": {
@@ -102,5 +113,16 @@
       "cardinality": "0..n",
       "description": "Credentials — referenced, never inline."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

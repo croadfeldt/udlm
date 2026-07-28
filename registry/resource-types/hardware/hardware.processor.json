@@ -96,7 +96,22 @@
         "minimum": 1,
         "description": "Max clock in MHz (Redfish MaxSpeedMHz)."
       }
-    }
+    },
+    "examples": [
+      {
+        "device_class": "physical",
+        "identity": {
+          "location": "CPU1",
+          "model": "AMD EPYC 7443P",
+          "manufacturer": "AMD",
+          "role": "general-compute"
+        },
+        "cores": 24,
+        "threads": 48,
+        "architecture": "x86-64",
+        "max_speed_mhz": 4035
+      }
+    ]
   },
   "outputs": {},
   "relationships": [
@@ -125,5 +140,16 @@
       "license": "DMTF",
       "license_compatibility": "compatible-reference"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

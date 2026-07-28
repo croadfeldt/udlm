@@ -102,7 +102,24 @@
         "minimum": 0,
         "description": "Spindle speed for rotational media; 0 / omitted for SSD/NVMe."
       }
-    }
+    },
+    "examples": [
+      {
+        "device_class": "physical",
+        "identity": {
+          "location": "Bay 3",
+          "serial_number": "DRV-SN-EXAMPLE-0007",
+          "wwn": "naa.5000000000000001",
+          "model": "Example NVMe SSD 1.92TB",
+          "manufacturer": "Example Storage Co.",
+          "role": "ceph-osd"
+        },
+        "capacity": "1920GB",
+        "media_type": "nvme",
+        "protocol": "nvme",
+        "rotation_speed_rpm": 0
+      }
+    ]
   },
   "outputs": {
     "device_path": {
@@ -158,5 +175,16 @@
       "license": "SNIA",
       "license_compatibility": "compatible-reference"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

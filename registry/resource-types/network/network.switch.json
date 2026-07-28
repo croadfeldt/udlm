@@ -111,7 +111,26 @@
           }
         ]
       }
-    }
+    },
+    "examples": [
+      {
+        "lifecycle_state": "allocated",
+        "composition_visibility": "opaque",
+        "identity": {
+          "chassis_id": "00:00:5e:00:53:01",
+          "serial_number": "SW-OBS-0001",
+          "asset_tag": "ASSET-SW-0001",
+          "manufacturer": "ExampleNet",
+          "model": "EN-48T",
+          "system_name": "leaf-sw-01"
+        },
+        "ports": {
+          "count": 48,
+          "speed": "1Gbps"
+        },
+        "management_vlan_ref": "mgmt-vlan"
+      }
+    ]
   },
   "immutable": [
     "identity.chassis_id",
@@ -183,5 +202,16 @@
       "name": "Top-of-Rack (ToR) Switch",
       "note": "datacenter placement role"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }
