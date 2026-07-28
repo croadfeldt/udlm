@@ -1,0 +1,58 @@
+uuid: uc-6cb8216a-1944-48a1-beac-9562a62bdac5
+handle: observability/deploy-log-shipper
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests an Observability.LogShipper by intent — a declared source
+    (the logs to collect) and a declared sink (where they are forwarded) — without naming a provider-native
+    agent config or a host-local file path. The observability provider selects an eligible backend,
+    realizes the shipper as a source-to-sink forwarding path, and it reaches Realized with its source, sink,
+    and forwarding state readable from the record. This stresses that a LogShipper is portable intent, not
+    a hand-tuned agent: the declared source and sink ARE the build instruction, the realized forwarding
+    path is readable from the record rather than inferred from a running agent, and the shipper rehydrates
+    by replaying the same source-and-sink intent against an eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - sre
+    - platform-operator
+    - security-officer
+  intent: Request a LogShipper by declared source and sink and have it realize as a forwarding path with
+    its state published on its outputs
+  success_criteria:
+  - The request carries the source and sink from the record alone; no provider-native agent config or host
+    path leaks into the intent
+  - The provider realizes the shipper as a source-to-sink forwarding path; it reaches Realized
+  - The source, sink, and forwarding state are readable from the shipper's declared outputs, not inferred
+    from a running agent
+  - A consumer confirms forwarding by reading the shipper's published state, not by inspecting a host agent
+  - The shipper rehydrates by replaying the same source-and-sink intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared source and sink are the complete, portable build record for the shipper
+  - domain: policy
+    interaction: validation confirms the source and sink are admissible before dispatch
+  - domain: provider
+    interaction: the observability provider realizes the source-to-sink forwarding path to intent
+  - domain: audit
+    interaction: the provision path and the realized forwarding state are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: observability-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- observability-logshipper
+- source-to-sink
+- provisioning-intent
+- portability
+- binding

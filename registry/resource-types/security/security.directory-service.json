@@ -68,7 +68,19 @@
         "default": "standalone",
         "description": "Topology role within the directory cluster."
       }
-    }
+    },
+    "examples": [
+      {
+        "protocols": [
+          "ldap",
+          "ldaps",
+          "kerberos"
+        ],
+        "realm": "CORP.INTERNAL",
+        "base_dn": "dc=corp,dc=internal",
+        "replication_role": "primary"
+      }
+    ]
   },
   "outputs": {
     "ldap_endpoint": {
@@ -139,5 +151,14 @@
       "standard": "Microsoft",
       "note": "AD DS directory role"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "security/integrate-directory-service",
+      "security/reference-credential-just-in-time"
+    ],
+    "flows": [
+      "docs/flows/credential-and-identity-lifecycle.md"
+    ]
+  }
 }

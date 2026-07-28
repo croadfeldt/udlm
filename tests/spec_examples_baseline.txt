@@ -2,9 +2,3 @@
 # carry a spec.examples. This list may ONLY shrink: a spec that gains a validated example is
 # dropped here (the gate refuses to re-add it). New specs are NEVER added — they ship an example.
 # Burn down family-by-family; target is an empty file.
-Capability
-Observability.LogShipper
-Security.CredentialRef
-Security.DirectoryService
-TaxonomyTerm
-Vulnerability

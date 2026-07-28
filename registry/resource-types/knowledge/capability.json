@@ -62,7 +62,16 @@
         ],
         "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states (provenance-first; promotion to canonical is a curation act, applied by Policy, not by a provider)."
       }
-    }
+    },
+    "examples": [
+      {
+        "name": "workload-placement",
+        "description": "Schedule a workload onto a suitable host or node according to declared placement constraints (affinity, topology, resource fit).",
+        "pillar": "Operate",
+        "domain": "Scheduling",
+        "curation_state": "canonical"
+      }
+    ]
   },
   "immutable": [],
   "outputs": {
@@ -85,5 +94,14 @@
       "cardinality": "0..n",
       "description": "This capability depends on another capability (capability-map edge). Forms an acyclic capability DAG; traversal/ordering is Policy."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "knowledge/declare-capability",
+      "observed/estate-resource-observed"
+    ],
+    "flows": [
+      "docs/flows/uc-17-provider-registration-capability.md"
+    ]
+  }
 }

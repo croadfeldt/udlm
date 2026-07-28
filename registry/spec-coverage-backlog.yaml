@@ -1,9 +1,1 @@
-uncovered:
-- Access.IdentityEscrow
-- Automation.Job
-- Capability
-- Observability.LogShipper
-- Security.CredentialRef
-- Security.DirectoryService
-- TaxonomyTerm
-- Vulnerability
+uncovered: []

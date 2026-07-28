@@ -235,5 +235,13 @@
       "license_compatibility": "reference-only",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "automation/run-automation-job"
+    ],
+    "flows": [
+      "docs/flows/automation-migration-and-promotion.md"
+    ]
+  }
 }

@@ -1,0 +1,67 @@
+uuid: uc-957c3905-2384-49ce-afed-59d9a53360d0
+handle: access/escrow-unauthorized-item-refused
+version: 1.0.0
+scenario:
+  description: 'A requester attempts to add an item to an Access.IdentityEscrow — an identity or an
+    access — that falls outside what the escrow policy authorizes for that escrow. Success for this use
+    case is that the addition is REFUSED before it is admitted to the escrow, not quietly accepted so an
+    unauthorized identity silently gains break-glass survival: the request must be driven to a typed
+    terminal refusal that names the policy the item violates and the escrow it was aimed at, never
+    admitted as a second, unauthorized survival entry (which would let an identity survive a recovery it
+    was never sanctioned to survive), and never left Pending on an item that will not become authorized on
+    its own. The refusal must be typed as a policy violation — machine-matchable and distinct from a
+    provider failure and from a not-found reference — and carry an actionable resolution (remove the item,
+    or amend the escrow policy through its governed change path). It must name the violated policy without
+    leaking the contents or membership of the escrow the requester is not authorized to see, and it must
+    leave a tamper-evident audit record of the denied addition, the item, and the deciding rule.'
+  actor:
+    persona: security-officer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+    - compliance-auditor
+    - regulator
+  intent: Attempt to add an item outside the authorized escrow policy, and have it refused as a typed
+    policy violation naming the breach rather than admitted as an unauthorized survival entry
+  success_criteria:
+  - 'typed: the addition reaches a typed terminal refusal typed as a policy violation, distinct from a
+    provider failure and from a not-found reference — never admitted as an unauthorized survival entry,
+    and never left Pending on an unauthorizable item'
+  - 'actionable: the refusal names the violated escrow policy and the escrow the item was aimed at, and
+    carries a resolution the requester can act on (remove the item, or amend the policy through its
+    governed change path)'
+  - 'whole: no partial addition is made — the escrow is unchanged, never left with a half-added
+    unauthorized entry'
+  - 'non-leaking: the refusal names only the violated policy, not the contents or membership of the
+    escrow the requester is not authorized to see'
+  - 'auditable: the denied addition, the item, and the deciding rule leave a tamper-evident audit record'
+  dimensions:
+    lifecycle_phase: modification
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: compliance_gated
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: the escrow policy denies the out-of-policy item before it is admitted, driving a typed refusal
+  - domain: data
+    interaction: the violated policy and the target escrow are resolvable records the refusal cites
+  - domain: provider
+    interaction: no provider is dispatched — the unauthorized item never becomes a live survival entry
+  - domain: audit
+    interaction: the denied addition, the item, and the deciding rule are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: access-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- access-identityescrow
+- escrow-policy
+- policy-violation
