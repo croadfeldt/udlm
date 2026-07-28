@@ -92,7 +92,23 @@
         "type": "string",
         "description": "GPU architecture / generation, e.g. RDNA4, Hopper."
       }
-    }
+    },
+    "examples": [
+      {
+        "device_class": "physical",
+        "identity": {
+          "location": "0000:c1:00.0",
+          "serial_number": "GPU-SN-EXAMPLE-0001",
+          "model": "AMD Radeon Pro W7900",
+          "manufacturer": "AMD",
+          "role": "compute"
+        },
+        "memory": {
+          "size": "48GB"
+        },
+        "architecture": "RDNA3"
+      }
+    ]
   },
   "outputs": {},
   "relationships": [
@@ -128,5 +144,16 @@
       "license": "DMTF",
       "license_compatibility": "compatible-reference"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
 }

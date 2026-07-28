@@ -1,0 +1,69 @@
+uuid: uc-4a790fae-c517-4345-824e-afd1d1555f40
+handle: software/service-missing-dependency-refused
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Software.Service that declares a hard dependency on a
+    Data.Database, but that database is unrealizable — no eligible provider can satisfy it, so the dependency
+    can never reach Realized. Success for this use case is the REFUSAL: the request must be blocked naming the
+    root dependency that cannot be satisfied, not accepted and driven half-up (the service realized and left
+    running against a database that does not exist, a partial the consumer never asked for and cannot use).
+    The dependency is a request-nature edge (ADR-052: the service DEPENDS ON the database being realized
+    first), so the graph resolves the blocker to its root before any dispatch. The refusal must be typed and
+    machine-matchable as an unsatisfiable-dependency block — distinct from a failure of the service''s own
+    provider, which was never dispatched — and it must name the root dependency (the database) and why it is
+    unrealizable, so the reader acts on the cause rather than the symptom. No service is left Realized over a
+    missing dependency; any partial artifact is reconciled, and an audit record carries the blocked intent,
+    the root dependency, and the resolution offered.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
+  intent: Request a Service whose declared database dependency is unrealizable, and have the intent blocked
+    naming the root dependency rather than left half-up with the service running against a missing database
+  success_criteria:
+  - The request is blocked before dispatch; the service is never realized over an unrealizable dependency,
+    and specifically is not left half-up running against a database that does not exist
+  - The block is typed as an unsatisfiable-dependency refusal, distinct from a failure of the service's own
+    provider (which was never dispatched)
+  - The dependency edge is honored as a request-nature dependency (ADR-052) — the graph refuses the whole
+    intent rather than realizing the service and leaving the missing database silently Pending
+  - The refusal names the root dependency (the database) and why it is unrealizable, so the reader acts on
+    the cause, and carries an actionable resolution
+  - An audit record of the block exists, carrying the blocked intent, the root dependency, and the offered
+    resolution
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: hard_dependencies
+    policy_complexity: single_validation
+    provider_landscape: none_eligible
+    governance_context: standard_governance
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the service-to-database edge is a first-class request-nature dependency; the database's
+      unrealizability is resolvable to the root the refusal cites
+  - domain: policy
+    interaction: the dependency rule refuses the whole intent before dispatch rather than realizing the
+      service and leaving the database Pending
+  - domain: provider
+    interaction: no provider can satisfy the database dependency, and the service's provider is never
+      dispatched over the missing dependency
+  - domain: audit
+    interaction: the blocked intent, the root dependency, and the offered resolution are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: software-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- software-service
+- data-database
+- dependency-root

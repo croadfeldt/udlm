@@ -138,6 +138,36 @@ spec:
       properties:
         restart_policy: {type: string, enum: [always, on-failure, never], default: always}
         replicas: {type: integer, minimum: 0, default: 1}
+  examples:
+    - image:
+        reference: registry.example.com/org/app:1.0
+        digest: sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f
+      command: [/usr/bin/app]
+      args: [--serve, --port=8080]
+      resources:
+        cpu: 2
+        memory: 2Gi
+      process:
+        env:
+          - name: LOG_LEVEL
+            value: info
+          - name: DB_PASSWORD
+            value_from:
+              credential_ref: app-db-secret
+              key: password
+        mounts:
+          - mount_path: /etc/app
+            source_ref: app-config
+            read_only: true
+      network:
+        ports:
+          - container_port: 8080
+            published_port: 8080
+            protocol: tcp
+            visibility: external
+      runtime:
+        restart_policy: always
+        replicas: 2
 
 outputs:
   endpoint:
@@ -204,3 +234,10 @@ context:
       analysis.
     - >-
       Data.Database — connection outputs the container binds to.
+
+coverage:
+  use_cases:
+    - compute/deploy-container-workload
+    - compute/container-image-unavailable-refused
+  flows:
+    - docs/flows/compute-provisioning-lifecycle.md

@@ -1,0 +1,59 @@
+uuid: uc-8c06b4bd-346f-47c9-8c35-da0e26dca99d
+handle: compute/composite-vm-with-attached-volume
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a compute-plus-storage stack as one composite intent: a
+    Storage.Volume of a declared size and a Compute.VirtualMachine that attaches it. The two resources form
+    a cross-resource dependency — the VM depends on the Volume — and must realize in that order: the volume
+    is carved and reaches Realized first, then the VM realizes and attaches it. The dependency edge is
+    first-class (the VM references the volume it attaches), so realization ordering is computed from the
+    graph, not scripted by hand, and a failure at either resource bounds the blast radius to itself and its
+    dependents rather than leaving a running VM with no disk or an orphaned volume no VM claims. This
+    stresses that a compute service with attached storage is one composite whose ordering and reach derive
+    from the declared cross-resource edge, and rehydrates by replaying volume-then-VM in the same order.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a VirtualMachine with an attached Volume as one composite, and have the Volume -> VM
+    dependency realize in order
+  success_criteria:
+  - The composite declares the cross-resource edge as first-class — the VM references the volume it attaches
+  - Realization ordering (volume, then VM) is computed from the graph, not scripted
+  - The VM does not realize its attachment until the volume is Realized; the running VM is never left without
+    its declared disk
+  - A failure at either resource bounds the blast radius to that resource and its dependents — no orphaned
+    volume and no diskless VM are left behind
+  - The composite rehydrates by replaying the volume-then-VM chain in the same dependency order
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: composite_service
+    policy_complexity: system_defaults_only
+    provider_landscape: multiple_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the VM -> Volume attachment edge is the record from which realization ordering is computed
+  - domain: policy
+    interaction: the volume is checked Realized before the VM's attachment dispatches
+  - domain: provider
+    interaction: the storage provider carves the volume, then the compute provider realizes the VM and
+      attaches it
+  - domain: audit
+    interaction: the realization order and per-resource outcomes are recorded against the composite
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: compute-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- compute-virtualmachine
+- storage-volume
+- composite-service
+- dependency-chain

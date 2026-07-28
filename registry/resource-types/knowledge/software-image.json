@@ -60,7 +60,17 @@
         "type": "string",
         "description": "Target architecture from the image config (OCI platform.architecture)."
       }
-    }
+    },
+    "examples": [
+      {
+        "digest": "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "repository": "registry.example.com/org/storefront-web",
+        "tag": "1.4.2",
+        "registry": "registry.example.com",
+        "os": "linux",
+        "arch": "amd64"
+      }
+    ]
   },
   "outputs": {},
   "relationships": [
@@ -82,5 +92,14 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "software/reference-signed-image",
+      "software/image-unsigned-refused"
+    ],
+    "flows": [
+      "docs/flows/application-tier-provisioning.md"
+    ]
+  }
 }

@@ -1,0 +1,65 @@
+uuid: uc-aed8499a-4a62-4c71-8e65-822ca13fc3be
+handle: compute/baremetal-host-hardware-mismatch-refused
+version: 1.0.0
+scenario:
+  description: 'A platform engineer declares a Compute.BareMetalHost intent whose required hardware — a GPU
+    of a named class, or a NIC of a required speed — no eligible physical host in the pool actually
+    satisfies. Success for this use case is the REFUSAL: the request must be rejected before provisioning,
+    never force-fit onto a host missing the required hardware (a machine the intent did not ask for) and
+    never left Pending indefinitely awaiting hardware that is not in the pool. The refusal must be typed as
+    a capability mismatch — machine-matchable and distinct from a provider failure (no host broke; none was
+    ever eligible) and from a schema-invalid request — and it must name the unmet requirement concretely:
+    the required hardware capability against what the eligible hosts actually declare, so the reader can tell
+    an over-constrained request from an under-provisioned pool. No host is provisioned, no machine is
+    force-fit, and an audit record carries the required-versus-available hardware comparison that justified
+    the refusal.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+    - compliance-auditor
+  intent: Declare a BareMetalHost intent whose required hardware no eligible host satisfies, and receive a
+    refusal naming the unmet requirement
+  success_criteria:
+  - The request is refused before provisioning; no host is provisioned and no machine is force-fit
+  - The refusal is typed as a capability mismatch, distinct from provider failure and from schema-invalid
+  - The intent is never force-fit onto a host missing the required hardware, and is never left Pending
+    indefinitely awaiting hardware not in the pool
+  - The refusal names the required hardware capability and what the eligible hosts actually declare, so an
+    over-constrained request is distinguishable from an under-provisioned pool
+  - An audit record of the refusal exists, carrying the required-versus-available hardware comparison
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: none_eligible
+    governance_context: standard_governance
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: provider
+    interaction: the eligible hosts' declared hardware is the eligibility authority; no host missing the
+      requirement receives the work
+  - domain: policy
+    interaction: the capability rule refuses the request on the hardware mismatch rather than force-fitting
+      or deferring
+  - domain: data
+    interaction: the required hardware and the eligible hosts' declared hardware are both resolvable records
+      the refusal cites
+  - domain: audit
+    interaction: the refusal and the required-versus-available hardware comparison are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: compute-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- compute-baremetalhost
+- capability-mismatch
+- hardware-requirement

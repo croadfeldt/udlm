@@ -1,0 +1,61 @@
+uuid: uc-b62ebbc4-8cc2-44be-ae2f-1b93ca90893f
+handle: software/provision-database
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Data.Database by intent alone — a declared engine, a size
+    (storage capacity and instance class), and a high-availability flag — without naming a backing host, a
+    data directory, or any provider-native instance handle. The data provider selects an eligible backend,
+    realizes the database to the declared engine and size with HA honored as declared, and the database
+    reaches Realized with those properties published on its outputs (assigned engine, size, HA topology, and
+    a connection endpoint). This stresses that a Database is portable intent, not a provider-native instance:
+    the declared engine/size/HA ARE the build instruction, the realized properties are readable from the
+    record rather than inferred from the backend, a downstream consumer binds on the published endpoint
+    output rather than probing the host, and the database rehydrates by replaying the same intent against an
+    eligible provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a Database by declared engine, size, and HA flag, and have it realize with those
+    properties and a connection endpoint published on its outputs
+  success_criteria:
+  - The request carries the engine, size, and HA flag from the record alone; no provider-native host or data
+    directory leaks into the intent
+  - The provider realizes the database to the declared engine and size with HA honored as declared; the
+    database reaches Realized
+  - The assigned engine, size, HA topology, and connection endpoint are readable from the database's declared
+    outputs, not inferred provider-side
+  - A downstream consumer binds on the published endpoint output, contract-checked, rather than probing the
+    backing host
+  - The database rehydrates by replaying the same intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared engine, size, and HA flag are the complete, portable build record
+  - domain: policy
+    interaction: validation confirms the engine and an admitted provider before dispatch
+  - domain: provider
+    interaction: the data provider realizes the database to the declared intent, HA honored as declared
+  - domain: audit
+    interaction: the provision path and the realized properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: software-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- data-database
+- provisioning-intent
+- portability
+- binding

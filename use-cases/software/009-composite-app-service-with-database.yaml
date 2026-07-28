@@ -1,0 +1,62 @@
+uuid: uc-d44f3643-94b9-4f2d-aead-290f44c98617
+handle: software/composite-app-service-with-database
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests an application as one composite intent: a Data.Database provides
+    persistence, and a Software.Service deployed from a referenced image depends on that database for its
+    connection endpoint. The two resources form a cross-resource dependency chain — Database -> Service — and
+    must realize in that order: the service cannot bind until the database is Realized and its connection
+    endpoint is published, because the service consumes that endpoint as its declared input. The dependency
+    edge is first-class (the service references the database), so realization ordering is computed from the
+    graph, not scripted by hand, and a failure at the database tier bounds the blast radius to itself and its
+    dependent service rather than half-building the app with a service pointed at a database that does not yet
+    exist. This stresses that a two-tier application is one composite whose ordering and reach derive from the
+    declared cross-resource chain, mirrors the three-tier app pattern across the Data and Software tiers, and
+    rehydrates by replaying the chain in the same dependency order.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a Service bound to a Database as one composite, and have the Database -> Service chain
+    realize in dependency order with the service consuming the database's published endpoint
+  success_criteria:
+  - The composite declares the chain as a first-class edge — the service references the database
+  - Realization ordering (database, then service) is computed from the graph, not scripted
+  - The service does not bind until the database is Realized and its connection endpoint is published; the
+    service consumes that endpoint as its declared input
+  - A failure at the database tier bounds the blast radius to that resource and its dependent service — the
+    app is never left half-built with a service pointed at a database that does not exist
+  - The composite rehydrates by replaying the Database -> Service chain in the same dependency order
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: composite_service
+    policy_complexity: system_defaults_only
+    provider_landscape: multiple_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Database -> Service edge is the cross-resource chain from which ordering is computed
+  - domain: policy
+    interaction: the service's database dependency is checked Realized, with its endpoint published, before
+      the service dispatches
+  - domain: provider
+    interaction: each tier's backend realizes in turn; the service binds only after the database's endpoint
+      is published
+  - domain: audit
+    interaction: the realization order and per-tier outcomes are recorded against the chain
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: software-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- software-service
+- data-database
+- composite-service
+- dependency-chain

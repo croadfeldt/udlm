@@ -133,6 +133,18 @@ spec:
     replicas:
       type: integer
       description: Desired/observed instance count (0 = intentionally scaled down).
+  examples:
+  - service_kind: application
+    constituents:
+    - form: container
+      container_ref:
+        resource_type: Compute.Container
+        target_handle: storefront-web
+    endpoints:
+    - name: https
+      url: https://storefront.svc.internal
+      port: 443
+    replicas: 3
 outputs:
   ready:
     type: boolean
@@ -205,3 +217,12 @@ context:
   - Compute.Cluster / Compute.BareMetalHost / Compute.VirtualMachine — where the constituents run.
   - Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
   - Security.CredentialRef — the service's secrets, by reference.
+
+coverage:
+  use_cases:
+    - software/deploy-service-from-image
+    - software/service-missing-dependency-refused
+    - software/composite-app-service-with-database
+  flows:
+    - docs/flows/application-tier-provisioning.md
+    - docs/flows/uc-02-solution-architecture-deployment.md

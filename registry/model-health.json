@@ -10,14 +10,14 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3349,
-    "mutations_rejected": 3349,
+    "mutations_attempted": 3568,
+    "mutations_rejected": 3568,
     "density": 1.0,
     "findings": 0,
     "per_type": {
       "Access.IdentityEscrow": {
-        "attempted": 130,
-        "rejected": 130
+        "attempted": 120,
+        "rejected": 120
       },
       "Automation.Job": {
         "attempted": 162,
@@ -28,68 +28,68 @@
         "rejected": 36
       },
       "Compute.BareMetalHost": {
-        "attempted": 170,
-        "rejected": 170
+        "attempted": 182,
+        "rejected": 182
       },
       "Compute.Cluster": {
-        "attempted": 74,
-        "rejected": 74
+        "attempted": 104,
+        "rejected": 104
       },
       "Compute.Container": {
-        "attempted": 198,
-        "rejected": 198
+        "attempted": 240,
+        "rejected": 240
       },
       "Compute.VirtualMachine": {
-        "attempted": 186,
-        "rejected": 186
+        "attempted": 218,
+        "rejected": 218
       },
       "Data.Database": {
-        "attempted": 68,
-        "rejected": 68
-      },
-      "Facility.Location": {
-        "attempted": 28,
-        "rejected": 28
-      },
-      "Facility.PowerFeed": {
-        "attempted": 50,
-        "rejected": 50
-      },
-      "Hardware.BMC": {
-        "attempted": 33,
-        "rejected": 33
-      },
-      "Hardware.BiosProfile": {
-        "attempted": 31,
-        "rejected": 31
-      },
-      "Hardware.GraphicsProcessor": {
         "attempted": 70,
         "rejected": 70
       },
+      "Facility.Location": {
+        "attempted": 30,
+        "rejected": 30
+      },
+      "Facility.PowerFeed": {
+        "attempted": 52,
+        "rejected": 52
+      },
+      "Hardware.BMC": {
+        "attempted": 36,
+        "rejected": 36
+      },
+      "Hardware.BiosProfile": {
+        "attempted": 32,
+        "rejected": 32
+      },
+      "Hardware.GraphicsProcessor": {
+        "attempted": 74,
+        "rejected": 74
+      },
       "Hardware.NetworkInterface": {
-        "attempted": 146,
-        "rejected": 146
+        "attempted": 151,
+        "rejected": 151
       },
       "Hardware.Processor": {
-        "attempted": 80,
-        "rejected": 80
-      },
-      "Hardware.StorageDevice": {
         "attempted": 85,
         "rejected": 85
       },
+      "Hardware.StorageDevice": {
+        "attempted": 90,
+        "rejected": 90
+      },
       "Identity.Group": {
-        "attempted": 40,
-        "rejected": 40
+        "attempted": 37,
+        "rejected": 37
       },
       "Identity.Person": {
-        "attempted": 47,
-        "rejected": 47
+        "attempted": 46,
+        "rejected": 46
       },
       "Identity.ServiceAccount": {
-        "attempted": 42,
-        "rejected": 42
+        "attempted": 34,
+        "rejected": 34
       },
       "Network.AddressService": {
         "attempted": 24,
@@ -108,8 +108,8 @@
         "rejected": 56
       },
       "Network.Gateway": {
-        "attempted": 52,
-        "rejected": 52
+        "attempted": 47,
+        "rejected": 47
       },
       "Network.IPAddress": {
         "attempted": 28,
@@ -120,12 +120,12 @@
         "rejected": 68
       },
       "Network.Switch": {
-        "attempted": 74,
-        "rejected": 74
+        "attempted": 79,
+        "rejected": 79
       },
       "Network.VLAN": {
-        "attempted": 30,
-        "rejected": 30
+        "attempted": 32,
+        "rejected": 32
       },
       "Network.VirtualNetwork": {
         "attempted": 35,
@@ -140,40 +140,40 @@
         "rejected": 20
       },
       "Platform.Namespace": {
-        "attempted": 37,
-        "rejected": 37
+        "attempted": 32,
+        "rejected": 32
       },
       "Platform.NodePool": {
-        "attempted": 101,
-        "rejected": 101
+        "attempted": 96,
+        "rejected": 96
       },
       "Platform.ResourceQuota": {
-        "attempted": 48,
-        "rejected": 48
+        "attempted": 43,
+        "rejected": 43
       },
       "Platform.StorageClass": {
         "attempted": 78,
         "rejected": 78
       },
       "Security.CredentialRef": {
-        "attempted": 61,
-        "rejected": 61
+        "attempted": 56,
+        "rejected": 56
       },
       "Security.DirectoryService": {
         "attempted": 41,
         "rejected": 41
       },
       "Software.Service": {
-        "attempted": 87,
-        "rejected": 87
+        "attempted": 121,
+        "rejected": 121
       },
       "SoftwareImage": {
-        "attempted": 40,
-        "rejected": 40
+        "attempted": 45,
+        "rejected": 45
       },
       "SoftwarePackage": {
-        "attempted": 35,
-        "rejected": 35
+        "attempted": 39,
+        "rejected": 39
       },
       "Storage.Cluster": {
         "attempted": 72,
@@ -184,24 +184,24 @@
         "rejected": 44
       },
       "Storage.FileShare": {
-        "attempted": 120,
-        "rejected": 120
+        "attempted": 115,
+        "rejected": 115
       },
       "Storage.Pool": {
-        "attempted": 157,
-        "rejected": 157
+        "attempted": 122,
+        "rejected": 122
       },
       "Storage.Volume": {
-        "attempted": 47,
-        "rejected": 47
+        "attempted": 42,
+        "rejected": 42
       },
       "TaxonomyTerm": {
         "attempted": 51,
         "rejected": 51
       },
       "Topology": {
-        "attempted": 55,
-        "rejected": 55
+        "attempted": 171,
+        "rejected": 171
       },
       "Vulnerability": {
         "attempted": 61,
@@ -314,24 +314,28 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 108,
+    "files_scanned": 127,
     "covered": [
       "Capability",
+      "Compute.BareMetalHost",
       "Compute.Cluster",
+      "Compute.Container",
+      "Compute.VirtualMachine",
+      "Data.Database",
       "Platform.Hub",
       "Security.CredentialRef",
+      "Software.Service",
+      "SoftwareImage",
+      "SoftwarePackage",
       "Storage.Dataset",
       "Storage.FileShare",
       "Storage.Pool",
-      "Storage.Volume"
+      "Storage.Volume",
+      "Topology"
     ],
     "uncovered": [
       "Access.IdentityEscrow",
       "Automation.Job",
-      "Compute.BareMetalHost",
-      "Compute.Container",
-      "Compute.VirtualMachine",
-      "Data.Database",
       "Facility.Location",
       "Facility.PowerFeed",
       "Hardware.BMC",
@@ -359,12 +363,8 @@
       "Platform.ResourceQuota",
       "Platform.StorageClass",
       "Security.DirectoryService",
-      "Software.Service",
-      "SoftwareImage",
-      "SoftwarePackage",
       "Storage.Cluster",
       "TaxonomyTerm",
-      "Topology",
       "Vulnerability"
     ]
   },
