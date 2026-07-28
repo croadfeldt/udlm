@@ -40,6 +40,25 @@ implemented inside policy** is a breach *out of* it. Conformance can be checked 
 that carries executable behavior, or a policy that becomes the system of record for lifecycle state, is
 non-conformant. The tenets below define each side of that boundary.
 
+## The nine tenets at a glance
+
+All nine answer one question — *where does logic live?* — and the answer is always "not in the data
+model." Read the row, then the section for the reasoning.
+
+| Tenet | In one line | So what — for an author / implementer |
+|---|---|---|
+| **T1** custodian, not mutator | the model holds, moves, and versions data; it never transforms it | put transformation in your provider/policy, never in the spec |
+| **T2** transformation is Policy | any enrich / convert / compute is Policy (DCM), not data | if a field must be *computed*, it's a policy input, not a spec default |
+| **T3** deterministic & reproducible | no embedded expressions; re-validatable years later against the pinned contract | pin the type version; use declarative JSON Schema, never a runtime expression |
+| **T4** flow is relationship | cross-entity data moves by typed reference, not by copying/transforming | wire a `target_field` edge; don't restate another entity's value |
+| **T5** adopt by reference | bring standards in by referencing them; the owner stays authoritative | reference AEP / TOSCA / FOCUS — don't fork or absorb their text |
+| **T6** pre-validated outcomes | validate and rehearse *before* the incident, not during | reserve + conformance prove it works before commit; no test-in-prod |
+| **T7** reuse before coining | extend an existing mechanism before inventing a new one | check for an existing edge / field / pattern before adding surface |
+| **T8** orchestrate, don't reimplement | wrap existing tools as providers; don't rebuild them | Terraform / Ansible / Crossplane are providers you *drive*, not replace |
+| **T9** never translate to native | the substrate stays neutral; the provider naturalizes, the model doesn't | the model never emits a provider's native spec — that's the provider's job |
+
+---
+
 ## T1 — The data model is a lifecycle custodian, not a mutator
 UDLM's role is to **maintain data through its lifecycle** — the four states (Intent → Requested →
 Realized → Discovered), with identity, versioning, relationships, provenance, audit, and sovereignty.
