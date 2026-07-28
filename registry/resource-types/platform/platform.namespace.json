@@ -91,7 +91,21 @@
         },
         "description": "Key-value annotations (Kubernetes annotation semantics)."
       }
-    }
+    },
+    "examples": [
+      {
+        "name": "team-alpha-prod",
+        "cluster_ref": "primary-platform-cluster",
+        "tenant_uuid": "b3f1c2d4-5e6a-4b7c-8d9e-0a1b2c3d4e5f",
+        "labels": {
+          "team": "alpha",
+          "environment": "production"
+        },
+        "annotations": {
+          "owner": "platform-team"
+        }
+      }
+    ]
   },
   "outputs": {
     "name": {
@@ -111,5 +125,15 @@
       "name": "cluster",
       "description": "The cluster this namespace exists within. A namespace cannot outlive its cluster."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "platform/provision-namespace-with-quota",
+      "platform/namespace-quota-exceeded-refused",
+      "platform/composite-hub-provisions-spoke"
+    ],
+    "flows": [
+      "docs/flows/platform-provisioning-lifecycle.md"
+    ]
+  }
 }

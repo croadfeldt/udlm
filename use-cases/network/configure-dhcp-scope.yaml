@@ -1,0 +1,61 @@
+uuid: uc-aa029702-50bc-404b-ac78-70d213087f72
+handle: network/configure-dhcp-scope
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Network.DHCPScope by intent alone — the subnet it serves, the
+    dynamic range and options it hands out — carved over a Network.IPAddressPool that owns the allocatable
+    range and operated by a Network.AddressService that provides the DHCP capability. The scope references
+    the pool and the address service as first-class edges; it does not name a lease database, a dhcpd
+    process, or any provider-native config. The provider realizes the scope on the declared pool under the
+    declared service, and it reaches Realized with its properties published on its outputs (served subnet,
+    dynamic range, option set). This stresses that a DHCPScope is portable intent whose allocatable range is
+    OWNED by an addressable IPAddressPool record and whose serving is OWNED by an AddressService — allocation
+    ownership is expressed in data, not inferred from a config file — and the scope rehydrates by replaying
+    the same intent against an eligible address provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+  intent: Request a DHCPScope over an IPAddressPool and operated by an AddressService, and have it realize
+    with its served range published on its outputs
+  success_criteria:
+  - The request declares the scope's edges as first-class references — the scope references the
+    IPAddressPool it carves from and the AddressService that operates it
+  - No provider-native lease database or dhcpd config leaks into the intent; the served subnet, range, and
+    options come from the record alone
+  - The provider realizes the scope on the declared pool under the declared service; the scope reaches
+    Realized
+  - The served subnet, dynamic range, and option set are readable from the scope's declared outputs, not
+    read from a provider config file
+  - The scope rehydrates by replaying the same intent against an eligible address provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the scope's references to the IPAddressPool and the AddressService are the ownership edges
+  - domain: policy
+    interaction: validation confirms the pool and service are Realized before the scope dispatches
+  - domain: provider
+    interaction: the address provider realizes the DHCP scope over the declared pool
+  - domain: audit
+    interaction: the configuration path and the realized scope properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: network-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- network-dhcpscope
+- network-ipaddresspool
+- network-addressservice
+- provisioning-intent
+- portability

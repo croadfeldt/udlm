@@ -1,0 +1,66 @@
+uuid: uc-b8f9eb2e-af77-45e2-a086-3cc7cba40b28
+handle: network/composite-segment-with-services
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a complete network segment as one composite intent: a
+    Network.VirtualNetwork provides the L2 attachment point, a Network.Gateway gives it a routed edge, a
+    Network.DHCPScope hands out addresses on its subnet, a Network.DNSZone resolves names for it, and a
+    Network.ConnectionProfile describes how workloads attach. The resources form a dependency graph rooted
+    at the VirtualNetwork — the gateway, DHCP scope, DNS zone, and connection profile each reference the
+    virtual network — and must realize in that order: none of the services can bind until the virtual
+    network is Realized, and the connection profile is not usable until the segment''s address and name
+    services are up. The dependency edges are first-class, so realization ordering is computed from the
+    graph rather than scripted by hand, and a failure at any tier bounds the blast radius to itself and its
+    dependents rather than half-building the segment. This stresses that a multi-resource network segment is
+    one composite whose ordering and reach derive from the declared graph, and rehydrates by replaying the
+    graph in the same order.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a network segment composed of a virtual network, gateway, DHCP scope, DNS zone, and
+    connection profile, and have the graph realize in dependency order as one segment
+  success_criteria:
+  - The composite declares the graph as first-class edges — the gateway, DHCP scope, DNS zone, and
+    connection profile each reference the virtual network they belong to
+  - Realization ordering (virtual network first, then its gateway and services) is computed from the graph,
+    not scripted
+  - No service binds until the virtual network is Realized; the connection profile is not usable until the
+    segment's address and name services are up
+  - A failure at any tier bounds the blast radius to that resource and its dependents — the segment is never
+    left half-built
+  - The composite rehydrates by replaying the graph in the same dependency order
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: composite_service
+    policy_complexity: system_defaults_only
+    provider_landscape: multiple_eligible
+    governance_context: internal_audit
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the VirtualNetwork-rooted edges are the graph from which realization ordering is computed
+  - domain: policy
+    interaction: each tier's dependency is checked Realized before the next tier dispatches
+  - domain: provider
+    interaction: each backend realizes its tier in turn; the services bind only after the virtual network is up
+  - domain: audit
+    interaction: the realization order and per-tier outcomes are recorded against the graph
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: network-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- network-virtualnetwork
+- network-gateway
+- network-dhcpscope
+- network-dnszone
+- network-connectionprofile
+- composite-service
+- dependency-chain

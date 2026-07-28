@@ -1,0 +1,66 @@
+uuid: uc-fd49cec2-a04b-4c5e-b6e8-f76ea1330791
+handle: network/overlapping-subnet-refused
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Network.VirtualNetwork and its Network.Gateway whose declared
+    subnet (CIDR) overlaps the subnet of a virtual network already Realized in the same routing scope.
+    Success for this use case is that the conflict is REFUSED before realization, not silently allowed to
+    co-exist: the request must be driven to a typed terminal refusal that names the overlapping CIDR and the
+    existing network it collides with, never admitted as a second overlapping segment (which would blackhole
+    or mis-route traffic once both are live), and never left Pending waiting on a conflict that will not
+    resolve itself. The refusal must be typed as a policy violation — machine-matchable and distinct from a
+    provider failure and from a capability mismatch — and carry an actionable resolution (choose a
+    non-overlapping CIDR or reuse the existing segment). It must name the conflict without leaking the
+    internal topology of networks the requester is not authorized to see, and it must leave a tamper-evident
+    audit record of the denied request and the deciding rule.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+    - security-officer
+    - compliance-auditor
+  intent: Request a VirtualNetwork whose subnet overlaps an existing one, and have it refused as a typed
+    policy violation naming the conflict rather than admitted as a second overlapping segment
+  success_criteria:
+  - 'typed: the request reaches a typed terminal refusal typed as a policy violation, distinct from a
+    provider failure and from a capability mismatch — never admitted as a second overlapping segment and
+    never left Pending on an unresolvable conflict'
+  - 'actionable: the refusal names the overlapping CIDR and the existing network it collides with, and
+    carries a resolution the requester can act on (a non-overlapping CIDR, or reuse of the existing segment)'
+  - 'whole: no partial segment is stood up — the VirtualNetwork and its Gateway are refused as a unit, never
+    left as a half-built overlapping network'
+  - 'non-leaking: the refusal names only the conflict, not the internal topology or ownership of networks
+    the requester is not authorized to see'
+  - 'auditable: the denied request, the overlapping CIDR, and the deciding rule leave a tamper-evident audit
+    record'
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: policy
+    interaction: the subnet-overlap rule denies the request before dispatch and drives it to a typed refusal
+  - domain: data
+    interaction: the overlapping CIDR and the existing network are resolvable records the refusal cites
+  - domain: provider
+    interaction: no provider is dispatched — the conflict is caught before realization, not discovered live
+  - domain: audit
+    interaction: the denied request, the conflict, and the deciding rule are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: network-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- must-reject
+- refusal-contract
+- network-virtualnetwork
+- network-gateway
+- policy-violation

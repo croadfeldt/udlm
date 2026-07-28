@@ -87,7 +87,37 @@
         ],
         "description": "Address families routed (common-elements: ip_family)."
       }
-    }
+    },
+    "examples": [
+      {
+        "functions": [
+          "routing",
+          "nat",
+          "firewall"
+        ],
+        "segments": [
+          {
+            "cidr": "203.0.113.0/24",
+            "role": "wan",
+            "vlan_ref": "wan-vlan"
+          },
+          {
+            "cidr": "192.0.2.0/24",
+            "role": "lan",
+            "vlan_ref": "lan-vlan"
+          },
+          {
+            "cidr": "198.51.100.0/24",
+            "role": "dmz",
+            "vlan_ref": {
+              "resource_type": "Network.VLAN",
+              "target_handle": "dmz-vlan"
+            }
+          }
+        ],
+        "ip_family": "ipv4"
+      }
+    ]
   },
   "outputs": {
     "external_address": {
@@ -131,5 +161,15 @@
       "name": "Firewall",
       "note": "edge filtering role"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/provision-virtual-network",
+      "network/overlapping-subnet-refused",
+      "network/composite-segment-with-services"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

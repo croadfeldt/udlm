@@ -1,0 +1,61 @@
+uuid: uc-b084ab86-14c6-48f2-84a2-f4b5debcd57c
+handle: network/allocate-ip-from-pool
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Network.IPAddress by intent alone — an allocation carved from
+    a named Network.IPAddressPool — without naming the specific address, a lease record, or any
+    provider-native handle. The IPAddress references the pool it is drawn from as a first-class edge; the
+    provider selects a free address within the pool''s range, realizes the allocation, and it reaches
+    Realized with the assigned address and its origin published on its outputs (address, allocation origin,
+    owning pool). This stresses that an IPAddress is a first-class record whose allocation is OWNED by an
+    addressable IPAddressPool — the assigned address is readable from the record rather than inferred from a
+    lease table — and that the allocation rehydrates by replaying the same intent against the same pool,
+    with ownership provable from the edge rather than reconstructed from provider state.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request an IPAddress carved from a named IPAddressPool, and have it realize with the assigned
+    address and origin published on its outputs
+  success_criteria:
+  - The request declares the allocation's edge as first-class — the IPAddress references the IPAddressPool
+    it is carved from; no specific address is named in the intent
+  - The provider selects a free address within the pool's range and realizes the allocation; the IPAddress
+    reaches Realized
+  - The assigned address, its allocation origin, and the owning pool are readable from the IPAddress's
+    declared outputs, not inferred from a lease table
+  - A downstream resource binds on the IPAddress's published address output, rather than reading provider
+    lease state
+  - The allocation rehydrates by replaying the same intent against the same pool
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the IPAddress's reference to the IPAddressPool is the ownership edge the allocation cites
+  - domain: policy
+    interaction: validation confirms the pool is Realized and has free capacity before the allocation dispatches
+  - domain: provider
+    interaction: the address provider selects a free address within the pool and realizes the allocation
+  - domain: audit
+    interaction: the allocation and its owning pool are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: network-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- network-ipaddress
+- network-ipaddresspool
+- provisioning-intent
+- portability
+- binding

@@ -80,7 +80,39 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "zone_name": "example.com",
+        "zone_type": "primary",
+        "records": [
+          {
+            "name": "@",
+            "type": "NS",
+            "ttl": 86400,
+            "data": "ns1.example.com."
+          },
+          {
+            "name": "@",
+            "type": "MX",
+            "ttl": 3600,
+            "data": "10 mail.example.com."
+          },
+          {
+            "name": "host01",
+            "type": "A",
+            "ttl": 3600,
+            "data": "192.0.2.10"
+          },
+          {
+            "name": "www",
+            "type": "CNAME",
+            "ttl": 3600,
+            "data": "host01.example.com."
+          }
+        ]
+      }
+    ]
   },
   "outputs": {
     "nameservers": {
@@ -129,5 +161,15 @@
       "standard": "GCP",
       "note": "Cloud DNS managed zone"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/configure-dns-zone",
+      "network/composite-segment-with-services",
+      "network/overlapping-subnet-refused"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

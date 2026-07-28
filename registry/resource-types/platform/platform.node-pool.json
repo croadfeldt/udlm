@@ -131,7 +131,36 @@
         },
         "description": "Taints applied to all nodes — workloads must tolerate these to be scheduled on the pool."
       }
-    }
+    },
+    "examples": [
+      {
+        "name": "gpu-large",
+        "cluster_ref": "primary-platform-cluster",
+        "node_count": 4,
+        "capabilities": {
+          "gpu": {
+            "available": true,
+            "models": [
+              "accelerator-a100",
+              "accelerator-h100"
+            ],
+            "count_per_node": 8
+          },
+          "architecture": "x86_64",
+          "memory_tier": "high-memory"
+        },
+        "labels": {
+          "workload": "gpu"
+        },
+        "taints": [
+          {
+            "key": "dedicated",
+            "value": "gpu",
+            "effect": "NoSchedule"
+          }
+        ]
+      }
+    ]
   },
   "outputs": {
     "pool_name": {
@@ -151,5 +180,15 @@
       "name": "cluster",
       "description": "The cluster this node pool belongs to."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "platform/provision-node-pool",
+      "platform/namespace-quota-exceeded-refused",
+      "platform/composite-hub-provisions-spoke"
+    ],
+    "flows": [
+      "docs/flows/platform-provisioning-lifecycle.md"
+    ]
+  }
 }

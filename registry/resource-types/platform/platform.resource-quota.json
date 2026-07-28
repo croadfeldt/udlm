@@ -98,7 +98,19 @@
           "type": "string"
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "namespace_ref": "team-alpha-prod",
+        "hard": {
+          "cpu": "32",
+          "memory": "64Gi",
+          "pods": 120,
+          "requests.storage": "500Gi",
+          "persistentvolumeclaims": 40
+        }
+      }
+    ]
   },
   "outputs": {
     "used": {
@@ -114,5 +126,15 @@
       "name": "namespace",
       "description": "The namespace this quota constrains."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "platform/provision-namespace-with-quota",
+      "platform/namespace-quota-exceeded-refused",
+      "platform/composite-hub-provisions-spoke"
+    ],
+    "flows": [
+      "docs/flows/platform-provisioning-lifecycle.md"
+    ]
+  }
 }

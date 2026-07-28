@@ -124,7 +124,27 @@
         },
         "description": "Provider-specific parameters passed to the provisioner (e.g., pool name, fsType, compression). Opaque to UDLM — the provisioner interprets them."
       }
-    }
+    },
+    "examples": [
+      {
+        "name": "block-fast-encrypted",
+        "provisioner": "block.csi.local",
+        "reclaim_policy": "Delete",
+        "volume_binding_mode": "WaitForFirstConsumer",
+        "allow_volume_expansion": true,
+        "capabilities": {
+          "iops": 16000,
+          "throughput_mbps": 1000,
+          "encryption": true,
+          "replication_factor": 3,
+          "snapshot_support": true
+        },
+        "parameters": {
+          "pool": "fast-pool",
+          "fsType": "ext4"
+        }
+      }
+    ]
   },
   "outputs": {
     "name": {
@@ -140,5 +160,15 @@
       "name": "storage_backend",
       "description": "The storage cluster that backs this class (e.g., a Ceph cluster, a NetApp filer)."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "platform/register-storage-class",
+      "platform/provision-namespace-with-quota",
+      "platform/composite-hub-provisions-spoke"
+    ],
+    "flows": [
+      "docs/flows/platform-provisioning-lifecycle.md"
+    ]
+  }
 }

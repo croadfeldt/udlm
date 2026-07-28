@@ -1,0 +1,58 @@
+uuid: uc-761a8a4e-3eee-411a-811d-ceda5e70ca4e
+handle: network/configure-dns-zone
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Network.DNSZone by intent alone — the zone name and the set
+    of resource records it is authoritative for (A/AAAA/CNAME/PTR) — without naming a nameserver process, a
+    zone-file path, or any provider-native serving handle. The network provider selects an eligible backend,
+    realizes the zone with the declared records served, and the zone reaches Realized with its properties
+    published on its outputs (zone name, serial, record set). This stresses that a DNSZone is portable
+    intent, not a provider-native zone file: the declared records ARE the build instruction, the realized
+    served set is readable from the record rather than scraped from the nameserver, and the zone rehydrates
+    by replaying the same intent against an eligible DNS provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a DNSZone by declared zone name and resource records, and have it realize with those
+    records served and published on its outputs
+  success_criteria:
+  - The request carries the zone name and its resource records from the record alone; no provider-native
+    zone-file path or nameserver process leaks into the intent
+  - The provider realizes the zone with the declared records served; the zone reaches Realized
+  - The zone name, serial, and served record set are readable from the zone's declared outputs, not scraped
+    from the nameserver
+  - A downstream consumer resolves against the zone by binding on its published record set, rather than
+    reading a provider zone file
+  - The zone rehydrates by replaying the same intent against an eligible DNS provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_no_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the declared zone name and resource records are the complete, portable build record
+  - domain: policy
+    interaction: validation confirms the zone name and record set are well-formed before dispatch
+  - domain: provider
+    interaction: the DNS provider realizes the zone and serves the declared records
+  - domain: audit
+    interaction: the configuration path and the realized zone properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: network-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- network-dnszone
+- provisioning-intent
+- portability
+- binding

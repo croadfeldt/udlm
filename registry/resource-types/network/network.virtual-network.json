@@ -65,7 +65,17 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "forward_mode": "bridge",
+        "autostart": true,
+        "identity": {
+          "location": "workload-br0",
+          "role": "workload"
+        }
+      }
+    ]
   },
   "outputs": {
     "attachment_ready": {
@@ -151,5 +161,15 @@
       "standard": "OVN",
       "note": "SDN realization"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "network/provision-virtual-network",
+      "network/overlapping-subnet-refused",
+      "network/composite-segment-with-services"
+    ],
+    "flows": [
+      "docs/flows/network-provisioning-lifecycle.md"
+    ]
+  }
 }

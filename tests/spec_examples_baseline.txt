@@ -3,20 +3,7 @@
 # dropped here (the gate refuses to re-add it). New specs are NEVER added — they ship an example.
 # Burn down family-by-family; target is an empty file.
 Capability
-Network.AddressService
-Network.ConnectionProfile
-Network.DHCPScope
-Network.DNSZone
-Network.Gateway
-Network.IPAddress
-Network.IPAddressPool
-Network.VirtualNetwork
 Observability.LogShipper
-Platform.Hub
-Platform.Namespace
-Platform.NodePool
-Platform.ResourceQuota
-Platform.StorageClass
 Security.CredentialRef
 Security.DirectoryService
 TaxonomyTerm
