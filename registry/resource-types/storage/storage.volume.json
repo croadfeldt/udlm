@@ -90,7 +90,16 @@
         "default": false,
         "description": "Reclaim policy: true = Retain (keep data after the consumer releases it), false = Delete."
       }
-    }
+    },
+    "examples": [
+      {
+        "capacity": "500Gi",
+        "access_mode": "read_write_once",
+        "volume_mode": "filesystem",
+        "storage_class": "ceph-rbd-ssd",
+        "retain_on_release": true
+      }
+    ]
   },
   "outputs": {
     "volume_handle": {

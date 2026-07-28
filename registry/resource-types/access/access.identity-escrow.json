@@ -126,7 +126,38 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "escrowed_items": [
+          {
+            "item_id": "remote-access",
+            "item_kind": "remote_access_identity",
+            "credential_ref": "credential/unit-042-remote-access",
+            "capture_on": [
+              "registration"
+            ],
+            "restore_on": [
+              "re_realization"
+            ],
+            "required": true
+          },
+          {
+            "item_id": "app-session",
+            "item_kind": "application_session",
+            "credential_ref": "credential/unit-042-app-session",
+            "capture_on": [
+              "registration",
+              "pre_wipe"
+            ],
+            "restore_on": [
+              "re_realization"
+            ],
+            "required": false
+          }
+        ]
+      }
+    ]
   },
   "outputs": {
     "last_captured_at": {

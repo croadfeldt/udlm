@@ -39,7 +39,14 @@ def specs():
         if p.endswith((".json", ".yaml", ".yml")):
             d = load(p)
             if d.get("resource_type") and "record_type" not in d:
-                out.append(("type", d["resource_type"], p, d.get("coverage")))
+                # A type's example leg is satisfied by in-spec spec.examples (ADR-055) — but only
+                # AUGMENT an existing coverage block, never synthesize one: a spec with examples but
+                # no coverage block stays in the backlog (its UCs/flows are still owed) rather than
+                # looking partially covered and demanding the other legs early.
+                cov = d.get("coverage")
+                if cov and (d.get("spec") or {}).get("examples"):
+                    cov = {**cov, "examples": (cov.get("examples") or []) + ["spec.examples"]}
+                out.append(("type", d["resource_type"], p, cov))
     for p in glob.glob(os.path.join(ROOT, "registry", "classes", "*.yaml")):
         d = load(p)
         if d.get("record_type") == "class":
@@ -84,7 +91,8 @@ def _resolve(referent, kind, uc_handles, inst_handles):
     if kind == "use_cases":
         return referent in uc_handles
     if kind == "examples":
-        return referent in inst_handles
+        # `spec.examples` is the in-spec worked example (ADR-055); anything else names an instance.
+        return referent == "spec.examples" or referent in inst_handles
     if kind == "flows":
         # a flow given by bare name resolves to docs/flows/<name>.md
         return os.path.isfile(os.path.join(ROOT, "docs", "flows", os.path.basename(referent)))

@@ -91,6 +91,27 @@ spec:
               type: string
             description: 'Provider-passthrough share knobs NOT lifted into typed fields — the basic-scale text passthrough
               (DCM ADR-023 §6). e.g. {"fruit:time machine": "yes", "inherit acls": "yes"}.'
+  examples:
+  - protocol: smb
+    workgroup: EXAMPLE
+    directory_service_ref: directory/example-ad
+    shares:
+    - name: projects
+      path: /export/projects
+      read_only: false
+      browseable: true
+      valid_principals:
+      - '@examplecom'
+      - maintainer
+      options:
+        'fruit:time machine': 'yes'
+        inherit acls: 'yes'
+    - name: archive
+      path: /export/archive
+      read_only: true
+      browseable: false
+      valid_principals:
+      - '@examplecom-archivers'
 outputs:
   mount_uri:
     type: string

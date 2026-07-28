@@ -10,18 +10,18 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3155,
-    "mutations_rejected": 3155,
+    "mutations_attempted": 3349,
+    "mutations_rejected": 3349,
     "density": 1.0,
     "findings": 0,
     "per_type": {
       "Access.IdentityEscrow": {
-        "attempted": 72,
-        "rejected": 72
+        "attempted": 130,
+        "rejected": 130
       },
       "Automation.Job": {
-        "attempted": 157,
-        "rejected": 157
+        "attempted": 162,
+        "rejected": 162
       },
       "Capability": {
         "attempted": 36,
@@ -176,24 +176,24 @@
         "rejected": 35
       },
       "Storage.Cluster": {
-        "attempted": 58,
-        "rejected": 58
-      },
-      "Storage.Dataset": {
-        "attempted": 40,
-        "rejected": 40
-      },
-      "Storage.FileShare": {
         "attempted": 72,
         "rejected": 72
       },
+      "Storage.Dataset": {
+        "attempted": 44,
+        "rejected": 44
+      },
+      "Storage.FileShare": {
+        "attempted": 120,
+        "rejected": 120
+      },
       "Storage.Pool": {
-        "attempted": 94,
-        "rejected": 94
+        "attempted": 157,
+        "rejected": 157
       },
       "Storage.Volume": {
-        "attempted": 45,
-        "rejected": 45
+        "attempted": 47,
+        "rejected": 47
       },
       "TaxonomyTerm": {
         "attempted": 51,
