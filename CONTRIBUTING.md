@@ -141,10 +141,15 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
   (`adopted-standards.md` §8).
 - **Spec completeness — UC + example + flow** — `registry/tools/spec_coverage.py --check`: every
   resource-type spec and Class declares its story in a structural **`coverage:` block** — the **Use Case(s)**
-  (`use-cases/`), **worked example(s)** (an instance; a Class is its own example), and **flow(s)**
-  (`docs/flows/`) that exercise it. Every declared referent must resolve (`COV-001`), and the backfill
-  backlog (`registry/spec-coverage-backlog.yaml`) must match the tree (`COV-002`) so a new spec can't ship
-  uncovered without either declaring coverage or visibly joining the backlog in its diff.
+  (`use-cases/`), **worked example(s)**, and **flow(s)** (`docs/flows/`) that exercise it. Every declared
+  referent must resolve (`COV-001`), and the backfill backlog (`registry/spec-coverage-backlog.yaml`) must
+  match the tree (`COV-002`) so a new spec can't ship uncovered without either declaring coverage or visibly
+  joining the backlog in its diff.
+- **Spec examples — in the spec, CI-validated (ADR-055)** — `tests/check_spec_examples.py`: a type's worked
+  example lives at **`spec.examples`** (the JSON Schema / OpenAPI keyword, co-located with the schema), never
+  in a side file. Every in-spec example **validates against its own spec schema** (`EXG-001`, hard — a rotted
+  example fails the build), and every spec carries one unless burn-down-baselined (`EXG-002`). The example is
+  non-normative (excluded from the identity digest), so refreshing it never forces a version bump.
 
 **Judgment (reviewer + author self-check).**
 - **Scope — DCM vs UDLM (the peer test, `docs/adr/ADR-008`):** *could an independent conformant peer decide
@@ -165,9 +170,15 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
   gist in one line** (what it *decided*), never a bare number. Concise; no duplication; cut anything that
   does not move a decision.
 - **A spec travels with its story (rule-36):** a new or changed resource type / Class does not merge alone —
-  it ships with at least one **Use Case** that exercises it, a **worked example** (instance), and a **flow**
-  that places it in a lifecycle. The scoreboard (above) shows the gap; the reviewer confirms the three are
-  present, not just the schema. A spec with no UC, no example, or no flow is an incomplete PR.
+  it ships with its Use Cases, its in-spec example, and a flow. The minimums:
+  - **Use Cases — 2–3:** a **positive** (happy path), a **negative** (a refusal / must-reject), and a
+    **composite** where the type genuinely composes with others. Intent types get bespoke UCs; observed /
+    inventory types (Hardware.\*, Facility.\*, Identity.\*) lean on the shared *estate-observation* UC.
+  - **Example — 1+ in `spec.examples`** (ADR-055, gated by `check_spec_examples.py`), not a side file.
+  - **Flow — 1 bespoke** lifecycle flow (failure branches shown inline) + the **shared composite** flow for
+    the multi-resource story (not duplicated per spec) + a **separate negative/rollback flow only where the
+    failure path is substantive** (DR, mid-maintenance failure). Observed types lean on the dependency-graph flow.
+  The scoreboard shows the gap; the reviewer confirms the story is present, not just the schema.
 - **Document the why:** the rationale lives in the repo (design note / tenet / ADR pointer), not just the
   diff.
 

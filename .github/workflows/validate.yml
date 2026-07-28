@@ -66,6 +66,11 @@ jobs:
       # backfill backlog (spec-coverage-backlog.yaml) must match the tree so a new uncovered spec
       # can't slip in silently (COV-002) — it declares coverage or visibly joins the backlog.
       - run: python3 registry/tools/spec_coverage.py --check
+      # Spec-example gate (ADR-055 — examples live in spec.examples, JSON Schema / OpenAPI
+      # convention): every in-spec example validates against its own spec schema (EXG-001, hard),
+      # and every spec carries one unless baselined in the burn-down (EXG-002). Spectral's
+      # oas3-valid-schema-example rule, UDLM-side; closes the deferred rule-36 G4 / D8 ruling.
+      - run: python3 tests/check_spec_examples.py
       # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).

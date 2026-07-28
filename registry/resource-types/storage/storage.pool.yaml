@@ -107,6 +107,30 @@ spec:
         type: string
       description: Provider-passthrough pool properties not lifted into typed fields (e.g. compression, recordsize,
         ashift).
+  examples:
+  - pool_kind: zfs
+    health: ONLINE
+    capacity:
+      size: 32TiB
+      allocated: 18.4TiB
+      free: 13.6TiB
+    vdevs:
+    - type: raidz2
+      raid_type: RAID6
+      members:
+      - storage-device/bay-01
+      - storage-device/bay-02
+      - storage-device/bay-03
+      - storage-device/bay-04
+      - storage-device/bay-05
+      - storage-device/bay-06
+    - type: spare
+      members:
+      - storage-device/bay-07
+    properties:
+      compression: lz4
+      recordsize: 128K
+      ashift: '12'
   $defs:
     vdev:
       type: object

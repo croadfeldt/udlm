@@ -85,12 +85,11 @@ def _supersedes(doc):
 
 
 def _identity_view(doc):
-    """The doc as it counts for identity — documentation-completeness pointers (ADR-051
-    IDENTITY_EXCLUDED_FIELDS, e.g. `coverage`) stripped, so a coverage-only edit is not a
-    content change and does not oblige a version bump."""
-    if isinstance(doc, dict) and any(k in doc for k in _pin.IDENTITY_EXCLUDED_FIELDS):
-        return {k: v for k, v in doc.items() if k not in _pin.IDENTITY_EXCLUDED_FIELDS}
-    return doc
+    """The doc as it counts for identity — non-normative documentation surfaces stripped (ADR-051:
+    top-level `coverage`, and the `spec.examples` JSON Schema annotation, ADR-055), so a
+    docs-only edit is not a content change and does not oblige a version bump. Shares the exact
+    strip the digest uses, so R1b and the digest agree on what identity covers."""
+    return _pin._strip_nonnormative(doc) if isinstance(doc, dict) else doc
 
 
 def check_pair(rel, old_doc, new_doc, fails, warns):

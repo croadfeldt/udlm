@@ -155,7 +155,34 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "process_type": "playbook",
+        "max_execution_time": "PT1H",
+        "on_max_exceeded": "terminate",
+        "trigger": "schedule",
+        "definition_ref": {
+          "resource_type": "Automation.Definition",
+          "target_handle": "nightly-backup-playbook"
+        },
+        "parameters": {
+          "retention_days": 30,
+          "compression": "zstd"
+        },
+        "targets": [
+          {
+            "resource_type": "Data.Database",
+            "target_handle": "orders-db"
+          }
+        ],
+        "schedule": {
+          "expression": "0 2 * * *",
+          "overlap_policy": "forbid",
+          "missed_run_policy": "catch_up"
+        }
+      }
+    ]
   },
   "outputs": {},
   "relationships": [

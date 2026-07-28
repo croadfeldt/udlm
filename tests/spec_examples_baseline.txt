@@ -1,0 +1,45 @@
+# Spec-example burn-down baseline (ADR-055 / EXG-002). Resource-type specs that do not yet
+# carry a spec.examples. This list may ONLY shrink: a spec that gains a validated example is
+# dropped here (the gate refuses to re-add it). New specs are NEVER added — they ship an example.
+# Burn down family-by-family; target is an empty file.
+Capability
+Compute.BareMetalHost
+Compute.Cluster
+Compute.Container
+Compute.VirtualMachine
+Data.Database
+Facility.Location
+Facility.PowerFeed
+Hardware.BMC
+Hardware.BiosProfile
+Hardware.GraphicsProcessor
+Hardware.NetworkInterface
+Hardware.Processor
+Hardware.StorageDevice
+Identity.Group
+Identity.Person
+Identity.ServiceAccount
+Network.AddressService
+Network.ConnectionProfile
+Network.DHCPScope
+Network.DNSZone
+Network.Gateway
+Network.IPAddress
+Network.IPAddressPool
+Network.Switch
+Network.VLAN
+Network.VirtualNetwork
+Observability.LogShipper
+Platform.Hub
+Platform.Namespace
+Platform.NodePool
+Platform.ResourceQuota
+Platform.StorageClass
+Security.CredentialRef
+Security.DirectoryService
+Software.Service
+SoftwareImage
+SoftwarePackage
+TaxonomyTerm
+Topology
+Vulnerability

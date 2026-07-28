@@ -93,7 +93,24 @@
           }
         }
       }
-    }
+    },
+    "examples": [
+      {
+        "protocols": [
+          "block",
+          "file",
+          "object"
+        ],
+        "capacity": {
+          "total": "120TiB",
+          "usable": "40TiB"
+        },
+        "data_protection": {
+          "scheme": "replication",
+          "replicas": 3
+        }
+      }
+    ]
   },
   "outputs": {
     "block_storage_class": {

@@ -68,6 +68,15 @@ spec:
       type: object
       additionalProperties: {type: string}
       description: Provider-passthrough dataset properties (compression, recordsize, mountpoint inheritance, etc.).
+  examples:
+    - dataset_kind: filesystem
+      mountpoint: /export/gitlab
+      used: 84.2G
+      quota: 200G
+      properties:
+        compression: zstd
+        recordsize: 128K
+        atime: 'off'
 
 outputs:
   device_or_path:
