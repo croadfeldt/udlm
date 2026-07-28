@@ -21,6 +21,37 @@
 
 ---
 
+## In one breath (start here)
+
+An entity's life is tracked as **four parallel records — not four sequential stages.** Each answers a
+different question, and they coexist:
+
+- **Intent** — *what the consumer asked for* (immutable, the raw declaration).
+- **Requested** — *what was approved and dispatched* to a provider (assembled + policy-processed + provider chosen).
+- **Realized** — *what the provider actually built* (provider-confirmed, with the real IPs/IDs it added).
+- **Discovered** — *what is observed to exist right now* (ground truth, refreshed each discovery cycle).
+
+All four share **one Entity UUID** (§3), so the whole story links. **Drift** is simply *Realized and Discovered
+disagreeing* (§6). An entity may enter **intent-first** (declare → build) or **discovered-first** (a racked
+server inventoried, then adopted) — same UUID either way.
+
+```mermaid
+flowchart LR
+  C([Consumer]) -->|declares| I[Intent<br/><i>what was asked</i>]
+  I -->|assemble · policy · pick provider| R[Requested<br/><i>what was approved</i>]
+  R -->|validate-and-reserve → commit| Z[Realized<br/><i>what was built</i>]
+  PR([Provider / infra]) -.->|discovery cycle| D[Discovered<br/><i>what exists now</i>]
+  Z -. compare .-> D
+  D -->|disagree ⇒| DR{{Drift}}
+  BF([Brownfield asset]) -.->|discovered-first, then adopt| D
+  classDef s fill:#dbeafe,stroke:#2563eb,color:#111
+  class I,R,Z,D s
+```
+
+The rest of this document is the detailed contract for each record; §2.6 traces one concrete entity through all four.
+
+---
+
 ## 1. Purpose
 
 The four states are the foundational model for how UDLM tracks the complete lifecycle of any resource or service. Every entity exists in one or more of these states simultaneously. The states are not sequential stages — they are parallel, independently maintained records that together provide a complete, auditable picture of what was requested, what was approved, what was built, and what actually exists.
@@ -167,6 +198,27 @@ The **Discovered State** is what is observed actually existing through active di
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | Compensation step failure |
 
 The complete recovery-condition machine and Recovery Policy model — how an implementation drives these conditions — is implementation concern; see the DCM operational model. (Earlier revisions called these "five additional states" — superseded; they never extend the lifecycle enum.)
+
+---
+
+## 2.6 A worked example — one VM through the four states
+
+To make the records concrete, here is a single `Compute.VirtualMachine` (entity UUID `…a1b2`) as it moves
+through the lifecycle. Each state is a **separate, immutable record**; the shared UUID links them. Field
+values are illustrative — the normative shapes are the resource-type spec + `realized-entity.schema.json`.
+
+| State | The record (illustrative) | Who wrote it |
+|-------|---------------------------|--------------|
+| **Intent** | `{entity_uuid: …a1b2, resource_type: Compute.VirtualMachine, cpu: 4, memory: 16GiB, network: "app-tier"}` — the consumer's raw ask, nothing added. | consumer (PR / API ingress) |
+| **Requested** | the Intent, **assembled**: org-default image + tags layered in, policy results recorded (sovereignty zone resolved, quota green), **provider selected** (`kubevirt-prod`), and a `reservation_hold_uuid` from validate-and-reserve. **Nothing is built yet.** | assembly + policy (DCM) |
+| **Realized** | provider-confirmed **after commit** — everything above **plus the provider's facts**: `ip: 198.51.100.20`, `vm_id: kv-9f3c`, actual disk `20GiB`. A write-once snapshot, traceable to exactly one Requested record. | provider → denaturalized to UDLM |
+| **Discovered** | a later discovery cycle observes the VM running at `198.51.100.20`, correlated to `…a1b2` via `correlation_ids`. It **matches** Realized → **no drift**. | discovery |
+
+**The point the example makes:**
+- Each state is a *different question about the same entity*, held as its own record — not one object mutated in place.
+- The transition Requested → Realized is where **two-phase reserve/commit** (§2.3a) sits: the `reservation_hold_uuid` proves the whole graph was reservable *before* anything was built.
+- If a later discovery saw `ip: 203.0.113.9` while Realized still said `198.51.100.20`, that mismatch **is drift** (§6) — Discovered never overwrites Realized; it only compares.
+- Had this VM been a pre-existing server instead, it would enter **Discovered-first** (§2.4) with `lifecycle_state: available`, then gain an Intent on adoption — same UUID, story running the other direction.
 
 ---
 
