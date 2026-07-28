@@ -19,6 +19,32 @@ This is not new graph theory — we adopt the standard result (a finite digraph 
 orderable iff it has no directed cycle) and TOSCA's DAG assumption for topology templates. UDLM adds
 only the *exposed shape* of a violation.
 
+## Declared once, navigable both ways (the derived inverse)
+
+A relationship edge is declared on **one** endpoint — its natural owner. A pool declares
+`contained_by BareMetalHost`; the host does **not** carry a reciprocal `contains Pool`. This is
+deliberate: storing both directions would duplicate the same fact in two places and let them drift,
+which the single-source discipline forbids. The reverse direction is **derived, never stored** — the
+same move as derived shape, nature, and portability.
+
+Every `edge_type` has a defined inverse, registered once in
+[`registry/edge-types.yaml`](../registry/edge-types.yaml): `depends_on ⟷ required_by`,
+`references ⟷ referenced_by`, `contained_by ⟷ contains`, `binds_to ⟷ bound_by`. The dependency graph
+is the union of all declared edges, and it is navigable in **both** directions by inverting them: to
+answer "what does this host contain?", invert the pools' `contained_by`. So a relationship that appears
+"missing" on the far endpoint is not missing — it is derived. Declare once; traverse either way.
+
+`tests/check_graph_integrity.py` keeps the derivation sound, so a one-sided *declaration* is never a
+one-sided *graph*:
+
+- **`GRAPH-001`** — the edge-type registry matches the `edge_type` enum in the spec meta-schema (the
+  inverse map cannot drift from the allowed edge types).
+- **`GRAPH-002`** — every edge `target` resolves to a real resource type or Class; a dangling target is
+  refused, because the derived inverse would otherwise land on nothing.
+- **`GRAPH-003`** — every declared edge has a derivable inverse; the gate builds the two-sided adjacency
+  (declared + derived) and can emit it (`--emit` → `registry/generated/dependency-graph.json`) for a
+  consumer or the estate-explorer that wants the materialized bidirectional graph.
+
 ## The exposed data: `DependencyCycle`
 
 When the invariant is violated, each distinct cycle is exposed as a `DependencyCycle` diagnostic — the
