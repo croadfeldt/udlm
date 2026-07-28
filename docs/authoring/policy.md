@@ -26,7 +26,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
   `gating`/`orchestration_flow` policy; the evidence gate stays a separate `gating` clause the schedule can
   never reference away. (The `schedule` block is ratified vocabulary; its JSON-Schema shape lands in the
   implementing PR ADR-053 §"What this does not decide" names — until then, model the timing decision as the
-  gating policy it sits on and cite ADR-053.)
+  Validation Policy it sits on and cite ADR-053.)
 - Before coining any new match source or output field, show no existing one composes to cover it (review
   sweep tenet **T7** — reduce to existing).
 
@@ -70,7 +70,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
 | Validates against `policy.schema.json` (required fields; type-correct `output` for its `policy_type`) | Valid by construction | `registry/tools/validate.py` |
 | Fresh `uuid`; a change to a published policy bumps `version` (never edits in place) | Identity is honest (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
 | Every normative rule-ID uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |
-| No retired vocabulary in the prose (e.g. "gating", not the retired "gatekeeper"/"gating policy") | Terminology discipline (TERM-001) | `tests/check_terminology.py` |
+| No retired vocabulary in the prose (use the current term — e.g. "Validation Policy") | Terminology discipline (TERM-001) | `tests/check_terminology.py` |
 
 ## 4. A worked pointer
 
@@ -83,7 +83,7 @@ the review-deadline field in one small record.
 For an **override**, the shape is: `policy_type: override`, `output: {target_policy_uuid: <soft policy>,
 scope: <narrowed match>, expires_at: <RFC 3339 Z>}`. For a **change-control schedule**, cite ADR-053 and the
 change-control flow [`../flows/change-control-adoption.md`](../flows/change-control-adoption.md) — the
-schedule clauses attach to a gating policy, they are not a policy of their own.
+schedule clauses attach to a Validation Policy, they are not a policy of their own.
 
 ## 5. Run the gates
 
