@@ -484,6 +484,34 @@
    "0.3.3": "sha256:c1782d104879ef15df51b1114cc5714c74310de51ab0a2e48b291832153a582b"
   }
  },
+ "type:Process": {
+  "current": "1.0.0",
+  "path": "registry/classes/process.yaml",
+  "versions": {
+   "1.0.0": "sha256:e2ff86b2c13696db25a752756210432b61fed944e28d6066e4826db1b590c25e"
+  }
+ },
+ "type:Process.OSPatch": {
+  "current": "1.0.0",
+  "path": "registry/classes/process.ospatch.yaml",
+  "versions": {
+   "1.0.0": "sha256:ebb869318d8dbea397f9b0cb3587bea9c7ac5d1d90f3279b1350743709041f50"
+  }
+ },
+ "type:Process.OSPatch.EngineBlue": {
+  "current": "1.0.0",
+  "path": "registry/classes/process.ospatch.engine-blue.yaml",
+  "versions": {
+   "1.0.0": "sha256:0575d36dffa7b5c89327ac606733b5f57c798c27ac511bfcaab746eadfa1fc7c"
+  }
+ },
+ "type:Process.OSPatch.EngineGreen": {
+  "current": "1.0.0",
+  "path": "registry/classes/process.ospatch.engine-green.yaml",
+  "versions": {
+   "1.0.0": "sha256:67b7852630c3abdf6d7ba756891ce91d73a7871b2ab33db2fb48ac453a1eaf08"
+  }
+ },
  "type:Security.CredentialRef": {
   "current": "0.3.2",
   "path": "registry/resource-types/security/security.credential-ref.yaml",
