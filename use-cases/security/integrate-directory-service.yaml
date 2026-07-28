@@ -1,0 +1,60 @@
+uuid: uc-3d052fb5-6e8c-44da-8684-2e0cb042bce1
+handle: security/integrate-directory-service
+version: 1.0.0
+scenario:
+  description: 'A platform engineer integrates a Security.DirectoryService (an LDAP or OIDC identity
+    source) into the estate as a first-class identity provider that downstream access and authentication
+    resolve against. The directory is declared by its protocol, its endpoint, and a Security.CredentialRef
+    for the bind/service secret — referenced by handle, never inline — and it reaches Realized as a named
+    identity source other resources can bind to. This stresses that an identity source is portable intent,
+    not a provider-native auth config: the protocol and endpoint ARE the integration record, the bind
+    secret is carried as a reference and resolved just-in-time, and the identity source rehydrates by
+    replaying the same declaration against an eligible provider without re-embedding any credential.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - security-officer
+    - platform-operator
+    - sre
+  intent: Integrate a DirectoryService (LDAP/OIDC) as a named identity source, with its bind secret
+    carried by reference and the source realized for downstream binding
+  success_criteria:
+  - The DirectoryService is declared by protocol (LDAP/OIDC) and endpoint from the record alone; no
+    provider-native auth config leaks into the intent
+  - The bind/service secret is carried as a Security.CredentialRef by handle, never inline, and resolved
+    just-in-time
+  - The identity source reaches Realized and is referenceable as a named source downstream resources bind to
+  - A downstream consumer resolves identities by binding on the DirectoryService's published reference,
+    not by re-declaring the endpoint
+  - The integration rehydrates by replaying the same declaration and credential reference against an
+    eligible provider
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the protocol, endpoint, and credential reference are the complete, portable integration record
+  - domain: policy
+    interaction: validation confirms the directory declaration and its credential reference before dispatch
+  - domain: provider
+    interaction: the provider realizes the directory integration and resolves the bind secret at its edge
+  - domain: audit
+    interaction: the integration and the identity source it stands up are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: security-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- security-directoryservice
+- security-credentialref
+- identity-source
+- integration
+- binding

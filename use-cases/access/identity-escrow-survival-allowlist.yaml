@@ -1,0 +1,61 @@
+uuid: uc-adad05bb-f56f-4858-91eb-582c51481d7c
+handle: access/identity-escrow-survival-allowlist
+version: 1.0.0
+scenario:
+  description: 'A security officer declares an Access.IdentityEscrow that carries a break-glass survival
+    allowlist — the explicit, bounded set of identities and accesses that MUST survive a recovery
+    scenario in which the normal identity source is unavailable. The allowlist is declared data, not a
+    latent side effect: each entry names an identity and the access it retains, so that when the estate
+    rehydrates from a loss the enumerated break-glass identities can authenticate while everything outside
+    the allowlist stays revoked. This stresses that survival is portable, governed intent — the escrow
+    record IS the recovery contract, the allowlist is a closed set validated at declaration rather than
+    assembled during an incident, and it rehydrates by replaying the same declaration so the exact set
+    that was authorized to survive is the exact set that does.'
+  actor:
+    persona: security-officer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - sre
+    - compliance-auditor
+    - regulator
+  intent: Declare an IdentityEscrow whose break-glass survival allowlist enumerates exactly the
+    identities and accesses that survive a recovery scenario
+  success_criteria:
+  - The IdentityEscrow declares a break-glass survival allowlist as data — each entry naming an identity
+    and the access it retains
+  - The allowlist is a closed, bounded set validated at declaration, not assembled ad hoc during an incident
+  - On recovery, exactly the enumerated identities survive and authenticate; everything outside the
+    allowlist stays revoked
+  - The survival set is readable from the escrow record, not inferred from a running identity source
+  - The escrow rehydrates by replaying the same declaration, so the authorized survival set is the
+    realized survival set
+  dimensions:
+    lifecycle_phase: new_request
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: audit_heavy
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the survival allowlist is the complete, portable recovery contract — identities and their retained access
+  - domain: policy
+    interaction: validation confirms the allowlist is a closed, bounded set before it is admitted
+  - domain: provider
+    interaction: on recovery the provider honors exactly the enumerated survival set, revoking everything else
+  - domain: audit
+    interaction: the escrow declaration and its survival allowlist are recorded for after-the-fact verification
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: access-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- access-identityescrow
+- break-glass
+- survival-allowlist
+- recovery-contract
+- auditable

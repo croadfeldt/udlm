@@ -1,0 +1,59 @@
+uuid: uc-b4ef0b09-8af7-45ff-b4a9-7f5aedf2a593
+handle: automation/run-automation-job
+version: 1.0.0
+scenario:
+  description: 'A platform engineer runs an Automation.Job that executes idempotently against the estate
+    and carries a declared blast-radius — the explicit set of entities the job is allowed to affect —
+    rather than reaching into whatever it happens to touch at runtime. The job declares what it does, the
+    entities it may act on, and its idempotency contract, so a re-run converges to the same state without
+    compounding effects, and its reach is bounded and readable before it runs, not discovered from the
+    entities it changed after the fact. This stresses that automation is governed, portable intent: the
+    Job record IS the run contract, its blast-radius is declared data validated before dispatch rather
+    than the accidental scope of a script, and the job rehydrates and re-runs by replaying the same intent
+    with the same bounded reach and idempotent result.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - sre
+    - platform-operator
+    - compliance-auditor
+  intent: Run an Automation.Job idempotently with a declared blast-radius, so its reach is bounded and
+    readable before it runs and a re-run converges to the same state
+  success_criteria:
+  - The Job declares its action, its idempotency contract, and its blast-radius — the explicit set of
+    affected entities — from the record alone
+  - The blast-radius is validated before dispatch; the job's reach is bounded and readable before it runs,
+    not discovered after
+  - The job runs idempotently — a re-run converges to the same state without compounding effects
+  - The affected entities are exactly those in the declared blast-radius; the job does not reach beyond it
+  - The job rehydrates and re-runs by replaying the same intent with the same bounded reach and result
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: single_with_deps
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Job's action, idempotency contract, and declared blast-radius are the complete, portable run record
+  - domain: policy
+    interaction: validation confirms the blast-radius is bounded and admissible before the job is dispatched
+  - domain: provider
+    interaction: the automation provider runs the job idempotently, affecting only the entities in the declared blast-radius
+  - domain: audit
+    interaction: the run, its declared blast-radius, and the entities affected are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: automation-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- automation-job
+- idempotent
+- declared-blast-radius
+- bounded-reach
+- day2

@@ -193,5 +193,15 @@
       "enforcement": "structural",
       "description": "Every escrowed item wraps exactly one credential reference; the escrow cannot exist without its custody leg."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "access/identity-escrow-survival-allowlist",
+      "access/escrow-unauthorized-item-refused"
+    ],
+    "flows": [
+      "docs/flows/credential-and-identity-lifecycle.md",
+      "docs/flows/uc-10-dynamic-rehydration.md"
+    ]
+  }
 }

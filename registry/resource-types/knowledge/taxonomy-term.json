@@ -74,7 +74,19 @@
         ],
         "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states. Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate a catalog surfaced. Promotion is a curation act applied by Policy, not by a provider."
       }
-    }
+    },
+    "examples": [
+      {
+        "term": "workload-placement",
+        "definition": "The capability to schedule a workload onto a suitable host or node according to declared placement constraints.",
+        "pillar": "Operate",
+        "domain": "Compute",
+        "root": "architecture-capability",
+        "normalization_rules": "Map free-text mentions of scheduling, bin-packing, affinity/anti-affinity, and node selection onto this term.",
+        "category": "dcm-capability-taxonomy",
+        "curation_state": "canonical"
+      }
+    ]
   },
   "immutable": [],
   "outputs": {
@@ -91,5 +103,14 @@
       "cardinality": "0..1",
       "description": "parent — this term's parent in the hierarchy. The parent chain terminates at a vocabulary root and never crosses into another root's subtree (keeps shared-machinery vocabularies disjoint)."
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "knowledge/define-taxonomy-term",
+      "observed/observation-off-vocabulary-quarantined"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md"
+    ]
+  }
 }

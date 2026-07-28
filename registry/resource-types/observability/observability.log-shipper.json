@@ -78,7 +78,22 @@
         },
         "description": "Extra stream labels to attach beyond the inherent host/unit identity (e.g. environment, role). Optional."
       }
-    }
+    },
+    "examples": [
+      {
+        "target": {
+          "host": "app-01.corp.internal"
+        },
+        "sink": {
+          "url": "https://logs.corp.internal:4318/v1/logs"
+        },
+        "source": "journal",
+        "labels": {
+          "environment": "production",
+          "role": "application"
+        }
+      }
+    ]
   },
   "immutable": [
     "target.host"
@@ -97,5 +112,14 @@
       "description": "OBSERVED — a provider-watched liveness fact, not derivable from model records (no shipment-instance records exist; this is heartbeat, not history). Timestamp of the most recent successful delivery (RFC 3339) — drives drift / staleness detection."
     }
   },
-  "relationships": []
+  "relationships": [],
+  "coverage": {
+    "use_cases": [
+      "observability/deploy-log-shipper",
+      "observability/log-shipper-sink-unreachable-refused"
+    ],
+    "flows": [
+      "docs/flows/uc-14-drift-detection-remediation.md"
+    ]
+  }
 }

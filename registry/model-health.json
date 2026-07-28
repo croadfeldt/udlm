@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3786,
-    "mutations_rejected": 3786,
+    "mutations_attempted": 3824,
+    "mutations_rejected": 3824,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -24,8 +24,8 @@
         "rejected": 162
       },
       "Capability": {
-        "attempted": 36,
-        "rejected": 36
+        "attempted": 38,
+        "rejected": 38
       },
       "Compute.BareMetalHost": {
         "attempted": 182,
@@ -132,8 +132,8 @@
         "rejected": 38
       },
       "Observability.LogShipper": {
-        "attempted": 50,
-        "rejected": 50
+        "attempted": 52,
+        "rejected": 52
       },
       "Platform.Hub": {
         "attempted": 22,
@@ -156,12 +156,12 @@
         "rejected": 83
       },
       "Security.CredentialRef": {
-        "attempted": 56,
-        "rejected": 56
+        "attempted": 65,
+        "rejected": 65
       },
       "Security.DirectoryService": {
-        "attempted": 41,
-        "rejected": 41
+        "attempted": 56,
+        "rejected": 56
       },
       "Software.Service": {
         "attempted": 121,
@@ -196,16 +196,16 @@
         "rejected": 42
       },
       "TaxonomyTerm": {
-        "attempted": 51,
-        "rejected": 51
+        "attempted": 56,
+        "rejected": 56
       },
       "Topology": {
         "attempted": 171,
         "rejected": 171
       },
       "Vulnerability": {
-        "attempted": 61,
-        "rejected": 61
+        "attempted": 66,
+        "rejected": 66
       }
     }
   },
@@ -314,8 +314,10 @@
     ]
   },
   "uc_coverage": {
-    "files_scanned": 138,
+    "files_scanned": 149,
     "covered": [
+      "Access.IdentityEscrow",
+      "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
       "Compute.Cluster",
@@ -330,12 +332,14 @@
       "Network.IPAddress",
       "Network.IPAddressPool",
       "Network.VirtualNetwork",
+      "Observability.LogShipper",
       "Platform.Hub",
       "Platform.Namespace",
       "Platform.NodePool",
       "Platform.ResourceQuota",
       "Platform.StorageClass",
       "Security.CredentialRef",
+      "Security.DirectoryService",
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
@@ -343,11 +347,11 @@
       "Storage.FileShare",
       "Storage.Pool",
       "Storage.Volume",
-      "Topology"
+      "TaxonomyTerm",
+      "Topology",
+      "Vulnerability"
     ],
     "uncovered": [
-      "Access.IdentityEscrow",
-      "Automation.Job",
       "Facility.Location",
       "Facility.PowerFeed",
       "Hardware.BMC",
@@ -361,11 +365,7 @@
       "Identity.ServiceAccount",
       "Network.Switch",
       "Network.VLAN",
-      "Observability.LogShipper",
-      "Security.DirectoryService",
-      "Storage.Cluster",
-      "TaxonomyTerm",
-      "Vulnerability"
+      "Storage.Cluster"
     ]
   },
   "consumer_coverage": {
