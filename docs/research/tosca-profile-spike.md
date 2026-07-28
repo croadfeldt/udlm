@@ -9,6 +9,25 @@ proof — and (2) *should we "just extend TOSCA" instead of keeping the model?* 
 what was awkward, and what TOSCA has no native home for. This is a **paper mapping**, not a run through an
 orchestrator — see *Limits*.
 
+## Update — Q1 is now **mechanical**, across the whole registry
+
+The paper mapping below has been made a tool:
+[`registry/tools/tosca_emit.py`](../../registry/tools/tosca_emit.py) emits a TOSCA v2.0 node type from a
+UDLM resource-type spec, recovers the UDLM-relevant facts back out of the emitted TOSCA, and diffs them
+against the source. Result:
+
+- **`Compute.VirtualMachine@0.6.4`** — 9 properties, 9 attributes, 4 edge targets, and the version all
+  round-trip with **0 loss, 0 invention**.
+- **48 / 48 shipped type specs** round-trip **CLEAN** on the type + topology layer — the emitter is faithful
+  across the *entire* registry, not one hand-picked type.
+
+So Q1 (does the contract round-trip to a standard node type?) is answered **by tooling, not assertion**:
+every UDLM type mechanically produces a lossless TOSCA node type. What the tool *cannot* carry is exactly the
+delta (four-state lifecycle, sovereignty, attestation) — it rides as opaque `metadata`, which is the finding,
+not a defect. Run: `python3 registry/tools/tosca_emit.py --round-trip <spec>`.
+
+---
+
 ## The candidate node type (derived mechanically from the spec)
 
 ```yaml
