@@ -1,0 +1,65 @@
+uuid: uc-6f928f8c-69ac-4c0f-a060-e5e5d46d276d
+handle: software/deploy-service-from-image
+version: 1.0.0
+scenario:
+  description: 'A platform engineer requests a Software.Service by intent alone — a reference to an admitted
+    SoftwareImage, a declared endpoint (the port and protocol the service exposes), and a replica count —
+    without naming a scheduler node, a container runtime handle, or any provider-native workload identifier.
+    The software provider selects an eligible backend, realizes the service from the referenced image with
+    the declared endpoint exposed, and the service reaches Realized with those properties published on its
+    outputs (the resolved image reference, the exposed endpoint, and a readiness state). This stresses that a
+    Service is portable intent, not a provider-native workload handle: the referenced image and declared
+    endpoint ARE the build instruction, the realized endpoint is readable from the record rather than
+    inferred from the runtime, a downstream consumer binds on the published endpoint output rather than
+    discovering it out of band, and the service rehydrates by replaying the same intent against an eligible
+    provider.'
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - application-team-member
+    - platform-operator
+    - sre
+  intent: Request a Service deployed from a referenced SoftwareImage with a declared endpoint, and have it
+    realize with the resolved image and exposed endpoint published on its outputs
+  success_criteria:
+  - The request carries the image reference and declared endpoint from the record alone; no provider-native
+    node or runtime handle leaks into the intent
+  - The provider realizes the service from the referenced image and exposes the declared endpoint; the
+    service reaches Realized
+  - The resolved image reference, exposed endpoint, and readiness state are readable from the service's
+    declared outputs, not inferred provider-side
+  - A downstream consumer binds on the published endpoint output, contract-checked, rather than discovering
+    it out of band
+  - The service rehydrates by replaying the same intent against an eligible provider
+  dimensions:
+    lifecycle_phase: provisioning
+    resource_complexity: single_with_deps
+    policy_complexity: system_defaults_only
+    provider_landscape: single_eligible
+    governance_context: no_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the image reference, declared endpoint, and replica count are the complete, portable build
+      record
+  - domain: policy
+    interaction: validation confirms the referenced image is admitted and a provider is eligible before
+      dispatch
+  - domain: provider
+    interaction: the software provider realizes the service from the referenced image and exposes the
+      declared endpoint
+  - domain: audit
+    interaction: the deploy path and the realized properties are recorded against the record
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: claude
+  prompt_version: software-2026-07-27
+  timestamp: '2026-07-27T00:00:00.000000+00:00'
+tags:
+- software-service
+- software-image
+- provisioning-intent
+- binding

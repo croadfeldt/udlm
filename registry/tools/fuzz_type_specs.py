@@ -399,11 +399,16 @@ class DeepWalker:
         es, scope = self._effective(schema, scope)
         if es is None:
             return
+        poly = False
         if "oneOf" in es or "anyOf" in es:
+            # A branch set spanning >1 JSON type (e.g. a ref field that is `string | Reference-object`)
+            # is legitimately polymorphic: type-poisoning is meaningless there — a poison of one type
+            # satisfies the other branch, so `valid` after mutation is correct, not over-permissive.
+            poly = len(self._branch_types(es, scope)) > 1
             es = self._select_branch(es, value, scope)
             if es is None:
                 return
-        self._mutate_here(es, value, path)
+        self._mutate_here(es, value, path, skip_type_poison=poly)
         if isinstance(value, dict):
             props = es.get("properties") or {}
             for k, v in value.items():
@@ -437,7 +442,23 @@ class DeepWalker:
         self.recorded.append({"desc": desc, "op": op, "path": list(path), "key": key,
                               "value": value})
 
-    def _mutate_here(self, es, value, path):
+    def _branch_types(self, es, scope):
+        """The set of JSON types the oneOf/anyOf branches declare (a $ref resolves to its target's
+        type). >1 distinct type => the path is type-polymorphic and type-poisoning is invalid there."""
+        types = set()
+        for comb in ("oneOf", "anyOf"):
+            for branch in es.get(comb, []):
+                eff, _ = self._effective(branch, scope)
+                if not eff:
+                    continue
+                t = eff.get("type")
+                if isinstance(t, str):
+                    types.add(t)
+                elif isinstance(t, list):
+                    types.update(t)
+        return types
+
+    def _mutate_here(self, es, value, path, skip_type_poison=False):
         # (g1) drop a locally-required key
         if isinstance(value, dict):
             for req in es.get("required", []):
@@ -457,7 +478,7 @@ class DeepWalker:
         # type family (a `type: string` must reject numbers, objects, arrays, booleans, null)
         declared = es.get("type")
         declared = [declared] if isinstance(declared, str) else declared
-        if declared:
+        if declared and not skip_type_poison:
             for poison in _POISONS:
                 if not any(_TYPE_CHECKS.get(t, lambda v: True)(poison) for t in declared):
                     got = next(t for t, chk in _TYPE_CHECKS.items() if chk(poison))

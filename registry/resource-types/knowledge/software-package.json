@@ -56,7 +56,16 @@
         "type": "string",
         "description": "Declared license as an SPDX license identifier (e.g. Apache-2.0), where the SBOM reports one."
       }
-    }
+    },
+    "examples": [
+      {
+        "purl": "pkg:rpm/redhat/openssl@3.0.7-18.el9?arch=x86_64",
+        "name": "openssl",
+        "version": "3.0.7-18.el9",
+        "type": "rpm",
+        "license": "OpenSSL"
+      }
+    ]
   },
   "outputs": {},
   "relationships": [
@@ -98,5 +107,14 @@
       "license_compatibility": "compatible-reference",
       "disposition": "tier1_value"
     }
-  ]
+  ],
+  "coverage": {
+    "use_cases": [
+      "software/reference-package",
+      "software/package-cve-blocked-refused"
+    ],
+    "flows": [
+      "docs/flows/application-tier-provisioning.md"
+    ]
+  }
 }

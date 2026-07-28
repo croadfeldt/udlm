@@ -3,7 +3,6 @@
 # dropped here (the gate refuses to re-add it). New specs are NEVER added — they ship an example.
 # Burn down family-by-family; target is an empty file.
 Capability
-Data.Database
 Facility.Location
 Facility.PowerFeed
 Hardware.BMC
@@ -33,9 +32,6 @@ Platform.ResourceQuota
 Platform.StorageClass
 Security.CredentialRef
 Security.DirectoryService
-Software.Service
-SoftwareImage
-SoftwarePackage
 TaxonomyTerm
 Topology
 Vulnerability
