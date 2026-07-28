@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/class.schema.json",
+  "title": "UDLM Class artifact — the scoped-Class authoring layer",
+  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped resource-type Class hierarchy (ADR-038). A Class composes SharedDataElements (`$defs.shared_data_element`) at one scope tier — Base (`Category`), Type (`Category.Type`), or Provider (`Category.Type.Provider`) — each `extends` its parent under the Liskov invariant (add or refine, never contradict). Classes become the authoring layer; a generator compiles each Type Class down to the flat resource-type-spec shape consumers read today (`--check`-gated, no downstream break — realization-plan P0). An element's scope position IS its portability (ADR-038 §3), so the realized `portability` block derives from where an instance's populated elements sit rather than being asserted. Part of the UDLM spec, versioned on the SPEC axis. Status: ADR-038 is Proposed pending the engineering pass (#217); this shape inherits that status and executes the decided model (realization-plan).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$id", "conforms_to", "uuid", "record_type", "class", "resource_type", "version", "family", "status", "metadata", "elements"],
+  "properties": {
+    "$id": {
+      "type": "string",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Canonical identifier: https://udlm.dev/registry/udlm/<spec>/class/<ClassName>/<version>. ClassName is the dotted Class name (Compute, Compute.VM, Compute.VM.OCPVirt). A new MAJOR mints a new $id; the uuid never changes (ADR-051)."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$",
+      "description": "SPEC-axis binding: the UDLM spec major.minor this Class is written against."
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Frozen identity (ADR-051): never changes, never reused; a content change bumps `version`, not this."
+    },
+    "record_type": {
+      "const": "class",
+      "description": "Dispatch key: this document is a Class artifact (validate.py dispatches it to class.schema.json)."
+    },
+    "class": {
+      "enum": ["base", "type", "provider"],
+      "description": "The scope tier. `base` = Category scope (single-segment name); `type` = Category.Type; `provider` = Category.Type.Provider (provider-authored). MUST match the segment-count of `resource_type`."
+    },
+    "resource_type": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
+      "description": "The dotted Class name — one segment for a Base Class (`Compute`), two for a Type Class (`Compute.VM`), three for a Provider Class (`Compute.VM.OCPVirt`). Every element's `scope` MUST equal this."
+    },
+    "parent": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
+      "description": "The parent Class this one `extends` (the dotted name one segment shorter). Required for `type` and `provider`; absent for `base` (a Base Class has no parent). The child adds or refines the parent's elements, never contradicts them (the Liskov invariant — enforced by validate_registry's Liskov gate)."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semver on the CONTENT axis (VERSIONING.md + the ADR-051 publish law). Narrowing an element's scope is breaking even with no shape change (ADR-045/UC-009)."
+    },
+    "family": {
+      "enum": ["Resource", "Process", "Knowledge", "Policy", "Provider"],
+      "description": "The entity family this Class belongs to (entities/*.md). The Process family may lead class-system adoption (automation intent, realization-plan priority signal)."
+    },
+    "status": {
+      "enum": ["active", "deprecated", "retired"],
+      "description": "Lifecycle status of the Class definition itself."
+    },
+    "adopts": {
+      "type": "array",
+      "description": "External standards this Class adopts by reference (T5) — carried as identity + version-pinned conformance reference, never re-expressed (adopted-standards.md). E.g. a Base Class adopting a schema.org or Redfish shape.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["standard", "version"],
+        "properties": {
+          "standard": { "type": "string", "description": "The adopted standard's identifier (e.g. `redfish`, `focus`)." },
+          "version": { "type": "string", "description": "The pinned standard version the Class conforms to." },
+          "binding": { "type": "string", "description": "How this Class binds to it (the join key / conformance reference)." }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Authoring metadata (author/authority, timestamps, provenance). The provider- or org-authority under which a non-canonical Class is held lives here (ADR-038 authorship & domain)."
+    },
+    "elements": {
+      "type": "array",
+      "description": "The SharedDataElements this Class contributes at its scope — the composable units (ADR-038 §2). A Type Class's compiled flat spec is its elements plus every ancestor's, landed under `spec.properties`.",
+      "items": { "$ref": "#/$defs/shared_data_element" }
+    }
+  },
+  "allOf": [
+    { "if": { "properties": { "class": { "const": "base" } } },
+      "then": { "not": { "required": ["parent"] }, "description": "A Base Class has no parent." } },
+    { "if": { "properties": { "class": { "enum": ["type", "provider"] } } },
+      "then": { "required": ["parent"], "description": "A Type/Provider Class MUST name its parent." } }
+  ],
+  "$defs": {
+    "shared_data_element": {
+      "title": "SharedDataElement",
+      "description": "The composable unit of the Class hierarchy (ADR-038 §2): a data element + its value vocabulary, held at a Class scope. 'Base field', 'shared vocabulary', and 'provider extension' collapse into one shape distinguished only by `scope`. The element `schema` is a declarative JSON-Schema fragment (T1 — data, never executable behavior); `values` are reference-data (ADR-012), the element curated `proposed → canonical`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["element", "scope", "schema", "state"],
+      "properties": {
+        "element": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "The element name — a lowercase field name in the compiled spec's properties (`cpu`, `memory`, `encryption`). Unique within its owning Class."
+        },
+        "scope": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
+          "description": "The Class scope this element is held at, as the dotted Class name. The scope position IS the element's portability (ADR-038 §3) — no separate declaration. MUST equal the owning Class's `resource_type`; the standalone field lets an element be addressed, diffed, and promoted across scopes."
+        },
+        "schema": {
+          "type": "object",
+          "description": "The element's declarative shape, a JSON-Schema 2020-12 fragment (the value under the element's key in the compiled spec's `properties`). Declarative constraints only (type/enum/bounds/if-then/pattern) — never executable behavior (T1/T3)."
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reference_data_type"],
+          "description": "Optional — declares that this element's values are a GOVERNED vocabulary (ADR-012 reference-data of the named kind), not an inline enum. The element names the vocabulary KIND; the canonical terms are reference-data records of that kind (curated proposed → canonical). Whether an instance MAY supply a bare literal or MUST resolve to a canonical term (a `data_reference`, ADR-012) is a PROFILE floor (ADR-007) enforced by the vocabulary-intake ladder (ADR-039 — match/mint, strict-profile-unknown-refused) — NOT a field here: homelab may write a bare string, sovereign must reference a canonical term.",
+          "properties": {
+            "reference_data_type": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The reference_data kind that governs this element's values (e.g. `storage_tier`, `os_image`, `vm_size`). Reference-data records of this kind hold the canonical terms; an instance binds one by `data_reference`. Never an inline enum in `schema` for a vocabulary that wants independent curation."
+            }
+          }
+        },
+        "state": {
+          "enum": ["proposed", "canonical"],
+          "description": "Curation state (ADR-038 §2): `proposed` — authored, not yet blessed for portable reliance; `canonical` — curated into the shared library. Promotion (proposed→canonical, or lower scope→higher) is the ADR-038 governed contribution operation, visible in diffs."
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the element is optional at its scope (ADR-014 optionality-with-conformity)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Cold-reader prose: what the element models and how a provider naturalizes it (DOC-001)."
+        }
+      }
+    }
+  }
+}

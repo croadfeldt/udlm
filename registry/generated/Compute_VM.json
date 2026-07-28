@@ -1,0 +1,141 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.0.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
+  "resource_type": "Compute.VM",
+  "version": "1.0.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "authority": "canonical",
+    "display_name": "Compute.VM Type Class",
+    "maintainer": "UDLM maintainers",
+    "origination_timestamp": "2026-07-27T21:00:00Z",
+    "title": "Compute.VM Type Class",
+    "description": "The VM Type Class — extends the Compute Base Class (cpu/memory/storage/storage_tier/guest_os, inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never contradict). A provider Class (Compute.VM.OCPVirt, …) extends this further. The generator compiles this class + its ancestors into today's flat Compute.VM resource-type spec.",
+    "prompt_version": "class-p0-keystone-2026-07-27",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.0.0",
+      "sources": [
+        {
+          "class": "Compute",
+          "version": "1.0.0",
+          "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
+        },
+        {
+          "class": "Compute.VM",
+          "version": "1.0.0",
+          "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "properties": {
+      "cpu": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "vCPUs / cores."
+          },
+          "sockets": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint; provider-support-dependent."
+          },
+          "cores_per_socket": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "count"
+        ],
+        "description": "Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores, EC2 vCPUs)."
+      },
+      "memory": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "string",
+            "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$"
+          },
+          "hugepages": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "page_size": {
+                "type": "string",
+                "description": "e.g. 2Mi, 1Gi."
+              }
+            }
+          }
+        },
+        "required": [
+          "size"
+        ],
+        "description": "Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}): `hugepages` becomes an optional Base element."
+      },
+      "storage": {
+        "type": "object",
+        "properties": {
+          "min_iops": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "min_throughput_mbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "min_replication": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "encryption": {
+            "type": "boolean"
+          }
+        },
+        "description": "The reference-discipline requirements descriptor (PVD-001) — the numeric storage requirements, unifying VM disks[].storage / BareMetal storage / Container resources. The requested performance class is the governed `storage_tier` element below, not an inline enum here."
+      },
+      "storage_tier": {
+        "type": "string",
+        "description": "Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+      },
+      "guest_os": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "type": "string",
+            "description": "e.g. rhel, ubuntu, windows."
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "description": "The requested operating system, as portable requirements (image family + version), not a provider-native image id. Proposed pending the OS-standardization catalog work (task #30)."
+      },
+      "firmware": {
+        "type": "string",
+        "description": "Governed vocabulary `vm_firmware` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+      },
+      "boot_order": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Ordered boot device preference (VM-specific; not meaningful for BareMetal or Container)."
+      }
+    },
+    "required": [
+      "cpu",
+      "memory"
+    ]
+  },
+  "outputs": {}
+}

@@ -41,6 +41,7 @@ DECISION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "decision-record.sc
 REGENERATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "regeneration-manifest.schema.json").read_text()))
 FINDING_ROUTING_VALIDATOR = Draft202012Validator(json.loads((ROOT / "finding-routing-record.schema.json").read_text()))
 ACCREDITATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "accreditation.schema.json").read_text()))
+CLASS_VALIDATOR = Draft202012Validator(json.loads((ROOT / "class.schema.json").read_text()))
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
 
@@ -537,6 +538,11 @@ def main() -> int:
         "providers",
         lambda doc: (PROVIDER_VALIDATOR,
                      lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adopted_standard_support'])}"))
+    print("== classes (scoped-Class artifacts — ADR-038 / P0 substrate) ==")
+    failures += validate_dir(
+        "classes",
+        lambda doc: (CLASS_VALIDATOR,
+                     lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — {len(d.get('elements') or [])} element(s)"))
     impact_report()
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0

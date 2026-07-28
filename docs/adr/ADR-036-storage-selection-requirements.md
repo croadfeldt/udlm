@@ -25,6 +25,13 @@ re-expressing an adopted standard inline (PVD-002).
    `min_replication`, `encryption`, `snapshot`. The fields mirror `Platform.StorageClass.capabilities`, so request
    and advertisement speak one language. **No named-class-reference arm** — a named class is inherently
    vendor-specific and does not port.
+
+   **Selection precedence (maintainer, 2026-07-27): name-selectable, requirements-authoritative.** A resource
+   MAY be selected by the neutral `tier` name alone. But any **explicit numeric requirements are authoritative
+   and drive the match** — and a `tier` term itself **denotes a requirements floor** (its canonical definition
+   carries the minima it means), so name-selection and requirements-selection resolve to the *same* match. One
+   provider's "SSD" and another's "performance" both qualify iff they meet the floor, so portability is retained;
+   the provider naturalizes its native class at its edge and records it as a realized output (§2), never intent.
 2. **The chosen native class is a realized fact, not intent.** The provider records which native backing it
    selected in an output (`outputs.storage_backing` — a k8s SC name, a datastore, a ZFS dataset). Captured,
    auditable, vendor-specific — never in the portable intent.
