@@ -21,14 +21,14 @@ at its root.
 
 ```mermaid
 flowchart TD
-    A[Intent: virtual network\nsubnet + VLAN] --> B{Subnet overlaps an\nexisting segment?}
-    B -->|overlaps| B1[Refuse — name the conflicting\nsegment (not silent co-existence)]
-    B -->|free| C[Realize segment + gateway]
-    C --> D[Attach address services\nDHCP scope over IP pool · DNS zone · address service]
-    D --> E{Pool has free addresses?}
-    E -->|exhausted| E1[Refuse allocation —\nname the exhausted pool]
-    E -->|available| F[Allocate IP addresses from the pool\nbind connection profiles]
-    F --> G[Record the segment→services→\naddress chain + provenance]
+    A["Intent: virtual network<br/>subnet + VLAN"] --> B{"Subnet overlaps an<br/>existing segment?"}
+    B -->|overlaps| B1["Refuse — name the conflicting<br/>segment (not silent co-existence)"]
+    B -->|free| C["Realize segment + gateway"]
+    C --> D["Attach address services<br/>DHCP scope over IP pool · DNS zone · address service"]
+    D --> E{"Pool has free addresses?"}
+    E -->|exhausted| E1["Refuse allocation —<br/>name the exhausted pool"]
+    E -->|available| F["Allocate IP addresses from the pool<br/>bind connection profiles"]
+    F --> G["Record the segment→services→<br/>address chain + provenance"]
 ```
 
 ## What network provisioning adds

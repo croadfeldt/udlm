@@ -23,14 +23,14 @@ item outside the escrow policy is refused. Every refusal emits an audit record
 
 ```mermaid
 flowchart TD
-    A[Credential reference\n(pointer to a secret, never the value)] --> B[Resolve just-in-time at use]
-    B --> C{Caller within the\nreference's authorized scope?}
-    C -->|out of scope| C1[Refuse — name the scope violation;\nsecret never materialized/exposed]
-    C -->|authorized| D[Use the resolved secret transiently\n(identity from the directory service)]
-    E[Identity escrow\nbreak-glass survival allowlist] --> F{Item within the\nescrow policy?}
-    F -->|unauthorized item| F1[Refuse — outside escrow policy]
-    F -->|authorized| G[Record the survival set\nfor recovery replay]
-    C1 --> AUD[Audit record]
+    A["Credential reference<br/>(pointer to a secret, never the value)"] --> B["Resolve just-in-time at use"]
+    B --> C{"Caller within the<br/>reference's authorized scope?"}
+    C -->|out of scope| C1["Refuse — name the scope violation;<br/>secret never materialized/exposed"]
+    C -->|authorized| D["Use the resolved secret transiently<br/>(identity from the directory service)"]
+    E["Identity escrow<br/>break-glass survival allowlist"] --> F{"Item within the<br/>escrow policy?"}
+    F -->|unauthorized item| F1["Refuse — outside escrow policy"]
+    F -->|authorized| G["Record the survival set<br/>for recovery replay"]
+    C1 --> AUD["Audit record"]
     F1 --> AUD
 ```
 

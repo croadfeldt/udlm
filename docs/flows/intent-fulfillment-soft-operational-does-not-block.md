@@ -26,12 +26,12 @@ sequenceDiagram
     participant P as Platform (reconciler)
     participant DNS as DNS (soft operational dep)
     participant Ct as Container (dependent)
-    C->>P: Intent {container --operational(soft)--> DNS}
+    C->>P: Intent (container operational(soft)to DNS)
     P->>DNS: reserve? unrealized
-    Note over Ct: soft edge → never blocks; window not consulted
+    Note over Ct: soft edge to never blocks, window not consulted
     P->>Ct: reserve + realize — DEGRADED
     Ct-->>C: Realized (degraded — reduced capability)
-    P-->>C: WARNING — missing DNS named; capability reduced (not silent)
+    P-->>C: WARNING — missing DNS named, capability reduced (not silent)
     Note over Ct: were the edge HARD, Ct would be blocked (see the hard sibling)
 ```
 

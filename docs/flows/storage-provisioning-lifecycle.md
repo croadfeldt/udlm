@@ -21,15 +21,15 @@ refuses the volume, an out-of-scope principal refuses the share, each naming the
 
 ```mermaid
 flowchart TD
-    A[Request: file share / volume\nover a dataset over a pool] --> B{Pool present + capacity\nmeets the requirements floor?}
-    B -->|no pool / unrealizable| B1[Refuse dataset — name the missing\nparent pool (operational dependency)]
-    B -->|yes| C[Reserve dataset slice\nquota + properties, ADR-011 reserve-not-activate]
-    C --> D{Requested size ≤ pool\navailable / quota?}
-    D -->|exceeds| D1[Refuse volume — name the\nquota constraint + resolution]
-    D -->|fits| E{Consumer principal within\nauthorized directory scope?}
-    E -->|out of scope| E1[Refuse share export —\nname the unauthorized principal]
-    E -->|authorized| F[Realize volume / share\nbind to dataset, decrement quota]
-    F --> G[Record implementation + the\npool→dataset→share chain]
+    A["Request: file share / volume<br/>over a dataset over a pool"] --> B{"Pool present + capacity<br/>meets the requirements floor?"}
+    B -->|no pool / unrealizable| B1["Refuse dataset — name the missing<br/>parent pool (operational dependency)"]
+    B -->|yes| C["Reserve dataset slice<br/>quota + properties, ADR-011 reserve-not-activate"]
+    C --> D{"Requested size ≤ pool<br/>available / quota?"}
+    D -->|exceeds| D1["Refuse volume — name the<br/>quota constraint + resolution"]
+    D -->|fits| E{"Consumer principal within<br/>authorized directory scope?"}
+    E -->|out of scope| E1["Refuse share export —<br/>name the unauthorized principal"]
+    E -->|authorized| F["Realize volume / share<br/>bind to dataset, decrement quota"]
+    F --> G["Record implementation + the<br/>pool→dataset→share chain"]
 ```
 
 ## What the chain adds over the single-volume case

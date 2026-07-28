@@ -26,13 +26,13 @@ sequenceDiagram
     participant C as Consumer
     participant P as Platform (reconciler)
     participant U as Request unit (10 peer VMs)
-    C->>P: Intent {VM1..VM10 coupled by a request dependency}
+    C->>P: Intent (VM1..VM10 coupled by a request dependency)
     P->>U: reserve each member where possible (ADR-011)
     Note over U: members held at Requested — reservation is NOT activation
     alt one member transiently unsatisfiable, window open
-        P-->>C: WARNING — unit held (hold-all); names blocking member
-        U-->>P: member converges → all can reserve
-        P->>U: activate ALL atomically (Requested → Realized)
+        P-->>C: WARNING — unit held (hold-all), names blocking member
+        U-->>P: member converges to all can reserve
+        P->>U: activate ALL atomically (Requested to Realized)
         U-->>C: unit Realized (none ahead of the others)
     else member permanently unsatisfiable (or window expires)
         P->>U: cancel-all — release every reservation

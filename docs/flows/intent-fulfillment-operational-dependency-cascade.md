@@ -31,18 +31,18 @@ sequenceDiagram
     participant PVC as PVC (operational dep)
     participant Ct as Container (dependent)
     participant Ind as Independent members
-    C->>P: Intent {container --operational--> PVC; plus independents}
+    C->>P: Intent (container operationalto PVC, plus independents)
     P->>Ind: reserve + realize (no dependency on PVC)
     Ind-->>C: Realized
     P->>PVC: reserve? no eligible storage capacity (transient)
     P->>Ct: hold — dependency unsatisfied
     Note over Ct: status = blocked-transient (not failed, not dangling)
-    P-->>C: WARNING — root=PVC (transient capacity); container converges when PVC does
+    P-->>C: WARNING — root=PVC (transient capacity), container converges when PVC does
     loop reconciliation (w > 0)
         P->>PVC: re-attempt reserve
     end
-    PVC-->>P: capacity freed → Realized
-    P->>Ct: recompute-dependents → reserve + realize
+    PVC-->>P: capacity freed to Realized
+    P->>Ct: recompute-dependents to reserve + realize
     Ct-->>C: Realized (converged)
     P-->>C: warning clears
 ```
