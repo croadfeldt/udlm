@@ -258,6 +258,12 @@ def main():
                    glob.glob(os.path.join(ROOT, "registry", "**", "*.yaml"), recursive=True))
     for p in paths:
         rel = os.path.relpath(p, ROOT)
+        # Generated artifacts (registry/generated/*) are compiled projections of Class sources, not
+        # authored records — they carry their source Class's identity by construction and regenerate
+        # deterministically (gated by generate_class_specs.py --check), so they hold no independent
+        # authored identity here (else the compiled spec would R3-duplicate its source Class).
+        if (os.sep + "generated" + os.sep) in (os.sep + rel + os.sep):
+            continue
         docs = _parse(open(p, encoding="utf-8").read(), p)
         current_files[rel] = docs
         for d in docs:
