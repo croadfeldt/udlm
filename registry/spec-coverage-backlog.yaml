@@ -2,7 +2,6 @@ uncovered:
 - Access.IdentityEscrow
 - Automation.Job
 - Capability
-- Data.Database
 - Facility.Location
 - Facility.PowerFeed
 - Hardware.BMC
@@ -32,9 +31,6 @@ uncovered:
 - Platform.StorageClass
 - Security.CredentialRef
 - Security.DirectoryService
-- Software.Service
-- SoftwareImage
-- SoftwarePackage
 - TaxonomyTerm
 - Topology
 - Vulnerability
