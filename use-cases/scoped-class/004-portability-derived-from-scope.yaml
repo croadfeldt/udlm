@@ -1,0 +1,47 @@
+uuid: uc-52351490-c1ad-4f9b-81c6-20333d8f58d2
+handle: scoped-class/portability-derived-from-scope
+version: 1.0.0
+scenario:
+  description: >-
+    A realized instance's portability is DERIVED from where its populated elements sit, not asserted. Only Base elements populated → category-portable; populate a Provider-scope element and it is provider-bound. Portability narrows progressively to the most-specific populated scope, computed never stored (the same move as derived shape and derived nature).
+  actor:
+    persona: platform-operator
+    profile: standard
+  perspectives:
+    - solution-architect
+    - application-team-member
+    - sre
+  intent: >-
+    Derive an instance's portability from the most-specific scope among its populated elements — computed from structure, never asserted or stored
+  success_criteria:
+  - Portability is computed from where populated elements sit, not declared
+  - Only Base populated → category-portable; a Provider element populated → provider-bound
+  - Portability narrows to the most-specific populated scope; derived, never stored (T3)
+  dimensions:
+    lifecycle_phase: day2_operations
+    resource_complexity: full_stack
+    policy_complexity: system_defaults_only
+    provider_landscape: multiple_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Class artifact + its SharedDataElements (scope, schema, values, state)
+  - domain: policy
+    interaction: the assembly/placement engine reads the compiled spec; portability derives from scope
+  - domain: provider
+    interaction: a provider naturalizes the class's elements at its edge (T9 / ADR-023)
+  - domain: audit
+    interaction: the class version, its elements, and any promotion/compile are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: scoped-class-corpus-2026-07-27
+  timestamp: '2026-07-27T23:00:00Z'
+tags:
+- scoped-class
+- portability
+- derived
+- adr-038

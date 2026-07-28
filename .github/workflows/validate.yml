@@ -61,6 +61,11 @@ jobs:
       - run: python3 tests/check_class_liskov.py
       - run: python3 registry/tools/generate_class_specs.py --check
       - run: python3 tests/check_class_address_resolution.py
+      # Spec-completeness scoreboard (every spec ships with a UC + example + flow): a report
+      # today (heuristic name-match), surfacing the coverage gap each run. The review sweep
+      # enforces at signoff; a structural coverage link (spec `coverage:` block or manifest)
+      # upgrades this to `--strict` and a hard gate.
+      - run: python3 registry/tools/spec_coverage.py
       # Instance-fuzz: every type spec must be satisfiable (a minimal instance synthesized from
       # the schema itself validates) and discriminating (dropped-required / enum-violation /
       # wrong-type / unknown-key mutations rejected); output schemas satisfiable ([D8.3]).

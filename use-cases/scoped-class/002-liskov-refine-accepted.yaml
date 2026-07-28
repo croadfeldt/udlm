@@ -1,0 +1,46 @@
+uuid: uc-9b90c5a3-3945-41b3-9afb-67d88450bf09
+handle: scoped-class/liskov-refine-accepted
+version: 1.0.0
+scenario:
+  description: >-
+    A Type Class extends its Base Class, adding type-specific elements and refining an inherited one — narrowing a bound, tightening an enum, adding a required field. The Liskov invariant holds (add or refine, never contradict), so a Provider Class is-a Type Class is-a Base Class. The refinement is accepted and the compiled spec carries the narrowed shape.
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - provider-owner
+  intent: >-
+    Extend a Base Class by adding and refining elements under the Liskov invariant, so the child narrows the parent and the extension is accepted
+  success_criteria:
+  - A child adds new elements freely and may refine an inherited one (narrower bound, tighter enum, added required)
+  - A refinement that narrows the parent is accepted by the Liskov gate
+  - The is-a relationship holds; the compiled child spec carries the refined shape
+  dimensions:
+    lifecycle_phase: modification
+    resource_complexity: hard_dependencies
+    policy_complexity: single_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: happy_path
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Class artifact + its SharedDataElements (scope, schema, values, state)
+  - domain: policy
+    interaction: the assembly/placement engine reads the compiled spec; portability derives from scope
+  - domain: provider
+    interaction: a provider naturalizes the class's elements at its edge (T9 / ADR-023)
+  - domain: audit
+    interaction: the class version, its elements, and any promotion/compile are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: scoped-class-corpus-2026-07-27
+  timestamp: '2026-07-27T23:00:00Z'
+tags:
+- scoped-class
+- liskov
+- extension
+- adr-038

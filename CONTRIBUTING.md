@@ -139,6 +139,10 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
   (with its source) or **OBSERVED**, or does not exist on the type.
 - **Registered standards** — `check_standards_registered.py`: a standard cited in prose has a register row
   (`adopted-standards.md` §8).
+- **Spec completeness — UC + example + flow (scoreboard)** — `registry/tools/spec_coverage.py`: every
+  resource-type spec and Class ships with a **Use Case** (`use-cases/`), a **worked example** (an instance,
+  or the Class artifact itself), and a **flow** (`docs/flows/`). A report today — it prints the coverage gap
+  each run; the judgment check below enforces it, and a structural coverage link makes it blocking.
 
 **Judgment (reviewer + author self-check).**
 - **Scope — DCM vs UDLM (the peer test, `docs/adr/ADR-008`):** *could an independent conformant peer decide
@@ -158,6 +162,10 @@ gate below and prints the judgment checklist. The full procedure is in [`docs/si
   enhancement/ticket numbers, colleague names, or internal tool artifacts. Every reference **carries its
   gist in one line** (what it *decided*), never a bare number. Concise; no duplication; cut anything that
   does not move a decision.
+- **A spec travels with its story (rule-36):** a new or changed resource type / Class does not merge alone —
+  it ships with at least one **Use Case** that exercises it, a **worked example** (instance), and a **flow**
+  that places it in a lifecycle. The scoreboard (above) shows the gap; the reviewer confirms the three are
+  present, not just the schema. A spec with no UC, no example, or no flow is an incomplete PR.
 - **Document the why:** the rationale lives in the repo (design note / tenet / ADR pointer), not just the
   diff.
 

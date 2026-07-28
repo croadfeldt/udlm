@@ -1,0 +1,46 @@
+uuid: uc-873dfc52-231b-4396-a0a8-bfe704626712
+handle: scoped-class/liskov-contradict-refused
+version: 1.0.0
+scenario:
+  description: >-
+    A child Class redeclares an inherited element in a way that CONTRADICTS the parent — changing its type, widening its enum, loosening a bound, or dropping a required. This breaks is-a substitutability, so the Liskov gate refuses it, naming the element and the contradiction. Extension is add-or-refine only.
+  actor:
+    persona: platform-engineer
+    profile: standard
+  perspectives:
+    - platform-operator
+    - compliance-auditor
+  intent: >-
+    Refuse a child Class whose redeclared element contradicts its parent (type change, enum widening, looser bound, dropped required) — naming the element and the violation
+  success_criteria:
+  - A redeclared element that changes type, widens an enum, loosens a bound, or drops a required is refused
+  - The refusal names the element and the specific contradiction
+  - A valid extension is add-or-refine only; is-a substitutability holds by construction
+  dimensions:
+    lifecycle_phase: modification
+    resource_complexity: hard_dependencies
+    policy_complexity: multi_validation
+    provider_landscape: single_eligible
+    governance_context: standard_governance
+    failure_mode: policy_violation
+  profile: standard
+  expected_domain_interactions:
+  - domain: data
+    interaction: the Class artifact + its SharedDataElements (scope, schema, values, state)
+  - domain: policy
+    interaction: the assembly/placement engine reads the compiled spec; portability derives from scope
+  - domain: provider
+    interaction: a provider naturalizes the class's elements at its edge (T9 / ADR-023)
+  - domain: audit
+    interaction: the class version, its elements, and any promotion/compile are recorded
+generated_by:
+  mode: authoring
+  source: human-authored
+  model: null
+  prompt_version: scoped-class-corpus-2026-07-27
+  timestamp: '2026-07-27T23:00:00Z'
+tags:
+- scoped-class
+- liskov
+- must-reject
+- adr-038
