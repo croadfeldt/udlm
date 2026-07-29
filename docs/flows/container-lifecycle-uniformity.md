@@ -38,7 +38,7 @@ flowchart TD
   difference is the **provider** placement selects (a container runtime vs a hypervisor).
 - **Rehydration, drift, and supply-chain are form-factor-neutral.** The dependency graph and the pipeline are
   the same, so blast-radius, rebuild-from-intent, and blue/green work the same for a container as a VM
-  (uc-10 / uc-14 / [secure-software-supply-chain](secure-software-supply-chain.md)).
+  (uc-10 / uc-14 / the secure software supply chain flow).
 - **Location is a provider + sovereignty choice.** Because intent is provider-neutral, the same flow runs
   on-prem or in any cloud — the target is chosen by placement and gated by sovereignty
   ([ADR-057](../adr/ADR-057-sovereignty-placement-and-provenance.md)), not by a separate process.
@@ -68,6 +68,6 @@ flowchart TD
   [uc-03](uc-03-vm-standard-provision.md) (standard provision),
   [uc-18](uc-18-provider-portable-rebuild.md) (portable rebuild),
   [uc-10](uc-10-dynamic-rehydration.md) (rehydration),
-  [secure-software-supply-chain](secure-software-supply-chain.md) (same pipeline, supply-chain trigger),
+  the secure software supply chain flow (same pipeline, supply-chain trigger),
   [ADR-057](../adr/ADR-057-sovereignty-placement-and-provenance.md) (sovereignty / placement). UC source:
   `compute/container-lifecycle`.
