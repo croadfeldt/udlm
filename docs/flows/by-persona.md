@@ -33,6 +33,7 @@ Owns the running system: recovery, drift, policy overrides, and how profiles res
 - [UC-19 · Policy resolution by profile](uc-19-policy-resolution-capability.md)
 - [UC-20 · Profile resolution & atomic onboarding](uc-20-profile-resolution-capability.md)
 - [UC-22 · Governed automation](uc-22-governed-automation.md)
+- [Secure software supply chain — the orchestrated pipeline](secure-software-supply-chain.md)
 
 ## compliance-auditor / auditor — provenance and cryptographic audit
 Verifies what happened: field-level provenance and tamper-evident proofs.
