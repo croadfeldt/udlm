@@ -613,6 +613,29 @@ layer:
 
 ---
 
+### 3.8 Two-sided scoping — which layers reach which requests (ADR-054)
+
+Gathering a layer into a request is a **two-sided** decision — a *publish ⋈ subscribe* match, not a
+one-way pull. Each side declares its half as **data** on the layer record; DCM's assembly engine
+computes the match (the acting side).
+
+- **Target (the layer publishes):** `covers` — a §10 selector list (authority + `Category.Type.Provider`
+  + attribute predicates, wildcarded) naming which resources the layer *may* inject into; and
+  `applies_on` — the convergence scenario(s) it injects during, named by ADR-030's vocabulary
+  (`realize` · `reconcile` · `reconfigure` · `rehydrate` · `decommission`; absent = every scenario).
+- **Source (the request/policy layer subscribes):** `from_layers` — a selector over the layer graph
+  naming which layers feed *this* request (so a tenant-A request draws tenant-A's layers even when a
+  tenant-B layer's `covers` would match); and `skip` — the governed negative form.
+
+**Injection is the intersection.** A layer `L` injects into a request `R` iff
+`R.target ∈ L.covers` **and** `R.operation ∈ L.applies_on` **and** `L ∈ R.from_layers` **and not**
+`L ∈ R.skip`. `covers` says *who may*; `from_layers` says *who does* — both are required, neither
+alone is the boundary. Because injection lands data into the assembled spec it is an **ingress
+crossing**: the policy information firewall's admission applies (`PROJ-P6`, ADR-041). Authoritative:
+[ADR-054](../docs/adr/ADR-054-references-context-and-field-projection.md).
+
+---
+
 
 ## 4. Layer Identity — Domain, Handle, and Priority
 

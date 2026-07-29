@@ -49,6 +49,26 @@
       "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
       "description": "REQUIRED when layer_type is reference_data (enforced below): the kind of shared dataset this layer governs — e.g. location, os_image, vm_size, network_zone, storage_class, gpu_profile, environment, topology_capability (layering-and-versioning §3.7). A data reference ({ref_uuid, ref_name, reference_data_type}; UDLM ADR-012) is only valid against a reference_data layer of the SAME reference_data_type — the type is the match axis the reference declares. Meaningless on non-reference_data layers."
     },
+    "covers": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "TARGET scoping (publish side; ADR-054 two-sided scoping). A \u00a710 selector list \u2014 authority + Category.Type.Provider + attribute predicates, wildcarded \u2014 naming which resources this layer MAY inject into. DCM's assembly engine GATHERS every layer whose `covers` matches the target, then orders by precedence. `covers` says *who may*; the request's `from_layers` says *who does* \u2014 both are required for injection, neither alone is the boundary. A request layer targets its own instance and needs no `covers`. `covers` is Data (the declaration); the match is Policy (the assembly engine)."
+    },
+    "applies_on": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+      "description": "TARGET scoping (publish side; ADR-054). The convergence scenario(s) this layer injects during \u2014 named by ADR-030's colloquial vocabulary (realize \u00b7 reconcile \u00b7 reconfigure \u00b7 rehydrate \u00b7 decommission; migration is a realize/rehydrate onto a new provider). These are trigger/gap-shape shortcuts for the one Converge act (ADR-030), not distinct mechanisms, so the value is an open lowercase token set rather than a closed enum. Absent = injects on every scenario. Injection requires the request's convergence operation \u2208 this list."
+    },
+    "from_layers": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "SOURCE scoping (subscribe side; ADR-054 two-sided scoping). Declared by a request/policy layer: a selector over the layer graph naming which layers feed THIS request \u2014 so a tenant-A request draws tenant-A's layers even when a tenant-B layer's `covers` would match. Injection = the intersection: layer L injects into request R iff R.target \u2208 L.covers \u2227 R.operation \u2208 L.applies_on \u2227 L \u2208 R.from_layers \u2227 L \u2209 R.skip. Because injection lands data into the spec it is an ingress crossing \u2014 PROJ-P6 admission applies (ADR-041). (The retirement of `reference_data` from layer_type and the entity-target resolver are the ADR-054 edge-model slice, tracked separately in #189.)"
+    },
+    "skip": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "SOURCE scoping (subscribe side; ADR-054). The negative form of `from_layers`, declared by a request/policy layer: a selector naming layers to EXCLUDE even though their `covers` matches. Governed \u2014 freely skippable for defaults, but `narrow_only`/compliance layers require authorization to skip (skip authorization is a DCM policy step). A layer named here is excluded from injection regardless of `covers`/`from_layers`."
+    },
     "precedence_class": {
       "enum": ["base", "core", "intermediate", "service", "request", "policy"],
       "description": "Position in the assembly precedence chain, lowest-authority first: base → core → intermediate → service → request, with policy applied over the result. Higher classes override lower field-by-field (narrow-never-widen for constraint profiles, E1). Usually equals layer_type; reference_data layers are looked up, not merged, so they declare their functional class."
