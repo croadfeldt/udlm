@@ -404,9 +404,41 @@ def check_layer_lineage(doc):
     return errors
 
 
+def _selector_covers_type(sel, rt):
+    """Does a §10 `covers` selector target resource_type `rt`? Authority prefix stripped; a bare
+    `*`/`**` covers all; otherwise the selector's dotted type-path must be a prefix of `rt` (broader,
+    e.g. `Compute.*` covers `Compute.VM`) or `rt` a prefix of it (narrower provider, e.g.
+    `Compute.VM.OCPVirt`). Deliberately lenient — the authoritative matcher is DCM's assembly engine;
+    this only catches a `covers` that plainly excludes the layer's own type."""
+    s = sel.strip()
+    if "/" in s:                                  # strip authority (peer.dcm.east/Compute.VM.*)
+        s = s.rsplit("/", 1)[1]
+    if s in ("*", "**"):
+        return True
+    base = [p for p in s.split(".") if p and p != "*"]
+    rt_parts = rt.split(".")
+    return base == rt_parts[:len(base)] or rt_parts == base[:len(rt_parts)]
+
+
+def check_layer_scoping(doc):
+    """covers ⋈ resource_type single-source (ADR-054 reconciliation): `resource_type X` is the
+    single-type shorthand for `covers ["X.*"]`, so a type-scoped layer omits `covers`. When BOTH are
+    declared they MUST agree — `covers` must include the layer's own `resource_type`, else there are
+    two disagreeing homes for one concept."""
+    rt, covers = doc.get("resource_type"), doc.get("covers")
+    if not rt or not covers:
+        return []
+    if not any(_selector_covers_type(s, rt) for s in covers):
+        loc = f"layer {doc.get('name', '?')} ({str(doc.get('uuid', ''))[:8]})"
+        return [f"{loc}: resource_type {rt!r} and covers {covers} disagree — covers must include the "
+                f"layer's own type (resource_type X ≡ covers ['X.*']); omit covers for the derived "
+                f"default, or add an entry covering {rt}."]
+    return []
+
+
 def check_layer(doc):
-    """All semantic checks for a layer record: data-reference integrity + lineage integrity."""
-    return check_data_references(doc) + check_layer_lineage(doc)
+    """All semantic checks for a layer record: data-reference + lineage + covers/resource_type scoping."""
+    return check_data_references(doc) + check_layer_lineage(doc) + check_layer_scoping(doc)
 
 
 def check_realized_entity(doc):
