@@ -10,6 +10,7 @@ telling); the links below resolve to the docs in *this* repo.
 The everyday consumer: asks for what they need in portable terms and lets the system realize it.
 - [Governed automation, end to end — the consumer journey](governed-automation-end-to-end.md)
 - [UC-03 · Standard VM provision](uc-03-vm-standard-provision.md)
+- [Container lifecycle — one model with VMs, on-prem or cloud](container-lifecycle-uniformity.md)
 - [UC-04 · VM intent onto OSAC](uc-04-vm-intent-osac-placement.md)
 - [UC-06 · Persistent volume with attach](uc-06-persistent-volume-provision.md)
 - [UC-11 · VM provision, provider fails mid-implementation](uc-11-vm-provision-with-provider-failure.md)
