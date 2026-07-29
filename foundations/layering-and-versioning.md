@@ -623,16 +623,27 @@ computes the match (the acting side).
   + attribute predicates, wildcarded) naming which resources the layer *may* inject into; and
   `applies_on` — the convergence scenario(s) it injects during, named by ADR-030's vocabulary
   (`realize` · `reconcile` · `reconfigure` · `rehydrate` · `decommission`; absent = every scenario).
-- **Source (the request/policy layer subscribes):** `from_layers` — a selector over the layer graph
-  naming which layers feed *this* request (so a tenant-A request draws tenant-A's layers even when a
-  tenant-B layer's `covers` would match); and `skip` — the governed negative form.
+- **Source (the request/policy layer subscribes):** `from_layers` — an **optional override** naming
+  which layers feed *this* request; and `skip` — the governed negative form.
+
+**`covers` does not replace `resource_type` — it generalizes it.** A type-scoped layer already names
+its target in `resource_type` (§4.1), so `resource_type: X` **is** `covers: ["X.*"]` and its `covers`
+is derived and omitted. Declare `covers` explicitly only for targeting *broader* than one type — many
+categories, attribute predicates, authority-qualified. When both are present they must agree (`covers`
+includes the layer's own type — `validate.py check_layer`); you never restate one in the other.
+
+**Tenant isolation is the default, not a re-declaration.** Absent `from_layers`, assembly is
+tenant-scoped from the existing ownership fields: a request draws its own tenant's layers
+(`tenant_uuid`) plus platform/system-domain layers (`domain`), and **never** another tenant's — so a
+tenant-A request excludes a tenant-B layer whose `covers` would match, with no `from_layers` needed.
+`from_layers`/`skip` are for selecting an *explicit subset* beyond that default.
 
 **Injection is the intersection.** A layer `L` injects into a request `R` iff
-`R.target ∈ L.covers` **and** `R.operation ∈ L.applies_on` **and** `L ∈ R.from_layers` **and not**
-`L ∈ R.skip`. `covers` says *who may*; `from_layers` says *who does* — both are required, neither
-alone is the boundary. Because injection lands data into the assembled spec it is an **ingress
-crossing**: the policy information firewall's admission applies (`PROJ-P6`, ADR-041). Authoritative:
-[ADR-054](../docs/adr/ADR-054-references-context-and-field-projection.md).
+`R.target ∈ L.covers` (or `L.resource_type`) **and** `R.operation ∈ L.applies_on` **and**
+`L ∈ R.from_layers` (default: `R`'s tenant + platform) **and not** `L ∈ R.skip`. `covers` says
+*who may*; `from_layers` says *who does*. Because injection lands data into the assembled spec it is an
+**ingress crossing**: the policy information firewall's admission applies (`PROJ-P6`, ADR-041).
+Authoritative: [ADR-054](../docs/adr/ADR-054-references-context-and-field-projection.md).
 
 ---
 
