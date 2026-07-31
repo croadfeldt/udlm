@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 48,
+    "types": 49,
     "by_family": {
       "Access": 4,
       "Knowledge": 5,
       "Process": 1,
-      "Resource": 38
+      "Resource": 39
     }
   },
   "discrimination": {
-    "mutations_attempted": 3824,
-    "mutations_rejected": 3824,
+    "mutations_attempted": 3902,
+    "mutations_rejected": 3902,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -40,8 +40,8 @@
         "rejected": 240
       },
       "Compute.VirtualMachine": {
-        "attempted": 218,
-        "rejected": 218
+        "attempted": 207,
+        "rejected": 207
       },
       "Data.Database": {
         "attempted": 70,
@@ -187,6 +187,10 @@
         "attempted": 115,
         "rejected": 115
       },
+      "Storage.Layout": {
+        "attempted": 89,
+        "rejected": 89
+      },
       "Storage.Pool": {
         "attempted": 122,
         "rejected": 122
@@ -210,8 +214,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 48,
-    "total": 48
+    "strict_specs": 49,
+    "total": 49
   },
   "outputs": {
     "per_type": {
@@ -221,7 +225,7 @@
       "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
       "Compute.Container": 2,
-      "Compute.VirtualMachine": 9,
+      "Compute.VirtualMachine": 7,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
@@ -258,6 +262,7 @@
       "Storage.Cluster": 3,
       "Storage.Dataset": 1,
       "Storage.FileShare": 1,
+      "Storage.Layout": 1,
       "Storage.Pool": 5,
       "Storage.Volume": 2,
       "TaxonomyTerm": 1,
@@ -294,18 +299,19 @@
       "Software.Service",
       "Storage.Dataset",
       "Storage.FileShare",
+      "Storage.Layout",
       "TaxonomyTerm",
       "Topology"
     ]
   },
   "context": {
-    "with_context": 48,
-    "total": 48,
+    "with_context": 49,
+    "total": 49,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 44,
-    "total": 48,
+    "with_relationships": 45,
+    "total": 49,
     "missing": [
       "Facility.PowerFeed",
       "Observability.LogShipper",
@@ -365,7 +371,8 @@
       "Identity.ServiceAccount",
       "Network.Switch",
       "Network.VLAN",
-      "Storage.Cluster"
+      "Storage.Cluster",
+      "Storage.Layout"
     ]
   },
   "consumer_coverage": {
@@ -433,12 +440,13 @@
       "Storage.Cluster",
       "Storage.Dataset",
       "Storage.FileShare",
+      "Storage.Layout",
       "Storage.Pool",
       "TaxonomyTerm",
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 48
+    "consumed_by_at_least_one": 49
   },
   "expressibility_coverage": {
     "value": null,

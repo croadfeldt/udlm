@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.1.0
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Compute
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
 metadata:
@@ -21,6 +21,18 @@ metadata:
     generator compiles each Type Class extending it down to today's flat resource-type spec.
   prompt_version: class-p0-keystone-2026-07-27
 elements:
+  - element: instance_size
+    scope: Compute
+    optional: true
+    state: proposed
+    description: >-
+      Provider-neutral size class (ADR-014: small|medium|large, ordered/comparable — common-elements
+      §2.2): size by class IN PLACE OF explicit cpu+memory; the provider maps it to concrete
+      resources at naturalization (ADR-023). Added for parity with the flat Compute.VirtualMachine
+      spec (2026-07-29 reconciliation, bare-instantiation philosophy): a compute consumer may be
+      declared by size class alone.
+    schema:
+      type: string
   - element: cpu
     scope: Compute
     state: canonical
@@ -102,13 +114,30 @@ elements:
     optional: true
     state: proposed
     description: >-
-      The requested operating system, as portable requirements (image family + version), not a
-      provider-native image id. Proposed pending the OS-standardization catalog work (task #30).
+      The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4 —
+      the flat VM's guest_os won over the earlier {family, version} draft): portable form is a
+      data_reference to an os_image reference-data vocabulary (ADR-012) the target provider
+      advertises via capability discovery (ADR-004); inline {type, version} is the
+      portability_breaking escape. Proposed pending the OS-standardization catalog work (task #30).
     schema:
-      type: object
-      properties:
-        family: { type: string, description: "e.g. rhel, ubuntu, windows." }
-        version: { type: string }
+      oneOf:
+        - type: object
+          required: [type]
+          additionalProperties: false
+          properties:
+            type:
+              type: string
+              description: >-
+                Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with no
+                os_image vocabulary entry — a review finding.
+            version:
+              type: string
+              description: Inline OS version (e.g. 9.4).
+        - allOf:
+            - $ref: "../data-reference.schema.json#/$defs/data_reference"
+            - required: [reference_data_type]
+              properties:
+                reference_data_type: { const: os_image }
 
 coverage:
   use_cases:

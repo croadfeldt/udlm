@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.1.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
 metadata:
@@ -25,11 +25,30 @@ elements:
     scope: Compute.VM
     optional: true
     state: canonical
-    description: The boot firmware the VM requests. A governed neutral vocabulary; the provider naturalizes to its native setting.
+    description: >-
+      Guest firmware surface, flat-spec object shape adopted (2026-07-29 reconciliation, A7 —
+      the flat VM's firmware object won over the earlier bare-string draft): the firmware
+      interface (`type`), UEFI Secure Boot, and virtual TPM — portable across every major
+      virtualization stack. The governed `vm_firmware` vocabulary declared below governs the
+      `type` sub-field's values; the provider naturalizes to its native setting.
     values:
       reference_data_type: vm_firmware
     schema:
-      type: string
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          enum: [bios, uefi]
+          default: uefi
+          description: Firmware interface presented to the guest (values governed by the vm_firmware vocabulary).
+        secure_boot:
+          type: boolean
+          default: false
+          description: "UEFI Secure Boot. Only valid with type: uefi (policy-validated)."
+        vtpm:
+          type: boolean
+          default: false
+          description: Virtual TPM 2.0 device presented to the guest.
   - element: boot_order
     scope: Compute.VM
     optional: true
