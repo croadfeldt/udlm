@@ -310,11 +310,12 @@
     "missing": []
   },
   "relationships": {
-    "with_relationships": 45,
+    "with_relationships": 44,
     "total": 49,
     "missing": [
       "Facility.PowerFeed",
       "Observability.LogShipper",
+      "Storage.Layout",
       "Topology",
       "Vulnerability"
     ]

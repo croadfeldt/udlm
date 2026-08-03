@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
   "resource_type": "Storage.Layout",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -17,13 +17,13 @@
   },
   "metadata": {
     "display_name": "Storage Layout",
-    "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Compute.VirtualMachine — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage class, an optional role, and an optional boot position — that a consumer (a VM's spec.layout_ref) realizes and consumable Storage.Volume records back. The entry `name` is the stable identity reconvergence joins on.",
+    "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Compute.VirtualMachine — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage class, an optional role, and an optional boot position. The entry `name` is the stable identity consumers join on; consumption is declared consumer-side (a consumer names its layout and the records realizing its entries declare the realization), never here.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-29T00:00:00Z"
   },
   "context": {
     "purpose": "Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.",
-    "plain_description": "The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may pin a provider storage class (`storage_class`), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). A VM points at one layout via its `layout_ref`; the consumable Storage.Volume records that realize each entry join back on the entry's name. The layout is shape, not data — the volumes carry the data.",
+    "plain_description": "The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may pin a provider storage class (`storage_class`), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself.",
     "use_when": [
       "You need a VM's (or other compute consumer's) disks declared as portable intent — sizes, roles, boot designation — separate from the consumer's own sizing.",
       "You need reconvergence to join realized volumes back to declared disks by a stable per-entry identity.",
@@ -37,7 +37,7 @@
     ],
     "works_with": [
       "Compute.VirtualMachine — the consumer that realizes this layout (spec.layout_ref).",
-      "Storage.Volume — the consumable volume(s) realizing each entry (realized_by_volume).",
+      "Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).",
       "Platform.StorageClass — the class an entry's storage_class names."
     ]
   },
@@ -110,18 +110,10 @@
   "outputs": {
     "realized_volumes": {
       "type": "array",
-      "description": "Per-entry realization map: for each entry name, the Storage.Volume (handle/uuid) realizing it — populated as volumes bind via the realized_by_volume relation. The binding surface a consumer reads to see which declared disk became which volume."
+      "description": "Per-entry realization map: for each entry name, the Storage.Volume (handle/uuid) realizing it — derived from the volume-declared realizes_layout_entry edges (the layout declares no consumer edge). The binding surface a consumer reads to see which declared disk became which volume."
     }
   },
-  "relationships": [
-    {
-      "edge_type": "references",
-      "target": "Storage.Volume",
-      "name": "realized_by_volume",
-      "cardinality": "0..n",
-      "description": "Each entry may be realized by a consumable Storage.Volume; the realizing volume joins on the entry's stable name."
-    }
-  ],
+  "relationships": [],
   "coverage": {
     "use_cases": [
       "compute/composite-vm-with-attached-volume",

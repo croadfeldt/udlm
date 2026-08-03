@@ -15,7 +15,7 @@ The registry holds **49 types** (Access 4, Knowledge 5, Process 1, Resource 39).
 | Strictness coverage | 49/49 (100%) | asserted — a non-strict spec fails this tool |
 | Outputs adequacy | 6 zero-output, 24 one-output | declared Realized binding surface |
 | Context coverage | 49/49 (100%) | plain-English `context` blocks |
-| Relationships coverage | 45/49 (91%) | types declaring `relationships[]` |
+| Relationships coverage | 44/49 (89%) | types declaring `relationships[]` |
 | UC coverage | 34/49 (69%) | types appearing in >=1 use case (149 UC files scanned) |
 | Consumer coverage | 49/49 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
@@ -65,7 +65,7 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 ## Coverage detail
 
 - Context blocks missing (0): none
-- `relationships[]` missing (4): `Facility.PowerFeed`, `Observability.LogShipper`, `Topology`, `Vulnerability`
+- `relationships[]` missing (5): `Facility.PowerFeed`, `Observability.LogShipper`, `Storage.Layout`, `Topology`, `Vulnerability`
 
 ## Pending metrics (owned elsewhere, shape reserved)
 

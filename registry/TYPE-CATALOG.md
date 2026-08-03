@@ -885,11 +885,11 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Compute.BareMetalHost / Compute.Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
-### Storage.Layout (0.1.0)
+### Storage.Layout (0.2.0)
 
 **Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
 
-The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may pin a provider storage class (`storage_class`), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). A VM points at one layout via its `layout_ref`; the consumable Storage.Volume records that realize each entry join back on the entry's name. The layout is shape, not data — the volumes carry the data.
+The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may pin a provider storage class (`storage_class`), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself.
 
 **Use when:**
 - You need a VM's (or other compute consumer's) disks declared as portable intent — sizes, roles, boot designation — separate from the consumer's own sizing.
@@ -904,7 +904,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 **Works with:**
 - Compute.VirtualMachine — the consumer that realizes this layout (spec.layout_ref).
-- Storage.Volume — the consumable volume(s) realizing each entry (realized_by_volume).
+- Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
 - Platform.StorageClass — the class an entry's storage_class names.
 
 ### Storage.Pool (0.3.2)
@@ -929,7 +929,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.5.3)
+### Storage.Volume (0.6.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 

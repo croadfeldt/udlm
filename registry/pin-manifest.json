@@ -576,10 +576,11 @@
   }
  },
  "type:Storage.Layout": {
-  "current": "0.1.0",
+  "current": "0.2.0",
   "path": "registry/resource-types/storage/storage.layout.json",
   "versions": {
-   "0.1.0": "sha256:0719c78495a557a8dc69c88014451fc0f95071f815a8cb9ab7a95468a899a0c5"
+   "0.1.0": "sha256:0719c78495a557a8dc69c88014451fc0f95071f815a8cb9ab7a95468a899a0c5",
+   "0.2.0": "sha256:9cdadab1b4e1383097f5d38b88acdef2b993be35c2a76bc3e3c408fdd56dbc5a"
   }
  },
  "type:Storage.Pool": {
@@ -590,10 +591,11 @@
   }
  },
  "type:Storage.Volume": {
-  "current": "0.5.3",
+  "current": "0.6.0",
   "path": "registry/resource-types/storage/storage.volume.json",
   "versions": {
-   "0.5.3": "sha256:20f85c1553b93f39ae3b07006d52edf8a2d18f7f70baa5928b73f247d488dfe4"
+   "0.5.3": "sha256:20f85c1553b93f39ae3b07006d52edf8a2d18f7f70baa5928b73f247d488dfe4",
+   "0.6.0": "sha256:dae830eaf4cda9f2cf6a439ea76468766f200675328e549e1d1e14419d465d7c"
   }
  },
  "type:TaxonomyTerm": {
