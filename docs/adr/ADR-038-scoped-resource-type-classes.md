@@ -510,20 +510,17 @@ wildcard match across *authority* (`peer.dcm.eu.*`), *entity* (`Compute.VM.*`, `
 - Generic-Compute request UX (how a Base-Class instantiation is surfaced to a consumer) — design later.
 - Attestation — deferred (§9), additive.
 
-## Addendum (2026-08-03, maintainer) — the paradigm completed: nothing else is authored
+## Addendum (2026-08-03, maintainer) — the paradigm completed
 
 Three rulings that finish this ADR's own direction (decided in the ADR-059 cycle; recorded here
 because this is their home):
 
-**1. Flat specs are never authored.** The generator is made *total*: a flat resource-type spec
-is a **generated receipt-validation schema** — the compiled projection of a definition stack —
-and hand-authoring one is a defect. The catalog and a provider's capability list are likewise
+**1. Flat specs are generated.** A flat resource-type spec is a **generated receipt-validation
+schema** — the compiled projection of a definition stack (the generator made total,
+`--check`-gated for equivalence). The catalog and a provider's capability list are likewise
 **projections** (the definitions an organization exposes; the definitions a provider publishes
 — provider-contract §8.1 unchanged). The authored surface of the registry is definitions,
-layers, policies, and instances. **Format follows nature:** authored definitions are YAML;
-generated and machine surfaces (flat specs, receipts, wire packets) are JSON — the yaml/json
-split is the authored/derived boundary, not style (naming-conventions §Serialization tightened
-to match).
+layers, policies, and instances.
 
 **2. The pipeline is a scope descent.** An intent binds a scope — Type (portable) or Provider
 (the consumer opted into specificity: permitted, priced, visible; whether allowed at all is

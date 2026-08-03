@@ -9,15 +9,14 @@
 the **provenance architecture** (typed chains, sealed writes, the admission rule). Everything
 else that cycle decided lives in its home: the artifact-family/projection/portability rulings
 in the **ADR-038 addendum**, the OpenLineage disposition in **adopted-standards.md**, the
-provenance-home reinterpretation in **context-and-purpose §4.3 / data-model-core E4**, the
-format boundary in **naming-conventions**. ADR-060 (findings) consumes this ADR and ratifies
+provenance-home reinterpretation in **context-and-purpose §4.3 / data-model-core E4**. ADR-060 (findings) consumes this ADR and ratifies
 separately.
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).**
 
 - **ADR-038 + its 2026-08-03 addendum**: the Class paradigm, completed — flat specs generated
-  never authored, catalog/capability lists as projections, scope descent, portability as a
-  computation over the states with the port-residue ladder. This ADR's record shape is what
+  (projections of the definition stack), catalog/capability lists as projections, scope
+  descent, portability as a computation over the states with the port-residue ladder. This ADR's record shape is what
   makes that addendum executable.
 - **[`foundations/four-states.md`](../../foundations/four-states.md)**: Intent is immutable after
   submission; Discovered has a dual role (snapshot stream under the RHY-008 retention ceiling +
