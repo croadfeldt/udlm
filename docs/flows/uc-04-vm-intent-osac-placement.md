@@ -17,7 +17,7 @@ state records provider provenance identifying OSAC — the whole intent-to-reali
   *kind* participates through the ordinary contract.
 - **Provider provenance is explicit** — the `Realized` record names OSAC as the realizing provider. Provenance
   is already part of the four-state model; this UC makes "which provider" a checked outcome.
-- **Validation gates before placement** — a single validation policy runs before the placement engine selects,
+- **This UC declares one pre-placement gate** — `policy_complexity: single_gating`, the pre-placement leg of the policy envelope (placement occurs during policy application; the pipeline's one home is DCM's request-realization flow),
   same shape as the base's policy phase.
 - Everything after selection — enrich, reserve, commit — is request-realization unchanged.
 
@@ -42,7 +42,7 @@ Everything else (assemble, enrich, reserve, commit, converge) is request-realiza
 
 ## Data · Policy · Provider
 - **Data:** the portable VM intent, and the `Realized` record carrying OSAC provenance.
-- **Policy:** a single gating validation before placement; the placement engine selecting OSAC.
+- **Policy:** a single gating validation (the envelope's pre-placement leg); placement — within policy application — selecting OSAC.
 - **Provider:** the OSAC-backed service provider realizes the VM through the ordinary provider contract.
 
 ## Pointers
