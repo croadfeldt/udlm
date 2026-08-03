@@ -118,12 +118,14 @@ seal embeds the working copy and its chain head.
 
 ## Decision 4 — Provenance chains, typed by what they protect
 
-Data enters on two pathways: **inquire** (a read — an actor or external system checking in;
-nothing changes, so nothing is chained; whether reads are *access-audited* is a policy
-question) and **change** — with three drivers: request-driven ("I want a change"),
-discovery-driven ("I have data," probe-sourced), and **provider-driven** ("I have data,"
-provider-sourced — the out-of-band lifecycle events the provider contract already obligates).
-Chains follow **the thing whose integrity they protect** — a pathway or a lifecycle:
+**Two pathways cause action**, and only these feed the chains: **request** — "I want a
+change" (an actor, or an external system acting as one) — and **data** — "I have data,"
+either probe-sourced (discovery) or provider-sourced (the out-of-band lifecycle events the
+provider contract already obligates). An **inquiry is not a pathway**: a read changes nothing
+and is a *consumer* of the audit surface — verification walks, ledger queries, point-in-time
+reconstruction are what the chains exist to serve. (Whether reads are access-audited is a
+policy question, and an access-audit event is not a chain link.) Chains follow **the thing
+whose integrity they protect** — a pathway or a lifecycle:
 
 | chain | protects | lifetime |
 |---|---|---|
