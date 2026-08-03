@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 3902,
-    "mutations_rejected": 3902,
+    "mutations_attempted": 3913,
+    "mutations_rejected": 3913,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -152,8 +152,8 @@
         "rejected": 43
       },
       "Platform.StorageClass": {
-        "attempted": 83,
-        "rejected": 83
+        "attempted": 88,
+        "rejected": 88
       },
       "Security.CredentialRef": {
         "attempted": 65,
@@ -196,8 +196,8 @@
         "rejected": 122
       },
       "Storage.Volume": {
-        "attempted": 42,
-        "rejected": 42
+        "attempted": 48,
+        "rejected": 48
       },
       "TaxonomyTerm": {
         "attempted": 56,
