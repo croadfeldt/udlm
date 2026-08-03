@@ -1,29 +1,26 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "dba568c8-78e7-4239-8929-5917305cce17",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Virtual Machine",
-    "description": "A virtual compute instance with CPU, memory, a guest OS, and optional attached disks and network interfaces.",
+    "description": "A virtual compute instance with CPU, memory, a guest OS, and optional network interfaces. Its disk layout is a separate Storage.Layout the VM references (spec.layout_ref) — one hand-authored source per concept (2026-07-29 reconciliation ruling); per-disk shape lives on the layout, storage requirements live here as the class-shaped `storage` descriptor + governed `storage_tier`.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z"
   },
   "spec": {
     "type": "object",
     "additionalProperties": false,
-    "required": [
-      "guest_os"
-    ],
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF vcpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
       },
-      "vcpu": {
+      "cpu": {
         "type": "object",
         "required": [
           "count"
@@ -54,8 +51,8 @@
         "properties": {
           "size": {
             "type": "string",
-            "pattern": "^[0-9]+(MB|GB|TB)$",
-            "description": "Memory allocation, e.g. 16GB."
+            "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
+            "description": "Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base Class `memory.size`)."
           },
           "hugepages": {
             "type": "object",
@@ -73,7 +70,7 @@
         }
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape.",
+        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
         "oneOf": [
           {
             "type": "object",
@@ -111,37 +108,42 @@
           }
         ]
       },
-      "disks": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "required": [
-            "size"
-          ],
-          "properties": {
-            "size": {
-              "type": "string",
-              "pattern": "^[0-9]+(GB|TB)$"
-            },
-            "storage_class": {
-              "description": "Storage tier for this disk — a resource reference to a Platform.StorageClass the provider advertises (common-elements §2.5, ADR-025), consistent with Storage.Volume.storage_class. Authored by handle; deferred resolution supported. A requirements/SLA descriptor alternative is proposed in ADR-035. Not a free string.",
-              "oneOf": [
-                {
-                  "type": "string",
-                  "description": "Short form — the handle of an existing Platform.StorageClass."
-                },
-                {
-                  "$ref": "../../common-elements.schema.json#/$defs/Reference"
-                }
-              ]
-            },
-            "boot_order": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Optional boot order (0 = first). Absent = provider default."
-            }
+      "layout_ref": {
+        "description": "The Storage.Layout this VM realizes — handle/uuid reference to an existing Storage.Layout whose entries describe the VM's disks (per-disk shape, boot designation, storage class). Common-elements Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent. Also carried as a references->Storage.Layout relationship (storage_layout).",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — the handle of an existing Storage.Layout."
+          },
+          {
+            "$ref": "../../common-elements.schema.json#/$defs/Reference"
+          }
+        ]
+      },
+      "storage": {
+        "type": "object",
+        "description": "The reference-discipline storage requirements descriptor (PVD-001, Compute Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
+        "properties": {
+          "min_iops": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "min_throughput_mbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "min_replication": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "encryption": {
+            "type": "boolean"
           }
         }
+      },
+      "storage_tier": {
+        "type": "string",
+        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element."
       },
       "placement": {
         "type": "object",
@@ -205,7 +207,7 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "description": "Short form — the handle of an existing Platform.StorageClass."
+                  "description": "Short form — the handle of an existing Network.VirtualNetwork."
                 },
                 {
                   "$ref": "../../common-elements.schema.json#/$defs/Reference"
@@ -221,7 +223,7 @@
               "oneOf": [
                 {
                   "type": "string",
-                  "description": "Short form — the handle of an existing Platform.StorageClass."
+                  "description": "Short form — the handle of an existing Network.IPAddress."
                 },
                 {
                   "$ref": "../../common-elements.schema.json#/$defs/Reference"
@@ -233,7 +235,7 @@
       },
       "run_state": {
         "type": "object",
-        "description": "Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from the four-state lifecycle_state; snapshot/restore are separate operations, not run states.",
+        "description": "Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from the four-state lifecycle_state; snapshot/restore are separate operations, not run states. The discovered counterpart is outputs.observed_run_state.",
         "properties": {
           "desired_state": {
             "enum": [
@@ -274,7 +276,7 @@
     },
     "examples": [
       {
-        "vcpu": {
+        "cpu": {
           "count": 4,
           "sockets": 2,
           "cores_per_socket": 2
@@ -286,17 +288,13 @@
           "type": "linux-server-9",
           "version": "9.4"
         },
-        "disks": [
-          {
-            "size": "100GB",
-            "storage_class": "ceph-rbd-ssd",
-            "boot_order": 0
-          },
-          {
-            "size": "500GB",
-            "storage_class": "ceph-rbd-hdd"
-          }
-        ],
+        "layout_ref": "web-01-layout",
+        "storage": {
+          "min_iops": 5000,
+          "min_replication": 2,
+          "encryption": true
+        },
+        "storage_tier": "performance",
         "placement": {
           "location_ref": "dc-west-rack-3",
           "zone": "zone-a",
@@ -333,12 +331,12 @@
       },
       {
         "required": [
-          "vcpu",
+          "cpu",
           "memory"
         ]
       }
     ],
-    "description": "Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements (ADR-038) — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data) is an open design decision (process concern vs VM field) — tracked on the type, not silently absent."
+    "description": "Deliberate exclusions: GPU/PCI passthrough and SR-IOV are Provider-Class SharedDataElements (ADR-038) — provider-variable capability, not portable base surface. Day-0 guest personalization (cloud-init/user-data) is an open design decision (process concern vs VM field) — tracked on the type, not silently absent. Per-disk shape (sizes, boot designation) lives on Storage.Layout, referenced via layout_ref."
   },
   "outputs": {
     "ip_addresses": {
@@ -361,17 +359,9 @@
       "type": "string",
       "description": "The provider-native identifier of the realized VM (opaque; correlation/ops use only — never a portable reference)."
     },
-    "run_state": {
+    "observed_run_state": {
       "type": "string",
-      "description": "Observed run state at last reconciliation (running|stopped|suspended) — the discovered counterpart of spec.run_state.desired_state."
-    },
-    "ip_address": {
-      "type": "string",
-      "description": "Primary IP address assigned once Realized."
-    },
-    "instance_id": {
-      "type": "string",
-      "description": "Provider-assigned instance identifier."
+      "description": "Observed run state at last reconciliation (running|stopped|suspended) — the discovered counterpart of spec.run_state.desired_state. Renamed from `run_state` (0.7.0) so desired (spec) and observed (outputs) never share a name."
     },
     "target_segment": {
       "type": "string",
@@ -404,11 +394,18 @@
       "description": "Attaches to existing Network.VirtualNetwork(s) — see spec.networks[].network_ref."
     },
     {
+      "edge_type": "references",
+      "target": "Storage.Layout",
+      "name": "storage_layout",
+      "cardinality": "0..1",
+      "description": "The Storage.Layout this VM realizes — see spec.layout_ref; the layout's entries describe the VM's disks."
+    },
+    {
       "edge_type": "depends_on",
       "target": "Storage.Volume",
       "name": "disk",
       "cardinality": "0..n",
-      "description": "Consumes existing/allocated Storage.Volume(s) for its disks."
+      "description": "Consumes existing/allocated Storage.Volume(s) — the consumable volumes realizing its Storage.Layout entries."
     }
   ],
   "adopts": [
@@ -434,21 +431,23 @@
     }
   ],
   "context": {
-    "purpose": "Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.",
-    "plain_description": "The request for one VM: how big — a named size class (`instance_size`), or explicit `vcpu` and `memory` in its place — what `guest_os`, which `disks` backed by what storage class, and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
+    "purpose": "Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.",
+    "plain_description": "The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.",
     "use_when": [
-      "You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.",
+      "You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.",
       "You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.",
-      "You need a VM's disks and addresses to reference existing Storage.Volume / Network.IPAddress records rather than duplicate them."
+      "You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress records rather than duplicate them."
     ],
     "not_for": [
       "The physical machine it runs on — Compute.BareMetalHost.",
       "A containerized workload — Compute.Container; the VM carries a full guest OS.",
+      "The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.",
       "The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory."
     ],
     "works_with": [
+      "Storage.Layout — the disk layout the VM realizes (per-disk shape, boot designation).",
       "Network.VirtualNetwork — the networks the VM's NICs attach to.",
-      "Storage.Volume — the volumes behind the VM's disks.",
+      "Storage.Volume — the consumable volumes realizing its layout entries.",
       "Facility.Location — where the VM is placed (selected from existing places, policy-governed).",
       "Network.IPAddress — pre-allocated addresses the VM consumes."
     ]

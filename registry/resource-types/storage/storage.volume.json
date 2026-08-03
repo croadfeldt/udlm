@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.5.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -127,6 +127,13 @@
       "target": "Compute.VirtualMachine",
       "cardinality": "0..n",
       "description": "The consumer(s) this volume is attached to (RWX volumes attach to many). attaches_to is the same relation IPAddress uses for interface attachment — the consumable-resource-to-consumer edge."
+    },
+    {
+      "edge_type": "references",
+      "target": "Storage.Layout",
+      "name": "realizes_layout_entry",
+      "cardinality": "0..1",
+      "description": "Declared consumer-side (consumers declare what they consume — the layout never lists its consumers): this volume realizes one named entry of a Storage.Layout, joining on the entry's stable name."
     }
   ],
   "adopts": [

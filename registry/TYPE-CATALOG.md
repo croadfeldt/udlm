@@ -139,25 +139,27 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VirtualMachine (0.6.4)
+### Compute.VirtualMachine (0.7.0)
 
-**Purpose:** Declares a virtual machine — sizing, guest OS, disks, network attachments, placement — as portable intent any virtualization provider can realize.
+**Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
-The request for one VM: how big — a named size class (`instance_size`), or explicit `vcpu` and `memory` in its place — what `guest_os`, which `disks` backed by what storage class, and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP address, hostname, instance id. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
+The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
 
 **Use when:**
-- You need to request a VM with declared size, OS, disks, and network attachments, portable across hypervisors.
+- You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
 - You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
-- You need a VM's disks and addresses to reference existing Storage.Volume / Network.IPAddress records rather than duplicate them.
+- You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress records rather than duplicate them.
 
 **Not for:**
 - The physical machine it runs on — Compute.BareMetalHost.
 - A containerized workload — Compute.Container; the VM carries a full guest OS.
+- The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
 - The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
 
 **Works with:**
+- Storage.Layout — the disk layout the VM realizes (per-disk shape, boot designation).
 - Network.VirtualNetwork — the networks the VM's NICs attach to.
-- Storage.Volume — the volumes behind the VM's disks.
+- Storage.Volume — the consumable volumes realizing its layout entries.
 - Facility.Location — where the VM is placed (selected from existing places, policy-governed).
 - Network.IPAddress — pre-allocated addresses the VM consumes.
 
@@ -883,6 +885,28 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Compute.BareMetalHost / Compute.Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
+### Storage.Layout (0.2.0)
+
+**Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
+
+The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may pin a provider storage class (`storage_class`), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself.
+
+**Use when:**
+- You need a VM's (or other compute consumer's) disks declared as portable intent — sizes, roles, boot designation — separate from the consumer's own sizing.
+- You need reconvergence to join realized volumes back to declared disks by a stable per-entry identity.
+- You need one disk layout shared or compared across consumers instead of restated inline in each.
+
+**Not for:**
+- The consumable volume itself — Storage.Volume; a layout entry may be realized by one.
+- The provisioning policy — Platform.StorageClass; an entry references a class by name.
+- Host-local ZFS/LVM layout a host service mounts — Storage.Dataset / Storage.Pool.
+- The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor.
+
+**Works with:**
+- Compute.VirtualMachine — the consumer that realizes this layout (spec.layout_ref).
+- Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
+- Platform.StorageClass — the class an entry's storage_class names.
+
 ### Storage.Pool (0.3.2)
 
 **Purpose:** Models a host-local aggregation of physical drives into redundancy-protected capacity that datasets are carved from.
@@ -905,7 +929,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.5.3)
+### Storage.Volume (0.6.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -990,4 +1014,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*48 types; 48 with context, 0 pending.*
+*49 types; 49 with context, 0 pending.*
