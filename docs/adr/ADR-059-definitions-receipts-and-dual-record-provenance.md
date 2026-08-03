@@ -113,9 +113,10 @@ seal embeds the working copy and its chain head.
 
 Data enters on two pathways: **inquire** (a read — an actor or external system checking in;
 nothing changes, so nothing is chained; whether reads are *access-audited* is a policy
-question) and **change** — either request-driven ("I want a change") or discovery-driven
-("I have data"). Chains follow **the thing whose integrity they protect** — a pathway or a
-lifecycle:
+question) and **change** — with three drivers: request-driven ("I want a change"),
+discovery-driven ("I have data," probe-sourced), and **provider-driven** ("I have data,"
+provider-sourced — the out-of-band lifecycle events the provider contract already obligates).
+Chains follow **the thing whose integrity they protect** — a pathway or a lifecycle:
 
 | chain | protects | lifetime |
 |---|---|---|
@@ -141,10 +142,22 @@ plus:
   references, the policy decisions that permitted the write, `consulted[]` citations —
   `(uuid, version, head)` of any orthogonal record that materially participated in a decision
   (consulted → cited; unconsulted → just an edge) — and **`pathway_ref`**: the citation of the
-  causal pathway chain, `(request_id, request_chain_head)` or `(run_id, discovery_run_head)`.
-  The same citation mechanism as `consulted[]`, pointed at causation: it makes the provenance
-  of a request verifiable **through to end state** — request chain → seal citation → resource
+  causal pathway anchor — `(request_id, request_chain_head)`, `(run_id, discovery_run_head)`,
+  or `(provider_id, event_id)` for provider-driven writes (the anchor is the authenticated
+  lifecycle-event channel the provider contract already obligates — mTLS + attestation answer
+  "is this really the provider"; no chain over the provider's event stream by default, the
+  same independence analysis as discovery runs, with the per-profile posture below). The same
+  citation mechanism as `consulted[]`, pointed at causation: it makes the provenance of a
+  request verifiable **through to end state** — pathway anchor → seal citation → resource
   chain → audit log, one mechanical walk.
+
+**The admission rule — continuity of provenance as a gate, not an aspiration:** a state write
+without a citable pathway anchor is **refused**. Every seal names its cause; there are no
+anonymous injections, from any source. This single rule is what makes the injection mechanism
+**source-blind**: intent-sourced, discovery-sourced, and provider-sourced changes all enter
+through the identical contract — sealed event + pathway citation + resource-chain append — and
+everything downstream (comparison, findings, audit walks) never needs to know how data arrived,
+only that it arrived governed.
 
 The audit log is a **Merkle log (RFC 9162)** — the repo's standing audit ruling; a linear
 framing of the log is a defect. UDLM specifies the **log contract only** — append-only,
@@ -223,6 +236,48 @@ carries) → *adopted class* (the target realizes the source's provider class). 
 the **scope-promotion backlog**: an element frequently translated between providers is shared
 vocabulary asking for ADR-039 promotion — the ledger measures where the hierarchy grows next.
 
+## Decision 8 — Findings are sealed interpretations; drift is the first family member
+
+A **finding** is a sealed interpretation of record state — permanent evidence that a condition
+was detected at a time, over a version, from cited inputs. Findings live in the ledger, never
+on the working record (the claims discipline: a finding is a history claim; storing one on the
+record would be a stored derivable *and* a lineage claim in the state store). One facet shape,
+`udlm_finding`, with `finding_class` discriminating; **drift** and **tamper** (a record failing
+resource-chain verification) are distinct classes with distinct response postures, joined by
+the same family: staleness (ADR-048 verdicts), cadence-miss (discovery completeness), and
+whatever a profile adds. One mechanism, one routing home (`finding-routing-record`), one
+lifecycle.
+
+**Drift, precisely:** divergence among the states **outside an active convergence**. The
+comparator runs event-driven — on each seal, which is DCM's own loop (data change → policies
+evaluate) — and consults convergence status first (ADR-052's window and verdicts): desired ≠
+actual during a sanctioned convergence is progress, not drift; the window expiring un-met *is*
+drift (the unmet-intent flavor, with the request chain as evidence). The comparator is
+**source-blind** (Decision 4's admission rule): it evaluates state relationships after any
+seal; the finding's evidence carries whichever pathway anchor the triggering seal carried —
+request, discovery run, or provider event.
+
+A drift finding carries: the diverged fields with both sides' values, severity per the
+canonical drift enum (a drift *policy* classifies per field — field relevance is
+organizational: observed-only fields and benign jitter are policy-excluded, never hard-coded),
+`entered_at` (the exact resource-chain version whose seal introduced the divergence — exact
+because detection is event-driven), and evidence citations (the triggering seal + its pathway
+anchor).
+
+**Finding lifecycle — so the ledger carries signal, not noise:** a finding is **opened once**
+(keyed on resource + diverged-field-set), confirmed-not-duplicated by subsequent detections,
+and **closed by a resolution seal** — reconverged, accepted, or reviewed — which cites it. The
+ledger then holds the full drift story as one citation walk: divergence version → finding →
+disposition → resolution version. Current drift *status* is always **derived on read** from the
+states — never answered from a finding (a finding says "was detected," never "is drifted").
+Flap debounce is policy.
+
+**Deliberately open, delegated to the response-matrix work (OBL-003):** the *accept* mechanism —
+adopt the discovered value into intent (a request-pathway change, chained and sealed; cleanest,
+heaviest) versus an accepted-deviation record that suppresses re-detection (lighter, but
+standing "known divergence" state that must be governed and expired). Both shapes are priced;
+the ruling is operational policy's to make.
+
 ## Worked example — the port
 
 `web01`, realized on `Compute.VM.OCPVirt`, ported to `Compute.VM.VMware`:
@@ -252,8 +307,10 @@ vocabulary asking for ADR-039 promotion — the ledger measures where the hierar
   schemas; sovereignty as data on the record.
 - **Policy (DCM):** placement, layer participation, every policy write (sealed); emission
   completeness and delivery; provider-scope consumption permission; port fidelity classes;
-  Discovered-seal retention; Governance-Matrix emission gating; L1-verification failure as its
-  own finding class (tamper is not drift).
+  Discovered-seal retention; Governance-Matrix emission gating; the drift policy (field
+  relevance, severity classification, flap debounce, the accept mechanism) and the response
+  matrix per finding class (tamper is not drift); per-profile posture on pathway continuity
+  citations (provider event streams and discovery runs).
 - **Provider:** publishes definitions (capability → catalog lineage, §8.1 unchanged); realizes
   receipts (writes Realized as a receipt, through DCM's sealing); naturalizes provider-scope
   elements; never hashes and never self-declares trust.
