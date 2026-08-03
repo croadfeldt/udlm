@@ -26,6 +26,7 @@ from jsonschema import Draft202012Validator, RefResolver
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASELINE = os.path.join(ROOT, "tests", "spec_examples_baseline.txt")
+META_BASELINE = os.path.join(ROOT, "tests", "meta_schema_examples_baseline.txt")
 
 
 def load(p):
@@ -68,11 +69,47 @@ def resource_type_specs():
     return sorted(out, key=lambda r: r[0])
 
 
-def read_baseline():
-    if not os.path.isfile(BASELINE):
+def read_baseline(path=None):
+    path = path or BASELINE
+    if not os.path.isfile(path):
         return set()
-    return {ln.strip() for ln in open(BASELINE, encoding="utf-8")
+    return {ln.strip() for ln in open(path, encoding="utf-8")
             if ln.strip() and not ln.startswith("#")}
+
+
+def meta_schemas():
+    """The registry meta-schemas (ADR-055 addendum): each may carry whole-artifact examples in
+    its ROOT `examples` array — validated against the schema itself, same EXG rules."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(ROOT, "registry", "*.schema.json"))):
+        out.append((os.path.basename(p), json.loads(open(p, encoding="utf-8").read()), p))
+    return out
+
+
+def check_meta_schemas(fails):
+    """ADR-055 addendum arm: EXG-001 (a root example must validate against its own schema — hard,
+    no baseline) + EXG-002 (a meta-schema without a root example is baselined; the list only
+    shrinks; new schemas ship one)."""
+    baseline = read_baseline(META_BASELINE)
+    missing_now = []
+    for name, doc, path in meta_schemas():
+        examples = doc.get("examples")
+        if not examples:
+            missing_now.append(name)
+            if name not in baseline:
+                fails.append(f"EXG-002 {name}: no root `examples` — a meta-schema ships its "
+                             f"whole-artifact example inline (ADR-055 addendum)")
+            continue
+        validator = _validator_for(doc, path)
+        for i, ex in enumerate(examples):
+            for err in validator.iter_errors(ex):
+                loc = "/".join(str(x) for x in err.path) or "(root)"
+                fails.append(f"EXG-001 {name} examples[{i}] at {loc}: {err.message} — a "
+                             f"meta-schema example must validate against its own schema")
+    for name in sorted(baseline - set(missing_now)):
+        fails.append(f"EXG-002 {name}: listed in meta_schema_examples_baseline.txt but now has "
+                     f"an example — remove it (presence never regresses)")
+    return len(meta_schemas()) - len(missing_now), len(meta_schemas()), len(missing_now), len(baseline)
 
 
 def main():
@@ -100,12 +137,16 @@ def main():
         fails.append(f"EXG-002 {rt}: listed in spec_examples_baseline.txt but now has an example — "
                      f"remove it from the baseline (presence never regresses)")
 
+    m_covered, m_total, m_missing, m_baselined = check_meta_schemas(fails)
+
     covered = sum(1 for rt, _, _ in resource_type_specs() if rt not in missing_now)
     total = len(resource_type_specs())
     for f in fails:
         print("FAIL [" + f)
     print(f"{covered}/{total} resource-type spec(s) carry a validated example; "
           f"{len(missing_now)} missing ({len(baseline)} baselined).")
+    print(f"{m_covered}/{m_total} meta-schema(s) carry a validated whole-artifact example; "
+          f"{m_missing} missing ({m_baselined} baselined).")
     return 1 if fails else 0
 
 
