@@ -17,7 +17,7 @@ state records provider provenance identifying OSAC — the whole intent-to-reali
   *kind* participates through the ordinary contract.
 - **Provider provenance is explicit** — the `Realized` record names OSAC as the realizing provider. Provenance
   is already part of the four-state model; this UC makes "which provider" a checked outcome.
-- **Validation gates before placement** — a single validation policy runs before the placement engine selects,
+- **Policies wrap placement** — pre-placement policies gate (validation, access, quota) without trimming what placement should decide; placement selects among providers satisfying request + policy; post-placement policies enrich and re-validate for the chosen provider (ADR-024), re-entrant to a fixed point (ADR-006),
   same shape as the base's policy phase.
 - Everything after selection — enrich, reserve, commit — is request-realization unchanged.
 
