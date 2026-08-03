@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -89,6 +89,11 @@
         "type": "boolean",
         "default": false,
         "description": "Reclaim policy: true = Retain (keep data after the consumer releases it), false = Delete."
+      },
+      "layout_entry": {
+        "type": "string",
+        "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+        "description": "The Storage.Layout entry name this volume realizes — the join key paired with the realizes_layout_entry edge. Instance edges carry no qualifier (realized-entity dependencies[] is a closed shape), so the entry binding lives HERE: set exactly when realizes_layout_entry is declared, matching an entry name in the referenced layout. Reconvergence joins on this value to populate the layout's realized_volumes map."
       }
     },
     "examples": [
@@ -133,7 +138,7 @@
       "target": "Storage.Layout",
       "name": "realizes_layout_entry",
       "cardinality": "0..1",
-      "description": "Declared consumer-side (consumers declare what they consume — the layout never lists its consumers): this volume realizes one named entry of a Storage.Layout, joining on the entry's stable name."
+      "description": "Declared consumer-side (consumers declare what they consume — the layout never lists its consumers): this volume realizes one named entry of a Storage.Layout, joining on the entry's stable name carried in spec.layout_entry (the edge itself carries no qualifier)."
     }
   ],
   "adopts": [

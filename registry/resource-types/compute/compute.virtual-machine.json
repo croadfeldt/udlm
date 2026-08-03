@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "dba568c8-78e7-4239-8929-5917305cce17",
   "resource_type": "Compute.VirtualMachine",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -109,7 +109,7 @@
         ]
       },
       "layout_ref": {
-        "description": "The Storage.Layout this VM realizes — handle/uuid reference to an existing Storage.Layout whose entries describe the VM's disks (per-disk shape, boot designation, storage class). Common-elements Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent. Also carried as a references->Storage.Layout relationship (storage_layout).",
+        "description": "The Storage.Layout this VM realizes — handle/uuid reference to an existing Storage.Layout whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent. Also carried as a references->Storage.Layout relationship (storage_layout).",
         "oneOf": [
           {
             "type": "string",

@@ -139,7 +139,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VirtualMachine (0.7.0)
+### Compute.VirtualMachine (0.7.1)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -697,7 +697,7 @@ The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod c
 - Platform.Namespace — the one namespace this quota constrains.
 - Compute.Container — workloads whose aggregate consumption the quota caps.
 
-### Platform.StorageClass (0.3.3)
+### Platform.StorageClass (0.4.0)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -885,27 +885,28 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Compute.BareMetalHost / Compute.Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
-### Storage.Layout (0.2.0)
+### Storage.Layout (0.3.0)
 
 **Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
 
-The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may pin a provider storage class (`storage_class`), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself.
+The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may request a storage performance class (`storage_tier`, the governed vocabulary), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself. The provider's chosen native class per entry is a realized fact, recorded in the realization map — never authored here.
 
 **Use when:**
 - You need a VM's (or other compute consumer's) disks declared as portable intent — sizes, roles, boot designation — separate from the consumer's own sizing.
 - You need reconvergence to join realized volumes back to declared disks by a stable per-entry identity.
-- You need one disk layout shared or compared across consumers instead of restated inline in each.
+- You need disk shapes comparable across consumers by lifting the shape to a Template (ADR-033) — layout RECORDS stay per-consumer so realization is unambiguous.
 
 **Not for:**
 - The consumable volume itself — Storage.Volume; a layout entry may be realized by one.
-- The provisioning policy — Platform.StorageClass; an entry references a class by name.
+- The provisioning policy — Platform.StorageClass; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).
+- A shared multi-consumer layout record — one record per consumer; sharing is the ADR-033 Template tier.
 - Host-local ZFS/LVM layout a host service mounts — Storage.Dataset / Storage.Pool.
 - The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor.
 
 **Works with:**
 - Compute.VirtualMachine — the consumer that realizes this layout (spec.layout_ref).
 - Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
-- Platform.StorageClass — the class an entry's storage_class names.
+- Platform.StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map).
 
 ### Storage.Pool (0.3.2)
 
@@ -929,7 +930,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.6.0)
+### Storage.Volume (0.7.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
