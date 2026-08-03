@@ -109,31 +109,47 @@ chained, anchored records may be cited as lineage. Presenting record content und
 heading is a defect, in any surface. Verification joins the two families mechanically: every
 seal embeds the working copy and its chain head.
 
-## Decision 4 — Dual-record provenance: operational chain + compliance ledger
+## Decision 4 — Provenance chains, typed by what they protect
 
-Two independent record families, chained independently, linked one-way.
+Data enters on two pathways: **inquire** (a read — an actor or external system checking in;
+nothing changes, so nothing is chained; whether reads are *access-audited* is a policy
+question) and **change** — either request-driven ("I want a change") or discovery-driven
+("I have data"). Chains follow **the thing whose integrity they protect** — a pathway or a
+lifecycle:
 
-**Layer 1 — the working record's chain.** Each record version's `integrity.head` is computed
-over the RFC 8785-canonical record minus `integrity.*` (the ADR-051 strip machinery) and links
-the previous version's head. DCM is the sole hasher. The chain covers the **whole state
-timeline, Discovered included** — observed state is tamper-evident, not just declared state.
+| chain | protects | lifetime |
+|---|---|---|
+| **request** | pathway integrity — the request record's journey (intent intake → assembled → policy-approved → dispatched → callback-reconciled); covers the approval→dispatch tamper window | the request; closes at its terminal state |
+| **discovery run** | pathway integrity — probe → ingest → apply; the observation unaltered in flight | the run; transient — retention is profile/policy (RHY-008). Successive runs do **not** chain to each other: observations are independent evidence, and cross-time record integrity is the resource chain's job |
+| **resource** | lifecycle + audit integrity — the record's version timeline | the resource, permanently. **Any** new version appends, whichever pathway caused it — Discovered stays tamper-evident on the record |
+| **audit log** | the history itself | forever, externally anchored |
 
-**Layer 2 — the ledger.** Every seal is an OpenLineage event embedding the working copy and its
-L1 head (the `udlm_workingCopy` facet — the one-way bridge; the working record never references
-the ledger, so operations never hang on compliance storage), plus:
+**The resource chain (in-record).** Each version's `integrity.head` is computed over the
+RFC 8785-canonical record minus `integrity.*` (the ADR-051 strip machinery) and links the
+previous version's head. DCM is the sole hasher.
+
+**The seal (ledger-side).** Every change seal is an OpenLineage event embedding the working
+copy and its resource-chain head (the `udlm_workingCopy` facet — the one-way bridge; the
+working record never references the ledger, so operations never hang on compliance storage),
+plus:
 
 - `udlm_provenance` — the modification chain: source kinds, previous values, and dual
   attribution (`source` = the applying policy, `via_layer` = the pinned layer that supplied the
   value). The former in-record field-provenance block's content, housed here.
 - `udlm_context` — attribution and cause: the IdM principal (resolved at sign-in, carried
   through the pipeline, never re-looked-up at write time), intent reference, change/approval
-  references, the policy decisions that permitted the write, and `consulted[]` citations —
-  `(uuid, version, l1_head)` of any orthogonal record that materially participated in a
-  decision. Consulted → cited; unconsulted → just an edge.
+  references, the policy decisions that permitted the write, `consulted[]` citations —
+  `(uuid, version, head)` of any orthogonal record that materially participated in a decision
+  (consulted → cited; unconsulted → just an edge) — and **`pathway_ref`**: the citation of the
+  causal pathway chain, `(request_id, request_chain_head)` or `(run_id, discovery_run_head)`.
+  The same citation mechanism as `consulted[]`, pointed at causation: it makes the provenance
+  of a request verifiable **through to end state** — request chain → seal citation → resource
+  chain → audit log, one mechanical walk.
 
-Event wrappers are hash-linked globally. UDLM specifies the **ledger contract only** —
-append-only, hash-linked, root externally anchorable, third-party verifiable; the store is an
-implementation choice. Corruption isolates per-asset (one L1 chain breaks) while the ledger
+The audit log is a **Merkle log (RFC 9162)** — the repo's standing audit ruling; a linear
+framing of the log is a defect. UDLM specifies the **log contract only** — append-only,
+Merkle-verifiable, root externally anchorable, third-party auditable; the store is an
+implementation choice. Corruption isolates per-asset (one resource chain breaks) while the log
 stays globally verifiable and locates when the corruption entered.
 
 **Coverage mandate:** provenance covers **all data on all records across the full lifecycle** —
@@ -142,8 +158,14 @@ Discovered seals are included, with **retention decided by profile/policy** (the
 stream's limited lifecycle rides the existing RHY-008 machinery; the durable-inventory role
 keeps its exemption).
 
+**Accepted asymmetry, stated deliberately:** when a discovery-run chain expires under its
+retention policy, the `pathway_ref` citation in the seal remains but is no longer independently
+walkable — the probe pathway can't be re-verified, while record integrity is unaffected (the
+resource chain and the audit log persist). That is the retention trade the policy makes, not a
+gap.
+
 **Point-in-time reconstruction is a ledger query** — the embedded snapshot at T, verified
-against its L1 head — an audit question answered in the audit home.
+against its resource-chain head — an audit question answered in the audit home.
 
 ## Decision 5 — Carriers split by nature
 
@@ -218,8 +240,9 @@ vocabulary asking for ADR-039 promotion — the ledger measures where the hierar
 4. **Both records afterward**: the working record has the same uuid, a new version whose
    `integrity.head` links the pre-port head — one unbroken chain across providers. The
    migration seal carries the principal, the approval, the placement basis, the consulted
-   facility citation, the composition swap with previous values, and per-element port
-   dispositions (`preference` dropped per the fidelity policy, recorded; `eviction_strategy`
+   facility citation, the **`pathway_ref`** citing the migration request's own chain head
+   (the ask, verifiable through to this end state), the composition swap with previous
+   values, and per-element port dispositions (`preference` dropped per the fidelity policy, recorded; `eviction_strategy`
    mapped via `mapped_from`).
 
 ## Data · Policy · Provider
