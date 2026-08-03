@@ -4,6 +4,12 @@
 **Date:** 2026-08-03
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
+**What this settles:** what is authored, what is derived, and what is recorded. One artifact
+family (definitions consumed → receipts recorded, everything else a projection); the receipt
+reduced to states + one pin + one chain; and provenance as typed chains plus a sealed ledger,
+with every write citing its causal pathway. ADR-060 (findings) consumes this and ratifies
+separately.
+
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
 once with what it settles.
 
@@ -96,12 +102,13 @@ The working record is:
 record" question): *the working record carries what operations need to act now without any other
 system; the ledger carries what audit needs to explain the past.*
 
-Applied to this ADR's own drafts, the test — with DRV-001 — rejected every proposed addition:
-a `composition` block (definitions stack: derivable from the leaf pin; layer list: never needed
-to port, because the target re-runs its own layers and policies), a pinned `policy_set` (pins
-pretend policies are static; the applied-policy list *is* lineage), and a `governed_fields`
-partition map (the partition derives from the states — Decision 7). The receipt stores nothing
-about its own assembly.
+**Considered and rejected** (each fails the test, or DRV-001, or both): a `composition` block —
+the definitions stack is derivable from the leaf pin, and a port never needs the source's layer
+list (the target re-runs its own layers and policies; which source layers supplied a value is
+explain-past, the ledger's); a pinned `policy_set` — a pin pretends policies are static when
+their application is conditional per run, and the applied-policy list *is* lineage; a
+`governed_fields` partition map — the partition derives from the states (Decision 7). The
+receipt stores nothing about its own assembly.
 
 **Claims discipline:** the working record makes **state claims only**; nothing in it is named
 provenance, lineage, or history. The ledger alone makes **history claims** — only sealed,
@@ -236,47 +243,11 @@ carries) → *adopted class* (the target realizes the source's provider class). 
 the **scope-promotion backlog**: an element frequently translated between providers is shared
 vocabulary asking for ADR-039 promotion — the ledger measures where the hierarchy grows next.
 
-## Decision 8 — Findings are sealed interpretations; drift is the first family member
+## Findings — split to ADR-060
 
-A **finding** is a sealed interpretation of record state — permanent evidence that a condition
-was detected at a time, over a version, from cited inputs. Findings live in the ledger, never
-on the working record (the claims discipline: a finding is a history claim; storing one on the
-record would be a stored derivable *and* a lineage claim in the state store). One facet shape,
-`udlm_finding`, with `finding_class` discriminating; **drift** and **tamper** (a record failing
-resource-chain verification) are distinct classes with distinct response postures, joined by
-the same family: staleness (ADR-048 verdicts), cadence-miss (discovery completeness), and
-whatever a profile adds. One mechanism, one routing home (`finding-routing-record`), one
-lifecycle.
-
-**Drift, precisely:** divergence among the states **outside an active convergence**. The
-comparator runs event-driven — on each seal, which is DCM's own loop (data change → policies
-evaluate) — and consults convergence status first (ADR-052's window and verdicts): desired ≠
-actual during a sanctioned convergence is progress, not drift; the window expiring un-met *is*
-drift (the unmet-intent flavor, with the request chain as evidence). The comparator is
-**source-blind** (Decision 4's admission rule): it evaluates state relationships after any
-seal; the finding's evidence carries whichever pathway anchor the triggering seal carried —
-request, discovery run, or provider event.
-
-A drift finding carries: the diverged fields with both sides' values, severity per the
-canonical drift enum (a drift *policy* classifies per field — field relevance is
-organizational: observed-only fields and benign jitter are policy-excluded, never hard-coded),
-`entered_at` (the exact resource-chain version whose seal introduced the divergence — exact
-because detection is event-driven), and evidence citations (the triggering seal + its pathway
-anchor).
-
-**Finding lifecycle — so the ledger carries signal, not noise:** a finding is **opened once**
-(keyed on resource + diverged-field-set), confirmed-not-duplicated by subsequent detections,
-and **closed by a resolution seal** — reconverged, accepted, or reviewed — which cites it. The
-ledger then holds the full drift story as one citation walk: divergence version → finding →
-disposition → resolution version. Current drift *status* is always **derived on read** from the
-states — never answered from a finding (a finding says "was detected," never "is drifted").
-Flap debounce is policy.
-
-**Deliberately open, delegated to the response-matrix work (OBL-003):** the *accept* mechanism —
-adopt the discovered value into intent (a request-pathway change, chained and sealed; cleanest,
-heaviest) versus an accepted-deviation record that suppresses re-detection (lighter, but
-standing "known divergence" state that must be governed and expired). Both shapes are priced;
-the ruling is operational policy's to make.
+How detected conditions (drift, tamper, staleness, cadence-miss) are represented — sealed
+ledger interpretations with an open/close lifecycle, never record fields — is **ADR-060**,
+which consumes this ADR's admission rule and claims discipline and ratifies separately.
 
 ## Worked example — the port
 
@@ -307,10 +278,9 @@ the ruling is operational policy's to make.
   schemas; sovereignty as data on the record.
 - **Policy (DCM):** placement, layer participation, every policy write (sealed); emission
   completeness and delivery; provider-scope consumption permission; port fidelity classes;
-  Discovered-seal retention; Governance-Matrix emission gating; the drift policy (field
-  relevance, severity classification, flap debounce, the accept mechanism) and the response
-  matrix per finding class (tamper is not drift); per-profile posture on pathway continuity
-  citations (provider event streams and discovery runs).
+  Discovered-seal retention; Governance-Matrix emission gating; the finding policies (ADR-060) and
+  response matrix per finding class; per-profile posture on pathway continuity citations
+  (provider event streams and discovery runs).
 - **Provider:** publishes definitions (capability → catalog lineage, §8.1 unchanged); realizes
   receipts (writes Realized as a receipt, through DCM's sealing); naturalizes provider-scope
   elements; never hashes and never self-declares trust.
