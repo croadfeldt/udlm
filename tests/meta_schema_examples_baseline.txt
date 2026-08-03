@@ -1,0 +1,22 @@
+# Meta-schema whole-artifact-example burn-down baseline (ADR-055 addendum / EXG-002).
+# Registry meta-schemas whose root `examples` is still empty. This list may ONLY shrink: a
+# schema that gains a validated example is dropped here (the gate refuses to re-add it).
+# New meta-schemas are NEVER added — they ship an example.
+accreditation.schema.json
+audit-leaf.schema.json
+audit-record.schema.json
+catalog-item.schema.json
+commit-log-entry.schema.json
+common-elements.schema.json
+data-reference.schema.json
+dcm-group.schema.json
+decision-record.schema.json
+finding-routing-record.schema.json
+function-capability-matrix.schema.json
+layer.schema.json
+policy.schema.json
+provider-adopted-standards.schema.json
+realized-entity.schema.json
+regeneration-manifest.schema.json
+resource-type-spec.schema.json
+rule-id-registry.schema.json

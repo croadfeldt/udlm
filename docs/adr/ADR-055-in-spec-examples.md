@@ -70,3 +70,20 @@ Rule-36's example clause is now enforceable, not aspirational; the parked D8/G4 
 the spec-completeness gate's `examples` leg resolves against `spec.examples` (self-contained, no
 side-file bookkeeping). The 48 specs without an example are baselined and burn down family-by-family;
 each in-spec example is CI-validated the day it lands and every day after.
+
+## Addendum (2026-08-02, maintainer) — whole-artifact examples live in the owning meta-schema
+
+The same ruling, one level up. An **example artifact** — a complete file demonstrating a
+grammar (the `Compute.VM.OCPVirt` Provider-Class demo) — does not live as a sibling of
+canonical records, distinguishable only by `metadata.authority: example`. It lives **inline in
+the meta-schema that defines the grammar**, as an entry in that schema's root JSON Schema
+`examples` array — co-versioned with the grammar it demonstrates, validated by the same gate
+(`EXG-001` applied to `registry/*.schema.json` root `examples`), and covered by the same
+burn-down rule (`EXG-002`, `tests/meta_schema_examples_baseline.txt`: meta-schemas without an
+example are baselined; the list only shrinks; new schemas ship one).
+
+Consequences: `registry/classes/compute.vm.ocpvirt.yaml` is retired (its content becomes
+`class.schema.json` `examples[0]`); its pin-manifest row remains as the append-only tombstone
+the publish law requires. The boundaries stand: negative fixtures live in `tests/`,
+multi-artifact stories live in the UC corpus. Canonical directories now contain only canonical
+records.
