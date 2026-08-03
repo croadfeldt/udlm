@@ -81,16 +81,15 @@ authored/derived boundary.
 
 Intent arrives at the scope the consumer bound: **Type scope** (portable — placement chooses the
 provider branch) or **Provider scope** (the consumer opted into specificity — permitted, priced,
-visible; whether it is allowed at all is organizational policy). **Placement occurs during
-policy application, not after it**: pre-placement policies gate and shape the request
-(validation, access, quota — and they trim nothing placement should decide); placement selects
-among the providers that satisfy request + policy; post-placement policies enrich and
-re-validate against the chosen branch (the ADR-024 pattern — a governed layer carries the
-value, a policy injects it for the selected provider). The whole envelope is re-entrant to a
-fixed point (ADR-006): reserving lands facts that re-trigger enrichment and policy. The receipt
-is the flattened leaf. Portability is therefore derivable at intent time *and* receipt time
-from where populated elements sit (ADR-038 §3) — the catalog projection shows the price of
-specificity before it is paid.
+visible; whether it is allowed at all is organizational policy). The pipeline traverses the
+class hierarchy downward — placement selects the provider branch, and the branch's elements are
+populated within the policy envelope — until the receipt is the flattened leaf. The pipeline's
+mechanics are **not this ADR's to define**: the canonical home is DCM's request-realization
+flow (placement occurs during policy application — pre-placement gates, post-placement
+enrichment per ADR-024, re-entrant to a fixed point per ADR-006); this decision adds only the
+scope-descent reading of that flow. Portability is therefore derivable at intent time *and*
+receipt time from where populated elements sit (ADR-038 §3) — the catalog projection shows the
+price of specificity before it is paid.
 
 ## Decision 3 — The receipt carries state, a pin, and a chain. Nothing else.
 
