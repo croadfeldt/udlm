@@ -79,17 +79,14 @@ authored/derived boundary.
 
 ## Decision 2 — The pipeline is a scope descent
 
-Intent arrives at the scope the consumer bound: **Type scope** (portable — placement chooses the
-provider branch) or **Provider scope** (the consumer opted into specificity — permitted, priced,
-visible; whether it is allowed at all is organizational policy). The pipeline traverses the
-class hierarchy downward — placement selects the provider branch, and the branch's elements are
-populated within the policy envelope — until the receipt is the flattened leaf. The pipeline's
-mechanics are **not this ADR's to define**: the canonical home is DCM's request-realization
-flow (placement occurs during policy application — pre-placement gates, post-placement
-enrichment per ADR-024, re-entrant to a fixed point per ADR-006); this decision adds only the
-scope-descent reading of that flow. Portability is therefore derivable at intent time *and*
-receipt time from where populated elements sit (ADR-038 §3) — the catalog projection shows the
-price of specificity before it is paid.
+This decision adds one reading, nothing more: **request-realization is a descent of the class
+hierarchy**. An intent binds a scope — **Type scope** (portable) or **Provider scope** (the
+consumer opted into specificity — permitted, priced, visible; whether it is allowed at all is
+organizational policy) — and the receipt is the flattened leaf of the descended branch. How
+the pipeline runs is defined **only** in DCM's request-realization flow; this ADR neither
+restates nor constrains it. Portability is therefore derivable at intent time *and* receipt
+time from where populated elements sit (ADR-038 §3) — the catalog projection shows the price
+of specificity before it is paid.
 
 ## Decision 3 — The receipt carries state, a pin, and a chain. Nothing else.
 
