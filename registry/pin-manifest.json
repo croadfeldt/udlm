@@ -280,6 +280,13 @@
    "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7"
   }
  },
+ "type:Compute.VM.OCPVirt": {
+  "current": "1.0.0",
+  "path": "registry/classes/compute.vm.ocpvirt.yaml",
+  "versions": {
+   "1.0.0": "sha256:cf04ee9dc1c0fbdc0faca437575b472bc53abed7d98dde644d8ac664118302b1"
+  }
+ },
  "type:Compute.VirtualMachine": {
   "current": "1.0.0",
   "path": "registry/instances/example-layer-base.yaml",
