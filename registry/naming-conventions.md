@@ -169,7 +169,10 @@ routing mechanics live in DCM (ADR-018).
 
 Registry type files are `category.type.<json|yaml>` — lowercase, dot-joined, with the PascalCase Type
 segment rendered **kebab-case** (`compute.virtual-machine.json`, `network.ip-address.json`). JSON is the
-canonical interchange form; YAML is allowed for authoring (VERSIONING.md §Serialization).
+canonical interchange form. The yaml/json split is the **authored/derived boundary** (ADR-038
+addendum): authored definitions (classes, layers) are YAML; generated and machine surfaces —
+flat specs (generated, never authored), receipts, wire packets — are JSON
+(VERSIONING.md §Serialization).
 
 ## 6. Instance handles & IDs
 

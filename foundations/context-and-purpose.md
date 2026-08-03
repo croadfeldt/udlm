@@ -89,7 +89,15 @@ What is **normative** is that a field's evolution is *reconstructable*: for any 
 - Provenance survives data export, migration, and portability scenarios
 - The audit capability reads lineage that was recorded at the point of change, not reconstructed from logs
 
-**Where** provenance is stored is an implementation choice. It MAY be carried inline with the field, or content-addressed/tiered so the object is not bloated — `layering-and-versioning.md` §3a defines the deduplicated and tiered storage models, and LAY-008 guarantees full reconstruction regardless of model. The obligation is reconstructability; inline co-location is not required.
+**Where** provenance is stored is an implementation choice, with one ruled home (ADR-059): the
+modification history lives in the **audit/OL record family** — sealed, chained, in-model — while
+the working record carries state claims only. "Without querying a separate system" reads as
+*without leaving the model*: the audit records are a UDLM record family, so lineage stays
+recoverable from stored model facts; it is housed in the family whose job is history, not
+inline with the working data. `layering-and-versioning.md` §3a's tiered storage models and
+LAY-008's full-reconstruction guarantee apply to that family. The obligation is
+reconstructability; inline co-location is not required — and for the working record, not
+permitted (ADR-059's claims discipline).
 
 ### 4.4 Provenance Metadata Structure
 

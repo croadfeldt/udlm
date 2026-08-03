@@ -509,3 +509,38 @@ wildcard match across *authority* (`peer.dcm.eu.*`), *entity* (`Compute.VM.*`, `
 - **Base Class instantiability: DECIDED — yes** (portability at its highest level; §4).
 - Generic-Compute request UX (how a Base-Class instantiation is surfaced to a consumer) — design later.
 - Attestation — deferred (§9), additive.
+
+## Addendum (2026-08-03, maintainer) — the paradigm completed: nothing else is authored
+
+Three rulings that finish this ADR's own direction (decided in the ADR-059 cycle; recorded here
+because this is their home):
+
+**1. Flat specs are never authored.** The generator is made *total*: a flat resource-type spec
+is a **generated receipt-validation schema** — the compiled projection of a definition stack —
+and hand-authoring one is a defect. The catalog and a provider's capability list are likewise
+**projections** (the definitions an organization exposes; the definitions a provider publishes
+— provider-contract §8.1 unchanged). The authored surface of the registry is definitions,
+layers, policies, and instances. **Format follows nature:** authored definitions are YAML;
+generated and machine surfaces (flat specs, receipts, wire packets) are JSON — the yaml/json
+split is the authored/derived boundary, not style (naming-conventions §Serialization tightened
+to match).
+
+**2. The pipeline is a scope descent.** An intent binds a scope — Type (portable) or Provider
+(the consumer opted into specificity: permitted, priced, visible; whether allowed at all is
+organizational policy) — and the receipt is the flattened leaf of the descended branch. How
+the pipeline runs is defined only in DCM's request-realization flow; this addendum adds the
+reading, not mechanics.
+
+**3. Portability is a computation over the states** (§3's derivation, made operational). The
+tier partition derives — tier 1 = the Intent state (read, not reconstructed; replayed on port,
+uuid preserved per ENT-006); tier 3 = provider-scope elements (resolved from the definitions
+the leaf pin reaches; discarded and re-naturalized down the target branch); tier 2 = the
+remainder (stripped; the target re-runs its own layers and policies). A traveling receipt
+needs no ledger and no assembly metadata — intent travels in the states. **Port residue
+resolves per element** against the target class: no equivalent + policy-classed ignorable →
+dropped with the fidelity degradation sealed (never silent); not ignorable → refuse or route
+to review; compatible → the ladder: *mapped* (translation policy, `mapped_from` attribution)
+→ *shared element* (both provider classes bind the same `SharedDataElement`) → *adopted class*
+(the target realizes the source's provider class). Mapping seals are the **scope-promotion
+backlog**: an element frequently translated between providers is shared vocabulary asking for
+ADR-039 promotion — the ledger measures where the hierarchy grows next.

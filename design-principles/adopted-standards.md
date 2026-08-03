@@ -202,6 +202,7 @@ beyond cost:
 | Compliance / controls | **OSCAL** | identity + control-binding |
 | Identity / people | **SCIM** | the join key; data served by an HR Information Provider |
 | Telemetry | **OpenTelemetry** semantic conventions | resource identity ↔ `resource` attributes |
+| Provenance / lineage | **OpenLineage** (Run/Job/Dataset + facets; LF AI graduated, the de-facto lineage protocol) | identity + version-pinned conformance + the facet binding — the seal vocabulary (ADR-059). What OL lacks is assigned across the triad, never patched into the standard: tamper evidence = the Merkle chains (Data), completeness/delivery = Policy + platform, tenancy/auth = platform, sovereignty = data on the record, actor identity = the `udlm_context` facet from IdM. Custody stays in-model (the audit record family); OL is the interchange, and OL-ingested lineage enters as Discovered/self-asserted |
 | Currency | **ISO 4217** | already de-facto adopted (we reference codes, don't enumerate) |
 
 Each keeps UDLM **thin** — the substrate that holds identity, lifecycle, relationships, and bindings —

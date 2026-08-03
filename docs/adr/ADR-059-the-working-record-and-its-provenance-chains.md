@@ -1,94 +1,55 @@
-# UDLM ADR-059: Definitions and receipts — one artifact family; dual-record provenance on OpenLineage
+# UDLM ADR-059: The working record and its provenance chains
 
 **Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decisions 2026-08-02/03
 **Date:** 2026-08-03
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
-**What this settles:** what is authored, what is derived, and what is recorded. One artifact
-family (definitions consumed → receipts recorded, everything else a projection); the receipt
-reduced to states + one pin + one chain; and provenance as typed chains plus a sealed ledger,
-with every write citing its causal pathway. ADR-060 (findings) consumes this and ratifies
+**What this settles:** the two truly novel rulings of the definitions-and-receipts cycle — the
+**working record's shape** (states + one pin + one chain, nothing else; state claims only) and
+the **provenance architecture** (typed chains, sealed writes, the admission rule). Everything
+else that cycle decided lives in its home: the artifact-family/projection/portability rulings
+in the **ADR-038 addendum**, the OpenLineage disposition in **adopted-standards.md**, the
+provenance-home reinterpretation in **context-and-purpose §4.3 / data-model-core E4**, the
+format boundary in **naming-conventions**. ADR-060 (findings) consumes this ADR and ratifies
 separately.
 
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
-once with what it settles.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).**
 
-- **ADR-038** (scoped resource-type Classes): Base → Type → Provider Classes composed from
-  `SharedDataElement`s; *scope position IS portability* (§3 derives an instance's portability from
-  where its populated elements sit); a generator compiles each Type Class to the flat spec
-  consumers read. This ADR completes that direction: the flat spec stops being an authored
-  artifact at all.
-- **ADR-033** (Pattern/Template/System): the template tiers already map to Intent / Requested /
-  Realized — the class hierarchy and the request lifecycle are one story, told twice.
-- **[`contracts/provider-contract.md`](../../contracts/provider-contract.md) §8.1**: a capability
-  declaration names `resource_types[{fqn, spec_version, catalog_item_uuid}]` — the provider →
-  capability → catalog-item lineage this ADR makes explicit.
+- **ADR-038 + its 2026-08-03 addendum**: the Class paradigm, completed — flat specs generated
+  never authored, catalog/capability lists as projections, scope descent, portability as a
+  computation over the states with the port-residue ladder. This ADR's record shape is what
+  makes that addendum executable.
 - **[`foundations/four-states.md`](../../foundations/four-states.md)**: Intent is immutable after
   submission; Discovered has a dual role (snapshot stream under the RHY-008 retention ceiling +
   durable inventory, exempt). Both facts are load-bearing below.
-- **[`foundations/context-and-purpose.md`](../../foundations/context-and-purpose.md) §4**:
-  field-level provenance is a structural requirement — "audit reads lineage recorded at the point
-  of change, not reconstructed from logs." Reinterpreted (not weakened) by Decision 4.
-- **ADR-051** (identity/version/digest): uuid frozen; (identity, version) immutable once
-  published; non-normative surfaces stripped from the identity digest — the strip machinery
-  Decision 3 reuses for `integrity`.
-- **ADR-054** (references-context): orthogonal data is a classified, dereferenceable edge — never
-  copied into the record.
-- **DCM ADR-024** (layers stage data; policies refine and validate): the seam Decision 5 keeps.
+- **[`foundations/context-and-purpose.md`](../../foundations/context-and-purpose.md) §4.3**: the
+  provenance obligation is reconstructability from stored model facts; its ruled home (this
+  cycle) is the audit/OL record family.
+- **[`design-principles/adopted-standards.md`](../../design-principles/adopted-standards.md) §7**:
+  the OpenLineage adoption disposition (identity + version-pinned conformance + facet binding).
+- **ADR-051** (identity/version/digest): non-normative surfaces stripped from the identity
+  digest — the strip machinery `integrity` reuses.
 - **DRV-001 / SPEC-DESIGN-REQUIREMENTS §37** (derivability): values the model computes are not
   stored. Applied here until it deleted this ADR's own first draft of the receipt shape.
-- **ENT-006**: the entity uuid is immutable across rehydration, provider migration, ownership
-  transfer — what makes a port a version transition, not a new identity.
-- **ADR-039** (vocabulary intake ladder): scope promotion is the portability-improvement
-  operation — Decision 6's port-mapping census feeds it.
-- **Issue #323** (class schema carries elements only): outputs/relationships/adopts/context have
-  no class-side home — reframed by this ADR as the first work item of the conversion program.
-- **`AUD-002`** ([`observability/audit-provenance-observability.md`](../../observability/audit-provenance-observability.md)):
-  tamper-evident audit — the requirement the merkle chains realize.
+- **ADR-052** (intent fulfillment / convergence): the declared window and derived verdicts the
+  seals interact with.
+- **`AUD-002` / [D2] ([`foundations/data-model-core.md`](../../foundations/data-model-core.md))**:
+  audit integrity is the RFC 9162 Merkle model — the requirement and structure the ledger
+  realizes.
+- **Issue #191 / E4**: the in-record field-provenance block this ADR supersedes (pending
+  execution — see Consequences).
 
 ---
 
 ## Context
 
-Three artifact populations grew in parallel — authored flat resource-type specs, class artifacts,
-and provider/catalog surfaces — with overlapping content and no single statement of which is
-primary. Operating a real estate against the model showed the cost: hand-authored flat specs
-maintained like outputs, catalog items with ambiguous parentage, and a provenance design pulled
-between in-record history (unbounded growth in the operational store) and external lineage
-(availability coupling). This ADR settles the artifact model and the provenance architecture in
-one decision set, because they turned out to be the same question: *what is authored, what is
-derived, and what is recorded?*
+Operating a real estate against the model pulled the provenance design between two bad shapes:
+in-record history (unbounded growth in the operational store) and external lineage
+(availability coupling — operations hostage to compliance storage). And the record itself had
+accreted candidate blocks — composition, policy pins, partition maps — each plausible, none
+tested against a rule. This ADR states the rule and the resulting architecture.
 
-## Decision 1 — One artifact family: definitions consumed, receipts recorded
-
-A **definition** is a scope-tiered Class (Base → Type → Provider) *offered for consumption*. A
-**receipt** is a realized entity — *the consumed, instantiated definition*. The difference is
-lifecycle state, not kind.
-
-Everything else is a **projection**, computed and never authored:
-
-| surface | is | derived from |
-|---|---|---|
-| flat resource-type spec | the receipt-validation schema | generator over the definition stack (ADR-038's compiler, made total) |
-| catalog | the definitions the organization exposes | definitions + org curation + access policy |
-| capability declaration | the provider's published definitions | provider-contract §8.1, unchanged |
-
-**Format follows nature:** authored definitions are YAML; machine surfaces — generated specs,
-receipts, wire packets — are JSON. The yaml/json split stops being style and becomes the
-authored/derived boundary.
-
-## Decision 2 — The pipeline is a scope descent
-
-This decision adds one reading, nothing more: **request-realization is a descent of the class
-hierarchy**. An intent binds a scope — **Type scope** (portable) or **Provider scope** (the
-consumer opted into specificity — permitted, priced, visible; whether it is allowed at all is
-organizational policy) — and the receipt is the flattened leaf of the descended branch. How
-the pipeline runs is defined **only** in DCM's request-realization flow; this ADR neither
-restates nor constrains it. Portability is therefore derivable at intent time *and* receipt
-time from where populated elements sit (ADR-038 §3) — the catalog projection shows the price
-of specificity before it is paid.
-
-## Decision 3 — The receipt carries state, a pin, and a chain. Nothing else.
+## Decision 1 — The receipt carries state, a pin, and a chain. Nothing else.
 
 The working record is:
 
@@ -97,7 +58,7 @@ The working record is:
 - **`resource_type` @ pinned spec version** — the one pin (an existing field). It resolves the
   entire ancestor definition stack through the registry; pin-manifest content digests make the
   resolution deterministic at any future time.
-- **`integrity`** — the Layer-1 merkle chain over the state timeline (Decision 4).
+- **`integrity`** — the Layer-1 merkle chain over the state timeline (Decision 2).
 
 **The record-content test** (normative, and the rubric for every future "does X belong in the
 record" question): *the working record carries what operations need to act now without any other
@@ -117,7 +78,7 @@ chained, anchored records may be cited as lineage. Presenting record content und
 heading is a defect, in any surface. Verification joins the two families mechanically: every
 seal embeds the working copy and its chain head.
 
-## Decision 4 — Provenance chains, typed by what they protect
+## Decision 2 — Provenance chains, typed by what they protect
 
 **Two pathways cause action**, and only these feed the chains: **request** — "I want a
 change" (an actor, or an external system acting as one) — and **data** — "I have data,"
@@ -190,28 +151,9 @@ gap.
 **Point-in-time reconstruction is a ledger query** — the embedded snapshot at T, verified
 against its resource-chain head — an audit question answered in the audit home.
 
-## Decision 5 — Carriers split by nature
-
-- **Static shared data → authored layers**: versioned, pinned, genuinely reused (org defaults,
-  facility/site data — the directly-used sidecar values). Policies decide layer
-  *participation*; declared base→request precedence decides merge *order* — assembly is never
-  policy-sequence-dependent.
-- **Dynamic policy writes → direct writes, sealed per-field**: linear (one seal entry per
-  write), with dual attribution where a layer supplied the value. Synthetic per-run "decision
-  layers" are rejected: a policy writing five fields under one condition and six under another
-  would mint a versioned artifact per outcome — combinatorial artifacts for zero reuse, when
-  reuse is the only reason layers exist.
-- **Orthogonal sidecar facts → ADR-054 edges**, never embedded (the information-providers
-  "copy the data in" anti-pattern). When consulted by a decision, cited in the seal by
-  `(uuid, version, l1_head)` — a tamper-evident cross-record join; the cited entity's own dual
-  records hold the content.
-
-## Decision 6 — OpenLineage, adopted by reference; its gaps assigned, never patched
-
-The provenance interchange is **OpenLineage** (T5 adoption: identity + version-pinned
-conformance + binding; never re-expressed): pipeline stage = Job, request traversal = Run,
-record state = Dataset, field provenance = column-lineage facets, the UDLM facets above as
-custom facets.
+**OpenLineage carries the seals** (the adoption disposition and its rationale live in
+[`adopted-standards.md`](../../design-principles/adopted-standards.md) §7). What OL lacks is
+assigned across the triad — never patched into the standard:
 
 | OL lacks | assigned to |
 |---|---|
@@ -224,29 +166,7 @@ custom facets.
 OL-*ingested* lineage (an external platform's events feeding dependency edges) enters as
 Discovered, self-asserted tier — an ingestion avenue, never an attested source.
 
-## Decision 7 — Portability is a computation over the states
-
-The tier partition derives; nothing stores it:
-
-1. **Consumer intent** = the Intent state — read, not reconstructed. Replayed on port; uuid
-   preserved (ENT-006).
-2. **Provider residue** = provider-scope elements, resolved from the definitions the leaf pin
-   reaches. Discarded and re-naturalized down the target branch.
-3. **Org/site context** = the remainder. Stripped; the target re-runs *its own* layers and
-   policies.
-
-A traveling receipt needs no ledger and no assembly metadata — intent travels in the states.
-
-**Port residue resolves per element** against the target class: no equivalent and policy-classed
-ignorable → dropped, with the fidelity degradation and authorizing policy sealed (never
-silent); no equivalent and not ignorable → the port refuses or routes to review; compatible →
-the **compatibility ladder**: *mapped* (a translation policy, `mapped_from` attribution in the
-seal) → *shared element* (both provider classes bind the same `SharedDataElement`; the value
-carries) → *adopted class* (the target realizes the source's provider class). Mapping seals are
-the **scope-promotion backlog**: an element frequently translated between providers is shared
-vocabulary asking for ADR-039 promotion — the ledger measures where the hierarchy grows next.
-
-## Findings — split to ADR-060
+## Findings — ADR-060
 
 How detected conditions (drift, tamper, staleness, cadence-miss) are represented — sealed
 ledger interpretations with an open/close lifecycle, never record fields — is **ADR-060**,
@@ -276,37 +196,29 @@ which consumes this ADR's admission rule and claims discipline and ratifies sepa
 
 ## Data · Policy · Provider
 
-- **Data (UDLM):** the artifact family and its two states; the receipt shape (states + pin +
-  chain); the record-content test and claims discipline; the ledger *contract*; the OL facet
-  schemas; sovereignty as data on the record.
-- **Policy (DCM):** placement, layer participation, every policy write (sealed); emission
-  completeness and delivery; provider-scope consumption permission; port fidelity classes;
-  Discovered-seal retention; Governance-Matrix emission gating; the finding policies (ADR-060) and
-  response matrix per finding class; per-profile posture on pathway continuity citations
-  (provider event streams and discovery runs).
-- **Provider:** publishes definitions (capability → catalog lineage, §8.1 unchanged); realizes
-  receipts (writes Realized as a receipt, through DCM's sealing); naturalizes provider-scope
-  elements; never hashes and never self-declares trust.
+- **Data (UDLM):** the receipt shape (states + pin + chain); the record-content test and claims
+  discipline; the typed-chain model and the seal facet shapes; the Merkle-log *contract*
+  (append-only, RFC 9162-verifiable, root externally anchorable — the store is an
+  implementation choice).
+- **Policy (DCM):** every policy write (sealed); emission completeness and delivery;
+  Discovered-seal retention; per-profile posture on pathway continuity citations (provider
+  event streams and discovery runs); Governance-Matrix emission gating; the finding policies
+  (ADR-060) and response matrix per finding class.
+- **Provider:** reports state through the authenticated channels the provider contract already
+  obligates (callbacks, lifecycle events); never hashes, never self-declares trust, never
+  emits or interprets findings.
 
 ## Consequences
 
-- The in-record field-provenance block (**#191/E4**, `realized-entity.schema.json`) migrates to
-  the `udlm_provenance` facet. [`context-and-purpose.md`](../../foundations/context-and-purpose.md)
-  §4 is reinterpreted, not weakened: audit records are a UDLM record family, so lineage stays
-  *in the model* — housed in the family whose job is history.
-- **#323 is the conversion program's first work item**: definitions must carry everything
-  (outputs, relationships — declared consumer-side — adopts, context), because nothing else is
-  authored anymore.
-- Flat specs become generated; catalog items become projections; the authored surface of the
-  registry shrinks to definitions, layers, policies, and instances.
-- Contracts and mechanisms are realigned to match (sealing joins the provider write contract;
-  consumer-api states the per-scope request/receipt surface; the DCM policy-obligations register
-  gains the emission, retention, and port-fidelity obligations; operational runbooks gain ledger
-  operation and chain verification — the walker treats a record failing L1 verification as
-  REFUSING). Tracked as the conversion/cleanup program, one small PR at a time.
-- **Future item (separate issue):** a common repository/process for cross-provider type
-  adoption — providers adopting other providers' resource/process classes for compatibility and
-  migration targets, on the federated-contribution machinery with attestation-gated admission.
+- **Pending supersession (executed in the receipt-schema program phase, declared here so the
+  inconsistency is never latent):** `realized-entity.schema.json` still carries the in-record
+  `provenance` block (#191/E4) and lacks `integrity` — the block's content migrates to the
+  `udlm_provenance` facet and the chain block is added when that phase lands; the estate's
+  records migrate by idempotent tooling.
+- The sealing obligation joins the provider write contract; emission completeness, retention,
+  and continuity-citation postures are registered as DCM policy obligations (OBL-003).
+- Dashboards, compliance surfaces, and DAV source lineage from the ledger only — rendering
+  working-record content under a lineage heading is a defect.
 
 *The one-line summary: best data is none or derivable — and the four states already were the
 data.*

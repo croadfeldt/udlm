@@ -134,6 +134,10 @@ it governs.
   standard/prod = materialized; fsi/sovereign = + audit chain). Provenance `source.kind`
   vocabulary: `layer | policy | actor | provider | discovery | rehydration | override` (the
   last three added so DCM ADR-013 overrides and discovery/rehydration writes are recordable).
+  **Home (ADR-059):** the modification history lives in the audit/OL record family (sealed
+  seals, `udlm_provenance` facet), never on the working record — the record makes state claims
+  only; the in-record #191 provenance block migrates there (pending supersession, executed with
+  the receipt-schema phase).
 - **[D2] Audit integrity is the RFC 9162 Merkle model** (AUD-006, ADR-010) — per-leaf
   signatures, signed tree heads. The "linear SHA-256 chain" wording elsewhere is a defect.
 - **[D1] Lifecycle data stores are defined by CONTRACT, not technology** (revised 2026-07-06,
