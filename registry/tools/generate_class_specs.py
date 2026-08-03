@@ -24,7 +24,7 @@ from jsonschema import Draft202012Validator
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSES = os.path.join(ROOT, "classes")
 OUT = os.path.join(ROOT, "generated")
-GENERATOR_VERSION = "class-spec-gen/1.0.0"
+GENERATOR_VERSION = "class-spec-gen/1.1.0"
 SPEC_VALIDATOR = Draft202012Validator(json.load(open(os.path.join(ROOT, "resource-type-spec.schema.json"))))
 
 
@@ -48,8 +48,19 @@ def chain(cls, by_name):
     return list(reversed(stack))  # Base first
 
 
+def rel_identity(rel):
+    """Relationship identity for the union: declared name wins; else the structural triple."""
+    return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
+
+
 def compile_spec(cls, by_name):
+    """Compile the FULL definition surface (#323): elements → spec, plus outputs (merged,
+    nearer overrides), relationships (union by identity — consumer-declared), immutable
+    (union, sorted), adopts (union, deduplicated by standard+standard_name, pass-through —
+    the class item shape IS adopted_standard_ref), and the Type Class's own context verbatim."""
     props, required, sources = {}, [], []
+    outputs, relationships, rel_seen = {}, [], set()
+    immutable, adopts, adopts_seen = set(), [], set()
     for c in chain(cls, by_name):
         sources.append({"class": c["resource_type"], "version": c["version"], "uuid": c["uuid"]})
         for el in c.get("elements") or []:
@@ -66,6 +77,19 @@ def compile_spec(cls, by_name):
                     required.append(el["element"])
             elif el["element"] in required:
                 required.remove(el["element"])       # a descendant may relax? no — Liskov gate forbids; kept defensive
+        for name, out in (c.get("outputs") or {}).items():
+            outputs[name] = dict(out)                # nearer Class overrides; Liskov gate enforces refine
+        for rel in c.get("relationships") or []:
+            ident = rel_identity(rel)
+            if ident not in rel_seen:                # redeclare is a Liskov violation; first (Base-most) wins here
+                rel_seen.add(ident)
+                relationships.append(dict(rel))
+        immutable.update(c.get("immutable") or [])
+        for a in c.get("adopts") or []:
+            key = (a.get("standard"), a.get("standard_name"))
+            if key not in adopts_seen:
+                adopts_seen.add(key)
+                adopts.append(dict(a))
     spec = {
         "$id": f"https://udlm.dev/registry/udlm/{cls['conforms_to'].split('/')[1]}/{cls['resource_type']}/{cls['version']}",
         "conforms_to": cls["conforms_to"],
@@ -78,8 +102,16 @@ def compile_spec(cls, by_name):
                      "generated": True,
                      "compilation_provenance": {"generator": GENERATOR_VERSION, "sources": sources}},
         "spec": {"type": "object", "properties": props, **({"required": sorted(required)} if required else {})},
-        "outputs": {},
+        "outputs": outputs,
     }
+    if immutable:
+        spec["immutable"] = sorted(immutable)
+    if relationships:
+        spec["relationships"] = relationships
+    if adopts:
+        spec["adopts"] = adopts
+    if cls.get("context"):                           # type tier only (schema-enforced); copied verbatim
+        spec["context"] = cls["context"]
     return spec
 
 

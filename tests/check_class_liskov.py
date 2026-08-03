@@ -71,6 +71,35 @@ def refine_errors(parent, child, where):
     return errs
 
 
+def ancestor_axis(cls, by_name, axis, as_map=None):
+    """Merged ancestor view of a non-element axis. as_map: fn(item)->key for list axes."""
+    merged = {}
+    chain, seen = [], set()
+    p = cls.get("parent")
+    while p and p not in seen:
+        seen.add(p)
+        chain.append(p)
+        p = (by_name.get(p) or {}).get("parent")
+    for name in reversed(chain):
+        val = (by_name.get(name) or {}).get(axis)
+        if isinstance(val, dict):
+            merged.update(val)
+        elif isinstance(val, list) and as_map:
+            for item in val:
+                merged[as_map(item)] = item
+    return merged
+
+
+def rel_identity(rel):
+    return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
+
+
+def visible_elements(cls, by_name):
+    names = set(ancestor_elements(cls, by_name))
+    names.update(el["element"] for el in cls.get("elements") or [])
+    return names
+
+
 def check(by_name):
     fails, n = [], 0
     for name, cls in sorted(by_name.items()):
@@ -81,6 +110,25 @@ def check(by_name):
                 fails.append(f"{name}: element {el['element']!r} scope={el.get('scope')!r} != class resource_type {name!r}")
             if el["element"] in anc:  # redeclare → must refine
                 fails += refine_errors(anc[el["element"]], el.get("schema") or {}, f"{name}.{el['element']}")
+        # outputs (#323): a redeclared output must refine the ancestor's shape
+        anc_out = ancestor_axis(cls, by_name, "outputs")
+        for oname, oschema in (cls.get("outputs") or {}).items():
+            if oname in anc_out:
+                fails += refine_errors(anc_out[oname] or {}, oschema or {}, f"{name}.outputs.{oname}")
+        # relationships (#323): a child ADDS; redeclaring an ancestor's identity contradicts
+        anc_rel = ancestor_axis(cls, by_name, "relationships", as_map=rel_identity)
+        for rel in cls.get("relationships") or []:
+            if rel_identity(rel) in anc_rel:
+                fails.append(f"{name}: relationship {rel_identity(rel)!r} redeclares an ancestor's — "
+                             f"a child adds relationships, never redeclares (narrowing a published contract is breaking, ADR-045)")
+        # immutable (#323): each path's head segment must resolve to a visible element
+        visible = visible_elements(cls, by_name)
+        for path in cls.get("immutable") or []:
+            if path.split(".")[0] not in visible:
+                fails.append(f"{name}: immutable path {path!r} does not resolve to an element visible in the chain")
+        # context (#323): type tier only (schema also enforces; kept here so the gate is self-sufficient)
+        if cls.get("context") and cls.get("class") != "type":
+            fails.append(f"{name}: `context` on a {cls.get('class')}-tier Class — context is type-tier prose only")
     return fails, n
 
 

@@ -15,7 +15,7 @@
     "prompt_version": "class-p1-process-pilot-2026-07-27",
     "generated": true,
     "compilation_provenance": {
-      "generator": "class-spec-gen/1.0.0",
+      "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "Process",
