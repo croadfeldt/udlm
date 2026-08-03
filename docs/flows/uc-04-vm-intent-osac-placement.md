@@ -17,14 +17,14 @@ state records provider provenance identifying OSAC — the whole intent-to-reali
   *kind* participates through the ordinary contract.
 - **Provider provenance is explicit** — the `Realized` record names OSAC as the realizing provider. Provenance
   is already part of the four-state model; this UC makes "which provider" a checked outcome.
-- **This UC declares one pre-placement gate** — `policy_complexity: single_gating`, the pre-placement leg of the policy envelope (placement occurs during policy application; the pipeline's one home is DCM's request-realization flow),
+- **Pre-placement-scoped policies run before placement** — the envelope's pre-placement leg (placement occurs during policy application; the pipeline's one home is DCM's request-realization flow). This UC's scenario declares that set contains one validation policy (`policy_complexity: single_gating` — a UC dimension, not a pipeline property),
   same shape as the base's policy phase.
 - Everything after selection — enrich, reserve, commit — is request-realization unchanged.
 
 ## The flow — only what's different
 ```mermaid
 flowchart TD
-  I["VM intent via DCM API"] --> V{"Validation policy<br/>(single gating)"}
+  I["VM intent via DCM API"] --> V{"Pre-placement policies<br/>(this UC: one validation)"}
   V -- pass --> P["Placement selects the<br/>OSAC-backed provider"]
   V -- fail --> X["Stop — policy error"]
   P --> D["Dispatch to OSAC<br/>(reserve then commit)"]
@@ -42,7 +42,7 @@ Everything else (assemble, enrich, reserve, commit, converge) is request-realiza
 
 ## Data · Policy · Provider
 - **Data:** the portable VM intent, and the `Realized` record carrying OSAC provenance.
-- **Policy:** a single gating validation (the envelope's pre-placement leg); placement — within policy application — selecting OSAC.
+- **Policy:** the pre-placement policy set (in this UC, one gating validation); placement — within policy application — selecting OSAC.
 - **Provider:** the OSAC-backed service provider realizes the VM through the ordinary provider contract.
 
 ## Pointers
