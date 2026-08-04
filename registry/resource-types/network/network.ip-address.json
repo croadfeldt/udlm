@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a",
   "resource_type": "Network.IPAddress",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -27,7 +27,7 @@
     "works_with": [
       "Hardware.NetworkInterface — the interface the address is configured on.",
       "Network.IPAddressPool — the pool the address was carved from.",
-      "Compute.VirtualMachine — consumers that request or bring addresses."
+      "Compute.VM — consumers that request or bring addresses."
     ]
   },
   "spec": {

@@ -9,7 +9,7 @@ authoritative standards list) · [registry/resource-type-spec.schema.json](resou
 ## 1. Purpose
 
 A new wave of infrastructure Resource Types (Compute.BareMetalHost, Storage.Cluster, Network.Gateway,
-Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Compute.VirtualMachine and
+Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Compute.VM and
 Compute.Cluster) bumps against well-established external
 schemas. Per **T5 / the Adopt disposition**, UDLM should **reference industry-standard data elements
 for validation and vocabulary** rather than re-express them, and remain **extensible by vendor-specific
@@ -52,7 +52,7 @@ and take OSAC **VirtualMachine** (`ComputeInstance`) and **Cluster** (`ClusterSp
 
 | Resource Type | Adopt (reference vocabulary) | Absorb (UDLM-owned intent) | Vendor extension |
 |---|---|---|---|
-| **Compute.VirtualMachine** | OSAC `ComputeInstance` (`cores`,`memory_gib`,`boot_disk`,`network_attachments[]`,`run_strategy`,`image`; status `state`+`conditions`+ips) — Tier 2 | the type itself | KubeVirt/libvirt specifics |
+| **Compute.VM** | OSAC `ComputeInstance` (`cores`,`memory_gib`,`boot_disk`,`network_attachments[]`,`run_strategy`,`image`; status `state`+`conditions`+ips) — Tier 2 | the type itself | KubeVirt/libvirt specifics |
 | **Compute.Cluster** | OSAC `ClusterSpec` (`node_sets{host_type,size}`,`release_image`,`network{pod,service cidr}`; `api_url`/`console_url`) + heatmiser day-0 VIPs/CIDRs — Tier 2 | the type | — |
 | **Compute.BareMetalHost** (§4 row previously said BareMetalInstance — registry authored BareMetalHost; instance = realized entity of it) | **Metal3 `BareMetalHost`** (`bmc.address`,`bootMACAddress`,`online`,`image`,`rootDeviceHints`; `status.hardware.{cpu,ramMebibytes,nics[],storage[],firmware}`,`provisioning.state`) + **Redfish `ComputerSystem`** (`ProcessorSummary`,`MemorySummary`,`PowerState`,`Boot*`,`UUID`) + heatmiser discovery manifest — Tier 2 | provision intent (role, image, target) | iDRAC/a supported board BMC |
 | **Storage.Cluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |

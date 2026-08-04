@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 49,
+    "types": 48,
     "by_family": {
       "Access": 4,
       "Knowledge": 5,
       "Process": 1,
-      "Resource": 39
+      "Resource": 38
     }
   },
   "discrimination": {
-    "mutations_attempted": 3913,
-    "mutations_rejected": 3913,
+    "mutations_attempted": 3706,
+    "mutations_rejected": 3706,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -38,10 +38,6 @@
       "Compute.Container": {
         "attempted": 240,
         "rejected": 240
-      },
-      "Compute.VirtualMachine": {
-        "attempted": 207,
-        "rejected": 207
       },
       "Data.Database": {
         "attempted": 70,
@@ -214,8 +210,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 49,
-    "total": 49
+    "strict_specs": 48,
+    "total": 48
   },
   "outputs": {
     "per_type": {
@@ -225,7 +221,6 @@
       "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
       "Compute.Container": 2,
-      "Compute.VirtualMachine": 7,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
@@ -305,13 +300,13 @@
     ]
   },
   "context": {
-    "with_context": 49,
-    "total": 49,
+    "with_context": 48,
+    "total": 48,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 44,
-    "total": 49,
+    "with_relationships": 43,
+    "total": 48,
     "missing": [
       "Facility.PowerFeed",
       "Observability.LogShipper",
@@ -329,7 +324,6 @@
       "Compute.BareMetalHost",
       "Compute.Cluster",
       "Compute.Container",
-      "Compute.VirtualMachine",
       "Data.Database",
       "Network.AddressService",
       "Network.ConnectionProfile",
@@ -391,7 +385,7 @@
       "Compute.Container": [
         "control-plane-servicetype-gen"
       ],
-      "Compute.VirtualMachine": [
+      "Compute.VM": [
         "control-plane-servicetype-gen"
       ],
       "Data.Database": [
@@ -447,7 +441,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 49
+    "consumed_by_at_least_one": 48
   },
   "expressibility_coverage": {
     "value": null,

@@ -193,7 +193,7 @@
           },
           "handle": {
             "type": "string",
-            "description": "The affected artifact the consumer reads (a type handle such as Compute.VirtualMachine, or a class handle)."
+            "description": "The affected artifact the consumer reads (a type handle such as Compute.VM, or a class handle)."
           },
           "noted_version": {
             "type": "string",

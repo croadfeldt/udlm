@@ -33,7 +33,7 @@ Use for memory, storage, bandwidth, power (`"650W"`), etc.
   "cpu":    { "count": 8 },
   "memory": { "size": "32GB" } }      // Quantity
 ```
-Reused by anything that sizes compute: `Compute.VirtualMachine`, a `Compute.Cluster` node pool, a
+Reused by anything that sizes compute: `Compute.VM`, a `Compute.Cluster` node pool, a
 `Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
 
@@ -91,7 +91,7 @@ How the existing types express shared concepts today, and the drift to normalize
 
 | Type | compute sizing | naming notes |
 |---|---|---|
-| `Compute.VirtualMachine` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
+| `Compute.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
 | `Compute.Cluster` | `node_pools[]` (each carries its own cpu/memory) | node-pool sizing not a shared shape |
 | `Data.Database` | `resources` block | a *third* spelling of cpu/memory |
 | `Network.IPAddress` | — | `family` ≠ canonical `ip_family` |

@@ -12,7 +12,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 ## 1. Type names — `Category.Type`
 
 - **Shape — domain-owned vs cross-cutting:**
-  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Compute.VirtualMachine`,
+  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Compute.VM`,
     `Network.IPAddress`).
   - **Cross-cutting / foundational types (not owned by any single domain) → single-segment**
     PascalCase (`Capability`, `Topology`). This covers Knowledge-family entities *and* cross-domain

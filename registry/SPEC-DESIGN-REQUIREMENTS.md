@@ -18,7 +18,7 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Identity & naming
 5. **UUIDv4** identity, immutable for the type's life; Handles are mutable/rebindable, References are
    typed cross-doc pointers (`contracts/identifier-scheme.md`). **[enforced: format]**
-6. **Vendor-neutral `Category.Type` name**, e.g. `Compute.VirtualMachine`
+6. **Vendor-neutral `Category.Type` name**, e.g. `Compute.VM`
    (`entities/resource-type-hierarchy.md`). Full conventions — tiered namespaces (Tier-1 `Category.Type`
    vendor-neutral / Tier-2 `Vendor.Type`), when to add a category, field/output/file naming, and the
    *name-to-an-existing-standard-before-inventing* rule — live in **`registry/naming-conventions.md`**.

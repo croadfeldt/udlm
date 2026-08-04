@@ -68,7 +68,8 @@ def compile_spec(cls, by_name):
             if el.get("values"):  # governed vocabulary — the compiled property notes its kind (ADR-036/PVD-001)
                 note = f"Governed vocabulary `{el['values']['reference_data_type']}` (ADR-038 §2); " \
                        "name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
-                schema["description"] = (schema.get("description", "") + " " + note).strip()
+                if note not in schema.get("description", ""):
+                    schema["description"] = (schema.get("description", "") + " " + note).strip()
             if el.get("description") and "description" not in schema:
                 schema["description"] = el["description"]
             props[el["element"]] = schema           # nearer Class overrides by name
@@ -99,7 +100,9 @@ def compile_spec(cls, by_name):
         "metadata": {**(cls.get("metadata") or {}),
                      "generated": True,
                      "compilation_provenance": {"generator": GENERATOR_VERSION, "sources": sources}},
-        "spec": {"type": "object", "properties": props, **({"required": sorted(required)} if required else {})},
+        "spec": {"type": "object", "additionalProperties": False,   # the closed-spec norm (SPEC-DESIGN §16)
+                 "properties": props, **({"required": sorted(required)} if required else {}),
+                 **(cls.get("spec_constraints") or {})},               # cross-element constraints, verbatim (type tier)
         "outputs": outputs,
     }
     if immutable:
@@ -110,7 +113,26 @@ def compile_spec(cls, by_name):
         spec["adopts"] = adopts
     if cls.get("context"):                           # type tier only (schema-enforced); copied verbatim
         spec["context"] = cls["context"]
-    return spec
+    if cls.get("spec_examples"):                     # rule-36/ADR-055: the worked example rides the compiled spec
+        spec["spec"]["examples"] = cls["spec_examples"]
+    _canonicalize_refs(spec)                         # generated specs live at a different depth than authored ones:
+    return spec                                      # relative refs are rebased to generated/ depth (../../X -> ../X), staying relative per G8
+
+
+def _canonicalize_refs(node):
+    """Rewrite relative registry-schema $refs to their canonical https://udlm.dev/registry/ URL so the
+    compiled artifact is location-independent (authored specs sit two levels deep; generated/ sits one)."""
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str):
+            m = __import__("re").match(r"^(?:\.\./)+([A-Za-z0-9.-]+\.schema\.json(?:#.*)?)$", ref)
+            if m:
+                node["$ref"] = "../" + m.group(1)   # generated/ sits one level below registry/ (G8: relative refs)
+        for v in node.values():
+            _canonicalize_refs(v)
+    elif isinstance(node, list):
+        for v in node:
+            _canonicalize_refs(v)
 
 
 def main():

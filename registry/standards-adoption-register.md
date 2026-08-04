@@ -101,7 +101,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** k8s already solved "how does one object point at another and stay honest": ownerReferences carry `uid` (authoritative) AND `name` (advisory), the GC resolves on `uid`, and a `uid` that resolves to nothing is a *dangling* edge — never a silent rebind onto a same-named record. We adopt exactly that shape (uuid-authoritative, name-advisory) and its deterministic invalid-edge handling (`OwnerRefInvalidNamespace` → our dangling-reference failure). **Pattern, not vocabulary:** the reference *shape* and integrity discipline, not the k8s field names or the multi-doc apply model. Grounded in `docs/research/minimal-custom-surface-and-graph-resilience.md` findings #1/#2. Convergent with our own uuid+handle discipline (`contracts/identifier-scheme.md`). **License:** Apache-2.0 — compatible-reference.
 
 ### KubeVirt — CANONICAL
-**Covers:** `KubeVirt` · **Body:** CNCF · **Since:** 2026-07-13 · **Where:** Compute.VirtualMachine (VirtualMachine/VirtualMachineInstance — domain cpu/memory, interfaces->networks, volumes, runStrategy/power).
+**Covers:** `KubeVirt` · **Body:** CNCF · **Since:** 2026-07-13 · **Where:** Compute.VM (VirtualMachine/VirtualMachineInstance — domain cpu/memory, interfaces->networks, volumes, runStrategy/power).
 **Why:** the k8s-native VM implementation the estate actually runs (OpenShift Virtualization), the parallel to Metal3 for bare metal — Redfish ComputerSystem gives the vendor-neutral system+power shape, KubeVirt the implementation vocabulary. *Alternatives:* OpenStack Nova (not the deployment reality), DMTF OVF (VM packaging/portability — PRIOR-ART, reference only). **License:** Apache-2.0 — compatible-reference.
 
 ### Metal3 — CANONICAL
