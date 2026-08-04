@@ -1,0 +1,124 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.0.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242",
+  "resource_type": "Job",
+  "version": "1.0.0",
+  "family": "Process",
+  "status": "active",
+  "metadata": {
+    "authority": "canonical",
+    "display_name": "Job — the execution record",
+    "maintainer": "UDLM maintainers",
+    "origination_timestamp": "2026-08-04T00:00:00Z",
+    "description": "ONE class for every execution (maintainer ruling 2026-08-04): a Job is the tracked, inspectable record of running something — the receipt of consuming a definition. Jobs are how an execution is started (submit intent for a Job) and stopped (a change request against it); a run's lifecycle rides the D7 execution_state axis, one Job per run (concurrency honest). No per-domain subtypes: the bound definition carries the schemas (its inputs_schema validates parameters, its outputs_schema validates results), so domain filtering is a DERIVED facet of the reference, queried not typed (job.running?family=automation — the ADR-038 §10 filtering surface). Instantiable base (\"Base Classes are instantiable\" — portability at its highest level); types appear later only if a genuinely job-shaped variant earns one. Every state transition seals with its pathway_ref; current state + results live on the record (act-now), history in the ledger (ADR-059 claims discipline). This is the udlm#330 start/stop model — an operation is a governed Job, not a bespoke verb surface.",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Job",
+          "version": "1.0.0",
+          "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "definition_ref": {
+        "description": "Common-elements Reference (handle string or {uuid, handle} object), following the layout_ref/location_ref precedent.",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — the handle of the definition (an Automation.* member)."
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "uuid": {
+                "type": "string"
+              },
+              "handle": {
+                "type": "string"
+              }
+            },
+            "description": "Long form — uuid and/or handle of the definition."
+          }
+        ]
+      },
+      "parameters": {
+        "type": "object",
+        "description": "The run's inputs, fixed at submission — validated by the implementation against the bound definition's inputs_schema."
+      },
+      "targets": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "What this run acts on, when the definition does not pin its own targets — selector strings resolved by the implementation."
+      }
+    },
+    "required": [
+      "definition_ref"
+    ],
+    "examples": [
+      {
+        "definition_ref": "automation-ospatch",
+        "parameters": {
+          "window": "sun 02:00-04:00 UTC"
+        },
+        "targets": [
+          "role:web"
+        ]
+      }
+    ]
+  },
+  "outputs": {
+    "results": {
+      "type": "object",
+      "description": "The run's results, shaped by the bound definition's outputs_schema — what dependent steps and readiness gates read. Current-state data (act-now); per-transition history is the ledger's."
+    },
+    "started_at": {
+      "type": "string",
+      "description": "RFC 3339 UTC instant execution entered EXECUTING."
+    },
+    "completed_at": {
+      "type": "string",
+      "description": "RFC 3339 UTC instant execution reached COMPLETED/FAILED/CANCELLED."
+    }
+  },
+  "immutable": [
+    "definition_ref",
+    "parameters"
+  ],
+  "relationships": [
+    {
+      "edge_type": "references",
+      "target": "Automation",
+      "name": "executes_definition",
+      "cardinality": "1..1",
+      "description": "Consumer-declared — the Job declares what it executes: exactly one definition, today an Automation.* class member (the target widens if a second family-Process category of definitions ever exists). The domain facet (family/category filters) derives from this edge."
+    }
+  ],
+  "context": {
+    "purpose": "The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.",
+    "plain_description": "A Job is one run. Starting something means submitting intent for a Job bound to a definition; stopping it is a change request against the Job; inspecting it is reading the record (current execution state, results) and walking its seals (who started it, why, what each transition was). Discovery runs, automation runs, and operational actions (power on a host) are all Jobs — one lifecycle, one retention family, one query surface.",
+    "use_when": [
+      "You start or stop an execution of anything — the governed alternative to a bespoke verb API (udlm#330)",
+      "You need what's-running-now against a resource (blast radius gains the mid-flight dimension as a plain query)",
+      "You need a run's results as readable state for dependent steps or readiness gates"
+    ],
+    "not_for": [
+      "The definition of WHAT can run (Automation.* classes — offered, not executed)",
+      "Run HISTORY beyond current state (the ledger's — a Job record makes state claims only)"
+    ],
+    "works_with": [
+      "Automation.OSPatch — a definition this executes (executes_definition)",
+      "Automation.OSPatch.EngineBlue / EngineGreen — the engines a provider realizes the run through"
+    ]
+  }
+}

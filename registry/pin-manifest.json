@@ -423,6 +423,13 @@
    "0.3.3": "sha256:9c0995f151533a93d74b40741014d234f1e5c89a3f61aa1b7bee01b49ca13786"
   }
  },
+ "type:Job": {
+  "current": "1.0.0",
+  "path": "registry/classes/job.yaml",
+  "versions": {
+   "1.0.0": "sha256:601df80039342226ff046166ed0aac71d794a2b1872565a9878117d277ad29b3"
+  }
+ },
  "type:Network.AddressService": {
   "current": "0.5.0",
   "path": "registry/resource-types/network/network.address-service.json",
