@@ -96,7 +96,7 @@ stateDiagram-v2
 
 State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record) · **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
 
-**Applicable to:** VirtualMachine, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet — and every other entity the system maintains as a reconciled state.
+**Applicable to:** VM, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet — and every other entity the system maintains as a reconciled state.
 
 #### 2.1.1 Resource Data Model
 
@@ -107,7 +107,7 @@ resource_entity:
   # Universal artifact metadata
   uuid: <uuid>                          # stable across full lifecycle including rehydration
   handle: <string>                      # human-readable stable identifier
-  resource_type: <fqn>                  # e.g., Compute.VirtualMachine
+  resource_type: <fqn>                  # e.g., Compute.VM
   resource_type_spec_version: <semver>
   lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>
   # ^ the ONLY lifecycle enum — five values (foundations/data-model-core.md §3, four-states.md §2.5).
@@ -180,7 +180,7 @@ An entity in `PENDING_REVIEW`:
 
 ### 2.2 Atomic and Composite — the derived shape (`has_constituents`)
 
-Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. the derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Compute.VirtualMachine`, `Automation.Workflow` — is `resource_type`, a finer gate.)
+Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. the derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Compute.VM`, `Automation.Workflow` — is `resource_type`, a finer gate.)
 
 **Characteristics:**
 - Represents the logical aggregate, not a physical resource
@@ -315,7 +315,7 @@ Not all resource types produce the same entity type. The entity type is declared
 
 ```yaml
 resource_type_spec:
-  fqn: Compute.VirtualMachine
+  fqn: Compute.VM
   family: Resource        # ADR-027 family (state vs execution)
   ownership_model: whole_allocation       # whole_allocation | allocation | shareable
   allocatable_from_pool_type: null        # if allocation: the pool resource type this comes from

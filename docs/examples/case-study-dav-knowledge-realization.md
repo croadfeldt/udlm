@@ -34,7 +34,7 @@ definition of Data in UDLM?"
 | | DCM (reference) | DAV (this study) |
 |---|---|---|
 | Domain | Infrastructure resources | Architecture / capability **knowledge** |
-| Entity examples | VirtualMachine, IPAddress, VLAN | Capability, TaxonomyTerm, UseCase, Gap |
+| Entity examples | VM, IPAddress, VLAN | Capability, TaxonomyTerm, UseCase, Gap |
 | Lifecycle driver | **Provisioning** (a Provider builds it) | **Curation** (humans + LLM propose/normalize/accept) |
 | "Realized" means | A provider confirmed it exists | A reviewer accepted it as canonical |
 | "Discovered" means | A discovery run observed the live resource | An **assessment** observed the capability in the field |

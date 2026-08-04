@@ -251,7 +251,7 @@ Discovery schedules are declared in the Resource Type Specification and in provi
 
 ```yaml
 resource_type_spec:
-  fqn: Compute.VirtualMachine
+  fqn: Compute.VM
   discovery_schedule:
     default_interval: PT15M      # discover VMs every 15 minutes
     profile_overrides:
@@ -391,7 +391,7 @@ recovery_policy:
   conditions:
     - field: entity.resource_type
       operator: in
-      value: [Compute.VirtualMachine, Container.Pod]
+      value: [Compute.VM, Container.Pod]
     - field: entity.owned_by_tenant.profile
       operator: equals
       value: prod
@@ -622,7 +622,7 @@ tenant_config:
 
 # Resource-type-level override (most specific; wins over Tenant and profile)
 resource_type_recovery_override:
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   recovery_profile: recovery-aggressive-retry
 ```
 

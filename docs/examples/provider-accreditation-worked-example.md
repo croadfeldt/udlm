@@ -24,7 +24,7 @@ A **capability** is the versioned, accreditable unit (`capability_uuid` + `versi
 
 | Capability (`capability_uuid`, v1.0.0) | Realizes these categories (constituent capabilities) |
 |---|---|
-| **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VirtualMachine) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
+| **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VM) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
 | **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Compute.Container) · `…/Network` · `…/Storage` |
 | **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (Compute.Cluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
 
@@ -65,7 +65,7 @@ categories elided for length; they carry no per-category override and inherit th
   "capabilities": [
     { "capability_uuid": "44e7eb3d-…", "version": "1.0.0", "name": "Virtual Machine Lifecycle",
       "categories": [
-        { "category": "realize_resources/Compute", "resource_types": ["Compute.VirtualMachine"],
+        { "category": "realize_resources/Compute", "resource_types": ["Compute.VM"],
           "topology_capability": { "kinds_supported": ["region","zone","host"], "max_separation": "zone" },
           "operational_capability": { "drain": true, "online_migrate": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
         { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress","Network.VirtualNetwork"] },

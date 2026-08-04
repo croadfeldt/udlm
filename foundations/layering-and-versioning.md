@@ -422,11 +422,11 @@ type_scope:
 - Cached in the Service Layer Cache at Service Provider registration time
 
 **Examples:**
-- VM sizing layer (small, medium, large configurations for `Compute.VirtualMachine`)
-- Web server configuration layer for `Compute.VirtualMachine`
+- VM sizing layer (small, medium, large configurations for `Compute.VM`)
+- Web server configuration layer for `Compute.VM`
 - Network port configuration layer for `Network.Port`
-- CL Web Service Data Layer for `Compute.VirtualMachine` (exact scope)
-- General compute placement layer for `Compute.VirtualMachine` and descendants
+- CL Web Service Data Layer for `Compute.VM` (exact scope)
+- General compute placement layer for `Compute.VM` and descendants
 
 ---
 
@@ -595,7 +595,7 @@ layer:
 
   layer_type: reference_data
   reference_data_type: vm_size
-  scope: type_agnostic   # applies across providers for Compute.VirtualMachine
+  scope: type_agnostic   # applies across providers for Compute.VM
 
   data:
     size_name: "Medium — General Purpose"
@@ -737,7 +737,7 @@ layer:
 
   # COMPATIBILITY METADATA — what this layer applies to
   compatibility:
-    resource_types: [Compute.VirtualMachine, Compute.Container]
+    resource_types: [Compute.VM, Compute.Container]
     resource_type_versions: "^1.0.0"
     provider_types: []              # empty = all providers
     profile_constraints: []         # empty = all profiles; or: [standard, prod, fsi]
@@ -1718,7 +1718,7 @@ Policy may override the profile default per field or resource type:
 policy:
   type: transformation
   rule: >
-    If resource_type == Compute.VirtualMachine
+    If resource_type == Compute.VM
     AND field.name == cpu_count
     THEN set: constraint_visibility.level = full
 ```

@@ -366,7 +366,7 @@ enforcement: hard
 # For VM resources: restricted fields to EU zones only
 match:
   data.classification: restricted
-  data.resource_type: Compute.VirtualMachine
+  data.resource_type: Compute.VM
   target.sovereignty_zone.not_in: [eu-west-sovereign, eu-north-sovereign]
 decision: STRIP_FIELD
 field_permissions:

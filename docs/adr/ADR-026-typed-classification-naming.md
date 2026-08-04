@@ -5,7 +5,7 @@
 
 ## Context
 
-UDLM classifies several first-class things along their own taxonomies: a resource's specific type (`Compute.VirtualMachine`), an entity's shape within its family (`Atomic` | `Composite`), a relationship edge's base semantics (`depends_on` | `contained_by` | `binds_to` | `references`). These need one consistent field-naming convention.
+UDLM classifies several first-class things along their own taxonomies: a resource's specific type (`Compute.VM`), an entity's shape within its family (`Atomic` | `Composite`), a relationship edge's base semantics (`depends_on` | `contained_by` | `binds_to` | `references`). These need one consistent field-naming convention.
 
 The edge tier was originally named `kind` — chosen to avoid overloading `type`, which `resource_type` and `entity_type` already use. Review found `kind` a poor fit **for edges** specifically:
 - The domain standard for an edge's base classification is **`type`** — OASIS TOSCA "relationship type", Neo4j "relationship type", the RDF predicate-as-type.
@@ -18,7 +18,7 @@ Using a non-standard word that *also* collides with a conflicting meaning next d
 **A typed classification of a first-class modeled thing is named `<noun>_type`,** where the noun scopes what is being typed. `type` is generic *by design*; namespacing it by noun disambiguates while keeping the standard semantics — the "overload" is scoping, not confusion. This is preferred over synonyms (`kind`, `flavor`, `category`, `class`) that diverge from the standard or collide with adjacent ecosystems.
 
 Canonical fields:
-- **`resource_type`** — the specific resource/process type (`Compute.VirtualMachine`, `Automation.AnsiblePlaybook`).
+- **`resource_type`** — the specific resource/process type (`Compute.VM`, `Automation.AnsiblePlaybook`).
 - **`entity_type`** — the coarse shape within a family (`Atomic` | `Composite`; `Capability` | … for Knowledge). See ADR-027.
 - **`edge_type`** — a relationship edge's universal base semantics (`depends_on` | `contained_by` | `binds_to` | `references`), refined by a declared **`relation`** name (`common-elements` §9). `relation` is retained unchanged — it is the standard term (RFC 8288 link relations, TOSCA derived types).
 

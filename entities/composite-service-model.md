@@ -52,7 +52,7 @@ Every DCM design principle is preserved:
 
 ### 1.3 The Practical Meaning
 
-A Composite Service registration tells DCM: "Here is a Composite Service called `ApplicationStack.WebApp`. To fulfill it, you will need a `Compute.VirtualMachine`, a `Network.IPAddress`, a `DNS.Record` (which depends on both), and a `Network.LoadBalancer` (which also depends on both). I can provide the DNS and LoadBalancer; you should place the VM and IP with appropriate compute and network providers."
+A Composite Service registration tells DCM: "Here is a Composite Service called `ApplicationStack.WebApp`. To fulfill it, you will need a `Compute.VM`, a `Network.IPAddress`, a `DNS.Record` (which depends on both), and a `Network.LoadBalancer` (which also depends on both). I can provide the DNS and LoadBalancer; you should place the VM and IP with appropriate compute and network providers."
 
 DCM then:
 - Creates a Composite Entity with one entity UUID
@@ -82,7 +82,7 @@ Each constituent in the composition definition declares:
 ```yaml
 constituents:
   - component_id: vm           # local identifier within this composite
-    resource_type: Compute.VirtualMachine
+    resource_type: Compute.VM
     provided_by: external      # placement selects the provider
     depends_on: []
     required_for_delivery: required
@@ -155,7 +155,7 @@ both now reference here); the runtime execution and failure handling live in `li
 ```yaml
 service_component:
   id: vm
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   required_for_delivery: <required|partial|optional>   # §2.4 — the one enum
 
   compensation_on_failure: <decommission_immediately|release_allocation|skip|notify>
@@ -231,7 +231,7 @@ catalog_ref: ApplicationStack.WebApp/v2
 constituents:
   - component_id: vm
     constituent_uuid: <vm_uuid>
-    resource_type: Compute.VirtualMachine
+    resource_type: Compute.VM
     placement: { provider: dc1-vmware }
     payload: { ... }
   - component_id: ip
@@ -422,7 +422,7 @@ registration:
       - lb
     constituents:
       - component_id: vm
-        resource_type: Compute.VirtualMachine
+        resource_type: Compute.VM
         provided_by: external
         depends_on: []
         required_for_delivery: required

@@ -596,7 +596,7 @@ federation_tunnel:
   # What the remote peer may request from this peer (inbound)
   inbound_authorization:
     - operation: catalog_query
-      permitted_resource_types: [Compute.VirtualMachine, Network.VLAN]
+      permitted_resource_types: [Compute.VM, Network.VLAN]
       requires_cross_tenant_authorization: true
     - operation: allocation_request
       permitted_resource_types: [Network.IPAddress]
@@ -606,7 +606,7 @@ federation_tunnel:
   # What this peer may request from the remote (outbound)
   outbound_authorization:
     - operation: placement_query
-      permitted_resource_types: [Compute.VirtualMachine]
+      permitted_resource_types: [Compute.VM]
     - operation: realized_state_query
       permitted_entity_uuids: [<uuid>]   # scoped to specific entities
 
@@ -635,7 +635,7 @@ federation_credential:
   issued_to_peer_uuid: <remote-uuid>
   expires_at: <ISO 8601>             # PT15M for fsi/sovereign
   operation_scope: catalog_query
-  scoped_resource_types: [Compute.VirtualMachine]
+  scoped_resource_types: [Compute.VM]
   non_transferable: true
   tunnel_uuid: <uuid>                 # bound to specific tunnel
 ```

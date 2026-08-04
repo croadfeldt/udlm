@@ -106,7 +106,7 @@ relationships:
     related_entity_role: storage
     edge_type: depends_on
     strength: hard                             # cannot function without it → constituent (derived)
-    relation: disk                             # declared by Compute.VirtualMachine
+    relation: disk                             # declared by Compute.VM
     lifecycle_policy: { on_related_destroy: destroy }
 
   - target_handle: "business-units/payments"   # non-owning business context
@@ -714,7 +714,7 @@ Relationship declarations exist at multiple levels, each building on the previou
 Declares what relationships are **possible** for a resource type. Sets the ceiling — lower levels can only declare relationships within these bounds.
 
 ```yaml
-resource_type: Compute.VirtualMachine
+resource_type: Compute.VM
 possible_relationships:
   - role: storage
     edge_type: depends_on
@@ -768,7 +768,7 @@ The consumer declares relationships in their request. Bundled declarations (stor
 ```yaml
 # Explicit relationship declaration in a request
 request:
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   # ... other fields ...
   relationships:
     - role: storage
@@ -781,7 +781,7 @@ request:
 
 # Bundled declaration — expanded automatically
 request:
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   storage:
     disks:
       - name: boot
@@ -1083,7 +1083,7 @@ Relationship roles are semantic labels — human-readable identifiers for the fu
 
 ```yaml
 resource_type_spec:
-  fully_qualified_name: Compute.VirtualMachine
+  fully_qualified_name: Compute.VM
   permitted_relationship_roles:
     - role: storage
       edge_types: [depends_on]        # hard

@@ -168,8 +168,11 @@ routing mechanics live in DCM (ADR-018).
 ## 5. File names
 
 Registry type files are `category.type.<json|yaml>` — lowercase, dot-joined, with the PascalCase Type
-segment rendered **kebab-case** (`compute.virtual-machine.json`, `network.ip-address.json`). JSON is the
-canonical interchange form; YAML is allowed for authoring (VERSIONING.md §Serialization).
+segment rendered **kebab-case**: word boundaries hyphenate (`compute.bare-metal-host.json`), and an
+acronym run merges with the word it abuts (`network.ipaddress.json`, `automation.ospatch.json` —
+never `ip-address` / `os-patch`). The transform is `_standard_filename()` in
+`registry/tools/generate_class_specs.py` (self-tested). JSON is the canonical interchange form;
+YAML is allowed for authoring (VERSIONING.md §Serialization).
 
 ## 6. Instance handles & IDs
 

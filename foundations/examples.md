@@ -54,7 +54,7 @@ intent-store/
 intent-store/
 └── a1b2c3d4-tenant-uuid/
     └── Compute/
-        └── VirtualMachine/
+        └── VM/
             └── f5e6d7c8-entity-uuid/
                 ├── intent.yaml
                 └── .metadata.yaml
@@ -81,7 +81,7 @@ requested-store/
 requested-store/
 └── a1b2c3d4-tenant-uuid/
     └── Compute/
-        └── VirtualMachine/
+        └── VM/
             └── f5e6d7c8-entity-uuid/
                 ├── requested.yaml
                 ├── assembly-provenance.yaml
@@ -129,13 +129,13 @@ A developer on the AppTeam Tenant requests a standard Linux VM. This example tra
 The developer submits the following intent via the Consumer API:
 
 ```yaml
-# intent-store/a1b2c3d4-tenant/Compute/VirtualMachine/f5e6d7c8-entity/intent.yaml
+# intent-store/a1b2c3d4-tenant/Compute/VM/f5e6d7c8-entity/intent.yaml
 
 apiVersion: udlm.io/v1
 kind: ResourceIntent
 metadata:
   entity_uuid: f5e6d7c8-e9f0-a1b2-c3d4-e5f6a7b8c9d0
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   tenant_uuid: a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6   # AppTeam Tenant
   submitted_by: b2c3d4e5-actor-uuid
   submitted_at: 2026-03-15T09:00:00Z
@@ -246,13 +246,13 @@ monitoring_endpoint:
 **Requested State committed:**
 
 ```yaml
-# requested-store/a1b2c3d4-tenant/Compute/VirtualMachine/f5e6d7c8-entity/requested.yaml
+# requested-store/a1b2c3d4-tenant/Compute/VM/f5e6d7c8-entity/requested.yaml
 
 apiVersion: udlm.io/v1
 kind: RequestedState
 metadata:
   entity_uuid: f5e6d7c8-e9f0-a1b2-c3d4-e5f6a7b8c9d0
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   tenant_uuid: a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6
   assembled_at: 2026-03-15T09:00:47Z
   intent_state_ref: f5e6d7c8-intent-ref-uuid
@@ -405,7 +405,7 @@ A VM discovered by the provider that the implementation did not provision is bro
 # Step 1: INGEST — discovery finds unknown VM
 discovered_entity:
   provider_entity_id: "vm-legacy-0001"
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   lifecycle_state: Discovered           # observed running; operational status is a status.condition
   discovered_at: 2026-03-15T06:00:00Z
   discovery_confidence: low             # no UDLM provenance
@@ -461,7 +461,7 @@ drift_record:
 **Policy Engine evaluates the drift record:**
 
 ```yaml
-# Drift response policy for Compute.VirtualMachine at significant severity:
+# Drift response policy for Compute.VM at significant severity:
 # action: ESCALATE for unsanctioned changes
 
 escalation:

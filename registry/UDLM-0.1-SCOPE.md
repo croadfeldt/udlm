@@ -50,7 +50,7 @@ but executed by DCM (ADR-008).
 
 | # | Use case (handle) | UDLM basis | Status |
 |---|---|---|---|
-| 1 | libvirt-vm-provider/vm-resource-representation | `compute.virtual-machine` 0.3.0; `realized-entity` | Covered |
+| 1 | libvirt-vm-provider/vm-resource-representation | `compute.vm` 0.3.0; `realized-entity` | Covered |
 | 2 | cross-domain/solution-architecture-deployment | `catalog-item` (constituents/bindings/fulfillment); realized receipt | Covered (DSL ingestion = DCM/Information-Provider) |
 | 3 | compute/vm-standard-provision | profile-resolution; policy §7.7; universal-audit | Covered |
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
@@ -79,7 +79,7 @@ by the merged spec (ADR-010 / §8.1a / realized-entity) or are DCM-runtime by th
 
 | P# | Item | Status |
 |---|---|---|
-| P1 | VM enrichment (placement/networks/power) | ✅ `compute.virtual-machine` 0.3.0 |
+| P1 | VM enrichment (placement/networks/power) | ✅ `compute.vm` 0.3.0 |
 | P2 | Profile schema | ✅ `dcm-group` `policy_profile` block |
 | P3 | Provider capacity/inventory advertisement | ✅ provider-contract §8.1a `resource_advertisement` |
 | P4 | Fault domains / SharedFaultDomain | ✅ ADR-010 |

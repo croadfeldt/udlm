@@ -49,7 +49,7 @@ def _snake(seg):
 
 
 def tosca_type_name(resource_type):
-    # Compute.VM → udlm.compute.VirtualMachine
+    # Compute.VM → udlm.compute.VM
     parts = resource_type.split(".")
     return "udlm." + parts[0].lower() + ("." + ".".join(parts[1:]) if len(parts) > 1 else "")
 

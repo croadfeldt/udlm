@@ -38,7 +38,7 @@ Everything else (assemble, place, enrich, reserve, commit, converge) is request-
 - The request is idempotent — repeating it does not create duplicate VMs.
 
 ## Data · Policy · Provider
-- **Data:** the portable `Compute.VirtualMachine`, its four states, and the audit record binding actor ·
+- **Data:** the portable `Compute.VM`, its four states, and the audit record binding actor ·
   intent · outcome to the implementation event.
 - **Policy:** the standard profile's resolved policy set, evaluated as a single validation before allocation.
 - **Provider:** the one eligible service provider allocates the VM and reports its native id back.
