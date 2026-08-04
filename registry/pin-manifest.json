@@ -234,7 +234,7 @@
  },
  "type:Automation": {
   "current": "1.1.0",
-  "path": "registry/classes/automation.yaml",
+  "path": "registry/classes/process/automation.yaml",
   "versions": {
    "1.1.0": "sha256:7f002f5f04f12e997ea555ac373e4123dfae685715403e68dc8b1a21bb1546ba"
   }
@@ -248,21 +248,21 @@
  },
  "type:Automation.OSPatch": {
   "current": "1.2.0",
-  "path": "registry/classes/automation.ospatch.yaml",
+  "path": "registry/classes/process/automation/ospatch.yaml",
   "versions": {
    "1.2.0": "sha256:bb08e74073c4d9267ea0d6af58fade1aef72fe684e94577894f0794b1a92a0a6"
   }
  },
  "type:Automation.OSPatch.EngineBlue": {
   "current": "1.1.0",
-  "path": "registry/classes/automation.ospatch.engine-blue.yaml",
+  "path": "registry/classes/process/automation/ospatch/engine-blue.yaml",
   "versions": {
    "1.1.0": "sha256:e5958c4feec16d24ad81c3b47800a0093870f65f5ba8bf14c95297cb2ad39eea"
   }
  },
  "type:Automation.OSPatch.EngineGreen": {
   "current": "1.1.0",
-  "path": "registry/classes/automation.ospatch.engine-green.yaml",
+  "path": "registry/classes/process/automation/ospatch/engine-green.yaml",
   "versions": {
    "1.1.0": "sha256:bbf1be76c579b32f2643941ba634760d59a3156653396cce9490e35df096ebff"
   }
@@ -276,7 +276,7 @@
  },
  "type:Compute": {
   "current": "1.2.0",
-  "path": "registry/classes/compute.yaml",
+  "path": "registry/classes/resource/compute.yaml",
   "versions": {
    "1.0.0": "sha256:e08b92ed9111a2db31dd98e25628e0fa843a1e8190fb524fe3e2efc07c79c63a",
    "1.1.0": "sha256:39b1f2f6e694a7f5bed411fd2015f00d5ec317409222ae531b1085c42b7c7519",
@@ -307,7 +307,7 @@
  },
  "type:Compute.VM": {
   "current": "1.2.0",
-  "path": "registry/classes/compute.vm.yaml",
+  "path": "registry/classes/resource/compute/vm.yaml",
   "versions": {
    "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7",
    "1.1.0": "sha256:2788d939cb89269010f3483d0a3f7e58706e40cc90e2863a21b79412b6bf21fe",
@@ -424,7 +424,7 @@
  },
  "type:Job": {
   "current": "1.0.0",
-  "path": "registry/classes/job.yaml",
+  "path": "registry/classes/process/job.yaml",
   "versions": {
    "1.0.0": "sha256:df3916a76072426854257089815099bdf764d883d3c5838ff268b6ccbf88b804"
   }
