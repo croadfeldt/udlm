@@ -1,27 +1,22 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 48,
+    "types": 47,
     "by_family": {
       "Access": 4,
       "Knowledge": 5,
-      "Process": 1,
       "Resource": 38
     }
   },
   "discrimination": {
-    "mutations_attempted": 3706,
-    "mutations_rejected": 3706,
+    "mutations_attempted": 3544,
+    "mutations_rejected": 3544,
     "density": 1.0,
     "findings": 0,
     "per_type": {
       "Access.IdentityEscrow": {
         "attempted": 120,
         "rejected": 120
-      },
-      "Automation.Job": {
-        "attempted": 162,
-        "rejected": 162
       },
       "Capability": {
         "attempted": 38,
@@ -210,13 +205,12 @@
     }
   },
   "strictness": {
-    "strict_specs": 48,
-    "total": 48
+    "strict_specs": 47,
+    "total": 47
   },
   "outputs": {
     "per_type": {
       "Access.IdentityEscrow": 4,
-      "Automation.Job": 0,
       "Capability": 1,
       "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
@@ -265,7 +259,6 @@
       "Vulnerability": 0
     },
     "zero_output_types": [
-      "Automation.Job",
       "Hardware.GraphicsProcessor",
       "Hardware.Processor",
       "SoftwareImage",
@@ -300,13 +293,13 @@
     ]
   },
   "context": {
-    "with_context": 48,
-    "total": 48,
+    "with_context": 47,
+    "total": 47,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 43,
-    "total": 48,
+    "with_relationships": 42,
+    "total": 47,
     "missing": [
       "Facility.PowerFeed",
       "Observability.LogShipper",
@@ -319,7 +312,6 @@
     "files_scanned": 149,
     "covered": [
       "Access.IdentityEscrow",
-      "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
       "Compute.Cluster",
@@ -397,7 +389,6 @@
     },
     "named_by_none": [
       "Access.IdentityEscrow",
-      "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
       "Facility.Location",
@@ -441,7 +432,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 48
+    "consumed_by_at_least_one": 47
   },
   "expressibility_coverage": {
     "value": null,

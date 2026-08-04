@@ -29,51 +29,137 @@
     "additionalProperties": false,
     "properties": {
       "definition_ref": {
-        "description": "Common-elements Reference (handle string or {uuid, handle} object), following the layout_ref/location_ref precedent.",
+        "description": "The versioned definition artifact this job executes — the playbook, workflow, pipeline, or script the engine runs. Always a typed reference, never an inline body or a provider-native id: either a resource Reference (common-elements §2.5) to the entity carrying the definition, or a data_reference (ADR-012) pinning an immutable automation_definition reference-data layer version — the pin that lets each promotion stage run exactly the definition version it verified, and lets rehydration replay the intent together with its payload. Optional: a job discovered on a brownfield engine may not yet cite its definition.",
         "oneOf": [
           {
-            "type": "string",
-            "description": "Short form — the handle of the definition (an Automation.* member)."
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
           },
           {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "uuid": {
-                "type": "string"
+            "allOf": [
+              {
+                "$ref": "../data-reference.schema.json#/$defs/data_reference"
               },
-              "handle": {
-                "type": "string"
+              {
+                "required": [
+                  "reference_data_type"
+                ],
+                "properties": {
+                  "reference_data_type": {
+                    "const": "automation_definition"
+                  }
+                }
               }
-            },
-            "description": "Long form — uuid and/or handle of the definition."
+            ]
           }
         ]
       },
       "parameters": {
         "type": "object",
-        "description": "The run's inputs, fixed at submission — validated by the implementation against the bound definition's inputs_schema."
+        "description": "Parameters the definition is invoked with — the org-authored automation intent (a patch policy, a reboot policy, maintenance windows) that must survive an engine migration byte-identical. Keys are defined by the referenced definition; the substrate carries them opaquely and the provider validates them against the pinned definition at naturalization (T9 — the substrate never translates them into a provider-native spec)."
       },
       "targets": {
         "type": "array",
         "items": {
-          "type": "string"
+          "allOf": [
+            {
+              "$ref": "../common-elements.schema.json#/$defs/Reference"
+            },
+            {
+              "required": [
+                "target_handle"
+              ]
+            }
+          ]
         },
-        "description": "What this run acts on, when the definition does not pin its own targets — selector strings resolved by the implementation."
+        "description": "The resources this job operates on — typed resource References (common-elements §2.5), never inventory strings. Each entry is authored by target_handle (ADR-025 §2 — a uuid is never hand-authored; DCM resolves and pins target_uuid at reserve). Part of the portable automation intent: the target set is engine-neutral and unchanged by an engine migration. Distinct from the informational affected_entities edge: targets is authored intent (what the job is FOR); affected_entities records what a run actually touched."
+      },
+      "max_execution_time": {
+        "type": "string",
+        "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$",
+        "description": "ISO 8601 duration (e.g. PT30M). MANDATORY per ENT-004; enforced by the substrate Lifecycle Constraint Enforcer."
+      },
+      "on_max_exceeded": {
+        "type": "string",
+        "enum": [
+          "terminate",
+          "notify",
+          "escalate"
+        ],
+        "x-extensible-enum": true,
+        "description": "Action when max_execution_time is exceeded. Default is profile-governed (ENT-004)."
+      },
+      "trigger": {
+        "type": "string",
+        "enum": [
+          "manual",
+          "event",
+          "schedule"
+        ],
+        "x-extensible-enum": true,
+        "description": "What initiates the job (e.g. a NUT on-battery event, a cron schedule, an operator)."
+      },
+      "schedule": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expression"
+        ],
+        "description": "Scheduled-execution intent — meaningful only when trigger is 'schedule'. Carries the data the trigger enum value alone cannot: when the job runs, what happens when a run would overlap a still-running predecessor, and what happens to a missed window.",
+        "properties": {
+          "expression": {
+            "type": "string",
+            "description": "Schedule expression, cron syntax (adopted vocabulary: Kubernetes CronJob .spec.schedule). The provider naturalizes it to its native scheduler."
+          },
+          "overlap_policy": {
+            "type": "string",
+            "enum": [
+              "allow",
+              "forbid",
+              "replace"
+            ],
+            "x-extensible-enum": true,
+            "description": "What happens when a scheduled run fires while the previous run is still executing (CronJob concurrencyPolicy cross-walk): allow concurrent runs, forbid the new run, or replace (supersede) the running one."
+          },
+          "missed_run_policy": {
+            "type": "string",
+            "enum": [
+              "skip",
+              "catch_up"
+            ],
+            "x-extensible-enum": true,
+            "description": "What happens to a run whose window was missed (engine down, job suspended): skip it, or catch_up — run once as soon as possible (CronJob startingDeadlineSeconds semantics)."
+          }
+        }
       }
     },
     "required": [
-      "definition_ref"
+      "definition_ref",
+      "max_execution_time"
     ],
     "examples": [
       {
-        "definition_ref": "automation-ospatch",
+        "max_execution_time": "PT1H",
+        "on_max_exceeded": "terminate",
+        "trigger": "schedule",
+        "definition_ref": {
+          "resource_type": "Automation.Definition",
+          "target_handle": "nightly-backup-playbook"
+        },
         "parameters": {
-          "window": "sun 02:00-04:00 UTC"
+          "retention_days": 30,
+          "compression": "zstd"
         },
         "targets": [
-          "role:web"
-        ]
+          {
+            "resource_type": "Data.Database",
+            "target_handle": "orders-db"
+          }
+        ],
+        "schedule": {
+          "expression": "0 2 * * *",
+          "overlap_policy": "forbid",
+          "missed_run_policy": "catch_up"
+        }
       }
     ]
   },
@@ -102,6 +188,55 @@
       "name": "executes_definition",
       "cardinality": "1..1",
       "description": "Consumer-declared — the Job declares what it executes: exactly one definition, today an Automation.* class member (the target widens if a second family-Process category of definitions ever exists). The domain facet (family/category filters) derives from this edge."
+    },
+    {
+      "edge_type": "depends_on",
+      "target": "Compute.BareMetalHost",
+      "cardinality": "0..n",
+      "name": "executor_host",
+      "description": "Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological lifecycle operation the executor cannot stop until the job completes ('orchestrator stops last', derived, not special-cased)."
+    },
+    {
+      "edge_type": "depends_on",
+      "target": "Network.Switch",
+      "cardinality": "0..n",
+      "name": "fabric",
+      "description": "Fabric the job traverses to reach its targets — connectivity outlives whatever the job is operating on."
+    },
+    {
+      "edge_type": "depends_on",
+      "target": "Network.AddressService",
+      "cardinality": "0..n",
+      "name": "resolver",
+      "description": "Name/address resolution the job uses to reach targets (typically soft — inventories can pin IPs)."
+    },
+    {
+      "edge_type": "references",
+      "target": "Compute.VM",
+      "cardinality": "0..n",
+      "description": "affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational; §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid). NOTE: the declared target is representative — affected entities may be of ANY resource type; this edge is informational and never constrains what a job may touch (the former bare 'Compute' category target was not a registered type)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Kubernetes",
+      "version": "batch/v1",
+      "standard_name": "Job",
+      "role": "run-to-completion and scheduled-job vocabulary (activeDeadlineSeconds ≈ max_execution_time, terminal states; CronJob schedule/concurrencyPolicy/startingDeadlineSeconds ≈ schedule.expression/overlap_policy/missed_run_policy)",
+      "source": "https://kubernetes.io/docs/concepts/workloads/controllers/job/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "Ansible",
+      "version": "2.x",
+      "standard_name": "Playbook",
+      "role": "playbook process_type vocabulary",
+      "source": "https://docs.ansible.com/ansible/latest/playbook_guide/",
+      "license": "GPL-3.0",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
     }
   ],
   "context": {
