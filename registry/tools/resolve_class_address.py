@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Address resolution for the scoped-Class hierarchy (ADR-038 / realization-plan P0).
+"""Address resolution for the scoped-Class hierarchy (ADR-038 / class-address grammar P0).
 
 An address names an element as seen from a Class, in either of the two ADR-038 notations — they are
 the same coordinate and resolve identically:
