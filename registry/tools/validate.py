@@ -18,7 +18,7 @@ import sys
 import pathlib
 
 try:
-    from jsonschema import Draft202012Validator
+    from jsonschema import Draft202012Validator, RefResolver
 except ImportError:
     sys.exit("requires: pip install jsonschema")
 try:
@@ -41,7 +41,11 @@ DECISION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "decision-record.sc
 REGENERATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "regeneration-manifest.schema.json").read_text()))
 FINDING_ROUTING_VALIDATOR = Draft202012Validator(json.loads((ROOT / "finding-routing-record.schema.json").read_text()))
 ACCREDITATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "accreditation.schema.json").read_text()))
-CLASS_VALIDATOR = Draft202012Validator(json.loads((ROOT / "class.schema.json").read_text()))
+_CLASS_SCHEMA = json.loads((ROOT / "class.schema.json").read_text())
+_CLASS_RESOLVER = RefResolver(base_uri=(ROOT / "class.schema.json").as_uri(), referrer=_CLASS_SCHEMA,
+                              store={(ROOT / "resource-type-spec.schema.json").as_uri():
+                                     json.loads((ROOT / "resource-type-spec.schema.json").read_text())})
+CLASS_VALIDATOR = Draft202012Validator(_CLASS_SCHEMA, resolver=_CLASS_RESOLVER)
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
 

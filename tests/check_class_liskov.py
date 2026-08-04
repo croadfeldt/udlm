@@ -90,14 +90,16 @@ def ancestor_axis(cls, by_name, axis, as_map=None):
     return merged
 
 
+def card_bounds(card):
+    """(min, max) from '0..n' / '1..1' / '0..*'; missing cardinality = fully open (0, inf)."""
+    if not card or ".." not in str(card):
+        return (0, float("inf"))
+    lo, hi = str(card).split("..", 1)
+    return (int(lo), float("inf") if hi in ("n", "*") else int(hi))
+
+
 def rel_identity(rel):
     return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
-
-
-def visible_elements(cls, by_name):
-    names = set(ancestor_elements(cls, by_name))
-    names.update(el["element"] for el in cls.get("elements") or [])
-    return names
 
 
 def check(by_name):
@@ -115,17 +117,31 @@ def check(by_name):
         for oname, oschema in (cls.get("outputs") or {}).items():
             if oname in anc_out:
                 fails += refine_errors(anc_out[oname] or {}, oschema or {}, f"{name}.outputs.{oname}")
-        # relationships (#323): a child ADDS; redeclaring an ancestor's identity contradicts
+        # relationships (#323 + maintainer ruling 2026-08-03 "tighten at your scope"): a child
+        # ADDS edges, or REDECLARES an ancestor's to TIGHTEN it — never loosen/retarget/re-type.
         anc_rel = ancestor_axis(cls, by_name, "relationships", as_map=rel_identity)
         for rel in cls.get("relationships") or []:
-            if rel_identity(rel) in anc_rel:
-                fails.append(f"{name}: relationship {rel_identity(rel)!r} redeclares an ancestor's — "
-                             f"a child adds relationships, never redeclares (narrowing a published contract is breaking, ADR-045)")
-        # immutable (#323): each path's head segment must resolve to a visible element
-        visible = visible_elements(cls, by_name)
+            parent = anc_rel.get(rel_identity(rel))
+            if parent:
+                where = f"{name}.relationships[{rel_identity(rel)!r}]"
+                for fld in ("edge_type", "target", "target_field"):
+                    if parent.get(fld) != rel.get(fld):
+                        fails.append(f"{where}: {fld} changed {parent.get(fld)!r} → {rel.get(fld)!r} (a redeclare only tightens; it never retargets)")
+                pmin, pmax = card_bounds(parent.get("cardinality"))
+                cmin, cmax = card_bounds(rel.get("cardinality"))
+                if cmin < pmin:
+                    fails.append(f"{where}: cardinality min {cmin} below parent's {pmin} (loosening)")
+                if cmax > pmax:
+                    fails.append(f"{where}: cardinality max {cmax} above parent's {pmax} (loosening)")
+                if parent.get("enforcement") == "structural" and rel.get("enforcement") == "advisory":
+                    fails.append(f"{where}: enforcement structural → advisory (loosening)")
+        # immutable (maintainer ruling 2026-08-03): OWN-TIER only — the path's head must name an
+        # element DECLARED AT THIS class; freezing inherited surface reaches above your scope.
+        own = {el["element"] for el in cls.get("elements") or []}
         for path in cls.get("immutable") or []:
-            if path.split(".")[0] not in visible:
-                fails.append(f"{name}: immutable path {path!r} does not resolve to an element visible in the chain")
+            if path.split(".")[0] not in own:
+                fails.append(f"{name}: immutable path {path!r} does not name an element declared at this class "
+                             f"(own-tier only — tighten at your scope, never above)")
         # context (#323): type tier only (schema also enforces; kept here so the gate is self-sufficient)
         if cls.get("context") and cls.get("class") != "type":
             fails.append(f"{name}: `context` on a {cls.get('class')}-tier Class — context is type-tier prose only")

@@ -180,11 +180,7 @@
           "version": "v1",
           "standard_name": "VirtualMachine",
           "role": "EXAMPLE — the provider-native construct this class naturalizes to; adopted by reference, never re-expressed.",
-          "source": {
-            "name": "KubeVirt API reference",
-            "version": "v1",
-            "url": "https://kubevirt.io/api-reference/"
-          },
+          "source": "KubeVirt API reference v1 — https://kubevirt.io/api-reference/",
           "license": "Apache-2.0",
           "license_compatibility": "compatible-vendor"
         }
@@ -269,59 +265,9 @@
     },
     "adopts": {
       "type": "array",
-      "description": "External standards this Class adopts by reference (T5) — SAME shape as the flat spec's adopted_standard_ref, so compilation is pass-through (union down the chain, deduplicated by standard+standard_name). Carried as identity + version-pinned conformance reference, never re-expressed (adopted-standards.md). #323: compile semantics defined — a Base Class adoption (e.g. Redfish on Compute) is inherited by every descendant's compiled spec.",
+      "description": "External standards this Class adopts by reference (T5) — items ARE the flat spec's `adopted_standard_ref` ($ref — one shape, single source). Compile: pass-through, union down the chain, deduplicated by standard+standard_name. A Base Class adoption is inherited by every descendant's compiled spec (#323).",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "standard",
-          "version",
-          "source",
-          "license",
-          "license_compatibility"
-        ],
-        "properties": {
-          "standard": {
-            "type": "string",
-            "description": "The adopted standard's identifier (e.g. `redfish`, `focus`)."
-          },
-          "version": {
-            "type": "string",
-            "description": "The pinned standard version the Class conforms to."
-          },
-          "standard_name": {
-            "type": "string",
-            "description": "The specific construct adopted (e.g. `ComputerSystem`)."
-          },
-          "role": {
-            "type": "string",
-            "description": "What this adoption settles for the Class — one line, gist-bearing."
-          },
-          "identity_join": {
-            "type": "string",
-            "description": "The join key binding a record to the standard's identity space (purl, CVE id, OCI digest, …)."
-          },
-          "source": {
-            "type": "object",
-            "description": "Provenance of the adopted text: name/version/URL (SPEC-DESIGN §22)."
-          },
-          "license": {
-            "type": "string",
-            "description": "The standard's license (SPEC-DESIGN §23)."
-          },
-          "license_compatibility": {
-            "enum": [
-              "compatible-vendor",
-              "compatible-reference",
-              "reference-only"
-            ],
-            "description": "Apache-2.0 compatibility verdict — copyleft is reference-by-name only."
-          },
-          "disposition": {
-            "type": "string",
-            "description": "adopt | absorb rationale pointer where the call was non-obvious."
-          }
-        }
+        "$ref": "resource-type-spec.schema.json#/$defs/adopted_standard_ref"
       }
     },
     "metadata": {
@@ -378,54 +324,9 @@
     },
     "relationships": {
       "type": "array",
-      "description": "Relationship templates this Class declares — SAME item shape as the flat spec's `relationships[]`, and DECLARED CONSUMER-SIDE (the maintainer direction ruling: a class declares what IT consumes/depends on/binds to; a class never declares who may consume it). Compile: union down the chain; identity = `name` when present, else (edge_type, target, target_field). Liskov: a child ADDS relationships; redeclaring an ancestor's identity is a contradiction (no narrowing — ADR-045: narrowing a published contract is breaking).",
+      "description": "Relationship templates this Class declares — items ARE the flat spec's relationships items ($ref — one shape, single source), and DECLARED CONSUMER-SIDE (a class declares what IT consumes; never who may consume it). Compile: union down the chain, identity = `name` else (edge_type, target, target_field), NEAREST class wins on a redeclare. Liskov (maintainer ruling 2026-08-03 — tighten at your scope): a child MAY redeclare an ancestor's edge to TIGHTEN it — cardinality min may rise, max may fall, enforcement may tighten advisory→structural — never loosen, never retarget, never change edge_type.",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "edge_type",
-          "target"
-        ],
-        "properties": {
-          "edge_type": {
-            "enum": [
-              "depends_on",
-              "contained_by",
-              "binds_to",
-              "references"
-            ],
-            "description": "The closed universal edge tier (data-model-core §4)."
-          },
-          "target": {
-            "type": "string",
-            "description": "Target resource type / Class (dotted name)."
-          },
-          "name": {
-            "type": "string",
-            "description": "Declared relation name (the domain tier; adopted names welcome)."
-          },
-          "target_field": {
-            "type": "string",
-            "description": "For binds_to: the target output consumed (must name a declared output of the target — TFLD discipline)."
-          },
-          "cardinality": {
-            "type": "string",
-            "pattern": "^[0-9]+\\.\\.([0-9]+|n|\\*)$",
-            "description": "Allowed multiplicity (how many are allowed — orthogonal to strength)."
-          },
-          "enforcement": {
-            "type": "string",
-            "description": "structural | advisory — whether the edge is validated as a requirement."
-          },
-          "description": {
-            "type": "string",
-            "description": "What the edge settles — one line."
-          },
-          "adopted_from": {
-            "type": "string",
-            "description": "The standard this relation name is adopted from (RFC 8345, TOSCA, …)."
-          }
-        }
+        "$ref": "resource-type-spec.schema.json#/properties/relationships/items"
       }
     },
     "immutable": {
@@ -433,42 +334,11 @@
       "items": {
         "type": "string"
       },
-      "description": "Dot-paths into the compiled `spec` that are createOnly (set at Intent, never changed post-realization). Compile: union down the chain, sorted. A tier MAY mark an inherited element immutable (a provider genuinely unable to change a portable field post-create is declaring reality — a restriction, permitted as refinement, #323). The Liskov gate checks each path's head segment resolves to an element visible in the chain."
+      "description": "Dot-paths into the compiled `spec` that are createOnly. Compile: union down the chain, sorted. OWN-TIER ONLY (maintainer ruling 2026-08-03 — tighten at your scope, never above): each path's head segment MUST name an element DECLARED AT THIS class; freezing inherited surface is reaching above your scope and is a Liskov violation."
     },
     "context": {
-      "type": "object",
-      "description": "The human-orientation block (purpose / plain_description / use_when / not_for / works_with) — SAME shape as the flat spec's `context`, and permitted ONLY on a `type`-tier Class (#323: context is prose with one audience-facing home; TYPE-CATALOG renders from it). Compile: copied verbatim onto the generated flat spec. Base and provider tiers carry no context (schema-enforced below).",
-      "required": [
-        "purpose",
-        "plain_description",
-        "use_when"
-      ],
-      "properties": {
-        "purpose": {
-          "type": "string"
-        },
-        "plain_description": {
-          "type": "string"
-        },
-        "use_when": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "not_for": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "works_with": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+      "$ref": "resource-type-spec.schema.json#/properties/context",
+      "description": "The human-orientation block — IS the flat spec's `context` ($ref — one shape). Permitted ONLY on a `type`-tier Class (#323: prose has one audience-facing home; TYPE-CATALOG renders from it); compile copies it verbatim. Base and provider tiers carry no context (enforced by the allOf conditional + the Liskov gate)."
     }
   },
   "allOf": [

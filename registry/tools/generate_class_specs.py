@@ -55,11 +55,11 @@ def rel_identity(rel):
 
 def compile_spec(cls, by_name):
     """Compile the FULL definition surface (#323): elements → spec, plus outputs (merged,
-    nearer overrides), relationships (union by identity — consumer-declared), immutable
+    nearer overrides), relationships (union by identity, nearest-class-wins on a legal tightening redeclare — consumer-declared), immutable
     (union, sorted), adopts (union, deduplicated by standard+standard_name, pass-through —
     the class item shape IS adopted_standard_ref), and the Type Class's own context verbatim."""
     props, required, sources = {}, [], []
-    outputs, relationships, rel_seen = {}, [], set()
+    outputs, rel_seen = {}, {}
     immutable, adopts, adopts_seen = set(), [], set()
     for c in chain(cls, by_name):
         sources.append({"class": c["resource_type"], "version": c["version"], "uuid": c["uuid"]})
@@ -80,10 +80,8 @@ def compile_spec(cls, by_name):
         for name, out in (c.get("outputs") or {}).items():
             outputs[name] = dict(out)                # nearer Class overrides; Liskov gate enforces refine
         for rel in c.get("relationships") or []:
-            ident = rel_identity(rel)
-            if ident not in rel_seen:                # redeclare is a Liskov violation; first (Base-most) wins here
-                rel_seen.add(ident)
-                relationships.append(dict(rel))
+            ident = rel_identity(rel)                # nearest class wins: a legal redeclare TIGHTENS (gate-enforced)
+            rel_seen[ident] = dict(rel)
         immutable.update(c.get("immutable") or [])
         for a in c.get("adopts") or []:
             key = (a.get("standard"), a.get("standard_name"))
@@ -106,8 +104,8 @@ def compile_spec(cls, by_name):
     }
     if immutable:
         spec["immutable"] = sorted(immutable)
-    if relationships:
-        spec["relationships"] = relationships
+    if rel_seen:
+        spec["relationships"] = list(rel_seen.values())
     if adopts:
         spec["adopts"] = adopts
     if cls.get("context"):                           # type tier only (schema-enforced); copied verbatim
