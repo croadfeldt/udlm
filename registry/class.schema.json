@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/class.schema.json",
   "title": "UDLM Class artifact — the scoped-Class authoring layer",
-  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped resource-type Class hierarchy (ADR-038). A Class composes SharedDataElements (`$defs.shared_data_element`) at one scope tier — Base (`Category`), Type (`Category.Type`), or Provider (`Category.Type.Provider`) — each `extends` its parent under the Liskov invariant (add or refine, never contradict). Classes become the authoring layer; a generator compiles each Type Class down to the flat resource-type-spec shape consumers read today (`--check`-gated, no downstream break — realization-plan P0). An element's scope position IS its portability (ADR-038 §3), so the realized `portability` block derives from where an instance's populated elements sit rather than being asserted. Part of the UDLM spec, versioned on the SPEC axis. Status: ADR-038 is Proposed pending the engineering pass (#217); this shape inherits that status and executes the decided model (realization-plan).",
+  "description": "Meta-schema for a Class artifact (registry/classes/*.yaml), the authoring layer of the scoped resource-type Class hierarchy (ADR-038). A Class carries the FULL definition surface — elements, outputs, relationships (consumer-declared), immutable, adopts, and (type tier) context — closing #323 so the compiled flat spec is complete, not a subset. A Class composes SharedDataElements (`$defs.shared_data_element`) at one scope tier — Base (`Category`), Type (`Category.Type`), or Provider (`Category.Type.Provider`) — each `extends` its parent under the Liskov invariant (add or refine, never contradict). Classes become the authoring layer; a generator compiles each Type Class down to the flat resource-type-spec shape consumers read today (`--check`-gated, no downstream break — realization-plan P0). An element's scope position IS its portability (ADR-038 §3), so the realized `portability` block derives from where an instance's populated elements sit rather than being asserted. Part of the UDLM spec, versioned on the SPEC axis. Status: ADR-038 is Proposed pending the engineering pass (#217); this shape inherits that status and executes the decided model (realization-plan).",
   "examples": [
     {
       "$id": "https://udlm.dev/registry/udlm/0.1/class/Compute.VM.OCPVirt/1.0.0",
@@ -155,7 +155,36 @@
         "flows": [
           "docs/flows/scoped-class-lifecycle.md"
         ]
-      }
+      },
+      "outputs": {
+        "vmi_phase": {
+          "type": "string",
+          "description": "EXAMPLE — provider-scope output: the KubeVirt VirtualMachineInstance phase as last reported (Running, Succeeded, Failed)."
+        }
+      },
+      "relationships": [
+        {
+          "edge_type": "binds_to",
+          "target": "Platform.StorageClass",
+          "target_field": "name",
+          "cardinality": "0..1",
+          "description": "EXAMPLE — consumer-declared: this provider class consumes the advertised storage class it schedules volumes onto (declared HERE, on the consumer — the target never lists its consumers)."
+        }
+      ],
+      "immutable": [
+        "namespace"
+      ],
+      "adopts": [
+        {
+          "standard": "kubevirt",
+          "version": "v1",
+          "standard_name": "VirtualMachine",
+          "role": "EXAMPLE — the provider-native construct this class naturalizes to; adopted by reference, never re-expressed.",
+          "source": "KubeVirt API reference v1 — https://kubevirt.io/api-reference/",
+          "license": "Apache-2.0",
+          "license_compatibility": "compatible-vendor"
+        }
+      ]
     }
   ],
   "type": "object",
@@ -236,28 +265,9 @@
     },
     "adopts": {
       "type": "array",
-      "description": "External standards this Class adopts by reference (T5) — carried as identity + version-pinned conformance reference, never re-expressed (adopted-standards.md). E.g. a Base Class adopting a schema.org or Redfish shape.",
+      "description": "External standards this Class adopts by reference (T5) — items ARE the flat spec's `adopted_standard_ref` ($ref — one shape, single source). Compile: pass-through, union down the chain, deduplicated by standard+standard_name. A Base Class adoption is inherited by every descendant's compiled spec (#323).",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "standard",
-          "version"
-        ],
-        "properties": {
-          "standard": {
-            "type": "string",
-            "description": "The adopted standard's identifier (e.g. `redfish`, `focus`)."
-          },
-          "version": {
-            "type": "string",
-            "description": "The pinned standard version the Class conforms to."
-          },
-          "binding": {
-            "type": "string",
-            "description": "How this Class binds to it (the join key / conformance reference)."
-          }
-        }
+        "$ref": "resource-type-spec.schema.json#/$defs/adopted_standard_ref"
       }
     },
     "metadata": {
@@ -304,6 +314,31 @@
           "description": "docs/flows/ doc(s) that place this Class in a lifecycle."
         }
       }
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by output name — a JSON-Schema fragment per output, same shape as the flat spec's `outputs`. Scoped like elements: any tier may declare (a Provider Class declaring provider-specific outputs is exactly the intended use, #323); the declaring Class IS the scope. Compile: merged down the chain, nearer Class overrides by name; a redeclare MUST refine (the Liskov gate applies element refinement rules to outputs).",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "description": "Relationship templates this Class declares — items ARE the flat spec's relationships items ($ref — one shape, single source), and DECLARED CONSUMER-SIDE (a class declares what IT consumes; never who may consume it). Compile: union down the chain, identity = `name` else (edge_type, target, target_field), NEAREST class wins on a redeclare. Liskov (maintainer ruling 2026-08-03 — tighten at your scope): a child MAY redeclare an ancestor's edge to TIGHTEN it — cardinality min may rise, max may fall, enforcement may tighten advisory→structural — never loosen, never retarget, never change edge_type.",
+      "items": {
+        "$ref": "resource-type-spec.schema.json#/properties/relationships/items"
+      }
+    },
+    "immutable": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Dot-paths into the compiled `spec` that are createOnly. Compile: union down the chain, sorted. OWN-TIER ONLY (maintainer ruling 2026-08-03 — tighten at your scope, never above): each path's head segment MUST name an element DECLARED AT THIS class; freezing inherited surface is reaching above your scope and is a Liskov violation."
+    },
+    "context": {
+      "$ref": "resource-type-spec.schema.json#/properties/context",
+      "description": "The human-orientation block — IS the flat spec's `context` ($ref — one shape). Permitted ONLY on a `type`-tier Class (#323: prose has one audience-facing home; TYPE-CATALOG renders from it); compile copies it verbatim. Base and provider tiers carry no context (enforced by the allOf conditional + the Liskov gate)."
     }
   },
   "allOf": [
@@ -340,6 +375,22 @@
           "parent"
         ],
         "description": "A Type/Provider Class MUST name its parent."
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "class": {
+            "const": "type"
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "context"
+          ]
+        }
       }
     }
   ],

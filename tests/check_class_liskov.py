@@ -71,6 +71,37 @@ def refine_errors(parent, child, where):
     return errs
 
 
+def ancestor_axis(cls, by_name, axis, as_map=None):
+    """Merged ancestor view of a non-element axis. as_map: fn(item)->key for list axes."""
+    merged = {}
+    chain, seen = [], set()
+    p = cls.get("parent")
+    while p and p not in seen:
+        seen.add(p)
+        chain.append(p)
+        p = (by_name.get(p) or {}).get("parent")
+    for name in reversed(chain):
+        val = (by_name.get(name) or {}).get(axis)
+        if isinstance(val, dict):
+            merged.update(val)
+        elif isinstance(val, list) and as_map:
+            for item in val:
+                merged[as_map(item)] = item
+    return merged
+
+
+def card_bounds(card):
+    """(min, max) from '0..n' / '1..1' / '0..*'; missing cardinality = fully open (0, inf)."""
+    if not card or ".." not in str(card):
+        return (0, float("inf"))
+    lo, hi = str(card).split("..", 1)
+    return (int(lo), float("inf") if hi in ("n", "*") else int(hi))
+
+
+def rel_identity(rel):
+    return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
+
+
 def check(by_name):
     fails, n = [], 0
     for name, cls in sorted(by_name.items()):
@@ -81,6 +112,39 @@ def check(by_name):
                 fails.append(f"{name}: element {el['element']!r} scope={el.get('scope')!r} != class resource_type {name!r}")
             if el["element"] in anc:  # redeclare → must refine
                 fails += refine_errors(anc[el["element"]], el.get("schema") or {}, f"{name}.{el['element']}")
+        # outputs (#323): a redeclared output must refine the ancestor's shape
+        anc_out = ancestor_axis(cls, by_name, "outputs")
+        for oname, oschema in (cls.get("outputs") or {}).items():
+            if oname in anc_out:
+                fails += refine_errors(anc_out[oname] or {}, oschema or {}, f"{name}.outputs.{oname}")
+        # relationships (#323 + maintainer ruling 2026-08-03 "tighten at your scope"): a child
+        # ADDS edges, or REDECLARES an ancestor's to TIGHTEN it — never loosen/retarget/re-type.
+        anc_rel = ancestor_axis(cls, by_name, "relationships", as_map=rel_identity)
+        for rel in cls.get("relationships") or []:
+            parent = anc_rel.get(rel_identity(rel))
+            if parent:
+                where = f"{name}.relationships[{rel_identity(rel)!r}]"
+                for fld in ("edge_type", "target", "target_field"):
+                    if parent.get(fld) != rel.get(fld):
+                        fails.append(f"{where}: {fld} changed {parent.get(fld)!r} → {rel.get(fld)!r} (a redeclare only tightens; it never retargets)")
+                pmin, pmax = card_bounds(parent.get("cardinality"))
+                cmin, cmax = card_bounds(rel.get("cardinality"))
+                if cmin < pmin:
+                    fails.append(f"{where}: cardinality min {cmin} below parent's {pmin} (loosening)")
+                if cmax > pmax:
+                    fails.append(f"{where}: cardinality max {cmax} above parent's {pmax} (loosening)")
+                if parent.get("enforcement") == "structural" and rel.get("enforcement") == "advisory":
+                    fails.append(f"{where}: enforcement structural → advisory (loosening)")
+        # immutable (maintainer ruling 2026-08-03): OWN-TIER only — the path's head must name an
+        # element DECLARED AT THIS class; freezing inherited surface reaches above your scope.
+        own = {el["element"] for el in cls.get("elements") or []}
+        for path in cls.get("immutable") or []:
+            if path.split(".")[0] not in own:
+                fails.append(f"{name}: immutable path {path!r} does not name an element declared at this class "
+                             f"(own-tier only — tighten at your scope, never above)")
+        # context (#323): type tier only (schema also enforces; kept here so the gate is self-sufficient)
+        if cls.get("context") and cls.get("class") != "type":
+            fails.append(f"{name}: `context` on a {cls.get('class')}-tier Class — context is type-tier prose only")
     return fails, n
 
 
