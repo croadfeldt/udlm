@@ -148,8 +148,7 @@ These classifications are evaluated by DCM, not by the registering provider, whe
 ### 2.4a Compensation Declaration (the one home)
 
 Each constituent also declares its compensation behavior. This is the **single normative home** for the
-declaration shape (previously duplicated in `service-dependencies.md` — now its §14 reference stub — and `operational-models.md` §6.1 —
-both now reference here); the runtime execution and failure handling live in `lifecycle/operational-models.md`
+declaration shape (`service-dependencies.md` §14 and `operational-models.md` §6.1 reference here); the runtime execution and failure handling live in `lifecycle/operational-models.md`
 §6, governed by Recovery Policy (CMP-005).
 
 ```yaml

@@ -158,7 +158,7 @@ Identity:
                                     # reboots (DIMM slot, drive bay "Bay 7", PCIe slot). Primary key.
   serial_number:  "S3F2NX0M..."      # globally unique hardware serial — survives a move to another parent
   wwn:           "0x5000c500..."    # storage-device World-Wide Name (drives); alt global key to serial
-  asset_tag:     "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag (renamed from assetTag in the snake_case reversal)
+  asset_tag:     "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag
   model:         "M393A4K40DB3-CWE" # type identity (part number) — equal across identical units
   role:          "system"           # OPTIONAL semantic usage — distinguishes same-model by PURPOSE
                                     # (drive: boot|data|ceph-osd|cache; memory: system|persistent)
@@ -235,7 +235,7 @@ standard owns it).
 ### 7a. `connects_to` — physical adjacency (the third traversal method)
 
 §7's `parent_device` (composition **down**, 1→N) and `lower_layer` (composition **up**, N→1) relate an
-interface to its foundational components *within* one device. **`connects_to`** (renamed from `connected_to` when relation names were adopted from standards, §9) is the cross-device
+interface to its foundational components *within* one device. **`connects_to`** (§9) is the cross-device
 edge: a physical interface's link to its **peer termination point** — host NIC ↔ switch port, switch ↔
 switch uplink. A self-referential `references` relationship (`Hardware.NetworkInterface →
 Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once from either end.

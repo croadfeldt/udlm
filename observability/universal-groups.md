@@ -25,20 +25,13 @@
 
 ## 1. Purpose
 
-DCM previously used eight distinct grouping constructs — Tenant, Resource Groups, Custom Resource Groups, Policy Groups, Policy Profiles, Layer Domain, Activation Scope, and Cross-Tenant Authorization. Each had its own structure, its own API, its own documentation, and its own membership model. This fragmentation created cognitive overhead for operators and prevented natural organizational structures (such as "everything related to Payments") from being expressed as a single construct.
+The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `DCMGroup` entity distinguished by `group_class` metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
 
-The **Universal Group Model** collapses all grouping into a single `DCMGroup` entity distinguished by `group_class` metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class.
-
-**What changes:**
-- All grouping constructs become `group_class` values on `DCMGroup`
-- Existing UUIDs, handles, and API references are preserved
-- Existing APIs become class-filtered views of the universal group store
-- Migration is additive — no breaking changes
-
-**What does NOT change:**
-- The structural invariants of each construct (one Tenant per resource, no constituent cross-tenant, etc.)
-- Policy enforcement behavior — governed by the active Profile, not per-group configuration
-- The hard-tenancy model — tenant_boundary groups retain all isolation guarantees
+**The model:**
+- Every grouping construct is a `group_class` value on `DCMGroup`; per-class APIs are class-filtered views of the one group store
+- Structural invariants are per-class (one Tenant per resource, no constituent cross-tenant, etc.)
+- Policy enforcement is governed by the active Profile, not per-group configuration
+- `tenant_boundary` groups carry the hard-tenancy isolation guarantees
 
 ---
 

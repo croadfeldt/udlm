@@ -327,16 +327,3 @@ A cross-tenant authorization is a DCMGroup with `group_class: cross_tenant_autho
 `authorized_resources[].permitted_operations`), lifecycle (creation §13.3, revocation/expiry §13.4 with the
 PT72H per-profile resolution deadline), and the `CTX-*` rules. Nothing here redefines it.
 
-### 10.1 Retired rules
-
-| Policy | Rule |
-|--------|------|
-| `GRP-016` | Retired — superseded by CTX-001/CTX-004 + universal-groups §13.3 (explicit creation only: granting-tenant admin, platform admin, or pre-authorization policy). |
-| `GRP-017` | Retired — superseded by universal-groups §13.2/CTX-003 (expiry lifecycle; expiry is treated identically to revocation). |
-| `GRP-018` | Retired — superseded by CTX-002 (revocation places dependents in PENDING_REVIEW; no automatic decommission). |
-| `GRP-019` | Retired — superseded by CTX-002 (automatic release/decommission requires explicit policy declaration; never the default). |
-
-
----
-
-*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*
