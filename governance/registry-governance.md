@@ -401,10 +401,9 @@ decide the *policy*. This section states what the registry **refuses**, in the f
 form the rest of the model uses — typed, actionable, non-leaking, auditable
 ([`contracts/error-model.md`](../contracts/error-model.md) §6a).
 
-**A caveat that belongs at the top, not in a footnote.** Class artifacts do not exist in the
-registry yet: there is no class-artifact schema, no class-compat classifier, and no estate-side
-pin resolver. Those are the P0 substrate items of the class implementation plan
-(`docs/design/scoped-class-hierarchy/implementation-plan.md`). `REG-011` through `REG-016` are
+**A caveat that belongs at the top, not in a footnote.** Class artifacts and their schema now
+exist in the registry (`registry/classes/`, `registry/class.schema.json` — ADR-061); the
+class-compat classifier and the estate-side pin resolver do not. `REG-011` through `REG-016` are
 therefore **specification, not enforcement** — they state the contract the P0 gates must satisfy
 when they are built, in the same way the rest of this repository specifies behavior that DCM
 realizes. The honest-enforcement ledger is

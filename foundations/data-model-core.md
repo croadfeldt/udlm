@@ -205,8 +205,9 @@ time. None of it is checked by a validator in this repository, and none of it cl
 `[enforced]`. Two of the registry-plane rules generalize checks that *do* run on the flat-spec
 plane today — version sufficiency (`tests/ci_compat_gate.py`) and version honesty on consumer
 manifests (`tests/check_consumer_conformance.py`) — and the class-plane gates additionally wait
-on a substrate that does not exist yet: class artifacts, their schema, and the classifier are P0
-items of `docs/design/scoped-class-hierarchy/implementation-plan.md`. Listing them here is the point
+on a class-plane compat classifier that does not exist yet: class artifacts and their schema have
+landed (`registry/classes/`, `registry/class.schema.json` — ADR-061), but compatibility is still
+priced only on the generated flat-spec plane. Listing the gap here is the point
 of the ledger: a written refusal is a contract, and calling it enforcement would be the exact
 dishonesty this section exists to prevent.
 
