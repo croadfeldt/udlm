@@ -232,12 +232,40 @@
    "0.1.1": "sha256:f57ba92461fc8524b50197806ee61c99b7bafa4484608bb075269af8869fb2f3"
   }
  },
+ "type:Automation": {
+  "current": "1.1.0",
+  "path": "registry/classes/automation.yaml",
+  "versions": {
+   "1.1.0": "sha256:7f002f5f04f12e997ea555ac373e4123dfae685715403e68dc8b1a21bb1546ba"
+  }
+ },
  "type:Automation.Job": {
   "current": "0.6.0",
   "path": "registry/resource-types/automation/automation.job.json",
   "versions": {
    "0.5.3": "sha256:c4e0c8590bc5fc1df25faf89a7a6e885674e687d8f9d756cf55f773a7c382d07",
    "0.6.0": "sha256:d04cbd5569f03b82cfdd509b71e944c2d8e7ff70d156ad3258e08d20eca6b2da"
+  }
+ },
+ "type:Automation.OSPatch": {
+  "current": "1.2.0",
+  "path": "registry/classes/automation.ospatch.yaml",
+  "versions": {
+   "1.2.0": "sha256:bb08e74073c4d9267ea0d6af58fade1aef72fe684e94577894f0794b1a92a0a6"
+  }
+ },
+ "type:Automation.OSPatch.EngineBlue": {
+  "current": "1.1.0",
+  "path": "registry/classes/automation.ospatch.engine-blue.yaml",
+  "versions": {
+   "1.1.0": "sha256:e5958c4feec16d24ad81c3b47800a0093870f65f5ba8bf14c95297cb2ad39eea"
+  }
+ },
+ "type:Automation.OSPatch.EngineGreen": {
+  "current": "1.1.0",
+  "path": "registry/classes/automation.ospatch.engine-green.yaml",
+  "versions": {
+   "1.1.0": "sha256:bbf1be76c579b32f2643941ba634760d59a3156653396cce9490e35df096ebff"
   }
  },
  "type:Capability": {
@@ -523,11 +551,10 @@
   }
  },
  "type:Process.OSPatch": {
-  "current": "1.1.0",
+  "current": "1.0.0",
   "path": "registry/classes/process.ospatch.yaml",
   "versions": {
-   "1.0.0": "sha256:ebb869318d8dbea397f9b0cb3587bea9c7ac5d1d90f3279b1350743709041f50",
-   "1.1.0": "sha256:ab6cb0ecc6d972b958c83cd18cc7ece74e9a207e4b72e3a58f7f7f7576ee955c"
+   "1.0.0": "sha256:ebb869318d8dbea397f9b0cb3587bea9c7ac5d1d90f3279b1350743709041f50"
   }
  },
  "type:Process.OSPatch.EngineBlue": {

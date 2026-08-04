@@ -52,6 +52,25 @@ A record of a job that automation runs — a playbook, a CI pipeline, a backup s
 - Network.Switch — the fabric the job traverses; connectivity outlives whatever the job operates on.
 - Network.AddressService — the name resolution the job needs to reach its targets.
 
+### Automation.OSPatch (1.2.0)
+
+**Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
+
+Declares that hosts get patched: which package sets, within which maintenance windows, at which severity floor. Both engines (blue today, green tomorrow) satisfy this one definition — swapping engines never touches the declared process.
+
+**Use when:**
+- You schedule or gate OS patching as governed automation
+- You need engine-portable patch compliance reporting
+
+**Not for:**
+- Application deployment (a different process family)
+- Ad-hoc one-host package installs
+
+**Works with:**
+- Compute.BareMetalHost — the patched substrate
+- Compute.VM — the patched substrate
+- Automation.OSPatch.EngineBlue / EngineGreen — the executing engines
+
 ## Capability
 
 ### Capability (0.2.1)
@@ -716,27 +735,6 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 - Storage.Volume — volumes declare their class by reference.
 - Storage.Cluster — the storage cluster backing the class.
 - Compute.VM — VM disks select a storage class.
-
-## Process
-
-### Process.OSPatch (1.1.0)
-
-**Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
-
-Declares that hosts get patched: which package sets, within which maintenance windows, at which severity floor. Both engines (blue today, green tomorrow) satisfy this one definition — swapping engines never touches the declared process.
-
-**Use when:**
-- You schedule or gate OS patching as governed automation
-- You need engine-portable patch compliance reporting
-
-**Not for:**
-- Application deployment (a different process family)
-- Ad-hoc one-host package installs
-
-**Works with:**
-- Compute.BareMetalHost — the patched substrate
-- Compute.VM — the patched substrate
-- Process.OSPatch.EngineBlue / EngineGreen — the executing engines
 
 ## Security
 
