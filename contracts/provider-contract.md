@@ -116,6 +116,12 @@ provider_base_registration:
     status: submitted                      # submitted → validating → active
     owned_by: { display_name: "<team>" }
 
+  # ONE DECLARATION, TWO PROJECTIONS (maintainer ruling 2026-08-03; ADR-038 addendum): the
+  # capability content below is a PROJECTION of the provider's registered Classes
+  # (registry/classes/ — Resource- and Process-family Provider Classes). Registration PRESENTS
+  # those classes as what the provider can support; the same declarations BECOME the catalog
+  # items presented for consumption. The class is the authored artifact; this payload and the
+  # catalog are two renderings of it. Wire shape unchanged.
   capabilities: [<verb × domain>, ...]   # the declared capability set (ADR-PROV-002); the accepted
                                          # capabilities/categories are governed by the Capability &
                                          # Category Registry (§9). provider_type, if present, is a
@@ -555,7 +561,9 @@ GET  {capabilities_endpoint}                  # return available options (networ
 **Capability declaration extension:**
 ```yaml
 service_provider_capabilities:
-  resource_types:
+  resource_types:                       # PROJECTION of the provider's Resource-family Provider
+                                        # Classes (one per class; the class is authored, this
+                                        # list is rendered — ADR-038 addendum)
     - fqn: Compute.VirtualMachine
       spec_version: "2.1.0"
       catalog_item_uuid: <uuid>
@@ -689,6 +697,13 @@ information_provider_capabilities:
 
 > **Full specification:** See [Composite Service Composition Model](../entities/composite-service-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (CMP-001–CMP-008).
 
+**Authored home (maintainer ruling 2026-08-03):** a Composite Service definition is a **class-system
+artifact** — a type- or provider-tier Class carrying `constituents[]` (registry/class.schema.json;
+the same shape + semantic checks as the catalog item's, by `$ref` — one shape, one checker).
+Constituents reference portable classes (the two-segment namespace — a composite composes types,
+never provider branches). The catalog item is a projection of that class; this capability block is
+the registration-side rendering of the same declaration.
+
 **Capability declaration extension (summary — full schema in [composite-service-model.md](../entities/composite-service-model.md)):**
 ```yaml
 composite_service_capabilities:
@@ -800,7 +815,7 @@ POST {cancel_endpoint}/{job_id}  # cancel running execution (if supported)
 **Capability declaration extension:**
 ```yaml
 process_provider_capabilities:
-  supported_process_types:
+  supported_process_types:   # PROJECTION of the provider's Process-family Provider Classes (Process.OSPatch.EngineBlue pattern) — the class is authored, this list is rendered
     - "Process.SoftwareInstall"
     - "Process.BackupExecution"
     - "Process.ComplianceScan"
