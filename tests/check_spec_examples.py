@@ -45,6 +45,7 @@ def _build_store():
         store[pathlib.Path(p).resolve().as_uri()] = doc
         if isinstance(doc.get("$id"), str):
             store[doc["$id"]] = doc
+        store[f"https://udlm.dev/registry/{os.path.basename(p)}"] = doc
     return store
 
 

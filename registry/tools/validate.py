@@ -12,6 +12,7 @@ DCMGroups). Catalog items additionally get semantic checks JSON Schema cannot ex
 (component_id uniqueness, sibling depends_on/binding resolution, cycle rejection,
 binding⊆depends_on ordering).
 Loads JSON and YAML natively. Exit non-zero if anything is invalid. Wire into CI."""
+import glob
 import json
 import re
 import sys
@@ -42,9 +43,21 @@ REGENERATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "regeneration-m
 FINDING_ROUTING_VALIDATOR = Draft202012Validator(json.loads((ROOT / "finding-routing-record.schema.json").read_text()))
 ACCREDITATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "accreditation.schema.json").read_text()))
 _CLASS_SCHEMA = json.loads((ROOT / "class.schema.json").read_text())
+def _ref_store():
+    """Cross-file $ref targets under BOTH their file URI and their $id (refs resolve against the
+    referring schema's $id base, so the $id key is the one that actually hits — same pattern as
+    the spec-examples/fuzz gates)."""
+    store = {}
+    for name in ("resource-type-spec.schema.json", "catalog-item.schema.json"):
+        doc = json.loads((ROOT / name).read_text())
+        store[(ROOT / name).as_uri()] = doc
+        if isinstance(doc.get("$id"), str):
+            store[doc["$id"]] = doc
+        store[f"https://udlm.dev/registry/{name}"] = doc
+    return store
+
 _CLASS_RESOLVER = RefResolver(base_uri=(ROOT / "class.schema.json").as_uri(), referrer=_CLASS_SCHEMA,
-                              store={(ROOT / "resource-type-spec.schema.json").as_uri():
-                                     json.loads((ROOT / "resource-type-spec.schema.json").read_text())})
+                              store=_ref_store())
 CLASS_VALIDATOR = Draft202012Validator(_CLASS_SCHEMA, resolver=_CLASS_RESOLVER)
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
@@ -115,6 +128,47 @@ def validate_dir(subdir: str, pick) -> int:
             else:
                 print(f"ok   {tag}  — {label(doc)}")
     return failures
+
+
+def check_class_constituents(doc):
+    """Composite-definition semantic checks for a Class carrying `constituents` — the SAME
+    cross-field constraints as a composite catalog item (one shape, one checker: reuse
+    check_catalog_item), plus namespace resolution: each constituent's resource_type must
+    resolve to a registered Class or a flat resource type (both legal during the migration —
+    the one dotted namespace)."""
+    if not doc.get("constituents"):
+        return []
+    errors = check_catalog_item(doc)
+    known = _known_type_names()
+    for c in doc.get("constituents", []):
+        rt = c.get("resource_type")
+        if rt and rt not in known:
+            errors.append(f"constituent '{c.get('component_id','?')}': resource_type {rt!r} resolves to "
+                          f"neither a registered Class nor a flat resource type")
+    return errors
+
+
+_KNOWN_TYPES = None
+def _known_type_names():
+    """Class names (registry/classes) + flat resource types (registry/resource-types) — cached."""
+    global _KNOWN_TYPES
+    if _KNOWN_TYPES is None:
+        names = set()
+        for path in glob.glob(str(ROOT / "classes" / "**" / "*.yaml"), recursive=True):
+            d = yaml.safe_load(open(path, encoding="utf-8")) or {}
+            if d.get("record_type") == "class":
+                names.add(d.get("resource_type"))
+        for path in glob.glob(str(ROOT / "resource-types" / "**" / "*"), recursive=True):
+            if path.endswith((".json", ".yaml", ".yml")):
+                try:
+                    d = (yaml.safe_load(open(path, encoding="utf-8")) if path.endswith((".yaml", ".yml"))
+                         else json.loads(open(path, encoding="utf-8").read())) or {}
+                except Exception:
+                    continue
+                if d.get("resource_type"):
+                    names.add(d["resource_type"])
+        _KNOWN_TYPES = names
+    return _KNOWN_TYPES
 
 
 def check_catalog_item(doc):
@@ -578,7 +632,9 @@ def main() -> int:
     failures += validate_dir(
         "classes",
         lambda doc: (CLASS_VALIDATOR,
-                     lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — {len(d.get('elements') or [])} element(s)"))
+                     lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — {len(d.get('elements') or [])} element(s)"
+                               + (f" + {len(d['constituents'])} constituent(s)" if d.get('constituents') else ""),
+                     check_class_constituents))
     impact_report()
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0
