@@ -4,37 +4,51 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **5 types** (Knowledge 5). Every spec is strict (`additionalProperties: false`, 5/5 (100%)) and the instance-fuzz harness rejected 244 of 244 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 5/5 (100%) of types appear in at least one use case; 0 appear in none. 5 types are named by a specific consumer manifest; the other 5 are carried only by the 4 envelope-level (all-types) consumers. 3 types declare no outputs and 2 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **50 types** (Access 4, Knowledge 5, Process 2, Resource 39). Every spec is strict (`additionalProperties: false`, 50/50 (100%)) and the instance-fuzz harness rejected 4275 of 4275 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/50 (70%) of types appear in at least one use case; 15 appear in none. 5 types are named by a specific consumer manifest; the other 45 are carried only by the 4 envelope-level (all-types) consumers. 5 types declare no outputs and 24 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
-| Types (by family) | 5 (Knowledge 5) | — |
-| Discrimination density | 244/244 = 100.00% | mutations rejected / attempted; 0 finding(s) |
-| Strictness coverage | 5/5 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 3 zero-output, 2 one-output | declared Realized binding surface |
-| Context coverage | 5/5 (100%) | plain-English `context` blocks |
-| Relationships coverage | 4/5 (80%) | types declaring `relationships[]` |
-| UC coverage | 5/5 (100%) | types appearing in >=1 use case (149 UC files scanned) |
-| Consumer coverage | 5/5 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
+| Types (by family) | 50 (Access 4, Knowledge 5, Process 2, Resource 39) | — |
+| Discrimination density | 4275/4275 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Strictness coverage | 50/50 (100%) | asserted — a non-strict spec fails this tool |
+| Outputs adequacy | 5 zero-output, 24 one-output | declared Realized binding surface |
+| Context coverage | 50/50 (100%) | plain-English `context` blocks |
+| Relationships coverage | 44/50 (88%) | types declaring `relationships[]` |
+| UC coverage | 35/50 (70%) | types appearing in >=1 use case (149 UC files scanned) |
+| Consumer coverage | 50/50 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
 
 Outputs are the contract-checked binding surface — a type with none publishes nothing a
 downstream consumer can bind on.
 
-**Zero-output types (3):** `SoftwareImage`, `SoftwarePackage`, `Vulnerability`
+**Zero-output types (5):** `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `Vulnerability`
 
-**One-output types (2):** `Capability`, `TaxonomyTerm`
+**One-output types (24):** `Capability`, `Facility.Location`, `Hardware.BMC`, `Hardware.BiosProfile`, `Hardware.NetworkInterface`, `Hardware.StorageDevice`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `Platform.ResourceQuota`, `Platform.StorageClass`, `Software.Service`, `Storage.Dataset`, `Storage.FileShare`, `Storage.Layout`, `TaxonomyTerm`, `Topology`
 
 ## UC coverage gaps
 
-Types appearing in no use case (0) — each is either ahead of its
+Types appearing in no use case (15) — each is either ahead of its
 scenarios or untested by any story (textual scan; a dotted handle is unambiguous,
 single-word handles could in principle match prose):
 
-- none
+- `Facility.Location`
+- `Facility.PowerFeed`
+- `Hardware.BMC`
+- `Hardware.BiosProfile`
+- `Hardware.GraphicsProcessor`
+- `Hardware.NetworkInterface`
+- `Hardware.Processor`
+- `Hardware.StorageDevice`
+- `Identity.Group`
+- `Identity.Person`
+- `Identity.ServiceAccount`
+- `Network.Switch`
+- `Network.VLAN`
+- `Storage.Cluster`
+- `Storage.Layout`
 
 ## Consumer coverage
 
@@ -51,7 +65,7 @@ All-types (envelope-level) consumers: `dav`, `graph-explorer`, `records-ci`, `re
 ## Coverage detail
 
 - Context blocks missing (0): none
-- `relationships[]` missing (1): `Vulnerability`
+- `relationships[]` missing (6): `Automation.OSPatch`, `Facility.PowerFeed`, `Observability.LogShipper`, `Storage.Layout`, `Topology`, `Vulnerability`
 
 ## Pending metrics (owned elsewhere, shape reserved)
 

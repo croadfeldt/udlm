@@ -16,7 +16,10 @@ here (DCM realizes the model; see the isolation table below).
 foundations/      The four states (Intent→Requested→Realized→Discovered), entity UUID, rehydration, drift
 registry/         Resource-type registry + the meta-schema + the definition RULES + common elements
   SPEC-DESIGN-REQUIREMENTS.md   ← THE rules every type/element MUST follow (read this first)
-  resource-type-spec.schema.json ← the type-definition meta-schema
+  resource-type-spec.schema.json ← the flat-spec meta-schema (generated/ artifacts validate against it)
+  class.schema.json              ← the CLASS meta-schema — classes/ is the authored surface
+  classes/<family>/…/_base.yaml  ← ALL definitions (ADR-061 index-file hierarchy); flat specs are
+                                   GENERATED projections in registry/generated/ (never authored)
   common-elements.md             ← canonical shared shapes (Quantity, ComputeResources, Identity, …)
   resource-type-data-sources.md  ← which industry standard each type adopts, + license verdicts
 entities/         Cross-cutting entity concerns (service-dependencies, composition_visibility, …)
@@ -55,9 +58,9 @@ lifecycle/        Operational models, recovery state machine
   - **Raw resources are first-class** (§28): a type MUST be instantiable with Discovered state and **no
     Intent** (racked-but-unallocated, brownfield), carrying `lifecycle_state: available`, later
     **adopted** (Intent attached, UUID preserved).
-- **Adding a type:** follow `registry/naming-conventions.md` (Tier-1 `Category.Type` vendor-neutral,
-  name-to-a-standard-first) and the registry process (`governance/registry-governance.md` §3,
-  `CONTRIBUTING.md`): define it in `registry/` validating against `resource-type-spec.schema.json`; fill
+- **Adding a type:** author a CLASS in `registry/classes/<family>/…` (ADR-061 layout; ADR-038 grammar),
+  following `registry/naming-conventions.md` and the registry process (`governance/registry-governance.md` §3,
+  `CONTRIBUTING.md`); the generator emits the flat spec into `registry/generated/`; fill
   `adopts[]` with source+license; reuse common-elements; ship ≥1 worked example; never inline
   vendor-exclusive fields. The standard each type adopts is tabulated in
   `registry/resource-type-data-sources.md`.

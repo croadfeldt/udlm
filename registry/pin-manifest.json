@@ -204,11 +204,10 @@
   }
  },
  "provider:full-stack-sp": {
-  "current": "0.2.0",
+  "current": "0.1.0",
   "path": "registry/providers/service/full-stack-sp.json",
   "versions": {
-   "0.1.0": "sha256:51554ba4c131ce13ef9fad37d7ed9af5e7413f55203175fe37cbafe51aa926d3",
-   "0.2.0": "sha256:a23d2aad5cefacc877b435f9459426fbdd85efd2cb900c26b4971549bcd9b027"
+   "0.1.0": "sha256:51554ba4c131ce13ef9fad37d7ed9af5e7413f55203175fe37cbafe51aa926d3"
   }
  },
  "resource_grouping:org/resource-group/example-orders-deployment": {
@@ -276,10 +275,11 @@
   }
  },
  "type:Capability": {
-  "current": "0.2.1",
-  "path": "registry/resource-types/knowledge/capability.json",
+  "current": "0.3.0",
+  "path": "registry/classes/knowledge/capability/_base.yaml",
   "versions": {
-   "0.2.1": "sha256:52ff5af2875712d89c7eea8265884ca7988411db83476e0aea4338a2add00966"
+   "0.2.1": "sha256:52ff5af2875712d89c7eea8265884ca7988411db83476e0aea4338a2add00966",
+   "0.3.0": "sha256:5e2ddce5e9664cfd0cf299cad39035c8d560928a2ebc258ae87b1d72f6e4cbcd"
   }
  },
  "type:Compute": {
@@ -692,17 +692,19 @@
   }
  },
  "type:SoftwareImage": {
-  "current": "0.1.1",
-  "path": "registry/resource-types/knowledge/software-image.json",
+  "current": "0.2.0",
+  "path": "registry/classes/knowledge/software-image/_base.yaml",
   "versions": {
-   "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70"
+   "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70",
+   "0.2.0": "sha256:adb81aac308780f6cc8f548cd7de36b3fd03c23dedfce869253b90997aefd068"
   }
  },
  "type:SoftwarePackage": {
-  "current": "0.1.0",
-  "path": "registry/resource-types/knowledge/software-package.json",
+  "current": "0.2.0",
+  "path": "registry/classes/knowledge/software-package/_base.yaml",
   "versions": {
-   "0.1.0": "sha256:40f7c35de3837300c7ba68155f09d3b381f397c08131d117ffd059bc92c60e6e"
+   "0.1.0": "sha256:40f7c35de3837300c7ba68155f09d3b381f397c08131d117ffd059bc92c60e6e",
+   "0.2.0": "sha256:f6eb0f7911780d3f89cb1d32e06edb5e570cef6f471adf1868a634aa7b765c1f"
   }
  },
  "type:Storage": {
@@ -766,10 +768,11 @@
   }
  },
  "type:TaxonomyTerm": {
-  "current": "0.2.1",
-  "path": "registry/resource-types/knowledge/taxonomy-term.json",
+  "current": "0.3.0",
+  "path": "registry/classes/knowledge/taxonomy-term/_base.yaml",
   "versions": {
-   "0.2.1": "sha256:618725e3e0fd0597f29b41ed87741c7a831c828ae7c84ad68b0de883be5dcfe6"
+   "0.2.1": "sha256:618725e3e0fd0597f29b41ed87741c7a831c828ae7c84ad68b0de883be5dcfe6",
+   "0.3.0": "sha256:d0d651a7ce50ef41a544c3eb7d72a32ec05a3f39db8e3f56323df547d6ccf457"
   }
  },
  "type:Topology": {
@@ -781,10 +784,11 @@
   }
  },
  "type:Vulnerability": {
-  "current": "0.1.1",
-  "path": "registry/resource-types/knowledge/vulnerability.json",
+  "current": "0.2.0",
+  "path": "registry/classes/knowledge/vulnerability/_base.yaml",
   "versions": {
-   "0.1.1": "sha256:16e6e1c0de0d263e087a6a86de8f362198fb88af06f303725fe8bbbad82f4684"
+   "0.1.1": "sha256:16e6e1c0de0d263e087a6a86de8f362198fb88af06f303725fe8bbbad82f4684",
+   "0.2.0": "sha256:2a092769f9a41c7f7c091552047cd2571bc5e9e0452a66388d806c95d81ab3ae"
   }
  }
 }
