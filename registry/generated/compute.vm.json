@@ -61,7 +61,7 @@
             "description": "Optional topology hint: cores per socket. Provider-support-dependent."
           }
         },
-        "description": "Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores, EC2 vCPUs)."
+        "description": "Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your scope; BareMetalHost keeps the loose base shape verbatim."
       },
       "memory": {
         "type": "object",
@@ -88,7 +88,7 @@
             }
           }
         },
-        "description": "Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}): `hugepages` becomes an optional Base element."
+        "description": "Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your scope; BareMetalHost keeps the loose base shape verbatim."
       },
       "storage": {
         "type": "object",

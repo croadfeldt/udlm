@@ -20,7 +20,7 @@ CASES = [
     # address                              owning_class          inherited
     # --- dot / compact notation ---
     ("Compute#cpu",                        "Compute",            False),   # declared on the Base itself
-    ("Compute.VM#cpu",                     "Compute",            True),    # inherited from Base
+    ("Compute.VM#storage_tier",            "Compute",            True),    # inherited from Base (cpu is redeclared-tightened at VM scope since the bulk conversion)
     ("Compute.VM#firmware",                "Compute.VM",         False),   # declared on the Type
     ("Compute.VM#storage_tier",            "Compute",            True),    # governed-vocab element, inherited
     ("Automation.OSPatch#idempotency",        "Automation",            True),    # inherited from Process Base
@@ -28,7 +28,7 @@ CASES = [
     ("Automation.OSPatch.EngineBlue#definition_ref", "Automation.OSPatch.EngineBlue", False),  # provider-scope
     ("Automation.OSPatch.EngineBlue#idempotency",    "Automation",     True),    # inherited two levels up
     # --- URL notation (the same coordinates, ADR-038's preferred form) ---
-    ("https://udlm.dev/class/Compute/VM#cpu",              "Compute",         True),   # local URL
+    ("https://udlm.dev/class/Compute/VM#storage_tier",     "Compute",         True),   # local URL
     ("https://state.mn/Compute/VM#firmware",              "Compute.VM",      False),  # federated authority
     ("https://udlm.dev/registry/udlm/0.1/class/Automation/OSPatch#idempotency", "Automation", True),  # $id-scaffolded URL
     ("https://peer.dcm.east/Automation/OSPatch/EngineBlue#definition_ref", "Automation.OSPatch.EngineBlue", False),
@@ -61,7 +61,7 @@ def main():
         except KeyError:
             pass
     # the two notations are the same coordinate — they must resolve identically
-    for dot, url in [("Compute.VM#cpu", "https://udlm.dev/class/Compute/VM#cpu"),
+    for dot, url in [("Compute.VM#storage_tier", "https://udlm.dev/class/Compute/VM#storage_tier"),
                      ("Automation.OSPatch.EngineBlue#idempotency", "https://x/Automation/OSPatch/EngineBlue#idempotency")]:
         rd, ru = R.resolve(dot, by_name), R.resolve(url, by_name)
         if (rd["owning_class"], rd["element"], rd["scope"]) != (ru["owning_class"], ru["element"], ru["scope"]):

@@ -1,0 +1,134 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.DNSZone/0.4.0
+conforms_to: udlm/0.1
+uuid: 8661d9e8-4688-486b-8bd7-be7465c3e4a5
+record_type: class
+class: type
+resource_type: Network.DNSZone
+parent: Network
+version: 0.4.0
+family: Resource
+status: active
+metadata:
+  display_name: DNS Zone
+  description: An authoritative DNS zone. Grounded in RFC 1034/1035 (the DNS zone + resource-record model);
+    external-dns DNSEndpoint is the Kubernetes-native cross-walk. The serving software is the provider.
+  maintainer: udlm-registry
+  origination_timestamp: '2026-06-27T00:38:59Z'
+  converted_from: flat spec Network.DNSZone@0.3.3 (bulk mechanical conversion 2026-08-04; factoring later
+    via scope promotion)
+elements:
+- element: zone_name
+  scope: Network.DNSZone
+  optional: false
+  state: canonical
+  description: Fully-qualified zone name, e.g. example.com (RFC 1035 domain name).
+  schema:
+    type: string
+    description: Fully-qualified zone name, e.g. example.com (RFC 1035 domain name).
+- element: zone_type
+  scope: Network.DNSZone
+  optional: true
+  state: canonical
+  description: Authoritative role for this zone.
+  schema:
+    type: string
+    enum:
+    - primary
+    - secondary
+    - forward
+    - stub
+    default: primary
+    description: Authoritative role for this zone.
+- element: records
+  scope: Network.DNSZone
+  optional: true
+  state: canonical
+  description: Resource records (RFC 1035). Optional — a zone may be summarized without enumerating records.
+  schema:
+    type: array
+    description: Resource records (RFC 1035). Optional — a zone may be summarized without enumerating
+      records.
+    items:
+      type: object
+      required:
+      - name
+      - type
+      properties:
+        name:
+          type: string
+          description: Owner name (relative or FQDN).
+        type:
+          type: string
+          description: RR type, e.g. A, AAAA, CNAME, MX, TXT, SRV, PTR, NS (RFC 1035 + RFC 3596 AAAA).
+        ttl:
+          type: integer
+          minimum: 0
+          description: Time-to-live in seconds.
+        data:
+          type: string
+          description: RDATA value.
+spec_examples:
+- zone_name: example.com
+  zone_type: primary
+  records:
+  - name: '@'
+    type: NS
+    ttl: 86400
+    data: ns1.example.com.
+  - name: '@'
+    type: MX
+    ttl: 3600
+    data: 10 mail.example.com.
+  - name: host01
+    type: A
+    ttl: 3600
+    data: 192.0.2.10
+  - name: www
+    type: CNAME
+    ttl: 3600
+    data: host01.example.com.
+outputs:
+  nameservers:
+    type: array
+    description: Authoritative nameservers for the zone (NS records) once Realized.
+relationships:
+- edge_type: references
+  target: Security.DirectoryService
+  cardinality: 0..1
+  description: When DNS is integrated with the directory (the directory service serves this zone).
+adopts:
+- standard: RFC-1035
+  version: '1035'
+  standard_name: Zone
+  role: DNS zone + resource-record vocabulary
+  source: https://www.rfc-editor.org/rfc/rfc1035
+  license: IETF-Trust
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+- standard: external-dns
+  version: 0.x
+  standard_name: DNSEndpoint
+  role: Kubernetes-native zone/record cross-walk
+  source: https://github.com/kubernetes-sigs/external-dns
+  license: Apache-2.0
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+context:
+  purpose: Declares an authoritative DNS zone — its name, role, and records — independent of the software
+    serving it.
+  plain_description: 'One DNS zone — its required `zone_name`, e.g. example.com — with its authoritative
+    role spelled `zone_type` (`primary`, `secondary`, `stub`, `forward`) and, optionally, its resource
+    `records`. The serving software (BIND, directory-integrated DNS, a cloud DNS) is a provider. Once
+    realized, the zone''s nameservers are published. One asymmetry is a documented open decision: records
+    here are authored inline, while the DHCP side derives its reservations from address records.'
+  use_when:
+  - You need zones inventoried with their authoritative role and their serving relationships.
+  - You need zone data declared portably so the serving software can change without the model changing.
+  not_for:
+  - The DNS service as a running dependency — Network.AddressService; the zone is data, the service is
+    what stops and starts.
+  - The address facts behind A/PTR entries — those originate on Network.IPAddress records; the zone holds
+    the name-side projection.
+  works_with:
+  - Security.DirectoryService — when a directory service serves the zone.
+  - Network.AddressService — the operated DNS capability answering for the zone.

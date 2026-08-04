@@ -217,6 +217,56 @@ elements:
         properties:
           reference_data_type:
             const: os_image
+- element: cpu
+  scope: Compute.VM
+  optional: true
+  state: canonical
+  description: Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your
+    scope; BareMetalHost keeps the loose base shape verbatim.
+  schema:
+    type: object
+    required:
+    - count
+    properties:
+      count:
+        type: integer
+        minimum: 1
+        description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt
+          domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (ADR-023).
+      sockets:
+        type: integer
+        minimum: 1
+        description: 'Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable.'
+      cores_per_socket:
+        type: integer
+        minimum: 1
+        description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
+- element: memory
+  scope: Compute.VM
+  optional: true
+  state: canonical
+  description: Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your
+    scope; BareMetalHost keeps the loose base shape verbatim.
+  schema:
+    type: object
+    required:
+    - size
+    properties:
+      size:
+        type: string
+        pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
+        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base
+          Class `memory.size`).
+      hugepages:
+        type: object
+        description: Optional huge-page backing (provider-support-dependent; validated against provider
+          capability).
+        properties:
+          enabled:
+            type: boolean
+          page_size:
+            type: string
+            description: e.g. 2Mi, 1Gi.
 coverage:
   use_cases:
   - scoped-class/compile-type-to-flat-spec

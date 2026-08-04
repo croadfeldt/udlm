@@ -1,0 +1,17 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Software/1.0.0
+conforms_to: udlm/0.1
+uuid: e2f48d85-0f75-4015-9e92-be500701b108
+record_type: class
+class: base
+resource_type: Software
+version: 1.0.0
+family: Resource
+status: active
+metadata:
+  authority: canonical
+  display_name: Software Base Class
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-08-04T00:00:00Z'
+  description: Empty Software category base — the promotion target for elements the Software.* types share
+    (ADR-039 scope promotion; factoring waves per family).
+elements: []
