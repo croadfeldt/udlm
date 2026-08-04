@@ -66,7 +66,7 @@ adopt-vs-invent criteria? (b) What proven mechanisms LIMIT dependency-graph brea
 | Finding | UDLM/DCM today |
 |---|---|
 | 1 | uuid-authoritative + handle-advisory refs (identifier-scheme §2.3; estate CI enforces) ✅ |
-| 3 (partially) | `connects_to` (renamed from `connected_to`, common-elements §9) is LLDP-*discovered*, not hand-drawn; estate CI is the integrity service for git data ✅ |
+| 3 (partially) | `connects_to` (common-elements §9) is LLDP-*discovered*, not hand-drawn; estate CI is the integrity service for git data ✅ |
 | 9 | VERSIONING.md additive-minor / removal-at-major discipline ✅ |
 | 10 | meta-schema `relationships.target` is the unversioned type NAME — edges already version-decoupled ✅ (codify as an explicit rule) |
 | 7 | Tier-2 `Vendor.Type` namespace + `provider_hints` ≈ augmentation-in-new-module ✅ (make it the normative extension mechanism for #198) |
