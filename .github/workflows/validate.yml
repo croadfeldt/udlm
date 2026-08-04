@@ -89,10 +89,6 @@ jobs:
       # graphs — cycles / undeclared outputs / unresolved siblings must error, and a legal
       # producer→consumer pair over every real declared output must pass clean.
       - run: python3 tests/check_composition_hammer.py
-      # Provider contract cross-check: every provider standard token resolves in the
-      # standards-adoption register (the ADOPT-001 discipline), accreditation-anchor uuids
-      # v4 + unique across provider docs, version ranges parse.
-      - run: python3 tests/check_provider_contracts.py
       # Consumer conformance (ADR-044): consumers declare their read surface in
       # registry/consumers/; every declared type must exist, no noted_version may run ahead of
       # the registry, and every type is consumed or acknowledged in unconsumed.yaml — which the

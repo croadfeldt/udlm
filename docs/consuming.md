@@ -23,7 +23,7 @@ state back; you never push implementation mechanism into the portable model.
 Four things you can build on, all portable across any conformant implementation:
 
 - **Resource types** — the declarative shapes for the things a system provisions (a VM, a Volume, a
-  Database, a DNSZone). Each type spec lives under `registry/resource-types/<family>/`, validates
+  Database, a DNSZone). Each type is authored as a class in `registry/classes/` and served as a compiled flat spec in `registry/generated/`, which validates
   against [`registry/resource-type-spec.schema.json`](../registry/resource-type-spec.schema.json), and
   ships a worked example plus the corpus that documents its intended behavior (§2).
 - **Classes** — the Base/Type/Provider scoped-Class layer under `registry/classes/`, validating against
@@ -51,7 +51,7 @@ shape*, *what a real one looks like*, and *how it is meant to behave*.
 
 | To learn… | Read | Where it is |
 |---|---|---|
-| the **shape** (fields, required, refusals) | the type spec's `spec` (a JSON Schema) | `registry/resource-types/<family>/<type>.json\|yaml` |
+| the **shape** (fields, required, refusals) | the type spec's `spec` (a JSON Schema) | `registry/generated/<category>.<type>.json` |
 | what a **valid one looks like** | `spec.examples` — the worked example, CI-validated against the spec (ADR-055) | inside the same spec, under `spec.examples` |
 | how it is **meant to behave** | the `coverage:` block — its use cases + flows | top-level `coverage:` on the same spec |
 
@@ -65,8 +65,8 @@ The registry layout you will navigate:
 
 | Directory / file | What it holds |
 |---|---|
-| `registry/resource-types/<family>/` | the type specs, grouped by family (compute, network, storage, data…) |
-| `registry/classes/` | the scoped Classes |
+| `registry/generated/` | the served type specs, compiled from the classes (compute.vm, network.vlan, …) |
+| `registry/classes/` | the authored surface — the scoped Classes (ADR-061 hierarchy) |
 | `registry/instances/` | worked instances of records (policies, layers, decision records, accreditations) |
 | `registry/*.schema.json` | the meta-schemas every artifact validates against |
 | `registry/consumers/` | the consumer manifests — where you declare *your* read surface (§3) |

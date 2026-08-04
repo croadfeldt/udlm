@@ -29,9 +29,6 @@ honor. The Class layer is where you say it once and let the hierarchy carry it.
 
 Do **not** author a Class when:
 
-- You are modeling **one self-contained thing with its own lifecycle** and no shared-element story — that
-  is a flat resource type. Follow [`resource-type.md`](resource-type.md). (You never hand-edit the
-  *generated* flat spec — the generator owns it; you edit the Class.)
 - You are adding **a governed list of values** an element draws from (the actual storage-tier terms) —
   that is reference data (`reference-data.md`). The Class *names* the vocabulary via `values.reference_data_type`;
   the terms are curated records elsewhere.

@@ -1,6 +1,6 @@
 # Type catalog — every resource type, in plain English
 
-> GENERATED from the `context` blocks in `registry/resource-types/` + `registry/generated/` by
+> GENERATED from the `context` blocks in `registry/generated/` by
 > `registry/tools/generate_type_catalog.py` — edit the spec, regenerate, never edit here.
 > Missing entries are types without a `context` block yet (tracked by the rule-36 gate).
 

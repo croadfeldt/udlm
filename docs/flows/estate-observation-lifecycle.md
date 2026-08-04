@@ -59,5 +59,5 @@ contract, and the graph they link into.
 | The dependency graph observations land in | `uc-07-udlm-dependency-graph-data-model.md`; UDLM estate model |
 | Published vocabulary + quarantine-on-off-vocabulary | corpus DIMENSION-VOCABULARY (DIM-001 pattern) |
 | Refusal ⇒ audit record (single-source) | `audit/refusal-emits-audit-record`; AUD-006 |
-| The observed record shapes + examples | `registry/resource-types/{hardware,facility,identity,network}/*`, `Topology` (`spec.examples`, ADR-055) |
+| The observed record shapes + examples | `registry/generated/{hardware,facility,identity,network}.*`, `Topology` (`spec.examples`, ADR-055) |
 | Corpus | `use-cases/observed/`, `use-cases/audit/` |
