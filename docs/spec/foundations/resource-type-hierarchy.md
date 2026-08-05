@@ -1,6 +1,5 @@
 # UDLM — Resource Type Hierarchy and Service Catalog
 
-**Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Entity Types](entity-types.md) | [Four States](four-states.md) | [Layering and Versioning](layering-and-versioning.md) | [Examples](examples.md)
 
 > **Foundation Document Reference**
