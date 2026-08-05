@@ -1,21 +1,9 @@
 # UDLM — Ownership, Sharing, and Allocation
 
-
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Reference
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA**
+> [foundations.md](foundations.md).
 >
 > The Data abstraction — ownership models for entity data
-
 
 **Related Documents:** [Entity Types](entity-types.md) | [Resource/Service Entities](resource-service-entities.md) | [Entity Relationships](entity-relationships.md) | [Resource Grouping](resource-grouping.md)
 

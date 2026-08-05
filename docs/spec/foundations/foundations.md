@@ -1,7 +1,5 @@
 # UDLM — The Three Abstractions: Data, Provider, Policy
 
-**Document Status:** ✅ Complete
-**Document Type:** Foundational model — read this first
 **Related Documents:** [Data Model Context](context-and-purpose.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 
 > **Scope.** This document defines the three abstractions the **data model** is built from and their

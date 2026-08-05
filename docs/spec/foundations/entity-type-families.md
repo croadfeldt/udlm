@@ -1,15 +1,9 @@
 # UDLM — Entity-Type Families
 
-**Document Status:** Draft (introduced 2026-06-08)
-**Document Type:** Foundation Reference
-
-> **Foundation Document Reference**
->
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md). This document defines how the **Data** abstraction's
 > entity-type *definitions* are organized as UDLM's vocabulary grows.
 > **This document maps to: DATA** (organization of typed entity extensions)
->
 > **Related:** [Entity Types](entity-types.md) | [Four States](four-states.md) |
 > [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) |
 > Case study: [`../../examples/case-study-dav-knowledge-realization.md`](../../examples/case-study-dav-knowledge-realization.md)

@@ -1,17 +1,9 @@
 # UDLM — Resource/Service Entities
 
-**Document Status:** ✅ Stable — UDLM substrate contract
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Operational Models](../lifecycle/operational-models.md) | [Entity Types](entity-types.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) | [Layering and Versioning](layering-and-versioning.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Service Dependencies](service-dependencies.md) | [Resource Grouping](resource-grouping.md)
 
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA + PROVIDER**
+> [foundations.md](foundations.md).
 >
 > Data: entity lifecycle. Provider: lifecycle events and update notifications.
 

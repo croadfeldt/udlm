@@ -4,22 +4,12 @@
 > [`registry/dcm-group.schema.json`](../../../registry/dcm-group.schema.json)
 > (`registry/tools/validate.py` dispatches any instance carrying `group_class` to it).
 
-**Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Grouping](resource-grouping.md) | [Entity Relationships](entity-relationships.md)
 
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA**
+> [foundations.md](foundations.md).
 >
 > The Data abstraction — DCMGroup as universal grouping artifact
-
-
 
 ---
 
@@ -572,7 +562,6 @@ dcm_group:
 | `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBERSHIP_EXPIRE audit record (event group.membership_expired); MEMBER_REMOVE is additionally produced only by the `remove` on_expiry action, when the member is actually removed. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
 | `GRP-015` | Group policy inheritance is group_class-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (homelab/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
 
-
 ## 11. Related Concepts
 
 - **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `group_class: resource_grouping`
@@ -580,7 +569,6 @@ dcm_group:
 - **[entity-relationships.md](entity-relationships.md)** — cross-tenant authorized relationships between groups
 - **[universal-audit.md](../contracts/universal-audit.md)** — all group changes produce audit records
 - **[ingestion-model.md](../lifecycle/ingestion-model.md)** — migration of existing constructs to universal groups
-
 
 ---
 
@@ -663,7 +651,6 @@ Authorization revoked (by granting Tenant admin, platform admin, or expiry)
 | `CTX-002` | Cross-tenant authorization revocation places all active dependent entities in PENDING_REVIEW. Revocation does not immediately release allocations. |
 | `CTX-003` | Cross-tenant authorization expiry is treated identically to explicit revocation. |
 | `CTX-004` | Platform Admin may create cross-tenant authorizations on behalf of any Tenant. All platform-managed authorizations carry a platform_managed flag and are visible in the platform admin audit log. |
-
 
 ---
 
