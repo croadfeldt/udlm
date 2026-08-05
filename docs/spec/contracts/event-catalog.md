@@ -1,14 +1,20 @@
 # UDLM — Event Catalog
 
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Reference — Authoritative Event Catalog
-**Related Documents:** [Universal Audit](universal-audit.md) | [Credentials](../governance/credentials.md) | [Authority Tier Model](../governance/authority-tier-model.md)
+**What this settles.** The single authoritative source for every event type: what events
+exist, when each fires, and what its payload contains. Any document referencing an event type
+is authoritative only if it agrees with this catalog — conflicts resolve in favor of this
+document. Delivery (pipeline, audience resolution, urgency routing, Message Bus) is
+implementation concern, defined in the consuming implementation's docs.
 
-> **This is the single authoritative source for all DCM event types.**
->
-> The Notification Model and Webhooks docs (implementation-specific; see DCM repo) define the delivery pipeline, audience resolution, urgency routing, and Message Bus integration. This document defines **what events exist, when they fire, and what their payloads contain**. Any document referencing an event type is authoritative only if it agrees with this catalog. Conflicts resolve in favor of this document.
+**In one breath.** Every event shares one envelope (§1) with event-specific fields under
+`payload`; delivery is **at-least-once**, so consumers implement idempotency on `event_uuid`;
+**per-entity ordering is guaranteed, cross-entity ordering is not**.
 
-> **Implementation note:** Consumers (webhook receivers, notification services, Message Bus subscribers, audit tooling) must implement idempotency using `event_uuid`. Events are delivered at-least-once. Per-entity ordering is guaranteed; cross-entity ordering is not.
+**Background — read first** (skip if you have it):
+[universal-audit.md](universal-audit.md) — events and audit records are distinct surfaces; the
+envelope timestamp inherits the Commit Log's authoritative instant ·
+[credentials.md](../governance/credentials.md) — the credential lifecycle the `credential.*`
+events narrate.
 
 ---
 
