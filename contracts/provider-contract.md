@@ -815,7 +815,7 @@ POST {cancel_endpoint}/{job_id}  # cancel running execution (if supported)
 **Capability declaration extension:**
 ```yaml
 process_provider_capabilities:
-  supported_process_types:   # PROJECTION of the provider's Process-family Provider Classes (Process.OSPatch.EngineBlue pattern) — the class is authored, this list is rendered
+  supported_process_types:   # PROJECTION of the provider's Process-family Provider Classes (Automation.OSPatch.EngineBlue pattern) — the class is authored, this list is rendered
     - "Process.SoftwareInstall"
     - "Process.BackupExecution"
     - "Process.ComplianceScan"

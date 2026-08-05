@@ -1,30 +1,30 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Process.OSPatch/1.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.OSPatch/1.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2",
-  "resource_type": "Process.OSPatch",
-  "version": "1.1.0",
+  "resource_type": "Automation.OSPatch",
+  "version": "1.2.0",
   "family": "Process",
   "status": "active",
   "metadata": {
     "authority": "canonical",
-    "display_name": "Process.OSPatch Type Class",
+    "display_name": "Automation.OSPatch Type Class",
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-07-27T22:00:00Z",
-    "description": "The portable OS-patching process — the definition BOTH engines share (blue today, green tomorrow). Names no engine: this is what org policy gates, what schedules reference, what compliance reports against, and what any provider must satisfy to declare `execute_workflows / Process.OSPatch`.",
+    "description": "The portable OS-patching process — the definition BOTH engines share (blue today, green tomorrow). Names no engine: this is what org policy gates, what schedules reference, what compliance reports against, and what any provider must satisfy to declare `execute_workflows / Automation.OSPatch`.",
     "prompt_version": "class-p1-process-pilot-2026-07-27",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Process",
-          "version": "1.0.0",
+          "class": "Automation",
+          "version": "1.1.0",
           "uuid": "90de377f-8c9f-4a03-8f11-8f72eabb90a4"
         },
         {
-          "class": "Process.OSPatch",
-          "version": "1.1.0",
+          "class": "Automation.OSPatch",
+          "version": "1.2.0",
           "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2"
         }
       ]
@@ -187,7 +187,7 @@
     "works_with": [
       "Compute.BareMetalHost — the patched substrate",
       "Compute.VM — the patched substrate",
-      "Process.OSPatch.EngineBlue / EngineGreen — the executing engines"
+      "Automation.OSPatch.EngineBlue / EngineGreen — the executing engines"
     ]
   }
 }

@@ -23,15 +23,15 @@ CASES = [
     ("Compute.VM#cpu",                     "Compute.VM",         False),   # redeclared-tightened at VM scope (published bytes)
     ("Compute.VM#firmware",                "Compute.VM",         False),   # declared on the Type
     ("Compute.VM#storage_tier",            "Compute",            True),    # governed-vocab element, inherited
-    ("Process.OSPatch#idempotency",        "Process",            True),    # inherited from Process Base
-    ("Process.OSPatch#patch_policy",       "Process.OSPatch",    False),   # declared on the Type
-    ("Process.OSPatch.EngineBlue#definition_ref", "Process.OSPatch.EngineBlue", False),  # provider-scope
-    ("Process.OSPatch.EngineBlue#idempotency",    "Process",     True),    # inherited two levels up
+    ("Automation.OSPatch#idempotency",        "Automation",            True),    # inherited from Process Base
+    ("Automation.OSPatch#patch_policy",       "Automation.OSPatch",    False),   # declared on the Type
+    ("Automation.OSPatch.EngineBlue#definition_ref", "Automation.OSPatch.EngineBlue", False),  # provider-scope
+    ("Automation.OSPatch.EngineBlue#idempotency",    "Automation",     True),    # inherited two levels up
     # --- URL notation (the same coordinates, ADR-038's preferred form) ---
     ("https://udlm.dev/class/Compute/VM#cpu",              "Compute.VM",      False),  # local URL
     ("https://state.mn/Compute/VM#firmware",              "Compute.VM",      False),  # federated authority
-    ("https://udlm.dev/registry/udlm/0.1/class/Process/OSPatch#idempotency", "Process", True),  # $id-scaffolded URL
-    ("https://peer.dcm.east/Process/OSPatch/EngineBlue#definition_ref", "Process.OSPatch.EngineBlue", False),
+    ("https://udlm.dev/registry/udlm/0.1/class/Automation/OSPatch#idempotency", "Automation", True),  # $id-scaffolded URL
+    ("https://peer.dcm.east/Automation/OSPatch/EngineBlue#definition_ref", "Automation.OSPatch.EngineBlue", False),
 ]
 UNRESOLVABLE = [
     "Compute.VM#does_not_exist",   # no such element
@@ -62,7 +62,7 @@ def main():
             pass
     # the two notations are the same coordinate — they must resolve identically
     for dot, url in [("Compute.VM#cpu", "https://udlm.dev/class/Compute/VM#cpu"),
-                     ("Process.OSPatch.EngineBlue#idempotency", "https://x/Process/OSPatch/EngineBlue#idempotency")]:
+                     ("Automation.OSPatch.EngineBlue#idempotency", "https://x/Automation/OSPatch/EngineBlue#idempotency")]:
         rd, ru = R.resolve(dot, by_name), R.resolve(url, by_name)
         if (rd["owning_class"], rd["element"], rd["scope"]) != (ru["owning_class"], ru["element"], ru["scope"]):
             fails.append(f"notation mismatch: {dot} vs {url} resolve differently")
