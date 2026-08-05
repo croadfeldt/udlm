@@ -4,27 +4,27 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **48 types** (Access 4, Knowledge 5, Process 1, Resource 38). Every spec is strict (`additionalProperties: false`, 48/48 (100%)) and the instance-fuzz harness rejected 3706 of 3706 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 33/48 (68%) of types appear in at least one use case; 15 appear in none. 5 types are named by a specific consumer manifest; the other 44 are carried only by the 4 envelope-level (all-types) consumers. 6 types declare no outputs and 24 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **47 types** (Access 4, Knowledge 5, Resource 38). Every spec is strict (`additionalProperties: false`, 47/47 (100%)) and the instance-fuzz harness rejected 3544 of 3544 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 32/47 (68%) of types appear in at least one use case; 15 appear in none. 5 types are named by a specific consumer manifest; the other 43 are carried only by the 4 envelope-level (all-types) consumers. 5 types declare no outputs and 24 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
-| Types (by family) | 48 (Access 4, Knowledge 5, Process 1, Resource 38) | — |
-| Discrimination density | 3706/3706 = 100.00% | mutations rejected / attempted; 0 finding(s) |
-| Strictness coverage | 48/48 (100%) | asserted — a non-strict spec fails this tool |
-| Outputs adequacy | 6 zero-output, 24 one-output | declared Realized binding surface |
-| Context coverage | 48/48 (100%) | plain-English `context` blocks |
-| Relationships coverage | 43/48 (89%) | types declaring `relationships[]` |
-| UC coverage | 33/48 (68%) | types appearing in >=1 use case (149 UC files scanned) |
-| Consumer coverage | 48/48 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
+| Types (by family) | 47 (Access 4, Knowledge 5, Resource 38) | — |
+| Discrimination density | 3544/3544 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Strictness coverage | 47/47 (100%) | asserted — a non-strict spec fails this tool |
+| Outputs adequacy | 5 zero-output, 24 one-output | declared Realized binding surface |
+| Context coverage | 47/47 (100%) | plain-English `context` blocks |
+| Relationships coverage | 42/47 (89%) | types declaring `relationships[]` |
+| UC coverage | 32/47 (68%) | types appearing in >=1 use case (149 UC files scanned) |
+| Consumer coverage | 47/47 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
 
 Outputs are the contract-checked binding surface — a type with none publishes nothing a
 downstream consumer can bind on.
 
-**Zero-output types (6):** `Automation.Job`, `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `Vulnerability`
+**Zero-output types (5):** `Hardware.GraphicsProcessor`, `Hardware.Processor`, `SoftwareImage`, `SoftwarePackage`, `Vulnerability`
 
 **One-output types (24):** `Capability`, `Facility.Location`, `Hardware.BMC`, `Hardware.BiosProfile`, `Hardware.NetworkInterface`, `Hardware.StorageDevice`, `Identity.Group`, `Identity.Person`, `Identity.ServiceAccount`, `Network.AddressService`, `Network.DHCPScope`, `Network.DNSZone`, `Network.Gateway`, `Network.IPAddress`, `Network.VLAN`, `Network.VirtualNetwork`, `Platform.ResourceQuota`, `Platform.StorageClass`, `Software.Service`, `Storage.Dataset`, `Storage.FileShare`, `Storage.Layout`, `TaxonomyTerm`, `Topology`
 
