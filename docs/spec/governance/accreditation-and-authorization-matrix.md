@@ -236,28 +236,23 @@ Accreditation submitted
 
 ### 3.5 Accreditation Gap (Closed Vocabulary)
 
-When a required accreditation is missing, expired, or revoked, the substrate enters an **Accreditation Gap** state for the affected provider:
+When a required accreditation is missing, expired, or revoked, the substrate opens an
+**accreditation-gap finding** for the affected provider — a sealed interpretation under
+ADR-060's findings model (open once, closed only by citing the resolution), the same lifecycle
+as drift and staleness findings. The finding MUST carry, at minimum:
 
-```yaml
-accreditation_gap_record:
-  uuid: <uuid>
-  provider_uuid: <uuid>
-  required_framework: hipaa
-  required_for: [phi data fields in active requests]
-  gap_type: missing | expired | revoked | suspended | verification_stale
-  detected_at: <ISO 8601>
-  severity: critical                    # accreditation gaps are always high or critical
-  affected_entity_uuids: [<uuid>, ...]  # entities currently hosted at this provider
-  # Which axes of the sovereignty 1-1 match (§3.3.1) had no matching accreditation — so the gap is
-  # diagnosable at the capability grain, not just "provider lacks framework X":
-  unmet_capability:                     # the capability (and optional version/category) with no match
-    capability_uuid: <uuid>
-    version: <semver | null>            # set when the required grain is grain-3 (exact version)
-    category: <verb × domain | null>    # set when the requirement is narrowed to one category
-  unmet_jurisdiction: [<geographic scope required, e.g. US-MN>]
-  policy_response: <from Recovery Policy>
-  # Default: NOTIFY_AND_WAIT for fsi/sovereign; ESCALATE for standard/prod
-```
+- `gap_type` — the closed vocabulary: `missing | expired | revoked | suspended | verification_stale`
+- the provider, the required framework, and what required it (the active requests/fields)
+- severity — accreditation gaps are always `high` or `critical`
+- the affected entity uuids (entities currently hosted at the provider)
+- the **unmet match axes** of the sovereignty 1-1 key (§3.3.1) — capability (and version/category
+  where the required grain demands it) and jurisdiction — so the gap is diagnosable at the
+  capability grain, not just "provider lacks framework X"
+- the policy response taken (from Recovery Policy; default `NOTIFY_AND_WAIT` for fsi/sovereign,
+  `ESCALATE` for standard/prod)
+
+The finding's record shape is the findings substrate's; the content above is this matrix's
+contract.
 
 ### 3.6 Peer Implementation Accreditation
 

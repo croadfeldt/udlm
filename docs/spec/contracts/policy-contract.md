@@ -984,8 +984,9 @@ exception_grant:
   review_required_before: "2026-06-15"
   renewable: true
   max_renewals: 2
-  usage_count: 0                             # tracks how many times this grant was used
   max_usage: null                            # null = unlimited within time window
+  # usage is DERIVED from the grant's audit trail — every use is an audited event;
+  # max_usage caps that derived count, there is no stored counter
 ```
 
 Exception Grants can target hard enforcement policies — but require dual-approval. Compensating controls are mandatory when overriding hard policies.

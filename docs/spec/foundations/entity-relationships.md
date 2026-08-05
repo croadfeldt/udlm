@@ -380,7 +380,7 @@ destroy       ← least conservative — entity terminated
 
 **The save_overrides_destroy rule (REL-018):** If any active relationship recommends `retain`, the entity is retained regardless of what any other relationship recommends — including relationships with `override: immutable` lifecycle policies. `retain` is the save. It always beats `destroy`.
 
-This rule applies automatically and silently when the hierarchy resolves cleanly (e.g., `retain` beats `destroy`). It is recorded in the `lifecycle_conflict_record` with severity `info` for audit purposes but requires no notification.
+This rule applies automatically and silently when the hierarchy resolves cleanly (e.g., `retain` beats `destroy`). The resolution is recorded as an audit fact at severity `info`; no notification is required.
 
 ### 8.3 Lifecycle Conflict Detection
 
@@ -400,33 +400,11 @@ This rule applies automatically and silently when the hierarchy resolves cleanly
 | `notify` is the winning action | `warning` | Notify owner — human decision required |
 | Immutable lifecycle lock overridden by REL-018 | `critical` | Notify entity owner, policy owner, and platform admin |
 
-**Lifecycle conflict record:**
-
-```yaml
-lifecycle_conflict_record:
-  entity_uuid: <shared resource uuid>
-  event_trigger: <parent_destroy | parent_suspend | parent_modify>
-  triggering_entity_uuid: <uuid of entity that changed state>
-  action_recommendations:
-    - related_entity_uuid: <VM-A uuid>
-      recommended_action: destroy
-      source: lifecycle_policy
-    - related_entity_uuid: <VM-B uuid>
-      recommended_action: retain
-      source: validation_policy
-      policy_uuid: <uuid>
-    - related_entity_uuid: <VM-C uuid>
-      recommended_action: notify
-      source: lifecycle_policy
-  resolved_action: retain
-  resolution_rule: save_overrides_destroy
-  conflict_detected: true
-  conflict_severity: info
-  notifications_sent:
-    - recipient_uuid: <entity owner>
-      message: "Lifecycle conflict resolved: retain overrode destroy and notify."
-  recorded_at: <ISO 8601>
-```
+**The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), DCM records
+durably: the full recommendation set (per edge — the recommended action and the policy or
+lifecycle declaration it came from), the resolved action and the rule that resolved it, the
+severity, and the notifications dispatched — citable from the affected entity's audit trail.
+The record's shape is DCM's implementation; the content above is the contract.
 
 ### 8.4 Lifecycle Policy Authority Hierarchy
 
@@ -478,8 +456,7 @@ entity:
   sharing_model:
     shareable: true
     sharing_scope: tenant
-    active_relationship_count: 3     # DCM maintains this — do not set manually
-    minimum_relationship_count: 0    # below this, on_last_relationship_released fires
+    minimum_relationship_count: 0    # at or below this, on_last_relationship_released fires
     on_last_relationship_released: <destroy | retain | notify>
     # destroy: entity destroyed when last relationship is released
     # retain:  entity persists independently — becomes unowned
@@ -490,10 +467,13 @@ entity:
 
 ### 9.3 Reference Count Lifecycle
 
-DCM maintains `active_relationship_count` automatically:
+The **active relationship count is derived, never stored**: it is the number of active
+`constituent`/`operational` edges targeting the entity, computed from the graph at each
+lifecycle event (informational edges never count — REL-016). A stored counter would duplicate
+the graph and drift. The lifecycle over the derived count:
 
-- **Relationship created** → `active_relationship_count` incremented
-- **Relationship released** (parent decommissioned, relationship detached) → `active_relationship_count` decremented
+- **Edge created** → the derived count rises
+- **Edge released** (parent decommissioned, relationship detached) → the derived count falls
 - **Informational relationships** → never counted (REL-016)
 - **Count reaches `minimum_relationship_count`** → `on_last_relationship_released` fires
 
@@ -524,39 +504,16 @@ Execute winning action
 Deferred destruction record created (if action was deferred)
 ```
 
-### 9.4 Deferred Destruction Records
+### 9.4 Deferred Destruction — the Obligation
 
-Every time a destructive action is deferred by the reference count mechanism:
+When a destruction is deferred because active edges remain (REL-015), DCM records durably: the
+triggering request, the entity whose edge was being released, the derived count before and
+after, the remaining blocking edges (declaring entity + edge_type + strength), and the reason —
+citable from the shared entity's audit trail. When the count later reaches the declared
+`minimum_relationship_count` and destruction proceeds, the destruction audit record cites the
+deferral, closing the loop. The record shapes are DCM's implementation; this content is the
+contract.
 
-```yaml
-deferred_destruction_record:
-  entity_uuid: <shared resource uuid>
-  triggering_request_uuid: <uuid of parent's decommission request>
-  releasing_entity_uuid: <uuid of the entity whose edge is being released>
-  relationship_count_before: 3
-  relationship_count_after: 2
-  action_taken: deferred
-  reason: "active_relationship_count above minimum. Destruction deferred."
-  remaining_relationships:
-    - related_entity_uuid: <VM-B uuid>
-      edge_type: depends_on
-      strength: hard
-    - related_entity_uuid: <VM-C uuid>
-      edge_type: depends_on
-      strength: soft
-  recorded_at: <ISO 8601>
-```
-
-When the last relationship is released:
-
-```yaml
-deferred_destruction_record:
-  relationship_count_before: 1
-  relationship_count_after: 0
-  action_taken: "on_last_relationship_released → destroy"
-  reason: "Last active relationship released. Executing on_last_relationship_released."
-  recorded_at: <ISO 8601>
-```
 
 ### 9.5 Unified with the Allocated Resource Model
 
@@ -566,7 +523,7 @@ The same-tenant sharing model and the cross-tenant allocated resource model are 
 |-----------|--------------------|-----------------------|
 | Scope | Within one Tenant | Across Tenant boundaries |
 | Pre-definition | Not required — relationships declared at request time | Parent pre-defines `available_allocations` |
-| Reference tracking | `active_relationship_count` on entity | `active_allocations` list on parent |
+| Reference tracking | derived active-edge count | `active_allocations` list on parent |
 | Destruction deferral | Deferred until count reaches minimum | Deferred until last allocation released |
 | Lifecycle events | `on_last_relationship_released` | `parent_lifecycle_policy` per allocation |
 | Governed by | REL-015 through REL-019 | REL-011, REL-014 |
@@ -791,8 +748,8 @@ The relationship graph exists across all four states:
 | `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
 | `REL-013` | Retired 2026-07-23 — nature is derived from `edge_type` (data-model-core §4), so invalid type × nature combinations are not representable; the retired stored fields are guarded by `tests/check_model_vocabulary.py` |
 | `REL-014` | An allocated resource claim requires a matching `available` allocation record on the parent entity |
-| `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` (see [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md))) is deferred until `active_relationship_count` reaches `minimum_relationship_count` |
-| `REL-016` | Informational relationships do not contribute to `active_relationship_count` on shared resource entities |
+| `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` — [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)) is deferred until the derived active-edge count reaches the declared `minimum_relationship_count` |
+| `REL-016` | Informational edges never contribute to the derived active-edge count on shared resource entities |
 | `REL-017` | A Resource Type Specification with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
 | `REL-018` | When a lifecycle event produces multiple action recommendations on a shared resource, the most conservative action wins per the hierarchy: `retain > notify > suspend > detach > cascade > destroy` (save_overrides_destroy) |
 | `REL-019` | When lifecycle action recommendations conflict, a `lifecycle_conflict_record` is created. Conflicts at `warning` or `critical` severity trigger notifications to the entity owner and affected policy owners |
@@ -860,22 +817,19 @@ Relationships follow the universal versioning and deprecation model. A relations
 
 The entity relationship graph is the source of truth for notification audiences. This section defines how relationships govern notification traversal for the notification model ([subscription-lifecycle.md](../lifecycle/subscription-lifecycle.md)).
 
-### 14.1 Relationship Properties Relevant to Notifications
+### 14.1 Stake Strength — Derived from the Edge
 
-Every relationship carries two properties that the Notification Router uses for audience resolution:
+Notification audience resolution consumes a **stake strength** per edge, and it is derived from
+the declaration — never a stored field:
 
-```yaml
-dependency:
-  edge_type: depends_on
-  relation: attached_to            # declared relation name (REL-001)
-  stake_strength: <required|preferred|optional>
-  notification_relevance:
-    # Declared in the Resource Type Spec for this relation
-    # Can be overridden per relationship instance
-    notifiable_events: [entity.decommissioning, entity.state_changed, entity.ttl_expired]
-    traversal_depth: 1               # how many hops from this relationship
-    audience_role: stakeholder       # role assigned to notified party
-```
+| Edge declaration | Derived stake strength |
+|---|---|
+| `depends_on`, `strength: hard` (or `contained_by`/`binds_to`) | `required` |
+| `depends_on`, `strength: soft` | `preferred` |
+| `references` | `optional` |
+
+Which events notify at which minimum stake, and how far traversal walks, are **platform-domain
+policy configuration** (defaults below) — not type-spec fields and not per-edge data.
 
 ### 14.2 Stake Strength and Notification Threshold
 
@@ -891,17 +845,17 @@ Different event types use different minimum stake strengths for notification:
 | `drift.detected` | — (owner only) | Drift is the owner's concern |
 | `dependency.state_changed` | required | Only affects required dependents |
 
-The minimum stake strength threshold per event type is declared in the resource type specification and can be overridden by a platform-domain policy.
+The minimum stake-strength threshold per event type is platform-domain policy configuration; the table above is the substrate default.
 
 ### 14.3 Notification Traversal and Graph Depth
 
-What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared in the Resource Type Specification (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) declare depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
+What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared by platform-domain policy (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) are fixed at depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
 
 ### 14.4 Notification Traversal Policies
 
 | Policy | Rule |
 |--------|------|
-| `REL-022` | Notification traversal follows relationship edges from the changed entity. Traversal depth per event type is declared in the Resource Type Specification. Default traversal depth is 1. |
+| `REL-022` | Notification traversal follows relationship edges from the changed entity. Traversal depth per event type is declared by platform-domain policy; the default is 1. Stake strength is derived from the edge declaration (§14.1), never stored. |
 | `REL-023` | Notification traversal respects sovereignty boundaries. Cross-tenant notifications carry only content authorized for the receiving Tenant. |
 | `REL-024` | The same actor reached via multiple relationship paths receives a single notification with all applicable audience_roles listed. |
 

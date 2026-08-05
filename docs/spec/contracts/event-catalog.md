@@ -669,7 +669,7 @@ payload:
 
 ```yaml
 payload:
-  ingestion_record_uuid: <uuid>
+  ingestion_seal_uuid: <uuid — the admitting write's L2 seal (ADR-059)>
   source_system: <string>
   entity_handle: <string>
   confidence_level: high | medium | low

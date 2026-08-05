@@ -123,62 +123,30 @@ tenant:
 
 ---
 
-## 5. The Ingestion Record
+## 5. Ingestion Evidence — Carried on the ADR-059 Provenance Surface
 
-Every ingested entity carries an `ingestion_record` in its provenance chain. This is the audit record of how the entity entered the substrate. The wire shape is normative:
+How an entity entered the substrate is provenance, and provenance has one home: the ADR-059
+dual-record surface. An ingestion is a write, so it is **sealed** — the L2 OpenLineage seal for
+the admitting write carries the ingestion evidence in its facets, and the admission rule
+supplies the pathway (`pathway_ref` = the discovery run for brownfield, the request for
+imports). There is no separate ingestion record kind.
 
-```yaml
-ingestion_record:
-  ingestion_uuid: <uuid>
-  resource_entity_uuid: <uuid>
-  ingestion_timestamp: <ISO 8601>
+The seal for an admitting write MUST carry, per source:
 
-  ingestion_source: <legacy_import | brownfield_discovery | manual_import>
+- **Always:** the `ingestion_source` (`legacy_import | brownfield_discovery | manual_import`),
+  the admitted entity uuid, the tenant assignment (`assigned_tenant_uuid` or `__transitional__`),
+  the `assignment_method` (`auto | manual | transitional`) with its human-readable
+  `assignment_signal`, the assigning actor, and the `ingestion_confidence`
+  (`high | medium | low` — low always lands `__transitional__`)
+- **Legacy import:** the original identifier (name, IP, hostname, or prior-system uuid) and the
+  key legacy fields snapshotted at migration time
+- **Brownfield discovery:** the seeding Discovered-state reference and the discovering
+  provider — already what the discovery-run anchor carries
+- **Manual import:** the source system name and its reference identifier
 
-  # Legacy ingestion fields (when ingestion_source: legacy_import)
-  legacy_identifier: <original identifier — name, IP, hostname, or prior-system UUID>
-  legacy_metadata_snapshot: <key legacy fields captured at migration time>
-
-  # Brownfield discovery fields (when ingestion_source: brownfield_discovery)
-  discovered_state_uuid: <uuid of Discovered State record>
-  discovery_provider_uuid: <uuid of provider that performed discovery>
-  discovery_timestamp: <ISO 8601 — when the entity was first discovered>
-
-  # Manual import fields (when ingestion_source: manual_import)
-  import_source_system: <name of source system — e.g., "Legacy CMDB", "Spreadsheet">
-  import_reference: <source system identifier>
-
-  # Common fields
-  assigned_tenant_uuid: <uuid — or null if still in __transitional__>
-  assignment_method: <auto | manual | transitional>
-  assignment_signal: >
-    Human-readable description of what drove auto-assignment.
-    e.g., "Resource group membership: payments-group → Payments Tenant"
-    e.g., "Business unit metadata: BU-PAY → Payments Tenant"
-    e.g., "No signal found — assigned to __transitional__"
-  assigned_by:
-    uuid: <actor UUID — optional>
-    display_name: <person name or "Ingestion System">
-    timestamp: <ISO 8601>
-
-  ingestion_confidence: <high | medium | low>
-  # high:   strong unambiguous signal — auto-assignment reliable
-  # medium: inferred from metadata — reasonable confidence, human review recommended
-  # low:    orphaned or conflicting signals — assigned to __transitional__
-
-  enrichment_status: <pending | partial | complete>
-  enrichment_history:
-    - sequence: 1
-      action: <tenant_assigned | relationship_added | field_enriched | promoted>
-      performed_by:
-        display_name: <actor>
-      timestamp: <ISO 8601>
-      detail: <human-readable description>
-
-  promoted_at: <ISO 8601 — populated when entity reaches PROMOTED state>
-  promoted_by:
-    display_name: <actor who authorized promotion>
-```
+Enrichment after admission (tenant assignment, relationship additions, field enrichment,
+promotion) is not a status ledger on a record — each enrichment is itself a sealed write,
+and the enrichment history **is** the seal sequence.
 
 ---
 
@@ -253,24 +221,13 @@ Service Provider performs discovery scan
 
 ### 8.3 Discovered → Realized Promotion Contract
 
-When a brownfield entity is promoted, its Discovered State record is promoted to become the initial Realized State. This is the moment the implementation assumes lifecycle authority. The wire shape of the promotion record is normative:
-
-```yaml
-realized_state_record:
-  entity_uuid: <uuid>
-  source: brownfield_promotion
-  ingestion_uuid: <uuid — links to ingestion_record>
-  discovered_state_uuid: <uuid — the Discovered State that seeded this>
-  promoted_at: <ISO 8601>
-  promoted_by:
-    display_name: <actor>
-  initial_realized_payload: <field values from discovery — unified format>
-  provenance:
-    origin:
-      source_type: brownfield_discovery
-      source_uuid: <discovered_state_uuid>
-      timestamp: <ISO 8601>
-```
+When a brownfield entity is promoted, its Discovered State record is promoted to become the
+initial Realized State — the moment the implementation assumes lifecycle authority. Promotion
+is a state transition, so its record is the entity's **receipt** (ADR-059: states + pin +
+integrity — the initial Realized snapshot seeded from discovery, `source.kind: discovery` on
+its provenance entry) and its evidence is the promotion's **seal**, which MUST cite: the
+seeding Discovered-state reference, the admitting ingestion seal, the promoting actor, and the
+promotion instant. No separate promotion record kind exists.
 
 From this point, the standard drift detection cycle runs: future discoveries are compared against the Realized State and any deviations are flagged as drift.
 

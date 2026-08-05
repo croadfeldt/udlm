@@ -249,13 +249,13 @@ The three patterns have different decommission safety behaviors:
 - DCM dispatches decommission to pool provider
 - Pool provider releases the resource back to pool
 - AllocationRecord relationship terminated
-- Pool `available_count` increases
+- Pool availability (derived from its active allocations) increases
 - Allocation entity → DECOMMISSIONED
 - Pool entity is unaffected
 
 **Shareable decommission:**
 - Resource owner Tenant initiates decommission of the shared resource
-- DCM checks `active_stake_count` for `stake_strength: required` stakes
+- DCM counts active `required` stakes (derived from the graph — never a stored counter)
 - If required stakes > 0 → `DECOMMISSION_DEFERRED`
   - Notifications to all required stakeholders
   - Owner retries decommission after stakeholders release

@@ -737,19 +737,12 @@ Typed action vocabulary (interop baseline — org policy declares which apply, a
 
 ## 9e. Ownership Transfer Count
 
-Ownership transfers are unlimited by default. Each transfer is immutably recorded with a monotonically incrementing `transfer_number`. Policy may declare a maximum per resource type.
-
-```yaml
-ownership_transfer_record:
-  transfer_uuid: <uuid>
-  transfer_number: 3              # monotonically incrementing — never resets
-  from_tenant_uuid: <uuid>
-  to_tenant_uuid: <uuid>
-  authorized_by: <actor>
-  transfer_timestamp: <ISO 8601>
-  reason: <human-readable — mandatory>
-  policy_uuid: <uuid>
-```
+Ownership transfers are unlimited by default; policy may declare a maximum per resource type.
+Each transfer is an **audited ownership change** recording: both tenant identities, the
+authorizing actor and policy, the timestamp, and a mandatory human-readable reason. The
+transfer ordinal is **derived from the entity's ordered audit trail** — never a stored counter.
+The audit surface is [universal-audit](../contracts/universal-audit.md); this is its content
+contract for transfers.
 
 Policy-governed maximum when needed:
 ```yaml
