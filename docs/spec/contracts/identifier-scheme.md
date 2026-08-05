@@ -1,7 +1,5 @@
 # UDLM — Identifier Scheme Contract
 
-**Document Status:** ✅ Complete — Normative (UUID standard ratified 2026-07-04)
-**Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
 

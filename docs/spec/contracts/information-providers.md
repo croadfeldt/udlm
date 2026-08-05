@@ -1,23 +1,14 @@
 # UDLM — Information Providers
 
-
-
-**Document Status:** ✅ Complete  
 **Related Documents:** [Resource Type Hierarchy](../foundations/resource-type-hierarchy.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Entity Relationships](../foundations/entity-relationships.md)
 
-> **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md)
 >
-> **This document maps to: PROVIDER**
 >
 > The Provider abstraction — Information Provider capability extension
-
-
 
 ---
 

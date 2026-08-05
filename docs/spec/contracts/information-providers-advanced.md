@@ -1,17 +1,12 @@
 # UDLM — Information Providers: Confidence, Authority, and Schema Versioning
 
-**Document Status:** ✅ Stable — UDLM substrate contract
 **Related Documents:** [Information Providers](information-providers.md) | [Universal Audit Model](universal-audit.md)
 
-> **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md)
 >
-> **This document maps to: PROVIDER**
 >
 > The Provider abstraction — Information Provider advanced capabilities.
 

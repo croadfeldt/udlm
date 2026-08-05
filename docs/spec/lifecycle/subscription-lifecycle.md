@@ -1,7 +1,5 @@
 # UDLM — Subscription Lifecycle Management
 
-**Document Status:** 📋 Draft — Ready for Review
-**Document Type:** Data model — Subscription as First-Class Data
 **Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md) | [Scheduled Requests](scheduled-requests.md) | [Event Catalog](../contracts/event-catalog.md)
 
 ---

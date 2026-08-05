@@ -2,23 +2,15 @@
 
 > **Machine-validatable schemas:** `registry/audit-record.schema.json` (Stage-2), `registry/commit-log-entry.schema.json` (Stage-1), `registry/audit-leaf.schema.json` (RFC 9162 Merkle leaf + signed_tree_head). `registry/tools/validate.py` dispatches by `record_type`. data-model-core §2 [D8.5].
 
-
-**Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Audit, Provenance, and Observability](audit-provenance-observability.md) | [data stores](storage-providers.md) | [Universal Groups](../foundations/universal-groups.md)
 
-> **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md)
 >
-> **This document maps to: DATA**
 >
 > The Data abstraction — Audit Record structure and the tamper-evident Merkle tree
-
-
 
 ---
 

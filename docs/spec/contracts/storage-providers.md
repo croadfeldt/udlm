@@ -1,9 +1,7 @@
 # UDLM — Storage Providers
 
-**Document Status:** ✅ Complete
 **Related Documents:** [Data Store Contracts](data-store-contracts.md) | [Provider Contract](provider-contract.md) | [Four States](../foundations/four-states.md) | [Audit, Provenance, and Observability](audit-provenance-observability.md)
 
-> **Foundation Document Reference**
 >
 > This document is a detailed reference for a specific domain of the UDLM data model — the **Provider**
 > abstraction ([foundations.md](../foundations/foundations.md)), specialized for storage.

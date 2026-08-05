@@ -1,10 +1,7 @@
 # UDLM — Scheduled and Deferred Requests
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference — Request Scheduling
 **Related Documents:** [Resource and Service Entities](../foundations/resource-service-entities.md) | [Operational Models](operational-models.md) | [Request Dependency Graph](request-dependency-graph.md) | [Event Catalog](../contracts/event-catalog.md)
 
-> **This document maps to: DATA + PROVIDER**
 >
 > A scheduled request is still a request — it goes through the same Intent → Requested → Realized pipeline. The only difference is when the pipeline's dispatch step fires. Scheduling is a field on the request, not a separate object type. The substrate requires that policy be evaluated at declaration time (gating) and again at dispatch time (policy correctness at the moment of execution).
 

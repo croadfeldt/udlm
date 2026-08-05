@@ -1,7 +1,5 @@
 # UDLM — Schema Sharing Protocol Contract
 
-**Document Status:** ✅ Complete
-**Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
 

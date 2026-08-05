@@ -1,17 +1,10 @@
 # UDLM — Operational Models
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference
-
-> **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
-> **This document maps to: POLICY**
 >
 > The Policy abstraction — Recovery Policy types, trigger vocabulary, action vocabulary.
 

@@ -1,7 +1,5 @@
 # UDLM — Error Model Contract
 
-**Document Status:** 📋 Draft — Initial Specification
-**Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
 

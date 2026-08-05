@@ -1,7 +1,5 @@
 # UDLM — Data Contracts and the Four Persistent Domains
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Specification — data contracts and persistence requirements (the data-contract *principle* is stated once here; the enforceable form is the `DSC-*` policies in §4)
 **Related Documents:** [design-principles index](README.md) | [Foundational Abstractions](../foundations/foundations.md) | [Four States](../foundations/four-states.md) | [Conformance](../../../CONFORMANCE.md) | [Provider Contract](../contracts/provider-contract.md)
 
 ---
