@@ -151,7 +151,7 @@ The platform mandates **no** fixed skew tolerance. Instead:
    | Sovereign | per regime | the regime's national time standard |
 
 3. **Providers advertise and attest** achievable sync as a capability
-   ([ADR-004](../../adr/ADR-004-provider-capability-declaration.md)); **placement
+   ([ADR-004](../../adr/README.md)); **placement
    admits** a workload only where the node's attested capability meets its
    profile's declared `max_divergence`.
 4. **Skew detection.** A peer MUST detect inbound artifacts whose divergence
@@ -233,6 +233,6 @@ A conformant implementation MUST:
 - [`event-catalog.md`](event-catalog.md) — events carry authoritative timestamps + causal references
 - [`universal-audit.md`](universal-audit.md) — hash-linked audit chain, total ordering
 - `cross-dcm-audit-data-model` — federated causal reconciliation + cross-signed checkpoints
-- [ADR-004](../../adr/ADR-004-provider-capability-declaration.md) — the capability model `TimeSync` uses
+- [ADR-004](../../adr/README.md) — the capability model `TimeSync` uses
 - [`error-model.md`](error-model.md) — timestamp-related error codes
 - [`scheduled-requests.md`](../lifecycle/scheduled-requests.md) — `not_before` and recurring schedules
