@@ -1,55 +1,29 @@
 # UDLM — Data Layers and the Assembly Process
 
+**What this settles.** The normative contract for how a request payload is assembled from
+layers: the merge rules, the provenance obligation, the artifact-metadata standard, and the
+`LAY-00x`/`OPS-00x` system policies an implementer must satisfy. Worked examples, the assembly
+diagram at scale, and the resolved-questions log live in the non-normative
+[Layering Annex](layering-and-versioning-annex.md), which adds no requirements.
 
+**In one breath.** A **layer** is a reusable, independently-owned set of field values —
+platform defaults, org standards, service config, the consumer's request. At request time UDLM
+**merges the layers in a fixed authority order** (lowest first), and each layer declares
+whether lower or higher owners may override its value (`allow` | `constrained` | `immutable`,
+`LAY-005`). The merged result — with **per-field provenance** (`LAY-008`) recording which layer
+set each value — becomes the **Requested state** (§12). **Policies apply *over* the merged
+result; they are not layers** (§1b). This is how many small, reusable definitions compose into
+one complete, provider-ready, fully-attributed payload without anyone hand-writing the whole
+thing.
 
-**Document Status:** ✅ Complete  
-**Related Documents:** [Context and Purpose](context-and-purpose.md) | [Entity Types](entity-types.md) | [Four States](four-states.md) | [Resource Type Hierarchy](resource-type-hierarchy.md)
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
-> The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA**
->
-> The Data abstraction — how Data is assembled from layers
-
-
-
----
-
-## In one breath (start here)
-
-A **layer** is a reusable, independently-owned set of field values — platform defaults, org standards,
-service config, the consumer's request. At request time UDLM **merges the layers in a fixed authority
-order** (lowest first), and each layer declares whether lower or higher owners may override its value
-(`allow` | `constrained` | `immutable`, `LAY-005`). The merged result — with **per-field provenance**
-(`LAY-008`) recording which layer set each value — becomes the **Requested state** (§12, and
-[four-states.md](four-states.md)). **Policies apply _over_ the merged result; they are not layers** (§1b).
+**Background — read first** (skip if you have it):
+[four-states.md](four-states.md) — Requested is the assembled, pre-realization record the merge
+produces · [foundations.md](foundations.md) — the Data·Provider·Policy triad this document's
+mechanism sits inside (this is the Data abstraction) ·
+[policy-contract.md](../contracts/policy-contract.md) — what the policies applied over the
+merge may do.
 
 → **§1a** shows the whole mechanism on one field (the fastest way in); **§7** is the assembly diagram.
-
----
-
-## 1. Purpose
-
-Data Layers are the mechanism by which DCM assembles a complete, contextually correct request payload from a set of composable, reusable data definitions. Rather than requiring consumers to specify every field of every resource they request, layers allow standards, organizational context, service-specific configuration, and consumer intent to be declared independently and merged into a unified payload at request time.
-
-Layers are the answer to the question: **how does a single consumer request become a complete, policy-validated, provider-ready payload?**
-
-The layering model enables:
-- **Reuse** — a base configuration defined once is inherited by thousands of resources
-- **Standardization** — organizational standards are encoded in layers, not in every individual request
-- **Separation of concerns** — infrastructure teams own core and service layers; consumers own request layers; policy owners own policy layers
-- **Scale** — 36 layer definitions can govern 40,000 VMs without duplication
-- **Auditability** — every field in the merged payload knows which layer set it and why
-
-> **At a glance (TL;DR).** A request payload is **merged from ordered layers**, lowest-authority first: *standards/core* → *organizational context* → *service/catalog* → *consumer request*, with *policy layers* applied over the result. Higher layers override lower ones field-by-field, and **every field records which layer set it** (provenance). Layers carry **data** (the *what*); **policies** (next section) decide and transform (the *how/whether*) — not the same mechanism. If you read one thing: layers are how many small, reusable data definitions compose into one complete, provider-ready, fully-attributed payload without anyone hand-writing the whole thing. The rest of this document is the detailed contract for that merge — skim by heading and return for the specific layer or rule you need.
-
-> **Normative core + non-normative annex.** This document is the **normative core** — the merge rules, the provenance obligation, the artifact-metadata standard, and the `LAY-00x`/`OPS-00x` system policies an implementer must satisfy. The long worked examples, the assembly diagram, the 40,000-VM scale illustration, the Q21–Q24 layer-gap analysis, and the resolved open-questions log live in the companion [Layering Annex](layering-and-versioning-annex.md), which is **non-normative** and adds no requirements.
 
 ---
 
@@ -87,13 +61,12 @@ Field-level override intent is `LAY-005`; provenance is always reconstructable p
 
 ## 1b. Layers vs Policies — The Clear Distinction
 
-Layers and policies are the two foundational mechanisms of DCM's assembly process. They are complementary and distinct — understanding the difference is critical to using DCM correctly.
+Layers and policies are the two mechanisms of assembly, and they never trade jobs.
 
 ### Layers Are Data
 
-A layer is a **declarative, immutable, versioned unit of data**. It carries static configuration values, organizational defaults, compliance metadata, and contextual information. A layer answers the question: **"what values should these fields have?"**
-
-Layers are **passive** — they declare values but do not execute logic. They do not evaluate the payload, make branching decisions, or enforce rules. The assembly process merges them in priority order. Layers come first.
+A layer answers **"what values should these fields have?"** — passive, declarative, merged in
+priority order, first. (The full definition is §2.)
 
 **What belongs in a layer:**
 - Infrastructure defaults (DNS servers, NTP servers, MTU values)
@@ -105,9 +78,9 @@ Layers are **passive** — they declare values but do not execute logic. They do
 
 ### Policies Are Logic
 
-A policy is an **executable rule** that evaluates the assembled payload and takes action. A policy answers the question: **"given this data, is it valid? what should change? should this proceed?"**
-
-Policies **execute** — they run logic (OPA Rego, DCM native rules, external evaluation calls). They can read every layer-provided value, validate correctness, transform fields, inject derived values, and gate requests. Policies come after layers — they operate on the assembled result.
+A policy answers **"given this data, is it valid? what should change? should this proceed?"**
+— executable logic (OPA Rego, DCM native rules, external calls) that reads the assembled
+result, validates, transforms, injects derived values, and gates. Policies come after layers.
 
 **What belongs in a policy:**
 - Validation rules ("this field must be present and within these bounds")
@@ -137,13 +110,6 @@ Layers cannot enforce rules — that is a policy's job. A layer that contains co
 > Is this a **rule** about whether the payload is correct? → **Policy**  
 > Is this a **value derived by evaluating** the payload? → **Policy** (Transformation type)"
 
-### The Analogy
-
-- Layers are the **ingredients** — pre-measured, pre-arranged, versioned
-- Policies are the **chef** — decides what to do with the ingredients, can add derived elements, makes judgment calls, can reject the dish entirely
-
-Both are necessary. Neither replaces the other.
-
 ---
 
 ## 2. What is a Layer?
@@ -162,146 +128,7 @@ Every layer:
 Layers are stored in Git following GitOps practices. They are the configuration source of truth — not the assembled payload.
 
 ---
-
-## 2a. Provenance Model Configuration
-
-### 3a.1 The Three Provenance Models
-
-Field-level provenance tracks which layer set each field, which policy modified it, and the full change history. DCM supports three configurable models — organizations choose based on their scale, compliance requirements, and operational preferences. The active Profile provides a recommended default via its activated Policy Group.
-
-**Model A — Full Inline**
-All provenance stored explicitly on every entity record. Every field carries its complete provenance inline: source layer, modifying policies, previous values, timestamps, actor chain.
-
-| Aspect | Detail |
-|--------|--------|
-| Storage cost | Very high — scales with entities × fields × changes |
-| Query simplicity | Highest — all provenance in one record, no traversal |
-| Write performance | Lowest — every field change requires provenance write |
-| Audit clarity | Highest — regulators see everything in one record |
-| Tooling required | Minimal |
-| Best for | Small deployments; FSI/sovereign (regulatory clarity); home lab |
-
-**Model B — Deduplicated (Content-Addressed) ← RECOMMENDED**
-Classical content-addressed deduplication applied to provenance. The layer chain is the deduplication key — every entity sharing the same configuration references the same chain rather than storing a copy. Only fields deviating from the chain store unique delta records.
-
-```
-Full provenance = layer chain content (deduplicated, shared) + entity deltas (unique per entity)
-```
-
-**Why lossless:** Layer chains are immutable. A reference to `layer-chain-abc123` always resolves to exactly the same data — no cache invalidation, no drift. This is what makes the deduplication lossless for audit. The reference always reconstructs the original.
-
-**Storage reduction:** 95-99% for standardized deployments (many entities, few unique chains). 36 layer definitions serving 40,000 VMs produces 36 chain references, not 8 million field provenance entries.
-
-| Aspect | Detail |
-|--------|--------|
-| Storage cost | Low — scales with unique configurations, not entity count |
-| Query simplicity | Medium — chain traversal required for layer-set fields |
-| Write performance | Highest — only deltas write; chain-matching fields are free |
-| Audit clarity | Complete — full reconstruction always possible |
-| Tooling required | Moderate — chain traversal tooling |
-| Best for | Standard and prod deployments; large-scale environments |
-
-**Analogous to:** Git content-addressed objects, Docker image layers, ZFS block deduplication — all content-addressed, deduplicated, lossless.
-
-**Model C — Tiered Archive**
-Hot/warm/cold storage tiers with decreasing detail. Recent provenance at full detail and fast access; older provenance compressed to change events; oldest compressed to hash anchors only (tamper-evidence without full reconstruction).
-
-| Aspect | Detail |
-|--------|--------|
-| Storage cost | Medium — time-dependent, degrades gracefully |
-| Query simplicity | Medium — cross-tier joins for long time ranges |
-| Write performance | Medium |
-| Audit clarity | Full detail in hot tier; change events in warm; anchors in cold |
-| Tooling required | Moderate — tier promotion jobs, consistency checks |
-| Best for | Large deployments with long retention requirements |
-
-**Models B and C are orthogonal** — combine them for maximum efficiency: deduplicate at the entity level (Model B) AND tier the storage of chains and deltas (Model C). This is the highest-efficiency option for very large-scale deployments with long retention requirements.
-
-### 3a.2 Configurable Provenance Model
-
-The provenance model is declared in the DCM deployment configuration and activated via a Policy Group:
-
-```yaml
-provenance_config:
-  model: <full_inline|layer_chain_ref|tiered|layer_chain_ref_tiered>
-
-  # Model A — Full Inline
-  full_inline:
-    include_previous_values: true
-    include_actor_chain: true
-    include_policy_rationale: true
-
-  # Model B — Deduplicated (Content-Addressed)
-  layer_chain_ref:
-    store_layer_derivable: false      # do not store fields matching chain default
-    delta_detail_level: <full|summary>
-    history_document_retention: P7Y
-    chain_store_retention: P7Y       # chains retained while any entity references them
-
-  # Model C — Tiered Archive
-  tiered:
-    hot_tier_duration: P30D          # full detail, fast access
-    warm_tier_duration: P365D        # change events only
-    cold_tier_duration: P10Y         # hash anchors only
-    warm_tier_detail: <change_events_with_values|change_events_only>
-
-  # Model B + C — Deduplicated + Tiered (maximum efficiency)
-  layer_chain_ref_tiered:
-    chain_store_hot: P365D           # chains fast for 1 year
-    chain_store_warm: P7Y            # chains slower for 7 years
-    delta_store_hot: P90D            # deltas fast for 90 days
-    delta_store_warm: P7Y            # deltas slower for 7 years
-```
-
-### 3a.3 Profile-Appropriate Provenance Policy Groups
-
-DCM ships four provenance Policy Groups. The active Profile activates the appropriate group by default. Organizations override by swapping the active group.
-
-| Group Handle | Model | Profile Default | Concern Type |
-|-------------|-------|----------------|-------------|
-| `system/group/provenance-full-inline` | A — Full Inline | homelab, dev, fsi, sovereign | implementation_posture |
-| `system/group/provenance-deduplicated` | B — Deduplicated | standard, prod | implementation_posture |
-| `system/group/provenance-tiered-archive` | C — Tiered | (available — not default) | implementation_posture |
-| `system/group/provenance-deduplicated-tiered` | B+C — Combined | (available for large-scale) | implementation_posture |
-
-**To change provenance model:**
-```yaml
-# Override profile default — swap the active provenance group
-tenant_config:
-  policy_group_overrides:
-    replace:
-      - from: system/group/provenance-full-inline
-        to: system/group/provenance-deduplicated
-        reason: "Deploying at scale — switching to deduplicated model"
-```
-
-### 3a.4 The Audit Completeness Guarantee
-
-Regardless of provenance model, full provenance must always be reconstructable:
-
-```
-LAY-008  Regardless of provenance model, full provenance must always be
-         reconstructable for any entity from the combination of: entity
-         record, layer chain store, and Audit Store. The provenance model
-         governs where data is stored and how it is accessed — not whether
-         it is available.
-```
-
-For Model B: chain reference + entity deltas → full provenance (lossless, immutable source)
-For Model C: hot tier (full) OR warm tier (events) + cold tier (anchors prove integrity)
-For Model A: entity record alone is sufficient
-
-### 3a.5 System Policies
-
-| Policy | Rule |
-|--------|------|
-| `LAY-007` | Field-level provenance model is configurable: full_inline, layer_chain_ref (deduplicated), tiered, or layer_chain_ref_tiered. Profile activates the appropriate Policy Group as default. Organizations override by replacing the active provenance group. Model B (layer_chain_ref) is the recommended default for standard+ profiles. |
-| `LAY-008` | Regardless of provenance model, full provenance must always be reconstructable from the combination of entity record, layer chain store, and Audit Store. The provenance model governs storage location and access pattern — not data availability. |
-
----
-
-
-### 2a. Layer Contributors
+## 2a. Layer Contributors
 
 Every layer type has a declared contributor type. The contributor determines what review is required before the layer becomes active in assembly. See [Federated Contribution Model](../governance/federated-contribution-model.md) Section 3 for the full contributor permission table.
 
@@ -318,7 +145,6 @@ The Request Layer is the only layer type that does not require a PR review — i
 
 
 > **Machine-validatable schema:** `registry/layer.schema.json` (data-model-core §2 [D8.4]); `registry/tools/validate.py` dispatches `record_type: layer`.
-
 ## 3. Layer Types
 
 DCM defines six layer types. Each has a distinct purpose, scope, ownership model, and position in the assembly precedence chain.
@@ -647,6 +473,142 @@ Authoritative: [ADR-054](../../adr/ADR-054-references-context-and-field-projecti
 
 ---
 
+## 3a. Provenance Model Configuration
+
+### 3a.1 The Three Provenance Models
+
+Field-level provenance tracks which layer set each field, which policy modified it, and the full change history. DCM supports three configurable models — organizations choose based on their scale, compliance requirements, and operational preferences. The active Profile provides a recommended default via its activated Policy Group.
+
+**Model A — Full Inline**
+All provenance stored explicitly on every entity record. Every field carries its complete provenance inline: source layer, modifying policies, previous values, timestamps, actor chain.
+
+| Aspect | Detail |
+|--------|--------|
+| Storage cost | Very high — scales with entities × fields × changes |
+| Query simplicity | Highest — all provenance in one record, no traversal |
+| Write performance | Lowest — every field change requires provenance write |
+| Audit clarity | Highest — regulators see everything in one record |
+| Tooling required | Minimal |
+| Best for | Small deployments; FSI/sovereign (regulatory clarity); home lab |
+
+**Model B — Deduplicated (Content-Addressed) ← RECOMMENDED**
+Classical content-addressed deduplication applied to provenance. The layer chain is the deduplication key — every entity sharing the same configuration references the same chain rather than storing a copy. Only fields deviating from the chain store unique delta records.
+
+```
+Full provenance = layer chain content (deduplicated, shared) + entity deltas (unique per entity)
+```
+
+**Why lossless:** Layer chains are immutable. A reference to `layer-chain-abc123` always resolves to exactly the same data — no cache invalidation, no drift. This is what makes the deduplication lossless for audit. The reference always reconstructs the original.
+
+**Storage reduction:** 95-99% for standardized deployments (many entities, few unique chains). 36 layer definitions serving 40,000 VMs produces 36 chain references, not 8 million field provenance entries.
+
+| Aspect | Detail |
+|--------|--------|
+| Storage cost | Low — scales with unique configurations, not entity count |
+| Query simplicity | Medium — chain traversal required for layer-set fields |
+| Write performance | Highest — only deltas write; chain-matching fields are free |
+| Audit clarity | Complete — full reconstruction always possible |
+| Tooling required | Moderate — chain traversal tooling |
+| Best for | Standard and prod deployments; large-scale environments |
+
+**Analogous to:** Git content-addressed objects, Docker image layers, ZFS block deduplication — all content-addressed, deduplicated, lossless.
+
+**Model C — Tiered Archive**
+Hot/warm/cold storage tiers with decreasing detail. Recent provenance at full detail and fast access; older provenance compressed to change events; oldest compressed to hash anchors only (tamper-evidence without full reconstruction).
+
+| Aspect | Detail |
+|--------|--------|
+| Storage cost | Medium — time-dependent, degrades gracefully |
+| Query simplicity | Medium — cross-tier joins for long time ranges |
+| Write performance | Medium |
+| Audit clarity | Full detail in hot tier; change events in warm; anchors in cold |
+| Tooling required | Moderate — tier promotion jobs, consistency checks |
+| Best for | Large deployments with long retention requirements |
+
+**Models B and C are orthogonal** — combine them for maximum efficiency: deduplicate at the entity level (Model B) AND tier the storage of chains and deltas (Model C). This is the highest-efficiency option for very large-scale deployments with long retention requirements.
+
+### 3a.2 Configurable Provenance Model
+
+The provenance model is declared in the DCM deployment configuration and activated via a Policy Group:
+
+```yaml
+provenance_config:
+  model: <full_inline|layer_chain_ref|tiered|layer_chain_ref_tiered>
+
+  # Model A — Full Inline
+  full_inline:
+    include_previous_values: true
+    include_actor_chain: true
+    include_policy_rationale: true
+
+  # Model B — Deduplicated (Content-Addressed)
+  layer_chain_ref:
+    store_layer_derivable: false      # do not store fields matching chain default
+    delta_detail_level: <full|summary>
+    history_document_retention: P7Y
+    chain_store_retention: P7Y       # chains retained while any entity references them
+
+  # Model C — Tiered Archive
+  tiered:
+    hot_tier_duration: P30D          # full detail, fast access
+    warm_tier_duration: P365D        # change events only
+    cold_tier_duration: P10Y         # hash anchors only
+    warm_tier_detail: <change_events_with_values|change_events_only>
+
+  # Model B + C — Deduplicated + Tiered (maximum efficiency)
+  layer_chain_ref_tiered:
+    chain_store_hot: P365D           # chains fast for 1 year
+    chain_store_warm: P7Y            # chains slower for 7 years
+    delta_store_hot: P90D            # deltas fast for 90 days
+    delta_store_warm: P7Y            # deltas slower for 7 years
+```
+
+### 3a.3 Profile-Appropriate Provenance Policy Groups
+
+DCM ships four provenance Policy Groups. The active Profile activates the appropriate group by default. Organizations override by swapping the active group.
+
+| Group Handle | Model | Profile Default | Concern Type |
+|-------------|-------|----------------|-------------|
+| `system/group/provenance-full-inline` | A — Full Inline | homelab, dev, fsi, sovereign | implementation_posture |
+| `system/group/provenance-deduplicated` | B — Deduplicated | standard, prod | implementation_posture |
+| `system/group/provenance-tiered-archive` | C — Tiered | (available — not default) | implementation_posture |
+| `system/group/provenance-deduplicated-tiered` | B+C — Combined | (available for large-scale) | implementation_posture |
+
+**To change provenance model:**
+```yaml
+# Override profile default — swap the active provenance group
+tenant_config:
+  policy_group_overrides:
+    replace:
+      - from: system/group/provenance-full-inline
+        to: system/group/provenance-deduplicated
+        reason: "Deploying at scale — switching to deduplicated model"
+```
+
+### 3a.4 The Audit Completeness Guarantee
+
+Regardless of provenance model, full provenance must always be reconstructable:
+
+```
+LAY-008  Regardless of provenance model, full provenance must always be
+         reconstructable for any entity from the combination of: entity
+         record, layer chain store, and Audit Store. The provenance model
+         governs where data is stored and how it is accessed — not whether
+         it is available.
+```
+
+For Model B: chain reference + entity deltas → full provenance (lossless, immutable source)
+For Model C: hot tier (full) OR warm tier (events) + cold tier (anchors prove integrity)
+For Model A: entity record alone is sufficient
+
+### 3a.5 System Policies
+
+| Policy | Rule |
+|--------|------|
+| `LAY-007` | Field-level provenance model is configurable: full_inline, layer_chain_ref (deduplicated), tiered, or layer_chain_ref_tiered. Profile activates the appropriate Policy Group as default. Organizations override by replacing the active provenance group. Model B (layer_chain_ref) is the recommended default for standard+ profiles. |
+| `LAY-008` | Regardless of provenance model, full provenance must always be reconstructable from the combination of entity record, layer chain store, and Audit Store. The provenance model governs storage location and access pattern — not data availability. |
+
+---
 
 ## 4. Layer Identity — Domain, Handle, and Priority
 
@@ -1350,6 +1312,48 @@ A `pinned` policy-version rehydration (Historical Exact or Historical Portable m
 
 ---
 
+### 5a.10 Override Control Metadata — Full Structure
+
+The complete field metadata structure carrying override control in the payload:
+
+```yaml
+field_name:
+  value: <current value>
+  metadata:
+    # Simple declaration (Level 2) — set by Policy Engine at runtime
+    override: <allow|constrained|immutable>
+    # OR matrix declaration (Level 3) — set by Policy Engine at runtime
+    override_matrix:
+      <full matrix structure per Section 5a.5>
+
+    # Always present regardless of level
+    basis_for_value: <human-readable — why this value was set>
+    baseline_value: <the original default before any override>
+    locked_by_policy_uuid: <uuid of policy that set this>
+    locked_at_level: <global|tenant|user>
+    constraint_schema: <JSON Schema — if constrained>
+
+  provenance:
+    origin:
+      value: <original value>
+      source_type: <layer type or source>
+      source_uuid: <uuid>
+      timestamp: <ISO 8601>
+    modifications:
+      - sequence: 1
+        previous_value: <value before>
+        modified_value: <value after>
+        source_uuid: <uuid of modifying entity>
+        operation_type: <enrichment|transformation|validation|gating|override|lock|grant>
+        actor: <actor type that performed this operation>
+        timestamp: <ISO 8601>
+        reason: <human-readable>
+```
+
+---
+
+The Request Payload Processor assembles the final payload by executing the following **nine steps** in order. Each step is recorded in the payload's provenance chain.
+
 ### 5a.11 Global Policy Self-Override — The Immutable Ceiling Model
 
 **Q51 resolved:** When a Global compliance-class Validation Policy sets `override: immutable` on a field, can a higher-priority Global policy still override it?
@@ -1392,48 +1396,6 @@ classification_level:
 **Audit behavior:** When a policy attempts to override a field with `immutable_ceiling: absolute`, the attempt is rejected silently from the requesting policy's perspective (the field simply doesn't change) but is fully logged in the Audit Store with the policy UUID, the attempted value, the rejection reason, and the UUID of the policy that set the ceiling.
 
 ---
-
-### 5a.10 Override Control Metadata — Full Structure
-
-The complete field metadata structure carrying override control in the payload:
-
-```yaml
-field_name:
-  value: <current value>
-  metadata:
-    # Simple declaration (Level 2) — set by Policy Engine at runtime
-    override: <allow|constrained|immutable>
-    # OR matrix declaration (Level 3) — set by Policy Engine at runtime
-    override_matrix:
-      <full matrix structure per Section 5a.5>
-
-    # Always present regardless of level
-    basis_for_value: <human-readable — why this value was set>
-    baseline_value: <the original default before any override>
-    locked_by_policy_uuid: <uuid of policy that set this>
-    locked_at_level: <global|tenant|user>
-    constraint_schema: <JSON Schema — if constrained>
-
-  provenance:
-    origin:
-      value: <original value>
-      source_type: <layer type or source>
-      source_uuid: <uuid>
-      timestamp: <ISO 8601>
-    modifications:
-      - sequence: 1
-        previous_value: <value before>
-        modified_value: <value after>
-        source_uuid: <uuid of modifying entity>
-        operation_type: <enrichment|transformation|validation|gating|override|lock|grant>
-        actor: <actor type that performed this operation>
-        timestamp: <ISO 8601>
-        reason: <human-readable>
-```
-
----
-
-The Request Payload Processor assembles the final payload by executing the following **nine steps** in order. Each step is recorded in the payload's provenance chain.
 
 ### Step 1 — Intent Capture
 The consumer's Request Layer is received and stored as the **Intent State** in the Intent Store. No modification occurs at this step. The Intent State is the immutable record of what the consumer asked for.
