@@ -164,7 +164,7 @@ match, resolves projections, and enforces the invariants (a peer MAY differ).
 
 ## What this does not decide
 
-The `§10` coordinate/addressing grammar itself (ADR-038 + the scoped-class-hierarchy design notes);
+The `§10` coordinate/addressing grammar itself (ADR-038 + the class-hierarchy design notes);
 the assembly precedence/override/`narrow_only` model (`foundations/layering-and-versioning.md`); and
 the firewall admission `PROJ-P6` and cross-domain guard (ADR-041). The JSON-Schema shapes (the edge
 `nature`, `covers`/`applies_on`/`from_layers`/`skip` on the layer/request envelopes) follow as an
