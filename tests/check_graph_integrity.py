@@ -40,7 +40,7 @@ def nodes_and_edges():
                 nodes.add(rt)
                 for e in d.get("relationships") or []:
                     edges.append((rt, e.get("edge_type"), e.get("target"), e.get("enforcement", "example")))
-    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "*.yaml")):
+    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
         d = load(p)
         if d.get("record_type") == "class":
             nodes.add(d["resource_type"])

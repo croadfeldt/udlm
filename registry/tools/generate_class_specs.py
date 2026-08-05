@@ -30,7 +30,7 @@ SPEC_VALIDATOR = Draft202012Validator(json.load(open(os.path.join(ROOT, "resourc
 
 def load_classes():
     by_name = {}
-    for path in sorted(glob.glob(os.path.join(CLASSES, "*.yaml"))):
+    for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         if doc.get("record_type") == "class":
             by_name[doc["resource_type"]] = doc
