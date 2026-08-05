@@ -15,7 +15,7 @@ provider-required field gets filled. The namespace question surfaced the need to
 and to confirm no new primitive is required. Recording it here settles the question and gives the team one
 place to point to.
 
-A portable request is incomplete on purpose: the abstract `Compute.VirtualMachine` carries `guest_os`, size,
+A portable request is incomplete on purpose: the abstract `Compute.VM` carries `guest_os`, size,
 disks, networks — never OpenShift's `namespace` or VMware's `cluster` (ADR-016). Once placement selects a
 provider, that provider requires fields the intent never carried. **Where does the value come from, and how
 is the right one chosen?**

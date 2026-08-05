@@ -1,9 +1,9 @@
-# Implementing a resource type — a worked walkthrough (`Compute.VirtualMachine`)
+# Implementing a resource type — a worked walkthrough (`Compute.VM`)
 
 **Audience:** an engineer building **provider** support for a UDLM resource type.
 **What this answers:** *"can we actually implement this?"* — yes, and here is the whole path for one type,
 each step pointing to the obligation that governs it (this is a map, not a re-spec — it never restates the
-contracts). It uses `Compute.VirtualMachine` throughout and **extends the four-states worked example**
+contracts). It uses `Compute.VM` throughout and **extends the four-states worked example**
 ([`four-states.md`](../foundations/four-states.md) §2.6) from *what each state record holds* to *what you do
 to produce it*.
 
@@ -18,7 +18,7 @@ over-building comes from crossing this line — see `sovereignty` / `policy` in 
 
 **0 · Declare what you support** — [`CONFORMANCE.md`](../CONFORMANCE.md) §4. Pick a conformance level +
 profile; declare the surfaces you implement and the types + versions you support
-(`Compute.VirtualMachine@<version>`). Register per [`provider-contract.md`](../contracts/provider-contract.md) §2.
+(`Compute.VM@<version>`). Register per [`provider-contract.md`](../contracts/provider-contract.md) §2.
 
 **1 · Read the type spec** — [`registry/generated/compute.vm.json`](../registry/generated/compute.vm.json).
 Its fields, typed `outputs`, edges, and `$id`/version are the **exact contract you validate against** — resolvable

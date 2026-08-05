@@ -122,7 +122,7 @@ credential_record:
     provider_uuid: <uuid | null>       # interaction credential: scoped to a provider
   scope:
     operations: [dispatch, discover, query, read, write, admin]  # allowed operations
-    resource_types: [Compute.VirtualMachine]                     # scoped resource types
+    resource_types: [Compute.VM]                     # scoped resource types
     tenant_uuid: <uuid | null>                                   # Tenant scope
   non_transferable: true               # always true for substrate-issued credentials
   bound_to_ip: <IP | null>             # optional; enforced in fsi/sovereign profiles
@@ -148,7 +148,7 @@ credential_record:
 
 Credential values are never stored in the implementation's data model, artifact stores, or Realized State Store. The implementation stores only the credential metadata record. The credential value is held exclusively by the Credential Provider.
 
-**`scope.resource_types` is not a read-grant.** It records which resource *types* a credential is valid *for* (e.g. a credential usable when acting on `Compute.VirtualMachine`) — it does **not** mean every resource of that type can read the value. Reading a value is a separate, per-credential authenticated and authorized act (next paragraph): the requester must be the credential's `issued_to` actor/entity, satisfy `value_retrieval_auth`, and pass the Governance Matrix. Scope narrows what a credential *authorizes*; it never widens who can *retrieve* it.
+**`scope.resource_types` is not a read-grant.** It records which resource *types* a credential is valid *for* (e.g. a credential usable when acting on `Compute.VM`) — it does **not** mean every resource of that type can read the value. Reading a value is a separate, per-credential authenticated and authorized act (next paragraph): the requester must be the credential's `issued_to` actor/entity, satisfy `value_retrieval_auth`, and pass the Governance Matrix. Scope narrows what a credential *authorizes*; it never widens who can *retrieve* it.
 
 Authorized consumers retrieve the credential value via `value_retrieval_endpoint` — which resolves to the **registered Credential Provider that holds the value**, not an implementation-core endpoint (the value flows producer → consumer directly; the implementation is never on the value path, CPX-001). Retrieval uses `value_retrieval_auth`, is itself authenticated — typically a short-lived bearer token or mTLS — and is audited.
 
@@ -218,10 +218,10 @@ PENDING → ACTIVE → ROTATING → ACTIVE (new value)
 
 A credential a resource needs is **a dependency like any other** — not a bespoke field. When a resource type requires a credential, that is expressed with the **same `requires` relationship** the dependency model uses for every other dependency (see [Entity Relationships](../entities/entity-relationships.md)): the dependent declares a `requires` edge to a `Credential.*` resource type, and Dependency Resolution issues a sub-request that Placement routes to a provider declaring the matching credential capability. There is no parallel `credential_requirements` mechanism — credentials reuse the dependency graph so that ordering, blast-radius, and lifecycle coupling come for free.
 
-> **Worked example (grounds the use case).** A consumer requests `Compute.VirtualMachine`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
+> **Worked example (grounds the use case).** A consumer requests `Compute.VM`. The catalog item for that VM declares `requires: Credential.SSHKey` (so SSH access to the realized VM is provisioned automatically — no human key-paste, no long-lived shared key). After the VM realizes, Dependency Resolution emits a credential sub-request; Placement **selects a provider that declares the `Credential.SSHKey` capability at the profile's required assurance** and dispatches to it; **that provider** — not the implementation — generates and holds the key, returning only metadata. The same pattern covers an application that `requires: Credential.Secret` for a database password, or a service that `requires: Credential.Certificate` for mTLS identity. In every case the implementation **brokers** (selects, scopes, gates on attestation, audits); a Credential **Provider** issues and holds the value (CPX-001). An implementation never issues a credential itself.
 
 ```
-Consumer requests resource (e.g., Compute.VirtualMachine)
+Consumer requests resource (e.g., Compute.VM)
   │
   ▼ Layer assembly + policy evaluation
   │   Dependency Resolution reads the type's `requires` edges, e.g.:
@@ -242,7 +242,7 @@ Consumer requests resource (e.g., Compute.VirtualMachine)
   │     credential_type: ssh_key
   │     issued_to.actor_uuid: <requesting_actor_uuid>
   │     scope.operations: [ssh_access]
-  │     scope.resource_types: [Compute.VirtualMachine]
+  │     scope.resource_types: [Compute.VM]
   │     expires_at: <now + profile_lifetime>
   │
   ▼ Credential Provider issues credential; returns credential_record
@@ -268,7 +268,7 @@ The implementation prepares to dispatch to a provider
   │   issued_to.component_uuid: <gateway_uuid>
   │   issued_to.provider_uuid: <target_provider_uuid>
   │   scope.operations: [dispatch]
-  │   scope.resource_types: [Compute.VirtualMachine]
+  │   scope.resource_types: [Compute.VM]
   │   entity_uuid: <entity_being_dispatched>
   │   expires_at: <now + PT15M>  (max; profile-governed)
   │
@@ -528,7 +528,7 @@ Request:
   },
   "scope": {
     "operations": ["ssh_access"],
-    "resource_types": ["Compute.VirtualMachine"],
+    "resource_types": ["Compute.VM"],
     "tenant_uuid": "<uuid | null>"
   },
   "expires_at": "<ISO 8601>",

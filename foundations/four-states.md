@@ -203,13 +203,13 @@ The complete recovery-condition machine and Recovery Policy model — how an imp
 
 ## 2.6 A worked example — one VM through the four states
 
-To make the records concrete, here is a single `Compute.VirtualMachine` (entity UUID `…a1b2`) as it moves
+To make the records concrete, here is a single `Compute.VM` (entity UUID `…a1b2`) as it moves
 through the lifecycle. Each state is a **separate, immutable record**; the shared UUID links them. Field
 values are illustrative — the normative shapes are the resource-type spec + `realized-entity.schema.json`.
 
 | State | The record (illustrative) | Who wrote it |
 |-------|---------------------------|--------------|
-| **Intent** | `{entity_uuid: …a1b2, resource_type: Compute.VirtualMachine, cpu: 4, memory: 16GiB, network: "app-tier"}` — the consumer's raw ask, nothing added. | consumer (PR / API ingress) |
+| **Intent** | `{entity_uuid: …a1b2, resource_type: Compute.VM, cpu: 4, memory: 16GiB, network: "app-tier"}` — the consumer's raw ask, nothing added. | consumer (PR / API ingress) |
 | **Requested** | the Intent, **assembled**: org-default image + tags layered in, policy results recorded (sovereignty zone resolved, quota green), **provider selected** (`kubevirt-prod`), and a `reservation_hold_uuid` from validate-and-reserve. **Nothing is built yet.** | assembly + policy (DCM) |
 | **Realized** | provider-confirmed **after commit** — everything above **plus the provider's facts**: `ip: 198.51.100.20`, `vm_id: kv-9f3c`, actual disk `20GiB`. A write-once snapshot, traceable to exactly one Requested record. | provider → denaturalized to UDLM |
 | **Discovered** | a later discovery cycle observes the VM running at `198.51.100.20`, correlated to `…a1b2` via `correlation_ids`. It **matches** Realized → **no drift**. | discovery |

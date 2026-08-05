@@ -200,9 +200,10 @@ pinned to a released contract — which don't exist yet. While `0.x`:
 
 The normative *model* is JSON Schema 2020-12; the *serialization* is not privileged. A registry
 document MAY be authored in **JSON or YAML** — they parse to the same document and validate against
-the same meta-schema (`compute.container.yaml` and `compute.virtual-machine.json` in this registry
-prove it). JSON is the canonical *wire/interchange* form (schema-sharing); YAML is offered for
-authoring ergonomics. Tooling (`tools/validate.py`, `tools/compat-check.py`) loads both.
+the same meta-schema. In practice the authored surface (`registry/classes/`) is YAML and every
+served spec (`registry/generated/`) is JSON — the same document either way. JSON is the canonical
+*wire/interchange* form (schema-sharing); YAML is offered for authoring ergonomics. Tooling
+(`tools/validate.py`, `tools/compat-check.py`) loads both.
 
 ## Enum extensibility
 

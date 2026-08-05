@@ -235,7 +235,7 @@ The **Resource Type Authority** is the team responsible for defining and maintai
 
 A **Service Provider** implements that specification in their Catalog Item and publishes provider-specific extensions and Service Layers on top of it. A provider is the publisher of their catalog item — not necessarily the author of the underlying Resource Type Spec.
 
-In many cases they are the same team: a networking team may both define `Network.VLAN` as the Resource Type Authority AND register as the Service Provider that realizes VLANs. In other cases they are different: a platform team defines `Compute.VirtualMachine` as the Resource Type Authority, and multiple compute providers each independently register Catalog Items implementing that specification.
+In many cases they are the same team: a networking team may both define `Network.VLAN` as the Resource Type Authority AND register as the Service Provider that realizes VLANs. In other cases they are different: a platform team defines `Compute.VM` as the Resource Type Authority, and multiple compute providers each independently register Catalog Items implementing that specification.
 
 Service Providers are first-class contributors of the resource type definitions that consumers request. A provider registering a new virtual machine offering publishes the Resource Type Specification, the Catalog Item, and the Service Layer that consumers use to interact with it.
 
@@ -282,7 +282,7 @@ Providers contribute Service Layers that are applied during request assembly for
 POST /api/v1/provider/contribute/service-layer
 
 {
-  "resource_type_fqn": "Compute.VirtualMachine",
+  "resource_type_fqn": "Compute.VM",
   "layer_handle": "providers/eu-west-prod-1/layers/vm-defaults",
   "layer_domain": "service",
   "provider_uuid": "<uuid>",

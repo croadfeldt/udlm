@@ -12,7 +12,7 @@ builds it. Portable in, provider-ready out — never dispatched half-built.
 
 ## Start vendor-agnostic; add specifics on top
 
-Every request starts from a **vendor-agnostic base**. A portable `Compute.VirtualMachine` carries the things
+Every request starts from a **vendor-agnostic base**. A portable `Compute.VM` carries the things
 true of *any* VM — `guest_os`, size, disks, networks — and deliberately leaves out one provider's mechanics
 like Kubernetes' `namespace`. Keeping those off the base is what makes the type portable: another provider
 can still read it ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) — the type models

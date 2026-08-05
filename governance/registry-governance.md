@@ -35,7 +35,7 @@ Registry governance follows the same substrate principles as all other UDLM gove
 | 2 | **Verified Community** | Named community maintainers | Technology/platform-specific types | Named maintainer(s) + UDLM oversight |
 | 3 | **Organization** | Deploying organization | Organization-specific/proprietary types | Organization's own process |
 
-**Tier 1 examples:** `Compute.VirtualMachine`, `Network.VLAN`, `Network.IPAddress`, `Storage.Block`, `Storage.File`, `Container.Pod`
+**Tier 1 examples:** `Compute.VM`, `Network.VLAN`, `Network.IPAddress`, `Storage.Block`, `Storage.File`, `Container.Pod`
 
 **Tier 2 examples:** `OpenStack.HeatStack`, `VMware.NSXSegment`, `KubeVirt.VirtualMachine`, `Ansible.Playbook`
 
@@ -164,7 +164,7 @@ Version constraints in requests are **strictly enforced** — a conformant imple
 
 ```yaml
 resource_type_version_constraint:
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   version_policy: <exact|compatible|latest_minor|latest>
   # exact:        Must match — "1.2.3" means only 1.2.3
   # compatible:   Same major — "^1.2.3" means >= 1.2.3 < 2.0.0

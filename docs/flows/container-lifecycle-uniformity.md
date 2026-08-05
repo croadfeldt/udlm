@@ -8,7 +8,7 @@ provisioning story ([uc-03](uc-03-vm-standard-provision.md)) shown to be **form-
 
 > **Use Case:** `compute/container-lifecycle`. **Persona:** application-team-member · **Profile:** prod.
 
-**In one breath.** `Compute.Container` and `Compute.VirtualMachine` are **peer resource types** in one
+**In one breath.** `Compute.Container` and `Compute.VM` are **peer resource types** in one
 registry under one edge model, so a container is declared with the same intent shape (image, resources,
 networks, storage, placement) and its dependencies are the **same typed edges**. It flows through the
 **same request-realization pipeline** (assemble → policy → validate-and-reserve → commit); placement selects
@@ -20,7 +20,7 @@ the thing is a container or a VM, on-prem or cloud. One model, one process, all 
 ## The flow
 ```mermaid
 flowchart TD
-  INT["Intent — Compute.Container OR Compute.VirtualMachine<br/>same shape: image · resources · networks · storage · placement"] --> GRAPH["Dependency graph<br/>the same typed edges regardless of form factor"]
+  INT["Intent — Compute.Container OR Compute.VM<br/>same shape: image · resources · networks · storage · placement"] --> GRAPH["Dependency graph<br/>the same typed edges regardless of form factor"]
   GRAPH --> PIPE["Request-realization<br/>the same pipeline: assemble · policy · validate-and-reserve · commit"]
   PIPE --> PROV{"Placement selects the provider"}
   PROV -->|container runtime| CONT["Realized container"]
@@ -31,7 +31,7 @@ flowchart TD
 ```
 
 ## What this adds over request-realization / VM provisioning
-- **Container is a peer type, not a special case.** `Compute.Container` sits beside `Compute.VirtualMachine`
+- **Container is a peer type, not a special case.** `Compute.Container` sits beside `Compute.VM`
   in the registry under one meta-schema and one edge model — a container's dependencies (image, network,
   storage, placement) are the **same typed edges** a VM's are.
 - **The pipeline doesn't change.** Assemble → policy → validate-and-reserve → commit is identical; the only

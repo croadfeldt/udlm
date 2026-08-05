@@ -198,7 +198,7 @@ Consumers may explicitly exclude specific layers from their request. Each exclus
 
 ```yaml
 request:
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   layer_exclusions:
     - layer_handle: "platform/networking/default-dns-config"
       reason: "This VM uses custom DNS — default config conflicts with application requirements"
@@ -296,7 +296,7 @@ Each service dependency executes its **own independent layer chain** during asse
 **Dependency assembly flow:**
 ```mermaid
 flowchart TD
-    P["Parent request: Compute.VirtualMachine"]
+    P["Parent request: Compute.VM"]
     P --> S14["Steps 1-4: Parent layer chain → parent_assembled_payload"]
     S14 --> S5["Step 5: Pre-placement policies on parent"]
     S5 --> S6["Step 6: Placement loop — parent provider selected<br/>Also identifies required dependency providers"]
@@ -312,7 +312,7 @@ flowchart TD
 **Layer exclusions on dependencies** — consumers may declare per-dependency exclusions:
 ```yaml
 request:
-  resource_type: Compute.VirtualMachine
+  resource_type: Compute.VM
   dependencies:
     - resource_type: Network.IPAddress
       layer_exclusions:
