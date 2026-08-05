@@ -1,7 +1,6 @@
 # UDLM — Conformance Specification
 
-**Document Status:** 📋 Draft — Initial Specification
-**Document Type:** Top-Level Conformance Surface
+**Draft** — pre-ratification (#217); the wire-compat promise binds at 1.0.
 **Established:** 2026-05-26
 **Maps to:** DATA (umbrella)
 

@@ -1,6 +1,6 @@
 # Standards Adoption Register
 
-**Document Status:** ✅ Complete — normative (SPEC-DESIGN-REQUIREMENTS hard constraint 31)
+**Normative** — SPEC-DESIGN-REQUIREMENTS hard constraint 31.
 
 Every standard this project **adopts**, absorbs a **pattern** from, **retires**, or deliberately
 **rejects** is recorded here: what, why (including alternatives considered), where it is used,
