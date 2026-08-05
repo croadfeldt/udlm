@@ -1,6 +1,5 @@
 # UDLM — Entity Relationships
 
-**Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md) | [Resource Grouping](resource-grouping.md) | [Information Providers](../contracts/information-providers.md)
 
 > **Foundation Document Reference**
