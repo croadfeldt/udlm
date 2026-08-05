@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
   "resource_type": "Storage.Layout",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -17,7 +17,7 @@
   },
   "metadata": {
     "display_name": "Storage Layout",
-    "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Compute.VirtualMachine — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage tier, an optional role, and an optional boot position. The entry `name` is the stable identity consumers join on; consumption is declared consumer-side (a consumer names its layout and the records realizing its entries declare the realization), never here. A layout record belongs to ONE consumer — reuse of a shape across consumers is the Template tier (ADR-033), so the per-entry realization map stays unambiguous.",
+    "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Compute.VM — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage tier, an optional role, and an optional boot position. The entry `name` is the stable identity consumers join on; consumption is declared consumer-side (a consumer names its layout and the records realizing its entries declare the realization), never here. A layout record belongs to ONE consumer — reuse of a shape across consumers is the Template tier (ADR-033), so the per-entry realization map stays unambiguous.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-29T00:00:00Z"
   },
@@ -37,7 +37,7 @@
       "The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor."
     ],
     "works_with": [
-      "Compute.VirtualMachine — the consumer that realizes this layout (spec.layout_ref).",
+      "Compute.VM — the consumer that realizes this layout (spec.layout_ref).",
       "Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).",
       "Platform.StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map)."
     ]

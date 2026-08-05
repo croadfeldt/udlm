@@ -309,7 +309,7 @@ policy:
   type: validation
   enforcement_class: compliance
   rule: >
-    If resource_type == Compute.VirtualMachine
+    If resource_type == Compute.VM
     AND field.cost_center.confidence_band IN [very_low, low]
     THEN deny: "Cost center assignment confidence insufficient for VM provisioning"
 ```

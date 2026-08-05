@@ -157,7 +157,7 @@ match:
   conditions:
     - field: request.resource_type
       operator: equals
-      value: "Compute.VirtualMachine"
+      value: "Compute.VM"
 
 # Zone + segment scoped — fires on any resource in DMZ in zone A
 match:
@@ -175,7 +175,7 @@ match:
   conditions:
     - field: request.resource_type
       operator: equals
-      value: "Compute.VirtualMachine"
+      value: "Compute.VM"
     - field: request.network_segment
       operator: equals
       value: "dmz"
@@ -949,7 +949,7 @@ policy_artifact:
   overrides: "sovereignty/eu-data-residency"
   scope:
     tenant_tags: ["payments"]
-    resource_types: ["Compute.VirtualMachine"]
+    resource_types: ["Compute.VM"]
     operations: [rehydration, provider_migration]
   effect: relax                              # relax a deny → allow
   justification: "Payments team DR requires zone-c replica per BCP-2026-04"
@@ -970,7 +970,7 @@ exception_grant:
   policy_handle: "sovereignty/eu-data-residency"
   scope:
     tenants: ["payments-team"]
-    resource_types: ["Compute.VirtualMachine"]
+    resource_types: ["Compute.VM"]
     operations: [rehydration, provider_migration]
   effect: relax
   compensating_controls:

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Process.OSPatch/1.0.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Process.OSPatch/1.1.0",
   "conforms_to": "udlm/0.1",
   "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2",
   "resource_type": "Process.OSPatch",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -24,7 +24,7 @@
         },
         {
           "class": "Process.OSPatch",
-          "version": "1.0.0",
+          "version": "1.1.0",
           "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2"
         }
       ]
@@ -32,6 +32,7 @@
   },
   "spec": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "inputs_schema": {
         "type": "object",
@@ -129,7 +130,64 @@
       "patch_policy",
       "reboot_policy",
       "targets"
+    ],
+    "examples": [
+      {
+        "targets": [
+          "role:web"
+        ],
+        "patch_policy": "security-only",
+        "reboot_policy": "if-required",
+        "inputs_schema": {
+          "type": "object",
+          "properties": {
+            "window": {
+              "type": "string"
+            }
+          }
+        },
+        "outputs_schema": {
+          "type": "object",
+          "properties": {
+            "packages_updated": {
+              "type": "integer"
+            }
+          }
+        },
+        "idempotency": "idempotent",
+        "compensation": "none"
+      }
     ]
   },
-  "outputs": {}
+  "outputs": {
+    "last_run_status": {
+      "type": "string",
+      "description": "Outcome of the most recent patch run (succeeded | failed | partial) — the readiness signal schedules and compliance reports consume."
+    },
+    "last_run_timestamp": {
+      "type": "string",
+      "description": "RFC 3339 UTC instant of the most recent run completion."
+    },
+    "packages_updated": {
+      "type": "integer",
+      "description": "Count of packages changed in the most recent run — the drift-facing magnitude signal."
+    }
+  },
+  "context": {
+    "purpose": "The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.",
+    "plain_description": "Declares that hosts get patched: which package sets, within which maintenance windows, at which severity floor. Both engines (blue today, green tomorrow) satisfy this one definition — swapping engines never touches the declared process.",
+    "use_when": [
+      "You schedule or gate OS patching as governed automation",
+      "You need engine-portable patch compliance reporting"
+    ],
+    "not_for": [
+      "Application deployment (a different process family)",
+      "Ad-hoc one-host package installs"
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — the patched substrate",
+      "Compute.VM — the patched substrate",
+      "Process.OSPatch.EngineBlue / EngineGreen — the executing engines"
+    ]
+  }
 }

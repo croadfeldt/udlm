@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Topology/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "34b1a133-4377-4bd6-b089-2345e8e80aab",
   "resource_type": "Topology",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -26,7 +26,7 @@
     ],
     "works_with": [
       "Facility.Location — the physical containment the domains often mirror.",
-      "Compute.VirtualMachine — placement intent resolved against domain kinds.",
+      "Compute.VM — placement intent resolved against domain kinds.",
       "Storage.Cluster — fault-domain-aware placement and maintenance gating."
     ]
   },

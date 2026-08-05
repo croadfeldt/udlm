@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f",
   "resource_type": "Platform.StorageClass",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -27,7 +27,7 @@
     "works_with": [
       "Storage.Volume — volumes declare their class by reference.",
       "Storage.Cluster — the storage cluster backing the class.",
-      "Compute.VirtualMachine — VM disks select a storage class."
+      "Compute.VM — VM disks select a storage class."
     ]
   },
   "adopts": [

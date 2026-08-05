@@ -14,7 +14,7 @@ finding, not a defect (see the spike doc).
 Usage:
   python3 registry/tools/tosca_emit.py --emit <spec.json|.yaml>        # print the TOSCA node type
   python3 registry/tools/tosca_emit.py --round-trip <spec.json|.yaml>  # emit → recover → diff
-  python3 registry/tools/tosca_emit.py                                 # round-trip Compute.VirtualMachine
+  python3 registry/tools/tosca_emit.py                                 # round-trip Compute.VM
 """
 import argparse
 import json
@@ -49,7 +49,7 @@ def _snake(seg):
 
 
 def tosca_type_name(resource_type):
-    # Compute.VirtualMachine → udlm.compute.VirtualMachine
+    # Compute.VM → udlm.compute.VirtualMachine
     parts = resource_type.split(".")
     return "udlm." + parts[0].lower() + ("." + ".".join(parts[1:]) if len(parts) > 1 else "")
 

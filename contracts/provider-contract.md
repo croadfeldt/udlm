@@ -564,7 +564,7 @@ service_provider_capabilities:
   resource_types:                       # PROJECTION of the provider's Resource-family Provider
                                         # Classes (one per class; the class is authored, this
                                         # list is rendered — ADR-038 addendum)
-    - fqn: Compute.VirtualMachine
+    - fqn: Compute.VM
       spec_version: "2.1.0"
       catalog_item_uuid: <uuid>
   two_phase_realization:                # reserve/commit/release — base MUST for realize_resources (§6a)
@@ -719,7 +719,7 @@ composite_service_capabilities:
     - fqn: ApplicationStack.WebApp
       version: "2.0.0"
       constituents:
-        - resource_type: Compute.VirtualMachine
+        - resource_type: Compute.VM
           required_for_delivery: required
         - resource_type: Network.IPAddress
           required_for_delivery: required
@@ -784,10 +784,10 @@ peer_dcm_capabilities:
   # peer may request" is set locally. A peer cannot widen its own grants by declaring them here.
   inbound_authorization:                 # requested (advisory)
     - operation: catalog_query
-      resource_types: [Compute.VirtualMachine]
+      resource_types: [Compute.VM]
   outbound_authorization:                # requested (advisory)
     - operation: placement_query
-      resource_types: [Compute.VirtualMachine]
+      resource_types: [Compute.VM]
   data_boundary:
     max_classification: restricted
   # trust_posture is NOT declared here (DCM ADR-022). A federating peer submits attestation EVIDENCE
@@ -918,7 +918,7 @@ External systems MUST be able to query for specific capabilities:
 GET /api/v1/capabilities?domain=cost
 GET /api/v1/capabilities?domain=audit
 GET /api/v1/capabilities?data_stream=true
-GET /api/v1/capabilities?operation=create&resource_type=Compute.VirtualMachine
+GET /api/v1/capabilities?operation=create&resource_type=Compute.VM
 ```
 
 The response MUST include only matching capabilities with their API endpoints and subscription mechanisms.

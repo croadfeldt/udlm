@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,10 +22,10 @@
     "not_for": [
       "The VLAN id or segment itself — Network.VLAN; a virtual network rides a segment, referenced not restated.",
       "The host bridge device — Hardware.NetworkInterface (device_class bridge) supports this network from below.",
-      "Per-guest NIC intent — that lives on Compute.VirtualMachine's own networks list."
+      "Per-guest NIC intent — that lives on Compute.VM's own networks list."
     ],
     "works_with": [
-      "Compute.VirtualMachine / Compute.Cluster — the guests that attach, and the scope that hosts the network.",
+      "Compute.VM / Compute.Cluster — the guests that attach, and the scope that hosts the network.",
       "Network.VLAN — the underlying segment, selected by reference.",
       "Hardware.NetworkInterface — the supporting bridge or uplink on the host.",
       "Network.IPAddressPool — the address pool scoped to this segment."

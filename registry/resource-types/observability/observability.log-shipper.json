@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.3.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
   "resource_type": "Observability.LogShipper",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -24,7 +24,7 @@
       "Metrics or trace collection — not covered; this type is logs."
     ],
     "works_with": [
-      "Compute.BareMetalHost / Compute.VirtualMachine — the target host whose logs are shipped.",
+      "Compute.BareMetalHost / Compute.VM — the target host whose logs are shipped.",
       "Software.Service — the central log store the sink URL points at."
     ]
   },

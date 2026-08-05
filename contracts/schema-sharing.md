@@ -81,7 +81,7 @@ that catalogs all its declared types and extensions.
   "published_at": "2026-05-26T14:32:18Z",
   "manifest": {
     "entity_types": [
-      { "id": "Compute.VirtualMachine", "version": "0.3.0", "schema_url": "/schemas/entity_types/Compute.VirtualMachine/0.3.0" },
+      { "id": "Compute.VM", "version": "0.3.0", "schema_url": "/schemas/entity_types/Compute.VM/0.3.0" },
       { "id": "Network.IPAddress", "version": "0.2.0", "schema_url": "/schemas/entity_types/Network.IPAddress/0.2.0" }
     ],
     "event_types": [

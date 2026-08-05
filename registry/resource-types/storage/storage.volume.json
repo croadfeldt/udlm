@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "lifecycle": {
@@ -37,7 +37,7 @@
     "works_with": [
       "Platform.StorageClass — the class declaring what kind of storage the volume gets.",
       "Storage.Cluster — the platform provisioning it.",
-      "Compute.VirtualMachine — the consumer(s) it attaches to.",
+      "Compute.VM — the consumer(s) it attaches to.",
       "Data.Database — databases whose data directory it backs."
     ]
   },
@@ -129,7 +129,7 @@
       "edge_type": "references",
       "name": "attaches_to",
       "adopted_from": "OASIS TOSCA AttachesTo",
-      "target": "Compute.VirtualMachine",
+      "target": "Compute.VM",
       "cardinality": "0..n",
       "description": "The consumer(s) this volume is attached to (RWX volumes attach to many). attaches_to is the same relation IPAddress uses for interface attachment — the consumable-resource-to-consumer edge."
     },

@@ -21,7 +21,7 @@
     "$id": {
       "type": "string",
       "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conforms_to`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VirtualMachine) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
+      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conforms_to`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VM) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
     },
     "conforms_to": {
       "type": "string",
@@ -36,7 +36,7 @@
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, entities/knowledge-family.md)."
+      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VM, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, entities/knowledge-family.md)."
     },
     "version": {
       "type": "string",
@@ -54,7 +54,7 @@
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow. Constrained by `family` (see allOf). The specific type (e.g. Compute.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
     },
     "lifecycle_archetype": {
       "enum": [
