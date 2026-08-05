@@ -1,18 +1,24 @@
 # UDLM — Credentials
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Specification — Credential lifecycle, types, contracts
-**Related Documents:** [Provider Contract](../contracts/provider-contract.md) | [Auth Providers](auth-providers.md) | [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) | [Provider Callback Auth](../contracts/provider-callback-auth.md) | [Standards Catalog](../../../registry/standards-catalog.md)
+**What this settles.** The single home for anything credential-shaped: the closed
+`credential_types` vocabulary (§2), the credential record and scope wire contract (§3),
+lifecycle (§4), rotation (§5), revocation (§6), consumer delivery (§7), the provider API and
+registration contracts (§8–§9), the cryptographic floor (§10), and the `CPX-*` system
+policies (§14).
 
-> **Foundation Document Reference**
->
-> Credentials in UDLM are first-class Data artifacts. Credential issuance is a **capability** a provider declares (`credential_capability`), not a separate provider kind (§1). The Zero Trust model in [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) governs credential scope and lifetime — this document specifies the substrate contract that any conformant implementation MUST honor.
->
-> **This document maps to: DATA + PROVIDER**
+**In one breath.** The implementation is a trust **broker**, never a credential authority:
+credential *values* are produced and held by a provider and flow **directly** to the
+authorized consumer (CPX-001) — DCM never sees, stores, or relays one. Its role is to
+**select** a provider, **scope** the request, **gate** on attestation, and **audit**; and
+"Credential Provider" is a **capability** a provider declares, not a separate provider kind.
 
----
-
-> **Cryptographic Standards:** See [Standards Catalog](../../../registry/standards-catalog.md) for the complete list of permitted/forbidden algorithms, FIPS requirements per profile, and certificate protocol RFCs (RFC 7030, RFC 8555, RFC 8894, RFC 4210).
+**Background — read first** (skip if you have it):
+[accreditation-and-authorization-matrix.md](accreditation-and-authorization-matrix.md) — the
+zero-trust model that governs credential scope and lifetime ·
+[provider-contract.md](../contracts/provider-contract.md) — how a capability is declared and
+becomes selectable · [standards-catalog.md](../../../registry/standards-catalog.md) — the
+permitted/forbidden algorithms, FIPS floors per profile, and certificate protocol RFCs
+(RFC 7030, 8555, 8894, 4210).
 
 ## 1. Credential Scope
 
