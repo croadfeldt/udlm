@@ -23,8 +23,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(REPO, "registry", "profile-settings-index.md")
 
 PROFILES = ["minimal", "dev", "standard", "prod", "fsi", "sovereign"]
-SCOPE = ["contracts", "foundations", "governance", "entities", "observability",
-         "lifecycle", "design-principles", "registry"]
+SCOPE = ["docs/spec", "registry"]
 # The master scaling table + the index itself legitimately enumerate profiles.
 ALWAYS_OK = {"docs/spec/principles/design-priorities.md", "registry/profile-settings-index.md"}
 # A doc path referenced in the index (e.g. docs/spec/governance/credentials.md).
