@@ -915,8 +915,6 @@ The relationship graph exists across all four states:
 
 ### 11.1 DCM System Policies for Relationships
 
-> `ERL-001..004` were renumbered from `REL-001..004` (2026-07-06 consistency review) — the `REL-*` family is owned by `registry/common-elements.md` §9.
-
 | Policy | Rule |
 |--------|------|
 | `ERL-001` | Every relationship must have a UUID |
@@ -984,8 +982,6 @@ lifecycle_policy:
 ```
 
 ### 11.2a Cross-Tenant Dependency System Policies
-
-> `ERL-D01..D03` were renumbered from `DEP-001..003` (2026-07-06 consistency review) — the `DEP-*` family is owned by `entities/service-dependencies.md`.
 
 | Policy | Rule |
 |--------|------|

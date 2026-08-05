@@ -69,7 +69,7 @@ archetype — an identity is maintained, not one-shot.)*
 - **Data · Policy · Provider** — the invariant decomposition. UDLM = Data (substrate); DCM = Policy
   (implementation); Provider = mechanism (wraps tools, T8). Every decision decomposes across all three.
 - **Pattern → Template → System** — roles, not new things (above). **Composite Service = Template**
-  (ADR-034); **Blueprint** is retired → Template.
+  (ADR-034); **Blueprint** — do not use; the term is **Template**.
 
 ## Canonical glossary (proposed) + retired aliases
 

@@ -116,7 +116,7 @@ prefixes:
     status: active
     # SANCTIONED co-ownership, not debt: the Universal Group Model doc deliberately co-defines
     # the GRP family with a coordinated number space (GRP-007..015 + GRP-INV-* there;
-    # 001-005/016-019 here) and states the invariant itself — "every GRP-* id has exactly one
+    # GRP-001..005 here) and states the invariant itself — "every GRP-* id has exactly one
     # definition" (universal-groups §2.3). No duplicate ID; the check still enforces that.
     additional_homes: [observability/universal-groups.md]
   - prefix: INF

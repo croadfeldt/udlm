@@ -248,8 +248,7 @@ The `who` in an audit record is not a single identity — it is a **composite ac
 | `scheduled_job` | Discovery cycle runs | Owner of the scheduled job |
 
 This is the ONE `actor.type` enum. External policy-evaluation ("black box") actors are
-`provider` actors — the former separate value for them was removed when the flat
-human/service_account/system model (§10.3/Q3) was reconciled into this nested shape.
+`provider` actors.
 
 ### 5.2 System-Initiated Actions
 
