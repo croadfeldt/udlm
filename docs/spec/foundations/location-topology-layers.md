@@ -1,7 +1,5 @@
 # UDLM — Layered Topology Contract
 
-**Document Status:** ✅ Stable — UDLM substrate contract (abstract)
-**Document Type:** Core Substrate Specification
 **Related Documents:** [Data Layers and Assembly](layering-and-versioning.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Governance Matrix](../governance/governance-matrix.md) | [Registry Governance](../governance/registry-governance.md)
 
 ---

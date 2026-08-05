@@ -144,7 +144,6 @@ Every layer type has a declared contributor type. The contributor determines wha
 
 The Request Layer is the only layer type that does not require a PR review — it is a consumer's direct field declarations on a specific request. All other layers flow through the GitOps PR model.
 
-
 > **Machine-validatable schema:** `registry/layer.schema.json` (data-model-core §2 [D8.4]); `registry/tools/validate.py` dispatches `record_type: layer`.
 ## 3. Layer Types
 
@@ -1644,7 +1643,6 @@ policy:
 |--------|------|
 | `LAY-005` | Layer fields declare override intent as allow, constrained, or immutable. The Request Payload Processor enforces override declarations during assembly Step 3. immutable prevents overrides from lower-authority domains only — higher-domain layers may always override. Compliance-class Validation Policies may additionally lock allow or constrained fields at runtime. |
 | `LAY-006` | Constraint schemas on constrained fields are visible to consumers in the Service Catalog UI and Consumer API at a policy-governed disclosure level: full (constraint, bounds, reason, suggestions), summary (bounds only), or hidden (enforced but not displayed). Profile sets the default. Policy may override per field or resource type. |
-
 
 ## 13b. Layer System Policies
 

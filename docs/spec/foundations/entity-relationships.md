@@ -7,9 +7,8 @@
 >
 > This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
+> [foundations.md](foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
 > **This document maps to: DATA + POLICY**
 >
@@ -513,7 +512,6 @@ citable from the shared entity's audit trail. When the count later reaches the d
 `minimum_relationship_count` and destruction proceeds, the destruction audit record cites the
 deferral, closing the loop. The record shapes are DCM's implementation; this content is the
 contract.
-
 
 ### 9.5 Unified with the Allocated Resource Model
 

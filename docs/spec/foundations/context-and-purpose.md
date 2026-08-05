@@ -1,23 +1,11 @@
 # UDLM — Context and Purpose
 
-
-
-**Document Status:** ✅ Complete  
 **Related Documents:** [Entity Types](entity-types.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) | [Four States](four-states.md) | [Layering and Versioning](layering-and-versioning.md) | [Examples](examples.md)
 
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA**
+> [foundations.md](foundations.md).
 >
 > The Data abstraction — foundational data model, provenance, four lifecycle states
-
-
 
 ---
 
