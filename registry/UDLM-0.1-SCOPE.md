@@ -1,6 +1,6 @@
 # UDLM 0.1 — Scope, Use-Case Coverage, and Exit Criteria
 
-**Document Status:** ✅ Normative — the committed definition of the 0.1 release surface.
+**Normative** — the committed definition of the 0.1 release surface.
 **What this settles:** what UDLM 0.1 *is* for the September release — the data/contract surface that
 enables the 21 release use cases, what is deliberately **deferred**, the **exit criteria** that gate
 the `0.1 → 1.0` tag, and the **profile posture** (implement against dev/eval; architect for

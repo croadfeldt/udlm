@@ -1,7 +1,5 @@
 # UDLM — Standards and Compliance Catalog
 
-**Document Status:** ✅ Stable — UDLM substrate reference
-**Document Type:** Substrate Reference — Normative External Standards
 **Purpose:** Single authoritative source for all RFCs, protocols, specifications, and compliance frameworks referenced by the UDLM substrate. For each standard: what it is, where the substrate uses it, and what obligation it places on conformant implementations. Distinct from [`standards-adoption-register.md`](standards-adoption-register.md), which records the adoption *decisions* (why, alternatives, license verdicts) behind `adopts[]` tokens and is ADOPT-001-enforced — this catalog states the *obligations*; the register states the *decisions*. A standard appears in both only when it is both an adopted vocabulary and a conformance obligation.
 
 > **How to read this document:**

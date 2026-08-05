@@ -1,6 +1,6 @@
 # Resource-Type Data Sources — what each infrastructure type adopts by reference
 
-**Document Status:** 🟡 Working — design input for the infrastructure Resource Types
+**Design input**, not contract — the binding adoption verdicts live in each type's `adopts[]` and the [standards-adoption-register](standards-adoption-register.md).
 **Related:** [docs/spec/principles/adopted-standards.md](../docs/spec/principles/adopted-standards.md) (the
 absorb/adopt disposition) · [registry/standards-catalog.md](standards-catalog.md) (the
 authoritative standards list) · [registry/resource-type-spec.schema.json](resource-type-spec.schema.json)
