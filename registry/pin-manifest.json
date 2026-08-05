@@ -227,14 +227,14 @@
  },
  "type:Access": {
   "current": "1.0.0",
-  "path": "registry/classes/access/access/_base.yaml",
+  "path": "registry/classes/access/_base.yaml",
   "versions": {
    "1.0.0": "sha256:415e03eb062518d7353e90cd0aa42f737d79752ceb6c6c66c55ab5342d3fd069"
   }
  },
  "type:Access.IdentityEscrow": {
   "current": "0.2.1",
-  "path": "registry/classes/access/access/identity-escrow.yaml",
+  "path": "registry/classes/access/identity-escrow.yaml",
   "versions": {
    "0.1.1": "sha256:f57ba92461fc8524b50197806ee61c99b7bafa4484608bb075269af8869fb2f3",
    "0.2.0": "sha256:84f41041c2d25e6b007ed495169ef9bc59594b0847e44777a4f746db7153f284",

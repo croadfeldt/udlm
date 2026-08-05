@@ -57,7 +57,11 @@ def main():
         # by its own segment until it has children, then it too becomes <segment>/_base.yaml.
         has_children = any(c.get("parent") == rt for c in _all_docs())
         indexed = doc.get("class") == "base" or has_children
-        want = [family.lower()] + segs + ["_base"] if indexed else [family.lower()] + segs
+        # family-segment dedup (maintainer ruling 2026-08-05): when the first name segment
+        # equals the family (Access.* under family Access), the directory is not repeated —
+        # the family dir IS that segment's dir.
+        eff = segs[1:] if segs and segs[0] == family.lower() else segs
+        want = [family.lower()] + eff + ["_base"] if indexed else [family.lower()] + eff
         if parts != want:
             fails.append(f"{rel}: path says {'/'.join(parts)!r}, expected {'/'.join(want)!r} "
                          f"(family={family}, resource_type={rt}, "
