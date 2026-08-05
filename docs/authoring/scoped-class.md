@@ -92,7 +92,7 @@ Three ideas the gates encode, worth holding in mind as you author:
 
 ## 4. A worked pointer
 
-Copy the pair **`registry/classes/resource/compute.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
+Copy the pair **`registry/classes/resource/compute/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
 `storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm.yaml`** (the Type Class
 — `parent: Compute`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →

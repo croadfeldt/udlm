@@ -287,10 +287,9 @@
         "Resource",
         "Process",
         "Knowledge",
-        "Policy",
-        "Provider"
+        "Access"
       ],
-      "description": "The entity family this Class belongs to (entities/*.md). The Process family may lead class-system adoption (automation intent, realization-plan priority signal)."
+      "description": "The entity family this Class belongs to (entities/*.md). Vocabulary mirrors resource-type-spec.schema.json's family enum (one vocabulary)."
     },
     "status": {
       "enum": [
@@ -388,6 +387,10 @@
     "spec_constraints": {
       "type": "object",
       "description": "SPEC-LEVEL keywords merged verbatim into the compiled spec object, beyond the element-derived properties/required — the home for CROSS-ELEMENT declarative constraints (oneOf / dependentSchemas / if-then, SPEC-DESIGN §16 'structural schema'), a spec-level description, or an additionalProperties override. Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Discovered porting Compute.VM: `oneOf: [[instance_size],[cpu,memory]]` is real spec content no per-element schema can express."
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "The Knowledge/Access family discriminator (resource-type-spec requires it on those families' branches) — pass-through to the compiled spec; meaningless on Resource/Process classes."
     }
   },
   "allOf": [

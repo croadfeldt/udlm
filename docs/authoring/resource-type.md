@@ -32,7 +32,7 @@ Do **not** author a resource type when:
 ## 2. The steps, in order
 
 Each step names the file you touch and the artifact it produces. Copy the worked example
-(`registry/resource-types/storage/storage.pool.yaml`) alongside these.
+(`registry/classes/resource/storage/pool.yaml`) alongside these.
 
 1. **Draft the spec skeleton.** Create `registry/resource-types/<domain>/<Type>.yaml`. Fill the required
    header (`$id`, `conforms_to`, `uuid` — mint a fresh UUIDv4, `resource_type` as `Category.Type`,
@@ -85,7 +85,7 @@ inherit their story rather than writing your own.
 
 ## 4. A worked pointer
 
-Copy **`registry/resource-types/storage/storage.pool.yaml`** — a host-local storage pool. It carries
+Copy **`registry/classes/resource/storage/pool.yaml`** — a host-local storage pool. It carries
 every part in one file: the `spec` with a recursive `$defs.vdev` tree, typed `outputs`
 (`usable_capacity`, `fault_tolerance_remaining`…), `adopts[]` for OpenZFS + SNIA Swordfish, an in-spec
 `spec.examples`, a full `context` block, and a `coverage:` block. For the UC pair to model, copy

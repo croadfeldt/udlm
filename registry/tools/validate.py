@@ -66,11 +66,15 @@ def _type_outputs_index():
     """resource_type -> set(declared output names). The typed-outputs surface a catalog-item
     binding resolves against (data-model-core §2 [D8.3])."""
     index = {}
-    for path in (ROOT / "resource-types").rglob("*"):
-        if path.suffix not in (".json", ".yaml", ".yml"):
+    for base in (ROOT / "resource-types", ROOT / "generated"):
+        if not base.exists():
             continue
-        doc = load(path)
-        index[doc["resource_type"]] = set((doc.get("outputs") or {}).keys())
+        for path in base.rglob("*"):
+            if path.suffix not in (".json", ".yaml", ".yml"):
+                continue
+            doc = load(path)
+            if isinstance(doc, dict) and doc.get("resource_type"):
+                index[doc["resource_type"]] = set((doc.get("outputs") or {}).keys())
     return index
 
 

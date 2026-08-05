@@ -243,7 +243,7 @@
  },
  "type:Automation": {
   "current": "1.1.0",
-  "path": "registry/classes/process/automation.yaml",
+  "path": "registry/classes/process/automation/_base.yaml",
   "versions": {
    "1.1.0": "sha256:7f002f5f04f12e997ea555ac373e4123dfae685715403e68dc8b1a21bb1546ba"
   }
@@ -258,7 +258,7 @@
  },
  "type:Automation.OSPatch": {
   "current": "1.2.0",
-  "path": "registry/classes/process/automation/ospatch.yaml",
+  "path": "registry/classes/process/automation/ospatch/_base.yaml",
   "versions": {
    "1.2.0": "sha256:bb08e74073c4d9267ea0d6af58fade1aef72fe684e94577894f0794b1a92a0a6"
   }
@@ -287,7 +287,7 @@
  },
  "type:Compute": {
   "current": "1.2.0",
-  "path": "registry/classes/resource/compute.yaml",
+  "path": "registry/classes/resource/compute/_base.yaml",
   "versions": {
    "1.0.0": "sha256:e08b92ed9111a2db31dd98e25628e0fa843a1e8190fb524fe3e2efc07c79c63a",
    "1.1.0": "sha256:39b1f2f6e694a7f5bed411fd2015f00d5ec317409222ae531b1085c42b7c7519",
@@ -479,7 +479,7 @@
  },
  "type:Job": {
   "current": "1.0.0",
-  "path": "registry/classes/process/job.yaml",
+  "path": "registry/classes/process/job/_base.yaml",
   "versions": {
    "1.0.0": "sha256:df3916a76072426854257089815099bdf764d883d3c5838ff268b6ccbf88b804"
   }

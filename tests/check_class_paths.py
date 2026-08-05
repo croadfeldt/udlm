@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Path <-> record gate (CLS-PATH-001, maintainer ruling 2026-08-04): the classes directory
-mirrors the class hierarchy — `registry/classes/<family>/<segments-as-path>.yaml`, a class file
-inside its parent's directory, named by its own (kebab-cased) segment. The path RESTATES facts
+mirrors the class hierarchy — `registry/classes/<family>/<segments-as-path>.yaml`, the index-file template: a base (always) or any class with children is a directory holding `_base.yaml`; a childless type/provider is a leaf file named by its own kebab-cased segment. The path RESTATES facts
 the record owns (family, resource_type, parent), so this gate makes it a VERIFIED projection:
   (a) first path component == lower(family)
   (b) remaining components == the resource_type segments, kebab-cased (acronym runs merge:
@@ -30,6 +29,18 @@ def kebab(seg):
     return out or seg.lower()
 
 
+_DOCS = None
+def _all_docs():
+    global _DOCS
+    if _DOCS is None:
+        _DOCS = []
+        for p in glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True):
+            d = yaml.safe_load(open(p, encoding="utf-8")) or {}
+            if d.get("record_type") == "class":
+                _DOCS.append(d)
+    return _DOCS
+
+
 def main():
     fails, n = [], 0
     for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
@@ -40,10 +51,17 @@ def main():
         rel = os.path.relpath(path, CLASSES)
         parts = rel[:-len(".yaml")].split(os.sep)
         rt, family = doc.get("resource_type", ""), doc.get("family", "")
-        want = [family.lower()] + [kebab(s) for s in rt.split(".")]
+        segs = [kebab(s) for s in rt.split(".")]
+        # index-file template (maintainer ruling 2026-08-04): a BASE is always a directory with
+        # _base.yaml (childless bases included — Job); a type/provider class is a leaf file named
+        # by its own segment until it has children, then it too becomes <segment>/_base.yaml.
+        has_children = any(c.get("parent") == rt for c in _all_docs())
+        indexed = doc.get("class") == "base" or has_children
+        want = [family.lower()] + segs + ["_base"] if indexed else [family.lower()] + segs
         if parts != want:
-            fails.append(f"{rel}: path says {'/'.join(parts)!r}, record says {'/'.join(want)!r} "
-                         f"(family={family}, resource_type={rt})")
+            fails.append(f"{rel}: path says {'/'.join(parts)!r}, expected {'/'.join(want)!r} "
+                         f"(family={family}, resource_type={rt}, "
+                         f"{'indexed — base tier or has children' if indexed else 'leaf'})")
         parent = doc.get("parent")
         expect_parent = ".".join(rt.split(".")[:-1]) or None
         if (parent or None) != expect_parent:
