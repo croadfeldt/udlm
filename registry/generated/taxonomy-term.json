@@ -1,41 +1,32 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17",
   "resource_type": "TaxonomyTerm",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "family": "Knowledge",
-  "entity_type": "TaxonomyTerm",
   "status": "active",
   "metadata": {
     "display_name": "Taxonomy Term",
     "description": "A canonical vocabulary term — the normalization authority a catalog normalizes onto (the 'spec' half of the spec/reality pair; Capability is 'reality'). Formalizes entities/knowledge-family.md §4.2. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), never realized by a provider. Cross-cutting foundational machinery — SHARED by multiple vocabularies that occupy DISJOINT subtrees under distinct roots (parent chains never cross roots): e.g. 'architecture-capability' (holds Capability [Knowledge], DAV's architecture-capability sense) and 'provider-capability' (the substrate provider-operation vocabulary; ADR-PROV-002). The `parent` chain up to a root is what keeps those vocabularies disjoint under one type.",
     "maintainer": "udlm-registry",
-    "origination_timestamp": "2026-07-11T00:00:00Z"
-  },
-  "context": {
-    "purpose": "Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.",
-    "plain_description": "A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated — the `curation_state` property: `proposed`, `under-review`, `canonical`, `deprecated`; once canonical, the term's handle is what other records bind to instead of restating names.",
-    "use_when": [
-      "You need an authoritative vocabulary that observed, free-text items normalize onto.",
-      "You need several disjoint controlled vocabularies without minting a new type per vocabulary."
-    ],
-    "not_for": [
-      "The observed thing being normalized — Capability records normalize onto terms; the term is the authority, not the observation.",
-      "Ad-hoc classification of resources — labels on resource records cover that; TaxonomyTerm is for governed vocabularies with curation."
-    ],
-    "works_with": [
-      "Capability — capabilities normalize onto terms (normalized_to).",
-      "TaxonomyTerm — the parent term; chains stay inside one vocabulary root."
-    ]
+    "origination_timestamp": "2026-07-11T00:00:00Z",
+    "converted_from": "flat spec TaxonomyTerm@0.2.1 (bulk mechanical conversion 2026-08-04; single-segment childless instantiable base — the Topology precedent dissolved the naming hold)",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "TaxonomyTerm",
+          "version": "0.3.0",
+          "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17"
+        }
+      ]
+    }
   },
   "spec": {
     "type": "object",
     "additionalProperties": false,
-    "required": [
-      "term",
-      "definition"
-    ],
     "properties": {
       "term": {
         "type": "string",
@@ -75,6 +66,10 @@
         "description": "Position in the curation lifecycle — the Knowledge-family interpretation of the four states. Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate a catalog surfaced. Promotion is a curation act applied by Policy, not by a provider."
       }
     },
+    "required": [
+      "definition",
+      "term"
+    ],
     "examples": [
       {
         "term": "workload-placement",
@@ -88,7 +83,6 @@
       }
     ]
   },
-  "immutable": [],
   "outputs": {
     "term_handle": {
       "type": "string",
@@ -104,13 +98,21 @@
       "description": "parent — this term's parent in the hierarchy. The parent chain terminates at a vocabulary root and never crosses into another root's subtree (keeps shared-machinery vocabularies disjoint)."
     }
   ],
-  "coverage": {
-    "use_cases": [
-      "knowledge/define-taxonomy-term",
-      "observed/observation-off-vocabulary-quarantined"
+  "entity_type": "TaxonomyTerm",
+  "context": {
+    "purpose": "Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.",
+    "plain_description": "A term with an authoritative definition, living in a named vocabulary tree (its root), with a parent chain that never crosses into another vocabulary. Several vocabularies share this one type while staying disjoint — e.g. an architecture-capability taxonomy and a provider-operation vocabulary are separate roots. Terms are curated — the `curation_state` property: `proposed`, `under-review`, `canonical`, `deprecated`; once canonical, the term's handle is what other records bind to instead of restating names.",
+    "use_when": [
+      "You need an authoritative vocabulary that observed, free-text items normalize onto.",
+      "You need several disjoint controlled vocabularies without minting a new type per vocabulary."
     ],
-    "flows": [
-      "docs/flows/estate-observation-lifecycle.md"
+    "not_for": [
+      "The observed thing being normalized — Capability records normalize onto terms; the term is the authority, not the observation.",
+      "Ad-hoc classification of resources — labels on resource records cover that; TaxonomyTerm is for governed vocabularies with curation."
+    ],
+    "works_with": [
+      "Capability — capabilities normalize onto terms (normalized_to).",
+      "TaxonomyTerm — the parent term; chains stay inside one vocabulary root."
     ]
   }
 }
