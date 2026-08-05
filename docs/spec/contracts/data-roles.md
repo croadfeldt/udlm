@@ -1,6 +1,5 @@
 # UDLM — Data Roles (PROPOSED)
 
-**Document Status:** 🟡 PROPOSED — see [ADR-PROV-001](../../../registry/instances/adr-provider-dispatch-role.json)
 **Related:** [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md) | [Governance Matrix](../governance/governance-matrix.md) | [Four States](../foundations/four-states.md)
 
 > **This document maps to: DATA + POLICY + PROVIDER.** It defines the role vocabulary ONCE; records

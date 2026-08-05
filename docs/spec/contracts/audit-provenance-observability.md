@@ -1,23 +1,14 @@
 # UDLM — Audit, Provenance, and Observability
 
-
-
-**Document Status:** ✅ Complete  
 **Related Documents:** [Four States](../foundations/four-states.md) | [data stores](storage-providers.md) | [Context and Purpose](../foundations/context-and-purpose.md)
 
-> **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](provider-contract.md) | [Policy Contract](policy-contract.md)
 >
-> **This document maps to: DATA**
 >
 > The Data abstraction — audit records, provenance as structural data
-
-
 
 ---
 

@@ -1,12 +1,9 @@
 # UDLM — Consumer Request Dependency Graph
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference — Cross-Request Ordering
 **Related Documents:** [Service Dependencies](../foundations/service-dependencies.md) | [Scheduled Requests](scheduled-requests.md) | [Composite Service Model](../foundations/composite-service-model.md) | [Operational Models](operational-models.md)
 
 > **Events:** Dependency resolution events (`request.dependencies_resolved`, `dependency.state_changed`) are defined in the [Event Catalog](../contracts/event-catalog.md).
 
-> **This document maps to: DATA + PROVIDER**
 >
 > **Distinction from existing dependency models:**
 > - Service Dependencies: *type-level* dependencies — the substrate knows that a VM *type* requires an IP type. Resolved automatically during layer assembly.
