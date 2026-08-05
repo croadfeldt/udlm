@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Spec generator (ADR-038 / realization-plan P0): compile each Type Class into the flat
+"""Spec generator (ADR-038; conversion executed 2026-08-04 — classes are the sole authored surface): compile each Type Class into the flat
 resource-type-spec shape consumers read today, so Classes are the authoring layer and the flat
 specs are generated artifacts (never hand-edited). A Type Class's compiled spec is its own elements
 plus every ancestor's, merged under `spec.properties`; `required` is the set of non-optional
