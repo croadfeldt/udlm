@@ -135,6 +135,17 @@ def _canonicalize_refs(node):
             _canonicalize_refs(v)
 
 
+def _standard_filename(resource_type):
+    """naming-conventions: files are `category.type.<ext>` — lowercase, dot-joined, PascalCase
+    segments rendered kebab-case with acronym runs kept whole (VirtualMachine -> virtual-machine,
+    IPAddress -> ip-address, OSPatch -> os-patch, VM -> vm)."""
+    import re as _re
+    def kebab(seg):
+        parts = _re.findall(r"[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[0-9]+", seg)
+        return "-".join(p.lower() for p in parts) or seg.lower()
+    return ".".join(kebab(seg) for seg in resource_type.split(".")) + ".json"
+
+
 def main():
     check = "--check" in sys.argv
     by_name = load_classes()
@@ -151,7 +162,7 @@ def main():
                 print("   - " + "/".join(str(p) for p in e.path) + ": " + e.message)
             drift.append(name); continue
         text = json.dumps(spec, indent=2, ensure_ascii=False) + "\n"
-        out = os.path.join(OUT, name.replace(".", "_") + ".json")
+        out = os.path.join(OUT, _standard_filename(name))
         if check:
             existing = open(out, encoding="utf-8").read() if os.path.exists(out) else ""
             if existing != text:
