@@ -38,6 +38,6 @@ mechanisms in [`governance/registry-governance.md`](../../governance/registry-go
 (intra-registry fixed-version pin refused — 004), `REG-014` (pin ahead or unknown refused, behind
 is enumerated debt — 006), `REG-016` (promotion refused on a dirty typed-output diff — 008), and
 `REG-015` (the durable gate-outcome record every case's "recorded" criterion depends on). Those
-rules are specification, not enforcement: the class artifacts, classifier, and pin resolver they
-run against are P0 items of `docs/design/scoped-class-hierarchy/implementation-plan.md`, and the
-blue/green harness behind 008 is scheduled with the P1 pilot.
+rules are specification, not enforcement: the class artifacts now exist (`registry/classes/`,
+ADR-061), but the class-compat classifier and pin resolver they run against remain unbuilt, and
+the blue/green harness behind 008 is future work.
