@@ -86,12 +86,10 @@ it governs.
   `target_field`), `references` (informational). `relation` (domain tier): a name DECLARED by
   the pinned type (`relationships[].name`), adopted from standards (RFC 8343/8345, TOSCA),
   refining but never overriding its edge_type (REL rules, common-elements §9).
-- **This supersedes the entity-relationships §4 six-type table.** Mapping: `requires` →
-  `depends_on (hard)`; `contains` → the inverse reading of `contained_by` (declared child-side
-  only); `peer` and `manages` → declared relation names (under `references` and `depends_on`
-  respectively). The `nature` axis (constituent|operational|informational) is expressed by:
+- **The `nature` axis** (constituent|operational|informational) is expressed by:
   constituents[] (constituent), edge_type ordering semantics (operational), `references`
-  (informational).
+  (informational). A peer or management concept is a declared relation name (under
+  `references` and `depends_on` respectively), never an edge_type.
 - **Composites** declare `constituents[]` (membership, ordering-neutral) and explicit
   `depends_on` edges (ordering). Ordering is always explicit, never inferred from membership.
 - **Graphs are emergent and acyclic** over ordering edge_types (depends_on/contained_by/binds_to);
