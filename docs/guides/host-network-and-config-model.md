@@ -1,6 +1,6 @@
 # Host networking as data: adapters, IP addresses, and NetworkManager config
 
-**Status:** ✅ Accepted — ratified by [ADR-023](../adr/ADR-023-host-networking-as-data-nmstate.md) (2026-07-15). This doc owns the mapping/worked-example detail; ADR-023 owns the decision.
+**Status:** ✅ Accepted — ratified by [ADR-023](../adr/README.md) (2026-07-15). This doc owns the mapping/worked-example detail; ADR-023 owns the decision.
 **Driver:** I want host network facts to be first-class UDLM records so automation reads them from the
 estate instead of from bespoke per-tool lists. The immediate trigger is small and concrete: when a host's
 motherboard is swapped its NIC gets a new MAC, and its reserved IP (say `192.0.2.91`) should be
