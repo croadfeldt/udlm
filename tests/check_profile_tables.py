@@ -27,8 +27,8 @@ SCOPE = ["docs/spec", "registry"]
 # The master scaling table + the index itself legitimately enumerate profiles.
 ALWAYS_OK = {"docs/spec/principles/design-priorities.md", "registry/profile-settings-index.md"}
 # A doc path referenced in the index (e.g. docs/spec/governance/credentials.md).
-DOCPATH_RE = re.compile(r"\b((?:contracts|foundations|governance|entities|observability|lifecycle|"
-                        r"design-principles|registry)/[A-Za-z0-9_.-]+\.md)\b")
+DOCPATH_RE = re.compile(r"\b((?:docs/spec/(?:contracts|foundations|governance|lifecycle|principles)"
+                        r"|docs/guides|registry)/[A-Za-z0-9_.-]+\.md)\b")
 
 
 def _cells(line):
