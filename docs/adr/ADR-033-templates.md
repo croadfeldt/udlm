@@ -1,7 +1,7 @@
 # ADR-033: Templates — the orderable assembly, and the Pattern → Template → System lifecycle
 
 **Status:** Proposed (2026-07-19) — a post-1.0 direction (ADR-031/032) unless a September use case pulls it in; introduces **no schema change** here.
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `docs/spec/lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-004 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-004 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
 
 ## Context
 
@@ -80,6 +80,7 @@ Per ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change**, 
 - The combined Day-0/1/2 unit is expressible with **no new states, no change to `Composite`, and no new entity shape** — a packaging + binding over the existing lifecycle. The tiers *are* Intent/Requested/Realized (T7: reduce to what exists).
 - `Antipattern` gains its positive twin (`Pattern`); the architecture-pattern concept gets a real home in Knowledge/DAV, and it reads as type-level intent rather than a fourth thing.
 - Templates are the concrete application of ADR-030's consumable model and the flow doc's trigger/day-N picture — they read cleanly only on top of those.
+- The `entity_type` value pair (`Atomic` / `Composite`) is being renamed to say what it asserts (single- vs multi-constituent orchestration) in **its own PR** — this ADR depends on nothing about that rename and is written to survive it.
 - **On-ramp to standardized architecture formats (post-1.0).** A Template is an orderable topology, and LikeC4 / C4 / TOSCA / ArchiMate / OAM are topology-description languages — so the mapping is near-mechanical (components → consumables, relationships → edges, workflows → bound processes). Three directions, all post-1.0:
   - **Ingest** — import a *descriptive* model (C4 / LikeC4 / ArchiMate) → a **Pattern** (Knowledge); a *deployable* one (TOSCA Service Template, RH Validated Pattern) → a **Template**. *(Pattern-lives-in-Knowledge pays off: a Pattern gains a standard interchange format, and DAV becomes the pattern library.)*
   - **Emit** — render a System / the estate *as* LikeC4 / C4. The model already carries the dependency graph, so a UDLM-data visualizer is a natural (post-1.0) DCM capability; the rendering is a formatter over that graph.

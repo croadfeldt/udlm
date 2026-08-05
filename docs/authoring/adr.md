@@ -1,13 +1,10 @@
 # Authoring an ADR
 
-**A ruling gets a register row by default; it earns ADR prose only when the why needs a page.**
-Every decision lands as one row in [`../adr/README.md`](../adr/README.md) — the decisions
-register: what it settled (the gist), where the content lives, what it supersedes. Write a full
-ADR only for a genuinely contested, architecture-shaping decision whose rationale engineering
-must be able to interrogate; a vocabulary call, naming ruling, or mechanism choice is a row,
-with its normative content at its home doc. UDLM adopts the ADR/MADR format by reference; it
-does not coin its own. This HOWTO is the procedure for the prose case; follow it and the
-terminology, single-source, and link gates accept it.
+An ADR is a **decision record** — a short, immutable justification of one UDLM data-model decision.
+UDLM adopts the ADR/MADR format by reference; it does not coin its own (see
+[`../adr/README.md`](../adr/README.md) — the index, where every ADR earns a one-line row carrying its
+gist). This HOWTO is the procedure; follow it and the terminology, single-source, and link gates
+accept it.
 
 > **Read once, first:** [`README.md`](README.md) (the universal contract), the ADR index above (how
 > ADRs are written — the "Background — read first" discipline), and the exemplar below.
@@ -80,7 +77,7 @@ in `registry/rule-id-registry.yaml` **before** you use it.
 
 ## 4. A worked pointer
 
-Copy [`../adr/ADR-055-in-spec-examples.md`](../adr/README.md) — it is the exemplar
+Copy [`../adr/ADR-055-in-spec-examples.md`](../adr/ADR-055-in-spec-examples.md) — it is the exemplar
 for every section: a `Background — read first` on-ramp (rule-36, ADR-051, the coverage gate, each cited
 once with what it settles), a one-decision-area body with numbered clauses, the
 "standards, and what each settles here" table, the Data · Policy · Provider lens, and a scope edge. Its

@@ -18,13 +18,13 @@ separately.
   (projections of the definition stack), catalog/capability lists as projections, scope
   descent, portability as a computation over the states with the port-residue ladder. This ADR's record shape is what
   makes that addendum executable.
-- **[`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md)**: Intent is immutable after
+- **[`foundations/four-states.md`](../../foundations/four-states.md)**: Intent is immutable after
   submission; Discovered has a dual role (snapshot stream under the RHY-008 retention ceiling +
   durable inventory, exempt). Both facts are load-bearing below.
-- **[`docs/spec/foundations/context-and-purpose.md`](../spec/foundations/context-and-purpose.md) §4.3**: the
+- **[`foundations/context-and-purpose.md`](../../foundations/context-and-purpose.md) §4.3**: the
   provenance obligation is reconstructability from stored model facts; its ruled home (this
   cycle) is the audit/OL record family.
-- **[`docs/spec/principles/adopted-standards.md`](../spec/principles/adopted-standards.md) §7**:
+- **[`design-principles/adopted-standards.md`](../../design-principles/adopted-standards.md) §7**:
   the OpenLineage adoption disposition (identity + version-pinned conformance + facet binding).
 - **ADR-051** (identity/version/digest): non-normative surfaces stripped from the identity
   digest — the strip machinery `integrity` reuses.
@@ -32,7 +32,7 @@ separately.
   stored. Applied here until it deleted this ADR's own first draft of the receipt shape.
 - **ADR-052** (intent fulfillment / convergence): the declared window and derived verdicts the
   seals interact with.
-- **`AUD-002` / [D2] ([`docs/spec/foundations/data-model-core.md`](../spec/foundations/data-model-core.md))**:
+- **`AUD-002` / [D2] ([`foundations/data-model-core.md`](../../foundations/data-model-core.md))**:
   audit integrity is the RFC 9162 Merkle model — the requirement and structure the ledger
   realizes.
 - **Issue #191 / E4**: the in-record field-provenance block this ADR supersedes (pending
@@ -151,7 +151,7 @@ gap.
 against its resource-chain head — an audit question answered in the audit home.
 
 **OpenLineage carries the seals** (the adoption disposition and its rationale live in
-[`adopted-standards.md`](../spec/principles/adopted-standards.md) §7). What OL lacks is
+[`adopted-standards.md`](../../design-principles/adopted-standards.md) §7). What OL lacks is
 assigned across the triad — never patched into the standard:
 
 | OL lacks | assigned to |

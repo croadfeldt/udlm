@@ -40,4 +40,4 @@ The Place step is request-realization's; this UC supplies what it selects over.
 ## Pointers
 
 - Base flow: [request-realization](request-realization.md) — this UC feeds its **Place** step. UC source: `libvirt-vm-provider/standard/provider-registration-capability`.
-- What a provider declares it requires (a sibling of what it advertises): `docs/spec/contracts/provider-contract.md`.
+- What a provider declares it requires (a sibling of what it advertises): `contracts/provider-contract.md`.

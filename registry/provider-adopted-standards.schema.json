@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
-  "title": "UDLM Provider — Capability Declaration (adopted standards + docs/spec/foundations/mobility/operational/sovereignty)",
-  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, DCM ADS-001; UDLM ADR-004). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-004 §2 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (DCM).",
+  "title": "UDLM Provider — Capability Declaration (adopted standards + topology/mobility/operational/sovereignty)",
+  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, DCM ADS-001; UDLM ADR-004). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); topology/mobility/operational/sovereignty vary per category WITHIN it (ADR-004 §2 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (DCM).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -122,7 +122,7 @@
         "version",
         "categories"
       ],
-      "description": "One declared, VERSIONED, accreditable capability — the accreditation/version unit (ADR-004 §5; accreditation §3.3.1 grain 3 binds `capability_uuid` + `version`). It realizes one or more `(verb × domain)` categories; docs/spec/foundations/mobility/operational/sovereignty are per-category, WITHIN this capability.",
+      "description": "One declared, VERSIONED, accreditable capability — the accreditation/version unit (ADR-004 §5; accreditation §3.3.1 grain 3 binds `capability_uuid` + `version`). It realizes one or more `(verb × domain)` categories; topology/mobility/operational/sovereignty are per-category, WITHIN this capability.",
       "properties": {
         "capability_uuid": {
           "type": "string",
@@ -132,7 +132,7 @@
         "version": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-          "description": "Immutable-once-published version (VERSIONING.md). Bumped on ANY change to its attested surface (any category's docs/spec/foundations/mobility/operational/sovereignty/resource_types); a grain-3 accreditation covers exactly this version, so a bump expires it until re-attested."
+          "description": "Immutable-once-published version (VERSIONING.md). Bumped on ANY change to its attested surface (any category's topology/mobility/operational/sovereignty/resource_types); a grain-3 accreditation covers exactly this version, so a bump expires it until re-attested."
         },
         "name": {
           "type": "string",
@@ -141,7 +141,7 @@
         "categories": {
           "type": "array",
           "minItems": 1,
-          "description": "The `(verb × domain)` categories (ADR-PROV-002) this capability realizes, each carrying its own docs/spec/foundations/mobility/operational/sovereignty. Two entries may share a category with different resource_types when a finer split is needed.",
+          "description": "The `(verb × domain)` categories (ADR-PROV-002) this capability realizes, each carrying its own topology/mobility/operational/sovereignty. Two entries may share a category with different resource_types when a finer split is needed.",
           "items": {
             "$ref": "#/$defs/category_scope"
           }
@@ -162,7 +162,7 @@
       "required": [
         "category"
       ],
-      "description": "What a capability offers for one `(verb × domain)` category — the grain at which docs/spec/foundations/sovereignty vary (ADR-004 §2). Blocks omitted here inherit `provider_defaults`.",
+      "description": "What a capability offers for one `(verb × domain)` category — the grain at which topology/sovereignty vary (ADR-004 §2). Blocks omitted here inherit `provider_defaults`.",
       "properties": {
         "category": {
           "type": "string",
@@ -355,7 +355,7 @@
             "both"
           ],
           "default": "both",
-          "description": "Which plane the provider commits to enforce this stance on (accreditation §3.8). DCM does NOT enforce residency at the byte level — it conveys the sovereignty requirement + the role:execution data slice (docs/spec/contracts/data-roles.md) to the provider, and the provider's accreditation (§3.7, matching `plane`) attests it enforces at the DATA plane. The control-plane path (operator access / support / telemetry) is the universal leak; a data-only stance does not cover it."
+          "description": "Which plane the provider commits to enforce this stance on (accreditation §3.8). DCM does NOT enforce residency at the byte level — it conveys the sovereignty requirement + the role:execution data slice (contracts/data-roles.md) to the provider, and the provider's accreditation (§3.7, matching `plane`) attests it enforces at the DATA plane. The control-plane path (operator access / support / telemetry) is the universal leak; a data-only stance does not cover it."
         },
         "sub_processors": {
           "type": "array",

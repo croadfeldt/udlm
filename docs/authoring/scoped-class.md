@@ -29,6 +29,9 @@ honor. The Class layer is where you say it once and let the hierarchy carry it.
 
 Do **not** author a Class when:
 
+- You are modeling **one self-contained thing with its own lifecycle** and no shared-element story — that
+  is a flat resource type. Follow [`resource-type.md`](resource-type.md). (You never hand-edit the
+  *generated* flat spec — the generator owns it; you edit the Class.)
 - You are adding **a governed list of values** an element draws from (the actual storage-tier terms) —
   that is reference data (`reference-data.md`). The Class *names* the vocabulary via `values.reference_data_type`;
   the terms are curated records elsewhere.
@@ -89,12 +92,12 @@ Three ideas the gates encode, worth holding in mind as you author:
 
 ## 4. A worked pointer
 
-Copy the pair **`registry/classes/resource/compute/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
-`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm.yaml`** (the Type Class
+Copy the pair **`registry/classes/compute.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
+`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/compute.vm.yaml`** (the Type Class
 — `parent: Compute`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is
-`registry/generated/compute.vm.json` (7 properties). The flow is
+`registry/generated/Compute_VM.json` (7 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
 
 ## 5. Run the gates

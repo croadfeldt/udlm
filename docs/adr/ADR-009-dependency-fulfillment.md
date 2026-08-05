@@ -2,8 +2,8 @@
 
 **Status:** Proposed
 **Date:** 2026-07-13
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-006 (convergence control model — DCM drives the single re-entrant loop); ADR-011 (validate-and-reserve — two-phase RESERVE→COMMIT is the decision-of-record for the realize-time criteria mechanism this ADR only names); ADR-008 (UDLM/DCM boundary — the peer test applied in §5); ADR-004 (provider capability declaration); `docs/spec/contracts/provider-contract.md` §6a (reserve/commit/release verbs); `registry/catalog-item.schema.json` (constituents carry `fulfillment`); `docs/guides/graph-integrity.md` (cycle detection)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-006 (convergence control model — DCM drives the single re-entrant loop); ADR-011 (validate-and-reserve — two-phase RESERVE→COMMIT is the decision-of-record for the realize-time criteria mechanism this ADR only names); ADR-008 (UDLM/DCM boundary — the peer test applied in §5); ADR-004 (provider capability declaration); `contracts/provider-contract.md` §6a (reserve/commit/release verbs); `registry/catalog-item.schema.json` (constituents carry `fulfillment`); `docs/graph-integrity.md` (cycle detection)
 **Tracking:** The recurring "who defines and procures a catalog item's dependencies — the request or the provider" question. This ADR is the decision-of-record so it is not re-litigated.
 
 ## Context
@@ -39,7 +39,7 @@ Each constituent declares a **`fulfillment`** mode, orthogonal to `provided_by` 
 When a provider brokers a dependency it does not own, most of what it conveys is a **shared reference** both sides already understand (for a `Network.IPAddress`, the target `Network.VLAN` segment or `Facility.Location` — nothing bespoke). But some dependencies need **provider-specific realize-time state the base type does not model** (a vendor offload/QoS class, a driver constraint). For those, the target type **MUST be extensible in one of two sanctioned ways**, and the provider contract requires providers to consume whichever the target offers:
 
 - **(a) Base-type extension surface** — the base type carries an open extension block (`spec` `additionalProperties` / a provider-extension layer, `domain: provider`, per `layering-and-versioning.md`); the base stays vendor-neutral, the extension is namespaced to the contributing provider.
-- **(b) Custom resource type layered on the base** — a derived type (`docs/spec/foundations/resource-type-hierarchy.md`) that `aliases`/extends the base and adds the broker's fields as first-class. Used when the shape recurs enough to deserve its own type.
+- **(b) Custom resource type layered on the base** — a derived type (`entities/resource-type-hierarchy.md`) that `aliases`/extends the base and adds the broker's fields as first-class. Used when the shape recurs enough to deserve its own type.
 
 Either satisfies the requirement (minimal-surface: prefer (a) for one-offs, (b) when the shape recurs). **A type that cannot be extended either way is non-conformant for brokered fulfillment.** The point is the **complete, contextual exchange** between broker and owner — the broker can convey everything the dependency needs, faithfully typed and namespaced, rather than being flattened into whatever fixed vocabulary the base type happened to anticipate. Settling the shape ahead of time and validating it at admission is a benefit, not the point.
 
@@ -67,7 +67,7 @@ Catalog item `vm-service` (VM provider), showing all three modes on its constitu
 ```yaml
 constituents:
   - component_id: vm
-    resource_type: Compute.VM
+    resource_type: Compute.VirtualMachine
     provided_by: self          # the VM provider realizes this
     fulfillment: provider
   - component_id: ipaddr

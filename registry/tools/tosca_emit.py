@@ -14,7 +14,7 @@ finding, not a defect (see the spike doc).
 Usage:
   python3 registry/tools/tosca_emit.py --emit <spec.json|.yaml>        # print the TOSCA node type
   python3 registry/tools/tosca_emit.py --round-trip <spec.json|.yaml>  # emit → recover → diff
-  python3 registry/tools/tosca_emit.py                                 # round-trip Compute.VM
+  python3 registry/tools/tosca_emit.py                                 # round-trip Compute.VirtualMachine
 """
 import argparse
 import json
@@ -28,7 +28,7 @@ except ImportError:
     yaml = None
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_SPEC = os.path.join(REPO, "registry/generated/compute.vm.json")
+DEFAULT_SPEC = os.path.join(REPO, "registry/resource-types/compute/compute.virtual-machine.json")
 
 # UDLM JSON-Schema types → TOSCA property types (the clean-mapping rows of the spike table).
 TYPE_MAP = {"object": "map", "array": "list", "string": "string",
@@ -49,7 +49,7 @@ def _snake(seg):
 
 
 def tosca_type_name(resource_type):
-    # Compute.VM → udlm.compute.VM
+    # Compute.VirtualMachine → udlm.compute.VirtualMachine
     parts = resource_type.split(".")
     return "udlm." + parts[0].lower() + ("." + ".".join(parts[1:]) if len(parts) > 1 else "")
 

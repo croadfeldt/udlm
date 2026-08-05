@@ -2,7 +2,7 @@
 
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Specification — Automated test framework contract for data model and architecture validation
-**Related Documents:** [Foundations](../docs/spec/foundations/foundations.md) | [Entity Types](../docs/spec/foundations/entity-types.md) | [Four States](../docs/spec/foundations/four-states.md) | [Policy Contract](../docs/spec/contracts/policy-contract.md) | [Provider Contract](../docs/spec/contracts/provider-contract.md) | [Data Contracts](../docs/spec/principles/data-contracts.md)
+**Related Documents:** [Foundations](../foundations/foundations.md) | [Entity Types](../foundations/entity-types.md) | [Four States](../foundations/four-states.md) | [Policy Contract](../contracts/policy-contract.md) | [Provider Contract](../contracts/provider-contract.md) | [Data Contracts](../design-principles/data-contracts.md)
 
 > **Purpose:** This document defines the contract for an automated, self-reflecting test framework
 > that validates the DCM data model and architecture by generating random end-to-end use cases,
@@ -324,7 +324,7 @@ enhancement_proposal:
   discovered_by: "test-run-2026-04-04-uuid"
   scenario: "Description of the edge case"
   gap: "What the architecture doesn't define"
-  affected_documents: ["docs/spec/contracts/policy-contract.md", "docs/spec/contracts/universal-audit.md"]
+  affected_documents: ["contracts/policy-contract.md", "observability/universal-audit.md"]
   proposed_resolution: "Description of proposed fix"
   invariant_to_add: "New rule ID and assertion"
 ```

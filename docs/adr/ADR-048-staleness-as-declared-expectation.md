@@ -2,10 +2,10 @@
 
 **Status:** Proposed (croadfeldt upstream)
 **Date:** 2026-07-25
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. `docs/spec/foundations/four-states.md` (Discovered state carries the
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. `foundations/four-states.md` (Discovered state carries the
 observation facts: timestamp, method, provider — last-seen is already derivable);
-`docs/spec/foundations/service-dependencies.md` OBS-005 (the profile-governed observation TTL this ADR
+`entities/service-dependencies.md` OBS-005 (the profile-governed observation TTL this ADR
 demotes to a fallback); `registry/accreditation.schema.json` `stale_after`/`stale_action`
 (the in-schema precedent: a declared bound plus a declared consequence);
 `docs/design/change-control-knowledge-sources.md` (independently logs freshness as missing on

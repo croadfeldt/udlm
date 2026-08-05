@@ -41,4 +41,4 @@ Each component's own build is request-realization; decompose, order, and the wir
 ## Pointers
 
 - Base flow (per component): [request-realization](request-realization.md). UC source: `cross-domain/solution-architecture-deployment`.
-- The four states (each component realizes independently): [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md).
+- The four states (each component realizes independently): [`foundations/four-states.md`](../../foundations/four-states.md).

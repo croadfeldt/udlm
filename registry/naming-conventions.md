@@ -12,7 +12,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 ## 1. Type names — `Category.Type`
 
 - **Shape — domain-owned vs cross-cutting:**
-  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Compute.VM`,
+  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Compute.VirtualMachine`,
     `Network.IPAddress`).
   - **Cross-cutting / foundational types (not owned by any single domain) → single-segment**
     PascalCase (`Capability`, `Topology`). This covers Knowledge-family entities *and* cross-domain
@@ -20,7 +20,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
     disambiguates. (The single-segment form signals "domain-neutral," not "Knowledge-only"; the
     meta-schema `resource_type` pattern already permits both forms.)
   - Enforced by the `resource_type` / `$id` patterns in the meta-schema.
-- **Tiered namespace** (`docs/spec/governance/registry-governance.md` §2):
+- **Tiered namespace** (`governance/registry-governance.md` §2):
   | Tier | Namespace form | Example | Vendor names? |
   |---|---|---|---|
   | 1 — Core | `Category.Type` (vendor-neutral, from the canonical categories below) | `Storage.Cluster` | **never** |
@@ -36,7 +36,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 
 ## 2. Categories
 
-The canonical categories (`docs/spec/foundations/resource-type-hierarchy.md` §2.2). Resource categories:
+The canonical categories (`entities/resource-type-hierarchy.md` §2.2). Resource categories:
 `Compute`, `Network`, `Storage`, `Platform`, `Security`, `Observability`, `Data`. Information
 categories: `Business`, `Identity`, `Compliance`, `Operations`.
 
@@ -70,7 +70,7 @@ Three terms here are easy to collide; keep them distinct.
   the governed **provider-capability taxonomy** (a `TaxonomyTerm` subtree under the `provider-capability` root,
   `registry/instances/provider-capability-taxonomy.yaml`). This is **not** the Knowledge-family
   **`Capability [Knowledge]`** — that is DAV's *architecture-capability* sense ("what an architecture
-  provides," `docs/spec/foundations/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
+  provides," `entities/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
   `architecture-capability`. One shared `TaxonomyTerm` **type**, two disjoint subtrees; parent chains never cross.
 - **Capability category** — a **(verb × §2-Category)** term in the provider-capability taxonomy (e.g.
   `realize_resources/Storage` = *storage-provisioning*). Its domain axis **is** a §2 Category — a capability
@@ -96,7 +96,7 @@ Before adding a type, check whether the concept is already expressed by an exist
   `registry/instances/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
-  (`docs/spec/foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
+  (`foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
   not a new type. "Allocate a host to a tenant" = whole-allocation of `Compute.BareMetalHost`, not a
   separate `BareMetalInstance` type.
 - **A new type** is warranted only for a genuinely distinct *kind of thing* with its own contract.
@@ -115,7 +115,7 @@ To translate to/from other ecosystems, a type carries its alternative names with
   (`{name, standard?, standard_version?, note?}`), e.g. AWS "Dedicated Host", OpenStack "Ironic node".
 
 (The Knowledge-family **`Alias`** entity is a different tool — *taxonomy-term* normalization
-"avoid → use instead", `docs/spec/foundations/knowledge-family.md` §4.3 — not type cross-walks.)
+"avoid → use instead", `entities/knowledge-family.md` §4.3 — not type cross-walks.)
 
 ## 4. Field, output, and enum names — casing (data model)
 
@@ -131,7 +131,8 @@ with a hard external constraint: it conforms to **AEP** (`aep.dev`, the dcm-proj
 adopted API-design standard, enforced by the `aep-dev/aep-openapi-linter`), and AEP's prescribed fields
 are snake_case (`page_size`, `*_time`). Native-universal consumption **+** AEP-bound API therefore jointly
 force one casing — **snake_case** — across UDLM and DCM. (camelCase would re-introduce the very
-translation layer native consumption exists to eliminate.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
+translation layer native consumption exists to eliminate; it was tried and reverted — VERSIONING.md
+surface-change log.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
 protobuf/gRPC, and AEP itself; fully supported via tags in Go; only K8s/CRDs prefer camelCase, reached by
 an **export adapter** at that domain boundary (not native consumption).
 
@@ -167,17 +168,14 @@ routing mechanics live in DCM (ADR-018).
 ## 5. File names
 
 Registry type files are `category.type.<json|yaml>` — lowercase, dot-joined, with the PascalCase Type
-segment rendered **kebab-case**: word boundaries hyphenate (`compute.bare-metal-host.json`), and an
-acronym run merges with the word it abuts (`network.ipaddress.json`, `automation.ospatch.json` —
-never `ip-address` / `os-patch`). The transform is `_standard_filename()` in
-`registry/tools/generate_class_specs.py` (self-tested). JSON is the canonical interchange form;
-YAML is allowed for authoring (VERSIONING.md §Serialization).
+segment rendered **kebab-case** (`compute.virtual-machine.json`, `network.ip-address.json`). JSON is the
+canonical interchange form; YAML is allowed for authoring (VERSIONING.md §Serialization).
 
 ## 6. Instance handles & IDs
 
 - Instance / graph node ids: lowercase **kebab-case**, short and stable (`ocp-control01`, `ups-rack`).
 - Type UUIDs are UUIDv4, immutable for the type's life; handles are mutable/rebindable
-  (SPEC-DESIGN §18, `docs/spec/contracts/identifier-scheme.md`).
+  (SPEC-DESIGN §18, `contracts/identifier-scheme.md`).
 
 ## 7. Standards-grounded type plan (this initiative)
 
@@ -196,7 +194,7 @@ The new types, their category/tier, and the standard each adopts by reference. A
 
 ✚ = introduces a new category (Hardware, Facility), anchored to Redfish per §2.
 
-Authoring follows the registry process (`docs/spec/governance/registry-governance.md` §3, `CONTRIBUTING.md`):
+Authoring follows the registry process (`governance/registry-governance.md` §3, `CONTRIBUTING.md`):
 each type validates against the meta-schema (`tools/validate.py`), ships ≥1 worked example, records
 `adopts[]` provenance + license, and starts at `status: developing` until promoted.
 
@@ -216,7 +214,8 @@ composability). Normative rules:
    across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
    IETF response to augmentation fragmentation), promoted through registry governance §3.
 4. **The formal `extends` mechanism** is **RESOLVED** — Provider-Class `SharedDataElement`s
-   (ADR-038). A provider extends an instance **additively** at its Provider Class,
+   (ADR-038; supersedes ADR-PROV-004/#198 — the `provider_extensions` carrier is retired and
+   removed, #202 executed). A provider extends an instance **additively** at its Provider Class,
    never by modifying the closed base spec. **No-override is structural**: the base type-spec is
    `additionalProperties: false`, and an element may not shadow a base field. Any provider-specific
    data **computes a portability degradation** (`portability_breaking: true`, classification

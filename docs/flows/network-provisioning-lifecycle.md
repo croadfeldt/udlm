@@ -53,6 +53,6 @@ contract.
 | Piece | Contract |
 |---|---|
 | Operational dependency + root-cause surfacing + reserve | ADR-052 / ADR-011 |
-| The network resource shapes + examples | `registry/generated/network.*` (`spec.examples`, ADR-055) |
+| The network resource shapes + examples | `registry/resource-types/network/*` (`spec.examples`, ADR-055) |
 | Observed fabric (switch/VLAN discovery) | `docs/flows/estate-observation-lifecycle.md` |
 | Corpus | `use-cases/network/` |

@@ -1,8 +1,8 @@
 # UDLM ADR-016: What a Resource Type Models — the resource's portable definition; provider-specific config is stored extra; DCM is the state system-of-record
 
 **Status:** Proposed (2026-07-15)
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary — *could a peer realize this differently and still be valid? yes → DCM*); ADR-014 (optionality with conformity — the data carries transport + conformity, not the provider's policy); ADR-012 (data references — an image ref builds the dependency map) + DCM ADR-024 (reference resolution & change-impact); `docs/spec/contracts/provider-contract.md` §1a.3 (config-projection) and `PRV-010` (provider resource-type extension); DCM ADR-023 (naturalization). **Prior art:** Kubernetes CRD `spec` vs controller-owned behaviour; Crossplane Composition (the claim is thin, the composition is the provider's); OAM Component vs Trait.
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary — *could a peer realize this differently and still be valid? yes → DCM*); ADR-014 (optionality with conformity — the data carries transport + conformity, not the provider's policy); ADR-012 (data references — an image ref builds the dependency map) + DCM ADR-024 (reference resolution & change-impact); `contracts/provider-contract.md` §1a.3 (config-projection) and `PRV-010` (provider resource-type extension); DCM ADR-023 (naturalization). **Prior art:** Kubernetes CRD `spec` vs controller-owned behaviour; Crossplane Composition (the claim is thin, the composition is the provider's); OAM Component vs Trait.
 
 ## Context
 

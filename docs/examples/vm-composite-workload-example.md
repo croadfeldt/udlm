@@ -35,7 +35,7 @@ constituents:
       allocation: static
 
   - component_id: game_vm
-    resource_type: Compute.VM
+    resource_type: Compute.VirtualMachine
     type_version: 0.6.3
     provided_by: self
     failure_effect: required
@@ -84,7 +84,7 @@ constituents:
     failure_effect: optional
     depends_on: [game_vm]
     spec_defaults:
-      definition_ref: {target_handle: cexample/automation/post-provision-setup}
+      process_type: playbook
       trigger: event                 # fires on the post-provision event
       max_execution_time: PT30M
 ```

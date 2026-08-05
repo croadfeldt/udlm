@@ -203,6 +203,6 @@ the decision stay in step:
 | The corpus (the eighteen cells sampled) | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
 | A flow per case | [`docs/flows/`](../flows/README.md) (intent-fulfillment entries) |
 | Reservation-not-activation | ADR-011 (validate-and-reserve) |
-| Edge model (`strength`, `edge_type`) | `docs/spec/foundations/service-dependencies.md`, ADR-027 |
-| Degraded / partial delivery | `docs/spec/contracts/provider-contract.md` (`DEGRADED`, `partial_delivery`) |
+| Edge model (`strength`, `edge_type`) | `entities/service-dependencies.md`, ADR-027 |
+| Degraded / partial delivery | `contracts/provider-contract.md` (`DEGRADED`, `partial_delivery`) |
 | The nature field + statuses + windows | [ADR-052](../adr/ADR-052-intent-fulfillment-dependency-nature.md) (ruled; JSON-Schema shape follows as an implementing PR) |

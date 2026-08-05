@@ -1,13 +1,13 @@
 # Contributing to UDLM
 
-> **New here? Start with [`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — it routes you by
+> **New here? Start with [`docs/working-with-udlm.md`](docs/working-with-udlm.md)** — it routes you by
 > what you're here to do (author · review · consume/build · contribute). This file is the canonical
 > *rules*; the guide is the *procedure* that satisfies them.
 
 UDLM — the Universal Data Lifecycle Model — is a vendor-neutral data substrate, released under
 Apache License 2.0. Both specification/prose and registry/schema contributions are welcome. Project
-governance lives in `docs/spec/governance/` (see `federated-contribution-model.md` and `registry-governance.md`);
-the design principles that bound every change are in `docs/spec/principles/` (start with `core-tenets.md`).
+governance lives in `governance/` (see `federated-contribution-model.md` and `registry-governance.md`);
+the design principles that bound every change are in `design-principles/` (start with `core-tenets.md`).
 
 ## Subject-scoped pull requests (default)
 
@@ -93,7 +93,7 @@ copy of the check; the term list belongs upstream, where the ruling was made.
 ## Document the why
 
 Every non-trivial change records its rationale, not just its diff: a design note under `docs/`, an
-update to a tenet/principle in `docs/spec/principles/`, or — for a decision — a pointer to the relevant
+update to a tenet/principle in `design-principles/`, or — for a decision — a pointer to the relevant
 DCM Architecture Decision Record (`architecture/adr/` in the DCM repo). Don't land a contract change
 without the why; a reviewer should be able to reconstruct *why* from the repo, not just *what*.
 
@@ -119,8 +119,8 @@ Before a PR merges it is swept against the standing checks below. The **automate
 good PR self-checks them in its *Why*. These are the recurring findings distilled into a checklist so they
 are caught once, not re-litigated per PR.
 
-**Before you open a PR or publish content, run the signoff:** `scripts/signoff.sh` runs every automated
-gate below and prints the judgment checklist. The full procedure is in [`docs/guides/signoff.md`](docs/guides/signoff.md).
+**Before you open a PR or publish content, run the signoff:** `./scripts/signoff.sh` runs every automated
+gate below and prints the judgment checklist. The full procedure is in [`docs/signoff.md`](docs/signoff.md).
 
 **Automated (CI).**
 - **Valid by construction** — `registry/tools/validate.py` + `tests/validate_registry.py` (`ADOPT-001`,

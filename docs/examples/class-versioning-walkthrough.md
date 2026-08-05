@@ -7,7 +7,7 @@ those cases ride every normal analysis run like the rest of the corpus — the d
 the validation share one source of truth.
 
 The running example: Base Class `Compute` carries a `memory` element (a Quantity object) that
-every compute descendant — VM, Container, BareMetalHost — includes at Base scope.
+every compute descendant — VirtualMachine, Container, BareMetalHost — includes at Base scope.
 
 ## The worked scenario: one element, three changes
 

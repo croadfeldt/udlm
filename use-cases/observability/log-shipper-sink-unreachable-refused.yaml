@@ -1,5 +1,5 @@
 uuid: uc-c7019eab-ae71-4a3a-a9e7-410a9644d042
-handle: docs/spec/contracts/log-shipper-sink-unreachable-refused
+handle: observability/log-shipper-sink-unreachable-refused
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests an Observability.LogShipper whose declared sink is unreachable

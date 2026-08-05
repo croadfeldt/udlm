@@ -61,6 +61,6 @@ surfaced, first-class and distinct from any structured record.
 |---|---|
 | The surfacing constraint over the matrix | [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) |
 | The root-naming sibling | [surface-names-root](intent-fulfillment-surface-names-root.md) (UC-008) |
-| Degraded / partial vocabulary | `docs/spec/contracts/provider-contract.md` (`partial_delivery`, `DEGRADED`) |
+| Degraded / partial vocabulary | `contracts/provider-contract.md` (`partial_delivery`, `DEGRADED`) |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
 | DCM counterpart | dcm-project/dcm `docs/flows/` |

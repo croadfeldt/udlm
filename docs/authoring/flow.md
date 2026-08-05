@@ -45,7 +45,7 @@ restates the base loop, it is too heavy — cut back to the delta.
    - **`## Where each piece is specified`** — a pointer table: each piece → its contract (an ADR, a
      spec path, the corpus directory). References carry their gist, never a bare number.
 3. **Wire the flow into `coverage:`.** In each spec whose story the flow completes, add the flow's
-   path under `coverage.flows:` (see `registry/classes/resource/storage/pool.yaml` — its
+   path under `coverage.flows:` (see `registry/resource-types/storage/storage.pool.yaml` — its
    `coverage.flows` lists `docs/flows/storage-provisioning-lifecycle.md`). A flow no spec references is
    an orphan.
 

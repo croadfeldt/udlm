@@ -40,7 +40,7 @@ def nodes_and_edges():
                 nodes.add(rt)
                 for e in d.get("relationships") or []:
                     edges.append((rt, e.get("edge_type"), e.get("target"), e.get("enforcement", "example")))
-    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
+    for p in glob.glob(os.path.join(ROOT, "registry", "classes", "*.yaml")):
         d = load(p)
         if d.get("record_type") == "class":
             nodes.add(d["resource_type"])
@@ -49,7 +49,7 @@ def nodes_and_edges():
 
 def resolves(target, nodes):
     """A target resolves to an exact node, or to a family (single-segment target matching the first
-    segment of some multi-segment node, e.g. `Compute` for `Compute.VM`)."""
+    segment of some multi-segment node, e.g. `Compute` for `Compute.VirtualMachine`)."""
     if target in nodes:
         return True
     if "." not in target:

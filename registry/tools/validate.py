@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Valid-by-construction gate. Validates:
-  - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
+  - registry/resource-types/*  against  resource-type-spec.schema.json        (TYPE definitions)
   - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
                         or against  dcm-group.schema.json                     (DCMGroup records)
                         or against  catalog-item.schema.json                  (Composite Service catalog items)
+  - registry/providers/*       against  provider-adopted-standards.schema.json (provider support matrices)
 Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
 schema); legacy discriminators remain — a document with a top-level `group_class` is a
 DCMGroup; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
@@ -30,6 +31,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.schema.json").read_text()))
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
 GROUP_VALIDATOR = Draft202012Validator(json.loads((ROOT / "dcm-group.schema.json").read_text()))
+PROVIDER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "provider-adopted-standards.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
 LAYER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "layer.schema.json").read_text()))
@@ -64,15 +66,11 @@ def _type_outputs_index():
     """resource_type -> set(declared output names). The typed-outputs surface a catalog-item
     binding resolves against (data-model-core §2 [D8.3])."""
     index = {}
-    for base in (ROOT / "resource-types", ROOT / "generated"):
-        if not base.exists():
+    for path in (ROOT / "resource-types").rglob("*"):
+        if path.suffix not in (".json", ".yaml", ".yml"):
             continue
-        for path in base.rglob("*"):
-            if path.suffix not in (".json", ".yaml", ".yml"):
-                continue
-            doc = load(path)
-            if isinstance(doc, dict) and doc.get("resource_type"):
-                index[doc["resource_type"]] = set((doc.get("outputs") or {}).keys())
+        doc = load(path)
+        index[doc["resource_type"]] = set((doc.get("outputs") or {}).keys())
     return index
 
 
@@ -270,7 +268,7 @@ def check_process_entity(doc):
     Keys on `family`, not `entity_type` — ADR-027 moved the state-vs-execution distinction to
     the family tier; `entity_type` is now the Atomic/Composite shape (a Process is
     family: Process, entity_type: Atomic|Composite). The prior `entity_type == "Process"` test
-    was dead — it never matched, and false-failed the correct example instance (now example-job) instance."""
+    was dead — it never matched, and false-failed the correct example-process instance."""
     errors = []
     rt = doc.get("resource_type")
     fam = _type_family_index().get(rt)
@@ -551,13 +549,13 @@ def pick_instance(doc):
 
 
 def _reverse_reference_graph():
-    """Scan instances for the data-reference graph. Returns:
+    """Scan instances + providers for the data-reference graph. Returns:
       nodes:     uuid -> {"label", "is_refdata"}
       referrers: target_uuid -> [referrer_uuid]   (who references target)
     This is what lets change-impact cascade TRANSITIVELY up the graph (ADR-012 #2): a record referencing
     a reference_data layer that is itself referenced, and so on — e.g. deployment → image → library."""
     nodes, referrers = {}, {}
-    for subdir in ("instances",):
+    for subdir in ("instances", "providers"):
         base = ROOT / subdir
         if not base.exists():
             continue
@@ -618,13 +616,18 @@ def impact_report():
 
 def main() -> int:
     failures = 0
-    print("== generated (served flat-spec projections) ==")
+    print("== resource types ==")
     failures += validate_dir(
-        "generated",
+        "resource-types",
         lambda doc: (TYPE_VALIDATOR,
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
     print("== instances (realized entities + DCMGroups + catalog items) ==")
     failures += validate_dir("instances", pick_instance)
+    print("== providers (adopted-standard support) ==")
+    failures += validate_dir(
+        "providers",
+        lambda doc: (PROVIDER_VALIDATOR,
+                     lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adopted_standard_support'])}"))
     print("== classes (scoped-Class artifacts — ADR-038 / P0 substrate) ==")
     failures += validate_dir(
         "classes",

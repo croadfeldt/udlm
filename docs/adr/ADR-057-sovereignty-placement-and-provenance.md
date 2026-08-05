@@ -5,7 +5,7 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.
-- **P4** ([`docs/spec/principles/cross-cutting-requirements.md`](../spec/principles/cross-cutting-requirements.md) — *sovereignty is structural, not advisory*): today sovereignty = **placement** — immutable `sovereignty_zone` / `data_classification` / jurisdiction fields; an entity cannot silently leave its zone; DCM's **Governance Matrix** enforces.
+- **P4** ([`design-principles/cross-cutting-requirements.md`](../../design-principles/cross-cutting-requirements.md) — *sovereignty is structural, not advisory*): today sovereignty = **placement** — immutable `sovereignty_zone` / `data_classification` / jurisdiction fields; an entity cannot silently leave its zone; DCM's **Governance Matrix** enforces.
 - **ADR-008** (UDLM/DCM boundary — *could a peer enforce this differently and still be valid? then it's DCM*): the split this ADR keeps.
 - **core-tenets** (UDLM is **custodian, not enforcer**; Data · Policy · Provider): UDLM carries the record, DCM decides/enforces, the provider is the mechanism.
 - **Attestation R2** (`registry/realized-entity.schema.json` — per-plane attestation that an entity's *sovereignty is **BACKED**, not merely claimed*): the evidence substrate.
@@ -21,7 +21,7 @@ For **both**, UDLM's role is identical and bounded (ADR-008): **codify the requi
 
 The provenance-admission need is real and already partly built — but **scattered and not unified as sovereignty**:
 - **Attestation R2** proves an entity's sovereignty is *backed* by evidence, but doesn't say *which sources are approved* for a boundary.
-- **Accreditation** vets *subjects* (a provider, a peer), and **capability admission** (ADR-PROV-003) gates a provider's *capabilities* default-deny — both are admission gates, but neither is expressed as "this boundary admits only docs/spec/foundations/sources on its approved list."
+- **Accreditation** vets *subjects* (a provider, a peer), and **capability admission** (ADR-PROV-003) gates a provider's *capabilities* default-deny — both are admission gates, but neither is expressed as "this boundary admits only entities/sources on its approved list."
 - P4 covers *where a thing may live*, never *whether its origin is admitted here*.
 
 So the operator question "is this server/image/firewall from an approved source, on the approved list for my sovereignty zone?" has enforcement pieces but **no codified requirement in the data model to point them at**. This ADR unifies them under sovereignty's second dimension — **without new enforcement machinery**.

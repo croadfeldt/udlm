@@ -1,6 +1,7 @@
 # UDLM — Conformance Specification
 
-**Draft** — pre-ratification (#217); the wire-compat promise binds at 1.0.
+**Document Status:** 📋 Draft — Initial Specification
+**Document Type:** Top-Level Conformance Surface
 **Established:** 2026-05-26
 **Maps to:** DATA (umbrella)
 
@@ -21,11 +22,11 @@ A peer implementation that claims udlm conformance commits to:
 
 - Producing data, events, and errors that any other conformant peer can
   deserialize and act on.
-- Honoring the interface specifications in `docs/spec/` — contracts, lifecycle,
-  governance, foundations (UDLM reserves the word
+- Honoring the interface specifications in `contracts/`, `lifecycle/`,
+  `governance/`, `entities/`, and `foundations/` (UDLM reserves the word
   *[contract](GLOSSARY.md)* for exactly these specs).
 - Publishing schemas, capabilities, and a conformance declaration via the
-  [schema-sharing protocol](docs/spec/contracts/schema-sharing.md) (the schema bundle at
+  [schema-sharing protocol](contracts/schema-sharing.md) (the schema bundle at
   `/.well-known/udlm/schema-bundle`, consolidated in §6) so peers can discover
   compatibility.
 - Maintaining versioning discipline so peers can negotiate.
@@ -64,8 +65,8 @@ Two conformant implementations with disjoint runtime implementations can federat
 and exchange data; they cannot necessarily swap controllers or share storage.
 
 Requiring a document in [§5](#5-required-contracts) — including
-`docs/spec/principles/design-priorities.md` and
-`docs/spec/principles/data-contracts.md` — means requiring its **data
+`design-principles/design-priorities.md` and
+`design-principles/data-contracts.md` — means requiring its **data
 contracts** (append-only, versioning, tamper-evidence, tenant isolation, the
 four design principles as constraints), **not** certifying storage technology,
 internal APIs, or runtime mechanics. Contracts are certified; mechanics are not.
@@ -163,13 +164,13 @@ following shape:
 |---|---|---|
 | `implementation` | yes | Self-identification |
 | `udlm_version` | yes | udlm semver this implementation conforms to |
-| `profile` | yes | The implementation's active **base profile** (from the [profile vocabulary](docs/spec/principles/design-priorities.md)). In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](docs/spec/foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). `fsi`/`sovereign` compose as overlays on the base profile. |
+| `profile` | yes | The implementation's active **base profile** (from the [profile vocabulary](design-principles/design-priorities.md)). In v1 a profile is advertised **platform-wide** (one active base profile per deployment); the model is designed to become **group-scopable** later (bound to a tenant/service/domain) — see the profile-scope note in [foundations.md](foundations/foundations.md) and [ADR-007](docs/adr/ADR-007-profile-model.md). `fsi`/`sovereign` compose as overlays on the base profile. |
 | `level` | yes | `"full"` or `"partial"` |
 | `exclusions` | required if level=partial | List of contract names not implemented |
 | `extensions_published` | yes | Whether schema bundle includes extensions |
 | `schema_bundle_url` | yes | Where to fetch the schema bundle |
 | `interop_surfaces` | yes | Which surfaces are available and how to reach them |
-| `leap_second_strategy` | yes | The peer's **declared** leap-second handling, drawn from the named, open set defined in [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 (e.g. `smear`, `step`). A monotonic clock is **required**; smearing is **recommended**. The peer states its strategy rather than being forced to a single one. |
+| `leap_second_strategy` | yes | The peer's **declared** leap-second handling, drawn from the named, open set defined in [`time-and-clock.md`](contracts/time-and-clock.md) §8 (e.g. `smear`, `step`). A monotonic clock is **required**; smearing is **recommended**. The peer states its strategy rather than being forced to a single one. |
 | `auth_mechanism_for_schema_endpoints` | yes | How peers authenticate to fetch schemas |
 | `conformance_test_suite_version` | yes | Which version of the test suite (see §8) was run |
 | `self_certified_at` | yes | RFC 3339 UTC; when self-certification was performed |
@@ -200,76 +201,76 @@ declare)** — a partial-conformance implementation MAY omit an excludable contr
 only if it enumerates the exclusion in its declaration (§3.2).
 
 > Resource and entity **types** referenced by these contracts are defined
-> canonically in the [registry](registry) — the Resource Type Specifications
+> canonically in the [registry](registry/) — the Resource Type Specifications
 > and the meta-schema. The contracts below bind their *behavior*; the registry
 > is where the type members live.
 
 ### 5.1 Foundations (required — not excludable)
 
-- `docs/spec/foundations/context-and-purpose.md`
-- `docs/spec/foundations/data-model-core.md` — the settled core decisions ([D1]-[D9]: edge model, status conditions, derived shape)
-- `docs/spec/foundations/foundations.md`
-- `docs/spec/foundations/entity-types.md`
-- `docs/spec/foundations/four-states.md` — the four-state lifecycle is non-negotiable
-- `docs/spec/foundations/layering-and-versioning.md`
-- `docs/spec/foundations/ownership-sharing-allocation.md`
+- `foundations/context-and-purpose.md`
+- `foundations/data-model-core.md` — the settled core decisions ([D1]-[D9]: edge model, status conditions, derived shape)
+- `foundations/foundations.md`
+- `foundations/entity-types.md`
+- `foundations/four-states.md` — the four-state lifecycle is non-negotiable
+- `foundations/layering-and-versioning.md`
+- `foundations/ownership-sharing-allocation.md`
 
 ### 5.2 Wire-compatibility contracts (required — not excludable)
 
 These are the contracts that make wire-compatibility work. Excluding any of
 them disqualifies the implementation from any conformance level.
 
-- `docs/spec/contracts/identifier-scheme.md`
-- `docs/spec/contracts/time-and-clock.md`
-- `docs/spec/contracts/error-model.md`
-- `docs/spec/contracts/event-catalog.md`
-- `docs/spec/contracts/schema-sharing.md`
+- `contracts/identifier-scheme.md`
+- `contracts/time-and-clock.md`
+- `contracts/error-model.md`
+- `contracts/event-catalog.md`
+- `contracts/schema-sharing.md`
 
 ### 5.3 Operational contracts (required — not excludable)
 
-- `docs/spec/contracts/retry-semantics.md`
-- `docs/spec/contracts/rate-limit-and-backpressure.md`
-- `docs/spec/contracts/provider-contract.md`
-- `docs/spec/contracts/policy-contract.md`
-- `docs/spec/contracts/data-store-contracts.md`
+- `contracts/retry-semantics.md`
+- `contracts/rate-limit-and-backpressure.md`
+- `contracts/provider-contract.md`
+- `contracts/policy-contract.md`
+- `contracts/data-store-contracts.md`
 
 ### 5.4 Entity and lifecycle contracts (required and excludable)
 
-- `docs/spec/foundations/resource-service-entities.md` — required (not excludable)
-- `docs/spec/foundations/resource-type-hierarchy.md` — required (not excludable)
-- `docs/spec/foundations/entity-relationships.md` — required (not excludable)
-- `docs/spec/lifecycle/operational-models.md` — required (not excludable)
-- `docs/spec/foundations/composite-service-model.md` — **excludable (must declare)**
-- `docs/spec/lifecycle/scheduled-requests.md` — **excludable (must declare)**
-- `docs/spec/lifecycle/request-dependency-graph.md` — **excludable (must declare)**
-- `docs/spec/lifecycle/subscription-lifecycle.md` — **excludable (must declare)**
-- `docs/spec/lifecycle/ingestion-model.md` — **excludable (must declare)** (peer may not support brownfield)
+- `entities/resource-service-entities.md` — required (not excludable)
+- `entities/resource-type-hierarchy.md` — required (not excludable)
+- `entities/entity-relationships.md` — required (not excludable)
+- `lifecycle/operational-models.md` — required (not excludable)
+- `entities/composite-service-model.md` — **excludable (must declare)**
+- `lifecycle/scheduled-requests.md` — **excludable (must declare)**
+- `lifecycle/request-dependency-graph.md` — **excludable (must declare)**
+- `lifecycle/subscription-lifecycle.md` — **excludable (must declare)**
+- `lifecycle/ingestion-model.md` — **excludable (must declare)** (peer may not support brownfield)
 
 ### 5.5 Governance contracts (required and excludable)
 
-- `docs/spec/governance/governance-matrix.md` — required (not excludable)
-- `docs/spec/governance/auth-providers.md` — required (not excludable; at least one auth mode)
-- `docs/spec/governance/credentials.md` — required (not excludable)
-- `docs/spec/governance/authority-tier-model.md` — required (not excludable)
-- `docs/spec/governance/accreditation-and-authorization-matrix.md` — required (not excludable)
-- `docs/spec/governance/registry-governance.md` — **excludable (must declare)** (peer may not host a registry)
-- `docs/spec/governance/federated-contribution-model.md` — **excludable (must declare)** (peer may not accept federation contributions)
+- `governance/governance-matrix.md` — required (not excludable)
+- `governance/auth-providers.md` — required (not excludable; at least one auth mode)
+- `governance/credentials.md` — required (not excludable)
+- `governance/authority-tier-model.md` — required (not excludable)
+- `governance/accreditation-and-authorization-matrix.md` — required (not excludable)
+- `governance/registry-governance.md` — **excludable (must declare)** (peer may not host a registry)
+- `governance/federated-contribution-model.md` — **excludable (must declare)** (peer may not accept federation contributions)
 
 ### 5.6 Observability (required — not excludable)
 
-- `docs/spec/contracts/audit-provenance-observability.md` — required (not excludable)
-- `docs/spec/contracts/universal-audit.md` — required (not excludable)
-- `docs/spec/foundations/universal-groups.md` — required (not excludable)
+- `observability/audit-provenance-observability.md` — required (not excludable)
+- `observability/universal-audit.md` — required (not excludable)
+- `observability/universal-groups.md` — required (not excludable)
 
 ### 5.7 Topology and design principles
 
-- `docs/spec/foundations/location-topology-layers.md` — required (the layered-topology contract; specific hierarchies are implementation choice)
-- `docs/spec/principles/design-priorities.md` — required (the four principles as contracts)
-- `docs/spec/principles/data-contracts.md` — required (the data-contract principle; persistence required, technology is implementation choice)
+- `topology/location-topology-layers.md` — required (the layered-topology contract; specific hierarchies are implementation choice)
+- `design-principles/design-priorities.md` — required (the four principles as contracts)
+- `design-principles/data-contracts.md` — required (the data-contract principle; persistence required, technology is implementation choice)
 
 ### 5.8 Reference
 
-- `registry/standards-catalog.md` — required as the normative external-standards basis
+- `reference/standards-catalog.md` — required as the normative external-standards basis
 
 ---
 
@@ -278,7 +279,7 @@ them disqualifies the implementation from any conformance level.
 Consolidated MUSTs from all wire-compat contract docs. A conformant implementation
 MUST satisfy every item.
 
-### Identifiers ([`identifier-scheme.md`](docs/spec/contracts/identifier-scheme.md))
+### Identifiers ([`identifier-scheme.md`](contracts/identifier-scheme.md))
 
 - [ ] UUIDs use RFC 9562 canonical form (lowercase hyphenated)
 - [ ] UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked)
@@ -287,15 +288,15 @@ MUST satisfy every item.
 - [ ] Identifier reassignment is rejected; uuids are never reused after decommission
 - [ ] Handle changes are audited
 
-### Time ([`time-and-clock.md`](docs/spec/contracts/time-and-clock.md))
+### Time ([`time-and-clock.md`](contracts/time-and-clock.md))
 
 - [ ] All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix
 - [ ] Skew ≤±5 seconds from peers
 - [ ] Future timestamps >5s ahead are rejected
-- [ ] Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8
+- [ ] Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](contracts/time-and-clock.md) §8
 - [ ] Total ordering via `(timestamp, sequence_uuid)` available
 
-### Errors ([`error-model.md`](docs/spec/contracts/error-model.md))
+### Errors ([`error-model.md`](contracts/error-model.md))
 
 - [ ] Error envelope schema matches §2 exactly
 - [ ] Error codes drawn from closed vocabulary or declared extensions
@@ -303,13 +304,13 @@ MUST satisfy every item.
 - [ ] `request_id` and `audit_uuid` present in every error
 - [ ] HTTP status mapping per §3.2 for HTTP transports
 
-### Events ([`event-catalog.md`](docs/spec/contracts/event-catalog.md))
+### Events ([`event-catalog.md`](contracts/event-catalog.md))
 
 - [ ] Event envelope schema matches the catalog
 - [ ] Event timestamps set by commit log, not emitter
 - [ ] `event_uuid` enables idempotent processing
 
-### Retries ([`retry-semantics.md`](docs/spec/contracts/retry-semantics.md))
+### Retries ([`retry-semantics.md`](contracts/retry-semantics.md))
 
 - [ ] `retryable: false` is never retried
 - [ ] `retry_after_seconds` honored
@@ -317,14 +318,14 @@ MUST satisfy every item.
 - [ ] Exponential backoff with jitter within prescribed bounds
 - [ ] Per-operation budget enforced (5 attempts / 6 total)
 
-### Rate limits ([`rate-limit-and-backpressure.md`](docs/spec/contracts/rate-limit-and-backpressure.md))
+### Rate limits ([`rate-limit-and-backpressure.md`](contracts/rate-limit-and-backpressure.md))
 
 - [ ] Rate-limit declarations published via capability discovery
 - [ ] `rate_limit.exceeded` with `retry_after_seconds` on overflow
 - [ ] `Retry-After` HTTP header on HTTP transports
 - [ ] Per-scope fairness enforced
 
-### Schema sharing ([`schema-sharing.md`](docs/spec/contracts/schema-sharing.md))
+### Schema sharing ([`schema-sharing.md`](contracts/schema-sharing.md))
 
 - [ ] Schema bundle published at `/.well-known/udlm/schema-bundle`
 - [ ] JSON Schema Draft 2020-12 for all schemas
@@ -352,7 +353,7 @@ This document adds one error code namespace to the closed vocabulary:
 | `conformance.declaration_unavailable` | yes (transient retrieval failure) | 503 |
 
 The `conformance.*` codes are **defined here and registered into** the closed
-error vocabulary in [`error-model.md`](docs/spec/contracts/error-model.md).
+error vocabulary in [`error-model.md`](contracts/error-model.md).
 
 ---
 
@@ -403,7 +404,7 @@ udlm follows semver — the two-axis (SPEC / ENTITY) definition is owned by [`re
 
 - Two implementations conformant to the **same major version** of udlm are
   wire-compatible. Schema version negotiation per
-  [`schema-sharing.md`](docs/spec/contracts/schema-sharing.md) handles minor-version
+  [`schema-sharing.md`](contracts/schema-sharing.md) handles minor-version
   differences.
 - Cross-major-version interoperation is NOT guaranteed. Implementations MAY
   support multiple major versions concurrently by publishing schemas for each
@@ -411,7 +412,7 @@ udlm follows semver — the two-axis (SPEC / ENTITY) definition is owned by [`re
   (see [§4.3](#43-declaring-multiple-major-versions)).
 - An implementation deprecating support for an older major version MUST give peers
   at least **6 months** notice via federation events
-  (`conformance.version_deprecated`; see [`event-catalog.md`](docs/spec/contracts/event-catalog.md)).
+  (`conformance.version_deprecated`; see [`event-catalog.md`](contracts/event-catalog.md)).
 
 ### 9.3 Deprecation policy
 
@@ -479,7 +480,7 @@ operators can:
 
 - Fetch `/.well-known/udlm/conformance` at any time.
 - Subscribe to the `conformance.*` federation events (see
-  [`event-catalog.md`](docs/spec/contracts/event-catalog.md)) for change notifications.
+  [`event-catalog.md`](contracts/event-catalog.md)) for change notifications.
 - Compare independent verification reports across implementations.
 
 An implementation MUST NOT misrepresent its conformance state. False claims are
@@ -489,15 +490,15 @@ detectable by running the test suite; verifiers MAY publish discrepancies.
 
 ## 13. Related documents
 
-- [`docs/spec/contracts/identifier-scheme.md`](docs/spec/contracts/identifier-scheme.md)
-- [`docs/spec/contracts/time-and-clock.md`](docs/spec/contracts/time-and-clock.md)
-- [`docs/spec/contracts/error-model.md`](docs/spec/contracts/error-model.md)
-- [`docs/spec/contracts/retry-semantics.md`](docs/spec/contracts/retry-semantics.md)
-- [`docs/spec/contracts/rate-limit-and-backpressure.md`](docs/spec/contracts/rate-limit-and-backpressure.md)
-- [`docs/spec/contracts/schema-sharing.md`](docs/spec/contracts/schema-sharing.md)
-- [`docs/spec/contracts/event-catalog.md`](docs/spec/contracts/event-catalog.md)
-- [`docs/spec/contracts/provider-contract.md`](docs/spec/contracts/provider-contract.md)
-- [`docs/spec/contracts/policy-contract.md`](docs/spec/contracts/policy-contract.md)
+- [`contracts/identifier-scheme.md`](contracts/identifier-scheme.md)
+- [`contracts/time-and-clock.md`](contracts/time-and-clock.md)
+- [`contracts/error-model.md`](contracts/error-model.md)
+- [`contracts/retry-semantics.md`](contracts/retry-semantics.md)
+- [`contracts/rate-limit-and-backpressure.md`](contracts/rate-limit-and-backpressure.md)
+- [`contracts/schema-sharing.md`](contracts/schema-sharing.md)
+- [`contracts/event-catalog.md`](contracts/event-catalog.md)
+- [`contracts/provider-contract.md`](contracts/provider-contract.md)
+- [`contracts/policy-contract.md`](contracts/policy-contract.md)
 - [`tests/test-framework-specification.md`](tests/test-framework-specification.md) — the conformance test suite
-- [`docs/spec/foundations/data-model-core.md`](docs/spec/foundations/data-model-core.md) — the settled core decisions
-- [`docs/spec/foundations/layering-and-versioning.md`](docs/spec/foundations/layering-and-versioning.md) — semver basis
+- [`foundations/data-model-core.md`](foundations/data-model-core.md) — the settled core decisions
+- [`foundations/layering-and-versioning.md`](foundations/layering-and-versioning.md) — semver basis

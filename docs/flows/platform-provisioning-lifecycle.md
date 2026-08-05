@@ -49,5 +49,5 @@ the quota-as-ceiling + hub-dependency contract, and the surfacing contract.
 |---|---|
 | Operational dependency + root-cause surfacing | ADR-052 |
 | Requirements-floor capacity (node pool / storage class) | ADR-036 |
-| The platform resource shapes + examples | `registry/generated/platform.*` (`spec.examples`, ADR-055) |
+| The platform resource shapes + examples | `registry/resource-types/platform/*` (`spec.examples`, ADR-055) |
 | Corpus | `use-cases/platform/`, `use-cases/multi-cluster/` |

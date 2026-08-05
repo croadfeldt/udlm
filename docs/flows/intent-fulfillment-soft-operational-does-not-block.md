@@ -65,6 +65,6 @@ semantics and the degraded/partial surfacing vocabulary.
 |---|---|
 | The model + the soft rows | [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (soft) |
 | The hard sibling | [operational-dependency-cascade](intent-fulfillment-operational-dependency-cascade.md) |
-| Edge strength (hard/soft), degraded | `docs/spec/foundations/service-dependencies.md`, `docs/spec/contracts/provider-contract.md` |
+| Edge strength (hard/soft), degraded | `entities/service-dependencies.md`, `contracts/provider-contract.md` |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
 | DCM counterpart | dcm-project/dcm `docs/flows/` |

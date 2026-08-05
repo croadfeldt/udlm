@@ -111,7 +111,7 @@ flowchart LR
 | The tiers + the decision (Blueprint→Template, standards anchors, interop on-ramp) | **ADR-033** |
 | Intent / Requested / Realized, Converge, adoption | ADR-030 · [lifecycle-convergence](lifecycle-convergence.md) |
 | The shared pipeline (assemble → place → enrich → reserve → converge) | [request-realization](request-realization.md) |
-| Consumables, binding, `lifecycle_policy` triggers | `docs/spec/lifecycle/subscription-lifecycle.md`; ADR-006 |
+| Consumables, binding, `lifecycle_policy` triggers | `lifecycle/subscription-lifecycle.md`; ADR-006 |
 | `Composite` (structural constituents) | ADR-027 |
 
 ## The whole story in one line

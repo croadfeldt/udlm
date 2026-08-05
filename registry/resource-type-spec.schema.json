@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/resource-type-spec.schema.json",
   "title": "UDLM Resource Type Specification",
-  "description": "Meta-schema that every Resource Type Specification in the UDLM Resource Type Registry MUST validate against. JSON Schema 2020-12 is the normative wire format for entity-type definitions (docs/spec/contracts/schema-sharing.md). A Resource Type Specification is the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, typed realized outputs, and allowed relationship types (docs/spec/foundations/resource-type-hierarchy.md). This meta-schema is itself part of the UDLM spec and is versioned on the SPEC axis.",
+  "description": "Meta-schema that every Resource Type Specification in the UDLM Resource Type Registry MUST validate against. JSON Schema 2020-12 is the normative wire format for entity-type definitions (contracts/schema-sharing.md). A Resource Type Specification is the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, typed realized outputs, and allowed relationship types (entities/resource-type-hierarchy.md). This meta-schema is itself part of the UDLM spec and is versioned on the SPEC axis.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -21,7 +21,7 @@
     "$id": {
       "type": "string",
       "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conforms_to`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VM) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
+      "description": "Canonical, project-controlled identifier on udlm.dev (HTTPS-enforced via the .dev HSTS preload). Encodes BOTH version axes and mirrors `conforms_to`: https://udlm.dev/registry/udlm/<spec>/<TypeName>/<version>. TypeName is `Category.Type` for the Resource family (Compute.VirtualMachine) or single-segment for the Knowledge family (Capability). Relationships reference a target by its `$id`. A new MAJOR mints a new `$id`."
     },
     "conforms_to": {
       "type": "string",
@@ -31,12 +31,12 @@
     "uuid": {
       "type": "string",
       "format": "uuid",
-      "description": "RFC 9562 UUIDv4 identity of this type specification (docs/spec/contracts/identifier-scheme.md §2.1 — the normative UUID standard: v4 identity / v7 time-ordered / others prohibited). Immutable for the life of the type."
+      "description": "RFC 9562 UUIDv4 identity of this type specification (contracts/identifier-scheme.md §2.1 — the normative UUID standard: v4 identity / v7 time-ordered / others prohibited). Immutable for the life of the type."
     },
     "resource_type": {
       "type": "string",
       "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VM, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, docs/spec/foundations/knowledge-family.md)."
+      "description": "Type name, unique within its `family`. Domain-owned types: namespaced Category.Type (Compute.VirtualMachine, Network.IPAddress). Cross-cutting / foundational types not owned by a single domain: single-segment (Capability, TaxonomyTerm, Topology) — disambiguated by `family` (registry/naming-conventions.md §1, entities/knowledge-family.md)."
     },
     "version": {
       "type": "string",
@@ -50,11 +50,11 @@
         "Knowledge",
         "Access"
       ],
-      "description": "Entity-type family (docs/spec/foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
+      "description": "Entity-type family (foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow. Constrained by `family` (see allOf). The specific type (e.g. Compute.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow. Constrained by `family` (see allOf). The specific type (e.g. Compute.VirtualMachine, Automation.Workflow) is `resource_type`, not `entity_type`. (foundations/entity-types.md, entities/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
     },
     "lifecycle_archetype": {
       "enum": [
@@ -69,7 +69,7 @@
         "partial",
         "provider-specific"
       ],
-      "description": "Portability classification (docs/spec/foundations/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (DCM's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
+      "description": "Portability classification (entities/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (DCM's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
     },
     "status": {
       "enum": [
@@ -77,7 +77,7 @@
         "deprecated",
         "retired"
       ],
-      "description": "Lifecycle status of this version (docs/spec/foundations/layering-and-versioning.md universal deprecation model)."
+      "description": "Lifecycle status of this version (foundations/layering-and-versioning.md universal deprecation model)."
     },
     "deprecation": {
       "type": "object",
@@ -201,7 +201,7 @@
     },
     "relationships": {
       "type": "array",
-      "description": "Relationship TEMPLATES this resource illustrates — guidance and placement hints, NOT a closed allowlist (UDLM ADR-009 §4). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). docs/spec/foundations/entity-relationships.md, service-dependencies.md.",
+      "description": "Relationship TEMPLATES this resource illustrates — guidance and placement hints, NOT a closed allowlist (UDLM ADR-009 §4). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). entities/entity-relationships.md, service-dependencies.md.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -261,7 +261,7 @@
     "lifecycle": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Lifecycle rules. Defaults to UDLM's four-state model Intent → Requested → Realized → Discovered (docs/spec/foundations/four-states.md). Override only to declare type-specific decommission behavior.",
+      "description": "Lifecycle rules. Defaults to UDLM's four-state model Intent → Requested → Realized → Discovered (foundations/four-states.md). Override only to declare type-specific decommission behavior.",
       "properties": {
         "states": {
           "type": "array",
@@ -281,7 +281,7 @@
     },
     "adopts": {
       "type": "array",
-      "description": "External standards this type ADOPTS by reference (core-tenets T5, docs/spec/principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
+      "description": "External standards this type ADOPTS by reference (core-tenets T5, design-principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
       "items": {
         "$ref": "#/$defs/adopted_standard_ref"
       }
@@ -603,7 +603,7 @@
         "license",
         "license_compatibility"
       ],
-      "description": "A reference to an external standard this entity adopts (T5; docs/spec/principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `license_compatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
+      "description": "A reference to an external standard this entity adopts (T5; design-principles/adopted-standards.md §3.1). Carries provenance + version pointer + recorded license verdict — never the standard's schema. `identity_join` is present only for data-join adoptions (e.g. FOCUS cost records keyed by ResourceId); reference-vocabulary adoptions (Redfish/Metal3/DNS field names) omit it. Provenance (`source`) and the license verdict (`license` + `license_compatibility`) are MANDATORY (SPEC-DESIGN-REQUIREMENTS §22–23).",
       "properties": {
         "standard": {
           "type": "string",

@@ -6,7 +6,7 @@
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The relation-vocabulary discipline this applies
 ([`common-elements.md`](../../registry/common-elements.md) §9 / REL-001 — relations are declared, and an
 unnamed edge is valid), the edge model it rides
-([`data-model-core.md`](../spec/foundations/data-model-core.md) §4 — `edge_type` carries ordering; graphs
+([`data-model-core.md`](../../foundations/data-model-core.md) §4 — `edge_type` carries ordering; graphs
 stay acyclic over ordering edge types), the reuse tenet it exercises (core-tenets **T7** — reach for an
 existing mechanism before coining a new one), and the type whose design surfaced it (`Platform.Hub`,
 the multi-cluster management plane — authored under rule 36).

@@ -3,7 +3,7 @@ handle: compute/composite-vm-with-attached-volume
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests a compute-plus-storage stack as one composite intent: a
-    Storage.Volume of a declared size and a Compute.VM that attaches it. The two resources form
+    Storage.Volume of a declared size and a Compute.VirtualMachine that attaches it. The two resources form
     a cross-resource dependency — the VM depends on the Volume — and must realize in that order: the volume
     is carved and reaches Realized first, then the VM realizes and attaches it. The dependency edge is
     first-class (the VM references the volume it attaches), so realization ordering is computed from the

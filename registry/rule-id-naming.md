@@ -1,6 +1,7 @@
 # UDLM Rule-ID Naming Convention
 
-**Decision record:** [ADR-028 — rule-ID naming and registry](../docs/adr/README.md)
+**Document Status:** ✅ Complete — normative
+**Decision record:** [ADR-028 — rule-ID naming and registry](../docs/adr/ADR-028-rule-id-naming-and-registry.md)
 **Registry:** [`rule-id-registry.yaml`](rule-id-registry.yaml) (schema: [`rule-id-registry.schema.json`](rule-id-registry.schema.json))
 **Enforced by:** `tests/check_single_source.py` (CI)
 
