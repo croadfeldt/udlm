@@ -102,7 +102,7 @@ Binding intent → Requested is then selector resolution, not translation betwee
 exactly what Butane's `boot_device` demonstrates mechanically.
 
 This is not a new posture — it is the same move
-[ADR-036](../adr/ADR-036-storage-selection-requirements.md) already made for storage *selection*
+[ADR-036](../adr/README.md) already made for storage *selection*
 (**Proposed**, pending engineering ratification #217 — lean on it as the registry's direction, not
 settled doctrine): its requirements descriptor deliberately mirrors the provider's advertised
 capability fields "so request and advertisement speak one language," and the provider's concrete choice
