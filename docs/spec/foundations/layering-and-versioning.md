@@ -23,7 +23,8 @@ mechanism sits inside (this is the Data abstraction) ·
 [policy-contract.md](../contracts/policy-contract.md) — what the policies applied over the
 merge may do.
 
-→ **§1a** shows the whole mechanism on one field (the fastest way in); **§7** is the assembly diagram.
+→ **§1a** shows the whole mechanism on one field (the fastest way in); **§6** is the
+step-by-step assembly (its diagram is in the annex).
 
 ---
 
@@ -1397,6 +1398,8 @@ classification_level:
 
 ---
 
+## 6. The Assembly Process — Steps 1–9
+
 ### Step 1 — Intent Capture
 The consumer's Request Layer is received and stored as the **Intent State** in the Intent Store. No modification occurs at this step. The Intent State is the immutable record of what the consumer asked for.
 
@@ -1479,16 +1482,8 @@ The fully assembled, policy-processed, placement-confirmed payload is stored as 
 ### Step 9 — Provider Dispatch
 The Requested State payload is dispatched to the selected Service Provider via the API Gateway. The resource hold placed during the Placement Loop is confirmed by dispatch. The provider uses the hold reference to fulfill the request against the reserved resources.
 
----
-
----
-
-## 7. Layer Assembly Diagram
-
-> The end-to-end assembly diagram (Steps 1–9, placement loop, policy phases)
-> has moved to the non-normative
-> [Layering Annex](layering-and-versioning-annex.md) (“Layer Assembly Diagram”).
-> The normative step definitions are in §6 above.
+The end-to-end diagram of these steps (placement loop, policy phases) is in the
+[Layering Annex](layering-and-versioning-annex.md).
 
 ---
 
@@ -1549,13 +1544,6 @@ deprecated → retired    (sunset date reached or manual retirement)
 
 ---
 
-## 11. Scale Example — 40,000 Linux VMs
-
-> The 40,000-VM scale illustration has moved to the non-normative
-> [Layering Annex](layering-and-versioning-annex.md) (“Scale Example — 40,000 Linux VMs”).
-
----
-
 ## 12. Relationship to the Four States
 
 | Layer | State Relationship |
@@ -1567,15 +1555,6 @@ deprecated → retired    (sunset date reached or manual retirement)
 | Discovery interrogation result | Becomes **Discovered State** — stored in Discovered Store |
 
 The layer chain of a Realized Entity is always traceable — given a Realized State record, the complete layer chain that produced it can be reconstructed, providing full audit capability back to the original Base Layer.
-
----
-
-## 13. Layer Gaps — Q21 through Q24
-
-> The Q21–Q24 layer-gap analysis (consumer exclusion, service-layer versioning,
-> conditional inclusion, dependency layer chains) and its examples have moved to the
-> non-normative [Layering Annex](layering-and-versioning-annex.md) (“Layer Gaps — Q21 through Q24”).
-> The binding rules are captured normatively in §13a (`LAY-001`–`LAY-004`) below.
 
 ---
 
