@@ -383,11 +383,11 @@
     },
     "spec_examples": {
       "type": "array",
-      "description": "Worked example payload(s) for the compiled spec (rule-36 / ADR-055: every type ships one, in-spec). Type tier only, like context. Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per ADR-055/051."
+      "description": "Worked example payload(s) for the compiled spec (rule-36 / ADR-055: every type ships one, in-spec). Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per ADR-055/051."
     },
     "spec_constraints": {
       "type": "object",
-      "description": "SPEC-LEVEL keywords merged verbatim into the compiled spec object, beyond the element-derived properties/required — the home for CROSS-ELEMENT declarative constraints (oneOf / dependentSchemas / if-then, SPEC-DESIGN §16 'structural schema'), a spec-level description, or an additionalProperties override. Type tier only, like context. Discovered porting Compute.VM: `oneOf: [[instance_size],[cpu,memory]]` is real spec content no per-element schema can express."
+      "description": "SPEC-LEVEL keywords merged verbatim into the compiled spec object, beyond the element-derived properties/required — the home for CROSS-ELEMENT declarative constraints (oneOf / dependentSchemas / if-then, SPEC-DESIGN §16 'structural schema'), a spec-level description, or an additionalProperties override. Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Discovered porting Compute.VM: `oneOf: [[instance_size],[cpu,memory]]` is real spec content no per-element schema can express."
     }
   },
   "allOf": [
@@ -430,7 +430,10 @@
       "if": {
         "properties": {
           "class": {
-            "const": "type"
+            "enum": [
+              "type",
+              "base"
+            ]
           }
         }
       },
@@ -462,7 +465,10 @@
       "if": {
         "properties": {
           "class": {
-            "const": "type"
+            "enum": [
+              "type",
+              "base"
+            ]
           }
         }
       },
@@ -478,7 +484,10 @@
       "if": {
         "properties": {
           "class": {
-            "const": "type"
+            "enum": [
+              "type",
+              "base"
+            ]
           }
         }
       },

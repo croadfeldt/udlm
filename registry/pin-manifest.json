@@ -479,7 +479,7 @@
  },
  "type:Job": {
   "current": "1.0.0",
-  "path": "registry/classes/process/job/_base.yaml",
+  "path": "registry/classes/job.yaml",
   "versions": {
    "1.0.0": "sha256:df3916a76072426854257089815099bdf764d883d3c5838ff268b6ccbf88b804"
   }

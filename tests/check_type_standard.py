@@ -80,6 +80,13 @@ def is_reference_shape(prop):
 def main():
     types = load_types()
     registered = {d.get("resource_type") for d in types.values() if isinstance(d, dict)}
+    # Class names of ANY tier are legal relationship targets: an edge to a category base
+    # (e.g. Job -> Automation) is POLYMORPHIC — "any member of the category" (the
+    # executes_definition case). Bases aren't served specs, but they are addressable targets.
+    for cp in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
+        cd = yaml.safe_load(open(cp, encoding="utf-8")) or {}
+        if cd.get("record_type") == "class":
+            registered.add(cd.get("resource_type"))
     baseline = {}
     if os.path.exists(BASELINE):
         baseline = yaml.safe_load(open(BASELINE, encoding="utf-8")) or {}
