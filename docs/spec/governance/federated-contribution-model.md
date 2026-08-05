@@ -1,16 +1,13 @@
 # UDLM — Federated Contribution Model
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference — Read This First for Multi-User Data Governance
-**Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Layering and Versioning](../foundations/layering-and-versioning.md) | [Registry Governance](registry-governance.md) | [Governance Matrix](governance-matrix.md) | [Authority Tier Model](authority-tier-model.md)
-
-> **This document maps to: DATA + POLICY + PROVIDER**
->
-> The federated contribution model governs how Data artifacts are created and managed across all contributor types. It extends the Data abstraction with explicit contributor identity, applies Policies to govern contribution permissions and review requirements, and uses the Provider abstraction for cross-peer federation of contributions.
+**Background — read first** (skip if you have it):
+[layering-and-versioning.md](../foundations/layering-and-versioning.md) — the artifact
+lifecycle and layer model every contribution flows through ·
+[governance-matrix.md](governance-matrix.md) — the boundary evaluation contributions cross ·
+[authority-tier-model.md](authority-tier-model.md) — the decision-gravity vocabulary reviews
+consume.
 
 ---
-
-> **Authority Tier Reference:** Contribution approval tiers (`reviewed`, `verified`, `authorized`) are named positions in the [Authority Tier Model](authority-tier-model.md) ordered list. Organizations may add custom tiers between existing ones. Changes to the tier registry that affect contribution approval requirements trigger impact detection (ATM-009–ATM-012).
 
 ## 1. Purpose and Principle
 
