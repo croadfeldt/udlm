@@ -1,7 +1,5 @@
 # UDLM — Resource Type Hierarchy and Service Catalog
 
-
-
 **Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Entity Types](entity-types.md) | [Four States](four-states.md) | [Layering and Versioning](layering-and-versioning.md) | [Examples](examples.md)
 
@@ -16,8 +14,6 @@
 > **This document maps to: DATA**
 >
 > The Data abstraction — Resource Type Specifications and Provider Catalog Items
-
-
 
 ---
 
@@ -34,7 +30,6 @@ The hierarchy serves four goals:
 
 ---
 
-
 ### 1a. Precise Vocabulary — Resource Type vs Catalog Item
 
 These terms are frequently conflated. The distinction is architectural:
@@ -49,56 +44,19 @@ These terms are frequently conflated. The distinction is architectural:
 
 **Anti-vocabulary update:** Never say "catalog item" when you mean "resource type specification." Never say "resource type" when you mean a specific provider offering — use "catalog item" or "provider catalog item."
 
-
 ## 2. The DCM Resource Type Registry
 
 DCM maintains an official **Resource Type Registry** — the authoritative source of standard resource type definitions. The registry is the foundation of portability across the DCM ecosystem.
 
+### 2.1c Resource Type Authority
 
-
-### 2.1c Resource Type Authority — Stewardship Model
-
-Every Resource Type Specification in the DCM registry is owned by a **Resource Type
-Authority** — the team or individual responsible for defining, maintaining, evolving,
-and deprecating that specification. This is not an implicit role; it is a declared
-field in the registry entry.
-
-The Resource Type Authority has full responsibility for:
-- Defining the universal fields (the vendor-neutral contract all providers must implement)
-- Deciding which fields are `conditional` vs `universal`
-- Declaring `layer_reference` constraints where the allowed values should be
-  governed by a named layer type rather than a static list
-- Reviewing provider extension proposals that add fields to their resource type
-- Publishing new versions when the contract changes
-- Deprecating the specification and declaring a replacement when it's superseded
-
-**Authority assignment by registry tier** (the tiers themselves are defined by
-[registry-governance](../governance/registry-governance.md); this table adds who holds authority per tier):
-
-| Tier | Who is the Resource Type Authority |
-|------|------------------------------------|
-| Tier 1 — DCM Core | DCM Project maintainers (community PRs + named maintainer approval) |
-| Tier 2 — Verified Community | Named community maintainer(s) declared at registry entry time |
-| Tier 3 — Organization | Designated platform team, domain team, or SME group per the organization's governance model |
-
-**Within Tier 3 (Organization), typical authority assignments:**
-
-| Resource Type Category | Typical Owning Authority |
-|-----------------------|--------------------------|
-| `Compute.*` | Platform / Virtualization Team |
-| `Network.*` | Network Operations |
-| `Storage.*` | Storage Operations |
-| `Security.*` | Security / CISO Office |
-| `Platform.*` | Platform Engineering |
-| `Process.*` | Automation / DevOps Platform Team |
-| `Application.*` | Application Platform Team |
-
-**The authority model is the same as all other DCM artifacts.** Resource Type
-Specifications are versioned, GitOps-managed, authority-owned, and subject to
-the standard `developing → proposed → active → deprecated → retired` lifecycle.
-The Resource Type Authority is the approver in the GitOps workflow — the PR must
-be approved by the authority before the specification activates.
-
+Every Resource Type Specification is owned by a **Resource Type Authority** — a declared field,
+not an implicit role. Who becomes the authority, how authority transfers, and who holds it per
+registry tier are owned by [registry-governance §3](../governance/registry-governance.md) (the
+submitter-becomes-authority rule and the tier table). What the authority decides *in this
+hierarchy*: the universal (vendor-neutral) field set, `conditional` vs `universal`
+classification, `layer_reference` constraints (§2.1b), provider extension review, and
+version/deprecation decisions for their specification.
 
 ### 2.1a Catalog Item vs Resource Type Specification — Critical Distinction
 
@@ -125,7 +83,6 @@ These two terms are frequently conflated throughout the documentation. They are 
 - "The consumer selects a catalog item" ✓ — they select a specific provider offering
 
 **In the anti-vocabulary:** "Catalog Item" should not be used when "Resource Type Specification" is meant, and vice versa. The hierarchy is: Resource Type Category → Resource Type → Resource Type Specification → Provider Catalog Item.
-
 
 ### 2.1 Registry Principles
 
@@ -212,7 +169,6 @@ The broadest classification. Defines the domain of a resource without any specif
 **Example:** `Compute`, `Network`, `Storage`
 
 ---
-
 
 ### 2.1b Layer-Referenced Field Constraints
 
@@ -314,7 +270,6 @@ artifacts, owned by a declared authority, stored in GitOps, subject to the stand
 that creates and governs the layer instances is the same authority that governs
 what values are valid for that field.
 
-
 ### Level 2 — Resource Type
 
 Defines an abstract resource within a category. A Resource Type represents a class of resource that multiple providers can implement. Resource Types are the primary unit of portability in DCM.
@@ -365,7 +320,6 @@ A specific provider's concrete implementation of a Resource Type Specification. 
 **Example:** `Nutanix.VM.Small` implements `Compute.VM` with `cpu_count: 4`, `ram_gb: 16`, `storage_gb: 60`
 
 ---
-
 
 ## 3a. Field Constraint Model — Three Choices
 
@@ -473,7 +427,6 @@ used an ad-hoc enum — this is a non-breaking minor version change.
 
 ---
 
-
 ## 4. Portability Classification
 
 Every field in every Resource Type Specification carries a portability classification. This classification is part of the field's metadata and is immutable once published for a given version.
@@ -544,138 +497,28 @@ field_name:
 
 ---
 
-## 5. Inheritance Model
+## 5. Specialization — Class Composition
 
-> **Governing note (ADR-038 / ADR-045).** Class composition over **Base / Type / Provider Classes** of scoped
-> `SharedDataElement`s is the ruled specialization mechanism, and inheritance depth stays at the three scope
-> planes (ADR-045 §5 — "a ruling, not a habit"). The type-level inheritance below is retained as **historical
-> context** for reading older definitions; unbounded chains like the §5.2 example are not how a new
-> specialization is authored.
-
-Resource Types support inheritance, enabling specialization without duplication. A child type inherits all fields from its parent and may add new fields.
-
-### 5.1 Inheritance Rules
-
-1. A child type inherits **all fields** from its parent type — no field can be removed or redefined
-2. A child type may **add new fields** beyond its parent's specification
-3. A child type's portability classification can only be **equal to or more restrictive** than its parent — a child of a `universal` type may be `conditional`, but not vice versa
-4. Each level of the hierarchy is **independently versioned**
-5. Each level maintains a **reference to its parent UUID and version**
-6. Deprecating a parent type **does not automatically deprecate child types** — each must be independently deprecated with appropriate migration guidance
-
-### 5.2 Inheritance Example
-
-```
-Compute                                        # Category
-  └── VM                           # Base Resource Type
-        ├── VM.GPU                 # Inherits VM
-        │     ├── gpu_count (conditional)
-        │     ├── gpu_memory_gb (conditional)
-        │     └── VM.GPU.HighMemory  # Inherits VM.GPU
-        │           └── extended_memory_gb (conditional)
-        └── VM.HighAvailability    # Inherits VM
-              ├── ha_mode (conditional)
-              └── failover_policy (conditional)
-```
-
-### 5.3 Inheritance Metadata
-
-Every Resource Type that inherits from a parent carries the following inheritance metadata:
-
-```yaml
-inheritance:
-  parent_uuid: <uuid of parent type>
-  parent_version: <version of parent type this inherits from>
-  parent_fully_qualified_name: <Category.ParentType>
-  inherited_fields: <list of field names inherited — for documentation>
-  added_fields: <list of field names added by this type>
-```
-
----
+Specialization is **class composition**, not type-tree inheritance: Base / Type / Provider
+Classes of scoped `SharedDataElement`s (ADR-038), extension always Liskov-safe (redeclare to
+tighten, never loosen — `tests/check_class_liskov.py`), and depth capped at the three scope
+planes (ADR-045 §5 — "a ruling, not a habit"). A child scope's portability is by construction
+equal or narrower than its parent's — scope *is* portability. Authoring procedure:
+[`docs/authoring/scoped-class.md`](../../authoring/scoped-class.md).
 
 ## 6. Provider Registration and Catalog Item Declaration
 
-For a provider to participate in the DCM ecosystem and have its catalog items available for request resolution, it must register against the Resource Type Hierarchy.
-
-### 6.1 Provider Registration Declaration
-
-A provider's registration is a machine-readable declaration that DCM consumes to understand what the provider offers and how to route requests to it:
-
-```yaml
-provider_registration:
-  uuid: <provider uuid>
-  name: <provider name>
-  version: <Major.Minor.Revision>
-  status:
-    state: <active|deprecated|retired>
-    deprecation_date: <if applicable>
-    sunset_date: <if applicable>
-    replacement_uuid: <if deprecated>
-    deprecation_reason: <if deprecated>
-    migration_guidance: <if deprecated>
-  catalog_items:
-    - <list of catalog item declarations>
-  sovereignty_capabilities:
-    <see sovereignty contract — provider-contract.md>
-  supported_lifecycle_operations:
-    <see lifecycle contract — provider-contract.md>
-  attestation:
-    <attestation EVIDENCE — see provider-contract.md §2. trust_posture is DCM-assigned in the verdict, not self-declared here (DCM ADR-022).>
-```
-
-### 6.2 Catalog Item Declaration
-
-Each catalog item a provider offers is declared against a specific Resource Type Specification version:
-
-```yaml
-catalog_item:
-  uuid: <uuid>
-  name: <human-readable name>
-  version: <Major.Minor.Revision>
-  implements:
-    resource_type_uuid: <uuid of Resource Type being implemented>
-    resource_type_version: <version of specification this implements>
-    resource_type_fully_qualified_name: <Category.ResourceType>
-  status:
-    state: <active|deprecated|retired>
-    deprecation_date: <if applicable>
-    sunset_date: <if applicable>
-    replacement_uuid: <if deprecated>
-    deprecation_reason: <if deprecated>
-    migration_guidance: <if deprecated>
-  universal_fields:
-    <implementation of all universal fields from parent specification>
-  conditional_fields_supported:
-    <list of conditional field names this provider supports>
-  provider_specific_extensions:
-    # Provider adds fields beyond the Resource Type Specification.
-    # Each field MUST be marked portability_breaking: true.
-    # The catalog item MUST set portability_warning: true.
-    # The Resource Type Authority MAY review and accept these as
-    # 'conditional' fields in a future version of the specification
-    # if multiple providers adopt the same extension.
-    #
-    # Example:
-    nutanix_acropolis_affinity_group:
-      type: string
-      portability_breaking: true
-      description: "Nutanix-specific affinity group assignment"
-
-  # Provider extension layers — alternative to inline extensions.
-  # Providers may contribute a Service Layer (domain: provider) that adds
-  # fields injected during payload assembly for their offering only.
-  # These layers are registered with DCM alongside the catalog item.
-  # They carry the same portability_breaking: true semantics.
-  provider_extension_layer_handles:
-    - "providers/nutanix-eu-west/layers/acropolis-extensions-v1"
-    # Layer domain: provider — cannot override platform or tenant layers
-    # Applied only when this catalog item is selected for dispatch
-
-  portability_warning: <true|false — true if any provider-specific extensions present>
-  portability_class: <portable|conditional|provider-specific|exclusive>
-```
-
----
+Both surfaces are owned elsewhere; the hierarchy consumes them. **Registration** — the
+machine-readable declaration DCM consumes at admission (capabilities as (verb × Category),
+adopted-standard support, sovereignty posture) — is the provider contract
+([provider-contract §2](../contracts/provider-contract.md); wire shape
+`registry/provider-adopted-standards.schema.json`). **Catalog items** — a provider's concrete
+offerings, each pinned to a Resource Type Specification version and only ever *narrower* than
+it — validate against `registry/catalog-item.schema.json` (constituents, bindings, and the
+composition checks in `registry/tools/validate.py`). What this hierarchy contributes is the
+pinning discipline: a catalog item names its `resource_type_uuid` + version, and request
+resolution (§7) narrows from the specification through the catalog item to a dispatchable
+request.
 
 ## 7. Request Resolution — Specificity Narrowing
 
@@ -720,56 +563,26 @@ The enforcement mode is itself a versioned, auditable policy — subject to the 
 
 ---
 
-## 8. Deprecation Model
+## 8. Deprecation — Hierarchy Cascade Rules
 
-Every definition at every level of the Resource Type Hierarchy can be deprecated. Deprecation is a first-class concept in DCM — not an afterthought.
+The lifecycle itself (`active → deprecated → retired`), the deprecation window, and the
+`migration_guidance` requirement are owned by
+[layering-and-versioning](layering-and-versioning.md) and `registry/VERSIONING.md`; sunset
+defaults are `REG-DP-002` ([registry-governance](../governance/registry-governance.md)). What
+is specific to the hierarchy is that deprecation **never cascades implicitly**:
 
-### 8.1 Deprecation Lifecycle
-
-```
-active → deprecated → retired
-```
-
-| State | Meaning | System Behavior |
-|---|---|---|
-| `active` | Definition is current and fully supported | Normal operation |
-| `deprecated` | Definition is being phased out. Replacement is available. | Deprecation warning surfaced to consumers. Requests still processed. Warning recorded in provenance. |
-| `retired` | Definition is no longer honored. | Requests using retired definitions are rejected by the Policy Engine. |
-
-### 8.2 Deprecation Cascade Rules
-
-- Deprecating a **Resource Type** does not automatically deprecate its child types or provider catalog items — each must be independently deprecated
-- Deprecating a **Provider Catalog Item** does not affect other catalog items implementing the same Resource Type
-- Retiring a **Resource Type Specification version** causes all catalog items registered against that version to require re-registration against a current version
-- **Sunset dates** must provide sufficient migration runway — minimum notice periods may be defined by organizational policy
-
-### 8.3 Migration Guidance Requirement
-
-Any definition marked `deprecated` MUST include:
-- A reference to the replacement definition (UUID and version)
-- A human-readable deprecation reason
-- Human-readable migration guidance explaining how to transition
-- A sunset date giving consumers time to migrate
-
----
+- Deprecating a **Resource Type** does not automatically deprecate its child types or provider
+  catalog items — each is independently deprecated with its own migration guidance
+- Deprecating a **Provider Catalog Item** does not affect other catalog items implementing the
+  same Resource Type
+- Retiring a **Resource Type Specification version** causes all catalog items registered
+  against that version to require re-registration against a current version
 
 ## 9. Versioning
 
-All definitions in the Resource Type Hierarchy follow the universal DCM versioning scheme.
-
-### 9.1 Version Scheme
-
-`Major.Minor.Revision`
-
-| Component | Trigger |
-|---|---|
-| **Major** | Breaking changes to the contract — removing fields, changing field types, changing required/optional status of universal fields |
-| **Minor** | Additive changes — adding new optional fields, adding new conditional fields, adding new extension points |
-| **Revision** | Data or configuration changes with no contract impact — updating descriptions, updating constraints that don't break existing data, updating metadata |
-
-### 9.2 Version Constraints in Requests
-
-Consumers and dependencies may declare version constraints in their requests:
+Every definition at every level versions under the one scheme in `registry/VERSIONING.md`
+(`MAJOR.MINOR.REVISION`, the entity-semver bump table, and the publish law — a published
+(identity, version) pair is immutable). Requests may pin:
 
 ```yaml
 resource_type:
@@ -778,41 +591,8 @@ resource_type:
   version: <version or version range>
 ```
 
-### 9.3 Version Immutability
-
-Once a version is published it is immutable. Any change — even a documentation correction — produces a new version. This applies to all definitions at all levels of the hierarchy.
-
----
-
-## 10. Open Questions
-
-| # | Question | Impact | Status |
-|---|----------|--------|--------|
-| 1 | What is the governance model for proposing and approving new Resource Types to the DCM registry? | Community adoption, quality control | ✅ Resolved — three-tier registry (DCM Core / Verified Community / Organization); PR-based proposals with automated validation gates; shadow validation period before active promotion; see [registry-governance](../governance/registry-governance.md) (REG-001, REG-002) |
-| 2 | Should the registry support a formal review/approval workflow before a Resource Type becomes `active`? | Registry integrity, community trust | ✅ Resolved — PR-based workflow with automated gates (schema, FQN conflict, dependency resolution) and mandatory shadow validation before active; review periods by change type; see [registry-governance](../governance/registry-governance.md) (REG-002) |
-| 3 | What is the minimum sunset period for deprecated definitions? | Migration planning, operational stability | ✅ Resolved — default sunset policies REG-DP-002: Tier 1=P12M, Tier 2=P6M; overridable via standard policy priority; locked as immutable in fsi/sovereign profiles; see [registry-governance](../governance/registry-governance.md) (REG-DP-002) |
-| 4 | Should version constraints in requests be strictly enforced or advisory? | Operational flexibility vs. predictability | ✅ Resolved — strictly enforced; version_policy options: exact/compatible/latest_minor/latest; DCM never auto-upgrades across major versions; profile-governed defaults (fsi/sovereign=exact); see [registry-governance](../governance/registry-governance.md) (REG-004) |
-| 5 | How are conflicts resolved when multiple providers satisfy all narrowing criteria equally? | Request resolution determinism | ✅ Resolved — UDLM supplies the constraint *inputs* (policy preference, provider priority, tenant affinity, cost signal); the tie-breaking *algorithm* that consumes them (e.g. least-loaded → consistent-hash on request_uuid for determinism) is implementation concern (REG-005). |
-| 6 | Should the registry be distributed or centralized? How does this interact with sovereignty requirements? | Registry availability, sovereignty | ✅ Resolved — federated model: DCM Project registry → Organization mirror → Sovereign DCM (offline/signed bundles); air-gap via signed bundle import; see [registry-governance](../governance/registry-governance.md) (REG-006) |
-
----
-
-## 11. Related Concepts
-
-- **Portability** — the ability to fulfill a resource intent using any provider that satisfies the resource type contract
-- **Naturalization** — provider's responsibility to transform DCM unified data into provider-specific format
-- **Denaturalization** — provider's responsibility to transform provider-specific results back into DCM unified format
-- **Sovereign Execution Posture** — sovereignty capabilities declared in provider registration inform placement decisions
-- **Policy Engine** — applies portability enforcement, placement policies, and request resolution logic
-- **Field-Level Provenance** — every field modification during request resolution is recorded with source UUID and operation type
-- **Universal Versioning** — Major.Minor.Revision applies to all definitions at all levels of the hierarchy
-- **Deprecation** — universal model for phasing out definitions at any level with migration guidance
-
----
-
-*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*
-
----
+Enforcement is strict, with `version_policy` options and profile-governed defaults owned by
+`REG-004` ([registry-governance](../governance/registry-governance.md)).
 
 ## Resource Type Reference — Consumer vs Internal Format
 
