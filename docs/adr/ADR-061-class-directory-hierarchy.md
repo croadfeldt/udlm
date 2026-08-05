@@ -39,38 +39,44 @@ parent's directory, named by its own segment:
 ```
 registry/classes/
 ├── resource/
-│   ├── compute.yaml                  Compute            (base)
-│   └── compute/
-│       └── vm.yaml                   Compute.VM         (type)
-└── process/
-    ├── automation.yaml               Automation         (base)
-    ├── automation/
-    │   ├── ospatch.yaml              Automation.OSPatch (type)
-    │   └── ospatch/
-    │       ├── engine-blue.yaml      …EngineBlue        (provider)
-    │       └── engine-green.yaml     …EngineGreen       (provider)
-    └── job.yaml                      Job                (childless base — an
-                                                          instantiable base is a file
-                                                          with no directory)
+│   ├── compute/
+│   │   ├── _base.yaml                Compute            (base — index file)
+│   │   ├── vm.yaml                   Compute.VM         (type, leaf)
+│   │   └── bare-metal-host.yaml      Compute.BareMetalHost
+│   ├── hardware/_base.yaml …         (every category: a directory owning its _base.yaml + types)
+│   └── topology/_base.yaml           Topology           (childless instantiable base — uniform:
+│                                                          still a directory, per the ruling)
+├── process/
+│   ├── automation/
+│   │   ├── _base.yaml                Automation
+│   │   └── ospatch/
+│   │       ├── _base.yaml            Automation.OSPatch (type WITH providers → indexed)
+│   │       ├── engine-blue.yaml      …EngineBlue        (provider, leaf)
+│   │       └── engine-green.yaml
+│   └── job/_base.yaml                Job                (childless base — uniform directory)
+└── access/
+    ├── access/_base.yaml + identity-escrow.yaml
+    └── identity/_base.yaml + group.yaml, person.yaml, service-account.yaml
 ```
 
 The rules:
 
 1. **First path component = `lower(family)`.** Family is the grouping axis, not a tier; it
    appears in the path exactly once.
-2. **Each dotted segment of `resource_type` is one path component**, the last one the
-   filename. Provider tier needs no special case — it is simply the third level.
-3. **Filenames are the leaf segment only** (`vm.yaml`, never `compute.vm.yaml`) — the path
-   carries the ancestry. Segment casing follows the file-naming standard: word boundaries
-   hyphenate (`bare-metal-host`), acronym runs merge with what follows (`ospatch`, `vm`,
-   `ipaddress`).
+2. **Index-file template (maintainer ruling 2026-08-04, superseding the sibling-pair draft):**
+   a **base is always a directory holding `_base.yaml`** — childless bases included (Job,
+   Topology), uniformly. A **type or provider class is a leaf file** named by its own
+   kebab-cased segment **until it has children**, when it too becomes `<segment>/_base.yaml`
+   (OSPatch, having engines, is indexed; VM, having no providers yet, is a leaf). One
+   directory owns everything about a class.
+3. **Each dotted segment of `resource_type` is one path component.** Provider tier needs no
+   special case — it is simply the third level. Segment casing follows the file-naming
+   standard: word boundaries hyphenate (`bare-metal-host`), acronym runs merge (`ospatch`,
+   `vm`).
 4. **No version directories** (ADR-051 owns versions) and **no tier directories** — tier is
-   derivable from depth and declared in the record; naming directories `base/`/`type/` would
-   restate it a third time.
-5. **The sibling pair is the template** (`compute.yaml` beside `compute/`), not an index file
-   (`compute/_base.yaml`): filenames keep the class's own name, no reserved names exist, and a
-   class never moves when it gains its first child. `ls classes/process/automation/` is the
-   answer to "what does Automation offer."
+   derivable from depth and declared in the record.
+5. Accepted cost of the template: a class **moves** (`<segment>.yaml` →
+   `<segment>/_base.yaml`) when it gains its first child — a `git mv`, never a version event.
 
 ## Decision — the path is a verified projection, never a source
 

@@ -1,0 +1,180 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.6.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337",
+  "resource_type": "Data.Database",
+  "version": "0.6.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Database",
+    "description": "A managed relational database instance. Publishes connection outputs other resources bind to. Reconciled 2026-07-07 with the dcm-project catalog DatabaseSpec (#271): resources now required (matching their DatabaseSpec), and the storage/host relationships added so a database's data volume and placement are first-class edges.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-17T18:31:11Z",
+    "converted_from": "flat spec Data.Database@0.5.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Data",
+          "version": "1.0.0",
+          "uuid": "34093415-4089-44f3-b395-07103e5f4779"
+        },
+        {
+          "class": "Data.Database",
+          "version": "0.6.0",
+          "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "engine": {
+        "type": "string",
+        "enum": [
+          "postgres",
+          "mysql"
+        ],
+        "description": "Database engine."
+      },
+      "version": {
+        "type": "string",
+        "default": "latest",
+        "description": "Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints, E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract §8.1a): (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable against a pinned requirement and across compatible providers (declared, not live-queried); (2) the concrete version provisioned is recorded in outputs.applied_version for audit. Intent carries the abstract; realized carries the concrete."
+      },
+      "resources": {
+        "type": "object",
+        "properties": {
+          "instance_size": {
+            "type": "string",
+            "description": "Provider-neutral size class (e.g. small|medium|large, or a named profile). Generic sizing INTENT — usable in place of, or alongside, explicit cpu/memory/storage. The PROVIDER reconciles it to concrete resources / its own instance classes at naturalization (DCM ADR-023, provider-naturalization boundary); UDLM/DCM does NOT define the mapping. A shared sizing option available to any resource type (common-elements §sizing)."
+          },
+          "cpu": {
+            "type": "string",
+            "pattern": "^([0-9]+m|[0-9]+(\\.[0-9]+)?)$",
+            "description": "CPU allocation, as a millicore string (`500m`) or whole/fractional cores (`2`, `1.5`) — Kubernetes-aligned quantity convention (#40 review). The provider reconciles to its concrete units at naturalization."
+          },
+          "memory": {
+            "type": "string",
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
+          },
+          "storage": {
+            "type": "string",
+            "pattern": "^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$"
+          }
+        },
+        "description": "Converted verbatim from the flat Data.Database spec."
+      },
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "description": "Converted verbatim from the flat Data.Database spec."
+      }
+    },
+    "required": [
+      "engine",
+      "resources"
+    ],
+    "examples": [
+      {
+        "engine": "postgres",
+        "version": "16",
+        "resources": {
+          "cpu": "2",
+          "memory": "16GB",
+          "storage": "200GB"
+        },
+        "metadata": {
+          "name": "orders-db"
+        }
+      }
+    ]
+  },
+  "outputs": {
+    "applied_version": {
+      "type": "string",
+      "description": "The concrete engine version the provider provisioned (audit record; realized-side). When the requested `version` was abstract (`latest`/`lts`) or omitted, this captures what it resolved to at realization — closing the loop between abstract intent and reality. Populated by the provider on realization (intent→realized; provider-contract §8.1a obligation 3)."
+    },
+    "connection_string": {
+      "type": "string",
+      "description": "Full connection string once Realized.",
+      "sensitive": true
+    },
+    "host": {
+      "type": "string",
+      "description": "Database host."
+    },
+    "port": {
+      "type": "integer",
+      "description": "Listening port."
+    },
+    "username": {
+      "type": "string",
+      "description": "Provisioned application username."
+    }
+  },
+  "relationships": [
+    {
+      "edge_type": "binds_to",
+      "name": "data_volume",
+      "adopted_from": "Kubernetes PersistentVolumeClaim",
+      "target": "Storage.Volume",
+      "cardinality": "0..1",
+      "description": "The persistent volume backing the database's data directory (binds its volume_handle output). Ordering: the volume is realized before the database that stores on it."
+    },
+    {
+      "edge_type": "contained_by",
+      "name": "host",
+      "target": "Compute.VM",
+      "cardinality": "0..1",
+      "description": "The compute host/guest the database runs on, when self-hosted (vs a managed DBaaS provider)."
+    },
+    {
+      "edge_type": "contained_by",
+      "name": "cluster",
+      "target": "Compute.Cluster",
+      "cardinality": "0..1",
+      "description": "The cluster the database runs on, when containerized/operator-managed."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "FOCUS",
+      "version": ">=1.3 <2.0",
+      "role": "cost-and-usage data for this database",
+      "identity_join": {
+        "local_field": "uuid",
+        "standard_column": "ResourceId"
+      },
+      "source": "https://focus.finops.org/",
+      "license": "CC-BY-4.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier2_record"
+    }
+  ],
+  "context": {
+    "purpose": "Declares a managed relational database instance and publishes the connection facts other resources bind to.",
+    "plain_description": "The request for a database: engine (e.g. postgres), a version that may be concrete (16) or an abstract channel the provider resolves (latest, lts), and the required `resources` sizing — `cpu` as a string (`500m` or `2`), with `memory` and `storage` as sizes like `16GB`. Once realized, it publishes host, port, and connection details that applications bind to, plus the concrete version provisioned — so a latest at request time is still an auditable fact afterwards. Where it runs (a VM, a cluster, a managed service) and which volume holds its data are first-class edges, not prose.",
+    "use_when": [
+      "You need a database provisioned to a declared engine, version, and size, with its connection surface published for consumers.",
+      "You need the database's backing volume and host in the graph so ordering (volume before database, database before app) is derivable."
+    ],
+    "not_for": [
+      "The volume storing the data — Storage.Volume; the database references it.",
+      "The secret material for connecting — that belongs with Security.CredentialRef (the current sensitive connection outputs are a known open decision)."
+    ],
+    "works_with": [
+      "Storage.Volume — the persistent volume backing the data directory.",
+      "Compute.VM / Compute.Cluster — where the database runs, when self-hosted.",
+      "Software.Service / Compute.Container — the consumers that bind to its connection outputs."
+    ]
+  }
+}

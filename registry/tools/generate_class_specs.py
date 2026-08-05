@@ -49,8 +49,10 @@ def chain(cls, by_name):
 
 
 def rel_identity(rel):
-    """Relationship identity for the union: declared name wins; else the structural triple."""
-    return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
+    """Relationship identity for the union/redeclare check: the FULL tuple — a name alone is not
+    unique (one class legitimately declares runs_on -> Cluster AND runs_on -> BareMetalHost).
+    A child's tightening redeclare matches name+structure; retargeting was already forbidden."""
+    return (rel.get("name"), rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
 
 
 def compile_spec(cls, by_name):
@@ -111,6 +113,8 @@ def compile_spec(cls, by_name):
         spec["relationships"] = list(rel_seen.values())
     if adopts:
         spec["adopts"] = adopts
+    if cls.get("entity_type"):                       # Knowledge/Access discriminator — pass-through
+        spec["entity_type"] = cls["entity_type"]
     if cls.get("context"):                           # type tier only (schema-enforced); copied verbatim
         spec["context"] = cls["context"]
     if cls.get("spec_examples"):                     # rule-36/ADR-055: the worked example rides the compiled spec

@@ -1,0 +1,145 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Cluster/0.6.0
+conforms_to: udlm/0.1
+uuid: b3db807c-91a9-4ad3-bd28-b5a1042f740a
+record_type: class
+class: type
+resource_type: Storage.Cluster
+parent: Storage
+version: 0.6.0
+family: Resource
+status: active
+metadata:
+  display_name: Storage Cluster
+  description: A vendor-neutral distributed storage cluster that serves block, file, and/or object storage.
+    The concrete technology (Ceph, etc.) is the PROVIDER, declared on the instance and in adopts[] — never
+    in the type name. Consumers bind to the typed protocol outputs (storage classes / endpoints), not
+    to the implementation. Grounded in SNIA Swordfish (StorageSystem) with Rook CephCluster as a reference
+    implementation.
+  maintainer: udlm-registry
+  origination_timestamp: '2026-06-27T00:38:59Z'
+  converted_from: flat spec Storage.Cluster@0.5.0 (bulk mechanical conversion 2026-08-04; factoring later
+    via scope promotion)
+elements:
+- element: protocols
+  scope: Storage.Cluster
+  optional: false
+  state: canonical
+  description: 'Storage access protocols the cluster serves (Ceph: block=RBD, file=CephFS, object=RGW/S3).'
+  schema:
+    type: array
+    items:
+      type: string
+      enum:
+      - block
+      - file
+      - object
+    description: 'Storage access protocols the cluster serves (Ceph: block=RBD, file=CephFS, object=RGW/S3).'
+- element: capacity
+  scope: Storage.Cluster
+  optional: true
+  state: canonical
+  description: Cluster capacity (Swordfish capacity model).
+  schema:
+    type: object
+    description: Cluster capacity (Swordfish capacity model).
+    properties:
+      total:
+        type: string
+        pattern: ^[0-9]+(GB|TB|PB|GiB|TiB|PiB)$
+        description: Total raw capacity.
+      usable:
+        type: string
+        pattern: ^[0-9]+(GB|TB|PB|GiB|TiB|PiB)$
+        description: Usable capacity after data-protection overhead.
+- element: data_protection
+  scope: Storage.Cluster
+  optional: true
+  state: canonical
+  description: Redundancy scheme (Swordfish data-protection).
+  schema:
+    type: object
+    description: Redundancy scheme (Swordfish data-protection).
+    properties:
+      scheme:
+        type: string
+        enum:
+        - replication
+        - erasure-coding
+        description: Protection method.
+      replicas:
+        type: integer
+        minimum: 1
+        description: Replica count when scheme=replication (e.g. 3).
+spec_examples:
+- protocols:
+  - block
+  - file
+  - object
+  capacity:
+    total: 120TiB
+    usable: 40TiB
+  data_protection:
+    scheme: replication
+    replicas: 3
+outputs:
+  block_storage_class:
+    type: string
+    description: Block (e.g. RBD) storage-class consumers provision volumes from.
+  file_storage_class:
+    type: string
+    description: Shared-file (e.g. CephFS) storage-class.
+  object_endpoint:
+    type: string
+    description: S3-compatible object endpoint (e.g. RGW).
+relationships:
+- edge_type: depends_on
+  target: Compute.VM
+  cardinality: 0..n
+  name: node_vm
+  description: Storage nodes/OSDs hosted on VMs (the cluster needs a quorum of these up).
+- edge_type: depends_on
+  target: Compute.BareMetalHost
+  cardinality: 0..n
+  name: node_host
+  description: Storage nodes/OSDs hosted on bare-metal hosts.
+adopts:
+- standard: SNIA-Swordfish
+  version: '1.2'
+  standard_name: StorageSystem
+  role: distributed storage system / capacity / data-protection vocabulary
+  source: https://www.snia.org/forums/smi/swordfish
+  license: SNIA
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+- standard: Rook
+  version: 1.x
+  standard_name: CephCluster
+  role: reference implementation (Ceph) — cluster shape, protocols, storage classes
+  source: https://rook.io/
+  license: Apache-2.0
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+context:
+  purpose: Models a distributed storage system serving block, file, and/or object storage — the platform
+    volumes are provisioned from.
+  plain_description: 'A multi-node storage system — Ceph is the reference implementation, but the technology
+    is the provider, never the type. It declares which `protocols` it serves (required: `block`, `file`,
+    `object`), its `capacity` — an object whose `total` and `usable` are whole-number sizes like 50TB,
+    not a bare size string — and its redundancy scheme, spelled `data_protection` (a `scheme` of `replication`
+    or `erasure-coding`, plus replica count), and publishes the consumption surfaces: the block and file
+    storage-class names volumes provision through, and the S3-compatible object endpoint. Its own nodes
+    are hosts or VMs it depends on — the cluster needs its quorum up.'
+  use_when:
+  - You need the storage platform in the graph so volumes and their consumers order correctly against
+    it and its member nodes.
+  - You need the cluster's protocols, capacity, and protection scheme declared vendor-neutrally.
+  not_for:
+  - A host-local pool of drives (ZFS zpool, LVM VG) — Storage.Pool; a Storage.Cluster is distributed across
+    nodes.
+  - The consumable volume — Storage.Volume, provisioned from this cluster.
+  - The provisioning policy name — Platform.StorageClass; the cluster backs a class, the class is the
+    policy record.
+  works_with:
+  - Compute.BareMetalHost / Compute.VM — the nodes the cluster runs across.
+  - Storage.Volume — volumes provisioned from the cluster.
+  - Platform.StorageClass — the class records naming what this cluster serves.

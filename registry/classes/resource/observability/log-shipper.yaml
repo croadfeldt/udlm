@@ -1,0 +1,124 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Observability.LogShipper/0.5.0
+conforms_to: udlm/0.1
+uuid: 1f2eadd3-1144-4962-9342-dfb7fbb1f922
+record_type: class
+class: type
+resource_type: Observability.LogShipper
+parent: Observability
+version: 0.5.0
+family: Resource
+status: active
+metadata:
+  display_name: Log Shipper
+  description: 'An OUTCOME: a target host''s logs are shipped to a central log sink, tagged with the host''s
+    identity. The consumer declares ''I need a LogShipper on host X'' — nothing about HOW. A provider
+    realizes it; the automation method (a configuration-management role today, an automation platform''s
+    job template tomorrow, a container, a script) is the provider''s encapsulated internal mechanism and
+    never appears in this type. Swapping the method is an internal provider change with zero impact on
+    this contract or the consumer — that invisibility is the point. Worked realization: a provider''s
+    configuration-management role shipping the host journal to the central log store. See DCM architecture/integrations/automation-outcome-providers.md.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-06-18T13:14:58Z'
+  converted_from: flat spec Observability.LogShipper@0.4.0 (bulk mechanical conversion 2026-08-04; factoring
+    later via scope promotion)
+elements:
+- element: target
+  scope: Observability.LogShipper
+  optional: false
+  state: canonical
+  description: Whose logs. The host the shipper runs on / collects from. (In a fuller model this becomes
+    a typed relationship to a host resource; for now it is a declarative identifier.)
+  schema:
+    type: object
+    required:
+    - host
+    description: Whose logs. The host the shipper runs on / collects from. (In a fuller model this becomes
+      a typed relationship to a host resource; for now it is a declarative identifier.)
+    properties:
+      host:
+        type: string
+        description: Host identifier (FQDN or inventory name).
+- element: sink
+  scope: Observability.LogShipper
+  optional: false
+  state: canonical
+  description: Where the logs go — the central log store endpoint. Vendor-neutral (e.g. an OTLP push URL);
+    the store itself is another entity.
+  schema:
+    type: object
+    required:
+    - url
+    description: Where the logs go — the central log store endpoint. Vendor-neutral (e.g. an OTLP push
+      URL); the store itself is another entity.
+    properties:
+      url:
+        type: string
+        description: Log-store push endpoint (e.g. an OTLP push URL).
+- element: source
+  scope: Observability.LogShipper
+  optional: true
+  state: canonical
+  description: 'Which logs to ship: the systemd journal (default) or on-disk files. An outcome property
+    — not a method detail.'
+  schema:
+    type: string
+    enum:
+    - journal
+    - files
+    default: journal
+    description: 'Which logs to ship: the systemd journal (default) or on-disk files. An outcome property
+      — not a method detail.'
+- element: labels
+  scope: Observability.LogShipper
+  optional: true
+  state: canonical
+  description: Extra stream labels to attach beyond the inherent host/unit identity (e.g. environment,
+    role). Optional.
+  schema:
+    type: object
+    additionalProperties:
+      type: string
+    description: Extra stream labels to attach beyond the inherent host/unit identity (e.g. environment,
+      role). Optional.
+spec_examples:
+- target:
+    host: app-01.corp.internal
+  sink:
+    url: https://logs.corp.internal:4318/v1/logs
+  source: journal
+  labels:
+    environment: production
+    role: application
+outputs:
+  status:
+    type: string
+    description: Realized health of the shipper (e.g. running / degraded), as reported by discovery.
+  shipping_to:
+    type: string
+    description: The sink URL the shipper is delivering to (echo of realized config).
+  last_shipped_at:
+    type: string
+    description: OBSERVED — a provider-watched liveness fact, not derivable from model records (no shipment-instance
+      records exist; this is heartbeat, not history). Timestamp of the most recent successful delivery
+      (RFC 3339) — drives drift / staleness detection.
+immutable:
+- target.host
+context:
+  purpose: Declares the outcome that a host's logs reach the central sink — without saying anything about
+    how.
+  plain_description: 'A statement of outcome: logs from a target host — the `target` object naming its
+    `host` — shipped to a named sink URL — the `sink` object carrying its `url`; both are objects, not
+    flat strings — tagged with the host''s identity. The consumer never sees the mechanism — whether a
+    provider satisfies it with an automation-managed agent, a container, or something else is the provider''s
+    private business, and swapping mechanisms changes nothing in this record. Realized state reports whether
+    shipping is healthy and when the last successful delivery happened, which drives staleness detection.'
+  use_when:
+  - You need logs-from-host-X-land-in-the-central-store as a declared, checkable fact per host.
+  - You need shipping health and last-delivery time surfaced for drift and staleness detection.
+  not_for:
+  - The log store itself — that is its own resource (e.g. a Software.Service running the sink); this type
+    is the per-host shipping outcome.
+  - Metrics or trace collection — not covered; this type is logs.
+  works_with:
+  - Compute.BareMetalHost / Compute.VM — the target host whose logs are shipped.
+  - Software.Service — the central log store the sink URL points at.
