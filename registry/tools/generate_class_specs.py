@@ -141,8 +141,16 @@ def _standard_filename(resource_type):
     IPAddress -> ip-address, OSPatch -> os-patch, VM -> vm)."""
     import re as _re
     def kebab(seg):
-        parts = _re.findall(r"[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[0-9]+", seg)
-        return "-".join(p.lower() for p in parts) or seg.lower()
+        # words (Upper+lower runs) separate with hyphens: VirtualMachine -> virtual-machine,
+        # BareMetalHost -> bare-metal-host. An ACRONYM run merges with what follows, no hyphen
+        # (maintainer ruling 2026-08-04): OSPatch -> ospatch, VM -> vm, IPAddress -> ipaddress.
+        tokens = _re.findall(r"[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[0-9]+", seg)
+        out = ""
+        for i, t in enumerate(tokens):
+            if i and not tokens[i - 1].isupper():   # previous token was a word -> hyphen boundary
+                out += "-"
+            out += t.lower()
+        return out or seg.lower()
     return ".".join(kebab(seg) for seg in resource_type.split(".")) + ".json"
 
 

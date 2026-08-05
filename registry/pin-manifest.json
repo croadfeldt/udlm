@@ -243,7 +243,7 @@
  },
  "type:Automation": {
   "current": "1.1.0",
-  "path": "registry/classes/process/automation/_base.yaml",
+  "path": "registry/classes/automation.yaml",
   "versions": {
    "1.1.0": "sha256:7f002f5f04f12e997ea555ac373e4123dfae685715403e68dc8b1a21bb1546ba"
   }
@@ -258,21 +258,21 @@
  },
  "type:Automation.OSPatch": {
   "current": "1.2.0",
-  "path": "registry/classes/process/automation/ospatch/_base.yaml",
+  "path": "registry/classes/automation.ospatch.yaml",
   "versions": {
    "1.2.0": "sha256:bb08e74073c4d9267ea0d6af58fade1aef72fe684e94577894f0794b1a92a0a6"
   }
  },
  "type:Automation.OSPatch.EngineBlue": {
   "current": "1.1.0",
-  "path": "registry/classes/process/automation/ospatch/engine-blue.yaml",
+  "path": "registry/classes/automation.ospatch.engine-blue.yaml",
   "versions": {
    "1.1.0": "sha256:e5958c4feec16d24ad81c3b47800a0093870f65f5ba8bf14c95297cb2ad39eea"
   }
  },
  "type:Automation.OSPatch.EngineGreen": {
   "current": "1.1.0",
-  "path": "registry/classes/process/automation/ospatch/engine-green.yaml",
+  "path": "registry/classes/automation.ospatch.engine-green.yaml",
   "versions": {
    "1.1.0": "sha256:bbf1be76c579b32f2643941ba634760d59a3156653396cce9490e35df096ebff"
   }

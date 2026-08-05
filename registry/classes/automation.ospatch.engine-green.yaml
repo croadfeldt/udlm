@@ -1,33 +1,33 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Process.OSPatch.EngineGreen/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Automation.OSPatch.EngineGreen/1.1.0
 conforms_to: udlm/0.1
 uuid: 17652734-3047-4440-b11d-0b2f40c645f1
 record_type: class
 class: provider
-resource_type: Process.OSPatch.EngineGreen
-parent: Process.OSPatch
-version: 1.0.0
+resource_type: Automation.OSPatch.EngineGreen
+parent: Automation.OSPatch
+version: 1.1.0
 family: Process
 status: active
 metadata:
   authority: canonical
-  display_name: Process.OSPatch.EngineGreen Provider Class
+  display_name: Automation.OSPatch.EngineGreen Provider Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-07-27T22:00:00Z'
   description: >-
-    The EngineGreen automation engine's naturalization of Process.OSPatch — engine-specific elements only,
+    The EngineGreen automation engine's naturalization of Automation.OSPatch — engine-specific elements only,
     added under Liskov (never contradicting the portable Type). The engine's provider declares
-    `execute_workflows / Process.OSPatch` in its capability set; admission (PRV-009), trust, and audit
+    `execute_workflows / Automation.OSPatch` in its capability set; admission (PRV-009), trust, and audit
     apply as for any provider. Two engines declaring the SAME Type Class = the multi-provider
-    declaration: engine migration is a provider swap on an untouched Process.OSPatch.
+    declaration: engine migration is a provider swap on an untouched Automation.OSPatch.
   prompt_version: class-p1-process-pilot-2026-07-27
 elements:
   - element: definition_ref
-    scope: Process.OSPatch.EngineGreen
+    scope: Automation.OSPatch.EngineGreen
     state: canonical
     description: The engine-native definition this class binds (a playbook/workflow ref + version pin).
     schema: { type: string }
   - element: execution_env
-    scope: Process.OSPatch.EngineGreen
+    scope: Automation.OSPatch.EngineGreen
     optional: true
     state: canonical
     description: The green engine's execution-environment image reference.

@@ -3,7 +3,7 @@ handle: scoped-class/multi-provider-engine-swap
 version: 1.0.0
 scenario:
   description: >-
-    Two automation engines each author a Provider Class extending the same portable Type Class (Process.OSPatch), engine-specific elements only, each Liskov-valid against the untouched Type; both declare the same capability against it. Engine migration is therefore a PROVIDER SWAP on an untouched Type — same operation, machinery, and audit continuity as moving a VM between providers.
+    Two automation engines each author a Provider Class extending the same portable Type Class (Automation.OSPatch), engine-specific elements only, each Liskov-valid against the untouched Type; both declare the same capability against it. Engine migration is therefore a PROVIDER SWAP on an untouched Type — same operation, machinery, and audit continuity as moving a VM between providers.
   actor:
     persona: platform-engineer
     profile: standard

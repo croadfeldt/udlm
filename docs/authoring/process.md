@@ -8,7 +8,7 @@ author each so CI accepts it.
 A process is the Process family (`family: Process`): a bounded execution, not a maintained state. The two
 shapes are:
 
-- **A Process-family Class** (`registry/classes/process*.yaml`, validated against
+- **A Process-family Class** (`registry/classes/automation*.yaml`, validated against
   `registry/class.schema.json`) — the portable, multi-engine definition. Use it when the *point* is that
   more than one engine can honor the same process, so migration between engines is a provider swap.
 - **The `Automation.Job` resource type** (`registry/resource-types/automation/automation.job.json`,
@@ -50,15 +50,15 @@ Follow [`scoped-class.md`](scoped-class.md) for the full Class procedure; the Pr
 1. **Author the Base and Type Classes.** The Process Base Class carries what every run shares —
    `inputs_schema`, `outputs_schema`, `idempotency` (`idempotent` / `at-most-once` / `unsafe-repeat` —
    the re-run semantics), `timeout`, `retry_policy`, `compensation`, and **`affected_entities`** (the
-   blast-radius declaration — which records this run may mutate). Your Type Class (`Process.OSPatch`)
+   blast-radius declaration — which records this run may mutate). Your Type Class (`Automation.OSPatch`)
    extends it with the domain intent (`targets`, `patch_policy`, `reboot_policy`) under Liskov.
-   **Produces:** `registry/classes/process.yaml` + `registry/classes/process.ospatch.yaml`.
-2. **Author a Provider Class per engine.** Each engine (`Process.OSPatch.EngineBlue`,
+   **Produces:** `registry/classes/automation.yaml` + `registry/classes/automation.ospatch.yaml`.
+2. **Author a Provider Class per engine.** Each engine (`Automation.OSPatch.EngineBlue`,
    `…EngineGreen`) adds only its engine-native elements (`definition_ref`, `control_server`,
    `start_jitter`) — never contradicting the portable Type. **Two engines declaring the same Type Class
    is the multi-provider declaration**: engine migration becomes a provider swap on an untouched
-   `Process.OSPatch`. **Produces:** the provider-tier bindings; the lock-in surface, made readable.
-3. **Compile and cover.** Run the generator, commit `registry/generated/process.os-patch.json`, and add a
+   `Automation.OSPatch`. **Produces:** the provider-tier bindings; the lock-in surface, made readable.
+3. **Compile and cover.** Run the generator, commit `registry/generated/automation.ospatch.json`, and add a
    `coverage:` block. Point it at the process/migration corpus below.
 
 ### Shape B — an `Automation.Job` resource type
@@ -106,9 +106,9 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
 
 ## 4. A worked pointer
 
-- **Process-family Class:** copy `registry/classes/process.yaml` (Base — note the `affected_entities`
-  blast-radius element and the `idempotency` codelist), `registry/classes/process.ospatch.yaml` (Type),
-  and `registry/classes/process.ospatch.engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
+- **Process-family Class:** copy `registry/classes/automation.yaml` (Base — note the `affected_entities`
+  blast-radius element and the `idempotency` codelist), `registry/classes/automation.ospatch.yaml` (Type),
+  and `registry/classes/automation.ospatch.engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
   that make migration a provider swap).
 - **`Automation.Job` resource type:** copy `registry/resource-types/automation/automation.job.json` — the
   first Process-family resource type, with `depends_on` graph edges, the portable-intent block
@@ -119,7 +119,7 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
   `blue-green-engine-verification`, `engine-migration-canary-cutover`, `engine-upgrade-regression`,
   `process-portability-structural-query`) and `docs/flows/automation-migration-and-promotion.md` — how
   automation moves between engines, engine versions, and environments using only placement machinery, with
-  verification as an empty output-diff. (The worked `Process.OSPatch` pilot pair currently declares its
+  verification as an empty output-diff. (The worked `Automation.OSPatch` pilot pair currently declares its
   coverage against the `scoped-class/*` corpus and `docs/flows/scoped-class-lifecycle.md`, because it is
   also the Class-system pilot; a production process should point at the process-migration corpus above.)
 
@@ -133,7 +133,7 @@ python3 registry/tools/generate_class_specs.py --check
 python3 registry/tools/spec_coverage.py --check
 ```
 
-Pass: `N class(es) checked, 0 Liskov violation(s)`; a `ok (fresh)  Process.OSPatch → registry/generated/process.os-patch.json (N props)`
+Pass: `N class(es) checked, 0 Liskov violation(s)`; a `ok (fresh)  Automation.OSPatch → registry/generated/automation.ospatch.json (N props)`
 line ending `N Type Class(es) compiled, 0 issue(s)`; and `… 0 dangling` — each exit 0.
 
 **Shape B — an `Automation.Job` resource type:**

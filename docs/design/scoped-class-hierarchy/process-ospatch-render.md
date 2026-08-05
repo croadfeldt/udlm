@@ -1,4 +1,4 @@
-# Render — Process.OSPatch: engine blue today, engine green tomorrow, one declared class
+# Render — Automation.OSPatch: engine blue today, engine green tomorrow, one declared class
 
 **What this settles:** the Process-family class model exercised on a real migration — OS patching
 realized by the incumbent engine (blue), migrating to the successor engine (green), with the
@@ -20,10 +20,10 @@ elements:
   affected_entities:    {scope: base, purpose: which records this run may mutate — the blast-radius declaration}
 ```
 
-## Type Class: `Process.OSPatch` (the portable definition — the thing both engines share)
+## Type Class: `Automation.OSPatch` (the portable definition — the thing both engines share)
 
 ```yaml
-class: Process.OSPatch
+class: Automation.OSPatch
 extends: Process               # Liskov: adds/refines, never contradicts
 elements:
   targets:              {refines: inputs_schema, schema: reference-list -> Compute.* hosts or a DCMGroup}
@@ -45,11 +45,11 @@ compensation: none             # rollback is a DIFFERENT process type; declared 
 Nothing above names an engine. This is what the org's policy gates, what schedules reference,
 what compliance reports against — and what both providers must satisfy to declare support.
 
-## Provider Class: `Process.OSPatch.EngineBlue` (today — the incumbent)
+## Provider Class: `Automation.OSPatch.EngineBlue` (today — the incumbent)
 
 ```yaml
-class: Process.OSPatch.EngineBlue
-extends: Process.OSPatch
+class: Automation.OSPatch.EngineBlue
+extends: Automation.OSPatch
 elements:
   definition_ref:       {scope: provider, value: "org-patching/apply", version_pin: "~> 4.2"}
   control_server:       {scope: provider, schema: reference -> the engine's control-plane Software.Service}
@@ -57,14 +57,14 @@ elements:
   start_jitter:         {scope: provider, schema: duration, purpose: per-host start-time spread}
 ```
 
-Registration: the blue engine's provider declares `execute_workflows / Process.OSPatch` in its
+Registration: the blue engine's provider declares `execute_workflows / Automation.OSPatch` in its
 capability set. Admission (PRV-009), trust, and audit apply as for any provider.
 
-## Provider Class: `Process.OSPatch.EngineGreen` (tomorrow — the successor)
+## Provider Class: `Automation.OSPatch.EngineGreen` (tomorrow — the successor)
 
 ```yaml
-class: Process.OSPatch.EngineGreen
-extends: Process.OSPatch
+class: Automation.OSPatch.EngineGreen
+extends: Automation.OSPatch
 elements:
   definition_ref:       {scope: provider, value: "os-patch @ the org automation repo", version_pin: release tag}
   execution_env:        {scope: provider, purpose: the engine's execution-environment image}
@@ -78,7 +78,7 @@ or into the Type.
 ## The migration, step by step (no class changes at any step)
 
 1. **Both declared.** The green engine's provider registers, declaring `execute_workflows /
-   Process.OSPatch`. Two providers now satisfy the Type — the same state as a resource type with
+   Automation.OSPatch`. Two providers now satisfy the Type — the same state as a resource type with
    two eligible providers. Default-deny: the platform admin admits the new capability.
 2. **Canary by policy.** A placement/validation policy routes a slice (one host group; `rolling_batch`
    makes this natural) to the green provider. The org's patch *intent* — targets, patch_policy,
