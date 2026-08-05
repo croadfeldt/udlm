@@ -109,7 +109,6 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`docs/design/`** — design rationale + decision trails (scoped-class hierarchy, registry design notes).
 - **`docs/examples/`** — non-normative worked examples (VM end-to-end trace, the DAV knowledge case study, provider accreditation).
 - **`docs/flows/`** — the flow tier (stage-level walkthroughs; see its README).
-- **`docs/internal/`** — tracked working/review artifacts (review packages, decision-support artifacts such as the 0.1 ratification-readiness and conformance-suite plans, the data-point necessity audit); not part of the published spec surface.
 - **`docs/research/`** — prior art, proposals, and vision explorations (architecture-as-code, LikeC4, OSAC, holistic vision).
 
 ---

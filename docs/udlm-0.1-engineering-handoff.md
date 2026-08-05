@@ -54,8 +54,8 @@ Hold these seven concepts and the rest follows:
 ## 4. Scope, deferral, conformance
 
 - **In scope / deferred / exit criteria:** [`../registry/UDLM-0.1-SCOPE.md`](../registry/UDLM-0.1-SCOPE.md) — the normative definition. Deferred to post-1.0 (its §6): operational rehydration, `topology_capability`-as-reference, JIT credentials (§ TODOs), and other explicitly-listed items.
-- **Ratification status:** [`internal/udlm-0.1-ratification-readiness.md`](internal/udlm-0.1-ratification-readiness.md) — which ADRs are ready to ratify for the `0.1 → 1.0` tag.
-- **Conformance bar:** [`internal/udlm-0.1-conformance-suite-plan.md`](internal/udlm-0.1-conformance-suite-plan.md) and [`CONFORMANCE.md`](../CONFORMANCE.md) — what an implementation must pass to claim UDLM 0.1.
+- **Ratification status:** issue #217 — the engineering ratification pass over the Proposed ADRs.
+- **Conformance bar:** [`CONFORMANCE.md`](../CONFORMANCE.md) — what an implementation must pass to claim UDLM 0.1.
 
 ## 5. How to check your work (definition of done)
 
