@@ -8,6 +8,7 @@
 
 | Setting | Bundle / owning block | What it governs per profile |
 |---|---|---|
+| `crypto.ca_algorithms` | `registry/standards-catalog.md` §3 | CA / mTLS certificate algorithm obligations per profile (P-384 preferred; P-256 where constrained; RSA floor) |
 | `credential.max_lifetime` (per credential type) | `docs/spec/governance/credentials.md` §12.1 (`max_lifetime` block) | how long a credential is valid before rotation (e.g. `dcm_interaction`: homelab PT1H … sovereign PT15M) |
 | `credential.rotation` / algorithm baseline / FIPS level / step-up MFA | `docs/spec/governance/credentials.md` §12.1 + §10 | rotation interval, forbidden-vs-approved algorithm set, FIPS floor, MFA requirement |
 | `credential.callback_token_lifetime` | `docs/spec/contracts/provider-callback-auth.md` §5 | provider-callback token lifetime + pre-expiry rotation |
