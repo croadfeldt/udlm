@@ -27,7 +27,7 @@ recoverable state, never an outage discovered by users.
 - **The array:** a `Storage.Cluster` / `Storage.Pool` whose `Storage.FileShare`s are the
   producers ten applications bind to (`depends_on` edges; consumption via the shares'
   declared typed outputs — the [D8.3] binding surface).
-- **The clients:** ten applications (`Compute.Container` / `Compute.VirtualMachine`
+- **The clients:** ten applications (`Compute.Container` / `Compute.VM`
   workloads), each carrying its **own availability policy** — the per-client tolerance class
   (window-tolerant or continuity-required) is policy data, not an operator's recollection.
 - **The replica:** a DR-paired array whose shares publish the *same typed outputs* — which is

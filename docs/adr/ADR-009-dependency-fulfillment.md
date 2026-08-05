@@ -67,7 +67,7 @@ Catalog item `vm-service` (VM provider), showing all three modes on its constitu
 ```yaml
 constituents:
   - component_id: vm
-    resource_type: Compute.VirtualMachine
+    resource_type: Compute.VM
     provided_by: self          # the VM provider realizes this
     fulfillment: provider
   - component_id: ipaddr

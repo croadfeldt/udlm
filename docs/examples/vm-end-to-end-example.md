@@ -46,7 +46,7 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 
 | handle | type | key relationships |
 |---|---|---|
-| `vm-app` | `Compute.VirtualMachine` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
+| `vm-app` | `Compute.VM` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
 | `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`**, vlan_membership→`net-vlan-20` | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
 | `ip-app` (192.0.2.55) | `Network.IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
 | `vol-app` (100Gi) | `Storage.Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |

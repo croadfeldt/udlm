@@ -46,7 +46,7 @@ is `{ id, metadata, spec, status }` with `status.conditions[]` (Kubernetes-style
 1:1 with UDLM Intent/Requested/Realized/Discovered and the `resource-type-spec.schema.json`
 `spec`/`outputs`/`relationships` model. **Recommendation: adopt the OSAC envelope + field-behavior
 vocabulary as the cross-cutting convention** (see [../docs/research/osac-better-together.md](../docs/research/osac-better-together.md)),
-and take OSAC **VirtualMachine** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly verbatim.
+and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly verbatim.
 
 ## 4. Per-type sources & disposition
 
@@ -61,7 +61,7 @@ and take OSAC **VirtualMachine** (`ComputeInstance`) and **Cluster** (`ClusterSp
 | **Security.DirectoryService** (authored under Security, not Identity) | **RFC 4512** (`namingContexts`,`subschemaSubentry`,baseDN — already in catalog via RFC 4511) + FreeIPA (realm/KDC, CA=Dogtag, replicas) + OSAC `LdapConfig` connection facet — Tier 2 | the operated-directory intent | — |
 | **Facility.PowerFeed** | **NUT** variable namespace (`ups.status` OL/OB/LB, `battery.charge`,`battery.runtime`,`battery.runtime.low`,`input.voltage`,`ups.realpower`,`ups.load`) + **Redfish `PowerSubsystem`/`PowerSupply`** (`CapacityWatts`,`InputPowerWatts`,`LineInputStatus`) — Tier 2 | which hosts a feed protects (intent) | vendor-UPS SNMP |
 
-**Net coverage:** reusable definitions exist for all 8 types in the table (VirtualMachine, Cluster,
+**Net coverage:** reusable definitions exist for all 8 types in the table (VM, Cluster,
 BareMetalHost, Gateway, and DirectoryService have OSAC/heatmiser sibling-project sources;
 Storage.Cluster, AddressService, and PowerFeed reference industry standards directly). dcm-project's
 service-type scope *explicitly excludes* bare metal, storage, networking, DHCP/DNS, identity, and

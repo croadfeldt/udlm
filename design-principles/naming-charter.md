@@ -38,7 +38,7 @@ flowchart TD
     NAT["nature — THE axis<br/>maintained-state · work-product · curated"]:::axis
     NAT --> AR["archetype — friendly presets over (nature + timeline + terminal)<br/>Resource · Credential · Inventory · Identity · Process · Knowledge"]:::preset
     ET["has_constituents — DERIVED shape<br/>(from constituents[]; not stored)"]:::orth
-    RT["resource_type — the specific type (orthogonal, finest)<br/>Compute.VirtualMachine · Automation.AnsiblePlaybook · …"]:::orth
+    RT["resource_type — the specific type (orthogonal, finest)<br/>Compute.VM · Automation.AnsiblePlaybook · …"]:::orth
     classDef axis fill:#dbeafe,stroke:#2563eb,color:#111
     classDef preset fill:#ede9fe,stroke:#7c3aed,color:#111
     classDef orth fill:#f3f4f6,stroke:#6b7280,color:#111
@@ -49,7 +49,7 @@ flowchart TD
 | **nature** | maintained-state / work-product / curated | what *kind* of lifecycle — reconciled? terminal? | **the axis**; reconcilability hangs off it |
 | **archetype** | Resource · Credential · Inventory · Identity · Process · Knowledge | the friendly, queryable **preset** over (nature + timeline + terminal) | **a view of nature**, not a peer axis |
 | **has_constituents** | derived (true iff `constituents[]`) | constituent **shape** — is it a composite? | **derived**, not stored (ADR-027 addendum); the stored `entity_type` shape is retired — `entity_type` survives only as the Knowledge/Access discriminator |
-| **resource_type** | `Compute.VirtualMachine`, … | the **specific** type | **keep** — orthogonal, finest |
+| **resource_type** | `Compute.VM`, … | the **specific** type | **keep** — orthogonal, finest |
 
 **Update (2026-07-22) — the derive decision already did part of this.** The ADR-027 addendum retired *two* stored classifiers as derived views: `lifecycle_archetype` (now derived from `family`) and the entity_type **shape** (now the derived `has_constituents`). That is exactly this charter's move — collapse redundant tiers to derived views — applied and shipped, so `nature`-as-the-one-axis inherits a validated precedent.
 

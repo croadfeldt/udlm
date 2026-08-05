@@ -123,7 +123,7 @@ provider:
   capabilities:
     realize_resources:
       resource_types:
-        - type: Compute.VirtualMachine
+        - type: Compute.VM
           required_inputs: [namespace, storage_class]
           extension_schema_ref: "urn:udlm:schema:k8s-vm-extensions:1.0"
         - type: Compute.Container
@@ -143,7 +143,7 @@ An enterprise-virtualization provider registering for the same resource type wou
 capabilities:
   realize_resources:
     resource_types:
-      - type: Compute.VirtualMachine
+      - type: Compute.VM
         required_inputs: [cluster, datastore, resource_pool]
         extension_schema_ref: "urn:udlm:schema:virt-vm-extensions:1.0"
 ```
@@ -180,8 +180,8 @@ Continuing the VM example from Phase 1. The Kubernetes VM provider publishes a c
 single virtual machine:
 
 ```yaml
-name: Compute.VirtualMachine.K8s
-resource_type: Compute.VirtualMachine
+name: Compute.VM.K8s
+resource_type: Compute.VM
 type_version: 0.1.1
 
 spec_defaults:
@@ -504,7 +504,7 @@ that.
 **What the provider receives:**
 
 ```yaml
-resource_type: Compute.VirtualMachine
+resource_type: Compute.VM
 spec:
   vcpu: 4
   memory: 16384

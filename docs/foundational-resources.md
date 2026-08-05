@@ -33,7 +33,7 @@ The list is open — the test is the four properties above, not membership on th
 
 A dependent resource's spec carries **the reference and the intent knobs it owns**, never a redefinition of the foundational resource:
 
-- **Right:** `Compute.VirtualMachine.spec.placement.location_ref → <Facility.Location handle>`, `networks[].network_ref → <Network.VirtualNetwork handle>`, plus VM-owned knobs (`ip_mode`, affinity to other resources).
+- **Right:** `Compute.VM.spec.placement.location_ref → <Facility.Location handle>`, `networks[].network_ref → <Network.VirtualNetwork handle>`, plus VM-owned knobs (`ip_mode`, affinity to other resources).
 - **Wrong:** `placement.location: "rack-3"` or `networks[].segment: "dmz"` as free-form strings — that invents a location/network the platform can't govern, dedup, place against, or reason about for blast-radius.
 
 This keeps one source of truth per foundational resource, lets policy govern selection, and makes the dependency graph honest — the estate's ordered shutdown, blast-radius, and rehydration all traverse these references, so they must point at real resources, not strings.

@@ -455,7 +455,7 @@ policy:
     - condition:
         notification_type: auto_scale
         provider_uuid: <approved-provider-uuid>
-        entity.resource_type: Compute.VirtualMachine
+        entity.resource_type: Compute.VM
         changed_fields: [memory_gb, cpu_count]
         change_within_bounds:
           memory_gb: { max_increase_factor: 2 }
@@ -758,7 +758,7 @@ policy:
   enforcement_class: compliance
   rule: >
     If resource.ownership_transfer_count > 5
-    AND resource_type == Compute.VirtualMachine
+    AND resource_type == Compute.VM
     THEN deny: "VM has exceeded 5 ownership transfers — manual review required"
 ```
 

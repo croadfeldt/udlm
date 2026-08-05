@@ -55,7 +55,7 @@ shape*, *what a real one looks like*, and *how it is meant to behave*.
 | what a **valid one looks like** | `spec.examples` — the worked example, CI-validated against the spec (ADR-055) | inside the same spec, under `spec.examples` |
 | how it is **meant to behave** | the `coverage:` block — its use cases + flows | top-level `coverage:` on the same spec |
 
-The `coverage:` block is your entry point to intended behavior. On `Compute.VirtualMachine`, for
+The `coverage:` block is your entry point to intended behavior. On `Compute.VM`, for
 example, it names three use cases (a standard provision, a provider-failure *refusal*, a composite
 VM-with-volume) and the flows that walk them. Read the refusal case first when you integrate — a type's
 must-reject contract (typed, actionable, non-leaking, auditable) is where the real behavior lives, and
@@ -115,7 +115,7 @@ consumer:
   repo: org/your-system
   description: One line on what you do with the model.
 consumes:                                    # XOR consumes_all_types: true
-  - resource_type: Compute.VirtualMachine
+  - resource_type: Compute.VM
     noted_version: 0.6.4                      # the registry version you last verified against
     noted_digest: sha256:<64 hex>             # optional — the exact bytes (see §4)
 schemas:                                      # optional — registry schema files you read
@@ -139,7 +139,7 @@ never changes, any content change bumps the `version`, and a published `(identit
 republished with different bytes (npm's rule). That is what makes `thing@version` mean something. The
 grammar is OCI/git — **tag for humans, digest for proof**:
 
-- `thing@version` (e.g. `type:Compute.VirtualMachine@0.6.4`) — human-legible; resolves to a recorded
+- `thing@version` (e.g. `type:Compute.VM@0.6.4`) — human-legible; resolves to a recorded
   digest through [`registry/pin-manifest.json`](../registry/pin-manifest.json), the generated referrer
   mapping every published `thing → version → sha256`.
 - `thing@sha256:<hex>` — the exact bytes, verified directly. Carry it as `noted_digest` on the entry

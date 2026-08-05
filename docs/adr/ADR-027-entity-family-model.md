@@ -34,7 +34,7 @@ The entity taxonomy previously named its primary Resource-family types `Infrastr
 A composite Resource's constituents are its owned resources; a composite Process's constituents are the sub-process calls DCM sequences — recorded via the **same constituent-relationship model** in both cases.
 
 ### Tiers
-`family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VirtualMachine`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`Atomic`/`Composite`) lives in `entity_type`. Both tiers are queryable and gateable.
+`family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VM`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`Atomic`/`Composite`) lives in `entity_type`. Both tiers are queryable and gateable.
 
 ## Consequences
 

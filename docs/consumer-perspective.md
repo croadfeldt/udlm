@@ -273,7 +273,7 @@ See [`CONFORMANCE.md`](../CONFORMANCE.md).
 ### 11.1 "I want to provision a VM"
 
 1. Identify the resource type for VMs in the implementation's catalog
-   (`Compute.VirtualMachine` typically).
+   (`Compute.VM` typically).
 2. Submit a request with required fields (size, image, network, location).
 3. Subscribe to `request.*` and `entity.*` events for your request UUID.
 4. Wait for `request.realized`. The payload includes the entity UUID and the

@@ -49,17 +49,17 @@ Getting this model right is foundational. It governs decommission safety (can th
 **Structural model:**
 ```
 Platform Tenant owns: the infrastructure, compute capacity, network fabric
-Consumer Tenant owns: VirtualMachine-A (a distinct entity)
-Consumer Tenant owns: VirtualMachine-B (another distinct entity)
+Consumer Tenant owns: VM-A (a distinct entity)
+Consumer Tenant owns: VM-B (another distinct entity)
 ```
-There is no relationship between VirtualMachine-A and the infrastructure Tenant — the consumer simply used a Service Provider to provision a resource. Once provisioned, the entity belongs to the consumer's Tenant entirely. The platform Tenant has no visibility into the consumer's entity unless an explicit Information Provider or cross-tenant relationship is established.
+There is no relationship between VM-A and the infrastructure Tenant — the consumer simply used a Service Provider to provision a resource. Once provisioned, the entity belongs to the consumer's Tenant entirely. The platform Tenant has no visibility into the consumer's entity unless an explicit Information Provider or cross-tenant relationship is established.
 
-**Examples:** VirtualMachine, Container, StorageVolume, NetworkInterface, DNSRecord.
+**Examples:** VM, Container, StorageVolume, NetworkInterface, DNSRecord.
 
 **Resource Type Spec declaration:**
 ```yaml
 resource_type_spec:
-  fqn: Compute.VirtualMachine
+  fqn: Compute.VM
   ownership_model: whole_allocation
   # Each consumer request produces an entity owned entirely by the requesting Tenant
 ```
