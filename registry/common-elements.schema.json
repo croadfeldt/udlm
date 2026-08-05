@@ -74,7 +74,7 @@
       "description": "A single IP address — IPv4 or IPv6 (typically an outputs value)."
     },
     "Reference": {
-      "$comment": "common-elements.md §2.5 (contracts/identifier-scheme.md); resolution model in ADR-025",
+      "$comment": "common-elements.md §2.5 (docs/spec/contracts/identifier-scheme.md); resolution model in ADR-025",
       "type": "object",
       "description": "A typed cross-entity pointer to another RESOURCE — distinct from a data_reference (ADR-012), which points at immutable reference-data. Authored by target_handle (AEP-124 resource association — reference by resource path); DCM resolves and pins target_uuid at reserve (ADR-025). The uuid is the target's frozen identity (ADR-051); revision pinning, where a consumer needs it, is the separate target_version / target_digest pair (the thing@version / thing@sha256 pin grammar). The only cross-type binding surface besides typed outputs (E2). Never a provider-native id.",
       "properties": {

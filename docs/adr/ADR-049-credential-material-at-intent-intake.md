@@ -4,15 +4,15 @@
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
-once with what it settles. `governance/credentials.md` — **CPX-001** (values never rest in the
+once with what it settles. `docs/spec/governance/credentials.md` — **CPX-001** (values never rest in the
 implementation's stores) + **CPX-013/CPX-014** (the intake detection + non-persistence rules this ADR
-picks the mechanism for). `foundations/four-states.md` — Intent is the *immutable* record of what
+picks the mechanism for). `docs/spec/foundations/four-states.md` — Intent is the *immutable* record of what
 was asked for, the constraint that makes this a design question, not a cleanup task.
 `registry/classes/resource/security/credential-ref.yaml` — the reference type (names which credential
 is held where; no value field). `registry/SPEC-DESIGN-REQUIREMENTS.md` §36(h) — the authoring-time
 twin (review can't see a value a submitter supplies at run time). ADR-039 /
 `docs/design/vocabulary-intake-ladder.md` — the match/mint ladder, the model's precedent for
-*changing* a submitted value at intake, not just judging it. `contracts/error-model.md` §8a — a
+*changing* a submitted value at intake, not just judging it. `docs/spec/contracts/error-model.md` §8a — a
 refusal is itself a boundary crossing.
 [`use-cases/must-reject/003-inline-credential-literal-refused.yaml`](../../use-cases/must-reject/003-inline-credential-literal-refused.yaml)
 — the case that measures this.
@@ -159,7 +159,7 @@ problem `detail` — where `detail` may carry sensitive occurrence text — reso
 on this path: the emitter does not put the refused material in `detail`, so the record cannot
 inherit it. The audit record names the field path and the violation class. This is the hash-only
 leaf discipline the audit model already applies to field values, extended to the error path that
-feeds it, and it is stated in `contracts/error-model.md` §6a rather than here so it applies to
+feeds it, and it is stated in `docs/spec/contracts/error-model.md` §6a rather than here so it applies to
 every refusal rather than only this one.
 
 ## Delegated work — the DCM policy obligation

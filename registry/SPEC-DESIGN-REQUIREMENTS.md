@@ -9,7 +9,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Format & validity
 1. **JSON Schema 2020-12** is the normative model — the format for all entity-type definitions
-   (`contracts/schema-sharing.md`).
+   (`docs/spec/contracts/schema-sharing.md`).
 2. Authorable in **JSON or YAML**, 1:1 — same document, same meta-schema. **[enforced]**
 3. **Valid-by-construction** — validates against `resource-type-spec.schema.json` or it is not a
    conformant spec. **[enforced]**
@@ -17,9 +17,9 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Identity & naming
 5. **UUIDv4** identity, immutable for the type's life; Handles are mutable/rebindable, References are
-   typed cross-doc pointers (`contracts/identifier-scheme.md`). **[enforced: format]**
+   typed cross-doc pointers (`docs/spec/contracts/identifier-scheme.md`). **[enforced: format]**
 6. **Vendor-neutral `Category.Type` name**, e.g. `Compute.VM`
-   (`entities/resource-type-hierarchy.md`). Full conventions — tiered namespaces (Tier-1 `Category.Type`
+   (`docs/spec/foundations/resource-type-hierarchy.md`). Full conventions — tiered namespaces (Tier-1 `Category.Type`
    vendor-neutral / Tier-2 `Vendor.Type`), when to add a category, field/output/file naming, and the
    *name-to-an-existing-standard-before-inventing* rule — live in **`registry/naming-conventions.md`**.
    **[enforced: pattern]**
@@ -28,25 +28,25 @@ Each hard constraint cites the UDLM contract it derives from.
 7. **`conforms_to: udlm/<MAJOR.MINOR>`** — SPEC-axis binding (apiVersion); same MAJOR = wire-compatible
    (`CONFORMANCE.md` §9). **[enforced: pattern]**
 8. **`version: MAJOR.MINOR.REVISION`** — ENTITY axis; immutable once published; any change publishes a
-   new version (`foundations/layering-and-versioning.md`). **[enforced: pattern]**
+   new version (`docs/spec/foundations/layering-and-versioning.md`). **[enforced: pattern]**
 9. **Semver semantics**: additive → MINOR, breaking → MAJOR, docs → REVISION. **[enforced: compat-check]**
 10. A **MAJOR** bump deprecates the predecessor and MUST carry `migration_guidance`; a deprecation
     window precedes retirement (universal deprecation model + K8s deprecation policy).
 11. **Version-pinned references** — profiles (E1) and realized instances (E5) pin the exact version used.
 
 ### Lifecycle & ownership
-12. Conforms to the **four states** Intent → Requested → Realized → Discovered (`foundations/four-states.md`).
+12. Conforms to the **four states** Intent → Requested → Realized → Discovered (`docs/spec/foundations/four-states.md`).
 13. **`spec` = desired state** (Intent/Requested, consumer-authored); **`outputs` = observed state**
     (Realized/Discovered, provider-authored). Never blurred (the K8s spec/status discipline).
 14. **Implementation is the authoritative system of record** for realized data — the basis of sovereignty
-    and audit (`entities/resource-service-entities.md`).
-15. **Implementation is two-phase — validate-and-reserve, then commit** (`foundations/four-states.md` §2.3a;
+    and audit (`docs/spec/foundations/resource-service-entities.md`).
+15. **Implementation is two-phase — validate-and-reserve, then commit** (`docs/spec/foundations/four-states.md` §2.3a;
     ADR-011). The Requested → Realized transition MUST **reserve** every target (validate + hold, **no
     side effects**, returning computed realize-time facts) and reconcile the reserved graph to a fixed
     point, MUST NOT **commit** (build) any target until the **whole reserved graph is held-and-valid and
     all applicable policy is green** (the commit barrier), and MUST **release** any uncommitted hold on
     failure/cancellation/TTL-expiry. Providers expose `reserve` / `commit` / `release`, all idempotent
-    (`contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (ADR-009)
+    (`docs/spec/contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (ADR-009)
     side-effect-free: cross-dependency criteria are computed against **reserved** facts before anything
     is built. A `reserve` request carries a `requested_ttl` bounded by the provider-advertised
     `min_hold_ttl` / `max_hold_ttl`; **TTL expiry is an implied release** and MUST emit
@@ -56,7 +56,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Portability & provider-neutrality
 15. The spec is the contract **any** provider of the type MUST satisfy; providers
-    naturalize → realize → denaturalize (`contracts/provider-contract.md`).
+    naturalize → realize → denaturalize (`docs/spec/contracts/provider-contract.md`).
 16. **Any deviation from full portability MUST be explicitly declared** via `portability`. **[enforced: enum]**
 17. **No provider-specific (vendor-exclusive) data in the universal spec** — those ride declared
     extension points (`portability` + `provider_hints` / the provider surface). **This binds adoption
@@ -68,7 +68,7 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Relationships
 18. Relationships are **first-class and typed** (`depends_on`/`binds_to`/`references`/`contained_by`),
     target **resource types** (never provider-specific refs), and form **acyclic** composite DAGs
-    (`entities/service-dependencies.md`, `entities/composite-service-model.md`). **[enforced: shape]**
+    (`docs/spec/foundations/service-dependencies.md`, `docs/spec/foundations/composite-service-model.md`). **[enforced: shape]**
 18a. **One authoritative direction — no stored inverse.** A relationship is declared **once**, on the
     **dependent/subordinate side** (the resource that `depends_on` / is `contained_by` / `binds_to` /
     `references` another). Only **direct** (one-generation) edges are recorded; ancestry/descendants are a
@@ -106,13 +106,13 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Interop & data discipline
 19. **Wire-compatible** — any conformant peer can deserialize, scope-resolve, reference, and validate
     it; independent extensions stay interoperable via the schema-sharing protocol
-    (`contracts/identifier-scheme.md`, `contracts/schema-sharing.md`).
+    (`docs/spec/contracts/identifier-scheme.md`, `docs/spec/contracts/schema-sharing.md`).
 20. **Data, not logic** — a spec carries values + declarative constraints; *executable* rules are
-    Policy, *static* values are Layers (`foundations/layering-and-versioning.md` §1b).
+    Policy, *static* values are Layers (`docs/spec/foundations/layering-and-versioning.md` §1b).
 21. **No embedded expressions** — a spec carries *declarative* constraints only (JSON Schema
     `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
     expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
-    the contract layer stays deterministic + reproducible (`design-principles/core-tenets.md` T2/T3).
+    the contract layer stays deterministic + reproducible (`docs/spec/principles/core-tenets.md` T2/T3).
     **Computation is relocated, not banned.** When a computed binding *is* needed (e.g. a CEL
     expression combining declared outputs), it is a **Transformation Policy evaluated by DCM's policy
     engine** — never embedded in the portable data. It is safe *iff*: (a) the evaluator is
@@ -144,7 +144,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Adopted standards — provenance & licensing
 22. **Source provenance** — every type or field whose vocabulary is **adopted** from an external
-    standard (the *adopt* disposition, `design-principles/adopted-standards.md`) MUST record the
+    standard (the *adopt* disposition, `docs/spec/principles/adopted-standards.md`) MUST record the
     source: the standard's name, version/edition, and canonical URL, in the type's `adopts[]` reference
     (the `adopted_standard_ref` in `registry/resource-type-spec.schema.json`) or a field-level
     `x-standard` pointer. (A provider separately declares which standard *versions* it can emit/consume
@@ -156,7 +156,7 @@ Each hard constraint cites the UDLM contract it derives from.
     whatever the source license. **Copying** a source's schema text, enum bodies, or normative prose
     into the UDLM tree (an *absorb*) is permitted ONLY from an Apache-2.0-compatible license;
     copyleft / file-scoped sources (GPL, LGPL, MPL) MAY be **referenced by name** but their text or
-    files MUST NOT be vendored into UDLM (`governance/registry-governance.md`, IP hygiene). This is
+    files MUST NOT be vendored into UDLM (`docs/spec/governance/registry-governance.md`, IP hygiene). This is
     why the disposition default is *adopt-by-reference*: it is both schema-rev-decoupled **and**
     license-clean.
 23a. **Adopt-by-reference casing — foreign names never become live keys.** Adopting a standard's
@@ -190,7 +190,7 @@ Each hard constraint cites the UDLM contract it derives from.
     on components being modeled. A component MAY *also* be a **first-class entity** (`Hardware.*`,
     `contained_by` the parent) for independent tracking (serial, slot, firmware, RMA, lifecycle),
     governed by **`composition_visibility`** (`opaque|transparent|selective`,
-    `entities/service-dependencies.md` §11d): `opaque` → rollup only; `transparent`/`selective` →
+    `docs/spec/foundations/service-dependencies.md` §11d): `opaque` → rollup only; `transparent`/`selective` →
     components are entities too. When components are modeled, the parent rollup is the **reconciled
     aggregate** of the contained components; a mismatch is **drift** (surfaced, not silently merged).
     Component entities are additive (MINOR) — never required for the portable contract.
@@ -214,7 +214,7 @@ Each hard constraint cites the UDLM contract it derives from.
 28. **A type MUST support a "raw" existence: Discovered state populated, no Intent.** A resource that
     physically exists but has not been allocated — a freshly racked server, a brownfield import, a spare
     drive on the shelf — MUST be representable for **inventory and tracking** with only its Discovered
-    state populated and **no Intent/allocation** (`foundations/four-states.md` §2.4). Such a resource
+    state populated and **no Intent/allocation** (`docs/spec/foundations/four-states.md` §2.4). Such a resource
     carries an **availability** lifecycle state (canonical `lifecycle_state`, e.g.
     `available|allocated|retired`; adopts Metal3 `provisioning.state: available`) marking it
     unallocated. It is later **adopted** — an Intent is attached (allocation / brownfield ingestion),
@@ -225,7 +225,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Decision decomposition — the three abstractions
 29. **Every type and every decision is decomposed across the three foundational abstractions —
-    `Data · Policy · Provider`** (DCM ADR-002; the UDLM Data⇄Policy boundary, `design-principles/core-tenets.md`).
+    `Data · Policy · Provider`** (DCM ADR-002; the UDLM Data⇄Policy boundary, `docs/spec/principles/core-tenets.md`).
     A capability is only fully scoped when each is named: **Data** = what UDLM models/holds (types,
     common-elements, served overlays); **Policy** = what DCM decides/computes/governs (the rules,
     matching, gating); **Provider** = what a provider *declares as possible* and the *mechanism it
@@ -235,10 +235,10 @@ Each hard constraint cites the UDLM contract it derives from.
     is foundational across UDLM, DCM, and (where applicable) DAV.
 
 30. **Universal identity is RFC 9562 UUID — v4 for identity, v7 for time-ordered artifacts,
-    everything else prohibited** (`contracts/identifier-scheme.md` §2.1, normative). Every entity,
+    everything else prohibited** (`docs/spec/contracts/identifier-scheme.md` §2.1, normative). Every entity,
     type spec, instance, policy, provider, and request carries an immutable v4 uuid minted once at
     creation (CSPRNG) and never reused (§5). Every cross-entity reference is
-    `{uuid: authoritative, handle: advisory}` — never name alone (foundations/context-and-purpose.md
+    `{uuid: authoritative, handle: advisory}` — never name alone (docs/spec/foundations/context-and-purpose.md
     §3). Validators MUST check version nibble + variant bits at ingest/authoring
     (estate CI and `tests/validate_registry.py` do).
 
@@ -255,8 +255,8 @@ Each hard constraint cites the UDLM contract it derives from.
 
 32. **Tenancy is schema-enforced.** Every realized-entity instance carries a required
     `tenant_uuid` — the uuid of a `tenant_boundary` DCMGroup validating against
-    `registry/dcm-group.schema.json` (TEN-001/TEN-003, `entities/resource-grouping.md` §2.2;
-    `foundations/data-model-core.md` §5 [D3]). **[enforced]** (`registry/tools/validate.py`;
+    `registry/dcm-group.schema.json` (TEN-001/TEN-003, `docs/spec/foundations/resource-grouping.md` §2.2;
+    `docs/spec/foundations/data-model-core.md` §5 [D3]). **[enforced]** (`registry/tools/validate.py`;
     referential existence of the tenant is a store-level check, not a schema one).
 
 33. **One rule, one home, one ID — single-source.** Every normative rule, vocabulary, or
@@ -275,10 +275,10 @@ Each hard constraint cites the UDLM contract it derives from.
     extra** (ADR-016). The **base spec** carries the resource's **portable, standard-grounded config** — the
     fields every provider of the type accepts (a container's `image`/`resources`/`command`/`args`/`ports`/
     `mounts`) — plus its **graph-bearing** (`data_reference` / relationship / service-graph),
-    **audit/provenance/identity**, and **observability/drift** elements. The line is **portable vs
+    **audit/provenance/identity**, and **docs/spec/contracts/drift** elements. The line is **portable vs
     provider-specific**, not config-vs-not: portable config that defines the resource is base;
     **provider-specific** config is declared by the provider, projected as a config interface DCM offers
-    (`contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
+    (`docs/spec/contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
     `SharedDataElement`s (ADR-038; schema implementation #199) across Requested/Realized, portability-flagged. **DCM stores the config
     *state* — base and extra — because it is the state system-of-record and drift is a diff; there is no
     "store a pointer instead of the values".** The provider owns the *schema*; the *mechanism* stays out of
@@ -398,7 +398,7 @@ Design principles; don't denormalize derivable facts).
 
 | Candidate | Where it would live | Status | Why deferred · inclusion trigger |
 |---|---|---|---|
-| `ownership_model` (`whole-allocation` \| `allocation` \| `shareable`) | resource type spec | **Deferred** (2026-06-27) | Would be a policy anchor for decommission-safety / cost-attribution / placement (`foundations/ownership-sharing-allocation.md`). Deferred because: every current type is `whole-allocation` (no discrimination yet), the pattern is largely **derivable** from pool/stake relationships (denormalization → drift risk), and it may be **instance-level** for types realizable multiple ways (static vs pooled IP). **Add when** the first non-whole-allocation type is authored (a pool → `allocation`, or a declared-shareable resource), as the *authoritative declaration the relationships conform to* — not a derived copy. |
+| `ownership_model` (`whole-allocation` \| `allocation` \| `shareable`) | resource type spec | **Deferred** (2026-06-27) | Would be a policy anchor for decommission-safety / cost-attribution / placement (`docs/spec/foundations/ownership-sharing-allocation.md`). Deferred because: every current type is `whole-allocation` (no discrimination yet), the pattern is largely **derivable** from pool/stake relationships (denormalization → drift risk), and it may be **instance-level** for types realizable multiple ways (static vs pooled IP). **Add when** the first non-whole-allocation type is authored (a pool → `allocation`, or a declared-shareable resource), as the *authoritative declaration the relationships conform to* — not a derived copy. |
 | `stability` (`experimental` \| `stable`) | resource type spec | **Deferred** (2026-06-27) | An explicit per-type maturity marker, separate from lifecycle `status` (`active`/`deprecated`/`retired`). Deferred because **maturity is already carried by the version** (`0.x` pre-stable → `1.0` stable, K8s-style — see VERSIONING.md "Lifecycle vs. maturity"), so a per-type field is redundant while the whole spec is `0.x`. **Add when** per-type maturity must differ from the global `0.x/1.0` (e.g. one type is battle-tested while the spec is still pre-1.0). The review stage (`developing`/`proposed`) is a governance-workflow concern, never a `status`/`stability` value. |
 
 ---

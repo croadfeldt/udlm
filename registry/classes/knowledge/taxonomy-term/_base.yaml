@@ -4,13 +4,13 @@ uuid: 0874c1b7-94c4-4682-a7a9-a29270c1ba17
 record_type: class
 class: base
 resource_type: TaxonomyTerm
-version: 0.3.0
+version: 0.3.1
 family: Knowledge
 status: active
 metadata:
   display_name: Taxonomy Term
   description: 'A canonical vocabulary term — the normalization authority a catalog normalizes onto (the
-    ''spec'' half of the spec/reality pair; Capability is ''reality''). Formalizes entities/knowledge-family.md
+    ''spec'' half of the spec/reality pair; Capability is ''reality''). Formalizes docs/spec/foundations/knowledge-family.md
     §4.2. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical
     -> deprecated), never realized by a provider. Cross-cutting foundational machinery — SHARED by multiple
     vocabularies that occupy DISJOINT subtrees under distinct roots (parent chains never cross roots):

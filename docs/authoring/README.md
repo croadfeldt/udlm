@@ -1,8 +1,8 @@
 # Authoring UDLM artifacts — start here
 
-> Part of **[Working with UDLM](../working-with-udlm.md)** — the author track. Reviewing instead?
-> [reviewing.md](../reviewing.md). Building a system on the model? [consuming.md](../consuming.md).
-> New contributor? [contributing-guide.md](../contributing-guide.md).
+> Part of **[Working with UDLM](../guides/working-with-udlm.md)** — the author track. Reviewing instead?
+> [reviewing.md](../guides/reviewing.md). Building a system on the model? [consuming.md](../guides/consuming.md).
+> New contributor? [contributing-guide.md](../guides/contributing-guide.md).
 
 **What this is.** The replicable procedure for adding anything to the UDLM registry: a resource type, a
 Class, a process, a policy, a provider/API, reference data, or a corpus artifact (Use Case, flow, ADR).

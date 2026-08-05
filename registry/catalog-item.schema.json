@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/catalog-item.schema.json",
   "title": "UDLM Composite Service Catalog Item",
-  "description": "The catalog-level Composite Service definition (entities/composite-service-model.md): constituent resource types, their dependency edges, their declared data-movement bindings, and their failure classification — everything DCM needs to expand a catalog request into a Composite Entity. This is item (2) of the [D8] machine-validatable-surface program (data-model-core §2) and the schema evidence for the application model: an 'application' IS a Composite catalog item. Cross-file constraints (depends_on/bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic; a binding's from_component must appear in that constituent's depends_on) are not expressible in pure JSON Schema — registry/tools/validate.py enforces them as semantic checks.",
+  "description": "The catalog-level Composite Service definition (docs/spec/foundations/composite-service-model.md): constituent resource types, their dependency edges, their declared data-movement bindings, and their failure classification — everything DCM needs to expand a catalog request into a Composite Entity. This is item (2) of the [D8] machine-validatable-surface program (data-model-core §2) and the schema evidence for the application model: an 'application' IS a Composite catalog item. Cross-file constraints (depends_on/bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic; a binding's from_component must appear in that constituent's depends_on) are not expressible in pure JSON Schema — registry/tools/validate.py enforces them as semantic checks.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -26,7 +26,7 @@
     },
     "handle": {
       "type": "string",
-      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3), e.g. org/catalog/three-tier-web-app. The uuid is the authoritative identity; never resolve by handle alone."
+      "description": "ADVISORY human-readable identity (docs/spec/contracts/identifier-scheme.md §3), e.g. org/catalog/three-tier-web-app. The uuid is the authoritative identity; never resolve by handle alone."
     },
     "conforms_to": {
       "type": "string",

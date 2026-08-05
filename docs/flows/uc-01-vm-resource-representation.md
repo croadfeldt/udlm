@@ -10,7 +10,7 @@
 
 - **The type, not just a request of it.** request-realization assumes `Compute.VM` exists; here the platform-operator *defines* it — its spec fields and its status shape.
 - **Spec / status split on one resource.** Spec is what was asked (portable base per [ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md)); status is what the provider realized. Both hang off the same typed record so they can be compared.
-- **Realized status reconciles back.** The libvirt/KVM provider reports native facts (assigned host, disk paths, power state) and those land in status — the [four-states](../../foundations/four-states.md) Realized side, made concrete for a VM.
+- **Realized status reconciles back.** The libvirt/KVM provider reports native facts (assigned host, disk paths, power state) and those land in status — the [four-states](../spec/foundations/four-states.md) Realized side, made concrete for a VM.
 
 ## The flow — only what's different
 
@@ -39,4 +39,4 @@ Everything between Submit and Realized is request-realization.
 ## Pointers
 
 - Base flow: [request-realization](request-realization.md). UC source: `libvirt-vm-provider/standard/vm-resource-representation`.
-- The four states (Intent → Requested → Realized): [`foundations/four-states.md`](../../foundations/four-states.md).
+- The four states (Intent → Requested → Realized): [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md).

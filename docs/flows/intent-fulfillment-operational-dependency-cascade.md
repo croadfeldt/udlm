@@ -80,6 +80,6 @@ status, the convergence-order contract, and the surfacing obligation; DCM's reco
 |---|---|
 | The model + the matrix cell | [`intent-fulfillment-model.md`](../design/intent-fulfillment-model.md) (operational · transient) |
 | Reservation vs activation | ADR-011 (validate-and-reserve) |
-| Edge strength (hard/soft) | `entities/service-dependencies.md`, ADR-027 |
+| Edge strength (hard/soft) | `docs/spec/foundations/service-dependencies.md`, ADR-027 |
 | UC source | [`use-cases/intent-fulfillment/`](../../use-cases/intent-fulfillment/README.md) |
 | DCM counterpart | dcm-project/dcm `docs/flows/` (the reconciler performing this flow) |

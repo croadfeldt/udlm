@@ -2,9 +2,9 @@
 
 **Status:** Proposed
 **Date:** 2026-06-27 (amended 2026-07-14 — blocks scoped per capability, not per provider; sovereignty added)
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-001 (`Topology` — the abstract domains this declares fulfillment *of*); ADR-003 (data mobility — `mobility` derives from §3); ADR-PROV-002 (capabilities are `(verb × domain)` categories — the scoping this aligns to); ADR-009/010/011 (how a per-capability sovereignty constraint propagates down the fulfillment graph and is proven at the reserve/commit barrier); DCM ADR-022 (trust/attestation); `governance/accreditation-and-authorization-matrix.md` §3.3/§3.3.1 (the accreditation record + the 1-1 match / binding-grain rules); `registry/provider-adopted-standards.schema.json` (the declaration schema — the exact field structure); `contracts/provider-contract.md` §2/§8.1a; DCM ADR-005, **DCM ADR-019 (Placement)**.
-**Tracking:** placement-data family — providers must declare topology/mobility/operational/sovereignty capability to satisfy placement + operational/SRE policies.
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-001 (`Topology` — the abstract domains this declares fulfillment *of*); ADR-003 (data mobility — `mobility` derives from §3); ADR-PROV-002 (capabilities are `(verb × domain)` categories — the scoping this aligns to); ADR-009/010/011 (how a per-capability sovereignty constraint propagates down the fulfillment graph and is proven at the reserve/commit barrier); DCM ADR-022 (trust/attestation); `docs/spec/governance/accreditation-and-authorization-matrix.md` §3.3/§3.3.1 (the accreditation record + the 1-1 match / binding-grain rules); `registry/provider-adopted-standards.schema.json` (the declaration schema — the exact field structure); `docs/spec/contracts/provider-contract.md` §2/§8.1a; DCM ADR-005, **DCM ADR-019 (Placement)**.
+**Tracking:** placement-data family — providers must declare docs/spec/foundations/mobility/operational/sovereignty capability to satisfy placement + operational/SRE policies.
 
 ## Context
 
@@ -20,11 +20,11 @@ Alongside the existing `adopted_standard_support`, the provider declares, **per 
 
 A provider's capabilities are `(verb × domain)` categories (ADR-PROV-002), and these blocks **legitimately differ per category**: `realize_resources/Compute` may guarantee `zone` separation and online-migrate while `realize_resources/Storage` guarantees only `rack` and cannot drain. A single provider-wide `max_separation` or `drain: true` is wrong the moment a provider offers more than one thing. So a block is declared **on each capability**, overriding an optional provider-level default; the per-capability value is what placement/policy matches — the provider block is the default, never the ceiling. This aligns with §8.1a capacity advertisement (already per capability) and with `mobility` (already resource-type-scoped).
 
-**The versioned, accreditable unit is coarser than the per-category grain.** Identity, `version`, and accreditation attach to a capability that may span more than one `(verb × domain)` category, while topology/sovereignty vary *within* it per category. The exact nesting (an offering that contains category blocks vs a flat per-category list) is a **schema decision** (`provider-adopted-standards.schema.json`), not settled here; this ADR fixes only that blocks are per-category + finest-wins, and that the accreditable/versioned unit is distinct from the category grain.
+**The versioned, accreditable unit is coarser than the per-category grain.** Identity, `version`, and accreditation attach to a capability that may span more than one `(verb × domain)` category, while docs/spec/foundations/sovereignty vary *within* it per category. The exact nesting (an offering that contains category blocks vs a flat per-category list) is a **schema decision** (`provider-adopted-standards.schema.json`), not settled here; this ADR fixes only that blocks are per-category + finest-wins, and that the accreditable/versioned unit is distinct from the category grain.
 
 ### 3. Sovereignty is a claim, trusted only by a 1-1 accreditation match
 
-A per-capability `sovereignty` block overrides the provider-wide `sovereignty_declaration` (finest wins) — residency differs by what is realized (Compute EU-only, Storage global). It is a **CLAIM**; trust requires a **1-1 match** with an accreditation attesting **exactly** its scope — provider × capability × jurisdiction. **No partial or inherited credit:** an unmatched claim is `self_asserted` and not honored for sovereign/restricted placement. The accreditation record carries the explicit scope, and the match + binding-grain rules live in `governance/accreditation-and-authorization-matrix.md` §3.3/§3.3.1. (`topology_capability.jurisdictions` is the *placement* input — where it can spread; `sovereignty` is the *authorization* stance for the same category — reconciled, not duplicated.)
+A per-capability `sovereignty` block overrides the provider-wide `sovereignty_declaration` (finest wins) — residency differs by what is realized (Compute EU-only, Storage global). It is a **CLAIM**; trust requires a **1-1 match** with an accreditation attesting **exactly** its scope — provider × capability × jurisdiction. **No partial or inherited credit:** an unmatched claim is `self_asserted` and not honored for sovereign/restricted placement. The accreditation record carries the explicit scope, and the match + binding-grain rules live in `docs/spec/governance/accreditation-and-authorization-matrix.md` §3.3/§3.3.1. (`topology_capability.jurisdictions` is the *placement* input — where it can spread; `sovereignty` is the *authorization* stance for the same category — reconciled, not duplicated.)
 
 ### 4. A per-capability sovereignty claim is a pipeline-wide obligation
 
@@ -48,7 +48,7 @@ The declaration shape, the four blocks' wire meaning, and the sovereignty-claim 
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
-- **Data (UDLM):** the per-capability declaration (topology/mobility/operational/sovereignty), each capability's `capability_uuid` + `version`, and the accreditation record's explicit scope.
+- **Data (UDLM):** the per-capability declaration (docs/spec/foundations/mobility/operational/sovereignty), each capability's `capability_uuid` + `version`, and the accreditation record's explicit scope.
 - **Policy (DCM):** matching/scoring/gating (ADR-019/020); the 1-1 claim↔accreditation reconciliation that decides *trusted* residency; the binding-grain + pipeline-propagation enforcement.
 - **Provider:** authors the declaration, executes it (naturalization, migration, rehearsal), and — for a per-capability sovereignty claim — guarantees it down the whole pipeline.
 

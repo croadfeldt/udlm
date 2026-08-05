@@ -11,7 +11,7 @@ secrets-as-reference (Security.CredentialRef), binding-contract validation, prov
 declare-and-select eligibility, and field-granular policy scope on projections.
 
 **Where each surface's enforcement is specified.** The four-part refusal contract is stated once
-in [`contracts/error-model.md`](../../contracts/error-model.md) §6a, with the error-path
+in [`docs/spec/contracts/error-model.md`](../../docs/spec/contracts/error-model.md) §6a, with the error-path
 non-disclosure rule in §8a and a surface-to-code index in §3.4. The per-surface mechanisms live
 in their own homes: `XTA-006`/`XTA-007` (cross-tenant), `GMX-011` (sovereignty egress),
 `GMX-012`/`GMX-013` (disclosed reduction and read/write scope symmetry), `CPX-013`/`CPX-014`
