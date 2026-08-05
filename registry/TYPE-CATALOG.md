@@ -51,7 +51,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## Capability
 
-### Capability (0.2.1)
+### Capability (0.3.0)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
@@ -803,7 +803,7 @@ The application layer: the mail service, the registry, model serving — a named
 
 ## SoftwareImage
 
-### SoftwareImage (0.1.1)
+### SoftwareImage (0.2.0)
 
 **Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
 
@@ -823,7 +823,7 @@ One container image, identified by its content digest (one observed `tag` is rec
 
 ## SoftwarePackage
 
-### SoftwarePackage (0.1.0)
+### SoftwarePackage (0.2.0)
 
 **Purpose:** Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.
 
@@ -972,7 +972,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.2.1)
+### TaxonomyTerm (0.3.0)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 
@@ -1014,7 +1014,7 @@ One record describing a graph of domains, framed by its required `scope` (`globa
 
 ## Vulnerability
 
-### Vulnerability (0.1.1)
+### Vulnerability (0.2.0)
 
 **Purpose:** Records a known vulnerability — CVE, GHSA, or OSV advisory — once, as the shared fact every affected package points at.
 
