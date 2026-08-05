@@ -1,6 +1,5 @@
 # UDLM — Cost / Metering Linkage (PROPOSED)
 
-**Document Status:** 🟡 PROPOSED — a possible method; see [ADR-COST-002](../../../registry/instances/adr-cost-metering-linkage.json)
 **Related:** [ADR-COST-001](../../../registry/instances/adr-cost-metering-placement.json) (placement) | [information-providers.md](information-providers.md) | [ownership-sharing-allocation.md](../foundations/ownership-sharing-allocation.md)
 
 > **This document maps to: DATA + PROVIDER.** It defines the *hooks* UDLM carries so an implementation

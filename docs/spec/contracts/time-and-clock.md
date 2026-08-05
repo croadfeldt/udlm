@@ -1,7 +1,5 @@
 # UDLM — Time and Clock Model Contract
 
-**Document Status:** 📋 Draft — Specification
-**Document Type:** Wire-Compatibility Contract
 **Established:** 2026-05-26
 **Maps to:** DATA
 **Governed by:** [ADR-005 — Time integrity](../../adr/ADR-005-time-integrity.md)

@@ -1,17 +1,12 @@
 # UDLM — Ingestion Model
 
-**Document Status:** ✅ Stable — UDLM substrate contract
 **Related Documents:** [Context and Purpose](../foundations/context-and-purpose.md) | [Four States](../foundations/four-states.md) | [Resource/Service Entities](../foundations/resource-service-entities.md) | [Entity Relationships](../foundations/entity-relationships.md) | [Resource Grouping](../foundations/resource-grouping.md)
 
-> **Foundation Document Reference**
 >
-> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
+> [foundations.md](../foundations/foundations.md).
 > more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 >
-> **This document maps to: DATA + PROVIDER**
 >
 > Data: ingestion state artifacts. Provider: discovery provider invocation.
 

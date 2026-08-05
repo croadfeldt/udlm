@@ -1,10 +1,7 @@
 # UDLM — Design Priorities
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference — Design Philosophy
 **Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Authority Tier Model](../governance/authority-tier-model.md) | [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
 
-> **This document maps to: DATA + PROVIDER + POLICY**
 >
 > Design priorities govern every decision across all three abstractions. They are not guidelines — they are the decision framework used when priorities conflict. Every contributor, implementer, and reviewer of a UDLM implementation should apply this framework.
 

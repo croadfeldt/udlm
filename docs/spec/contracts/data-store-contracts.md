@@ -1,10 +1,7 @@
 # UDLM — Data Store Contracts
 
-**Document Status:** ✅ Complete
-**Document Type:** Data Model Specification — Contracts the four data domains must satisfy
 **Related Documents:** [Four States](../foundations/four-states.md) | [Data Model Core](../foundations/data-model-core.md) | [Universal Audit](universal-audit.md)
 
-> **Foundation Document Reference**
 >
 > This document specifies the enforcement contracts for the four data domains and the audit
 > domain. Stores are defined by CONTRACT, not technology ([data-model-core](../foundations/data-model-core.md)
@@ -12,8 +9,6 @@
 > and sovereignty/tenancy policy. The concrete enforcement mechanism (the reference PostgreSQL
 > implementation, its SQL schema, RLS, and operators) is implementation architecture — see the DCM
 > architecture documentation.
->
-> **This document maps to: DATA**
 
 ---
 

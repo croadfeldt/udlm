@@ -1,10 +1,7 @@
 # UDLM — Provider Callback Authentication Contract
 
-**Document Status:** ✅ Stable — UDLM substrate contract (mechanism-neutral)
-**Document Type:** Substrate Reference
 **Related Documents:** [Provider Contract](provider-contract.md) | [Credentials](../governance/credentials.md) | [Accreditation, Auth Matrix, Zero Trust](../governance/accreditation-and-authorization-matrix.md) | [Schema Sharing](schema-sharing.md) | [Identifier Scheme](identifier-scheme.md)
 
-> **Foundation Document Reference**
 >
 > This document maps to: **PROVIDER** (authentication of the provider-to-peer interaction boundary)
 > and **DATA** (the credential artifact that governs that boundary).
