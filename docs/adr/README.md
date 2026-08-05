@@ -96,12 +96,12 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [014](ADR-014-resource-type-optionality-conformity.md) | Resource-type data — optionality with conformity (transport, not policy) | Proposed — **pending case-by-case application review** |
 | [015](ADR-015-settings-and-config-bundles.md) | Settings and configuration bundles | Proposed |
 | [016](ADR-016-resource-type-role-graph-audit-not-config.md) | What a Resource Type models — the portable definition; provider-specific config stored extra; DCM is the state system-of-record | Proposed |
-| [017](ADR-017-profile-homelab.md) | The Homelab profile — the single-operator on-ramp | Proposed — floors applied to `docs/guides/profiles.md` 2026-08-05; collapse candidate |
-| [018](ADR-018-profile-dev.md) | The Dev profile — the evaluation / co-engineering target | Proposed — floors applied to `docs/guides/profiles.md` 2026-08-05; collapse candidate |
-| [019](ADR-019-profile-standard.md) | The Standard profile — baseline production | Proposed — floors applied to `docs/guides/profiles.md` 2026-08-05; collapse candidate |
-| [020](ADR-020-profile-prod.md) | The Prod profile — hardened production | Proposed — floors applied to `docs/guides/profiles.md` 2026-08-05; collapse candidate |
-| [021](ADR-021-profile-fsi.md) | The FSI profile — regulated (financial-services) production | Proposed — floors applied to `docs/guides/profiles.md` 2026-08-05; collapse candidate |
-| [022](ADR-022-profile-sovereign.md) | The Sovereign profile — data sovereignty (strictest floor) | Proposed — floors applied to `docs/guides/profiles.md` 2026-08-05; collapse candidate |
+| 017 | The Homelab profile — the single-operator on-ramp | Ruled — row-only; floors applied to `docs/guides/profiles.md` (per-profile Floor blocks) |
+| 018 | The Dev profile — the evaluation / co-engineering target | Ruled — row-only; floors applied to `docs/guides/profiles.md` (per-profile Floor blocks) |
+| 019 | The Standard profile — baseline production | Ruled — row-only; floors applied to `docs/guides/profiles.md` (per-profile Floor blocks) |
+| 020 | The Prod profile — hardened production | Ruled — row-only; floors applied to `docs/guides/profiles.md` (per-profile Floor blocks) |
+| 021 | The FSI profile — regulated (financial-services) production | Ruled — row-only; floors applied to `docs/guides/profiles.md` (per-profile Floor blocks) |
+| 022 | The Sovereign profile — data sovereignty (strictest floor) | Ruled — row-only; floors applied to `docs/guides/profiles.md` (per-profile Floor blocks) |
 | 023 | Host networking as data — adopt NMstate + RFC 8344 for the addressing family | Ruled — row-only; content home: `../guides/host-network-and-config-model.md` + the adoption register (NMstate, RFC 8344) |
 | [024](ADR-024-filling-provider-required-inputs.md) | Filling provider-required inputs — layers stage data, policies refine and validate | Proposed — **pending case-by-case application review** |
 | 025 | Resource references — AEP-124 resource association, resolved at reserve | Ruled — row-only; content home: the standards-adoption register (AEP-124) + `registry/common-elements.md` (Reference) |
