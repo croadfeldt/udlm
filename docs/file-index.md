@@ -68,7 +68,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 - **`resource-service-entities.md`** — resource/service entity lifecycle + Process entities. *Owns:* `RSE-*`; the operational-phase overlay (coarse lifecycle defers to data-model-core §3).
 - **`composite-service-model.md`** — *Owns:* composite composition + compensation semantics.
-- **`entity-relationships.md`** — the universal relationship *structure*. *Owns:* the inverse vocabulary + `XTA-*` cross-tree rules (the relationship model itself is data-model-core §4).
+- **`entity-relationships.md`** — everything built ON the edge model (which is data-model-core §4 / common-elements §9). *Owns:* `XTA-*` cross-tenant rules, the allocated- and shared-resource operational models, relationship lifecycle policies, declaration tiers, bundled expansion, notification traversal (`REL-022..024`), graph depth (`REL-021`), and `ERL-*` graph integrity.
 - **`service-dependencies.md`** — *Owns:* the dependency graph, rehydration ordering, `DEP-*`.
 - **`resource-grouping.md`** — *Owns:* grouping, tenant boundaries, the DCMGroup / `GRP-*` model.
 - **`resource-type-hierarchy.md`** — *Owns:* the resource-type hierarchy + service-catalog structure.

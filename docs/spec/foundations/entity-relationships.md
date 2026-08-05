@@ -1,7 +1,5 @@
 # UDLM — Entity Relationships
 
-
-
 **Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md) | [Resource Grouping](resource-grouping.md) | [Information Providers](../contracts/information-providers.md)
 
@@ -17,204 +15,84 @@
 >
 > Data: relationship records. Policy: Lifecycle Policy output schema
 
-
-
 ---
 
 ## 1. Purpose
 
-The DCM Entity Relationship model is the **universal mechanism for expressing relationships between any two entities in DCM** — whether between two Resource/Service Entities, between an entity and external business data, or between entities at the service definition level.
-
-A single relationship model is used everywhere. There is no separate binding mechanism for storage, no separate dependency graph structure, no separate business data association mechanism. One model serves all relationship types across the full lifecycle — from pre-realization planning through to post-implementation management, drift detection, cost rollup, and rehydration.
-
-This document defines the Entity Relationship Graph, which is the data structure underlying service dependency declaration ([service-dependencies.md](service-dependencies.md)) and rehydration ordering. The Service Dependencies document retains content on rehydration ordering and failure handling, which operate on the relationship graph defined here.
-
----
-
-## 2. Design Principle
-
-**Single model. Minimum variance. Simple by default.**
+One relationship model serves every case: two Resource/Service Entities, an entity and external
+business data, entities at the service-definition level. There is no separate binding mechanism
+for storage, no separate dependency-graph structure, no separate business-data association. The
+authoritative edge model is [data-model-core §4](data-model-core.md); the relation vocabulary and
+its rules (`REL-001..003`) are [common-elements §9](../../../registry/common-elements.md); the
+machine shape is `dependencies[]` in `registry/realized-entity.schema.json`. This document owns
+what builds ON that model: the cross-tenant rules (`XTA-*`), the allocated- and shared-resource
+operational models, relationship lifecycle policies, the declaration tiers, bundled expansion,
+notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
 
 **Why relationships exist at all.** Relationships are not bookkeeping — they are what lets DCM act on a system instead of a pile of independent resources. From the graph DCM **auto-resolves dependencies** (a VM that `requires` a network triggers the network's provisioning), **orders lifecycle operations** (build, suspend, destroy, and rehydrate in dependency order), computes **blast radius** (what is affected if this entity changes state), and rolls up cost and ownership. Without the relationship the platform cannot sequence or reason about impact; the relationship is the price of that automation.
 
-**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A catalog item or resource type declares its standard relationships once (the structural ceiling, §8.1); when a consumer requests it, DCM expands those automatically (§9). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about. So the model below is rich because it has to express every case the platform may encounter, but the day-to-day authoring surface is small.
-
-The worst outcome is a data model with different mechanisms for expressing similar concepts. Every relationship in DCM — whether a VM requires storage, an application contains a web server, or a resource references a Business Unit — is expressed using the same structure. The only things that vary are the relationship type, role, and nature — all of which are declared fields, not structural differences.
+**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A catalog item or resource type declares its standard relationships once (the structural ceiling, §10.1); when a consumer requests it, DCM expands those automatically (§11). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about.
 
 ---
 
-## 3. The Universal Relationship Structure
+## 2. The Relationship Record
 
-Every relationship is a first-class data object with its own UUID. It is recorded **bidirectionally** — on both participating entities. The same `relationship_uuid` appears on both sides, identifying the relationship itself.
+An edge is **declared one-sided and derived two-sided**: it lives on the declaring entity's
+record as a `dependencies[]` entry (`registry/realized-entity.schema.json`), and the inverse
+reading is **computed**, never stored — every `edge_type` has a derivable inverse, so the graph
+is navigable both ways without a second record (`GRAPH-001..003`,
+`tests/check_graph_integrity.py`). There is no relationship object with its own uuid, no
+`direction` field, and no inverse *type* — an old `required_by` is just the inbound reading of a
+`depends_on`.
 
-### 3.1 Relationship Record Structure
-
-```yaml
-relationship:
-  relationship_uuid: <uuid — same on both sides of the relationship>
-  
-  # This entity's perspective
-  this_entity_uuid: <uuid of the entity carrying this relationship record>
-  this_role: <role this entity plays in the relationship>
-  
-  # The related entity — authored by handle, resolved to uuid at reserve (AEP-124)
-  target_handle: <handle of the related entity — how the edge is authored, before uuids exist>
-  related_entity_uuid: <uuid — resolved from target_handle at reserve; empty until then>
-  related_entity_type: <internal|external>
-  related_entity_role: <role the related entity plays>
-  direction: <outbound|inbound — the same edge is recorded on both sides; direction, not a separate type>
-  
-  # For external entities only
-  information_provider_uuid: <uuid of Information Provider — if external>
-  information_type: <e.g., Business.BusinessUnit — if external>
-  lookup_method: <primary_key|fallback — how to resolve the external reference>
-  
-  # Edge semantics — authoritative two-tier model (data-model-core §4, common-elements §9)
-  edge_type: <depends_on|contained_by|binds_to|references>   # closed universal tier
-  strength: <hard|soft>                                 # depends_on only — soft orders, never blocks (DEP-006)
-  relation: <declared relation name>                    # domain tier — DECLARED by the pinned type (REL-001)
-  target_field: <field consumed>                        # binds_to only
-  # nature (constituent|operational|informational) is DERIVED from edge_type, not stored — see §6
-  
-  # Lifecycle policy — for constituent and operational relationships only
-  lifecycle_policy:
-    on_related_destroy: <destroy|retain|detach|notify>
-    on_related_suspend: <suspend|retain|detach|notify>
-    on_related_modify: <cascade|ignore|notify>
-  
-  # Metadata
-  version: <Major.Minor.Revision>
-  status: <active|suspended|terminated>
-  created_timestamp: <ISO 8601>
-  created_by_uuid: <uuid of entity or process that created this relationship>
-  
-  provenance:
-    <standard field-level provenance>
-```
-
-### 3.2 Authoring by handle, recording by uuid
-
-A relationship is **authored by handle** and **recorded by uuid**. At authoring time the related entity may not be realized yet, so the edge names it by `target_handle`; the substrate resolves the handle to `related_entity_uuid` at reserve (AEP-124 — author by handle, resolve at reserve). The uuid never has to be known in advance. Every relationship is then recorded on **both** participating entities under one shared `relationship_uuid`; the two records differ only in `direction` — there is no separate inverse *type*.
-
-**Authored — a VM's intent, by handle (no uuids yet). One example, three edge_types:**
+**Authored by handle, resolved by uuid** (AEP-124 — author by handle, resolve at reserve): at
+authoring time the target may not be realized, so the edge names it by `target_handle`; the
+substrate resolves `target_uuid` at reserve. The uuid never has to be known in advance.
 
 ```yaml
-# On the VM's requested intent
-relationships:
-  - target_handle: "storage/primary"          # its boot disk
-    this_role: compute
-    related_entity_role: storage
+# Authored — a VM's intent, by handle (no uuids yet). Three edge_types at work:
+dependencies:
+  - target_handle: "storage/primary"     # its boot disk
     edge_type: depends_on
-    strength: hard                             # cannot function without it → constituent (derived)
-    relation: disk                             # declared by Compute.VM
-    lifecycle_policy: { on_related_destroy: destroy }
+    strength: hard                       # cannot function without it → constituent (derived)
+    relation: disk                       # declared by Compute.VM (REL-001)
 
-  - target_handle: "business-units/payments"   # non-owning business context
-    edge_type: references
-    relation: business_unit                    # informational (derived) — no lifecycle coupling
+  - target_handle: "business-units/payments"
+    edge_type: references                # informational (derived) — no lifecycle coupling
+    relation: business_unit
 
-  - target_handle: "vm/db-replica-b"           # equal HA partner
+  - target_handle: "vm/db-replica-b"     # equal HA partner
     edge_type: depends_on
-    strength: soft                             # orders but never blocks (DEP-006) → operational (derived)
+    strength: soft                       # orders but never blocks (DEP-006)
     relation: cluster_peer
-```
 
-**Recorded — realized, bidirectional (uuids resolved at reserve):**
-
-```yaml
-# On the VM Entity — the disk edge, resolved
-relationships:
-  - relationship_uuid: "rel-...-001"
-    this_entity_uuid: "<vm uuid>"
-    related_entity_uuid: "<storage uuid>"      # resolved from handle "storage/primary"
+# Resolved — the same edges at reserve, uuids filled in:
+dependencies:
+  - target_uuid: "<storage uuid>"        # resolved from "storage/primary"
     edge_type: depends_on
     strength: hard
     relation: disk
-    direction: outbound
-
-# On the Storage Entity — the SAME edge, inbound. Same relationship_uuid and edge_type;
-# direction expresses the inverse — there is no `required_by` type.
-relationships:
-  - relationship_uuid: "rel-...-001"
-    this_entity_uuid: "<storage uuid>"
-    related_entity_uuid: "<vm uuid>"
-    edge_type: depends_on
-    strength: hard
-    relation: disk
-    direction: inbound
 ```
 
-This single example does what the old one-edge example never did: it exercises `depends_on` (hard and soft), `references`, and declared `relation` names — the edge_type and the derived nature both doing visible work.
+The storage entity records nothing: its inbound `depends_on` reading is derived from the VM's
+declaration when the graph is traversed.
 
 ---
 
-## 4. Edge Model — edge_type + relation (authoritative)
+## 3. Edge Model — edge_type + relation
 
 Every edge carries two tiers, one authoritative field each (data-model-core §4, common-elements §9):
 
 - **`edge_type`** — closed, universal: `depends_on` (`strength: hard|soft`), `contained_by`, `binds_to` (`target_field`), `references`. Ordering, traversal, and lifecycle projection consume ONLY `edge_type` + `strength`. Aligned with OASIS TOSCA root relationship types and ECMA-424 CycloneDX `dependsOn`.
 - **`relation`** — domain tier: a name DECLARED by the pinned Resource Type (`relationships[].name`), adopted from a standard where one names the concept (RFC 8343/8345, TOSCA). A relation **refines** its edge_type and never overrides the edge_type's ordering semantics (REL-003); a consumer that does not understand a relation falls back to edge_type behaviour — the dependency graph is always a strict projection of the data.
 
-**Direction expresses the inverse** (§3.2): one edge, recorded on both sides, `direction: outbound|inbound`. There is no separate inverse *type* — an old `required_by` is just the inbound reading of a `depends_on`.
+**The inverse is derived** (§2): one edge, declared on the depending side; the inbound reading is computed at traversal. There is no separate inverse *type*.
 
 `references` and a declared peer `relation` exist so `depends_on` is never overloaded to mean "just points at" — they carry **no** lifecycle coupling, which ordering edge_types must never imply. *Example:* a VM `references` its **Business Unit** / Cost Center / Product Owner so cost rollup, ownership, and reporting work — but destroying or suspending the Business Unit must **not** touch the VM. *Example (peer):* the members of a cluster (two database replicas, two firewall HA partners) each declare a `cluster_peer` relation — equal entities where neither owns or contains the other, so lifecycle authority sits on each side independently.
 
-**Legacy six-type mapping** — earlier drafts used a six-type vocabulary; it maps onto the model above and is retained only for reading older records:
-
-| Legacy type | → edge_type + relation |
-|---|---|
-| `requires` | `depends_on` (`strength: hard`) |
-| `depends_on` | `depends_on` (`strength: soft`) |
-| `contains` | `contained_by` (declared child-side only) |
-| `references` | `references` |
-| `peer` | a declared `relation` under `references` (informational) or `depends_on` (operational) |
-| `manages` | a declared `relation` under `depends_on` |
-
 ---
 
-## 5. Relationship Roles
-
-Roles describe the **function** a related entity serves in a relationship. They are semantic labels that carry meaning for humans and for policy evaluation — they do not affect system behavior directly.
-
-### 5.1 Standard Roles (DCM-defined)
-
-| Role | Description |
-|------|-------------|
-| `compute` | Processing resource — VM, container, bare metal |
-| `storage` | Storage resource — block, object, file |
-| `networking` | Network resource — IP, VLAN, subnet, port |
-| `security` | Security resource — firewall rule, certificate, HSM |
-| `database` | Database resource — relational, NoSQL, time-series |
-| `web` | Web tier resource — web server, reverse proxy, CDN |
-| `app` | Application tier resource — app server, runtime |
-| `cache` | Caching resource — in-memory cache, CDN layer |
-| `queue` | Messaging resource — message queue, event stream |
-| `pipeline` | Pipeline resource — CI/CD, data pipeline |
-| `identity` | Identity resource — service account, credential |
-| `monitoring` | Monitoring resource — metrics, logging, alerting |
-| `business_unit` | Business Unit association |
-| `cost_center` | Cost Center association |
-| `product_owner` | Product Owner association |
-| `regulatory_scope` | Regulatory or compliance scope association |
-
-### 5.2 Custom Roles (extensible)
-
-Organizations register custom roles for domain-specific relationship semantics. Custom roles are semantic labels only — they do not change system behavior. DCM core ignores unknown custom roles in operational decisions but carries them in payloads for downstream consumers.
-
-```yaml
-custom_role_registration:
-  uuid: <uuid>
-  name: <role name — e.g., trading_engine>
-  description: <description>
-  registered_by_tenant_uuid: <uuid — or null for global>
-  category: <domain context — e.g., financial_services>
-  version: <Major.Minor.Revision>
-  status: <active|deprecated|retired>
-```
-
----
-
-## 6. Relationship Nature (a derived axis)
+## 4. Relationship Nature (a derived axis)
 
 **Nature is derived from the edge model, not stored as a field** (data-model-core §4). It is a reading of `edge_type`: `constituent` = `contained_by` / `constituents[]` membership; `operational` = an ordering edge_type (`depends_on` / `binds_to`); `informational` = `references`. It is retained as a vocabulary because the cross-tenant, matrix, and lifecycle rules below are stated in terms of it — but it is computed from `edge_type`, never authored independently.
 
@@ -226,15 +104,14 @@ Nature describes the **structural character** of a relationship — what it mean
 | `operational` | The related entity is needed for operation but is not part of the definition | Required — declared on relationship | Web server depends on load balancer |
 | `informational` | The related entity provides context or reference only — no operational dependency | Not applicable | Resource references its Business Unit |
 
-> **`informational` is a nature reading, not a stored duplicate of `references`.** Under the derived model (this section's opening; data-model-core §4) nature is **computed from `edge_type`, never authored**: an edge is informational exactly when it is a `references` edge — the one `edge_type` that carries **no lifecycle coupling** ("track this edge but never cascade lifecycle across it"). A peer or management *relation* is expressed as a declared `relation` name **refining** a `references` edge — lifecycle-inert by construction; the legacy six-type vocabulary (`peer`, `manages`, …) survives only for reading old records (§4).
+> **`informational` is a nature reading, not a stored duplicate of `references`.** Under the derived model (this section's opening; data-model-core §4) nature is **computed from `edge_type`, never authored**: an edge is informational exactly when it is a `references` edge — the one `edge_type` that carries **no lifecycle coupling** ("track this edge but never cascade lifecycle across it"). A peer or management *relation* is expressed as a declared `relation` name **refining** a `references` edge — lifecycle-inert by construction; a peer or management concept is always a declared `relation` refining an edge_type (§3).
 
 ---
 
-## 6a. Common Patterns in the Edge Model
+## 5. Common Patterns in the Edge Model
 
-With nature derived from `edge_type` (§6, data-model-core §4), the old type × nature matrix reduces
-to the edge model itself: each `edge_type` has exactly one nature reading, so invalid combinations
-are not representable. The patterns the matrix used to govern, in current vocabulary:
+With nature derived from `edge_type` (§4, data-model-core §4), each `edge_type` has exactly one nature reading, so invalid
+combinations are not representable. The recurring patterns:
 
 | Pattern | Expressed as | Nature (derived) | Lifecycle policy |
 |---|---|---|---|
@@ -244,19 +121,18 @@ are not representable. The patterns the matrix used to govern, in current vocabu
 | Cluster members / HA partners | mutual `edge_type: depends_on` (`strength: soft`), one edge per direction, with a declared `relation` (e.g. `peer_of`) | `operational` | per side |
 | Component management authority | a declared `relation` (e.g. `manages`) refining `depends_on` or `contained_by` | per edge_type | required |
 
-**Behavioral rules (unchanged in substance):**
+**Behavioral rules:**
 
 - Any `constituent` or `operational` relationship **must** declare a lifecycle policy (ERL-004, REL-008)
 - Constituent edges are the strongest coupling — cross-tenant is prohibited (REL-010)
-- `depends_on` with derived `operational` nature is the **allocated resource cell** — where cross-tenant allocations are modeled (§6c)
+- `depends_on` with derived `operational` nature is the **allocated resource cell** — where cross-tenant allocations are modeled (§7)
 - `references` with derived `informational` nature is the **business context cell** — Business Unit, Cost Center, Person relationships live here
-- The retired six-type `relationship_type` field cannot reappear in examples — guarded by `tests/check_model_vocabulary.py`
 
 ---
 
-## 6b. Cross-Tenant Relationships
+## 6. Cross-Tenant Relationships
 
-### 6b.1 The Governing Principle
+### 6.1 The Governing Principle
 
 The relationship **nature** determines whether a cross-tenant relationship is permitted:
 
@@ -266,7 +142,7 @@ The relationship **nature** determines whether a cross-tenant relationship is pe
 | `operational` | ✅ With explicit dual authorization | REL-011 — both Tenants must authorize |
 | `informational` | ✅ Unless denied by hard tenancy | REL-012 — blocked only by `deny_all` |
 
-### 6b.2 Hard Tenancy Declaration
+### 6.2 Hard Tenancy Declaration
 
 Tenants declare their cross-tenant relationship policy. This is enforced by the Validation Policy Engine at request time:
 
@@ -283,7 +159,7 @@ tenant:
 
 **Default is `explicit_only` — informational sharing is not open by default.** Every cross-tenant relationship of any nature requires an explicit `cross_tenant_authorization` record. This closes the model — cross-tenant access must be deliberately granted, not passively permitted.
 
-### 6b.2a What the refusal looks like
+### 6.2a What the refusal looks like
 
 Closed-by-default settles *whether* an unauthorized crossing is permitted. It leaves open what
 the submitter is handed when they attempt one — and that answer decides whether the boundary is
@@ -314,7 +190,7 @@ rule, which is where not-found and not-authorized are separated for the whole mo
 tenants, so the refusal record names both — today's denial records carry a single
 `tenant_uuid`, which leaves the owning tenant unable to see that their resource was reached for.
 
-### 6b.3 DCM System Policies for Cross-Tenant Relationships
+### 6.3 DCM System Policies for Cross-Tenant Relationships
 
 | Policy | Rule |
 |--------|------|
@@ -331,9 +207,9 @@ tenants, so the refusal record names both — today's denial records carry a sin
 
 ---
 
-## 6c. Allocated Resources — Cross-Tenant Operational Model
+## 7. Allocated Resources — Cross-Tenant Operational Model
 
-### 6c.1 Concept
+### 7.1 Concept
 
 An **Allocated Resource** is a pre-defined, discrete slice of a parent resource — provisioned by the owning Tenant and made available for consuming Tenants to claim. The allocated resource becomes a **first-class entity** in the consuming Tenant's scope with its own UUID, its own lifecycle, and its own governance — while maintaining a formal `depends_on` + `operational` relationship to the parent resource across the Tenant boundary.
 
@@ -341,7 +217,7 @@ This models real infrastructure practice: the network team pre-carves VLANs, the
 
 The relationship type is `depends_on` + `operational` — the allocated entity depends on the parent operationally but is not a constituent component of it. The allocation is the relationship; the entity itself is independently governed.
 
-### 6c.2 Parent Resource — Available Allocations
+### 7.2 Parent Resource — Available Allocations
 
 The owning Tenant pre-defines allocations on the parent resource:
 
@@ -371,7 +247,7 @@ parent_resource_entity:
       # Parent uses this to notify Tenant A of lifecycle changes
 ```
 
-### 6c.3 Allocated Entity — In the Consuming Tenant
+### 7.3 Allocated Entity — In the Consuming Tenant
 
 When a consuming Tenant claims an available allocation, DCM creates a first-class entity in the consuming Tenant's scope:
 
@@ -401,9 +277,8 @@ allocated_entity:
     on_parent_degrade: notify
     on_parent_capacity_change: notify
 
-  relationships:
-    - relationship_uuid: <uuid>
-      related_entity_uuid: <parent resource uuid>
+  dependencies:
+    - target_uuid: <parent resource uuid>
       related_entity_type: internal
       related_entity_tenant_uuid: <Infrastructure Tenant uuid>
       edge_type: depends_on
@@ -418,7 +293,7 @@ allocated_entity:
     <standard — owned_by Tenant A>
 ```
 
-### 6c.4 Lifecycle Event Propagation
+### 7.4 Lifecycle Event Propagation
 
 When the parent resource changes state, DCM iterates all active allocations and propagates according to each allocation's `parent_lifecycle_policy`:
 
@@ -441,7 +316,7 @@ DCM iterates active_allocations
 Events dispatched via notification_endpoint on each active_allocation record
 ```
 
-### 6c.5 Claiming Flow
+### 7.5 Claiming Flow
 
 ```
 Parent Tenant pre-defines available_allocations on parent resource
@@ -458,7 +333,7 @@ Policy Engine evaluates:
   ▼
 DCM creates:
   │  Allocated Entity (owned by Tenant A) with UUID
-  │  depends_on edge on the allocated entity (+ inbound record on the parent — direction: inbound; cross_tenant: true)
+  │  depends_on edge on the allocated entity (the parent’s inbound reading is derived; cross_tenant: true)
   │  Updates parent's available_allocation status: available → claimed
   │  Adds record to parent's active_allocations
   │  Provenance recorded on both entities
@@ -469,11 +344,11 @@ Infrastructure Tenant owner notified of new claim
 
 ---
 
-## 7. Lifecycle Policies
+## 8. Lifecycle Policies
 
 Lifecycle policies declare what happens to an entity when its related entity changes state. They apply to `constituent` and `operational` relationships only — `informational` relationships have no lifecycle implications.
 
-### 7.1 Policy Actions
+### 8.1 Policy Actions
 
 | Action | Meaning |
 |--------|---------|
@@ -485,7 +360,7 @@ Lifecycle policies declare what happens to an entity when its related entity cha
 | `cascade` | Cascade the change from the related entity to this entity |
 | `ignore` | Take no action — the change to the related entity does not affect this entity |
 
-### 7.2 Lifecycle Action Hierarchy — Save Overrides Destroy
+### 8.2 Lifecycle Action Hierarchy — Save Overrides Destroy
 
 When a shared resource has multiple active relationships and a lifecycle event triggers, each relationship may produce a different action recommendation. DCM resolves conflicts using a deterministic hierarchy — **the most conservative action always wins**:
 
@@ -507,7 +382,7 @@ destroy       ← least conservative — entity terminated
 
 This rule applies automatically and silently when the hierarchy resolves cleanly (e.g., `retain` beats `destroy`). It is recorded in the `lifecycle_conflict_record` with severity `info` for audit purposes but requires no notification.
 
-### 7.3 Lifecycle Conflict Detection
+### 8.3 Lifecycle Conflict Detection
 
 **Not all multi-recommendation scenarios are conflicts.** The hierarchy resolves most cases deterministically. A conflict worth surfacing occurs when:
 
@@ -533,17 +408,14 @@ lifecycle_conflict_record:
   event_trigger: <parent_destroy | parent_suspend | parent_modify>
   triggering_entity_uuid: <uuid of entity that changed state>
   action_recommendations:
-    - relationship_uuid: <uuid>
-      related_entity_uuid: <VM-A uuid>
+    - related_entity_uuid: <VM-A uuid>
       recommended_action: destroy
       source: lifecycle_policy
-    - relationship_uuid: <uuid>
-      related_entity_uuid: <VM-B uuid>
+    - related_entity_uuid: <VM-B uuid>
       recommended_action: retain
       source: validation_policy
       policy_uuid: <uuid>
-    - relationship_uuid: <uuid>
-      related_entity_uuid: <VM-C uuid>
+    - related_entity_uuid: <VM-C uuid>
       recommended_action: notify
       source: lifecycle_policy
   resolved_action: retain
@@ -556,7 +428,7 @@ lifecycle_conflict_record:
   recorded_at: <ISO 8601>
 ```
 
-### 7.4 Lifecycle Policy Authority Hierarchy
+### 8.4 Lifecycle Policy Authority Hierarchy
 
 Lifecycle policies follow the same three-tier authority model as override control:
 
@@ -577,9 +449,9 @@ DCM System Policy (non-overridable — sovereignty and compliance mandates)
 
 ---
 
-## 7a. Shared Resource Model — Same-Tenant
+## 9. Shared Resource Model — Same-Tenant
 
-### 7a.1 Concept
+### 9.1 Concept
 
 A **Shared Resource** is an entity within a single Tenant that has active relationships from multiple parent entities. Rather than being exclusively owned by one parent, it is referenced by N parents — each with its own lifecycle relationship.
 
@@ -587,7 +459,7 @@ This is the same-tenant counterpart to the cross-tenant Allocated Resource model
 
 **Examples:** Shared NFS volume mounted by multiple VMs. Shared database cluster used by multiple application services. Shared VLAN used by multiple VMs. Shared TLS certificate used by multiple services.
 
-### 7a.2 The `sharing_model` Declaration
+### 9.2 The `sharing_model` Declaration
 
 The Resource Type Specification declares whether instances of a type can be shared. Individual entities carry the runtime sharing state:
 
@@ -616,7 +488,7 @@ entity:
 
 **`shareability.allowed: false`** on a Resource Type (e.g., `Compute.BootDisk`) means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
 
-### 7a.3 Reference Count Lifecycle
+### 9.3 Reference Count Lifecycle
 
 DCM maintains `active_relationship_count` automatically:
 
@@ -652,7 +524,7 @@ Execute winning action
 Deferred destruction record created (if action was deferred)
 ```
 
-### 7a.4 Deferred Destruction Records
+### 9.4 Deferred Destruction Records
 
 Every time a destructive action is deferred by the reference count mechanism:
 
@@ -660,22 +532,18 @@ Every time a destructive action is deferred by the reference count mechanism:
 deferred_destruction_record:
   entity_uuid: <shared resource uuid>
   triggering_request_uuid: <uuid of parent's decommission request>
-  triggering_relationship_uuid: <uuid of relationship being released>
+  releasing_entity_uuid: <uuid of the entity whose edge is being released>
   relationship_count_before: 3
   relationship_count_after: 2
   action_taken: deferred
   reason: "active_relationship_count above minimum. Destruction deferred."
   remaining_relationships:
-    - relationship_uuid: <uuid>
-      related_entity_uuid: <VM-B uuid>
+    - related_entity_uuid: <VM-B uuid>
       edge_type: depends_on
       strength: hard
-      direction: inbound            # was required_by
-    - relationship_uuid: <uuid>
-      related_entity_uuid: <VM-C uuid>
+    - related_entity_uuid: <VM-C uuid>
       edge_type: depends_on
       strength: soft
-      direction: inbound            # was dependency_of
   recorded_at: <ISO 8601>
 ```
 
@@ -690,7 +558,7 @@ deferred_destruction_record:
   recorded_at: <ISO 8601>
 ```
 
-### 7a.5 Unified with the Allocated Resource Model
+### 9.5 Unified with the Allocated Resource Model
 
 The same-tenant sharing model and the cross-tenant allocated resource model are the same concept at different scopes:
 
@@ -705,21 +573,20 @@ The same-tenant sharing model and the cross-tenant allocated resource model are 
 
 ---
 
-## 8. Relationship Declarations — Where They Live
+## 10. Relationship Declarations — Where They Live
 
 Relationship declarations exist at multiple levels, each building on the previous:
 
-### 8.1 Resource Type Specification (structural ceiling)
+### 10.1 Resource Type Specification (structural ceiling)
 
 Declares what relationships are **possible** for a resource type. Sets the ceiling — lower levels can only declare relationships within these bounds.
 
 ```yaml
 resource_type: Compute.VM
-possible_relationships:
-  - role: storage
+relationships:
+  - name: disk
     edge_type: depends_on
     strength: hard
-    relation: disk
     permitted_related_types:
       - Storage.Block
       - Storage.File
@@ -730,10 +597,9 @@ possible_relationships:
     consumer_declarable: true
     # Consumer can declare binding_type and lifecycle_policy override
 
-  - role: networking
+  - name: network_attachment
     edge_type: depends_on
     strength: hard
-    relation: network_attachment
     permitted_related_types:
       - Network.IPAddress
     default_lifecycle_policy:
@@ -742,17 +608,16 @@ possible_relationships:
     # DCM manages this automatically — consumer cannot override
 ```
 
-### 8.2 Catalog Item (offering-specific)
+### 10.2 Catalog Item (offering-specific)
 
 Declares the **actual relationships** for a specific curated offering. Can only be more restrictive than the Resource Type Specification.
 
 ```yaml
 catalog_item: Production VM
 relationships:
-  - role: storage
+  - name: disk
     edge_type: depends_on
     strength: hard
-    relation: disk
     related_catalog_item_uuid: <uuid of Standard Block Storage catalog item>
     lifecycle_policy:
       on_related_destroy: retain
@@ -761,7 +626,7 @@ relationships:
     binding_type: owned
 ```
 
-### 8.3 Request Time (consumer-declared)
+### 10.3 Request Time (consumer-declared)
 
 The consumer declares relationships in their request. Bundled declarations (storage fields within a VM request) are automatically expanded into relationship records by the Request Payload Processor.
 
@@ -771,10 +636,9 @@ request:
   resource_type: Compute.VM
   # ... other fields ...
   relationships:
-    - role: storage
+    - relation: disk
       edge_type: depends_on
       strength: hard
-      relation: disk
       binding_type: referenced
       related_entity_uuid: <uuid of existing Storage Entity>
       # Consumer referencing existing storage — not creating new
@@ -790,33 +654,29 @@ request:
         # and a relationship record with binding_type: owned
 ```
 
-### 8.4 External Data Relationships
+### 10.4 External Data Relationships
 
 Relationships to external data entities follow the same structure with `related_entity_type: external`:
 
 ```yaml
 # On a VM Entity — relationship to external Business Unit
-relationships:
-  - relationship_uuid: <uuid>
-    this_entity_uuid: <vm-uuid>
-    this_role: <consumer>
-    related_entity_uuid: <uuid of external_entity_reference>
+dependencies:
+  - target_uuid: <uuid of external_entity_reference>
     related_entity_type: external
     information_provider_uuid: <uuid of HR Information Provider>
     information_type: Business.BusinessUnit
     edge_type: references
     relation: business_unit
-    role: business_unit
     lookup_method: primary_key
 ```
 
 ---
 
-## 9. Bundled Declaration Expansion
+## 11. Bundled Declaration Expansion
 
 When a consumer includes resource configuration as bundled fields (e.g., storage within a VM request), the Request Payload Processor expands these into first-class entities and relationship records.
 
-### 9.1 Expansion Process
+### 11.1 Expansion Process
 
 ```
 Consumer submits bundled VM request with storage fields
@@ -827,7 +687,7 @@ Request Payload Processor
   │  For each expandable field:
   │    1. Creates a Resource/Service Entity stub (PENDING state)
   │       with its own UUID, Tenant membership, Resource Type
-  │    2. Creates a Relationship record on both the parent stub
+  │    2. Declares the dependency edge on the parent stub
   │       and the child stub
   │    3. Applies lifecycle policy from:
   │       consumer declaration → provider default → Resource Type default
@@ -852,7 +712,7 @@ DCM updates:
   │  Full provenance recorded on all entities and relationships
 ```
 
-### 9.2 Expansion Rules in Resource Type Specification
+### 11.2 Expansion Rules in Resource Type Specification
 
 The expansion rule declares which fields expand into entities and how:
 
@@ -875,19 +735,19 @@ field_definition:
 
 ---
 
-## 10. The Entity Relationship Graph
+## 12. The Entity Relationship Graph
 
 All relationships across all entities form a traversable **Entity Relationship Graph** — the complete map of how all entities in DCM relate to each other.
 
-### 10.1 Graph Properties
+### 12.1 Graph Properties
 
 - Every node is a Resource/Service Entity (internal or external reference)
-- Every edge is a Relationship with a UUID
-- The graph is bidirectional — traversable from any node in any direction
+- Every edge is a typed dependency declared on exactly one entity
+- The graph is traversable in both directions — the inverse reading of every edge is derived (GRAPH-003), never stored
 - Every node exists exactly once — shared entities appear once with multiple relationship edges
 - Cycles over the **ordering** edge_types (`depends_on`, `contained_by`) are invalid and must be rejected (the CYCLE gate); non-ordering `references` cycles — including reflexive self-reference (the multi-cluster self-managed hub, `docs/examples/multi-cluster-hub-example.md`) — are legal and outside the ordering sort
 
-### 10.2 Graph and the Four States
+### 12.2 Graph and the Four States
 
 The relationship graph exists across all four states:
 
@@ -898,7 +758,7 @@ The relationship graph exists across all four states:
 | Realized State | Graph populated — nodes are REALIZED entities with full provenance |
 | Discovered State | Graph used for comparison — discovered entities matched against realized graph |
 
-### 10.3 Graph Applications
+### 12.3 Graph Applications
 
 | Application | How the Graph is Used |
 |-------------|----------------------|
@@ -911,14 +771,14 @@ The relationship graph exists across all four states:
 
 ---
 
-## 11. Relationship Integrity
+## 13. Relationship Integrity
 
-### 11.1 DCM System Policies for Relationships
+### 13.1 DCM System Policies for Relationships
 
 | Policy | Rule |
 |--------|------|
-| `ERL-001` | Every relationship must have a UUID |
-| `ERL-002` | Every relationship must be recorded on both participating entities |
+| `ERL-001` | Every edge at rest identifies its target by uuid (`target_uuid`, resolved from `target_handle` at reserve — AEP-124) |
+| `ERL-002` | An edge is declared on exactly one entity; its inverse reading is derived, never stored (GRAPH-003) |
 | `ERL-003` | Cycles over the ordering edge_types (`depends_on`, `contained_by`) are invalid and must be rejected; non-ordering `references` cycles (including reflexive self-reference, e.g. the multi-cluster self-managed hub) are legal and outside the ordering sort |
 | `ERL-004` | A constituent or operational relationship must have a lifecycle policy declared somewhere in the authority chain before provider dispatch |
 | `REL-005` | External relationships must reference a registered Information Provider |
@@ -936,8 +796,9 @@ The relationship graph exists across all four states:
 | `REL-017` | A Resource Type Specification with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
 | `REL-018` | When a lifecycle event produces multiple action recommendations on a shared resource, the most conservative action wins per the hierarchy: `retain > notify > suspend > detach > cascade > destroy` (save_overrides_destroy) |
 | `REL-019` | When lifecycle action recommendations conflict, a `lifecycle_conflict_record` is created. Conflicts at `warning` or `critical` severity trigger notifications to the entity owner and affected policy owners |
+| `REL-021` | Relationship graph depth is limited to a profile-governed maximum (default: 15 for standard/prod; 10 for fsi/sovereign). Circular relationship detection is always enforced regardless of depth configuration. Depth is measured as the maximum traversal distance between any two entities in the relationship graph (§15) |
 
-### 11.2 Lifecycle Policy Conflict Resolution
+### 13.2 Lifecycle Policy Conflict Resolution
 
 Lifecycle policy fields on relationships are fields. They carry the same `override` metadata, the same provenance obligations, and resolve under the same Policy Engine authority hierarchy as any other field in DCM. There is no special case — minimum variance applies.
 
@@ -981,7 +842,7 @@ lifecycle_policy:
       modifications: []
 ```
 
-### 11.2a Cross-Tenant Dependency System Policies
+### 13.2a Cross-Tenant Dependency System Policies
 
 | Policy | Rule |
 |--------|------|
@@ -989,35 +850,22 @@ lifecycle_policy:
 | `ERL-D02` | Cross-tenant operational dependencies require a valid available allocation record on the target resource — failure returns `CROSS_TENANT_DEPENDENCY_UNAVAILABLE` |
 | `ERL-D03` | A Resource Type Specification may only declare cross-tenant dependencies if explicitly marked `cross_tenant: permitted` — default is `cross_tenant: not_permitted` |
 
-### 11.3 Relationship Versioning and Deprecation
+### 13.3 Relationship Versioning and Deprecation
 
-Relationships follow the universal versioning and deprecation model. A relationship version changes when its lifecycle policy, nature, or role changes. Terminated relationships are retained in provenance permanently.
-
----
-
-## 12. Open Questions
-
-| # | Question | Impact | Status |
-|---|----------|--------|--------|
-| 1 | How are relationship conflicts resolved — two policies declare different lifecycle policies for the same relationship? | Policy model | ✅ Resolved — standard Policy Engine authority hierarchy; REL-008 and REL-009 |
-| 2 | Should relationship roles be validated against the role registry at request time, or is validation advisory? | Operational complexity | ✅ Resolved — advisory default; Resource Type Spec may declare permitted_relationship_roles with role_validation: advisory/enforced; community role catalog; see §15.1 below (REL-020) |
-| 3 | How does the relationship graph interact with multi-tenant scenarios — can a relationship cross Tenant boundaries? | Multi-tenancy | ✅ Resolved — nature governs; constituent never; operational with dual auth; informational unless deny_all; REL-010/011/012 |
-| 4 | Should there be a maximum relationship graph depth to prevent runaway complexity? | Operational governance | ✅ Resolved — profile-governed max depth: 15 standard/prod, 10 fsi/sovereign; circular detection always enforced; depth = traversal distance; see §15.2 below (REL-021) |
-| 5 | How are shared entities represented in the relationship graph — an entity required by multiple parents? | Graph model | ✅ Resolved — sharing_model declaration; active_relationship_count; save_overrides_destroy hierarchy (REL-018); lifecycle_conflict_record; REL-015 through REL-019 |
-
+Relationships follow the universal versioning and deprecation model. A relationship version changes when its lifecycle policy or edge declaration changes. Terminated relationships are retained in provenance permanently.
 
 ---
 
-## 13. Notification Traversal Rules
+## 14. Notification Traversal Rules
 
 The entity relationship graph is the source of truth for notification audiences. This section defines how relationships govern notification traversal for the notification model ([subscription-lifecycle.md](../lifecycle/subscription-lifecycle.md)).
 
-### 13.1 Relationship Properties Relevant to Notifications
+### 14.1 Relationship Properties Relevant to Notifications
 
 Every relationship carries two properties that the Notification Router uses for audience resolution:
 
 ```yaml
-relationship:
+dependency:
   edge_type: depends_on
   relation: attached_to            # declared relation name (REL-001)
   stake_strength: <required|preferred|optional>
@@ -1029,7 +877,7 @@ relationship:
     audience_role: stakeholder       # role assigned to notified party
 ```
 
-### 13.2 Stake Strength and Notification Threshold
+### 14.2 Stake Strength and Notification Threshold
 
 Different event types use different minimum stake strengths for notification:
 
@@ -1045,11 +893,11 @@ Different event types use different minimum stake strengths for notification:
 
 The minimum stake strength threshold per event type is declared in the resource type specification and can be overridden by a platform-domain policy.
 
-### 13.3 Notification Traversal and Graph Depth
+### 14.3 Notification Traversal and Graph Depth
 
 What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared in the Resource Type Specification (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) declare depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
 
-### 13.4 Notification Traversal Policies
+### 14.4 Notification Traversal Policies
 
 | Policy | Rule |
 |--------|------|
@@ -1057,50 +905,9 @@ What the data model fixes is the **declared depth**: notification traversal resp
 | `REL-023` | Notification traversal respects sovereignty boundaries. Cross-tenant notifications carry only content authorized for the receiving Tenant. |
 | `REL-024` | The same actor reached via multiple relationship paths receives a single notification with all applicable audience_roles listed. |
 
-
 ---
 
-## 14. Related Concepts
-
-- **Entity Relationship Graph** — the complete traversable graph of all entity relationships in DCM
-- **Information Provider** — provider type for external data entities referenced in relationships
-- **Bundled Declaration Expansion** — processor mechanism for expanding bundled fields into entities and relationships
-- **Lifecycle Policy** — declares what happens to an entity when its related entity changes state
-- **Service Dependencies** — document covering rehydration ordering and failure handling on the relationship graph
-- **Resource Type Specification** — declares possible relationships for a resource type
-- **External Entity Reference** — stable pointer to data owned by an external system
-
-
-## 15. Relationship Gap Resolutions — role validation and graph depth
-
-### 15.1 Relationship Role Validation — are roles validated at request time?
-
-Relationship roles are semantic labels — human-readable identifiers for the function a member plays in a relationship. By default, role validation is advisory. Resource Type Specifications may declare a closed set of permitted roles with enforced validation.
-
-```yaml
-resource_type_spec:
-  fully_qualified_name: Compute.VM
-  permitted_relationship_roles:
-    - role: storage
-      edge_types: [depends_on]        # hard
-      permitted_related_types: [Storage.Block, Storage.File]
-    - role: networking
-      edge_types: [depends_on]        # hard
-      permitted_related_types: [Network.IPAddress, Network.Port]
-    - role: dns
-      edge_types: [depends_on]        # soft
-      permitted_related_types: [DNS.Record]
-    - role: load_balancer
-      edge_types: [depends_on]        # soft
-      permitted_related_types: [Network.LoadBalancer]
-  role_validation: advisory   # advisory | enforced
-  # advisory: unknown roles produce a warning in assembly provenance
-  # enforced: unknown roles are rejected at request time
-```
-
-**Community role catalog:** DCM ships a non-authoritative reference list of commonly-used roles. Organizations freely declare roles not in the catalog when role_validation is advisory.
-
-### 15.2 Maximum Relationship Graph Depth — is graph depth bounded?
+## 15. Maximum Relationship Graph Depth (`REL-021`)
 
 Relationship graph depth is limited to a profile-governed maximum. Circular relationship detection is always enforced regardless of depth configuration.
 
@@ -1125,16 +932,6 @@ relationship_depth_policy:
 | `sovereign` | 10 | Maximum control |
 
 **Note:** Relationship depth differs from dependency depth (DEP-015). Dependency depth counts the provisioning chain. Relationship depth counts the graph traversal distance between any two entities. A VM with 50 IP address relationships has depth 1, not 50.
-
----
-
-## 16. System Policies — Relationship Gaps
-
-| Policy | Rule |
-|--------|------|
-| `REL-020` | Relationship roles are semantic labels. Resource Type Specifications may declare permitted_relationship_roles with advisory or enforced validation. Advisory produces assembly warnings for unknown roles. Enforced rejects unknown roles at request time. DCM maintains a community role catalog as a non-authoritative reference. |
-| `REL-021` | Relationship graph depth is limited to a profile-governed maximum (default: 15 for standard/prod; 10 for fsi/sovereign). Circular relationship detection is always enforced regardless of depth configuration. Depth is measured as the maximum traversal distance between any two entities in the relationship graph. |
-
 
 ---
 

@@ -182,7 +182,7 @@ implementation MUST emit `validation.uuid_collision` identically — same `type`
 each such refusal writes its `REFUSE` record, so a probing pattern is legible in audit as an
 enumeration attempt rather than invisible in an error branch. (Legitimate v4 collisions are
 vanishingly rare; a run of them from one actor is signal, not noise.) See
-`docs/spec/foundations/entity-relationships.md` §6b (`XTA-006` — the cross-tenant refusal contract).
+`docs/spec/foundations/entity-relationships.md` §6 (`XTA-006` — the cross-tenant refusal contract).
 
 ### 3.4 Refusal surfaces — where each code is emitted
 
