@@ -8,7 +8,7 @@ once with what it settles. `governance/credentials.md` — **CPX-001** (values n
 implementation's stores) + **CPX-013/CPX-014** (the intake detection + non-persistence rules this ADR
 picks the mechanism for). `foundations/four-states.md` — Intent is the *immutable* record of what
 was asked for, the constraint that makes this a design question, not a cleanup task.
-`registry/resource-types/security.credential-ref.yaml` — the reference type (names which credential
+`registry/classes/resource/security/credential-ref.yaml` — the reference type (names which credential
 is held where; no value field). `registry/SPEC-DESIGN-REQUIREMENTS.md` §36(h) — the authoring-time
 twin (review can't see a value a submitter supplies at run time). ADR-039 /
 `docs/design/vocabulary-intake-ladder.md` — the match/mint ladder, the model's precedent for

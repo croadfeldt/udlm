@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Valid-by-construction gate. Validates:
-  - registry/resource-types/*  against  resource-type-spec.schema.json        (TYPE definitions)
+  - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
   - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
                         or against  dcm-group.schema.json                     (DCMGroup records)
                         or against  catalog-item.schema.json                  (Composite Service catalog items)
-  - registry/providers/*       against  provider-adopted-standards.schema.json (provider support matrices)
 Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
 schema); legacy discriminators remain — a document with a top-level `group_class` is a
 DCMGroup; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
@@ -31,7 +30,6 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.schema.json").read_text()))
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
 GROUP_VALIDATOR = Draft202012Validator(json.loads((ROOT / "dcm-group.schema.json").read_text()))
-PROVIDER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "provider-adopted-standards.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
 LAYER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "layer.schema.json").read_text()))
@@ -553,13 +551,13 @@ def pick_instance(doc):
 
 
 def _reverse_reference_graph():
-    """Scan instances + providers for the data-reference graph. Returns:
+    """Scan instances for the data-reference graph. Returns:
       nodes:     uuid -> {"label", "is_refdata"}
       referrers: target_uuid -> [referrer_uuid]   (who references target)
     This is what lets change-impact cascade TRANSITIVELY up the graph (ADR-012 #2): a record referencing
     a reference_data layer that is itself referenced, and so on — e.g. deployment → image → library."""
     nodes, referrers = {}, {}
-    for subdir in ("instances", "providers"):
+    for subdir in ("instances",):
         base = ROOT / subdir
         if not base.exists():
             continue
@@ -620,18 +618,13 @@ def impact_report():
 
 def main() -> int:
     failures = 0
-    print("== resource types ==")
+    print("== generated (served flat-spec projections) ==")
     failures += validate_dir(
-        "resource-types",
+        "generated",
         lambda doc: (TYPE_VALIDATOR,
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
     print("== instances (realized entities + DCMGroups + catalog items) ==")
     failures += validate_dir("instances", pick_instance)
-    print("== providers (adopted-standard support) ==")
-    failures += validate_dir(
-        "providers",
-        lambda doc: (PROVIDER_VALIDATOR,
-                     lambda d: f"{d['provider']['name']} — {', '.join(s['standard'] for s in d['adopted_standard_support'])}"))
     print("== classes (scoped-Class artifacts — ADR-038 / P0 substrate) ==")
     failures += validate_dir(
         "classes",
