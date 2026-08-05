@@ -357,6 +357,28 @@ Each hard constraint cites the UDLM contract it derives from.
 |---|---|
 | `DRV-001` | A resource type MUST NOT declare a field whose value is derivable from other model records (relationships, instance records, declared ranges, provenance) as an independently stored fact. A field whose **name** is shaped like a history/recency fact (`last_*`, `latest_*`, `previous_*`, `runs_*`, `history_*`, `*_history`, `*_completed`) or, in `outputs`, like an aggregation (`total_*`, `num_*`, `count_*`, `sum_*`, `avg_*`, `current_*`, `*_count`, `*_total`, `*_sum`, `*_average`) MUST either declare its classification in its description — **DERIVED** (naming the source it is computed from) or **OBSERVED** (a provider-watched fact not derivable from model records) — or not exist on the type, its facts living on the instance records that own them. The gate reads names, not semantics: aggregation names are checked on `outputs` only, because in a `spec` an aggregate name can be legitimate intent; a derivable value under a neutral name is the reviewer's derivability question, not the gate's. |
 
+38. **The managed surface is a control plane, not a DCIM — and observed inventory is opt-in,
+    never authored.** UDLM/DCM is the system-of-record **only for the resources whose lifecycle
+    it owns**; it is not a hardware-component inventory authority. Component-level observation
+    enters solely through `classification: substrate | ancillary` (default `substrate`): an
+    **ancillary** type is **observe-only** (valid solely as Discovered/Realized records — never
+    on the Intent/catalog authoring surface), **structurally subordinate** (every instance
+    `contained_by` a substrate resource — a checkable invariant), observed-provenance-bearing,
+    and **policy-readable, never authored**. Optionality reuses existing mechanisms: a profile
+    includes or omits the ancillary set, a provider declares inventory as a capability,
+    conformance treats `ancillary` as an optional non-Tier-1 tier, and a non-implementing peer
+    ignores them (must-ignore-unknown). The substrate/ancillary line: control-plane-**actionable**
+    components (BMC, NetworkInterface, BiosProfile) are substrate; observe-only components
+    (Processor, StorageDevice, GraphicsProcessor) are ancillary. *The `classification` schema
+    carrier is pending — the invariant binds authoring now.*
+
+39. **Required cardinality states universality.** A relationship or field is declared `1..x`
+    **only when the requirement is universal to the type** — true for every provider and every
+    organization. A requirement that is provider- or org-variable is declared permissively
+    (`0..1` / `0..n`); the actual requirement is the provider's (capability declaration,
+    naturalization) or the organization's (policy) to state. UDLM carries the comparable shape;
+    it never bakes one party's requirement into the shared type.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.

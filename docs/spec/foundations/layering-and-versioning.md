@@ -105,6 +105,15 @@ Policies cannot set static configuration — that is a layer's job. A policy tha
 
 Layers cannot enforce rules — that is a policy's job. A layer that contains conditional logic or rule evaluation is being misused — that logic belongs in a policy.
 
+**The provider-required-input case** (the rule applied): inputs a provider requires but intent
+does not carry are resolved by a **post-placement transformation policy** reading governed data —
+a tenant or platform layer, or a governed mapping keyed by provider and resource type. The layer
+holds the values; the policy selects for the chosen provider and injects into the provider's
+Provider-Class `SharedDataElement` (ADR-038). One generic policy scales by data, not by rules; a
+missing mapping **gates prescriptively** at reserve with a named reason; and a coverage check at
+provider registration asserts every provider-required field has a fill path — the gap surfaces at
+config time, never on a user's request. There is no self-selecting-data primitive.
+
 ### The Decision Rule for Practitioners
 
 > "Is this a **value** that should appear in the payload? → **Layer**  
