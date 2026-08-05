@@ -11,10 +11,10 @@ shapes are:
 - **A Process-family Class** (`registry/classes/process/automation*`, validated against
   `registry/class.schema.json`) — the portable, multi-engine definition. Use it when the *point* is that
   more than one engine can honor the same process, so migration between engines is a provider swap.
-- **The `Automation.Job` resource type** (`registry/classes/process/job/_base.yaml`,
-  validated against `registry/resource-type-spec.schema.json`) — a job as a first-class node in the
-  dependency graph. Use it when you need the job's dependencies and blast-radius as data, without the
-  full multi-provider Class apparatus.
+- **The `Job` class** (`registry/classes/process/job/_base.yaml`, a childless instantiable base
+  validated against `registry/class.schema.json`) — a run as a first-class node in the dependency
+  graph. Every execution instantiates this ONE class — no per-domain subtypes; the domain derives
+  from the definition it executes (`job.running?family=automation` is a filter, never a subtype).
 
 Read both schemas and both worked examples before choosing.
 
@@ -23,10 +23,10 @@ Read both schemas and both worked examples before choosing.
 **Author a Process-family Class** when the recurring problem is **platform-to-platform automation
 migration**: two engines (blue today, green tomorrow) must run *the same* OS-patch or backup definition,
 org policy gates the portable definition, and lock-in should be readable as exactly the elements sitting
-at engine scope. This is the shape the implementation-plan flags as most-used — resource-provider migration
-is episodic, automation-engine migration is recurring.
+at engine scope. Resource-provider migration
+is episodic; automation-engine migration is recurring — this shape exists for the recurring case.
 
-**Author an `Automation.Job` resource type** when you need **a job as a graph node with real
+**Instantiate the `Job` class** when you need **a run as a graph node with real
 dependencies** — its executor host, the fabric it traverses, the name service it resolves through — so an
 ordered operation (a UPS-triggered graceful shutdown, a rolling upgrade) falls out of the reverse-topological
 sort with no hand-written runbook, and so a resource can cite the job that changed it in its provenance.
@@ -36,7 +36,7 @@ does not itself model multiple engines competing on one definition.
 Do **not** author a process when:
 
 - The thing is **a maintained state**, not a bounded execution (a Service the job *deploys*, a Container
-  the job *runs in*) — that is a resource type. Follow [`resource-type.md`](resource-type.md). A process
+  the job *runs in*) — that is a resource type: author its Class ([`scoped-class.md`](scoped-class.md)). A process
   must declare a bound on its execution time; a service has no scheduled end.
 - The behavior is **computed or executed** rather than declared — the run engine, the placement, the
   give-up window are DCM's, not the data model's (the ADR-008 peer test).
@@ -61,13 +61,15 @@ Follow [`scoped-class.md`](scoped-class.md) for the full Class procedure; the Pr
 3. **Compile and cover.** Run the generator, commit `registry/generated/automation.ospatch.json`, and add a
    `coverage:` block. Point it at the process/migration corpus below.
 
-### Shape B — an `Automation.Job` resource type
+### Shape B — a `Job` record
 
-Follow [`resource-type.md`](resource-type.md); the process-specific parts:
+The class already exists — you instantiate it, you do not subtype it. The process-specific parts of a
+conformant Job record:
 
-1. **Declare the mandatory execution bound.** `process_type` and **`max_execution_time`** (ISO-8601
-   duration) are required — a job that never declares when it must stop is not a job. Add `on_max_exceeded`
-   and `trigger` (`manual` / `event` / `schedule`).
+1. **Declare the mandatory execution bound.** **`max_execution_time`** (ISO-8601 duration) is required
+   (ENT-002) — a job that never declares when it must stop is not a job. Add `on_max_exceeded`
+   and `trigger` (`manual` / `event` / `schedule`). (`process_type` is retired — the domain derives
+   from the bound definition, not from a field.)
 2. **Carry the automation intent portably.** `definition_ref` (a typed reference or a version-pinned
    `automation_definition` data_reference — never an inline body or a provider-native id), `parameters`
    (opaque to the substrate, validated by the provider at naturalization), `targets` (typed resource
@@ -76,9 +78,8 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
    untouched definition.
 3. **Declare the blast-radius, and the outputs stance.** `depends_on` edges are the executor host, fabric,
    and resolver — a running job pins them (orchestrator stops last). The `affected_entities` edge is
-   informational (§6.4 makes the *affected* entity cite the job's uuid). Every run-history fact is an
-   output of a *run instance*, not of the job — so `Automation.Job` carries `outputs: {}` plus an explicit
-   `outputs-exempt: run-scoped` note (rule-36 G1 is satisfied by the note, not by empty outputs).
+   informational (§6.4 makes the *affected* entity cite the job's uuid). The Job **is** the run
+   instance, so run-history facts are its declared `outputs` — `results`, `started_at`, `completed_at`.
 
 ## 3. Completeness checklist — and the gate that enforces each
 
@@ -90,7 +91,7 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
 | Type Class compiles to a conformant flat spec, committed and fresh | `registry/tools/generate_class_specs.py --check` — **GEN-001/002** |
 | `coverage:` block resolves | `registry/tools/spec_coverage.py --check` — **COV-001** |
 
-**Shape B (`Automation.Job` resource type):**
+**Shape B (the `Job` class, served as `registry/generated/job.json`):**
 
 | Ships with it | Enforced by |
 |---|---|
@@ -110,9 +111,9 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
   blast-radius element and the `idempotency` codelist), `registry/classes/process/automation/ospatch/_base.yaml` (Type),
   and `registry/classes/process/automation/ospatch/engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
   that make migration a provider swap).
-- **`Automation.Job` resource type:** copy `registry/classes/process/job/_base.yaml` — the
-  first Process-family resource type, with `depends_on` graph edges, the portable-intent block
-  (`definition_ref` / `parameters` / `targets` / `schedule`), the `outputs-exempt` stance, its
+- **The `Job` class:** copy `registry/classes/process/job/_base.yaml` — with `depends_on` graph
+  edges, the portable-intent block
+  (`definition_ref` / `parameters` / `targets` / `schedule`), the run outputs (`results` / `started_at` / `completed_at`), its
   `spec.examples`, and its `coverage:` block naming `use-cases/automation/run-automation-job.yaml`
   (idempotent run with a declared blast-radius) and `docs/flows/automation-migration-and-promotion.md`.
 - **Corpus and flow:** `use-cases/process-migration/` (`automation-staged-promotion`,

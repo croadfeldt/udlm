@@ -28,7 +28,7 @@ except ImportError:
     yaml = None
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_SPEC = os.path.join(REPO, "registry/resource-types/compute/compute.virtual-machine.json")
+DEFAULT_SPEC = os.path.join(REPO, "registry/generated/compute.vm.json")
 
 # UDLM JSON-Schema types → TOSCA property types (the clean-mapping rows of the spike table).
 TYPE_MAP = {"object": "map", "array": "list", "string": "string",

@@ -233,8 +233,8 @@ A schema MAY:
 
 The udlm specification publishes a baseline set of schemas every implementation's
 bundle implicitly depends on. These are **not hypothetical** — they are the
-record schemas in `registry/*.schema.json` and the resource-type specs in
-`registry/resource-types/`, each already carrying a canonical `$id` of the form
+record schemas in `registry/*.schema.json` and the served resource-type specs
+in `registry/generated/`, each already carrying a canonical `$id` of the form
 `https://udlm.dev/registry/udlm/<MAJOR.MINOR>/<name>` (e.g.
 `https://udlm.dev/registry/udlm/0.1/policy.schema.json`). That `$id` **is** the
 canonical URL a bundle references; `validate_registry.py` enforces that a spec's
@@ -249,7 +249,7 @@ the spec version at the 0.1→1.0 cutover (VERSIONING.md). The baseline includes
 - The identifier forms (`identifier-scheme.md`: UUID, handle, reference) and the
   timestamp discipline (RFC 3339, UTC `Z`, seconds precision minimum —
   `common-elements.md` §8), enforced by `pattern` in the schemas above.
-- Every Tier-1 resource-type spec in `registry/resource-types/`.
+- Every Tier-1 served resource-type spec in `registry/generated/`.
 
 These are the **shared vocabulary** every peer can assume. An implementation's bundle
 manifest lists only its *own* extensions on top of this baseline; it does not
