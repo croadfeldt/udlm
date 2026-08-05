@@ -5,7 +5,7 @@
 Every standard this project **adopts**, absorbs a **pattern** from, **retires**, or deliberately
 **rejects** is recorded here: what, why (including alternatives considered), where it is used,
 when (git-derived instant — common-elements §8, no fabricated precision), who decided, and the
-license verdict. Entries are DecisionRecord-shaped (entities/knowledge-family.md §4.5 — the
+license verdict. Entries are DecisionRecord-shaped (docs/spec/foundations/knowledge-family.md §4.5 — the
 ADR/DR concept, itself adopted not invented); statuses reuse the DecisionRecord curation states.
 
 **Enforcement (`ADOPT-001`):** `tests/validate_registry.py` fails any `adopts[].standard` string
@@ -35,7 +35,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** consumers must distinguish breaking/additive/doc changes mechanically. *Alternatives:* CalVer (encodes when, not compatibility — wrong axis for contracts). Refinement: enum addition = MAJOR unless `x-extensible-enum` (registry-specific rule, documented in VERSIONING.md).
 
 ### RFC 9562 (UUID) — CANONICAL
-**Covers:** `RFC 9562` · **Body:** IETF · **Since:** 2026-07-05T00:41:50Z (ratified; obsoletes the RFC 4122 references used before) · **Where:** `contracts/identifier-scheme.md` §2.1, hard constraint 30, every uuid in types/instances/estate.
+**Covers:** `RFC 9562` · **Body:** IETF · **Since:** 2026-07-05T00:41:50Z (ratified; obsoletes the RFC 4122 references used before) · **Where:** `docs/spec/contracts/identifier-scheme.md` §2.1, hard constraint 30, every uuid in types/instances/estate.
 **Why:** universal identity needs one closed version policy: **v4** = identity (CSPRNG, no correlatable structure), **v7** = declared time-ordered fields only. *Alternatives within the standard, prohibited:* v1 (MAC + clock leak), v3/v5 (deterministic — collision-by-construction across independent minters), v6/v8 (interop/underspecified). *Alternatives outside:* ULID/KSUID (no IETF standardization, time-leak by default). **License:** IETF Trust — compatible-reference.
 
 ### RFC 3339 / ISO 8601 profile (timestamps) — CANONICAL
@@ -46,7 +46,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `RFC 9457` · **Body:** IETF (via **AEP-193**) · **Since:** 2026-07-15 · **Where:** `error-model.md` §2 (the error envelope); referenced by `rate-limit-and-backpressure.md`, `retry-semantics.md`, and every interop error surface.
 **Why:** a shared, machine-readable error shape lets any conformant peer parse another's errors without per-implementation adapters; RFC 9457 is the IETF standard for it (`type`/`title`/`detail`/`instance` + top-level extension members). *Alternatives:* a bespoke envelope (reinvents a solved shape, no ecosystem — net-negative surface); gRPC `Status` (binary-first, off the REST surface). **License:** IETF Trust — compatible-reference.
 ### RFC 9162 (Certificate Transparency v2 / Merkle logs) — CANONICAL
-**Covers:** `RFC 9162` · **Body:** IETF · **Since:** 2026-04-07T18:38:08Z · **Where:** `observability/universal-audit.md` AUD-006 (audit records form a Merkle tree; leaf signatures), `audit.log_head` in the instance schema.
+**Covers:** `RFC 9162` · **Body:** IETF · **Since:** 2026-04-07T18:38:08Z · **Where:** `docs/spec/contracts/universal-audit.md` AUD-006 (audit records form a Merkle tree; leaf signatures), `audit.log_head` in the instance schema.
 **Why:** tamper-evident audit for fsi/sovereign profiles needs an append-only structure with an established verification model; CT is the deployed-at-scale precedent. *Alternatives:* blockchain (consensus machinery we don't need), plain hash chain (no efficient inclusion proofs). **License:** IETF Trust — compatible-reference.
 
 ### ADR / Decision Record format — CANONICAL
@@ -96,7 +96,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ### Kubernetes ObjectReference / ownerReference (object-reference shape) — PATTERN
 **Covers:** `Kubernetes ObjectReference` · **Body:** Kubernetes (CNCF) · **Since:** 2026-07-14 (UDLM ADR-012) · **Where:** the data-reference shape `{ref_uuid, ref_name, reference_data_type}` (`registry/data-reference.schema.json`) — a field points at a governed Reference Data Layer instead of inlining a copy; `check_data_references` (`registry/tools/validate.py`) enforces referential integrity.
-**Why:** k8s already solved "how does one object point at another and stay honest": ownerReferences carry `uid` (authoritative) AND `name` (advisory), the GC resolves on `uid`, and a `uid` that resolves to nothing is a *dangling* edge — never a silent rebind onto a same-named record. We adopt exactly that shape (uuid-authoritative, name-advisory) and its deterministic invalid-edge handling (`OwnerRefInvalidNamespace` → our dangling-reference failure). **Pattern, not vocabulary:** the reference *shape* and integrity discipline, not the k8s field names or the multi-doc apply model. Grounded in `docs/research/minimal-custom-surface-and-graph-resilience.md` findings #1/#2. Convergent with our own uuid+handle discipline (`contracts/identifier-scheme.md`). **License:** Apache-2.0 — compatible-reference.
+**Why:** k8s already solved "how does one object point at another and stay honest": ownerReferences carry `uid` (authoritative) AND `name` (advisory), the GC resolves on `uid`, and a `uid` that resolves to nothing is a *dangling* edge — never a silent rebind onto a same-named record. We adopt exactly that shape (uuid-authoritative, name-advisory) and its deterministic invalid-edge handling (`OwnerRefInvalidNamespace` → our dangling-reference failure). **Pattern, not vocabulary:** the reference *shape* and integrity discipline, not the k8s field names or the multi-doc apply model. Grounded in `docs/research/minimal-custom-surface-and-graph-resilience.md` findings #1/#2. Convergent with our own uuid+handle discipline (`docs/spec/contracts/identifier-scheme.md`). **License:** Apache-2.0 — compatible-reference.
 
 ### KubeVirt — CANONICAL
 **Covers:** `KubeVirt` · **Body:** CNCF · **Since:** 2026-07-13 · **Where:** Compute.VM (VirtualMachine/VirtualMachineInstance — domain cpu/memory, interfaces->networks, volumes, runStrategy/power).
@@ -133,7 +133,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** the open standards converge on `{address, prefix, origin}` + parent-by-reference (RFC 8343/8344, NMstate, NetBox, Redfish) — the strongest adopt signal. NMstate is NetworkManager's **declarative** desired-state API — **Apache-2.0, a Red Hat project** (RHEL `network`-role backend, OpenShift Kubernetes-NMState operator) — and maps 1:1 to `NodeNetworkConfigurationPolicy.spec.desiredState`. Tier-2 adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the config body. **License:** NMstate Apache-2.0 — compatible-reference; RFC 8344 IETF Trust — compatible-reference.
 
 ### OAuth 2.0 Rich Authorization Requests — RFC 9396 — PATTERN
-**Covers:** `RFC 9396` `RFC-9396` · **Body:** IETF · **Since:** registered 2026-07-15 (first referenced in `capability-discovery.md` §2.5). · **Where:** the capability-admission model — RAR is the structured `verb × domain` request shape behind `effective_capabilities` (`contracts/capability-discovery.md` §2.5; SPEC-DESIGN adopt-by-ref §22–23).
+**Covers:** `RFC 9396` `RFC-9396` · **Body:** IETF · **Since:** registered 2026-07-15 (first referenced in `capability-discovery.md` §2.5). · **Where:** the capability-admission model — RAR is the structured `verb × domain` request shape behind `effective_capabilities` (`docs/spec/contracts/capability-discovery.md` §2.5; SPEC-DESIGN adopt-by-ref §22–23).
 **Why:** the provider-capability model needed a standard shape for "a request for authorization to do specific actions on specific resources"; RAR's typed `authorization_details` *is* our `verb × domain`, and it pairs with the IAM permission-boundary / OAuth-scope intersection semantics already adopted. **Adopt the mechanism (PATTERN), not a specific OAuth server.** *Alternatives:* plain OAuth scopes (flat strings, no resource/action structure), an invented request grammar (rejected on the don't-reinvent rule). **License:** IETF Trust — compatible-reference.
 
 ### Cluster API — CANONICAL
@@ -216,7 +216,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ### TCC (Try-Confirm-Cancel) + Two-Phase Commit (X/Open XA, ISO/IEC 10026 OSI-TP) — PATTERN
 **Covers:** `TCC` · `2PC` · **Body:** X/Open (XA DTP) · ISO/IEC 10026 (OSI-TP); TCC = established microservices distributed-transaction pattern · **Since:** 2026-07-13 (ADR-011).
-**Where:** two-phase realization — `contracts/provider-contract.md` §6a, `foundations/four-states.md` §2.3a, SPEC-DESIGN hard constraint 15.
+**Where:** two-phase realization — `docs/spec/contracts/provider-contract.md` §6a, `docs/spec/foundations/four-states.md` §2.3a, SPEC-DESIGN hard constraint 15.
 **Why:** implementation spans providers that cannot share a lock, so it needs a reservation-based commit protocol: **Try = `reserve`** (tentative hold, no side effects), **Confirm = `commit`**, **Cancel = `release`**; DCM is the 2PC **coordinator**, providers are **participants** (a provider that cannot hold votes no by failing reserve), and the **commit barrier** is the global commit decision. **Pattern, not vocabulary:** we adopt the try/confirm/cancel + coordinator/barrier shape and map it onto the existing REST dispatch channel — we do **not** absorb XA's C API or WS-AtomicTransaction/WS-BusinessActivity SOAP envelopes (the transport is already defined). *Contrast — SAGA:* commit-then-compensate; reserve-first avoids most compensation (nothing is built before the barrier), so SAGA applies only to a partially-failed *commit* (`COMPENSATE_AND_FAIL`). **License:** open specifications — compatible-reference.
 
 ### Lease (timeout-bounded reservation) — RFC 2131 (DHCP) as protocol precedent — PATTERN
@@ -226,7 +226,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ## Attestation, accreditation & sovereignty
 
-*Vocabulary + patterns for the accreditation model (`governance/accreditation-and-authorization-matrix.md`, `registry/accreditation.schema.json`) — adopted after the 2026-07-14 sovereignty-enforcement prior-art review (`docs/research/sovereignty-enforcement-prior-art.md`). The taxonomy cross-walk is matrix §3.10.*
+*Vocabulary + patterns for the accreditation model (`docs/spec/governance/accreditation-and-authorization-matrix.md`, `registry/accreditation.schema.json`) — adopted after the 2026-07-14 sovereignty-enforcement prior-art review (`docs/research/sovereignty-enforcement-prior-art.md`). The taxonomy cross-walk is matrix §3.10.*
 
 ### W3C Verifiable Credentials Data Model 2.0 — CANONICAL (vocabulary)
 **Covers:** `W3C-VC` · **Body:** W3C · **Since:** 2026-07-14 · **Where:** the accreditation record's `proof` (`type`/`verification_method`/`proof_purpose: assertionMethod`/`proof_value`) and `trust_anchor`; the issuer→holder→subject→verifier spine (accreditor→provider→capability→DCM); `validFrom`/`validUntil` ≈ `issued_at`/`expires_at`; `credentialStatus` ≈ the verification/staleness block.

@@ -2,12 +2,12 @@
 
 **Status:** Proposed (croadfeldt upstream)
 **Date:** 2026-07-25
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. ADR-015 (settings and config bundles — the §2a select/order/compose
 resolution algorithm this ADR ratifies as *the* answer); ADR-038 (scoped resource-type Classes —
 the scoping question that prompted this ruling); ADR-008 (the UDLM/DCM boundary test — contract in
 UDLM, assembly engine in DCM); ADR-045 §7 (compilation provenance on generated artifacts, verified
-by byte-comparable recompilation); `foundations/layering-and-versioning.md` (LAY-005 override
+by byte-comparable recompilation); `docs/spec/foundations/layering-and-versioning.md` (LAY-005 override
 intent, LAY-008 per-field provenance reconstructability).
 
 ## Context

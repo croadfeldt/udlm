@@ -79,7 +79,7 @@ A definition has two orthogonal signals; don't conflate them into one field:
   So "how baked is this?" is read from the version, and a thing can be `active` **and** still `0.x`
   (active-but-not-yet-stable) without overloading `status`.
 - **Review stage** (`developing` / `proposed` / accepted) is a **third** thing — the governance
-  *workflow* an artifact moves through on its way into the registry (`governance/registry-governance.md`
+  *workflow* an artifact moves through on its way into the registry (`docs/spec/governance/registry-governance.md`
   §3). It is **not** a `status` value: a definition only appears in the validated registry once accepted
   (`status: active`). Don't put review states in `status`.
 
@@ -102,7 +102,7 @@ A **MAJOR** bump is a breaking change: the prior version moves to `deprecated`, 
 version's `deprecation`-linked predecessor MUST carry `migration_guidance`. Consumers pinned to
 the old major keep working until it is `retired`.
 
-## Deprecation lifecycle (universal model, foundations/layering-and-versioning.md)
+## Deprecation lifecycle (universal model, docs/spec/foundations/layering-and-versioning.md)
 
 ```
 active ──► deprecated ──► retired

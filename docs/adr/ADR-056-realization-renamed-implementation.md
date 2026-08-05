@@ -5,7 +5,7 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** The four-state
-lifecycle names a state **Realized** ([`foundations/four-states.md`](../../foundations/four-states.md), ADR-030) and a verb **realize** — "make intent real." Separately, the spec used the noun **realization**
+lifecycle names a state **Realized** ([`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md), ADR-030) and a verb **realize** — "make intent real." Separately, the spec used the noun **realization**
 to mean *a system that implements UDLM's interfaces* (DCM and DAV are examples). Those are **unrelated
 concepts sharing a root**, which is the exact legibility anti-pattern engineering flagged in review
 ("what does this term mean"). This ADR de-overloads them. Terminology discipline: CONTRIBUTING § TERM-001.
@@ -64,5 +64,5 @@ is legitimate and stays.
 ## Related
 
 - ADR-030 (convergence lifecycle — the `Realized` state this protects) · ADR-051 (identity/version —
-  why the decision records are not edited) · `foundations/four-states.md` · `GLOSSARY.md` (the term) ·
-  `design-principles/naming-charter.md` (the canonical vocabulary) · CONTRIBUTING § TERM-001.
+  why the decision records are not edited) · `docs/spec/foundations/four-states.md` · `GLOSSARY.md` (the term) ·
+  `docs/spec/principles/naming-charter.md` (the canonical vocabulary) · CONTRIBUTING § TERM-001.

@@ -116,7 +116,7 @@ attestation requires bespoke `metadata`/`policy_type` conventions that a generic
 **Q1 — implementability (the C-2 by-construction proof):** the mechanical derivation succeeded, so the
 `Compute.VM` contract is well-formed enough to transcribe to a standard node type without
 invention. Where TOSCA *couldn't* carry a thing, that thing was a deliberate UDLM addition, not a spec
-defect. This is positive evidence for [`../implementing-a-resource-type.md`](../implementing-a-resource-type.md).
+defect. This is positive evidence for [`../guides/implementing-a-resource-type.md`](../guides/implementing-a-resource-type.md).
 
 ## Recommendation
 

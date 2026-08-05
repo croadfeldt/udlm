@@ -13,7 +13,11 @@ here (DCM realizes the model; see the isolation table below).
 ## Layout
 
 ```
-foundations/      The four states (Intent→Requested→Realized→Discovered), entity UUID, rehydration, drift
+docs/spec/        THE normative prose tier (ADR-062): foundations/ (four states, entity
+                  types/families, entities, layering, groups), contracts/, governance/,
+                  lifecycle/, principles/ — ratification covers docs/spec/ + registry/
+docs/             everything else humans read: adr/ design/ authoring/ flows/ guides/
+                  examples/ research/ + file-index.md
 registry/         Resource-type registry + the meta-schema + the definition RULES + common elements
   SPEC-DESIGN-REQUIREMENTS.md   ← THE rules every type/element MUST follow (read this first)
   resource-type-spec.schema.json ← the flat-spec meta-schema (generated/ artifacts validate against it)
@@ -22,9 +26,7 @@ registry/         Resource-type registry + the meta-schema + the definition RULE
                                    GENERATED projections in registry/generated/ (never authored)
   common-elements.md             ← canonical shared shapes (Quantity, ComputeResources, Identity, …)
   resource-type-data-sources.md  ← which industry standard each type adopts, + license verdicts
-entities/         Cross-cutting entity concerns (service-dependencies, composition_visibility, …)
-design-principles/  Adopted-standards disposition (absorb/embed/adopt), provenance & licensing
-lifecycle/        Operational models, recovery state machine
+use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts/ signoff
 ```
 
 ## Operating rules (non-negotiable)
@@ -59,7 +61,7 @@ lifecycle/        Operational models, recovery state machine
     Intent** (racked-but-unallocated, brownfield), carrying `lifecycle_state: available`, later
     **adopted** (Intent attached, UUID preserved).
 - **Adding a type:** author a CLASS in `registry/classes/<family>/…` (ADR-061 layout; ADR-038 grammar),
-  following `registry/naming-conventions.md` and the registry process (`governance/registry-governance.md` §3,
+  following `registry/naming-conventions.md` and the registry process (`docs/spec/governance/registry-governance.md` §3,
   `CONTRIBUTING.md`); the generator emits the flat spec into `registry/generated/`; fill
   `adopts[]` with source+license; reuse common-elements; ship ≥1 worked example; never inline
   vendor-exclusive fields. The standard each type adopts is tabulated in
@@ -92,7 +94,7 @@ engineering team (issue #217) — never claim Accepted/ratified status.
   Provider-Class `SharedDataElement` (ADR-038).
 - **provider-contract.md owns the whole provider/capability surface**: registration §2, sovereignty
   obligations `SOV-*` §2a, capability profiles §8, registry §9, discovery wire protocol §10.
-- **Six profiles:** homelab → dev → standard → prod → fsi → sovereign (`docs/profiles.md`).
+- **Six profiles:** homelab → dev → standard → prod → fsi → sovereign (`docs/guides/profiles.md`).
 - **Audit is Merkle** (RFC 9162): events are `audit.integrity_alert`/`audit.integrity_break`;
   linear hash-chain wording is a defect.
 - **Core tenet T9:** the substrate never translates into a provider's native spec.

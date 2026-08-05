@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/audit-record.schema.json",
   "title": "DCM Audit Record (Stage-2, enriched)",
-  "description": "Machine-validatable enriched audit record (observability/universal-audit.md §3; DCM ADR-010). The tamper-evident system-of-what-happened. Append-only, immutable once written (AUD-002); RFC 9162 Merkle-linked (AUD-006). UDLM carries the record shape; DCM's Audit Service produces it. data-model-core §2 [D8.5].",
+  "description": "Machine-validatable enriched audit record (docs/spec/contracts/universal-audit.md §3; DCM ADR-010). The tamper-evident system-of-what-happened. Append-only, immutable once written (AUD-002); RFC 9162 Merkle-linked (AUD-006). UDLM carries the record shape; DCM's Audit Service produces it. data-model-core §2 [D8.5].",
   "type": "object",
   "additionalProperties": false,
   "required": [

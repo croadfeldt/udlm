@@ -48,7 +48,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
    `proposed` (a dirty-safe holding pen), and `canonical` is the promoted, portable set; reference resolution
    honors the distinction so a strict profile can require canonical vocabulary. Cleaning *is* lineage — dedupe
    and rename are `supersede` operations (ADR-012), never deletion.** The `proposed → under-review →
-   canonical → deprecated` lifecycle (`foundations/four-states.md`) is the value-level curation state; a
+   canonical → deprecated` lifecycle (`docs/spec/foundations/four-states.md`) is the value-level curation state; a
    revision of a canonical term is a **new immutable record** that names its predecessor via `supersedes`,
    never an edit (ADR-012 §6, ADR-051). (The `layer` record's own `status.state` — `active`/`deprecated`/
    `retired` — is the record lifecycle; the proposed/canonical stage is the vocabulary-intake curation the

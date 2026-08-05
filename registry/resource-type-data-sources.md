@@ -1,8 +1,8 @@
 # Resource-Type Data Sources — what each infrastructure type adopts by reference
 
 **Document Status:** 🟡 Working — design input for the infrastructure Resource Types
-**Related:** [design-principles/adopted-standards.md](../design-principles/adopted-standards.md) (the
-absorb/adopt disposition) · [reference/standards-catalog.md](../reference/standards-catalog.md) (the
+**Related:** [docs/spec/principles/adopted-standards.md](../docs/spec/principles/adopted-standards.md) (the
+absorb/adopt disposition) · [registry/standards-catalog.md](standards-catalog.md) (the
 authoritative standards list) · [registry/resource-type-spec.schema.json](resource-type-spec.schema.json)
 (`spec`/`outputs`/`relationships` shape) · [../docs/research/osac-better-together.md](../docs/research/osac-better-together.md)
 
@@ -79,7 +79,7 @@ UDLM has the hooks to encode this without new machinery:
   **vendor-extension slot**. Vendor-specific elements live here, marked portability-affecting, surfaced
   to policy — the model stays referenceable AND extensible (ties to the vendor/custom extension model).
 
-## 6. New entries proposed for `reference/standards-catalog.md`
+## 6. New entries proposed for `registry/standards-catalog.md`
 
 These resource-domain standards are not yet in the catalog. Proposed additions (all **Tier 2** record
 schemas unless noted), to be merged into a new "Resource Domain Standards" section:

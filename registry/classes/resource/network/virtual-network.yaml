@@ -5,7 +5,7 @@ record_type: class
 class: type
 resource_type: Network.VirtualNetwork
 parent: Network
-version: 0.8.0
+version: 0.8.1
 family: Resource
 status: active
 metadata:
@@ -98,7 +98,7 @@ relationships:
   name: segment
   cardinality: 0..1
   description: The foundational Network.VLAN segment this virtual network rides (selected by reference,
-    not inlined) — docs/foundational-resources.md.
+    not inlined) — docs/guides/foundational-resources.md.
 adopts:
 - standard: Kubernetes NetworkAttachmentDefinition
   version: v1 (k8snetworkplumbingwg)

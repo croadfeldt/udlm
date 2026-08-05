@@ -2,7 +2,7 @@
 
 **What this settles:** how an auditor proves a named range of past audit events has not been tampered with — signed tree heads, inclusion proofs per event, and consistency proofs across epochs — with the signing key kept inside the sovereignty boundary. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `governance/audit-merkle-tree-verification`. **Persona:** compliance-auditor · **Profile:** sovereign.
+> **Use Case:** `docs/spec/governance/audit-merkle-tree-verification`. **Persona:** compliance-auditor · **Profile:** sovereign.
 
 **In one breath.** This is request-realization's machinery pointed at a **read**: the auditor's request is assembled and placed like any other, but it routes to an **audit/information provider** that returns *proofs* instead of building anything. The provider gives signed tree heads for each epoch, an inclusion proof for every requested event, and consistency proofs tying the heads into one append-only sequence. The auditor verifies these independently; a sovereignty policy guarantees the signing key never left the boundary. Nothing is reserved, nothing is committed — the audit state is only read.
 
@@ -46,5 +46,5 @@ Assemble and place are request-realization; from the audit provider onward is th
 
 ## Pointers
 
-- Base flow: [request-realization](request-realization.md). UC source: `governance/audit-merkle-tree-verification`.
+- Base flow: [request-realization](request-realization.md). UC source: `docs/spec/governance/audit-merkle-tree-verification`.
 - Capability-validation sibling (does DCM *provide* this): [uc-21-audit-chain-proofs-capability](uc-21-audit-chain-proofs-capability.md).

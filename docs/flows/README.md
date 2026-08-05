@@ -79,4 +79,4 @@ Each flow doc keeps this structure so the tier stays consistent:
 4. **The invariants** — the stage rules any actor must obey, collected.
 5. **What UDLM does not decide** — the seam handed to DCM, with the pointer.
 6. **Data · Policy · Provider** — the required decomposition lens (SPEC-DESIGN §29).
-7. **Where each piece is specified** — a pointer table to the governing contracts/ADRs.
+7. **Where each piece is specified** — a pointer table to the governing docs/spec/contracts/ADRs.

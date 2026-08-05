@@ -4,7 +4,7 @@
 VMs, containers, and Kubernetes clusters** (and all their constituent capabilities), and how **three
 different sovereignty postures** are modelled with the accreditation record — using nothing but the
 provider capability declaration (`registry/provider-adopted-standards.schema.json`) and the accreditation
-record (`registry/accreditation.schema.json`; `governance/accreditation-and-authorization-matrix.md`).
+record (`registry/accreditation.schema.json`; `docs/spec/governance/accreditation-and-authorization-matrix.md`).
 
 The scenario:
 - **Region sovereignty (US + Canada) for everything** the provider offers — *except* cluster lifecycle.

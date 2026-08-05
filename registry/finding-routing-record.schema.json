@@ -247,7 +247,7 @@
         },
         "profile": {
           "type": "string",
-          "description": "OPTIONAL — the constraint profile the estate operates under (docs/profiles.md). Useful context for judging severity; it discloses posture, not identity."
+          "description": "OPTIONAL — the constraint profile the estate operates under (docs/guides/profiles.md). Useful context for judging severity; it discloses posture, not identity."
         },
         "egress_disposition": {
           "enum": ["released", "redacted", "field_masked"],

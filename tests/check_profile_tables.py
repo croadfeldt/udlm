@@ -26,8 +26,8 @@ PROFILES = ["minimal", "dev", "standard", "prod", "fsi", "sovereign"]
 SCOPE = ["contracts", "foundations", "governance", "entities", "observability",
          "lifecycle", "design-principles", "registry"]
 # The master scaling table + the index itself legitimately enumerate profiles.
-ALWAYS_OK = {"design-principles/design-priorities.md", "registry/profile-settings-index.md"}
-# A doc path referenced in the index (e.g. governance/credentials.md).
+ALWAYS_OK = {"docs/spec/principles/design-priorities.md", "registry/profile-settings-index.md"}
+# A doc path referenced in the index (e.g. docs/spec/governance/credentials.md).
 DOCPATH_RE = re.compile(r"\b((?:contracts|foundations|governance|entities|observability|lifecycle|"
                         r"design-principles|registry)/[A-Za-z0-9_.-]+\.md)\b")
 

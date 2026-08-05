@@ -1,10 +1,10 @@
 # UDLM ADR-024: Filling provider-required inputs — layers stage data, policies refine and validate
 
 **Status:** Proposed (2026-07-16)
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-016 (provider-specific config lives off the portable type, stored as `provider_extensions` — deprecated, subsumed by ADR-038's Provider-Class `SharedDataElement`, retiring per #202);
-ADR-011 (validate-and-reserve — the completeness gate); `foundations/layering-and-versioning.md` §1a (layers
-are data, policies are logic), §5 (precedence), Step 7 (post-placement policy); `contracts/policy-contract.md`
+ADR-011 (validate-and-reserve — the completeness gate); `docs/spec/foundations/layering-and-versioning.md` §1a (layers
+are data, policies are logic), §5 (precedence), Step 7 (post-placement policy); `docs/spec/contracts/policy-contract.md`
 §12 (transformation / enrichment). **Flow:** `docs/flows/request-realization.md`.
 
 ## Context

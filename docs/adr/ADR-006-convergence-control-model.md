@@ -2,8 +2,8 @@
 
 **Status:** Proposed
 **Date:** 2026-07-10
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `foundations/foundations.md` §1 (the Data·Policy·Provider runtime loop this specifies); ADR-005 (causal audit — the triggers are the causal edges); `contracts/event-catalog.md`; `contracts/policy-contract.md`; `contracts/provider-contract.md` (provider callback); the DCM convergence engine (loop runner); UCs `idempotent-reconvergence`, `drift-detection-remediation`, dependency-failure-surfaced, `vm-provision-with-provider-failure`
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §1 (the Data·Policy·Provider runtime loop this specifies); ADR-005 (causal audit — the triggers are the causal edges); `docs/spec/contracts/event-catalog.md`; `docs/spec/contracts/policy-contract.md`; `docs/spec/contracts/provider-contract.md` (provider callback); the DCM convergence engine (loop runner); UCs `idempotent-reconvergence`, `drift-detection-remediation`, dependency-failure-surfaced, `vm-provision-with-provider-failure`
 **Tracking:** review of udlm #16 — "Data·Policy·Provider: peers or a sequence?" and "does policy re-run when a provider changes or denies a request?"
 
 ## Context

@@ -2,8 +2,8 @@
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model); ADR-018 (dev — the floor this contains); ADR-017 (per-profile-ADR template); ADR-010 (drift/graph); the record: `registry/instances/profile-standard.yaml`; `docs/profile-resolution.md` (floors nest by set-containment)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model); ADR-018 (dev — the floor this contains); ADR-017 (per-profile-ADR template); ADR-010 (drift/graph); the record: `registry/instances/profile-standard.yaml`; `docs/guides/profile-resolution.md` (floors nest by set-containment)
 
 > Owns the *rationale* for `standard`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 
@@ -40,6 +40,6 @@ Target demographic: a team running production workloads with no specific regulat
 
 ## Options considered
 
-- **(A) Fold standard into dev (one production-ready default).** Rejected: it would force governance/drift/recovery onto evaluation, defeating `dev`'s low-friction purpose.
+- **(A) Fold standard into dev (one production-ready default).** Rejected: it would force docs/spec/governance/drift/recovery onto evaluation, defeating `dev`'s low-friction purpose.
 - **(B) Skip standard; jump dev → prod.** Rejected: many production estates don't need blast-radius change-control or dual-approval; `standard` is the honest middle set the ladder needs.
 - **(C) [chosen] dev's floor + governance-matrix + recovery + drift reconciliation.**

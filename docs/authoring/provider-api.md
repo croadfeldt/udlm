@@ -31,7 +31,7 @@ and never enters the portable model.
 
 ### A. The capability declaration — `provider-adopted-standards.schema.json`
 
-1. **Write the record** at `contracts/provider-contract.md` §2 (the registration payload — standing provider artifacts retired 2026-08-04; capabilities are the Provider Classes a provider supports or injects at DCM registration) (e.g. `service/` or `information/`). Set
+1. **Write the record** at `docs/spec/contracts/provider-contract.md` §2 (the registration payload — standing provider artifacts retired 2026-08-04; capabilities are the Provider Classes a provider supports or injects at DCM registration) (e.g. `service/` or `information/`). Set
    the required top level (`provider-adopted-standards.schema.json` `required`): `provider` and
    `adopted_standard_support`.
 2. **`provider`** — `name`, a v4 `uuid`, and `version`. **The `uuid` is frozen at registration and never
@@ -81,11 +81,11 @@ onto the one Governance Matrix; it is distinct from the capability *declaration*
 
 ## 4. A worked pointer
 
-Copy [`../../contracts/provider-contract.md §2 examples`](../../contracts/provider-contract.md)
+Copy [`../../contracts/provider-contract.md §2 examples`](../spec/contracts/provider-contract.md)
 — a `service` provider that consumes Redfish/KubeVirt/Kubernetes and declares three capabilities (VM,
 Container, Cluster lifecycle), each spanning several `(verb × domain)` categories with per-category
 `topology_capability`, `operational_capability`, and (on the container capability) a narrowed `sovereignty`
-block. [`../../contracts/provider-contract.md §8 (serve_data)`](../../contracts/provider-contract.md)
+block. [`../../contracts/provider-contract.md §8 (serve_data)`](../spec/contracts/provider-contract.md)
 is the `information`-kind counterpart.
 
 For the matching accreditation, see
