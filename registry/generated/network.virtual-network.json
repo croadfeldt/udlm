@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.1",
   "conforms_to": "udlm/0.1",
   "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.VirtualNetwork",
-          "version": "0.8.0",
+          "version": "0.8.1",
           "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e"
         }
       ]
@@ -108,7 +108,7 @@
       "target": "Network.VLAN",
       "name": "segment",
       "cardinality": "0..1",
-      "description": "The foundational Network.VLAN segment this virtual network rides (selected by reference, not inlined) — docs/foundational-resources.md."
+      "description": "The foundational Network.VLAN segment this virtual network rides (selected by reference, not inlined) — docs/guides/foundational-resources.md."
     }
   ],
   "adopts": [

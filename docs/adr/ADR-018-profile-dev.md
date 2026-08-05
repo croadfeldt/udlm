@@ -2,8 +2,8 @@
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model — composed set + floor); ADR-017 (the homelab profile + the per-profile-ADR template this follows); the record: `registry/instances/profile-dev.yaml`; `docs/profile-resolution.md`; `../../registry/UDLM-0.1-SCOPE.md` §2 (profile posture — implement against dev)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model — composed set + floor); ADR-017 (the homelab profile + the per-profile-ADR template this follows); the record: `registry/instances/profile-dev.yaml`; `docs/guides/profile-resolution.md`; `../../registry/UDLM-0.1-SCOPE.md` §2 (profile posture — implement against dev)
 
 > Owns the *rationale* for `dev`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 

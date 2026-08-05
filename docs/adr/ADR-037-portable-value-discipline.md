@@ -6,7 +6,7 @@
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); ADR-012 (data-references); ADR-028
 (rule-ID naming + registry); core-tenets **T5** (adopt outward) / **T7** (reduce inward); `check_single_source.py`
 + SPEC-DESIGN §33 (the single-source precedent this mirrors). **Home of the `PVD` rule family:**
-`design-principles/portable-values.md`.
+`docs/spec/principles/portable-values.md`.
 
 **Settles:** the **portable-value discipline (PVD)** — a selectable value is a reference, codelist, or requirement; never a free string or an inline re-expression of an adopted standard. PVD-001 is the **destination**, not the admission gate: at admission time a string meets it via the vocabulary-intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039 — match/mint/promote under profile control); strictness gates minting, never matching.
 
@@ -22,14 +22,14 @@ account exactly the way this should be — a **rule + an automated check + a rev
 discipline is load-bearing for portability.
 
 ## Decision
-1. **The rules — one family, two findings** (defined in `design-principles/portable-values.md`, the `PVD` home):
+1. **The rules — one family, two findings** (defined in `docs/spec/principles/portable-values.md`, the `PVD` home):
    - **PVD-001 (free-string vocabulary).** A selectable value MUST be a `data_reference` to a reference-data kind
      (ADR-012/035), a bounded **codelist** (T5), or a **requirements descriptor** (ADR-036) — never an
      unconstrained string.
    - **PVD-002 (inline re-expression).** A field MUST NOT restate, inline, an **adopted standard's body**
      (adopt by reference — T5) or the **shape of a referenceable resource type** (bind by an ADR-025 reference —
      T7).
-2. **Home + family.** `design-principles/portable-values.md` is the `PVD` family's home; the prefix is registered
+2. **Home + family.** `docs/spec/principles/portable-values.md` is the `PVD` family's home; the prefix is registered
    in `registry/rule-id-registry.yaml` (ADR-028). PVD is the third sibling of T5 (adopt *outward*) and T7 (reduce
    *inward*): **reference what the model already owns, don't restate it inline.**
 3. **The automated check (planned).** `tests/check_portable_values.py` — planned, to be CI-wired like

@@ -4,7 +4,7 @@ UDLM is a wire-compatible substrate for systems that manage data through its
 lifecycle from intent to realization. Any system conformant to UDLM produces
 data that any other conformant system can read, interpret, and exchange.
 
-> **Working with UDLM?** Start at **[`docs/working-with-udlm.md`](docs/working-with-udlm.md)** — it
+> **Working with UDLM?** Start at **[`docs/guides/working-with-udlm.md`](docs/guides/working-with-udlm.md)** — it
 > routes you by what you're here to do: author an artifact, review a contribution, build a system that
 > consumes the model, or contribute to the project.
 
@@ -23,23 +23,23 @@ on none of them. Term definitions: [`GLOSSARY.md`](GLOSSARY.md).
 ```
 udlm/
 ├── CONFORMANCE.md           What a conformant implementation must provide
-├── foundations/             Context, entity types, four-state lifecycle
-├── entities/                Resource and service entity model
-├── contracts/               Wire-compatibility contracts (identifier, time,
-│                            error, retry, rate-limit, schema-sharing, events,
-│                            provider/policy/data-store contracts, etc.)
-├── lifecycle/               Lifecycle contracts (ingestion, operational
-│                            models, scheduling, dependency graphs, subscriptions)
-├── governance/              Auth, registry, governance matrix, accreditation,
-│                            federated contribution, credentials, authority tiers
-├── observability/           Audit, provenance, observability contracts
-├── topology/                Layered-topology contract
-├── design-principles/       Substrate design principles (core tenets, adopted standards)
-├── registry/                Resource Type Registry — the meta-schema, type/instance
-│                            definitions, provider support matrices, validation tooling
-├── reference/               Normative external standards cited
-├── docs/                    Narrative perspectives (consumer handbook)
-└── tests/                   Test framework specification
+├── docs/
+│   ├── spec/                THE normative tier — what ratification covers
+│   │   ├── foundations/       Core model: four states, entity types/families,
+│   │   │                      entities, layering, ownership, groups, topology
+│   │   ├── contracts/         Wire contracts: identifier, time, error, retry,
+│   │   │                      events, provider/policy/data-store, audit
+│   │   ├── governance/        Auth, registry governance, governance matrix,
+│   │   │                      accreditation, credentials, authority tiers
+│   │   ├── lifecycle/         Ingestion, operational models, subscriptions
+│   │   └── principles/        Core tenets, priorities, adopted standards
+│   ├── adr/  design/  authoring/  flows/  guides/  examples/  research/
+│   └── file-index.md        Per-file ownership index
+├── registry/                Resource Type Registry — meta-schemas, the authored
+│                            classes/, generated flat specs, instances, tooling
+├── use-cases/               The CI-consumed coverage corpus
+├── tests/                   The gate suite
+└── scripts/                 signoff and tooling
 ```
 
 For a per-file breakdown — what each document *owns*, so a rule lives in exactly one place — see [`docs/file-index.md`](docs/file-index.md).
@@ -48,11 +48,10 @@ For a per-file breakdown — what each document *owns*, so a rule lives in exact
 
 An implementation that claims UDLM conformance:
 
-1. Implements every required contract in `contracts/`, `foundations/`,
-   `entities/`, `lifecycle/`, `governance/`, `observability/`, `topology/`,
-   `design-principles/`, `reference/`.
+1. Implements every required contract in `docs/spec/` (foundations, contracts,
+   lifecycle, governance, principles).
 2. Publishes a schema bundle at `/.well-known/udlm/schema-bundle` per
-   [`contracts/schema-sharing.md`](contracts/schema-sharing.md).
+   [`docs/spec/contracts/schema-sharing.md`](docs/spec/contracts/schema-sharing.md).
 3. Publishes a conformance declaration at `/.well-known/udlm/conformance`
    per [`CONFORMANCE.md`](CONFORMANCE.md).
 4. Passes the conformance test suite per
@@ -77,7 +76,7 @@ concurrently. See [`CONFORMANCE.md`](CONFORMANCE.md) §9.
 
 UDLM is licensed under the **Apache License 2.0** — see [`LICENSE`](LICENSE). This is the
 project's single license declaration; other documents (e.g.
-[`design-principles/adopted-standards.md`](design-principles/adopted-standards.md)) reference
+[`docs/spec/principles/adopted-standards.md`](docs/spec/principles/adopted-standards.md)) reference
 it rather than restating it.
 
 ## Provenance

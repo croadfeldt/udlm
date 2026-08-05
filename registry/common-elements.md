@@ -123,7 +123,7 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
 - **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — DCM is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
-  by **`composition_visibility`** (`opaque|transparent|selective`, `entities/service-dependencies.md`
+  by **`composition_visibility`** (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
 
@@ -186,7 +186,7 @@ lifecycle_state: available   # available | allocated | retired   (extensible per
 `available` = inventoried, unallocated, tracked. `allocated` = an Intent has been **adopted** onto it
 (it entered the managed lifecycle, UUID preserved). `retired` = decommissioned but retained for history.
 Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its canonical
-inspected-but-unprovisioned state). See `foundations/four-states.md` §2.4 (raw / discovered-first entry)
+inspected-but-unprovisioned state). See `docs/spec/foundations/four-states.md` §2.4 (raw / discovered-first entry)
 and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
 
 ## 7. `device_class` — device implementation (Hardware.* types)

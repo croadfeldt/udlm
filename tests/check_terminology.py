@@ -16,7 +16,7 @@ provider" appears in blessed contexts). Grow the table with the ruling that reti
 
 Evasions closed 2026-07-25 (each with the live corpus violation it exposed):
   1. LINE WRAP — a term split across two lines evaded a line-based regex. The scan now also
-     tests each line joined to its successor. Caught: contracts/time-and-clock.md §8, where
+     tests each line joined to its successor. Caught: docs/spec/contracts/time-and-clock.md §8, where
      "the hash\\nchain" carried the retired linear-chain wording past the gate.
   2. BARE ARROW — the history marker accepted "→"/"->" anywhere on the line, so any line with
      an arrow (most of this spec's prose) was skipped wholesale. Arrows are no longer markers;

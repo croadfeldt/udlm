@@ -66,5 +66,5 @@ its story hangs together. They cannot prove it should exist. That judgment stays
 is exactly why the gates handle the bookkeeping, so the reviewer can spend attention on the decision.
 
 > **Next:** pick your kind in [`README.md`](README.md) → its HOWTO. Reviewing an artifact instead of
-> authoring one? See [`../reviewing.md`](../reviewing.md). Building a system on the model? See
-> [`../consuming.md`](../consuming.md).
+> authoring one? See [`../guides/reviewing.md`](../guides/reviewing.md). Building a system on the model? See
+> [`../guides/consuming.md`](../guides/consuming.md).

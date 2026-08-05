@@ -2,7 +2,7 @@
 
 **Status:** Proposed
 **Date:** 2026-06-27
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** SPEC-DESIGN-REQUIREMENTS §17 (vendor-neutrality), §26/§27 (component granularity & instance identity), `registry/naming-conventions.md` §1; **DCM ADR-019 (Placement Policy)** — the control-plane consumer
 **Tracking:** placement-informing data family; raised via dcm-project/dcm #64 ("what about placement policy?")
 

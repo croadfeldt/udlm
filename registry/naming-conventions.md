@@ -20,7 +20,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
     disambiguates. (The single-segment form signals "domain-neutral," not "Knowledge-only"; the
     meta-schema `resource_type` pattern already permits both forms.)
   - Enforced by the `resource_type` / `$id` patterns in the meta-schema.
-- **Tiered namespace** (`governance/registry-governance.md` §2):
+- **Tiered namespace** (`docs/spec/governance/registry-governance.md` §2):
   | Tier | Namespace form | Example | Vendor names? |
   |---|---|---|---|
   | 1 — Core | `Category.Type` (vendor-neutral, from the canonical categories below) | `Storage.Cluster` | **never** |
@@ -36,7 +36,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 
 ## 2. Categories
 
-The canonical categories (`entities/resource-type-hierarchy.md` §2.2). Resource categories:
+The canonical categories (`docs/spec/foundations/resource-type-hierarchy.md` §2.2). Resource categories:
 `Compute`, `Network`, `Storage`, `Platform`, `Security`, `Observability`, `Data`. Information
 categories: `Business`, `Identity`, `Compliance`, `Operations`.
 
@@ -70,7 +70,7 @@ Three terms here are easy to collide; keep them distinct.
   the governed **provider-capability taxonomy** (a `TaxonomyTerm` subtree under the `provider-capability` root,
   `registry/instances/provider-capability-taxonomy.yaml`). This is **not** the Knowledge-family
   **`Capability [Knowledge]`** — that is DAV's *architecture-capability* sense ("what an architecture
-  provides," `entities/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
+  provides," `docs/spec/foundations/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
   `architecture-capability`. One shared `TaxonomyTerm` **type**, two disjoint subtrees; parent chains never cross.
 - **Capability category** — a **(verb × §2-Category)** term in the provider-capability taxonomy (e.g.
   `realize_resources/Storage` = *storage-provisioning*). Its domain axis **is** a §2 Category — a capability
@@ -96,7 +96,7 @@ Before adding a type, check whether the concept is already expressed by an exist
   `registry/instances/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
-  (`foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
+  (`docs/spec/foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
   not a new type. "Allocate a host to a tenant" = whole-allocation of `Compute.BareMetalHost`, not a
   separate `BareMetalInstance` type.
 - **A new type** is warranted only for a genuinely distinct *kind of thing* with its own contract.
@@ -115,7 +115,7 @@ To translate to/from other ecosystems, a type carries its alternative names with
   (`{name, standard?, standard_version?, note?}`), e.g. AWS "Dedicated Host", OpenStack "Ironic node".
 
 (The Knowledge-family **`Alias`** entity is a different tool — *taxonomy-term* normalization
-"avoid → use instead", `entities/knowledge-family.md` §4.3 — not type cross-walks.)
+"avoid → use instead", `docs/spec/foundations/knowledge-family.md` §4.3 — not type cross-walks.)
 
 ## 4. Field, output, and enum names — casing (data model)
 
@@ -177,7 +177,7 @@ YAML is allowed for authoring (VERSIONING.md §Serialization).
 
 - Instance / graph node ids: lowercase **kebab-case**, short and stable (`ocp-control01`, `ups-rack`).
 - Type UUIDs are UUIDv4, immutable for the type's life; handles are mutable/rebindable
-  (SPEC-DESIGN §18, `contracts/identifier-scheme.md`).
+  (SPEC-DESIGN §18, `docs/spec/contracts/identifier-scheme.md`).
 
 ## 7. Standards-grounded type plan (this initiative)
 
@@ -196,7 +196,7 @@ The new types, their category/tier, and the standard each adopts by reference. A
 
 ✚ = introduces a new category (Hardware, Facility), anchored to Redfish per §2.
 
-Authoring follows the registry process (`governance/registry-governance.md` §3, `CONTRIBUTING.md`):
+Authoring follows the registry process (`docs/spec/governance/registry-governance.md` §3, `CONTRIBUTING.md`):
 each type validates against the meta-schema (`tools/validate.py`), ships ≥1 worked example, records
 `adopts[]` provenance + license, and starts at `status: developing` until promoted.
 

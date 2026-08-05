@@ -4,7 +4,7 @@
 > *example* implementation, cited to show UDLM holds outside infrastructure (see `GLOSSARY.md`).
 >
 > **Outcome (2026-07):** the recommendation landed — the Knowledge entity-type family now exists
-> (`entities/knowledge-family.md`, five types in the registry). §5's type-gap and the "Composite"
+> (`docs/spec/foundations/knowledge-family.md`, five types in the registry). §5's type-gap and the "Composite"
 > primary-type framing are historical (the shape is derived, ADR-027 addendum).
 
 _An effectiveness analysis: does UDLM's "implementation-neutral universal substrate" claim

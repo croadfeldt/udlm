@@ -6,7 +6,7 @@ the three consumers that need one vocabulary: a UDLM registry type (intent), est
 real hosts (realized), and day-0 provisioning input. **Method:** survey of the official specs/schemas of
 five primary candidates and six secondary prior-art systems, scored against the coverage the registry is
 missing and the adoption tests in
-[`../../design-principles/adopted-standards.md`](../../design-principles/adopted-standards.md)
+[`../spec/principles/adopted-standards.md`](../spec/principles/adopted-standards.md)
 (disposition, tier, net-negative, license compatibility). Registry baseline this must not duplicate:
 `Storage.Pool` already owns RAID/pool topology (recursive `vdevs`, `pool_kind` zfs/md/hardware_raid/lvm/btrfs,
 Swordfish `RAIDType`); `Hardware.StorageDevice` already owns drives and has `device_class: partition` +

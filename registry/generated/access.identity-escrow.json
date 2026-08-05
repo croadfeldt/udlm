@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b",
   "resource_type": "Access.IdentityEscrow",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Identity Escrow",
-    "description": "The contract for identity state that must SURVIVE its host entity's re-realization: which items are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when it is re-realized. Each item wraps a Security.CredentialRef (custody stays with the escrow store as issuer; the value never enters the model); the escrow binds to the host's entity UUID (which re-provisioning preserves), never to a realization generation. The escrowed_items list is the exhaustive survival allowlist: anything not listed does not survive the wipe default. Normative rules: ESC-* (entities/identity-escrow.md). Demand case: a field-device fleet adopter whose devices are re-imaged on a fixed cadence but must keep their remote-access and application identities.",
+    "description": "The contract for identity state that must SURVIVE its host entity's re-realization: which items are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when it is re-realized. Each item wraps a Security.CredentialRef (custody stays with the escrow store as issuer; the value never enters the model); the escrow binds to the host's entity UUID (which re-provisioning preserves), never to a realization generation. The escrowed_items list is the exhaustive survival allowlist: anything not listed does not survive the wipe default. Normative rules: ESC-* (docs/spec/foundations/identity-escrow.md). Demand case: a field-device fleet adopter whose devices are re-imaged on a fixed cadence but must keep their remote-access and application identities.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-25T00:00:00Z",
     "converted_from": "flat spec Access.IdentityEscrow@0.1.1 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
@@ -23,7 +23,7 @@
         },
         {
           "class": "Access.IdentityEscrow",
-          "version": "0.2.0",
+          "version": "0.2.1",
           "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b"
         }
       ]

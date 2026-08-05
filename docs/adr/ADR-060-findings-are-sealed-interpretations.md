@@ -15,7 +15,7 @@ lifecycle**, never as a field on the working record.
   change seal cites its causal pathway anchor (`pathway_ref` — request chain, discovery run, or
   provider event), and a write without a citable anchor is refused. This ADR sits entirely on
   those decisions.
-- **[`foundations/four-states.md`](../../foundations/four-states.md)**: comparing the four
+- **[`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md)**: comparing the four
   states continuously is how the implementation detects drift — the comparison loop this ADR
   gives an output shape.
 - **ADR-052** (intent fulfillment / convergence): the declared convergence window and derived

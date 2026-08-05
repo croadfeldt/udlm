@@ -1,9 +1,9 @@
 # UDLM ADR-025: Resource references — AEP-124 resource association, resolved at reserve
 
 **Status:** Proposed (2026-07-17)
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Adopts (T5):** **AEP-124 Resource association** (aep.dev/124) — reference another resource by its **resource path** (AEP-122); Apache-2.0, `compatible-reference`. UDLM adopts the AEP path-reference convention and adds only what AEP does not model: a resolved `target_uuid` as provenance (see §5). Concrete lineage: the Kubernetes `ObjectReference`/`ownerReference` idiom AEP generalizes (already cited by ADR-012).
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data references — the *sibling* mechanism for reference-**data**, deliberately uuid-authoritative; this ADR does **not** change it); `registry/common-elements.md` §2.5 `Reference` (the resource-reference shape this ADR gives resolution semantics); `contracts/identifier-scheme.md` (handles + uuids); ADR-011 (validate-and-reserve — the execution-time gate this leans on); ADR-024 (post-placement enrichment fills provider-required inputs — many of which are resource references); `foundations/four-states.md` (Intent→Requested→Realized→Discovered); the four-state model this maps onto.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data references — the *sibling* mechanism for reference-**data**, deliberately uuid-authoritative; this ADR does **not** change it); `registry/common-elements.md` §2.5 `Reference` (the resource-reference shape this ADR gives resolution semantics); `docs/spec/contracts/identifier-scheme.md` (handles + uuids); ADR-011 (validate-and-reserve — the execution-time gate this leans on); ADR-024 (post-placement enrichment fills provider-required inputs — many of which are resource references); `docs/spec/foundations/four-states.md` (Intent→Requested→Realized→Discovered); the four-state model this maps onto.
 
 ## Context
 

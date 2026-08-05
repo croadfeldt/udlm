@@ -6,7 +6,7 @@
 
 ## Access
 
-### Access.IdentityEscrow (0.2.0)
+### Access.IdentityEscrow (0.2.1)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
 
@@ -71,7 +71,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## Compute
 
-### Compute.BareMetalHost (0.9.0)
+### Compute.BareMetalHost (0.9.1)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -576,7 +576,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.4.0)
+### Network.VLAN (0.4.1)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 
@@ -596,7 +596,7 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 - Network.Switch — the fabric carrying the segment.
 - Network.Gateway — edge segments each ride a referenced VLAN.
 
-### Network.VirtualNetwork (0.8.0)
+### Network.VirtualNetwork (0.8.1)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 
@@ -737,7 +737,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## Security
 
-### Security.CredentialRef (0.4.0)
+### Security.CredentialRef (0.4.1)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -972,7 +972,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.3.0)
+### TaxonomyTerm (0.3.1)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 

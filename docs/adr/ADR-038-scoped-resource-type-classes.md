@@ -360,7 +360,7 @@ your *own* classes under your *own* authority is different, and allowed** — `a
 distinct identity in the org's namespace, canon untouched, portability authority-scoped, promotable to canon when
 proven; it runs through **DCM's policy/profile class-authoring feature** and the one contribution lifecycle (see
 *Authorship & domain*). The line is **authority, not permission**: standardize a *shared* class → Policy/Profile;
-author a type the library lacks → your own class under your authority. **Org = a governance/tenancy overlay on the
+author a type the library lacks → your own class under your authority. **Org = a docs/spec/governance/tenancy overlay on the
 shared classes and, where the library falls short, an authority-scoped author of its own.** Best practice for that
 authoring: `docs/design/custom-classes-best-practice.md`.
 
@@ -398,7 +398,7 @@ by the test, default to the cheaper axis.
 The Class hierarchy is **inheritance (*is-a*)** — vertical specialization of *one* resource's definition
 (`Compute.VM extends Compute`). A **multi-resource is composition (*has-a*)** — horizontal orchestration of
 *several* constituents through one request. They are **orthogonal**, both needed, and the model already carries
-composition as the **Composite Service** (`entities/composite-service-model.md`, the `catalog-item`): multiple
+composition as the **Composite Service** (`docs/spec/foundations/composite-service-model.md`, the `catalog-item`): multiple
 constituent types + declared dependencies + T4 bindings + failure rollup, delivered through a **single request**
 that produces a **Composite Entity — one UUID** across all four states, fulfilled by ordinary Service Providers
 (no meta-provider). `entity_type` marks the axis: **`single`** = one constituent, **`multi`** = a composite.

@@ -2,8 +2,8 @@
 
 **Status:** Proposed
 **Date:** 2026-07-14
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `foundations/layering-and-versioning.md` §3.7 (Reference Data Layers — the shared, governed datasets a reference points at; DCM ADR-012 is the assembly model); ADR-008 (the UDLM/DCM boundary this decision splits along); `docs/research/minimal-custom-surface-and-graph-resilience.md` findings #1/#2 (uid-authoritative + advisory-name; deterministic invalid-edge detection — the direct grounding); `registry/layer.schema.json` + `registry/data-reference.schema.json` (the shapes this fixes); `registry/tools/validate.py` `check_data_references` (the enforcement).
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/layering-and-versioning.md` §3.7 (Reference Data Layers — the shared, governed datasets a reference points at; DCM ADR-012 is the assembly model); ADR-008 (the UDLM/DCM boundary this decision splits along); `docs/research/minimal-custom-surface-and-graph-resilience.md` findings #1/#2 (uid-authoritative + advisory-name; deterministic invalid-edge detection — the direct grounding); `registry/layer.schema.json` + `registry/data-reference.schema.json` (the shapes this fixes); `registry/tools/validate.py` `check_data_references` (the enforcement).
 
 ## Context
 

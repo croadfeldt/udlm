@@ -2,8 +2,8 @@
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
 **Date:** 2026-07-15
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model — distinct sets, not levels); ADR-020 (prod — the production floor this contains); ADR-005 (attested time); ADR-022/DCM (accreditation-gated admission); `observability/universal-audit.md` §8 (Merkle transparency, RFC 9162); `governance/accreditation-and-authorization-matrix.md` (two-gate verify-then-appraise); `contracts/policy-contract.md` §18 (override-approval); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-fsi.yaml`
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-007 (profile model — distinct sets, not levels); ADR-020 (prod — the production floor this contains); ADR-005 (attested time); ADR-022/DCM (accreditation-gated admission); `docs/spec/contracts/universal-audit.md` §8 (Merkle transparency, RFC 9162); `docs/spec/governance/accreditation-and-authorization-matrix.md` (two-gate verify-then-appraise); `docs/spec/contracts/policy-contract.md` §18 (override-approval); ADR-017 (per-profile-ADR template); the record: `registry/instances/profile-fsi.yaml`
 
 > Owns the *rationale* for `fsi`; the floor data is the record's (single-source, SPEC-DESIGN §33).
 

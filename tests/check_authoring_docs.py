@@ -3,8 +3,8 @@
 at — a schema, a gate, a worked example, a sibling guide — must exist. A guide that references a deleted
 gate or a renamed schema is worse than none, because a newcomer follows it verbatim.
 
-Scope: the distribution guides — docs/working-with-udlm.md, docs/authoring/**, and the role guides
-(docs/reviewing.md, docs/consuming.md, docs/contributing-guide.md). For each, this checks:
+Scope: the distribution guides — docs/guides/working-with-udlm.md, docs/authoring/**, and the role guides
+(docs/guides/reviewing.md, docs/guides/consuming.md, docs/guides/contributing-guide.md). For each, this checks:
   - every Markdown link `[text](target)` to a relative path resolves to a real file;
   - every backticked repo path (registry/…, tests/…, scripts/…, use-cases/…, docs/…, .github/…) exists
     (globs and pure directory mentions are allowed — a dir must still exist).
@@ -19,11 +19,11 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 GUIDE_GLOBS = [
-    "docs/working-with-udlm.md",
+    "docs/guides/working-with-udlm.md",
     "docs/authoring/*.md",
-    "docs/reviewing.md",
-    "docs/consuming.md",
-    "docs/contributing-guide.md",
+    "docs/guides/reviewing.md",
+    "docs/guides/consuming.md",
+    "docs/guides/contributing-guide.md",
 ]
 REPO_DIRS = ("registry/", "tests/", "scripts/", "use-cases/", "docs/", ".github/")
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
