@@ -100,7 +100,7 @@ union, gives you:
 4. **A strict Data⇄Policy split** — the model carries only nouns (records, edges, markers, pins); every
    verb (transform, evaluate, enforce, resolve) is DCM/Policy. Most tools embed logic in the artifact
    (HCL functions, Composition patches, CEL); UDLM deliberately does not, which is what makes the data
-   tamper-evidently auditable and portable. (registry-design-notes §6a.)
+   tamper-evidently auditable and portable. (decision trail retired to git history 2026-08-04.)
 
 If a reviewer accepts (1)+(2) as real and valuable, the model earns its existence; (3)+(4) are *how*,
 not *why*. If they don't, the honest path is §9.
