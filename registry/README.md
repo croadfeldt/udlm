@@ -1,62 +1,49 @@
 # UDLM Resource Type Registry
 
-The registry is the concrete instantiation of UDLM's **Resource Type Specifications** — the
-versioned, formal definitions that the spec (prose, in `..`) describes but does not, until now,
-contain. Each entry is a vendor-neutral definition of a resource type's field schema, constraints,
-typed outputs, lifecycle, and allowed relationships. Providers implement against a version; catalog
-items and constraint profiles project over them.
+The registry is the machine surface of the spec: the versioned, formal definitions of every
+resource type, and the schemas every record kind validates against. **Classes are the one
+authored surface** (`classes/` — ADR-061's hierarchy); the flat specs consumers read are
+**generated projections** (`generated/`, never edited by hand). Providers implement against a
+served version; catalog items and constraint profiles project over them.
 
 ## Layout
 ```
 registry/
-  resource-type-spec.schema.json   # the meta-schema every entry MUST validate against
-  VERSIONING.md                    # the two-axis versioning + compatibility policy
-  realized-entity.schema.json      # the INSTANCE meta-schema (four states + provenance + ownership)
-  regeneration-manifest.schema.json   # the change record a class change emits (blast radius + consumer debt)
-  finding-routing-record.schema.json  # an estate's contradicted compatibility claim, routed upstream with the diff
-  resource-types/                  # TYPE definitions — one file per entity type, JSON or YAML
-    compute.vm.json   #   Resource family (Category.Type names)
-    compute.cluster.json
-    data.database.json
-    network.ip-address.json
-    compute.container.yaml          # ← YAML; semantically identical, same meta-schema
-    capability.json                 # ← Knowledge family (single-segment name; curation lifecycle)
-  instances/                       # INSTANCE records (realized entities) — e.g. orders-db.json
-  provider-adopted-standards.schema.json  # provider support-matrix (T5: which external-standard versions a provider serves)
-  providers/                       # provider support matrices — e.g. cost-sp.json (FOCUS/OpenCost)
-  tools/
-    validate.py                    # valid-by-construction: types + instances + provider matrices
-    compat-check.py                # classify a version delta + enforce the declared bump
+  class.schema.json                # the CLASS meta-schema — classes/ is the authored surface
+  resource-type-spec.schema.json   # the flat-spec meta-schema generated/ validates against
+  classes/<family>/…               # ALL definitions (ADR-061: base = dir + _base.yaml;
+                                   #   type/provider = leaf file until it gains children)
+  generated/                       # the SERVED flat specs — compiled, one per type, never authored
+  instances/                       # worked INSTANCE records (realized entities, policies, layers, …)
+  realized-entity.schema.json      # the instance meta-schema (four states + ownership)
+  VERSIONING.md                    # two-axis versioning + the publish law
+  pin-manifest.json                # the digest referrer behind the publish law (append-only)
+  rule-id-registry.yaml            # every normative rule family and its one home file
+  standards-adoption-register.md   # every adoption decision (what/why/license) — ADOPT-001
+  standards-catalog.md             # conformance obligations per external standard
+  tools/                           # generate_class_specs, validate, compat-check, pin manifest, …
 ```
 
-## Design, and how it maps to UDLM
-- **`spec` is desired state, `outputs` is observed state.** A type's `spec` field schema is the
-  **Intent/Requested** contract a consumer fills; its typed `outputs` are the **Realized/Discovered**
-  values a provider publishes. This is the same desired-vs-observed split Kubernetes enforces with
-  `spec`/`status` — here it falls straight out of UDLM's four states.
-- **`conforms_to` + `version` = two version axes.** `conforms_to: udlm/0.1` binds the entry to a SPEC
-  version (its `apiVersion`); `version` is the entry's own `MAJOR.MINOR.REVISION`. See `VERSIONING.md`.
-- **Relationships are first-class** (`depends_on`, `binds_to`, …) — the substrate the composite model
-  (`../docs/spec/foundations/composite-service-model.md`) builds its dependency DAG from.
-- **JSON and YAML are both native.** The normative *model* is JSON Schema 2020-12; serialization is
-  not privileged. Author in whichever you prefer — the tooling loads both.
-
-## Two families
-The meta-schema covers **both entity-type families** (`docs/spec/foundations/entity-type-families.md`):
-**Resource** (provisioned by a provider — `Category.Type` names, four-state lifecycle archetype
-`provisioning`) and **Knowledge** (curated, never provider-realized — single-segment names like
-`Capability`, lifecycle archetype `curation`). `family` + `entity_type` are family-conditional in the
-meta-schema; the `resource-types/` directory holds both (the dir name predates the Knowledge family).
-`capability.json` is the worked Knowledge example (anchored by DAV, `docs/spec/foundations/knowledge-family.md`).
+## How it maps to UDLM
+- **`spec` is desired state, `outputs` is observed state** — the Intent/Requested contract a
+  consumer fills vs the Realized/Discovered values a provider publishes; the Kubernetes
+  `spec`/`status` split, falling straight out of the four states.
+- **`conforms_to` + `version` = two version axes** (`VERSIONING.md`): the SPEC binding and the
+  entry's own `MAJOR.MINOR.REVISION`, under the publish law — a published (identity, version)
+  pair is immutable.
+- **JSON and YAML are both native.** Classes are authored in YAML; every served spec is JSON —
+  the same document either way (the normative model is JSON Schema 2020-12).
 
 ## Adding a resource type
-1. Create `resource-types/<name>.{json,yaml}` — `<category>.<type>` (Resource) or `<type>` (Knowledge).
-2. Fill the required fields (`conforms_to`, `uuid` [new UUIDv4], `resource_type`, `version`, `family`,
-   `entity_type`, `portability`, `status`, `metadata`, `spec`, `outputs`).
-3. `python3 tools/validate.py` — must pass (valid-by-construction).
-4. For a change to an existing type, `python3 tools/compat-check.py <old> <new>` — the declared
-   `version` bump must be ≥ the required bump.
+Author a **class**, not a flat file — the full procedure is
+[`docs/authoring/scoped-class.md`](../docs/authoring/scoped-class.md) (which gates enforce what),
+the layout grammar is [ADR-061](../docs/adr/ADR-061-class-directory-hierarchy.md) (path = verified
+projection of family + name segments), and the rules every definition must satisfy are
+[`SPEC-DESIGN-REQUIREMENTS.md`](SPEC-DESIGN-REQUIREMENTS.md). In one breath: create the class
+YAML under `classes/<family>/…`, fill `adopts[]` with source + license, reuse common-elements,
+ship a `spec.examples` entry, run `python3 registry/tools/generate_class_specs.py`, and commit
+the generated spec with it — `bash scripts/signoff.sh` runs every gate that will judge it.
 
 ## Conformance
-`tools/validate.py` is the gate; wire it into CI. An entry that does not validate against the
-meta-schema is not a conformant Resource Type Specification.
+`registry/tools/validate.py` + the CI suite are the gate: a definition that does not validate,
+compile, and pass the class gates is not a conformant Resource Type Specification.
