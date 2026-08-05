@@ -2,7 +2,7 @@ uuid: uc-48f0cc96-35a4-42a0-8384-7e5dfc56c9ce
 handle: compute/vm-provision-provider-failure-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Compute.VirtualMachine that validates and dispatches, but
+  description: 'A platform engineer requests a Compute.VM that validates and dispatches, but
     the selected compute provider fails mid-provision — the backend errors after accepting the work, before
     the VM reaches Realized. Success for this use case is that the failure is SURFACED, not swallowed: the
     request must be driven to a typed terminal failure state with a resolution the requester can act on,

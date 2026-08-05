@@ -20,7 +20,7 @@
         "display_name": "Compute.VM.OCPVirt Provider Class (example)",
         "maintainer": "UDLM maintainers",
         "origination_timestamp": "2026-07-30T18:30:00Z",
-        "description": "EXAMPLE Provider Class — not canonical. Per the ADR-038 authorship ruling, Provider Classes are provider-authored and reach canonical standing through the DCM contribution lifecycle; this file demonstrates the grammar for the class named illustratively throughout ADR-038. OpenShift Virtualization (KubeVirt) Provider Class for the Compute.VM Type Class. Carries only what is meaningful when the VM lands on this provider: the target namespace (the canonical ADR-016 example of a provider-required field that lives off the portable type), instancetype/preference selection, run and eviction strategy, storage-class and boot-source mechanics, secondary-network attachments, and the GPU-passthrough / SR-IOV elements the Compute.VirtualMachine flat spec explicitly parks for the Provider tier. Elements are proposed pending a grounding pass against a live VirtualMachine custom resource (deferred — OpenShift Virtualization not currently installed in the reference estate)."
+        "description": "EXAMPLE Provider Class — not canonical. Per the ADR-038 authorship ruling, Provider Classes are provider-authored and reach canonical standing through the DCM contribution lifecycle; this file demonstrates the grammar for the class named illustratively throughout ADR-038. OpenShift Virtualization (KubeVirt) Provider Class for the Compute.VM Type Class. Carries only what is meaningful when the VM lands on this provider: the target namespace (the canonical ADR-016 example of a provider-required field that lives off the portable type), instancetype/preference selection, run and eviction strategy, storage-class and boot-source mechanics, secondary-network attachments, and the GPU-passthrough / SR-IOV elements the Compute.VM flat spec explicitly parks for the Provider tier. Elements are proposed pending a grounding pass against a live VirtualMachine custom resource (deferred — OpenShift Virtualization not currently installed in the reference estate)."
       },
       "elements": [
         {
@@ -126,7 +126,7 @@
           "scope": "Compute.VM.OCPVirt",
           "optional": true,
           "state": "proposed",
-          "description": "Host GPU devices passed through to the guest, by permitted device name. This is one of the two elements the Compute.VirtualMachine flat spec deliberately excludes as Provider-Class surface (ADR-038).",
+          "description": "Host GPU devices passed through to the guest, by permitted device name. This is one of the two elements the Compute.VM flat spec deliberately excludes as Provider-Class surface (ADR-038).",
           "schema": {
             "type": "array",
             "items": {
@@ -139,7 +139,7 @@
           "scope": "Compute.VM.OCPVirt",
           "optional": true,
           "state": "proposed",
-          "description": "SR-IOV network references for direct virtual-function interfaces. The second element the Compute.VirtualMachine flat spec deliberately excludes as Provider-Class surface (ADR-038).",
+          "description": "SR-IOV network references for direct virtual-function interfaces. The second element the Compute.VM flat spec deliberately excludes as Provider-Class surface (ADR-038).",
           "schema": {
             "type": "array",
             "items": {
@@ -380,6 +380,14 @@
     "constituents": {
       "$ref": "catalog-item.schema.json#/properties/constituents",
       "description": "COMPOSITE DEFINITION (the combining artifact, maintainer ruling 2026-08-03): a class MAY compose other classes — items ARE the catalog item's constituents shape ($ref — one shape, one semantic checker: component_id uniqueness, sibling resolution, acyclic depends_on, binding⊆depends_on). Constituent resource_type references resolve in the one dotted namespace (a class or a flat type during migration). Permitted on type and provider tiers (a provider-registered composite is §8.3's case), never base. Constituents do NOT enter the compiled flat spec — a composite EXPANDS at request time; the catalog item is a projection rendered implementation-side (DCM, per-org curation + tenancy), never authored beside the class (one declaration, two projections: registration presents it, the catalog offers it)."
+    },
+    "spec_examples": {
+      "type": "array",
+      "description": "Worked example payload(s) for the compiled spec (rule-36 / ADR-055: every type ships one, in-spec). Type tier only, like context. Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per ADR-055/051."
+    },
+    "spec_constraints": {
+      "type": "object",
+      "description": "SPEC-LEVEL keywords merged verbatim into the compiled spec object, beyond the element-derived properties/required — the home for CROSS-ELEMENT declarative constraints (oneOf / dependentSchemas / if-then, SPEC-DESIGN §16 'structural schema'), a spec-level description, or an additionalProperties override. Type tier only, like context. Discovered porting Compute.VM: `oneOf: [[instance_size],[cpu,memory]]` is real spec content no per-element schema can express."
     }
   },
   "allOf": [
@@ -446,6 +454,38 @@
         "not": {
           "required": [
             "constituents"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "class": {
+            "const": "type"
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "spec_examples"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "class": {
+            "const": "type"
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "spec_constraints"
           ]
         }
       }

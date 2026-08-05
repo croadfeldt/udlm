@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.2.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.Processor/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "418c9acb-3cd8-4e73-817d-8be2bdf13442",
   "resource_type": "Hardware.Processor",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "family": "Resource",
   "portability": "portable",
   "status": "active",
@@ -26,7 +26,7 @@
     ],
     "works_with": [
       "Compute.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.",
-      "Compute.VirtualMachine — the guest a virtual CPU is presented to."
+      "Compute.VM — the guest a virtual CPU is presented to."
     ]
   },
   "spec": {
@@ -123,7 +123,7 @@
       "edge_type": "contained_by"
     },
     {
-      "target": "Compute.VirtualMachine",
+      "target": "Compute.VM",
       "cardinality": "0..1",
       "name": "guest",
       "description": "For device_class=virtual, the guest the vCPU is presented to.",

@@ -62,7 +62,9 @@ def _validator_for(spec, spec_path):
 
 def resource_type_specs():
     out = []
-    for p in glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True):
+    roots = [os.path.join(ROOT, "registry", "resource-types", "**", "*"),
+             os.path.join(ROOT, "registry", "generated", "*")]
+    for p in [q for pat in roots for q in glob.glob(pat, recursive=True)]:
         if p.endswith((".json", ".yaml", ".yml")):
             d = load(p)
             if d.get("resource_type") and "record_type" not in d and isinstance(d.get("spec"), dict):

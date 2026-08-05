@@ -55,7 +55,8 @@ UNCONSUMED_HEADER = """\
 def load_registry_versions():
     """resource_type -> current version, from the type specs."""
     versions = {}
-    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True)):
+    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True)
+                       + glob.glob(os.path.join(ROOT, "registry", "generated", "*.json"))):
         if not path.endswith((".json", ".yaml", ".yml")):
             continue
         with open(path, encoding="utf-8") as fh:
@@ -107,7 +108,7 @@ def check_manifest(rel, doc, versions, fails):
     for entry in doc.get("consumes") or []:
         rt, noted = entry.get("resource_type"), entry.get("noted_version")
         if rt not in versions:
-            fails.append(f"{rel}: unknown resource_type {rt!r} — not in registry/resource-types/ "
+            fails.append(f"{rel}: unknown resource_type {rt!r} — not in registry/resource-types/ or registry/generated/ "
                          f"(a rename/removal breaking this consumer, or a typo)")
             continue
         consumed.add(rt)

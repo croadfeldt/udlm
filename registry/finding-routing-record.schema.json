@@ -112,7 +112,7 @@
                 "properties": {
                   "handle": {
                     "type": "string",
-                    "description": "The type handle whose declared output differed (e.g. Compute.VirtualMachine)."
+                    "description": "The type handle whose declared output differed (e.g. Compute.VM)."
                   },
                   "output": {
                     "type": "string",

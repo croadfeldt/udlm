@@ -20,7 +20,7 @@ over-building comes from crossing this line — see `sovereignty` / `policy` in 
 profile; declare the surfaces you implement and the types + versions you support
 (`Compute.VirtualMachine@<version>`). Register per [`provider-contract.md`](../contracts/provider-contract.md) §2.
 
-**1 · Read the type spec** — [`registry/resource-types/compute/compute.virtual-machine.json`](../registry/resource-types/compute/compute.virtual-machine.json).
+**1 · Read the type spec** — [`registry/resource-types/compute/Compute_VM.json (generated — authored in registry/classes/compute.vm.yaml)`](../registry/generated/Compute_VM.json).
 Its fields, typed `outputs`, edges, and `$id`/version are the **exact contract you validate against** — resolvable
 offline, no runtime late-binding (VERSIONING publish law; P4 offline closure).
 
@@ -62,7 +62,7 @@ evidence; DCM's Matrix decides.
 
 Run this checklist against the cited contracts. Every box should be checkable **from the spec alone**:
 
-- [ ] Read `compute.virtual-machine.json` **offline** and know every field's shape and every typed output.
+- [ ] Read `Compute_VM.json (generated — authored in registry/classes/compute.vm.yaml)` **offline** and know every field's shape and every typed output.
 - [ ] Naturalize using **only execution-role** data (data-roles).
 - [ ] Reserve returning a **hold + computed facts** without building anything (four-states §2.3a).
 - [ ] Commit **only** on the barrier signal.

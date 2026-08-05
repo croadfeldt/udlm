@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc",
   "resource_type": "Network.AddressService",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -25,7 +25,7 @@
       "A single address — Network.IPAddress."
     ],
     "works_with": [
-      "Compute.BareMetalHost / Compute.VirtualMachine — where the service runs; it stops before its host.",
+      "Compute.BareMetalHost / Compute.VM — where the service runs; it stops before its host.",
       "Network.DHCPScope — the per-subnet config this service serves.",
       "Network.DNSZone — the zones it answers for."
     ]
@@ -79,7 +79,7 @@
     {
       "edge_type": "depends_on",
       "name": "served_by",
-      "target": "Compute.VirtualMachine",
+      "target": "Compute.VM",
       "cardinality": "0..n",
       "description": "served_by — a VM running this DHCP/DNS provider. (One of BareMetalHost / VirtualMachine per instance.)"
     }

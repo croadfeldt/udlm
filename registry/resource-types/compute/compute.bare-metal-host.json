@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
       "you need host provisioning to be replayable intent — image, root device, boot MAC, power target — so a lost host rebuilds from the estate (the bare-metal leg of rehydration)"
     ],
     "not_for": [
-      "A virtual machine — that is Compute.VirtualMachine; a host is hardware you can touch.",
+      "A virtual machine — that is Compute.VM; a host is hardware you can touch.",
       "The host's out-of-band management controller — that is Hardware.BMC, its own record with its own address and power-control surface.",
       "Individual NICs, GPUs, or drives inside the host — those are Hardware.NetworkInterface / Hardware.GraphicsProcessor / Hardware.StorageDevice records contained by the host."
     ],
@@ -30,7 +30,7 @@
       "Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.",
       "Hardware.BiosProfile — the firmware configuration the host converges to.",
       "Hardware.NetworkInterface — the host's NICs, modeled as contained components.",
-      "Compute.VirtualMachine — the guests the host runs."
+      "Compute.VM — the guests the host runs."
     ]
   },
   "spec": {

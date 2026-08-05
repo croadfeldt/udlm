@@ -58,7 +58,7 @@ TYPES_DIR = ROOT / "resource-types"
 
 # Candidate strings tried against `pattern` constraints, most-common shapes first.
 PATTERN_CANDIDATES = [
-    "example", "example-1", "example.one", "cexample/example", "Compute.VirtualMachine",
+    "example", "example-1", "example.one", "cexample/example", "Compute.VM",
     "1.0.0", "0.1.0", "192.0.2.1", "192.0.2.0/24", "00:11:22:33:44:55",
     "123e4567-e89b-42d3-a456-426614174000", "2026-01-01T00:00:00Z", "2026-01-01",
     "example.example.com", "https://example.example.com/x", "sha256:" + "0" * 64,

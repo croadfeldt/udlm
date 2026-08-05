@@ -20,7 +20,7 @@ CASES = [
     # address                              owning_class          inherited
     # --- dot / compact notation ---
     ("Compute#cpu",                        "Compute",            False),   # declared on the Base itself
-    ("Compute.VM#cpu",                     "Compute",            True),    # inherited from Base
+    ("Compute.VM#cpu",                     "Compute.VM",         False),   # redeclared-tightened at VM scope (published bytes)
     ("Compute.VM#firmware",                "Compute.VM",         False),   # declared on the Type
     ("Compute.VM#storage_tier",            "Compute",            True),    # governed-vocab element, inherited
     ("Process.OSPatch#idempotency",        "Process",            True),    # inherited from Process Base
@@ -28,7 +28,7 @@ CASES = [
     ("Process.OSPatch.EngineBlue#definition_ref", "Process.OSPatch.EngineBlue", False),  # provider-scope
     ("Process.OSPatch.EngineBlue#idempotency",    "Process",     True),    # inherited two levels up
     # --- URL notation (the same coordinates, ADR-038's preferred form) ---
-    ("https://udlm.dev/class/Compute/VM#cpu",              "Compute",         True),   # local URL
+    ("https://udlm.dev/class/Compute/VM#cpu",              "Compute.VM",      False),  # local URL
     ("https://state.mn/Compute/VM#firmware",              "Compute.VM",      False),  # federated authority
     ("https://udlm.dev/registry/udlm/0.1/class/Process/OSPatch#idempotency", "Process", True),  # $id-scaffolded URL
     ("https://peer.dcm.east/Process/OSPatch/EngineBlue#definition_ref", "Process.OSPatch.EngineBlue", False),
