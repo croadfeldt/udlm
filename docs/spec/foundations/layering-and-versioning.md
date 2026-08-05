@@ -1070,7 +1070,7 @@ When two layers at the same precedence level declare conflicting values for the 
 
 ## 5a. Field Override Control
 
-Field override control is the mechanism by which DCM governs **who can change what, under what conditions**, across the layer precedence chain. It was present in the original data model rules as "override preference" metadata on fields — this section formalizes that concept as a graduated model that is **simple by default and powerful when needed**.
+Field override control is the mechanism by which DCM governs **who can change what, under what conditions**, across the layer precedence chain — a graduated model that is **simple by default and powerful when needed**.
 
 **Design Principle:** A field with no override declaration is fully overridable by anyone. Restrictions are always opt-in. The model has three levels — you use only the level you need. Levels 1 and 2 cover the vast majority of real-world cases. Level 3 exists for fields that genuinely require nuanced, actor-specific governance.
 
