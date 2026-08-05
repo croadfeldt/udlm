@@ -18,6 +18,13 @@ strictness, thresholds, and automation, never existence.
 
 ## homelab — the single-operator on-ramp (ADR-017)
 
+**Floor (the guaranteed minimum):** the `dev`-sized substrate — structural validation,
+single-tenant ownership, resolved-profile evaluation, append-only audit, four-state tracking.
+**Pre-tuned by `operational_config`, not mandated:** drift / recovery / discovery **on** at low
+ceremony; governance-matrix **advisory**; approval ladder **none**; merkle-transparency audit
+and attestation **off**. Nothing is disabled — a floor is a minimum, not a filter (ADR-007 §2);
+making one of these floor-required is the custom-profile fork path.
+
 | Criterion | |
 |---|---|
 | **Persona** | one operator running a real estate for themselves |
@@ -30,6 +37,13 @@ strictness, thresholds, and automation, never existence.
 the adoption on-ramp that later grows into `standard`. **Not** for teams or anything customer-facing.
 
 ## dev — the evaluation & co-engineering target (ADR-018; the shipped default)
+
+**Floor:** the smallest set that still runs the release use cases — structural validation,
+single-tenant ownership, resolved-profile evaluation, append-only audit, four-state tracking,
+the three stores, and causal-only time. No governance-matrix, attestation, or drift/recovery
+mandate — those are exercised by the higher profiles; validating the UCs against `dev`
+validates them for every profile (the ADR-007 invariant: identical architecture and wire
+contracts, only the required floor differs).
 
 | Criterion | |
 |---|---|
@@ -47,6 +61,12 @@ prod, dev is a scratchpad. That axis is why both exist.
 
 ## standard — baseline production (ADR-019)
 
+**Floor:** `dev`'s **plus** the three things that separate "runs" from "operates" —
+`policy/governance-matrix` (boundary enforcement on every DCM→Provider crossing),
+`policy/recovery` (partial-implementation and timeout handling resolve deterministically), and
+`policy/drift-reconciliation` + `discovery/scheduled` (drift detected and remediated on a
+cadence). `standard ⊃ dev` — profiles compare by floor-containment (profile-resolution §2).
+
 | Criterion | |
 |---|---|
 | **Persona** | a platform team running shared production for internal consumers |
@@ -58,6 +78,12 @@ prod, dev is a scratchpad. That axis is why both exist.
 **Expected use cases:** the default choice for real workloads without a regulatory driver.
 
 ## prod — hardened production (ADR-020)
+
+**Floor:** `standard`'s **plus** blast-radius-aware change control and bounded execution —
+`policy/blast-radius-impact` (changes gated against what they actually reach),
+`policy/dual-approval-destructive` (a human gate on irreversible actions), and
+`recovery/bounded-convergence` + tighter dispatch timeouts (retries bounded with a
+terminal-failure surface, so convergence cannot loop indefinitely). `prod ⊃ standard ⊃ dev`.
 
 | Criterion | |
 |---|---|
@@ -71,6 +97,13 @@ prod, dev is a scratchpad. That axis is why both exist.
 
 ## fsi — regulated financial services (ADR-021)
 
+**Floor:** `prod`'s **plus** the compliance dimension — tamper-evident Merkle-transparency
+audit with inclusion/consistency proofs (universal-audit §8, RFC 9162); attestation-gated,
+**verifiable** provider admission (the accreditation's proof chains to a trust anchor and is
+verified before scope is appraised — the two-gate, matrix §3.7/§3.8); governance-matrix on
+**every** lifecycle operation; the time-bounded override-approval workflow; attested time; and
+regulatory retention. A distinct *kind* of set (a compliance posture), not merely `prod`+more.
+
 | Criterion | |
 |---|---|
 | **Persona** | platform + compliance in a regulated financial institution |
@@ -82,6 +115,13 @@ prod, dev is a scratchpad. That axis is why both exist.
 **Expected use cases:** FSI estates where the regulator reads the audit trail.
 
 ## sovereign — data sovereignty, the strictest floor (ADR-022)
+
+**Floor:** `fsi`'s **plus** the sovereignty dimension — in-boundary key material (audit
+signing keys never leave the boundary, AUD-012); sovereign-only placement with the sovereignty
+declaration **attested**, never self-asserted; data-plane-attested residency (conveyed to and
+attested by the enforcing provider — `enforcement_plane`, matrix §3.8); and sub-processor
+restriction (no unauthorized downstream access). Spatial confinement is its own dimension; a
+stricter need forks `sovereign` as a custom profile.
 
 | Criterion | |
 |---|---|
