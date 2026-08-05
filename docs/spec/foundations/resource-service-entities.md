@@ -214,13 +214,18 @@ REQUESTED → PENDING → PROVISIONING → REALIZED → OPERATIONAL
 
 ## 6. Processes
 
-A **Process** is a distinct class of Resource/Service Entity representing ephemeral execution resources — automation jobs, playbooks, pipelines, workflows, and similar process-oriented resources.
+A **Process** is the family of bounded executions — and every execution is a record of the ONE
+`Job` class (`registry/classes/process/job/_base.yaml`), the runs system-of-record. There are no
+per-domain run subtypes: the domain derives from the definition the Job executes
+(`executes_definition` → an Automation or other definition class; `job.running?family=automation`
+is a filter, never a subtype). Starting an execution is submitting a Job intent; stopping one is
+a change request on the Job.
 
 ### 6.1 Characteristics
 
 - **Ephemeral lifecycle** — exists for the duration of execution, then terminates
 - **No ongoing realized state to manage** — lifecycle ends at COMPLETED or FAILED
-- **Execution record retained permanently** — the record of what the process did is immutable and permanent
+- **The run record is retained permanently** — the Job's receipt (states) and its seals are immutable and permanent
 - **Must belong to a Tenant** — even ephemeral resources must be owned
 - **Must be in the provenance chain** of any Resource/Service Entity they affect
 
@@ -245,38 +250,41 @@ All terminal states are permanent. The execution record is immutable after reach
 
 ### 6.3 Process Data Model
 
-> **Machine-validatable:** the Process execution axis is the `process` block on `registry/realized-entity.schema.json` (execution_state + process_type + affected_entities + execution_record). It is a SEPARATE axis from the four-state `lifecycle_state` (data-model-core §3 [D7]); `registry/tools/validate.py` requires it on `family: Process` instances and forbids it elsewhere.
+> **Machine-validatable:** the Process execution axis is the `process` block on `registry/realized-entity.schema.json` (`execution_state` + `affected_entities`). It is a SEPARATE axis from the four-state `lifecycle_state` (data-model-core §3 [D7]); `registry/tools/validate.py` requires it on `family: Process` instances and forbids it elsewhere. Everything else about a run lives where the Job class puts it: the intent in `spec` fields (`definition_ref`, `parameters`, `targets`, `max_execution_time`, `on_max_exceeded`, `trigger`, `schedule`), the run facts in typed `outputs` (`started_at`, `completed_at`, `results`), the executing provider in the record's provider field, and the authorizing policy in the write's seal (ADR-059 — authorization is a ledger claim, not record state).
 
 ```yaml
-process_entity:
+job_record:
   uuid: <uuid>
   family: Process           # ADR-027 family (bounded execution)
-  # shape (Atomic|Composite) is derived — has_constituents, not a stored field (ADR-027 addendum)
-  process_type: <playbook|workflow|pipeline|automation_job|script|other>
+  resource_type: Job        # the one runs class — no per-domain subtypes
   tenant_uuid: <owning tenant uuid>
   version: <Major.Minor.Revision>
-  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity itself
-  execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>  # per-RUN dynamics — a SEPARATE axis (data-model-core §3 [D7]); each run moves execution_state
-  input_payload:
-    <the Requested State payload that initiated this process>
-  output_payload:
-    <what the process produced — in unified format>
-  affected_entities:
-    - entity_uuid: <uuid of affected Resource/Service Entity>
-      effect_type: <created|modified|decommissioned|read>
-      effect_description: <human-readable description>
-  execution_record:
-    initiated_timestamp: <ISO 8601>
-    completed_timestamp: <ISO 8601 — when terminal state reached>
-    executing_provider_uuid: <uuid of provider that executed>
-    authorized_by_policy_uuid: <uuid of policy that authorized execution>
-  provenance:
-    <standard provenance metadata>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle
+  states:
+    requested:
+      fields:               # the Job intent — immutable [definition_ref, parameters]
+        definition_ref: <Reference to the definition this run executes>
+        parameters: { <validated by the bound definition's inputs_schema> }
+        targets: [ <typed References> ]
+        max_execution_time: PT2H        # mandatory (ENT-002)
+        on_max_exceeded: terminate
+        trigger: schedule
+    realized:
+      outputs:              # run facts are typed outputs of the Job
+        started_at: <ISO 8601>
+        completed_at: <ISO 8601 — when terminal state reached>
+        results: { <validated by the bound definition's outputs_schema> }
+  process:                  # the execution axis — data-model-core [D7]
+    execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>
+    affected_entities:
+      - entity_uuid: <uuid of affected Resource/Service Entity>
+        effect_type: <created|modified|decommissioned|read>
+        effect_description: <human-readable description>
 ```
 
 ### 6.4 Provenance Obligation for Processes
 
-If a Process Resource modifies the state of a Resource/Service Entity, that Entity's realized state provenance MUST reference the Process UUID as the source of the modification. This ensures that every change to an Infrastructure Entity can be traced back to the Process that caused it.
+If a Job modifies the state of a Resource/Service Entity, that Entity's realized-state provenance MUST reference the Job uuid as the source of the modification — every change to an entity is traceable to the run that caused it (this is udlm#330's start/stop model doing provenance work).
 
 ---
 
@@ -641,23 +649,27 @@ The substrate requires that a conformant implementation provide a Lifecycle Cons
 
 ## 9a-process. Lifecycle Time Constraints — Processes
 
-Process Resource entities must declare a maximum execution time. This is a mandatory field — not optional. A Process Resource with no execution time limit creates operational blindness (the implementation cannot know if it is hung).
+Every Job declares a maximum execution time — `max_execution_time` is a mandatory Job element (ENT-002), not optional. A run with no execution bound creates operational blindness (the implementation cannot know if it is hung).
 
 ```yaml
-process_entity:
-  resource_type: Process.AnsiblePlaybook
-  execution_constraints:
-    max_execution_time: PT2H          # mandatory — ISO 8601 duration
-    expected_completion: PT30M        # advisory — when we expect completion
-    grace_period: PT15M               # grace period after max before action fires
-    on_max_exceeded: <escalate|terminate|notify>
-    # escalate:  notify platform admin and provider; human decides
-    # terminate: instruct provider to terminate the process
-    # notify:    notify consumer and wait; no automatic action
-    escalation_recipient: <actor-uuid>
+job_record:
+  resource_type: Job
+  states:
+    requested:
+      fields:
+        max_execution_time: PT2H      # mandatory Job element — ISO 8601 duration (ENT-002)
+        on_max_exceeded: <escalate|terminate|notify>
+        # escalate:  notify platform admin and provider; human decides
+        # terminate: instruct provider to terminate the run
+        # notify:    notify consumer and wait; no automatic action
+  lifecycle_constraints:              # the general structure (§9a.2) carries the soft edges
+    enforcement:
+      warn_before_expiry: PT30M       # advisory expected-completion warning
+      grace_period: PT15M             # grace after max before the action fires
+      on_grace_period_expiry: escalate
 ```
 
-Process execution time is a `lifecycle_constraint.ttl` with `reference_point: realization_timestamp`. The `on_max_exceeded` action maps to the standard `on_expiry` lifecycle action vocabulary.
+`max_execution_time` is the run's `lifecycle_constraint.ttl` with `reference_point: realization_timestamp`; `on_max_exceeded` maps onto the standard `on_expiry` action vocabulary, and the softer edges (warning, grace) ride the general enforcement block (§9a.2).
 
 Profile-governed defaults for `on_max_exceeded` are implementation-configurable; the substrate requires that profiles in the stricter direction (e.g., `fsi`, `sovereign`) default to deterministic termination, while looser profiles MAY default to `notify`.
 
