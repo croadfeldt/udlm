@@ -21,12 +21,11 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # catalog (the reference list). Both are homes; only a standard in neither is a gap.
 ACCOUNTED_DOCS = [
     os.path.join(REPO, "registry", "standards-adoption-register.md"),
-    os.path.join(REPO, "reference", "standards-catalog.md"),
+    os.path.join(REPO, "registry", "standards-catalog.md"),
 ]
 
 # Spec directories whose prose citations are in scope.
-SCOPE = ["contracts", "foundations", "governance", "entities", "observability",
-         "lifecycle", "design-principles", "registry"]
+SCOPE = ["docs/spec", "registry"]
 
 # Match RFC/AEP citations, but NOT when they are the tail of an ADR id (ADR-AEP-001 is an ADR, not a standard).
 CITE_RE = re.compile(r"(?<!ADR-)\b(RFC\s?\d{3,5}|AEP-\d+)\b")
