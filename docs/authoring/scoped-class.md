@@ -97,7 +97,7 @@ Copy the pair **`registry/classes/compute.yaml`** (the Base Class — `cpu`, `me
 — `parent: Compute`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is
-`registry/generated/Compute_VM.json` (7 properties). The flow is
+`registry/generated/compute.vm.json` (7 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
 
 ## 5. Run the gates

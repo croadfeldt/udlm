@@ -58,7 +58,7 @@ Follow [`scoped-class.md`](scoped-class.md) for the full Class procedure; the Pr
    `start_jitter`) — never contradicting the portable Type. **Two engines declaring the same Type Class
    is the multi-provider declaration**: engine migration becomes a provider swap on an untouched
    `Process.OSPatch`. **Produces:** the provider-tier bindings; the lock-in surface, made readable.
-3. **Compile and cover.** Run the generator, commit `registry/generated/Process_OSPatch.json`, and add a
+3. **Compile and cover.** Run the generator, commit `registry/generated/process.os-patch.json`, and add a
    `coverage:` block. Point it at the process/migration corpus below.
 
 ### Shape B — an `Automation.Job` resource type
@@ -133,7 +133,7 @@ python3 registry/tools/generate_class_specs.py --check
 python3 registry/tools/spec_coverage.py --check
 ```
 
-Pass: `N class(es) checked, 0 Liskov violation(s)`; a `ok (fresh)  Process.OSPatch → registry/generated/Process_OSPatch.json (N props)`
+Pass: `N class(es) checked, 0 Liskov violation(s)`; a `ok (fresh)  Process.OSPatch → registry/generated/process.os-patch.json (N props)`
 line ending `N Type Class(es) compiled, 0 issue(s)`; and `… 0 dangling` — each exit 0.
 
 **Shape B — an `Automation.Job` resource type:**
