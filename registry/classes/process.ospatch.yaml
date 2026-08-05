@@ -1,0 +1,49 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Process.OSPatch/1.0.0
+conforms_to: udlm/0.1
+uuid: 65a1d324-0d7e-44ef-bff6-d510ecf973e2
+record_type: class
+class: type
+resource_type: Process.OSPatch
+parent: Process
+version: 1.0.0
+family: Process
+status: active
+metadata:
+  authority: canonical
+  display_name: Process.OSPatch Type Class
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-07-27T22:00:00Z'
+  description: >-
+    The portable OS-patching process — the definition BOTH engines share (blue today, green tomorrow).
+    Names no engine: this is what org policy gates, what schedules reference, what compliance reports
+    against, and what any provider must satisfy to declare `execute_workflows / Process.OSPatch`.
+  prompt_version: class-p1-process-pilot-2026-07-27
+elements:
+  - element: targets
+    scope: Process.OSPatch
+    state: canonical
+    description: The hosts to patch — references to Compute.* hosts or a DCMGroup (refines the Base inputs).
+    schema: { type: array, items: { type: string } }
+  - element: patch_policy
+    scope: Process.OSPatch
+    state: canonical
+    description: What to patch — a bounded codelist (PVD-001).
+    schema: { type: string, enum: [security-only, all-updates, cve-list] }
+  - element: reboot_policy
+    scope: Process.OSPatch
+    state: canonical
+    description: Reboot behaviour — a bounded codelist; `if-required` may reference a maintenance window.
+    schema: { type: string, enum: [never, if-required, always] }
+  - element: exclusions
+    scope: Process.OSPatch
+    optional: true
+    state: canonical
+    description: The org's known-fragile packages to hold back.
+    schema: { type: array, items: { type: string } }
+
+coverage:
+  use_cases:
+    - scoped-class/multi-provider-engine-swap
+    - scoped-class/liskov-contradict-refused
+  flows:
+    - docs/flows/scoped-class-lifecycle.md

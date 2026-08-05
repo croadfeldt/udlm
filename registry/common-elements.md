@@ -33,7 +33,7 @@ Use for memory, storage, bandwidth, power (`"650W"`), etc.
   "cpu":    { "count": 8 },
   "memory": { "size": "32GB" } }      // Quantity
 ```
-Reused by anything that sizes compute: `Compute.VM`, a `Compute.Cluster` node pool, a
+Reused by anything that sizes compute: `Compute.VirtualMachine`, a `Compute.Cluster` node pool, a
 `Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
 
@@ -91,7 +91,7 @@ How the existing types express shared concepts today, and the drift to normalize
 
 | Type | compute sizing | naming notes |
 |---|---|---|
-| `Compute.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
+| `Compute.VirtualMachine` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
 | `Compute.Cluster` | `node_pools[]` (each carries its own cpu/memory) | node-pool sizing not a shared shape |
 | `Data.Database` | `resources` block | a *third* spelling of cpu/memory |
 | `Network.IPAddress` | — | `family` ≠ canonical `ip_family` |
@@ -123,7 +123,7 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
 - **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — DCM is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
-  by **`composition_visibility`** (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md`
+  by **`composition_visibility`** (`opaque|transparent|selective`, `entities/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
 
@@ -158,7 +158,7 @@ Identity:
                                     # reboots (DIMM slot, drive bay "Bay 7", PCIe slot). Primary key.
   serial_number:  "S3F2NX0M..."      # globally unique hardware serial — survives a move to another parent
   wwn:           "0x5000c500..."    # storage-device World-Wide Name (drives); alt global key to serial
-  asset_tag:     "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag
+  asset_tag:     "RF-DIMM-0042"     # OPTIONAL org-assigned asset tag (renamed from assetTag in the snake_case reversal)
   model:         "M393A4K40DB3-CWE" # type identity (part number) — equal across identical units
   role:          "system"           # OPTIONAL semantic usage — distinguishes same-model by PURPOSE
                                     # (drive: boot|data|ceph-osd|cache; memory: system|persistent)
@@ -186,7 +186,7 @@ lifecycle_state: available   # available | allocated | retired   (extensible per
 `available` = inventoried, unallocated, tracked. `allocated` = an Intent has been **adopted** onto it
 (it entered the managed lifecycle, UUID preserved). `retired` = decommissioned but retained for history.
 Adopts Metal3 `BareMetalHost.status.provisioning.state` (`available` is its canonical
-inspected-but-unprovisioned state). See `docs/spec/foundations/four-states.md` §2.4 (raw / discovered-first entry)
+inspected-but-unprovisioned state). See `foundations/four-states.md` §2.4 (raw / discovered-first entry)
 and SPEC-DESIGN-REQUIREMENTS §28 (ingest-raw-then-adopt, UUID-preserving).
 
 ## 7. `device_class` — device implementation (Hardware.* types)
@@ -235,7 +235,7 @@ standard owns it).
 ### 7a. `connects_to` — physical adjacency (the third traversal method)
 
 §7's `parent_device` (composition **down**, 1→N) and `lower_layer` (composition **up**, N→1) relate an
-interface to its foundational components *within* one device. **`connects_to`** (§9) is the cross-device
+interface to its foundational components *within* one device. **`connects_to`** (renamed from `connected_to` when relation names were adopted from standards, §9) is the cross-device
 edge: a physical interface's link to its **peer termination point** — host NIC ↔ switch port, switch ↔
 switch uplink. A self-referential `references` relationship (`Hardware.NetworkInterface →
 Hardware.NetworkInterface`, 0..1 per physical port), symmetric, declared once from either end.

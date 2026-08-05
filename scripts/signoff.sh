@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pre-post signoff — run before opening any PR or publishing content.
 # Runs every automated gate, then prints the human judgment checklist.
-# Exit 0 only if all HARD gates pass. Procedure: docs/guides/signoff.md.
+# Exit 0 only if all HARD gates pass. Procedure: docs/signoff.md.
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 2
 base="${1:-origin/main}"
@@ -37,7 +37,7 @@ cat <<'EOF'
   [ ] Adopt tools by reference (T8): wrap a mature tool as a Provider, don't reimplement
   [ ] Data point earns its keep: has a real consumer OR is a derived predicate (no duplicate data)
   [ ] Written for engineers: no internal/session refs, no PII/colleague names, references carry their gist
-  [ ] Naming: canonical terms only (docs/spec/principles/naming-charter.md); no unratified renames
+  [ ] Naming: canonical terms only (design-principles/naming-charter.md); no unratified renames
   [ ] Sizing: <=2-3k lines, one subject; split if larger
   [ ] Document the why: rationale in the repo (design note / tenet / ADR), not just the diff
   [ ] Git hygiene: rebased on freshly-fetched origin/main

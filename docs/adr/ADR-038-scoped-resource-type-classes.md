@@ -12,7 +12,7 @@
 The reference-discipline work (PVD-001: reference over restate; requirements over vendor-native) kept running
 into the same seam. Pushing on it revealed that **"base field," "shared vocabulary," and "provider extension"
 are one structure — a data element + its value list — at different scopes.** Separately, types with overlapping
-concepts (`Compute.VM` and `Compute.BareMetalHost` both have cpu / memory / OS / storage / network)
+concepts (`Compute.VirtualMachine` and `Compute.BareMetalHost` both have cpu / memory / OS / storage / network)
 define them **independently**, which is the source of the cross-type inconsistency surfaced in review (the
 units/sizing thread across VM, container, cluster, and database). Rather than patch each field on each type,
 this settles the meta-model: **resource types are layered Classes composed of scoped shared elements.**
@@ -124,7 +124,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
     **is a native URL**: `https://<authority>/<entity-path>?<filters>#<field-path>`. **Dots and slashes are two
     serializations of the same hierarchy** — interconvertible 1:1 (segments are clean tokens; cf. Java
     `com.example.Foo`↔`com/example/Foo`, OData qualified-name↔URL-path, DNS): the **dotted** form is the compact
-    logical name (`resource_type` `Compute.VM`, the DNS authority `peer.dcm.east`,
+    logical name (`resource_type` `Compute.VirtualMachine`, the DNS authority `peer.dcm.east`,
     event-routing/wildcards `compute.vm.*`); the **slashed** form is the URL address (`/Compute/VM/OCPVirt`,
     path-routable, HTTP-native). Same hierarchy — pick the serialization by context. The *anchor* is an instance
     uuid (→ a value), a Class/type name (→ the element *definition*), or a layer uuid; the *field-path* addresses
@@ -147,7 +147,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
       **URL is canonical for anything that addresses or selects** — every coordinate, query, **selector
       (including `covers`)**, and federation reference is canonically a URL (`https://…/Compute/VM?…#…`).
       **Dotted is canonical for a bare identity name** — a type name used as a *field value*: `resource_type`,
-      `extends`, a Class name (`Compute.VM`). Dotted is *also* an **accepted compact alias** for
+      `extends`, a Class name (`Compute.VirtualMachine`). Dotted is *also* an **accepted compact alias** for
       addressing/selectors where readability favors it — a `covers` list or an inline reference
       (`Compute.VM.*[.residency = dc-east]`) — with the URL as its canonical equivalent. Rule of thumb: *names
       are dotted; anything that addresses or selects is a URL* (compact-dotted alias permitted for readability). **(b) One filter mechanism.** The
@@ -211,7 +211,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
       URL component (above). The **authority is the host** — a *logical* authority name resolved by DCM's
       **governed resolver**, **not public DNS** (native-URL-shaped *and* governed; this refines the earlier
       "keep `udlm.dev` the host" lean). **Two URLs, two purposes:** **type-definition identity** lives at the
-      naming authority (`$id` = `https://udlm.dev/registry/udlm/0.1/Compute.VM/0.6.0`); an **instance
+      naming authority (`$id` = `https://udlm.dev/registry/udlm/0.1/Compute.VirtualMachine/0.6.0`); an **instance
       address** lives at the owning DCM's authority (`https://peer.dcm.east/Compute/VM/…`). The URL is still a
       **name**, exactly like `$id` — HTTP-shaped does **not** imply a free GET; resolving one goes through the
       governed resolver (auth + sovereignty gate), which is what makes HTTP the natural *governed resolution
@@ -272,7 +272,7 @@ test (ADR-008) along the **authorship** axis:
   class conforms to and instructs DCM; **DCM implements class-authoring as a policy/profile-driven feature**,
   governed by org policy (same family as *Org standards*). Standardizing an *existing* class stays Policy/Profile
   (a constraint profile); authoring a *new* one your library lacks is this feature — told apart by **authority**,
-  both Policy/DCM. **How to author one well:** `docs/design/custom-classes-best-practice.md`
+  both Policy/DCM. **How to author one well:** `docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`
   (the cheapest-tool ladder, custom Type vs Base, the discipline, anti-patterns, the lifecycle, the never-redefine guard).
 - **Data-layer definitions are organization-level** — the layer *contract* is UDLM; *which* layers exist and what
   they hold (an org compliance overlay, a Data-Center info bundle) are org implementation details.
@@ -318,7 +318,7 @@ policy/profile.**
 - **Recast, not discard.** The reference-discipline ADRs (035–037) and the vocab-ingest ADRs become
   **applications** of this paradigm (PVD-001 = "reference the right Class-scoped element, don't restate";
   storage requirements = Base/Type-Class `SharedDataElement`s; vocab ingest = how value lists get populated).
-- **The recent VM reshape lands cleanly.** The `Compute.VM` reference-discipline reshape is a valid
+- **The recent VM reshape lands cleanly.** The `Compute.VirtualMachine` reference-discipline reshape is a valid
   `Compute.VM` (Type Class) under this model — it lands in today's registry and migrates cleanly when the
   paradigm rolls out.
 - **Two sweep criteria + data checks this adds (generalized).** Both came from concrete catches; both are stated
@@ -360,9 +360,9 @@ your *own* classes under your *own* authority is different, and allowed** — `a
 distinct identity in the org's namespace, canon untouched, portability authority-scoped, promotable to canon when
 proven; it runs through **DCM's policy/profile class-authoring feature** and the one contribution lifecycle (see
 *Authorship & domain*). The line is **authority, not permission**: standardize a *shared* class → Policy/Profile;
-author a type the library lacks → your own class under your authority. **Org = a docs/spec/governance/tenancy overlay on the
+author a type the library lacks → your own class under your authority. **Org = a governance/tenancy overlay on the
 shared classes and, where the library falls short, an authority-scoped author of its own.** Best practice for that
-authoring: `docs/design/custom-classes-best-practice.md`.
+authoring: `docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`.
 
 ## Naming depth — unbounded, but governed
 `Category.Type.Provider` is not a hard three-level cap — the notation is **unbounded** (the grammar recurses to
@@ -398,7 +398,7 @@ by the test, default to the cheaper axis.
 The Class hierarchy is **inheritance (*is-a*)** — vertical specialization of *one* resource's definition
 (`Compute.VM extends Compute`). A **multi-resource is composition (*has-a*)** — horizontal orchestration of
 *several* constituents through one request. They are **orthogonal**, both needed, and the model already carries
-composition as the **Composite Service** (`docs/spec/foundations/composite-service-model.md`, the `catalog-item`): multiple
+composition as the **Composite Service** (`entities/composite-service-model.md`, the `catalog-item`): multiple
 constituent types + declared dependencies + T4 bindings + failure rollup, delivered through a **single request**
 that produces a **Composite Entity — one UUID** across all four states, fulfilled by ordinary Service Providers
 (no meta-provider). `entity_type` marks the axis: **`single`** = one constituent, **`multi`** = a composite.

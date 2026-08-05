@@ -1,0 +1,120 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwarePackage/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "df4b2ff1-c6d4-4075-a355-ee85db5bc366",
+  "resource_type": "SoftwarePackage",
+  "version": "0.1.0",
+  "family": "Knowledge",
+  "entity_type": "SoftwarePackage",
+  "status": "active",
+  "metadata": {
+    "display_name": "Software Package",
+    "description": "A software package / library as a Knowledge-family fact — one record per purl, shared by every SoftwareImage that contains it (one entity, many referrers). Knowledge, not a Resource: discovered by a scanner sweep, never provider-realized. ADOPT (not absorb) the Package-URL (purl) spec and SPDX/CycloneDX component identity by reference (T5): purl is the portable correlation id; the component schema is not restated. Contained by SoftwareImage (contains); references Vulnerability (affected_by).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-22T00:00:00Z"
+  },
+  "context": {
+    "purpose": "Records a software package or library as one shared fact per package URL, so every image containing it points at the same record.",
+    "plain_description": "One package at one version — identified by its purl (Package URL), the portable id that carries ecosystem, name, and version in one string. There is exactly one record per purl no matter how many images contain it, which is what makes blast-radius questions cheap: find the package once, walk back to every image and container that includes it. Discovered by scanners; never built or provisioned.",
+    "use_when": [
+      "You need where-do-we-run-version-X-of-library-Y answerable as a graph walk.",
+      "You need packages linked to the advisories affecting them."
+    ],
+    "not_for": [
+      "The image bundling the package — SoftwareImage contains packages.",
+      "The advisory itself — Vulnerability; a package is affected_by it."
+    ],
+    "works_with": [
+      "SoftwareImage — the images that contain this package.",
+      "Vulnerability — the advisories affecting this package version."
+    ]
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "purl"
+    ],
+    "properties": {
+      "purl": {
+        "type": "string",
+        "description": "Package URL (purl) — the portable identity and dedup key, e.g. pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1. One record per purl."
+      },
+      "name": {
+        "type": "string",
+        "description": "Package name (as parsed from the purl / SBOM component)."
+      },
+      "version": {
+        "type": "string",
+        "description": "Package version (as parsed from the purl / SBOM component)."
+      },
+      "type": {
+        "type": "string",
+        "description": "Package ecosystem / purl type (e.g. rpm, maven, npm, pypi, golang, deb)."
+      },
+      "license": {
+        "type": "string",
+        "description": "Declared license as an SPDX license identifier (e.g. Apache-2.0), where the SBOM reports one."
+      }
+    },
+    "examples": [
+      {
+        "purl": "pkg:rpm/redhat/openssl@3.0.7-18.el9?arch=x86_64",
+        "name": "openssl",
+        "version": "3.0.7-18.el9",
+        "type": "rpm",
+        "license": "OpenSSL"
+      }
+    ]
+  },
+  "outputs": {},
+  "relationships": [
+    {
+      "edge_type": "references",
+      "target": "Vulnerability",
+      "cardinality": "0..n",
+      "description": "affected_by — this package version is affected by the vulnerability (OSV / VEX). A declarative typed reference; the match is Policy. Non-ordering, but walked by blast-radius/impact in reverse (the CVE -> resource path)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "purl",
+      "version": "1.x",
+      "standard_name": "package URL",
+      "role": "the canonical package identifier this type's identity fields carry",
+      "source": "https://github.com/package-url/purl-spec",
+      "license": "MIT",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "SPDX",
+      "version": "2.3",
+      "standard_name": "SBOM package fields / license list",
+      "role": "SBOM interchange alignment; license identifiers use the SPDX license list",
+      "source": "https://spdx.dev/",
+      "license": "Community-Spec-1.0 (license list data CC0-1.0)",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "CycloneDX",
+      "version": "1.5",
+      "standard_name": "component / bom-ref",
+      "role": "SBOM interchange alignment (component identity and references)",
+      "source": "https://cyclonedx.org/",
+      "license": "Apache-2.0",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "coverage": {
+    "use_cases": [
+      "software/reference-package",
+      "software/package-cve-blocked-refused"
+    ],
+    "flows": [
+      "docs/flows/application-tier-provisioning.md"
+    ]
+  }
+}

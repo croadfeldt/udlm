@@ -29,22 +29,22 @@ CANONICAL = [
     {
         "concept": "Design Priority Order",
         "heading": re.compile(r"design priority order\b", re.I),
-        "home": "docs/spec/principles/design-priorities.md",
+        "home": "design-principles/design-priorities.md",
     },
     {
         "concept": "The Four States",
         "heading": re.compile(r"^(the )?four[- ]state(s)?( lifecycle| model)?$", re.I),
-        "home": "docs/spec/foundations/four-states.md",
+        "home": "foundations/four-states.md",
     },
     {
         "concept": "Layers vs Policies",
         "heading": re.compile(r"^layers?\s+vs\.?\s+polic", re.I),
-        "home": "docs/spec/foundations/layering-and-versioning.md",
+        "home": "foundations/layering-and-versioning.md",
     },
     {
         "concept": "The Data-Policy-Provider boundary",
         "heading": re.compile(r"boundary,\s+not\s+a\s+guideline", re.I),
-        "home": "docs/spec/principles/core-tenets.md",
+        "home": "design-principles/core-tenets.md",
     },
 ]
 

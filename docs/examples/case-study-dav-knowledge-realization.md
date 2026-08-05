@@ -4,7 +4,7 @@
 > *example* implementation, cited to show UDLM holds outside infrastructure (see `GLOSSARY.md`).
 >
 > **Outcome (2026-07):** the recommendation landed — the Knowledge entity-type family now exists
-> (`docs/spec/foundations/knowledge-family.md`, five types in the registry). §5's type-gap and the "Composite"
+> (`entities/knowledge-family.md`, five types in the registry). §5's type-gap and the "Composite"
 > primary-type framing are historical (the shape is derived, ADR-027 addendum).
 
 _An effectiveness analysis: does UDLM's "implementation-neutral universal substrate" claim
@@ -34,7 +34,7 @@ definition of Data in UDLM?"
 | | DCM (reference) | DAV (this study) |
 |---|---|---|
 | Domain | Infrastructure resources | Architecture / capability **knowledge** |
-| Entity examples | VM, IPAddress, VLAN | Capability, TaxonomyTerm, UseCase, Gap |
+| Entity examples | VirtualMachine, IPAddress, VLAN | Capability, TaxonomyTerm, UseCase, Gap |
 | Lifecycle driver | **Provisioning** (a Provider builds it) | **Curation** (humans + LLM propose/normalize/accept) |
 | "Realized" means | A provider confirmed it exists | A reviewer accepted it as canonical |
 | "Discovered" means | A discovery run observed the live resource | An **assessment** observed the capability in the field |

@@ -1,11 +1,11 @@
-# Spike — can UDLM emit a TOSCA profile? (`Compute.VM`)
+# Spike — can UDLM emit a TOSCA profile? (`Compute.VirtualMachine`)
 
 **Status:** research spike (non-normative). **What it settles:** the two questions the prior-art positioning
 doc left falsifiable ([`../design/prior-art-and-positioning.md`](../design/prior-art-and-positioning.md) §9,
 exit-1): (1) *does the UDLM type contract round-trip to a standard TOSCA node type?* — the implementability
 proof — and (2) *should we "just extend TOSCA" instead of keeping the model?* Feeds the interop track (task
 #54). **Method:** derive a candidate TOSCA v2.0 node type directly from the shipped
-`Compute.VM@0.6.4` spec (properties, outputs, relationships), then record what mapped cleanly,
+`Compute.VirtualMachine@0.6.4` spec (properties, outputs, relationships), then record what mapped cleanly,
 what was awkward, and what TOSCA has no native home for. This is a **paper mapping**, not a run through an
 orchestrator — see *Limits*.
 
@@ -16,7 +16,7 @@ The paper mapping below has been made a tool:
 UDLM resource-type spec, recovers the UDLM-relevant facts back out of the emitted TOSCA, and diffs them
 against the source. Result:
 
-- **`Compute.VM@0.6.4`** — 9 properties, 9 attributes, 4 edge targets, and the version all
+- **`Compute.VirtualMachine@0.6.4`** — 9 properties, 9 attributes, 4 edge targets, and the version all
   round-trip with **0 loss, 0 invention**.
 - **48 / 48 shipped type specs** round-trip **CLEAN** on the type + topology layer — the emitter is faithful
   across the *entire* registry, not one hand-picked type.
@@ -33,11 +33,11 @@ not a defect. Run: `python3 registry/tools/tosca_emit.py --round-trip <spec>`.
 ```yaml
 tosca_definitions_version: tosca_2_0
 node_types:
-  udlm.compute.VM:
+  udlm.compute.VirtualMachine:
     version: 0.6.4                                  # ← UDLM entity version (MAJOR.MINOR.REVISION)
     derived_from: tosca.nodes.Compute
     metadata:
-      udlm_id: "udlm/0.1/Compute.VM/0.6.4"   # ← the $id (identity + version pin)
+      udlm_id: "udlm/0.1/Compute.VirtualMachine/0.6.4"   # ← the $id (identity + version pin)
       # DELTA — no native TOSCA home; carried as metadata (see below):
       udlm_sovereignty_zone: "<createOnly>"
       udlm_data_classification: "<createOnly>"
@@ -114,9 +114,9 @@ attestation requires bespoke `metadata`/`policy_type` conventions that a generic
   its existence (positioning doc §5), and TOSCA is an **emission target**, not a replacement.
 
 **Q1 — implementability (the C-2 by-construction proof):** the mechanical derivation succeeded, so the
-`Compute.VM` contract is well-formed enough to transcribe to a standard node type without
+`Compute.VirtualMachine` contract is well-formed enough to transcribe to a standard node type without
 invention. Where TOSCA *couldn't* carry a thing, that thing was a deliberate UDLM addition, not a spec
-defect. This is positive evidence for [`../guides/implementing-a-resource-type.md`](../guides/implementing-a-resource-type.md).
+defect. This is positive evidence for [`../implementing-a-resource-type.md`](../implementing-a-resource-type.md).
 
 ## Recommendation
 

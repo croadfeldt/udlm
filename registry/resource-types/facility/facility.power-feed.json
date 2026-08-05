@@ -1,0 +1,159 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.PowerFeed/0.3.2",
+  "conforms_to": "udlm/0.1",
+  "uuid": "e1cdf697-ec3d-4208-8e62-ef1c88ba7a31",
+  "resource_type": "Facility.PowerFeed",
+  "version": "0.3.2",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Power Feed",
+    "description": "A power source feeding equipment — utility circuit, UPS, PDU, or generator. The graph ROOT for an estate: hosts depend_on a PowerFeed, so a reverse-topological shutdown walks everything that transitively draws from it. Grounded in DMTF Redfish DCIM (Circuit / PowerDistribution) for the power-distribution model and NUT (Network UPS Tools) for UPS telemetry (NUT is GPL — referenced by name only).",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-06-27T00:38:59Z"
+  },
+  "context": {
+    "purpose": "Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.",
+    "plain_description": "One source of power feeding equipment. Hosts and switches declare which feed they draw from, so what loses power when a UPS drains is a graph walk, not tribal knowledge. For UPS feeds it carries live status (online, on-battery, low-battery), battery charge, and estimated runtime — the facts an automated graceful shutdown triggers on. Rated `capacity` (watts, voltage, phases) and `redundancy` — the enum `none`, `n+1`, or `2n`, not a boolean — are declared up front.",
+    "use_when": [
+      "You need equipment tied to its actual power source so a UPS on-battery event can drive an ordered shutdown of exactly what that UPS feeds.",
+      "You need rated capacity and feed redundancy recorded per circuit/UPS/PDU."
+    ],
+    "not_for": [
+      "The place equipment sits — Facility.Location; a rack is a place, a feed is a power source, and the two vary independently.",
+      "Powering one host off — that action targets the host's Hardware.BMC control surface, not the feed."
+    ],
+    "works_with": [
+      "Compute.BareMetalHost — hosts declare depends_on the feed(s) they draw from.",
+      "Network.Switch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.",
+      "Automation.Job — the shutdown job a feed's on-battery status triggers."
+    ]
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "feed_type"
+    ],
+    "properties": {
+      "feed_type": {
+        "type": "string",
+        "enum": [
+          "utility",
+          "ups",
+          "pdu",
+          "generator"
+        ],
+        "description": "Kind of power source."
+      },
+      "capacity": {
+        "type": "object",
+        "description": "Rated capacity (Redfish Circuit/PowerDistribution ratings).",
+        "properties": {
+          "watts": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Rated real power, W (VA for UPS where applicable)."
+          },
+          "voltage": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Nominal voltage, V."
+          },
+          "phases": {
+            "type": "integer",
+            "enum": [
+              1,
+              3
+            ],
+            "description": "Single- or three-phase."
+          }
+        }
+      },
+      "redundancy": {
+        "type": "string",
+        "enum": [
+          "none",
+          "n+1",
+          "2n"
+        ],
+        "default": "none",
+        "description": "Feed redundancy level."
+      }
+    },
+    "examples": [
+      {
+        "feed_type": "pdu",
+        "capacity": {
+          "watts": 5000,
+          "voltage": 208,
+          "phases": 3
+        },
+        "redundancy": "n+1"
+      }
+    ]
+  },
+  "outputs": {
+    "status": {
+      "type": "string",
+      "description": "Observed feed status — online | on-battery | low-battery | overload | off (maps from NUT ups.status). Drives the UPS shutdown trigger."
+    },
+    "battery_charge": {
+      "type": "integer",
+      "description": "Battery charge percent for a UPS feed (NUT battery.charge)."
+    },
+    "runtime_seconds": {
+      "type": "integer",
+      "description": "Estimated runtime remaining on battery, seconds (NUT battery.runtime)."
+    }
+  },
+  "relationships": [],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standard_name": "Circuit",
+      "role": "power-distribution / circuit rating vocabulary (Redfish DCIM PowerDistribution/Circuit)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "NUT",
+      "version": "2.8",
+      "standard_name": "ups.status",
+      "role": "UPS telemetry variable namespace (status, battery.charge, battery.runtime) — reference-only: NUT is GPL",
+      "source": "https://networkupstools.org/docs/developer-guide.chunked/apas01.html",
+      "license": "GPL-2.0-or-later",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
+    }
+  ],
+  "aliases": [
+    {
+      "name": "UPS",
+      "note": "when feedType=ups"
+    },
+    {
+      "name": "PDU",
+      "note": "when feedType=pdu"
+    },
+    {
+      "name": "Outlet",
+      "standard": "Redfish",
+      "note": "Redfish DCIM Outlet, for a per-outlet feed"
+    }
+  ],
+  "coverage": {
+    "use_cases": [
+      "observed/estate-resource-observed",
+      "observed/observation-off-vocabulary-quarantined",
+      "audit/refusal-emits-audit-record"
+    ],
+    "flows": [
+      "docs/flows/estate-observation-lifecycle.md",
+      "docs/flows/uc-07-udlm-dependency-graph-data-model.md"
+    ]
+  }
+}

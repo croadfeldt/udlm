@@ -12,7 +12,7 @@ VM without cross-tenant exposure, decrements the tenant's quota, and records bot
 attachment — all in the dev profile.
 
 ## What this adds over request-realization
-- **A cross-resource dependency** — the request references an *existing* `Compute.VM`. Placement
+- **A cross-resource dependency** — the request references an *existing* `Compute.VirtualMachine`. Placement
   and reserve must resolve and honor that reference, not just stand up an isolated resource.
 - **Tenant isolation at the storage plane** — a validation policy checks the request against the tenant's storage
   class eligibility before allocation, and the attach must not expose the volume across tenants.

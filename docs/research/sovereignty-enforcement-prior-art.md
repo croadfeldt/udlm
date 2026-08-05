@@ -2,7 +2,7 @@
 
 **Type:** research note (decision support — not normative)
 **Date:** 2026-07-14 · **Method:** three-stream prior-art review (identity/attestation; sovereign-cloud/federation; authorization/admission), each claim checked against primary sources.
-**Feeds:** `docs/spec/governance/accreditation-and-authorization-matrix.md` §3.7–§3.10, `registry/accreditation.schema.json`, `registry/provider-adopted-standards.schema.json` (`conformance_claims` + `enforcement_plane`), ADR-004 §4/§4a, `registry/standards-adoption-register.md` (Attestation section).
+**Feeds:** `governance/accreditation-and-authorization-matrix.md` §3.7–§3.10, `registry/accreditation.schema.json`, `registry/provider-adopted-standards.schema.json` (`conformance_claims` + `enforcement_plane`), ADR-004 §4/§4a, `registry/standards-adoption-register.md` (Attestation section).
 
 ## What this settles
 

@@ -123,7 +123,7 @@ provider:
   capabilities:
     realize_resources:
       resource_types:
-        - type: Compute.VM
+        - type: Compute.VirtualMachine
           required_inputs: [namespace, storage_class]
           extension_schema_ref: "urn:udlm:schema:k8s-vm-extensions:1.0"
         - type: Compute.Container
@@ -143,7 +143,7 @@ An enterprise-virtualization provider registering for the same resource type wou
 capabilities:
   realize_resources:
     resource_types:
-      - type: Compute.VM
+      - type: Compute.VirtualMachine
         required_inputs: [cluster, datastore, resource_pool]
         extension_schema_ref: "urn:udlm:schema:virt-vm-extensions:1.0"
 ```
@@ -180,8 +180,8 @@ Continuing the VM example from Phase 1. The Kubernetes VM provider publishes a c
 single virtual machine:
 
 ```yaml
-name: Compute.VM.K8s
-resource_type: Compute.VM
+name: Compute.VirtualMachine.K8s
+resource_type: Compute.VirtualMachine
 type_version: 0.1.1
 
 spec_defaults:
@@ -504,7 +504,7 @@ that.
 **What the provider receives:**
 
 ```yaml
-resource_type: Compute.VM
+resource_type: Compute.VirtualMachine
 spec:
   vcpu: 4
   memory: 16384
@@ -709,10 +709,10 @@ Provider                          System                           Consumer
 ## Pointers
 
 - The request's perspective on the same flow: [request-realization](request-realization.md)
-- Provider base contract (what you MUST implement): `docs/spec/contracts/provider-contract.md` §1a
-- Capability advertisement shape: `docs/spec/contracts/provider-contract.md` §2 (registration) + §10 (discovery protocol)
+- Provider base contract (what you MUST implement): `contracts/provider-contract.md` §1a
+- Capability advertisement shape: `contracts/provider-contract.md` §2 (registration) + §10 (discovery protocol)
 - How required inputs get filled: `docs/adr/ADR-024-filling-provider-required-inputs.md`
-- Policy contract (enrichment policies): `docs/spec/contracts/policy-contract.md` §12
+- Policy contract (enrichment policies): `contracts/policy-contract.md` §12
 - Catalog item schema: `registry/catalog-item.schema.json`
 - Provider-specific data model: UDLM ADR-038 (Provider-Class `SharedDataElement`s); portability: `registry/realized-entity.schema.json` `portability` block
 - Realized entity schema: `registry/realized-entity.schema.json`

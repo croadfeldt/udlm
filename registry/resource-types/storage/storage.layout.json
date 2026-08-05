@@ -1,0 +1,133 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.3.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
+  "resource_type": "Storage.Layout",
+  "version": "0.3.0",
+  "family": "Resource",
+  "status": "active",
+  "lifecycle": {
+    "states": [
+      "Intent",
+      "Requested",
+      "Realized",
+      "Discovered"
+    ],
+    "decommission": "The layout is a declared shape, not the data: decommission releases the layout record only after the Storage.Volume(s) realizing its entries are released by their consumers. Deleting the realizing volumes is the DATA-DESTRUCTIVE step and follows Storage.Volume's own decommission rules."
+  },
+  "metadata": {
+    "display_name": "Storage Layout",
+    "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Compute.VirtualMachine — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage tier, an optional role, and an optional boot position. The entry `name` is the stable identity consumers join on; consumption is declared consumer-side (a consumer names its layout and the records realizing its entries declare the realization), never here. A layout record belongs to ONE consumer — reuse of a shape across consumers is the Template tier (ADR-033), so the per-entry realization map stays unambiguous.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-29T00:00:00Z"
+  },
+  "context": {
+    "purpose": "Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.",
+    "plain_description": "The list of disks a machine should have: each entry names a disk (`name`, the stable join key), sizes it (`size`), and may request a storage performance class (`storage_tier`, the governed vocabulary), state what the disk is for (`role`: boot/data/log), and place it in the boot order (`boot_order`). The layout is shape, not data — it declares nothing about who consumes it. Consumers declare their side: whatever realizes or references a layout entry joins on the entry's stable `name` and declares that edge itself. The provider's chosen native class per entry is a realized fact, recorded in the realization map — never authored here.",
+    "use_when": [
+      "You need a VM's (or other compute consumer's) disks declared as portable intent — sizes, roles, boot designation — separate from the consumer's own sizing.",
+      "You need reconvergence to join realized volumes back to declared disks by a stable per-entry identity.",
+      "You need disk shapes comparable across consumers by lifting the shape to a Template (ADR-033) — layout RECORDS stay per-consumer so realization is unambiguous."
+    ],
+    "not_for": [
+      "The consumable volume itself — Storage.Volume; a layout entry may be realized by one.",
+      "The provisioning policy — Platform.StorageClass; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).",
+      "A shared multi-consumer layout record — one record per consumer; sharing is the ADR-033 Template tier.",
+      "Host-local ZFS/LVM layout a host service mounts — Storage.Dataset / Storage.Pool.",
+      "The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor."
+    ],
+    "works_with": [
+      "Compute.VirtualMachine — the consumer that realizes this layout (spec.layout_ref).",
+      "Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).",
+      "Platform.StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map)."
+    ]
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "entries"
+    ],
+    "properties": {
+      "entries": {
+        "type": "array",
+        "minItems": 1,
+        "description": "The declared disks, in declaration order. Entry names MUST be unique within the layout — the name is the stable identity that reconvergence joins on (a realized volume binds to an entry by name, surviving reorder and resize).",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "size"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+              "description": "Stable entry identity, unique within the layout — the join key reconvergence uses to bind a realized Storage.Volume back to this declared disk. Lowercase DNS-label shape."
+            },
+            "size": {
+              "type": "string",
+              "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
+              "description": "Requested disk size, quantity form (e.g. 100Gi, 500GB) — the class-aligned size pattern shared with Compute memory sizing."
+            },
+            "storage_tier": {
+              "type": "string",
+              "description": "Optional requested storage performance class for this entry — the GOVERNED `storage_tier` vocabulary (ADR-038 §2: canonical terms are reference-data records, each denoting a requirements floor). Name-selectable but requirements-authoritative (ADR-036); mirrors the consumer-side `storage_tier` element. Never a provider class name: providers exposing storage classes MUST map each class to a tier (Platform.StorageClass `tier`), and the class the provider chose is recorded per entry as `storage_backing` in the realization map (maintainer ruling 2026-08-02)."
+            },
+            "role": {
+              "type": "string",
+              "x-extensible-enum": [
+                "boot",
+                "data",
+                "log"
+              ],
+              "description": "Optional role of this disk. Convention: the boot entry carries role `boot` (and, where order matters, boot_order 0); a layout declares at most one boot entry — candidate validator gate."
+            },
+            "boot_order": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Optional boot position (0 = first). Absent = provider default. Boot designation lives here — on the layout entry — not on the consumer."
+            }
+          }
+        }
+      }
+    },
+    "examples": [
+      {
+        "entries": [
+          {
+            "name": "root",
+            "size": "100Gi",
+            "storage_tier": "performance",
+            "role": "boot",
+            "boot_order": 0
+          },
+          {
+            "name": "data-1",
+            "size": "500Gi",
+            "storage_tier": "standard",
+            "role": "data"
+          }
+        ]
+      }
+    ]
+  },
+  "outputs": {
+    "realized_volumes": {
+      "type": "array",
+      "description": "Per-entry realization map — items are {entry, volume, storage_backing}: for each entry name, the Storage.Volume (handle/uuid) realizing it, and the provider-chosen native class (`storage_backing`, the ADR-036 §2 realized fact that resolved the entry's `storage_tier`). Derived from the volume-declared realizes_layout_entry edges + `layout_entry` join keys (the layout declares no consumer edge). This map is the lineage surface: Intent (entry) → Realized (volume + backing), joined on the stable entry name."
+    }
+  },
+  "relationships": [],
+  "coverage": {
+    "use_cases": [
+      "compute/composite-vm-with-attached-volume",
+      "storage/provision-volume-bound-to-pool"
+    ],
+    "flows": [
+      "docs/flows/storage-provisioning-lifecycle.md",
+      "docs/flows/compute-provisioning-lifecycle.md"
+    ]
+  }
+}

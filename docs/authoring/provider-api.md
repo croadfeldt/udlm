@@ -31,7 +31,7 @@ and never enters the portable model.
 
 ### A. The capability declaration — `provider-adopted-standards.schema.json`
 
-1. **Write the record** at `docs/spec/contracts/provider-contract.md` §2 (the registration payload — standing provider artifacts retired 2026-08-04; capabilities are the Provider Classes a provider supports or injects at DCM registration) (e.g. `service/` or `information/`). Set
+1. **Write the record** at `registry/providers/<kind>/<name>.json` (e.g. `service/` or `information/`). Set
    the required top level (`provider-adopted-standards.schema.json` `required`): `provider` and
    `adopted_standard_support`.
 2. **`provider`** — `name`, a v4 `uuid`, and `version`. **The `uuid` is frozen at registration and never
@@ -73,19 +73,19 @@ onto the one Governance Matrix; it is distinct from the capability *declaration*
 
 | Ships with the provider | Why | Gate |
 |---|---|---|
-| Validates against `provider-adopted-standards.schema.json` | Valid by construction | DCM admission at registration |
-| Every `adopted_standard_support[].standard` token resolves in the adoption register | ADOPT-001 — the adoption decision is recorded | DCM admission at registration |
-| `provider.uuid` + every `capability_uuid` are canonical v4 and **unique across registered providers** | They are accreditation anchors; a shared anchor lets one attestation cover two subjects | DCM admission at registration |
-| Every `supports` range parses (pin / wildcard / comparator) | DCM can resolve it | DCM admission at registration |
+| Validates against `provider-adopted-standards.schema.json` | Valid by construction | `registry/tools/validate.py` |
+| Every `adopted_standard_support[].standard` token resolves in the adoption register | ADOPT-001 — the adoption decision is recorded | `tests/check_provider_contracts.py` |
+| `provider.uuid` + every `capability_uuid` are canonical v4 and **unique across all provider docs** | They are accreditation anchors; a shared anchor lets one attestation cover two subjects | `tests/check_provider_contracts.py` |
+| Every `supports` range parses (pin / wildcard / comparator) | DCM can resolve it | `tests/check_provider_contracts.py` |
 | No standard adopted only in prose without a register row | Completeness (report-only review aid) | `tests/check_standards_registered.py` |
 
 ## 4. A worked pointer
 
-Copy [`../../contracts/provider-contract.md §2 examples`](../spec/contracts/provider-contract.md)
+Copy [`../../registry/providers/service/full-stack-sp.json`](../../registry/providers/service/full-stack-sp.json)
 — a `service` provider that consumes Redfish/KubeVirt/Kubernetes and declares three capabilities (VM,
 Container, Cluster lifecycle), each spanning several `(verb × domain)` categories with per-category
 `topology_capability`, `operational_capability`, and (on the container capability) a narrowed `sovereignty`
-block. [`../../contracts/provider-contract.md §8 (serve_data)`](../spec/contracts/provider-contract.md)
+block. [`../../registry/providers/information/cost-sp.json`](../../registry/providers/information/cost-sp.json)
 is the `information`-kind counterpart.
 
 For the matching accreditation, see
@@ -95,12 +95,22 @@ Minnesota (`US-MN`) sovereignty, showing how `subject_uuid`/`capability_uuid`/`s
 declaration in A. (The provider *lifecycle* — how a declaration is registered and admitted — is documented in
 [`../flows/provider-lifecycle.md`](../flows/provider-lifecycle.md).)
 
-## 5. Where the gates run
+## 5. Run the gates
 
-Provider declarations are not repo artifacts — they are submitted at DCM registration
-(`../flows/provider-lifecycle.md`), and every checklist row above is enforced there as an
-admission check: an invalid declaration, an unresolvable standard token, a duplicate anchor
-uuid, or an unparseable `supports` range refuses registration. What stays in-repo is the wire
-shape itself (`registry/provider-adopted-standards.schema.json`) and the adoption register the
-tokens resolve against; `tests/check_standards_registered.py` remains as a **report-only**
-review aid (always exits `0`) listing prose standard citations with no register row.
+From the repo root:
+
+```console
+$ python tests/check_provider_contracts.py
+...
+2 provider doc(s) cross-checked against 126 registered standard token(s); 5 accreditation anchor(s)
+OK — every provider standard resolves, anchors unique, version ranges parse
+
+$ python tests/check_standards_registered.py
+standards-registered: 23 distinct RFC/AEP citations in the spec; 2 in neither the register nor the catalog.
+...
+```
+
+`check_provider_contracts.py` exits `0` on the `OK` line and names the offending provider + field on failure.
+`check_standards_registered.py` is **report-only** (always exits `0`): it lists prose standard citations with
+no register row for a human to triage — a review aid, not a blocking gate. Run `python
+registry/tools/validate.py` too for schema validity (see [`policy.md`](policy.md) §5 for its passing output).

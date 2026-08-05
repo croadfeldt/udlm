@@ -9,7 +9,7 @@ once with what it settles. ADR-038 — the scoped-Class hierarchy (`SharedDataEl
 dotted coordinate + dual anchor this builds on); this ADR is the third relationship axis alongside
 its *is-a* and *has-a*. ADR-012 — data references point at immutable records (the linkage this
 classifies and projects). ADR-041 — the policy information firewall *over* projection (it adds
-`PROJ-P6` to the invariants below and governs data entering by reference). `docs/spec/foundations/layering-and-versioning.md`
+`PROJ-P6` to the invariants below and governs data entering by reference). `foundations/layering-and-versioning.md`
 — the assembly/layer model (`covers`/`skip` extend it). T1/T2 + ADR-023 — the naturalization
 boundary the anti-exfil invariants protect.
 
@@ -164,8 +164,8 @@ match, resolves projections, and enforces the invariants (a peer MAY differ).
 
 ## What this does not decide
 
-The `§10` coordinate/addressing grammar itself (ADR-038 + the class-hierarchy design notes);
-the assembly precedence/override/`narrow_only` model (`docs/spec/foundations/layering-and-versioning.md`); and
+The `§10` coordinate/addressing grammar itself (ADR-038 + the scoped-class-hierarchy design notes);
+the assembly precedence/override/`narrow_only` model (`foundations/layering-and-versioning.md`); and
 the firewall admission `PROJ-P6` and cross-domain guard (ADR-041). The JSON-Schema shapes (the edge
 `nature`, `covers`/`applies_on`/`from_layers`/`skip` on the layer/request envelopes) follow as an
 implementing PR once ratified.

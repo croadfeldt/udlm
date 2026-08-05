@@ -2,8 +2,8 @@
 
 **Status:** Proposed
 **Date:** 2026-07-10
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/contracts/time-and-clock.md` (the contract this governs); `docs/spec/contracts/identifier-scheme.md` (UUIDv7 policy); ADR-002 (adopt-by-reference / served pattern); ADR-004 (provider capability declaration); the trust/attestation model; `cross-dcm-audit-data-model` (corpus UC); `docs/spec/principles/core-tenets.md` (T5 adopt-by-reference)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `contracts/time-and-clock.md` (the contract this governs); `contracts/identifier-scheme.md` (UUIDv7 policy); ADR-002 (adopt-by-reference / served pattern); ADR-004 (provider capability declaration); the trust/attestation model; `cross-dcm-audit-data-model` (corpus UC); `design-principles/core-tenets.md` (T5 adopt-by-reference)
 **Tracking:** review feedback on udlm #18 (swapdisk: ±5 s tolerance too broad, leap-second smear over-mandated) → the broader question "how do independent peers agree on ordering and audit?"
 
 ## Context
@@ -19,7 +19,7 @@ It also never addressed the federated case: two independent DCMs each keep their
 ## Decision
 
 **1. Ordering is structural (causal), not temporal.**
-Total order *within* an audit stream comes from a hash-linked sequence with a UUIDv7 tiebreak (ms timestamp + monotonic counter, per RFC 9562) — never from comparing wall clocks. *Across* streams/DCMs, order is a **causal partial order (a DAG)** carried by causal references (happened-after links — already present as the audit record's references to the docs/spec/foundations/events it acts on; HLC or vector clocks where fine cross-node granularity is needed). Concurrent events (no causal link) MAY be linearized differently by different observers — that is concurrency, **not** conflict. A genuine total order across DCMs for a *shared* resource is established only by an **explicit, audited authority** (the resource's single-writer owner) or a consensus round; that tie-break is itself a signed audit event.
+Total order *within* an audit stream comes from a hash-linked sequence with a UUIDv7 tiebreak (ms timestamp + monotonic counter, per RFC 9562) — never from comparing wall clocks. *Across* streams/DCMs, order is a **causal partial order (a DAG)** carried by causal references (happened-after links — already present as the audit record's references to the entities/events it acts on; HLC or vector clocks where fine cross-node granularity is needed). Concurrent events (no causal link) MAY be linearized differently by different observers — that is concurrency, **not** conflict. A genuine total order across DCMs for a *shared* resource is established only by an **explicit, audited authority** (the resource's single-writer owner) or a consensus round; that tie-break is itself a signed audit event.
 
 **2. Time synchronization is a profile-declared, adopt-by-reference capability — the platform is standard-neutral.**
 UDLM defines only the *shape*: a `TimeSync` requirement (UTC-traceable, a `max_divergence` bound, a mechanism class NTP/PTP) that MUST be attestable. It mandates **no** tolerance. The **profile** binds the standard by reference — base → **FINRA CAT (50 ms of UTC)**; regulated/FSI → **MiFID II RTS 25** tiers (1 s / 1 ms / 100 µs by activity); sovereign → its own regime. Providers/nodes **advertise and attest** the sync they can hold as a capability; **placement admits** a workload only where node capability meets its profile's declared bound. This is the same adopt-by-reference + capability pattern as ADR-002 (cost/capacity served overlays) and ADR-004 (provider capability declaration).
@@ -49,4 +49,4 @@ REQUIRE monotonic, UTC-traceable time (never steps backward). RECOMMEND smearing
 - **+** Cross-DCM divergence is detectable and attributable; federation gets a real integrity story, not trust-by-assertion.
 - **−** Events must carry causal references (largely already true via the dependency graph); HLC is needed where cross-node ordering granularity is tight.
 - **−** Federated DCMs must run the checkpoint/witnessing exchange (ties to the trust model) — new mechanism, though it reuses attestation.
-- Supersedes the ±5 s constant and the smear mandate in `docs/spec/contracts/time-and-clock.md` (redrafted alongside this ADR).
+- Supersedes the ±5 s constant and the smear mandate in `contracts/time-and-clock.md` (redrafted alongside this ADR).

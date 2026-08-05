@@ -9,9 +9,9 @@ assumes these; each is cited once with what it settles, not re-taught here. The 
 ratifies: `docs/design/intent-fulfillment-model.md` (dependencies-with-a-nature + a convergence
 window, and the complete permutation matrix). The corpus that measures it:
 `use-cases/intent-fulfillment/` (nine UCs, mirrored to dcm `dav/use-cases/hammer-intent-fulfillment/`).
-`docs/spec/principles/core-tenets.md` T7 (*extend before net-new*) — the tenet this is the worked
+`design-principles/core-tenets.md` T7 (*extend before net-new*) — the tenet this is the worked
 exemplar of. ADR-011 (validate-and-reserve) — the reservation law the request nature stands on.
-`docs/spec/foundations/service-dependencies.md`, ADR-027 (`dependencies[].strength`) — the edge the new attribute
+`entities/service-dependencies.md`, ADR-027 (`dependencies[].strength`) — the edge the new attribute
 rides. ADR-048 (staleness verdicts derived, never stored) — the pattern the status classification
 copies. ADR-008 — the UDLM/DCM boundary.
 
@@ -104,7 +104,7 @@ overrule the DAV precision fixture independently caught the analyzer making.
 
 DCM's policy defaults (the `N` value, cascade-vs-hold per domain) are DCM's by the boundary; the
 JSON-Schema shape of `nature` and the window field follows as an implementing PR against
-`docs/spec/foundations/service-dependencies.md` once ratified.
+`entities/service-dependencies.md` once ratified.
 
 ## Status — 0.1
 

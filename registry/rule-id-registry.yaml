@@ -11,67 +11,67 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.1"
+version: "1.0.0"
 
 prefixes:
   - prefix: ACC
     name: Accreditation & authorization
-    home: docs/spec/governance/accreditation-and-authorization-matrix.md
+    home: governance/accreditation-and-authorization-matrix.md
     domain: Accreditation frameworks and the data-authorization matrix
     status: active
   - prefix: APO
     name: Audit / provenance / observability
-    home: docs/spec/contracts/audit-provenance-observability.md
+    home: observability/audit-provenance-observability.md
     domain: Cross-cutting audit-store, audit-replication, provenance, and observability-scoping rules
     status: active
   - prefix: ATM
     name: Authority tier model
-    home: docs/spec/governance/authority-tier-model.md
+    home: governance/authority-tier-model.md
     domain: Authority tiers and their escalation semantics
     status: active
   - prefix: AUD
     name: Universal audit
-    home: docs/spec/contracts/universal-audit.md
+    home: observability/universal-audit.md
     domain: The universal audit model (Merkle log, leaf signatures, log head)
     status: active
   - prefix: AUTH
     name: Auth capability & identity contract
-    home: docs/spec/governance/auth-providers.md
+    home: governance/auth-providers.md
     domain: The authentication capability and Identity contract (UDLM carries the contract, never authenticates)
     status: active
   - prefix: CMP
     name: Composite service composition
-    home: docs/spec/foundations/composite-service-model.md
+    home: entities/composite-service-model.md
     domain: Composite Service registration and constituent composition rules
     status: active
   - prefix: CPX
     name: Credential handling
-    home: docs/spec/governance/credentials.md
+    home: governance/credentials.md
     domain: Credential referencing, custody, and exchange rules
     status: active
   - prefix: CTX
     name: Group context
-    home: docs/spec/foundations/universal-groups.md
+    home: observability/universal-groups.md
     domain: Universal-group context and scoping rules
     status: active
   - prefix: DEP
     name: Service dependencies
-    home: docs/spec/foundations/service-dependencies.md
+    home: entities/service-dependencies.md
     domain: Service-dependency declaration, ordering, and strength (hard/soft)
     status: active
   - prefix: DISC
     name: Capability discovery
-    home: docs/spec/contracts/provider-contract.md
+    home: contracts/provider-contract.md
     domain: Capability discovery wire protocol (provider-contract §10; folded 2026-07-23)
     status: active
   - prefix: DPO
     name: Design priority order
-    home: docs/spec/principles/design-priorities.md
+    home: design-principles/design-priorities.md
     domain: The Design Priority Order framework
     status: active
   - prefix: DSC
     name: Data-store contract (persistence)
-    home: docs/spec/principles/data-contracts.md
+    home: design-principles/data-contracts.md
     domain: Persistence contract for the data domains (append-only, versioned snapshots, retention, tamper-evidence, tenant isolation at the storage interface)
     status: active
   - prefix: DRV
@@ -81,112 +81,112 @@ prefixes:
     status: active
   - prefix: ENT
     name: Entity invariants
-    home: docs/spec/foundations/entity-types.md
+    home: foundations/entity-types.md
     domain: Core entity lifecycle invariants (ownership, UUID immutability, PENDING_REVIEW, composite health)
     status: active
   - prefix: ESC
     name: Identity escrow
-    home: docs/spec/foundations/identity-escrow.md
+    home: entities/identity-escrow.md
     domain: Identity state surviving host re-realization (Access.IdentityEscrow contract rules)
     status: active
   - prefix: ERL
     name: Entity-relationship (legacy-renumbered)
-    home: docs/spec/foundations/entity-relationships.md
+    home: entities/entity-relationships.md
     domain: Entity-relationship rules renumbered off REL-* to a disjoint prefix (single-source precedent)
     status: active
   - prefix: EVT
     name: Event catalog
-    home: docs/spec/contracts/event-catalog.md
+    home: contracts/event-catalog.md
     domain: The event catalog and event-emission rules
     status: active
   - prefix: FCM
     name: Federated contribution model
-    home: docs/spec/governance/federated-contribution-model.md
+    home: governance/federated-contribution-model.md
     domain: Federated contribution and upstream/downstream flow rules
     status: active
   - prefix: GMX
     name: Governance matrix
-    home: docs/spec/governance/governance-matrix.md
+    home: governance/governance-matrix.md
     domain: The unified governance matrix
     status: active
   - prefix: GRP
     name: Resource grouping
-    home: docs/spec/foundations/resource-grouping.md
+    home: entities/resource-grouping.md
     domain: Resource-group classes, membership, and nesting rules
     status: active
     # SANCTIONED co-ownership, not debt: the Universal Group Model doc deliberately co-defines
     # the GRP family with a coordinated number space (GRP-007..015 + GRP-INV-* there;
-    # GRP-001..005 here) and states the invariant itself — "every GRP-* id has exactly one
+    # 001-005/016-019 here) and states the invariant itself — "every GRP-* id has exactly one
     # definition" (universal-groups §2.3). No duplicate ID; the check still enforces that.
-    additional_homes: [docs/spec/foundations/universal-groups.md]
+    additional_homes: [observability/universal-groups.md]
   - prefix: INF
     name: Information providers
-    home: docs/spec/contracts/information-providers-advanced.md
+    home: contracts/information-providers-advanced.md
     domain: Information-Provider confidence, authority, and schema-versioning rules
     status: active
   - prefix: ING
     name: Ingestion model
-    home: docs/spec/lifecycle/ingestion-model.md
+    home: lifecycle/ingestion-model.md
     domain: Brownfield/observed ingestion rules
     status: active
   - prefix: LAY
     name: Data layering & versioning
-    home: docs/spec/foundations/layering-and-versioning.md
+    home: foundations/layering-and-versioning.md
     domain: Data-layer assembly and precedence rules
     status: active
   - prefix: LOC
     name: Layered topology
-    home: docs/spec/foundations/location-topology-layers.md
+    home: topology/location-topology-layers.md
     domain: Location/topology layering contract
     status: active
   - prefix: LTC
     name: Lifecycle constraint
-    home: docs/spec/foundations/resource-service-entities.md
+    home: entities/resource-service-entities.md
     domain: Lifecycle Constraint Enforcer rules
     status: active
   - prefix: OBS
     name: Observability (dependencies)
-    home: docs/spec/foundations/service-dependencies.md
+    home: entities/service-dependencies.md
     domain: Observability rules carried on the service-dependency graph
     status: active
   - prefix: OPS
     name: Operational models
-    home: docs/spec/lifecycle/operational-models.md
+    home: lifecycle/operational-models.md
     domain: Operational-model (ingest/process/egress) rules
     status: active
   - prefix: OWN
     name: Ownership, sharing & allocation
-    home: docs/spec/foundations/ownership-sharing-allocation.md
+    home: foundations/ownership-sharing-allocation.md
     domain: Ownership models, sharing, and allocation rules
     status: active
   - prefix: PCA
     name: Provider callback auth
-    home: docs/spec/contracts/provider-callback-auth.md
+    home: contracts/provider-callback-auth.md
     domain: Provider callback authentication contract
     status: active
   - prefix: POL
     name: Policy contract
-    home: docs/spec/contracts/policy-contract.md
+    home: contracts/policy-contract.md
     domain: The unified policy contract
     status: active
   - prefix: PRV
     name: Provider contract
-    home: docs/spec/contracts/provider-contract.md
+    home: contracts/provider-contract.md
     domain: The unified provider contract and provider profiles
     status: active
   - prefix: RDG
     name: Request dependency graph
-    home: docs/spec/lifecycle/request-dependency-graph.md
+    home: lifecycle/request-dependency-graph.md
     domain: Consumer request dependency-graph rules
     status: active
   - prefix: REG
     name: Registry governance
-    home: docs/spec/governance/registry-governance.md
+    home: governance/registry-governance.md
     domain: Registry governance, tiers, and deprecation policy (incl. REG-DP sub-series)
     status: active
   - prefix: REL
     name: Entity relationships
-    home: docs/spec/foundations/entity-relationships.md
+    home: entities/entity-relationships.md
     domain: Entity-relationship model rules (edge_type, relation, nature-derivation)
     status: active
     # SANCTIONED co-ownership: common-elements §9 "Relation vocabulary (normative)" owns the
@@ -195,37 +195,37 @@ prefixes:
     additional_homes: [registry/common-elements.md]
   - prefix: RHY
     name: Rehydration / four-states
-    home: docs/spec/foundations/four-states.md
+    home: foundations/four-states.md
     domain: Four-state lifecycle and rehydration rules
     status: active
   - prefix: RSE
     name: Resource/service entity
-    home: docs/spec/foundations/resource-service-entities.md
+    home: entities/resource-service-entities.md
     domain: Resource/Service entity rules (ownership transfer, allocation, capacity confidence, billing_state)
     status: active
   - prefix: SCH
     name: Scheduled requests
-    home: docs/spec/lifecycle/scheduled-requests.md
+    home: lifecycle/scheduled-requests.md
     domain: Scheduled and deferred request rules
     status: active
   - prefix: SOV
     name: Sovereignty
-    home: docs/spec/contracts/provider-contract.md
+    home: contracts/provider-contract.md
     domain: Provider-sovereignty registration obligations (provider-contract §2a; A4 landed 2026-07-23)
     status: active
   - prefix: STO
     name: Storage providers
-    home: docs/spec/contracts/storage-providers.md
+    home: contracts/storage-providers.md
     domain: Storage-provider contract rules
     status: active
   - prefix: SUB
     name: Subscription lifecycle
-    home: docs/spec/lifecycle/subscription-lifecycle.md
+    home: lifecycle/subscription-lifecycle.md
     domain: Subscription-as-data lifecycle rules
     status: active
   - prefix: TEN
     name: Tenancy
-    home: docs/spec/foundations/resource-grouping.md
+    home: entities/resource-grouping.md
     domain: Tenant-boundary group rules
     status: active
   - prefix: TERM
@@ -235,17 +235,17 @@ prefixes:
     status: active
   - prefix: XTA
     name: Cross-tenant authorization
-    home: docs/spec/foundations/entity-relationships.md
+    home: entities/entity-relationships.md
     domain: Cross-tenant authorization (XTA) rules
     status: active
   - prefix: PVD
     name: Portable-value discipline
-    home: docs/spec/principles/portable-values.md
+    home: design-principles/portable-values.md
     domain: Portable-value discipline (reference / codelist / requirement, not free string; no inline re-expression)
     status: active
   - prefix: ZT
     name: Zero trust
-    home: docs/spec/governance/accreditation-and-authorization-matrix.md
+    home: governance/accreditation-and-authorization-matrix.md
     domain: Zero-trust posture rules
     status: active
   - prefix: DOC

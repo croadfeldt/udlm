@@ -1,7 +1,7 @@
 # ADR-027: Entity family model — Resource | Process, and the Atomic/Composite shape
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-17
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** [ADR-026 — typed-classification naming](README.md); `docs/spec/foundations/entity-types.md`; `docs/spec/foundations/entity-type-families.md`; ADR-013 (hardware component scope)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** [ADR-026 — typed-classification naming](ADR-026-typed-classification-naming.md); `foundations/entity-types.md`; `foundations/entity-type-families.md`; ADR-013 (hardware component scope)
 
 ## Context
 
@@ -34,7 +34,7 @@ The entity taxonomy previously named its primary Resource-family types `Infrastr
 A composite Resource's constituents are its owned resources; a composite Process's constituents are the sub-process calls DCM sequences — recorded via the **same constituent-relationship model** in both cases.
 
 ### Tiers
-`family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VM`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`Atomic`/`Composite`) lives in `entity_type`. Both tiers are queryable and gateable.
+`family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VirtualMachine`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`Atomic`/`Composite`) lives in `entity_type`. Both tiers are queryable and gateable.
 
 ## Consequences
 

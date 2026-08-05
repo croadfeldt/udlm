@@ -2,7 +2,7 @@
 
 **Type:** research note (decision support — not normative)
 **Date:** 2026-07-14 · **Method:** assessed the UDLM/DCM tenancy surface against the deployed industry canon (SaaS isolation, Kubernetes multi-tenancy, data-isolation patterns, ReBAC, GDPR).
-**Feeds:** `registry/dcm-group.schema.json` (the `tenant_boundary` model), DCM ADR-014 (RLS isolation), `docs/spec/foundations/data-model-core.md` §6 (the [D1] isolation ladder), `docs/spec/foundations/resource-grouping.md` (tenant lifecycle + cross-tenant), `docs/spec/contracts/data-store-contracts.md` (tenant-context contract), `docs/spec/foundations/ownership-sharing-allocation.md`.
+**Feeds:** `registry/dcm-group.schema.json` (the `tenant_boundary` model), DCM ADR-014 (RLS isolation), `foundations/data-model-core.md` §6 (the [D1] isolation ladder), `entities/resource-grouping.md` (tenant lifecycle + cross-tenant), `contracts/data-store-contracts.md` (tenant-context contract), `foundations/ownership-sharing-allocation.md`.
 
 ## What this settles
 

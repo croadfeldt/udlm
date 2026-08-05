@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 50,
+    "types": 49,
     "by_family": {
       "Access": 4,
       "Knowledge": 5,
-      "Process": 2,
+      "Process": 1,
       "Resource": 39
     }
   },
   "discrimination": {
-    "mutations_attempted": 4275,
-    "mutations_rejected": 4275,
+    "mutations_attempted": 3913,
+    "mutations_rejected": 3913,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -19,29 +19,29 @@
         "attempted": 120,
         "rejected": 120
       },
-      "Automation.OSPatch": {
-        "attempted": 122,
-        "rejected": 122
+      "Automation.Job": {
+        "attempted": 162,
+        "rejected": 162
       },
       "Capability": {
         "attempted": 38,
         "rejected": 38
       },
       "Compute.BareMetalHost": {
-        "attempted": 209,
-        "rejected": 209
+        "attempted": 182,
+        "rejected": 182
       },
       "Compute.Cluster": {
-        "attempted": 208,
-        "rejected": 208
+        "attempted": 104,
+        "rejected": 104
       },
       "Compute.Container": {
-        "attempted": 344,
-        "rejected": 344
+        "attempted": 240,
+        "rejected": 240
       },
-      "Compute.VM": {
-        "attempted": 217,
-        "rejected": 217
+      "Compute.VirtualMachine": {
+        "attempted": 207,
+        "rejected": 207
       },
       "Data.Database": {
         "attempted": 70,
@@ -90,10 +90,6 @@
       "Identity.ServiceAccount": {
         "attempted": 34,
         "rejected": 34
-      },
-      "Job": {
-        "attempted": 157,
-        "rejected": 157
       },
       "Network.AddressService": {
         "attempted": 32,
@@ -218,18 +214,18 @@
     }
   },
   "strictness": {
-    "strict_specs": 50,
-    "total": 50
+    "strict_specs": 49,
+    "total": 49
   },
   "outputs": {
     "per_type": {
       "Access.IdentityEscrow": 4,
-      "Automation.OSPatch": 3,
+      "Automation.Job": 0,
       "Capability": 1,
       "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
       "Compute.Container": 2,
-      "Compute.VM": 7,
+      "Compute.VirtualMachine": 7,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
@@ -242,7 +238,6 @@
       "Identity.Group": 1,
       "Identity.Person": 1,
       "Identity.ServiceAccount": 1,
-      "Job": 3,
       "Network.AddressService": 1,
       "Network.ConnectionProfile": 2,
       "Network.DHCPScope": 1,
@@ -275,6 +270,7 @@
       "Vulnerability": 0
     },
     "zero_output_types": [
+      "Automation.Job",
       "Hardware.GraphicsProcessor",
       "Hardware.Processor",
       "SoftwareImage",
@@ -309,15 +305,14 @@
     ]
   },
   "context": {
-    "with_context": 50,
-    "total": 50,
+    "with_context": 49,
+    "total": 49,
     "missing": []
   },
   "relationships": {
     "with_relationships": 44,
-    "total": 50,
+    "total": 49,
     "missing": [
-      "Automation.OSPatch",
       "Facility.PowerFeed",
       "Observability.LogShipper",
       "Storage.Layout",
@@ -329,14 +324,13 @@
     "files_scanned": 149,
     "covered": [
       "Access.IdentityEscrow",
-      "Automation.OSPatch",
+      "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
       "Compute.Cluster",
       "Compute.Container",
-      "Compute.VM",
+      "Compute.VirtualMachine",
       "Data.Database",
-      "Job",
       "Network.AddressService",
       "Network.ConnectionProfile",
       "Network.DHCPScope",
@@ -397,7 +391,7 @@
       "Compute.Container": [
         "control-plane-servicetype-gen"
       ],
-      "Compute.VM": [
+      "Compute.VirtualMachine": [
         "control-plane-servicetype-gen"
       ],
       "Data.Database": [
@@ -409,7 +403,7 @@
     },
     "named_by_none": [
       "Access.IdentityEscrow",
-      "Automation.OSPatch",
+      "Automation.Job",
       "Capability",
       "Compute.BareMetalHost",
       "Facility.Location",
@@ -423,7 +417,6 @@
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
-      "Job",
       "Network.AddressService",
       "Network.ConnectionProfile",
       "Network.DHCPScope",
@@ -454,7 +447,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 50
+    "consumed_by_at_least_one": 49
   },
   "expressibility_coverage": {
     "value": null,

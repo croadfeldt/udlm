@@ -5,7 +5,7 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-P1..P5`, to which this adds `PROJ-P6`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
 dual anchor); ADR-025 (DCM implementation); ADR-008 (the UDLM/DCM peer test); ADR-011 (sovereignty & residency);
-`docs/spec/contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
+`contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
 
 **Settles:** in its **information-flow role**, policy **is an information firewall** — it mediates data crossing
@@ -57,7 +57,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
    - **Value / resolved (L7).** Match on the **dereferenced datum** (`residency`, `fabric_id`). Requires the
      resolver (Decision 4) and resolution-before-policy (`PROJ-P1`).
    - **The reference/edge graph is a new policy match source**, added alongside the existing four
-     (`docs/spec/contracts/policy-contract.md` §2.1). Structural is cheaper, matches **stable identity** rather than
+     (`contracts/policy-contract.md` §2.1). Structural is cheaper, matches **stable identity** rather than
      transient value, and works when resolution is gated/unavailable — often the surface you want. It also
      **unifies with blast-radius**: "everything that points to X" *is* the `impact_report` graph query, so
      decommission/impact and structural policy share one graph.

@@ -1,5 +1,5 @@
 uuid: uc-6cb8216a-1944-48a1-beac-9562a62bdac5
-handle: docs/spec/contracts/deploy-log-shipper
+handle: observability/deploy-log-shipper
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests an Observability.LogShipper by intent — a declared source

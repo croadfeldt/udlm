@@ -2,8 +2,8 @@
 
 **Status:** Proposed
 **Date:** 2026-07-13
-**Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/guides/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/guides/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (UDLM/DCM boundary)
+**Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `entities/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (UDLM/DCM boundary)
 **Tracking:** September 0.1 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before implementation").
 
 ## Context
@@ -22,7 +22,7 @@ UDLM defines the **base shape and the enforcement mechanism**; the **organizatio
 
 ### 1. `SharedFaultDomain` — derived, anchored on foundational resources
 
-A fault domain is **not a new authored edge kind** (that would be authoring burden and drift-prone). It is **derived**: resources that transitively reference the same **foundational resource** (`docs/guides/foundational-resources.md`) designated a fault-domain anchor share that fault domain. Exposed as data:
+A fault domain is **not a new authored edge kind** (that would be authoring burden and drift-prone). It is **derived**: resources that transitively reference the same **foundational resource** (`docs/foundational-resources.md`) designated a fault-domain anchor share that fault domain. Exposed as data:
 
 ```
 SharedFaultDomain: { anchor: <foundational resource ref>, kind: location|power|host|network|<org-defined>,
