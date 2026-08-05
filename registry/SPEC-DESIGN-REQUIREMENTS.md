@@ -347,7 +347,7 @@ Each hard constraint cites the UDLM contract it derives from.
     an independent field. A stored copy is drift waiting to happen: the moment the underlying
     records change, the copy is a second answer to a question that must have one. This is the
     same compute-never-store discipline the model already applies to derived shape
-    (`has_constituents`, ADR-027 addendum), derived nature (`edge_type`, entity-relationships §6),
+    (`has_constituents`, ADR-027 addendum), derived nature (`edge_type`, entity-relationships §4),
     and staleness verdicts (ADR-048 — judged against declared expectation, never stored). Where a
     realized reading genuinely is not derivable from model records — a provider watches it and
     reports it — the type says so, so a reader can tell a rollup from an observation.
