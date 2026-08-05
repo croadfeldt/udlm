@@ -68,8 +68,8 @@ conformant Job record:
 
 1. **Declare the mandatory execution bound.** **`max_execution_time`** (ISO-8601 duration) is required
    (ENT-002) — a job that never declares when it must stop is not a job. Add `on_max_exceeded`
-   and `trigger` (`manual` / `event` / `schedule`). (`process_type` is retired — the domain derives
-   from the bound definition, not from a field.)
+   and `trigger` (`manual` / `event` / `schedule`); the domain derives from the bound definition,
+   not from a field.
 2. **Carry the automation intent portably.** `definition_ref` (a typed reference or a version-pinned
    `automation_definition` data_reference — never an inline body or a provider-native id), `parameters`
    (opaque to the substrate, validated by the provider at naturalization), `targets` (typed resource

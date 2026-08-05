@@ -270,7 +270,7 @@ def check_process_entity(doc):
     Keys on `family`, not `entity_type` — ADR-027 moved the state-vs-execution distinction to
     the family tier; `entity_type` is now the Atomic/Composite shape (a Process is
     family: Process, entity_type: Atomic|Composite). The prior `entity_type == "Process"` test
-    was dead — it never matched, and false-failed the correct example-process instance."""
+    was dead — it never matched, and false-failed the correct example instance (now example-job) instance."""
     errors = []
     rt = doc.get("resource_type")
     fam = _type_family_index().get(rt)

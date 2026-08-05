@@ -825,8 +825,8 @@ payload:
 #### `process.timeout`
 ```yaml
 payload:
-  process_entity_uuid: <uuid>
-  process_type: playbook | workflow | pipeline | automation_job | script | other
+  job_uuid: <uuid>
+  definition_ref: <the definition the run executes — the domain derives from it>
   max_execution_time: <ISO 8601 duration>    # e.g. PT30M
   started_at: <RFC 3339 UTC 'Z'>
   timed_out_at: <RFC 3339 UTC 'Z'>
