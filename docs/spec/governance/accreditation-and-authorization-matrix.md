@@ -1,25 +1,13 @@
 # UDLM — Accreditation, Data Authorization Matrix, and Zero Trust
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM substrate.
-> The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA + POLICY**
->
-> Data: Accreditation artifacts. Policy: Zero Trust posture as policy concern type.
-
-**Related Documents:** [Resource/Service Entities](../foundations/resource-service-entities.md) | [Layering and Versioning](../foundations/layering-and-versioning.md) | [Operational Models](../lifecycle/operational-models.md) | [Standards Catalog](../../../registry/standards-catalog.md)
+**Background — read first** (skip if you have it):
+[foundations.md](../foundations/foundations.md) — the Data·Provider·Policy triad these three
+models decompose across · [provider-contract.md](../contracts/provider-contract.md) — the
+registration where capabilities and sovereignty stances are declared (a *claim*, which this
+document turns into trust or refuses to) · [governance-matrix.md](governance-matrix.md) — the
+evaluation surface that consumes accreditation status as an input.
 
 ---
-
-> **Authentication Assurance Levels:** See [Standards Catalog](../../../registry/standards-catalog.md) for the NIST SP 800-63B AAL mapping per profile.
 
 ## 1. Purpose
 

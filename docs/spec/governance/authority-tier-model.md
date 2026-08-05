@@ -1,12 +1,15 @@
 # UDLM — Authority Tier Model
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference — Authority Tier Specification
-**Related Documents:** [Design Priorities](../principles/design-priorities.md) | [Federated Contribution Model](federated-contribution-model.md) | [Registry Governance](registry-governance.md)
+**What this settles.** The ordered authority-tier vocabulary — Data, as a versioned registry
+entry — and the `decision_gravity` mapping policies use to require a tier. A tier declares
+**how much organizational decision gravity an action requires**, never the mechanism: who
+satisfies a tier, how many people, and what tools are the organization's to define.
 
-> **This document maps to: DATA + POLICY**
->
-> The authority tier list is Data — a versioned, ordered registry entry. Tiers are referenced by name in Policies (scoring thresholds, contribution approval requirements, registration requirements). The ordered list resolves numeric weight at evaluation time.
+**Background — read first** (skip if you have it):
+[design-priorities.md](../principles/design-priorities.md) — where auto-approve thresholds sit
+per profile · [federated-contribution-model.md](federated-contribution-model.md) — the
+contribution reviews that consume tiers · [registry-governance.md](registry-governance.md) —
+the registry approvals that consume them.
 
 ---
 

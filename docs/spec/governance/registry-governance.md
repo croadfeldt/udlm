@@ -1,19 +1,10 @@
 # UDLM — Registry Governance
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Related Documents:** [Resource Type Hierarchy](../foundations/resource-type-hierarchy.md) | [Auth Providers](auth-providers.md) | [Federated Contribution Model](federated-contribution-model.md)
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM substrate.
-> The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA + PROVIDER**
->
-> Data: registry artifacts. Provider: Resource Type Registry extension.
+**Background — read first** (skip if you have it):
+[resource-type-hierarchy.md](../foundations/resource-type-hierarchy.md) — the four levels and
+categories the registry catalogs · [federated-contribution-model.md](federated-contribution-model.md)
+— the contributor/review model registry submissions specialize ·
+[auth-providers.md](auth-providers.md) — who an approving actor is.
 
 ---
 

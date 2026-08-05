@@ -1,19 +1,10 @@
 # UDLM — Auth Capability and Identity Contract
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Related Documents:** [Provider Contract](../contracts/provider-contract.md) | [Credentials](credentials.md) | [Authority Tier Model](authority-tier-model.md)
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM substrate.
-> The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: PROVIDER**
->
-> The Provider abstraction — Auth Provider taxonomy and credential model.
+**Background — read first** (skip if you have it):
+[provider-contract.md](../contracts/provider-contract.md) §8.4 — auth is a **capability a
+provider declares**, not a provider kind · [credentials.md](credentials.md) — the credential
+vocabulary this document defers to entirely · [authority-tier-model.md](authority-tier-model.md)
+— the tiers auth decisions feed.
 
 ---
 
