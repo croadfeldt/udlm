@@ -106,6 +106,12 @@ negative-probed (a misplaced file is caught).
 Authoring-surface organization only: Data-side convention + gate. Policy and Provider are
 untouched — nothing downstream reads class paths.
 
+**Family-segment dedup.** When a class's first name segment equals its family (the `Access.*`
+category under family Access), the directory is not repeated — the family directory *is* that
+segment's directory: `classes/access/_base.yaml` (the Access category base),
+`classes/access/identity-escrow.yaml`. `CLS-PATH-001` computes the deduped path; `access/access/`
+is never legal.
+
 ## Consequences
 
 - The bulk conversion lands its ~45 type classes into this shape from birth; family
