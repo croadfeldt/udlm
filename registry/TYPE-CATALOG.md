@@ -420,6 +420,27 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 - Security.CredentialRef — the account's key/token, by reference.
 - Identity.Group — memberships that grant it roles.
 
+## Job
+
+### Job (1.0.0)
+
+**Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
+
+A Job is one run. Starting something means submitting intent for a Job bound to a definition; stopping it is a change request against the Job; inspecting it is reading the record (current execution state, results) and walking its seals (who started it, why, what each transition was). Discovery runs, automation runs, and operational actions (power on a host) are all Jobs — one lifecycle, one retention family, one query surface.
+
+**Use when:**
+- You start or stop an execution of anything — the governed alternative to a bespoke verb API (udlm#330)
+- You need what's-running-now against a resource (blast radius gains the mid-flight dimension as a plain query)
+- You need a run's results as readable state for dependent steps or readiness gates
+
+**Not for:**
+- The definition of WHAT can run (Automation.* classes — offered, not executed)
+- Run HISTORY beyond current state (the ledger's — a Job record makes state claims only)
+
+**Works with:**
+- Automation.OSPatch — a definition this executes (executes_definition)
+- Automation.OSPatch.EngineBlue / EngineGreen — the engines a provider realizes the run through
+
 ## Network
 
 ### Network.AddressService (0.5.0)
@@ -1034,4 +1055,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*50 types; 50 with context, 0 pending.*
+*51 types; 51 with context, 0 pending.*

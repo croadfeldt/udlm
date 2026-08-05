@@ -157,7 +157,11 @@ def _standard_filename(resource_type):
 def main():
     check = "--check" in sys.argv
     by_name = load_classes()
-    types = {n: c for n, c in by_name.items() if c.get("class") == "type"}
+    has_children = {n: any(c.get("parent") == n for c in by_name.values()) for n in by_name}
+    # served classes: every type tier + any CHILDLESS base (instantiable directly — the Job
+    # pattern; a base with children is abstract-by-use, its types are the served surface)
+    types = {n: c for n, c in by_name.items()
+             if c.get("class") == "type" or (c.get("class") == "base" and not has_children[n])}
     os.makedirs(OUT, exist_ok=True)
     drift, n = [], 0
     for name, cls in sorted(types.items()):
