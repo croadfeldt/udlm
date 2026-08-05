@@ -1,8 +1,8 @@
 # UDLM ADR-015: Settings and Configuration Bundles
 
 **Status:** Proposed (2026-07-15)
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary — "could a peer differ? yes → DCM"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary — "could a peer differ? yes → DCM"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `docs/spec/foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).
 
 ## Context
 
@@ -82,7 +82,7 @@ Step 2 orders *tiers*; ordering **within** one tier is ADR-047 — same-tier com
 
 That is what makes precedence *effective* rather than merely ordered: the setting says how far down it may be pushed and in which direction; each overlay says which slice of the estate it is; the resolver matches, orders, and composes.
 
-**Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `scope` (the filter's coordinates) and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given scope — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `contracts/policy-contract.md`), enforced by DCM at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.
+**Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `scope` (the filter's coordinates) and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given scope — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `docs/spec/contracts/policy-contract.md`), enforced by DCM at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.
 
 ### 3. UDLM defines; DCM manages — the four faces of a setting
 

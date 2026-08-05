@@ -1,0 +1,107 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Automation.OSPatch/1.2.0
+conforms_to: udlm/0.1
+uuid: 65a1d324-0d7e-44ef-bff6-d510ecf973e2
+record_type: class
+class: type
+resource_type: Automation.OSPatch
+parent: Automation
+version: 1.2.0
+family: Process
+status: active
+metadata:
+  authority: canonical
+  display_name: Automation.OSPatch Type Class
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-07-27T22:00:00Z'
+  description: 'The portable OS-patching process — the definition BOTH engines share (blue today, green
+    tomorrow). Names no engine: this is what org policy gates, what schedules reference, what compliance
+    reports against, and what any provider must satisfy to declare `execute_workflows / Automation.OSPatch`.'
+  prompt_version: class-p1-process-pilot-2026-07-27
+elements:
+- element: targets
+  scope: Automation.OSPatch
+  state: canonical
+  description: The hosts to patch — references to Compute.* hosts or a DCMGroup (refines the Base inputs).
+  schema:
+    type: array
+    items:
+      type: string
+- element: patch_policy
+  scope: Automation.OSPatch
+  state: canonical
+  description: What to patch — a bounded codelist (PVD-001).
+  schema:
+    type: string
+    enum:
+    - security-only
+    - all-updates
+    - cve-list
+- element: reboot_policy
+  scope: Automation.OSPatch
+  state: canonical
+  description: Reboot behaviour — a bounded codelist; `if-required` may reference a maintenance window.
+  schema:
+    type: string
+    enum:
+    - never
+    - if-required
+    - always
+- element: exclusions
+  scope: Automation.OSPatch
+  optional: true
+  state: canonical
+  description: The org's known-fragile packages to hold back.
+  schema:
+    type: array
+    items:
+      type: string
+coverage:
+  use_cases:
+  - scoped-class/multi-provider-engine-swap
+  - scoped-class/liskov-contradict-refused
+  flows:
+  - docs/flows/scoped-class-lifecycle.md
+outputs:
+  last_run_status:
+    type: string
+    description: Outcome of the most recent patch run (succeeded | failed | partial) — the readiness signal
+      schedules and compliance reports consume.
+  last_run_timestamp:
+    type: string
+    description: RFC 3339 UTC instant of the most recent run completion.
+  packages_updated:
+    type: integer
+    description: Count of packages changed in the most recent run — the drift-facing magnitude signal.
+context:
+  purpose: The portable OS-patching process — what org policy gates, schedules reference, and compliance
+    reports against, independent of which engine executes it.
+  plain_description: 'Declares that hosts get patched: which package sets, within which maintenance windows,
+    at which severity floor. Both engines (blue today, green tomorrow) satisfy this one definition — swapping
+    engines never touches the declared process.'
+  use_when:
+  - You schedule or gate OS patching as governed automation
+  - You need engine-portable patch compliance reporting
+  not_for:
+  - Application deployment (a different process family)
+  - Ad-hoc one-host package installs
+  works_with:
+  - Compute.BareMetalHost — the patched substrate
+  - Compute.VM — the patched substrate
+  - Automation.OSPatch.EngineBlue / EngineGreen — the executing engines
+spec_examples:
+- targets:
+  - role:web
+  patch_policy: security-only
+  reboot_policy: if-required
+  inputs_schema:
+    type: object
+    properties:
+      window:
+        type: string
+  outputs_schema:
+    type: object
+    properties:
+      packages_updated:
+        type: integer
+  idempotency: idempotent
+  compensation: none

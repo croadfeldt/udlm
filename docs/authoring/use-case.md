@@ -66,7 +66,7 @@ A UC references a decision; it never argues one.
 | No estate tokens (personal host/site names, estate IPs) | `tests/check_estate_tokens.py` |
 
 **The refusal contract (must-reject UCs).** Success is the REFUSAL, and per
-[ADR-003](../adr/ADR-003-data-mobility-and-process-validation.md) (data-mobility + process-validation
+[ADR-003](../adr/README.md) (data-mobility + process-validation
 — the origin of the refusal-contract elements, as [`../../use-cases/PERSONAS.yaml`](../../use-cases/PERSONAS.yaml)
 attributes them) the refusal must be **typed** (machine-matchable, distinct from not-found and
 schema-invalid), **actionable** (surfaced, naming the constraint and its resolution), **whole** (no

@@ -6,7 +6,7 @@ the three consumers that need one vocabulary: a UDLM registry type (intent), est
 real hosts (realized), and day-0 provisioning input. **Method:** survey of the official specs/schemas of
 five primary candidates and six secondary prior-art systems, scored against the coverage the registry is
 missing and the adoption tests in
-[`../../design-principles/adopted-standards.md`](../../design-principles/adopted-standards.md)
+[`../spec/principles/adopted-standards.md`](../spec/principles/adopted-standards.md)
 (disposition, tier, net-negative, license compatibility). Registry baseline this must not duplicate:
 `Storage.Pool` already owns RAID/pool topology (recursive `vdevs`, `pool_kind` zfs/md/hardware_raid/lvm/btrfs,
 Swordfish `RAIDType`); `Hardware.StorageDevice` already owns drives and has `device_class: partition` +
@@ -102,7 +102,7 @@ Binding intent → Requested is then selector resolution, not translation betwee
 exactly what Butane's `boot_device` demonstrates mechanically.
 
 This is not a new posture — it is the same move
-[ADR-036](../adr/ADR-036-storage-selection-requirements.md) already made for storage *selection*
+[ADR-036](../adr/README.md) already made for storage *selection*
 (**Proposed**, pending engineering ratification #217 — lean on it as the registry's direction, not
 settled doctrine): its requirements descriptor deliberately mirrors the provider's advertised
 capability fields "so request and advertisement speak one language," and the provider's concrete choice

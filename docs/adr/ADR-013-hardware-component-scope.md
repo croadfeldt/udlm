@@ -1,7 +1,7 @@
 # UDLM ADR-013: UDLM/DCM is not a hardware component system-of-record (for now)
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); maintainer decision 2026-07-15
-**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `entities/knowledge-family.md` §4.5)
+**Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary); DCM ADR-017 (brownfield/discovered ingestion); the DMTF Redfish adoption (`registry/standards-adoption-register.md`); reviewer feedback on `dcm-project/udlm` #40.
 
 ## Context

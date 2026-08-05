@@ -1,0 +1,265 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.0.0
+conforms_to: udlm/0.1
+uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
+record_type: class
+class: base
+resource_type: Job
+version: 1.0.0
+family: Process
+status: active
+metadata:
+  authority: canonical
+  display_name: Job — the execution record
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-08-04T00:00:00Z'
+  description: 'ONE class for every execution (maintainer ruling 2026-08-04): a Job is the tracked, inspectable
+    record of running something — the receipt of consuming a definition. Jobs are how an execution is
+    started (submit intent for a Job) and stopped (a change request against it); a run''s lifecycle rides
+    the D7 execution_state axis, one Job per run (concurrency honest). No per-domain subtypes: the bound
+    definition carries the schemas (its inputs_schema validates parameters, its outputs_schema validates
+    results), so domain filtering is a DERIVED facet of the reference, queried not typed (job.running?family=automation
+    — the ADR-038 §10 filtering surface). Instantiable base ("Base Classes are instantiable" — portability
+    at its highest level); types appear later only if a genuinely job-shaped variant earns one. Every
+    state transition seals with its pathway_ref; current state + results live on the record (act-now),
+    history in the ledger (ADR-059 claims discipline). This is the udlm#330 start/stop model — an operation
+    is a governed Job, not a bespoke verb surface.'
+elements:
+- element: definition_ref
+  scope: Job
+  optional: false
+  state: canonical
+  description: 'The versioned definition artifact this job executes — the playbook, workflow, pipeline,
+    or script the engine runs. Always a typed reference, never an inline body or a provider-native id:
+    either a resource Reference (common-elements §2.5) to the entity carrying the definition, or a data_reference
+    (AD'
+  schema:
+    description: 'The versioned definition artifact this job executes — the playbook, workflow, pipeline,
+      or script the engine runs. Always a typed reference, never an inline body or a provider-native id:
+      either a resource Reference (common-elements §2.5) to the entity carrying the definition, or a data_reference
+      (ADR-012) pinning an immutable automation_definition reference-data layer version — the pin that
+      lets each promotion stage run exactly the definition version it verified, and lets rehydration replay
+      the intent together with its payload. Optional: a job discovered on a brownfield engine may not
+      yet cite its definition.'
+    oneOf:
+    - $ref: ../../common-elements.schema.json#/$defs/Reference
+    - allOf:
+      - $ref: ../../data-reference.schema.json#/$defs/data_reference
+      - required:
+        - reference_data_type
+        properties:
+          reference_data_type:
+            const: automation_definition
+- element: parameters
+  scope: Job
+  optional: true
+  state: canonical
+  description: Parameters the definition is invoked with — the org-authored automation intent (a patch
+    policy, a reboot policy, maintenance windows) that must survive an engine migration byte-identical.
+    Keys are defined by the referenced definition; the substrate carries them opaquely and the provider
+    validates th
+  schema:
+    type: object
+    description: Parameters the definition is invoked with — the org-authored automation intent (a patch
+      policy, a reboot policy, maintenance windows) that must survive an engine migration byte-identical.
+      Keys are defined by the referenced definition; the substrate carries them opaquely and the provider
+      validates them against the pinned definition at naturalization (T9 — the substrate never translates
+      them into a provider-native spec).
+- element: targets
+  scope: Job
+  optional: true
+  state: canonical
+  description: 'The resources this job operates on — typed resource References (common-elements §2.5),
+    never inventory strings. Each entry is authored by target_handle (ADR-025 §2 — a uuid is never hand-authored;
+    DCM resolves and pins target_uuid at reserve). Part of the portable automation intent: the target
+    set i'
+  schema:
+    type: array
+    items:
+      allOf:
+      - $ref: ../../common-elements.schema.json#/$defs/Reference
+      - required:
+        - target_handle
+    description: 'The resources this job operates on — typed resource References (common-elements §2.5),
+      never inventory strings. Each entry is authored by target_handle (ADR-025 §2 — a uuid is never hand-authored;
+      DCM resolves and pins target_uuid at reserve). Part of the portable automation intent: the target
+      set is engine-neutral and unchanged by an engine migration. Distinct from the informational affected_entities
+      edge: targets is authored intent (what the job is FOR); affected_entities records what a run actually
+      touched.'
+- element: max_execution_time
+  scope: Job
+  optional: false
+  state: canonical
+  description: ISO 8601 duration (e.g. PT30M). MANDATORY per ENT-004; enforced by the substrate Lifecycle
+    Constraint Enforcer.
+  schema:
+    type: string
+    pattern: ^P(?!$)(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$
+    description: ISO 8601 duration (e.g. PT30M). MANDATORY per ENT-004; enforced by the substrate Lifecycle
+      Constraint Enforcer.
+- element: on_max_exceeded
+  scope: Job
+  optional: true
+  state: canonical
+  description: Action when max_execution_time is exceeded. Default is profile-governed (ENT-004).
+  schema:
+    type: string
+    enum:
+    - terminate
+    - notify
+    - escalate
+    x-extensible-enum: true
+    description: Action when max_execution_time is exceeded. Default is profile-governed (ENT-004).
+- element: trigger
+  scope: Job
+  optional: true
+  state: canonical
+  description: What initiates the job (e.g. a NUT on-battery event, a cron schedule, an operator).
+  schema:
+    type: string
+    enum:
+    - manual
+    - event
+    - schedule
+    x-extensible-enum: true
+    description: What initiates the job (e.g. a NUT on-battery event, a cron schedule, an operator).
+- element: schedule
+  scope: Job
+  optional: true
+  state: canonical
+  description: 'Scheduled-execution intent — meaningful only when trigger is ''schedule''. Carries the
+    data the trigger enum value alone cannot: when the job runs, what happens when a run would overlap
+    a still-running predecessor, and what happens to a misse'
+  schema:
+    type: object
+    additionalProperties: false
+    required:
+    - expression
+    description: 'Scheduled-execution intent — meaningful only when trigger is ''schedule''. Carries the
+      data the trigger enum value alone cannot: when the job runs, what happens when a run would overlap
+      a still-running predecessor, and what happens to a missed window.'
+    properties:
+      expression:
+        type: string
+        description: 'Schedule expression, cron syntax (adopted vocabulary: Kubernetes CronJob .spec.schedule).
+          The provider naturalizes it to its native scheduler.'
+      overlap_policy:
+        type: string
+        enum:
+        - allow
+        - forbid
+        - replace
+        x-extensible-enum: true
+        description: 'What happens when a scheduled run fires while the previous run is still executing
+          (CronJob concurrencyPolicy cross-walk): allow concurrent runs, forbid the new run, or replace
+          (supersede) the running one.'
+      missed_run_policy:
+        type: string
+        enum:
+        - skip
+        - catch_up
+        x-extensible-enum: true
+        description: 'What happens to a run whose window was missed (engine down, job suspended): skip
+          it, or catch_up — run once as soon as possible (CronJob startingDeadlineSeconds semantics).'
+immutable:
+- definition_ref
+- parameters
+outputs:
+  results:
+    type: object
+    description: The run's results, shaped by the bound definition's outputs_schema — what dependent steps
+      and readiness gates read. Current-state data (act-now); per-transition history is the ledger's.
+  started_at:
+    type: string
+    description: RFC 3339 UTC instant execution entered EXECUTING.
+  completed_at:
+    type: string
+    description: RFC 3339 UTC instant execution reached COMPLETED/FAILED/CANCELLED.
+relationships:
+- edge_type: references
+  target: Automation
+  name: executes_definition
+  cardinality: 1..1
+  description: 'Consumer-declared — the Job declares what it executes: exactly one definition, today an
+    Automation.* class member (the target widens if a second family-Process category of definitions ever
+    exists). The domain facet (family/category filters) derives from this edge.'
+- edge_type: depends_on
+  target: Compute.BareMetalHost
+  cardinality: 0..n
+  name: executor_host
+  description: 'Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological
+    lifecycle operation the executor cannot stop until the job completes (''orchestrator stops last'',
+    derived, not special-cased).'
+- edge_type: depends_on
+  target: Network.Switch
+  cardinality: 0..n
+  name: fabric
+  description: Fabric the job traverses to reach its targets — connectivity outlives whatever the job
+    is operating on.
+- edge_type: depends_on
+  target: Network.AddressService
+  cardinality: 0..n
+  name: resolver
+  description: Name/address resolution the job uses to reach targets (typically soft — inventories can
+    pin IPs).
+- edge_type: references
+  target: Compute.VM
+  cardinality: 0..n
+  description: 'affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational;
+    §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid). NOTE:
+    the declared target is representative — affected entities may be of ANY resource type; this edge is
+    informational and never constrains what a job may touch (the former bare ''Compute'' category target
+    was not a registered type).'
+context:
+  purpose: The source of truth for executions — start, stop, track, and inspect a run of anything as one
+    governed object, with results readable and every transition sealed.
+  plain_description: A Job is one run. Starting something means submitting intent for a Job bound to a
+    definition; stopping it is a change request against the Job; inspecting it is reading the record (current
+    execution state, results) and walking its seals (who started it, why, what each transition was). Discovery
+    runs, automation runs, and operational actions (power on a host) are all Jobs — one lifecycle, one
+    retention family, one query surface.
+  use_when:
+  - You start or stop an execution of anything — the governed alternative to a bespoke verb API (udlm#330)
+  - You need what's-running-now against a resource (blast radius gains the mid-flight dimension as a plain
+    query)
+  - You need a run's results as readable state for dependent steps or readiness gates
+  not_for:
+  - The definition of WHAT can run (Automation.* classes — offered, not executed)
+  - Run HISTORY beyond current state (the ledger's — a Job record makes state claims only)
+  works_with:
+  - Automation.OSPatch — a definition this executes (executes_definition)
+  - Automation.OSPatch.EngineBlue / EngineGreen — the engines a provider realizes the run through
+spec_examples:
+- max_execution_time: PT1H
+  on_max_exceeded: terminate
+  trigger: schedule
+  definition_ref:
+    resource_type: Automation.Definition
+    target_handle: nightly-backup-playbook
+  parameters:
+    retention_days: 30
+    compression: zstd
+  targets:
+  - resource_type: Data.Database
+    target_handle: orders-db
+  schedule:
+    expression: 0 2 * * *
+    overlap_policy: forbid
+    missed_run_policy: catch_up
+adopts:
+- standard: Kubernetes
+  version: batch/v1
+  standard_name: Job
+  role: run-to-completion and scheduled-job vocabulary (activeDeadlineSeconds ≈ max_execution_time, terminal
+    states; CronJob schedule/concurrencyPolicy/startingDeadlineSeconds ≈ schedule.expression/overlap_policy/missed_run_policy)
+  source: https://kubernetes.io/docs/concepts/workloads/controllers/job/
+  license: Apache-2.0
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+- standard: Ansible
+  version: 2.x
+  standard_name: Playbook
+  role: playbook process_type vocabulary
+  source: https://docs.ansible.com/ansible/latest/playbook_guide/
+  license: GPL-3.0
+  license_compatibility: reference-only
+  disposition: tier1_value

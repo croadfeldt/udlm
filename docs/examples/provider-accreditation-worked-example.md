@@ -4,15 +4,19 @@
 VMs, containers, and Kubernetes clusters** (and all their constituent capabilities), and how **three
 different sovereignty postures** are modelled with the accreditation record — using nothing but the
 provider capability declaration (`registry/provider-adopted-standards.schema.json`) and the accreditation
-record (`registry/accreditation.schema.json`; `governance/accreditation-and-authorization-matrix.md`).
+record (`registry/accreditation.schema.json`; `docs/spec/governance/accreditation-and-authorization-matrix.md`).
 
 The scenario:
 - **Region sovereignty (US + Canada) for everything** the provider offers — *except* cluster lifecycle.
 - **State sovereignty (Minnesota) for containers.**
 - **No sovereignty accreditation for Cluster Lifecycle** at all.
 
-All three artifacts below are live, validated instances — `registry/providers/service/full-stack-sp.json`,
-`registry/instances/accreditation-region-us-ca.yaml`, `registry/instances/accreditation-state-mn.yaml`.
+The two accreditations are live, validated instances — `registry/instances/accreditation-region-us-ca.yaml`
+and `registry/instances/accreditation-state-mn.yaml`. The provider declaration is **not a repo
+artifact**: capabilities are declared at **DCM registration** (the classes a provider supports, or
+provider classes it injects — [provider-contract §2](../spec/contracts/provider-contract.md)), and the
+payload below is what crosses the wire, validating against
+`registry/provider-adopted-standards.schema.json` at admission.
 
 ---
 
@@ -24,7 +28,7 @@ A **capability** is the versioned, accreditable unit (`capability_uuid` + `versi
 
 | Capability (`capability_uuid`, v1.0.0) | Realizes these categories (constituent capabilities) |
 |---|---|
-| **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VirtualMachine) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
+| **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VM) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
 | **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Compute.Container) · `…/Network` · `…/Storage` |
 | **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (Compute.Cluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
 
@@ -46,8 +50,8 @@ are declared per category — e.g. the VM's Compute category advertises `online_
 
 Declaring a stance does **not** make it trusted — that takes a matching, **verifiable** accreditation (§3).
 
-**The declaration** (`registry/providers/service/full-stack-sp.json`, abridged — Network/Storage constituent
-categories elided for length; they carry no per-category override and inherit the provider default):
+**The registration payload** (abridged — Network/Storage constituent categories elided for length;
+they carry no per-category override and inherit the provider default):
 
 ```json
 {
@@ -65,7 +69,7 @@ categories elided for length; they carry no per-category override and inherit th
   "capabilities": [
     { "capability_uuid": "44e7eb3d-…", "version": "1.0.0", "name": "Virtual Machine Lifecycle",
       "categories": [
-        { "category": "realize_resources/Compute", "resource_types": ["Compute.VirtualMachine"],
+        { "category": "realize_resources/Compute", "resource_types": ["Compute.VM"],
           "topology_capability": { "kinds_supported": ["region","zone","host"], "max_separation": "zone" },
           "operational_capability": { "drain": true, "online_migrate": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
         { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress","Network.VirtualNetwork"] },
@@ -172,24 +176,16 @@ requirement. DCM resolves placement and runs the 1-1 match for (`full-stack-sp` 
 
 No accreditation matches all three axes, so the VM's Minnesota claim is `self_asserted`. Under a sovereign
 profile that is a **hard fail**: the provider is **not eligible** for this request, and — with no other
-eligible provider — DCM surfaces an **accreditation gap** (§3.5) instead of silently placing it:
+eligible provider — DCM opens an **accreditation-gap finding** (§3.5 — an ADR-060 finding: opened once, closed only by
+citing the resolution) instead of silently placing it. The finding carries the §3.5 content
+contract:
 
-```yaml
-accreditation_gap_record:
-  uuid: <uuid>
-  provider_uuid: ee72f521-…            # full-stack-sp
-  required_framework: sovereign
-  required_for: [VM intent requiring US-MN residency]
-  gap_type: missing
-  detected_at: 2026-07-14T00:00:00Z
-  severity: critical
-  unmet_capability:
-    capability_uuid: 44e7eb3d-…        # VM Lifecycle
-    version: null                      # country-grain requirement — no exact version pinned
-    category: realize_resources/Compute
-  unmet_jurisdiction: [US-MN]
-  policy_response: NOTIFY_AND_WAIT      # sovereign-profile default (§3.5)
-```
+- `gap_type: missing` · severity `critical` · the provider (`full-stack-sp`)
+- what required it: the VM intent requiring US-MN residency, under `framework: sovereign`
+- the **unmet match axes** at the capability grain: capability `44e7eb3d` (VM Lifecycle),
+  category `realize_resources/Compute`, no version pinned (country-grain requirement) —
+  and jurisdiction `US-MN`
+- the policy response taken: `NOTIFY_AND_WAIT` (the sovereign-profile default)
 
 The outcome is **explicit and diagnosable**: the request does not fail with a vague "no capacity" — it
 names exactly what is missing (a Minnesota accreditation for the VM capability). The remedy is equally

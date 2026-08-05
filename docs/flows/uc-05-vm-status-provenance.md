@@ -34,11 +34,11 @@ Everything up to Commit is request-realization.
 
 ## Data · Policy · Provider
 
-- **Data:** the realized (status) side of `Compute.VirtualMachine`, each field paired with a provenance record (provider run id + timestamp). This is the [four-states](../../foundations/four-states.md) Realized side made auditable.
+- **Data:** the realized (status) side of `Compute.VM`, each field paired with a provenance record (provider run id + timestamp). This is the [four-states](../spec/foundations/four-states.md) Realized side made auditable.
 - **Policy:** system defaults only (`system_defaults_only`) — no placement or enrichment logic here; the concern is faithful ingest, not choosing values.
 - **Provider:** libvirt/KVM reports native status on commit and on re-read; DCM reconciles each report onto the resource.
 
 ## Pointers
 
 - Base flow: [request-realization](request-realization.md). UC source: `libvirt-vm-provider/standard/vm-status-provenance`.
-- The four states (Intent → Requested → Realized): [`foundations/four-states.md`](../../foundations/four-states.md).
+- The four states (Intent → Requested → Realized): [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md).

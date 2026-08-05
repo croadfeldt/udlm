@@ -1,0 +1,173 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.2.0
+conforms_to: udlm/0.1
+uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
+record_type: class
+class: base
+resource_type: Compute
+version: 1.2.0
+family: Resource
+status: active
+metadata:
+  authority: canonical
+  display_name: Compute Base Class
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-07-27T21:00:00Z'
+  title: Compute Base Class
+  description: The Base Class of the Compute category (ADR-038). Every element here is a SharedDataElement
+    at `Compute` scope, inherited by every Compute Type Class (Compute.VM, Compute.BareMetalHost, Compute.Container,
+    …). Base-scope = portable across every type in the category. This is the first worked Class artifact
+    — the P0 substrate the class-gated queue composes against; the generator compiles each Type Class
+    extending it down to today's flat resource-type spec.
+  prompt_version: class-p0-keystone-2026-07-27
+elements:
+- element: instance_size
+  scope: Compute
+  optional: true
+  state: proposed
+  description: 'Provider-neutral size class (ADR-014: small|medium|large, ordered/comparable — common-elements
+    §2.2): size by class IN PLACE OF explicit cpu+memory; the provider maps it to concrete resources at
+    naturalization (ADR-023). Added for parity with the flat Compute.VM spec (2026-07-29 reconciliation,
+    bare-instantiation philosophy): a compute consumer may be declared by size class alone.'
+  schema:
+    type: string
+    description: Provider-neutral size class (small|medium|large, ordered/comparable — common-elements
+      §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources
+      at naturalization (ADR-023). anyOf enforces sizing by class OR raw.
+- element: cpu
+  scope: Compute
+  state: canonical
+  description: Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under
+    three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores,
+    EC2 vCPUs).
+  schema:
+    type: object
+    properties:
+      count:
+        type: integer
+        minimum: 1
+        description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt
+          domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (ADR-023).
+      sockets:
+        type: integer
+        minimum: 1
+        description: 'Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable.'
+      cores_per_socket:
+        type: integer
+        minimum: 1
+        description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
+  optional: true
+- element: memory
+  scope: Compute
+  state: canonical
+  description: 'Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}):
+    `hugepages` becomes an optional Base element.'
+  schema:
+    type: object
+    properties:
+      size:
+        type: string
+        pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
+        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base
+          Class `memory.size`).
+      hugepages:
+        type: object
+        description: Optional huge-page backing (provider-support-dependent; validated against provider
+          capability).
+        properties:
+          enabled:
+            type: boolean
+          page_size:
+            type: string
+            description: e.g. 2Mi, 1Gi.
+  optional: true
+- element: storage
+  scope: Compute
+  optional: true
+  state: canonical
+  description: The reference-discipline requirements descriptor (PVD-001) — the numeric storage requirements,
+    unifying VM disks[].storage / BareMetal storage / Container resources. The requested performance class
+    is the governed `storage_tier` element below, not an inline enum here.
+  schema:
+    type: object
+    description: The reference-discipline storage requirements descriptor (PVD-001, Compute Base Class
+      shape) — numeric minima the realizing storage must meet. The requested performance class is the
+      governed `storage_tier` element, not an inline enum here.
+    properties:
+      min_iops:
+        type: integer
+        minimum: 0
+      min_throughput_mbps:
+        type: integer
+        minimum: 0
+      min_replication:
+        type: integer
+        minimum: 1
+      encryption:
+        type: boolean
+- element: storage_tier
+  scope: Compute
+  optional: true
+  state: canonical
+  description: 'The requested storage performance class — the neutral `tier` of ADR-036''s requirements
+    descriptor, as a GOVERNED vocabulary (ADR-038 §2), not an inline enum or a vendor class name. The
+    canonical terms are `storage_tier` reference-data records (standard / performance / archive, curated
+    proposed→canonical), and each term DENOTES A REQUIREMENTS FLOOR — its canonical definition carries
+    the minima it means (e.g. performance → min_iops 20000, min_throughput 500). Selection precedence
+    (ADR-036, ruled 2026-07-27): name-selectable but requirements-authoritative — a resource may be selected
+    by tier name alone, but explicit `storage` requirements, if given, drive the match, and a tier name
+    resolves to the same floor. One provider''s "SSD" and another''s "performance" both qualify iff they
+    meet the floor (portability retained); the provider records its chosen native class as a realized
+    output, never intent. Rigor is profile-driven (ADR-007 + the ADR-039 intake ladder): homelab MAY write
+    a bare string; sovereign MUST resolve to a canonical term by `data_reference`.'
+  schema:
+    type: string
+    description: 'The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical
+      terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a
+      requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare
+      string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element.
+      Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative
+      (ADR-036). Profile decides bare-vs-reference.'
+  values:
+    reference_data_type: storage_tier
+- element: guest_os
+  scope: Compute
+  optional: true
+  state: proposed
+  description: 'The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4
+    — the flat VM''s guest_os won over the earlier {family, version} draft): portable form is a data_reference
+    to an os_image reference-data vocabulary (ADR-012) the target provider advertises via capability discovery
+    (ADR-004); inline {type, version} is the portability_breaking escape. Proposed pending the OS-standardization
+    catalog work (task #30).'
+  schema:
+    description: 'Guest operating system. Portable form is a reference to an os_image reference-data vocabulary
+      (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy
+      validates membership at request. Inline is the portability_breaking escape. Optional at the data
+      layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require
+      it.'
+    oneOf:
+    - type: object
+      required:
+      - type
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: 'Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with
+            no os_image vocabulary entry — a review finding.'
+        version:
+          type: string
+          description: Inline OS version (e.g. 9.4).
+    - allOf:
+      - $ref: ../../data-reference.schema.json#/$defs/data_reference
+      - required:
+        - reference_data_type
+        properties:
+          reference_data_type:
+            const: os_image
+coverage:
+  use_cases:
+  - scoped-class/author-scoped-class
+  - scoped-class/compile-type-to-flat-spec
+  - scoped-class/portability-derived-from-scope
+  flows:
+  - docs/flows/scoped-class-lifecycle.md

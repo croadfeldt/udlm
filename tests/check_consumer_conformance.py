@@ -6,7 +6,7 @@ resource types (each with `noted_version`, the registry version the consumer was
 against) or `consumes_all_types: true` for envelope-level readers. Three invariants, every
 state green or red:
 
-  1. EXISTENCE — every named resource_type resolves in registry/resource-types/. A rename or
+  1. EXISTENCE — every named resource_type resolves in the served registry (registry/generated/). A rename or
      removal that would break a declared consumer fails HERE, naming the consumer, instead of
      failing later in that consumer's runtime.
   2. VERSION HONESTY — every noted_version parses (X.Y.Z) and is not AHEAD of the registry's
@@ -55,7 +55,8 @@ UNCONSUMED_HEADER = """\
 def load_registry_versions():
     """resource_type -> current version, from the type specs."""
     versions = {}
-    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True)):
+    for path in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*"), recursive=True)
+                       + glob.glob(os.path.join(ROOT, "registry", "generated", "*.json"))):
         if not path.endswith((".json", ".yaml", ".yml")):
             continue
         with open(path, encoding="utf-8") as fh:
@@ -107,7 +108,7 @@ def check_manifest(rel, doc, versions, fails):
     for entry in doc.get("consumes") or []:
         rt, noted = entry.get("resource_type"), entry.get("noted_version")
         if rt not in versions:
-            fails.append(f"{rel}: unknown resource_type {rt!r} — not in registry/resource-types/ "
+            fails.append(f"{rel}: unknown resource_type {rt!r} — not in registry/generated/ "
                          f"(a rename/removal breaking this consumer, or a typo)")
             continue
         consumed.add(rt)

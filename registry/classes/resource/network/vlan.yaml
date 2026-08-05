@@ -1,0 +1,104 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.4.0
+conforms_to: udlm/0.1
+uuid: 009c7bcb-53ae-4a3b-96fd-12ee35b3b426
+record_type: class
+class: type
+resource_type: Network.VLAN
+parent: Network
+version: 0.4.1
+family: Resource
+status: active
+metadata:
+  display_name: VLAN / Network Segment ID
+  description: 'A foundational network segment identifier — a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve)
+    — owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED
+    by reference from the resources that ride it (a Network.VirtualNetwork, a Hardware.NetworkInterface).
+    A root resource (docs/guides/foundational-resources.md): dependents reference an existing VLAN, they do not
+    invent one. The concrete encapsulation is provider data; a provider may offer a variant (e.g. Network.Port)
+    that the org ratifies.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-07-13T00:00:00Z'
+  converted_from: flat spec Network.VLAN@0.3.2 (bulk mechanical conversion 2026-08-04; factoring later
+    via scope promotion)
+elements:
+- element: encapsulation
+  scope: Network.VLAN
+  optional: false
+  state: canonical
+  description: Segmentation type. vlan = 802.1Q; vxlan/geneve = overlay VNI; flat = untagged.
+  schema:
+    type: string
+    enum:
+    - vlan
+    - vxlan
+    - geneve
+    - flat
+    description: Segmentation type. vlan = 802.1Q; vxlan/geneve = overlay VNI; flat = untagged.
+- element: segment_id
+  scope: Network.VLAN
+  optional: true
+  state: canonical
+  description: The VLAN id (1-4094 for 802.1Q) or VNI (0-16777215 for VXLAN/Geneve). Omitted for flat.
+  schema:
+    type: integer
+    minimum: 0
+    maximum: 16777215
+    description: The VLAN id (1-4094 for 802.1Q) or VNI (0-16777215 for VXLAN/Geneve). Omitted for flat.
+- element: name
+  scope: Network.VLAN
+  optional: true
+  state: canonical
+  description: Human name for the segment, e.g. dmz.
+  schema:
+    type: string
+    description: Human name for the segment, e.g. dmz.
+spec_examples:
+- encapsulation: vlan
+  segment_id: 100
+  name: mgmt
+outputs:
+  segment_ready:
+    type: boolean
+    description: Whether the segment is provisioned on the fabric and available to attach.
+relationships:
+- edge_type: references
+  target: Network.Switch
+  name: fabric
+  cardinality: 0..n
+  description: The switch(es)/fabric that carry this segment (where the provider manages it).
+- edge_type: contained_by
+  target: Compute.Cluster
+  name: scope
+  cardinality: 0..1
+  description: Optional cluster/fabric scope the segment is defined within.
+adopts:
+- standard: IEEE 802.1Q
+  version: '2022'
+  standard_name: VLAN tagging
+  role: segment id + tagging vocabulary
+  source: https://standards.ieee.org/ieee/802.1Q/
+  license: IEEE
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+context:
+  purpose: Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything
+    that rides it references.
+  plain_description: 'The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `vxlan`
+    or `geneve` for an overlay VNI, `flat` for untagged — and its id, `segment_id`. It exists so a segment
+    id appears in exactly one record — switch ports, host sub-interfaces, gateway segments, and virtual
+    networks all reference the VLAN record rather than each retyping the tag. It is a root resource: dependents
+    select an existing VLAN, they do not invent one inline.'
+  use_when:
+  - You need one authoritative record per segment that ports, virtual networks, and gateway segments all
+    reference.
+  - You need overlay segments (VXLAN/Geneve VNIs) modeled with the same shape as 802.1Q VLANs.
+  not_for:
+  - The workload attachment point — Network.VirtualNetwork rides a VLAN; guests attach to the VirtualNetwork,
+    not to the VLAN.
+  - A port's tagging configuration — that is vlan_memberships on Hardware.NetworkInterface, referencing
+    this record.
+  works_with:
+  - Hardware.NetworkInterface — ports and sub-interfaces declare membership by reference.
+  - Network.VirtualNetwork — virtual networks ride a referenced segment.
+  - Network.Switch — the fabric carrying the segment.
+  - Network.Gateway — edge segments each ride a referenced VLAN.

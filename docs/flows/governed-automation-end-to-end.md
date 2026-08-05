@@ -8,7 +8,7 @@ It **builds on [request-realization](request-realization.md)** and extends
 [uc-22 (governed automation)](uc-22-governed-automation.md) — where uc-22 is the *govern-the-effect* core,
 this is the *whole journey* around it.
 
-> **Use Case:** `governance/governed-automation-journey`. **Persona:** application-team-member (consumer) ·
+> **Use Case:** `docs/spec/governance/governed-automation-journey`. **Persona:** application-team-member (consumer) ·
 > **Profile:** prod.
 
 **In one breath.** A consumer logs in; their identity resolves to a role, team, and group memberships.
@@ -101,4 +101,4 @@ flowchart TD
   (reconciliation / drift), [credential-and-identity-lifecycle](credential-and-identity-lifecycle.md) (JIT
   credentials), [ADR-041](../adr/ADR-041-policy-information-firewall.md),
   [ADR-057](../adr/ADR-057-sovereignty-placement-and-provenance.md). UC source:
-  `governance/governed-automation-journey`.
+  `docs/spec/governance/governed-automation-journey`.

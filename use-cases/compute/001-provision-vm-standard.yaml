@@ -2,7 +2,7 @@ uuid: uc-6f003d84-a6c9-4028-bb06-42c68986570c
 handle: compute/provision-vm-standard
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Compute.VirtualMachine by intent alone — a size (vCPU and
+  description: 'A platform engineer requests a Compute.VM by intent alone — a size (vCPU and
     memory), an OS image, and the network it attaches to — without naming a hypervisor host, a disk path,
     or any provider-native placement. The compute provider selects an eligible backend, realizes the VM
     to the declared size on the declared OS image, attaches it to the declared network, and the VM reaches

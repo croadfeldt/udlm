@@ -32,12 +32,12 @@ the migration path. The unifying doctrine: docs/design/operational-response-matr
 
 **Where the refusal cases' enforcement is specified.** The refusal contract each of these cases
 asserts — typed, actionable, non-leaking, auditable — is stated once in
-[`contracts/error-model.md`](../../contracts/error-model.md) §6a, and the registry-plane
-mechanisms in [`governance/registry-governance.md`](../../governance/registry-governance.md) §6a:
+[`docs/spec/contracts/error-model.md`](../../docs/spec/contracts/error-model.md) §6a, and the registry-plane
+mechanisms in [`docs/spec/governance/registry-governance.md`](../../docs/spec/governance/registry-governance.md) §6a:
 `REG-011` (version sufficiency — 002), `REG-012` (scope narrowing is breaking — 009), `REG-013`
 (intra-registry fixed-version pin refused — 004), `REG-014` (pin ahead or unknown refused, behind
 is enumerated debt — 006), `REG-016` (promotion refused on a dirty typed-output diff — 008), and
 `REG-015` (the durable gate-outcome record every case's "recorded" criterion depends on). Those
-rules are specification, not enforcement: the class artifacts, classifier, and pin resolver they
-run against are P0 items of `docs/design/scoped-class-hierarchy/implementation-plan.md`, and the
-blue/green harness behind 008 is scheduled with the P1 pilot.
+rules are specification, not enforcement: the class artifacts now exist (`registry/classes/`,
+ADR-061), but the class-compat classifier and pin resolver they run against remain unbuilt, and
+the blue/green harness behind 008 is future work.

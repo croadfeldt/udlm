@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Instance-fuzz gate for resource-type specs (model-validation depth, deterministic layer).
 
-For every registry/resource-types/* definition this harness proves, per type, that the spec
+For every served flat spec in registry/generated/ this harness proves, per type, that the spec
 schema is BOTH satisfiable and discriminating:
 
   ACCEPT  (a) a minimal valid instance can be synthesized from the schema itself, and validates.
@@ -54,11 +54,11 @@ except ImportError:
     yaml = None
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-TYPES_DIR = ROOT / "resource-types"
+TYPES_DIR = ROOT / "generated"
 
 # Candidate strings tried against `pattern` constraints, most-common shapes first.
 PATTERN_CANDIDATES = [
-    "example", "example-1", "example.one", "cexample/example", "Compute.VirtualMachine",
+    "example", "example-1", "example.one", "cexample/example", "Compute.VM",
     "1.0.0", "0.1.0", "192.0.2.1", "192.0.2.0/24", "00:11:22:33:44:55",
     "123e4567-e89b-42d3-a456-426614174000", "2026-01-01T00:00:00Z", "2026-01-01",
     "example.example.com", "https://example.example.com/x", "sha256:" + "0" * 64,

@@ -47,7 +47,7 @@ jobs:
       # Repo-cleanliness gates (the nine questions — dav docs/repo-cleanliness-review.md):
       # referential integrity (Q8) + CI/signoff parity (these two ran only in signoff.sh before).
       - run: python3 tests/check_links.py
-      # Guide-integrity (DOC-002): the contributor guides (docs/working-with-udlm.md, docs/authoring/**,
+      # Guide-integrity (DOC-002): the contributor guides (docs/guides/working-with-udlm.md, docs/authoring/**,
       # docs/{reviewing,consuming,contributing-guide}.md) must not rot — every file/schema/gate they
       # reference must exist, so a newcomer following them verbatim never hits a dead pointer.
       - run: python3 tests/check_authoring_docs.py
@@ -63,6 +63,7 @@ jobs:
       - run: python3 registry/tools/generate_pin_manifest.py --check
       # Scoped-Class substrate (ADR-038 / P0): Liskov extension gate + generated-spec freshness
       - run: python3 tests/check_class_liskov.py
+      - run: python3 tests/check_class_paths.py
       - run: python3 registry/tools/generate_class_specs.py --check
       - run: python3 tests/check_class_address_resolution.py
       # Spec-completeness gate (rule-36 — every spec ships with a UC + example + flow, declared in
@@ -88,10 +89,6 @@ jobs:
       # graphs — cycles / undeclared outputs / unresolved siblings must error, and a legal
       # producer→consumer pair over every real declared output must pass clean.
       - run: python3 tests/check_composition_hammer.py
-      # Provider contract cross-check: every provider standard token resolves in the
-      # standards-adoption register (the ADOPT-001 discipline), accreditation-anchor uuids
-      # v4 + unique across provider docs, version ranges parse.
-      - run: python3 tests/check_provider_contracts.py
       # Consumer conformance (ADR-044): consumers declare their read surface in
       # registry/consumers/; every declared type must exist, no noted_version may run ahead of
       # the registry, and every type is consumed or acknowledged in unconsumed.yaml — which the

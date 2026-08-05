@@ -1,7 +1,7 @@
 # UDLM Resource Type Registry
 
 The registry is the concrete instantiation of UDLM's **Resource Type Specifications** — the
-versioned, formal definitions that the spec (prose, in `../`) describes but does not, until now,
+versioned, formal definitions that the spec (prose, in `..`) describes but does not, until now,
 contain. Each entry is a vendor-neutral definition of a resource type's field schema, constraints,
 typed outputs, lifecycle, and allowed relationships. Providers implement against a version; catalog
 items and constraint profiles project over them.
@@ -15,7 +15,7 @@ registry/
   regeneration-manifest.schema.json   # the change record a class change emits (blast radius + consumer debt)
   finding-routing-record.schema.json  # an estate's contradicted compatibility claim, routed upstream with the diff
   resource-types/                  # TYPE definitions — one file per entity type, JSON or YAML
-    compute.virtual-machine.json   #   Resource family (Category.Type names)
+    compute.vm.json   #   Resource family (Category.Type names)
     compute.cluster.json
     data.database.json
     network.ip-address.json
@@ -37,17 +37,17 @@ registry/
 - **`conforms_to` + `version` = two version axes.** `conforms_to: udlm/0.1` binds the entry to a SPEC
   version (its `apiVersion`); `version` is the entry's own `MAJOR.MINOR.REVISION`. See `VERSIONING.md`.
 - **Relationships are first-class** (`depends_on`, `binds_to`, …) — the substrate the composite model
-  (`../entities/composite-service-model.md`) builds its dependency DAG from.
+  (`../docs/spec/foundations/composite-service-model.md`) builds its dependency DAG from.
 - **JSON and YAML are both native.** The normative *model* is JSON Schema 2020-12; serialization is
   not privileged. Author in whichever you prefer — the tooling loads both.
 
 ## Two families
-The meta-schema covers **both entity-type families** (`foundations/entity-type-families.md`):
+The meta-schema covers **both entity-type families** (`docs/spec/foundations/entity-type-families.md`):
 **Resource** (provisioned by a provider — `Category.Type` names, four-state lifecycle archetype
 `provisioning`) and **Knowledge** (curated, never provider-realized — single-segment names like
 `Capability`, lifecycle archetype `curation`). `family` + `entity_type` are family-conditional in the
 meta-schema; the `resource-types/` directory holds both (the dir name predates the Knowledge family).
-`capability.json` is the worked Knowledge example (anchored by DAV, `entities/knowledge-family.md`).
+`capability.json` is the worked Knowledge example (anchored by DAV, `docs/spec/foundations/knowledge-family.md`).
 
 ## Adding a resource type
 1. Create `resource-types/<name>.{json,yaml}` — `<category>.<type>` (Resource) or `<type>` (Knowledge).

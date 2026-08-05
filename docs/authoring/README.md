@@ -1,8 +1,8 @@
 # Authoring UDLM artifacts — start here
 
-> Part of **[Working with UDLM](../working-with-udlm.md)** — the author track. Reviewing instead?
-> [reviewing.md](../reviewing.md). Building a system on the model? [consuming.md](../consuming.md).
-> New contributor? [contributing-guide.md](../contributing-guide.md).
+> Part of **[Working with UDLM](../guides/working-with-udlm.md)** — the author track. Reviewing instead?
+> [reviewing.md](../guides/reviewing.md). Building a system on the model? [consuming.md](../guides/consuming.md).
+> New contributor? [contributing-guide.md](../guides/contributing-guide.md).
 
 **What this is.** The replicable procedure for adding anything to the UDLM registry: a resource type, a
 Class, a process, a policy, a provider/API, reference data, or a corpus artifact (Use Case, flow, ADR).
@@ -34,9 +34,9 @@ you can run it yourself (all run in `.github/workflows/validate.yml`; `./scripts
 
 | You are adding… | Follow | Its schema | Its completeness gate(s) |
 |---|---|---|---|
-| A **resource type** (VM, Volume, Service, DNSZone…) | [`resource-type.md`](resource-type.md) | `resource-type-spec.schema.json` | EXG-001/002, COV-001/002, fuzz, rule-36 |
+| A **resource type** (VM, Volume, Service, DNSZone…) | [`scoped-class.md`](scoped-class.md) — author a Type Class; the flat spec is generated | `class.schema.json` | Liskov, generate_class_specs, EXG-001/002, COV-001/002, fuzz, rule-36 |
 | A **Class** (Base/Type/Provider scoped-Class) | [`scoped-class.md`](scoped-class.md) | `class.schema.json` | Liskov, generate_class_specs, COV |
-| A **process** (a job/operation with blast-radius) | [`process.md`](process.md) | `class.schema.json` (Process family) / `resource-type-spec` (Automation.Job) | as Class / resource type |
+| A **process** (a job/operation with blast-radius) | [`process.md`](process.md) | `class.schema.json` (Process family; executions are `Job` records) | as Class / resource type |
 | A **policy** (schedule, validation, override…) | [`policy.md`](policy.md) | `policy.schema.json` | validate, rule-IDs, terminology |
 | A **provider / API** (a naturalizing backend) | [`provider-api.md`](provider-api.md) | `provider-adopted-standards.schema.json`, `function-capability-matrix.schema.json` | provider-contracts, standards-registered |
 | **Reference data** (a governed vocabulary) | [`reference-data.md`](reference-data.md) | `layer.schema.json` (`reference_data_type`) | validate, single-source |

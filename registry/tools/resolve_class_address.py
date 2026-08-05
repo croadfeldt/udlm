@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Address resolution for the scoped-Class hierarchy (ADR-038 / realization-plan P0).
+"""Address resolution for the scoped-Class hierarchy (ADR-038 / class-address grammar P0).
 
 An address names an element as seen from a Class, in either of the two ADR-038 notations — they are
 the same coordinate and resolve identically:
@@ -38,7 +38,7 @@ CLASSES = os.path.join(ROOT, "classes")
 
 def load_classes():
     by_name = {}
-    for path in sorted(glob.glob(os.path.join(CLASSES, "*.yaml"))):
+    for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         if doc.get("record_type") == "class":
             by_name[doc["resource_type"]] = doc

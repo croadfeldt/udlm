@@ -1,0 +1,122 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.ConnectionProfile/0.4.0
+conforms_to: udlm/0.1
+uuid: 7c322a52-3d41-4067-b9e2-967280517aa8
+record_type: class
+class: type
+resource_type: Network.ConnectionProfile
+parent: Network
+version: 0.4.0
+family: Resource
+status: active
+metadata:
+  display_name: Connection Profile (host network config)
+  description: 'The declarative NetworkManager desired-state for a host interface — addressing method,
+    routes, DNS, and bond/bridge/VLAN membership — as a first-class estate record (ADR-023). The body
+    conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned
+    conformance pointer, NMstate owns the config body. Realized onto the host by a NetworkManager-family
+    provider (a configuration-management engine, Kubernetes-NMState); maps 1:1 to Kubernetes-NMState NodeNetworkConfigurationPolicy.spec.desiredState.
+    Supersedes bespoke per-tool host-network variables.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-07-15T00:00:00Z'
+  converted_from: flat spec Network.ConnectionProfile@0.3.3 (bulk mechanical conversion 2026-08-04; factoring
+    later via scope promotion)
+elements:
+- element: nmstate_schema_version
+  scope: Network.ConnectionProfile
+  optional: false
+  state: canonical
+  description: The pinned NMstate interface-schema version the `desired_state` body conforms to (the conformance
+    pointer; NMstate releasing a new version does NOT force a UDLM schema change — the Tier-2 litmus).
+  schema:
+    type: string
+    description: The pinned NMstate interface-schema version the `desired_state` body conforms to (the
+      conformance pointer; NMstate releasing a new version does NOT force a UDLM schema change — the Tier-2
+      litmus).
+- element: desired_state
+  scope: Network.ConnectionProfile
+  optional: false
+  state: canonical
+  description: Opaque NMstate desired-state body — `state`, `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`),
+    the type sub-objects (`vlan`/`link-aggregation`/`bridge`/`mac-vlan`), `routes.config[]`, `dns-resolver.config`.
+    NOT restated field-by-field (adopt-by-reference); interpreted against `nmstate_schema_version`. 1:1
+    with NNCP.spec.desiredState.
+  schema:
+    type: object
+    additionalProperties: true
+    description: Opaque NMstate desired-state body — `state`, `ipv4`/`ipv6` (`enabled`/`dhcp`/`autoconf`/`address[]`),
+      the type sub-objects (`vlan`/`link-aggregation`/`bridge`/`mac-vlan`), `routes.config[]`, `dns-resolver.config`.
+      NOT restated field-by-field (adopt-by-reference); interpreted against `nmstate_schema_version`.
+      1:1 with NNCP.spec.desiredState.
+spec_examples:
+- nmstate_schema_version: '2.2'
+  desired_state:
+    interfaces:
+    - name: bond0.100
+      type: vlan
+      state: up
+      vlan:
+        base-iface: bond0
+        id: 100
+      ipv4:
+        enabled: true
+        dhcp: false
+        address:
+        - ip: 192.0.2.10
+          prefix-length: 24
+      ipv6:
+        enabled: false
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 192.0.2.1
+        next-hop-interface: bond0.100
+    dns-resolver:
+      config:
+        server:
+        - 192.0.2.53
+        search:
+        - example.com
+outputs:
+  applied:
+    type: boolean
+    description: Whether the desired state is applied and matches on the host (Realized).
+  discovered_state:
+    type: object
+    description: The NMstate current-state read back from the host; a diff vs desired_state is drift (OBS-001).
+relationships:
+- edge_type: references
+  name: configures
+  target: Hardware.NetworkInterface
+  cardinality: 1..1
+  description: configures — the adapter/port this profile applies to. Host-side declaration (dependent-side
+    rule).
+adopts:
+- standard: NMstate
+  version: 2.x
+  standard_name: Interface / NetworkState desired-state schema
+  role: 'the whole config body by reference (Tier-2): state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver
+    — NetworkManager declarative desired-state, 1:1 with Kubernetes-NMState NNCP'
+  source: https://nmstate.io/
+  license: Apache-2.0
+  license_compatibility: compatible-reference
+  disposition: tier2_record
+context:
+  purpose: Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN
+    membership — as declarative state a provider applies.
+  plain_description: 'What a host interface''s network configuration should be, in NMstate''s own schema:
+    the opaque body is `desired_state`, interpreted against the pinned `nmstate_schema_version` it declares
+    — the profile does not re-describe NMstate''s fields. A NetworkManager-family provider applies it
+    (a configuration-management engine, Kubernetes-NMState); the state read back from the host is published,
+    and a difference between desired and discovered is drift. It replaces per-tool host-network variable
+    files with one governed record per interface.'
+  use_when:
+  - You need host interface config (static addressing, routes, VLANs on a bond) declared once and converged
+    by automation.
+  - You need drift in host networking detected from data, not by logging into hosts.
+  not_for:
+  - The interface device itself — Hardware.NetworkInterface; the profile configures a device that type
+    inventories.
+  - 'BIOS settings — Hardware.BiosProfile: the same opaque-body-plus-pinned-registry pattern, for firmware.'
+  works_with:
+  - Hardware.NetworkInterface — the adapter or port the profile applies to.
+  - Network.VLAN — the segments the configured VLANs and sub-interfaces ride.

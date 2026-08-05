@@ -15,7 +15,7 @@ lifecycle**, never as a field on the working record.
   change seal cites its causal pathway anchor (`pathway_ref` — request chain, discovery run, or
   provider event), and a write without a citable anchor is refused. This ADR sits entirely on
   those decisions.
-- **[`foundations/four-states.md`](../../foundations/four-states.md)**: comparing the four
+- **[`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md)**: comparing the four
   states continuously is how the implementation detects drift — the comparison loop this ADR
   gives an output shape.
 - **ADR-052** (intent fulfillment / convergence): the declared convergence window and derived
@@ -73,13 +73,32 @@ divergence version → finding → disposition → resolution version. Current d
 always **derived on read** from the states — never answered from a finding (a finding says
 "was detected," never "is drifted"). Flap debounce is policy.
 
-## Deliberately open — the accept mechanism
+## Resolution routing — policy dictates, the substrate enables
 
-Delegated to the response-matrix work (DCM OBL-003), both shapes priced: adopt the discovered
-value into intent (a request-pathway change, chained and sealed; cleanest, heaviest) versus an
-accepted-deviation record that suppresses re-detection (lighter, but standing "known
-divergence" state that must be governed and expired). The ruling is operational policy's to
-make.
+**Ruled 2026-08-05.** A drift finding routes to **policy first**; policies dictate what happens,
+when, and *perform the action* — the substrate ships **no built-in action and no built-in
+decision** for any finding class. What UDLM guarantees is that every resolution option is
+*expressible*; DCM carries example policies and profiles MAY bind defaults. The enabled
+vocabulary:
+
+| Resolution action | What it is on the wire |
+|---|---|
+| **Adopt** — intent updated to match reality | a change request on Intent (normal pathway) |
+| **Accept** — realized kept, the difference noted on Intent | a change request annotating Intent |
+| **Replay intent** — full re-realization through the pipeline | a re-realization request (policies re-applied) |
+| **Replay request** — re-dispatch to the provider | re-dispatch of the naturalized request |
+| **Replay realized** — re-assert the realized state | a converge request at the last hop |
+| **Re-observe** — confirm before acting; close as observation-error if the re-read disagrees | a discovery run; false-positive closes the finding |
+| **Quarantine / suspend** — interim containment pending decision | an entity state-change request (not a resolution) |
+| **Defer** — explicitly not now, with a review timer | a recorded decision; the finding stays open |
+| **Decommission** — the drift reveals the thing should not exist | a decommission request |
+
+Policy may also **hand the decision off** — to a human, an AI, or an external policy system;
+the handoff outcome lands as a **DecisionRecord citing the finding**. Because every action
+above is an ordinary governed request, the audit capture is total *without new machinery*: the
+finding is sealed, each policy evaluation and refusal is audited, the handoff is a
+DecisionRecord, and the final action carries full request provenance — the resolution seal
+cites the chain end-to-end, decision and resulting action included.
 
 ## Data · Policy · Provider
 
@@ -88,7 +107,7 @@ make.
   current status.
 - **Policy (DCM):** the comparator and when it speaks (convergence consulted first); the drift
   policy — field relevance, severity classification, flap debounce; the response matrix per
-  finding class; the accept-mechanism ruling.
+  finding class; the example resolution policies (OBL-003) and any profile-bound defaults.
 - **Provider:** unaffected — providers report state (sealed, anchored); they never emit or
   interpret findings.
 
@@ -99,5 +118,5 @@ make.
   are one family, routed through the existing finding-routing record.
 - Dashboards, compliance surfaces, and the review console source the *timeline* from findings
   and *current status* from derivation — never the reverse.
-- The accept-mechanism fork must be ruled in OBL-003 before drift response can be considered
-  discharged.
+- Drift response is dischargeable: OBL-003 carries the response-matrix mechanism (routing,
+  the action vocabulary as matrix rows, example policies, profile defaults).

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Spec generator (ADR-038 / realization-plan P0): compile each Type Class into the flat
+"""Spec generator (ADR-038; conversion executed 2026-08-04 — classes are the sole authored surface): compile each Type Class into the flat
 resource-type-spec shape consumers read today, so Classes are the authoring layer and the flat
 specs are generated artifacts (never hand-edited). A Type Class's compiled spec is its own elements
 plus every ancestor's, merged under `spec.properties`; `required` is the set of non-optional
@@ -30,7 +30,7 @@ SPEC_VALIDATOR = Draft202012Validator(json.load(open(os.path.join(ROOT, "resourc
 
 def load_classes():
     by_name = {}
-    for path in sorted(glob.glob(os.path.join(CLASSES, "*.yaml"))):
+    for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         if doc.get("record_type") == "class":
             by_name[doc["resource_type"]] = doc
@@ -49,8 +49,10 @@ def chain(cls, by_name):
 
 
 def rel_identity(rel):
-    """Relationship identity for the union: declared name wins; else the structural triple."""
-    return rel.get("name") or (rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
+    """Relationship identity for the union/redeclare check: the FULL tuple — a name alone is not
+    unique (one class legitimately declares runs_on -> Cluster AND runs_on -> BareMetalHost).
+    A child's tightening redeclare matches name+structure; retargeting was already forbidden."""
+    return (rel.get("name"), rel.get("edge_type"), rel.get("target"), rel.get("target_field"))
 
 
 def compile_spec(cls, by_name):
@@ -68,7 +70,8 @@ def compile_spec(cls, by_name):
             if el.get("values"):  # governed vocabulary — the compiled property notes its kind (ADR-036/PVD-001)
                 note = f"Governed vocabulary `{el['values']['reference_data_type']}` (ADR-038 §2); " \
                        "name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
-                schema["description"] = (schema.get("description", "") + " " + note).strip()
+                if note not in schema.get("description", ""):
+                    schema["description"] = (schema.get("description", "") + " " + note).strip()
             if el.get("description") and "description" not in schema:
                 schema["description"] = el["description"]
             props[el["element"]] = schema           # nearer Class overrides by name
@@ -99,7 +102,9 @@ def compile_spec(cls, by_name):
         "metadata": {**(cls.get("metadata") or {}),
                      "generated": True,
                      "compilation_provenance": {"generator": GENERATOR_VERSION, "sources": sources}},
-        "spec": {"type": "object", "properties": props, **({"required": sorted(required)} if required else {})},
+        "spec": {"type": "object", "additionalProperties": False,   # the closed-spec norm (SPEC-DESIGN §16)
+                 "properties": props, **({"required": sorted(required)} if required else {}),
+                 **(cls.get("spec_constraints") or {})},               # cross-element constraints, verbatim (type tier)
         "outputs": outputs,
     }
     if immutable:
@@ -108,15 +113,59 @@ def compile_spec(cls, by_name):
         spec["relationships"] = list(rel_seen.values())
     if adopts:
         spec["adopts"] = adopts
+    if cls.get("entity_type"):                       # Knowledge/Access discriminator — pass-through
+        spec["entity_type"] = cls["entity_type"]
     if cls.get("context"):                           # type tier only (schema-enforced); copied verbatim
         spec["context"] = cls["context"]
-    return spec
+    if cls.get("spec_examples"):                     # rule-36/ADR-055: the worked example rides the compiled spec
+        spec["spec"]["examples"] = cls["spec_examples"]
+    _canonicalize_refs(spec)                         # generated specs live at a different depth than authored ones:
+    return spec                                      # relative refs are rebased to generated/ depth (../../X -> ../X), staying relative per G8
+
+
+def _canonicalize_refs(node):
+    """Rewrite relative registry-schema $refs to their canonical https://udlm.dev/registry/ URL so the
+    compiled artifact is location-independent (authored specs sit two levels deep; generated/ sits one)."""
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str):
+            m = __import__("re").match(r"^(?:\.\./)+([A-Za-z0-9.-]+\.schema\.json(?:#.*)?)$", ref)
+            if m:
+                node["$ref"] = "../" + m.group(1)   # generated/ sits one level below registry/ (G8: relative refs)
+        for v in node.values():
+            _canonicalize_refs(v)
+    elif isinstance(node, list):
+        for v in node:
+            _canonicalize_refs(v)
+
+
+def _standard_filename(resource_type):
+    """naming-conventions: files are `category.type.<ext>` — lowercase, dot-joined, PascalCase
+    segments rendered kebab-case with acronym runs kept whole (VirtualMachine -> virtual-machine,
+    IPAddress -> ip-address, OSPatch -> os-patch, VM -> vm)."""
+    import re as _re
+    def kebab(seg):
+        # words (Upper+lower runs) separate with hyphens: VirtualMachine -> virtual-machine,
+        # BareMetalHost -> bare-metal-host. An ACRONYM run merges with what follows, no hyphen
+        # (maintainer ruling 2026-08-04): OSPatch -> ospatch, VM -> vm, IPAddress -> ipaddress.
+        tokens = _re.findall(r"[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[0-9]+", seg)
+        out = ""
+        for i, t in enumerate(tokens):
+            if i and not tokens[i - 1].isupper():   # previous token was a word -> hyphen boundary
+                out += "-"
+            out += t.lower()
+        return out or seg.lower()
+    return ".".join(kebab(seg) for seg in resource_type.split(".")) + ".json"
 
 
 def main():
     check = "--check" in sys.argv
     by_name = load_classes()
-    types = {n: c for n, c in by_name.items() if c.get("class") == "type"}
+    has_children = {n: any(c.get("parent") == n for c in by_name.values()) for n in by_name}
+    # served classes: every type tier + any CHILDLESS base (instantiable directly — the Job
+    # pattern; a base with children is abstract-by-use, its types are the served surface)
+    types = {n: c for n, c in by_name.items()
+             if c.get("class") == "type" or (c.get("class") == "base" and not has_children[n])}
     os.makedirs(OUT, exist_ok=True)
     drift, n = [], 0
     for name, cls in sorted(types.items()):
@@ -129,7 +178,7 @@ def main():
                 print("   - " + "/".join(str(p) for p in e.path) + ": " + e.message)
             drift.append(name); continue
         text = json.dumps(spec, indent=2, ensure_ascii=False) + "\n"
-        out = os.path.join(OUT, name.replace(".", "_") + ".json")
+        out = os.path.join(OUT, _standard_filename(name))
         if check:
             existing = open(out, encoding="utf-8").read() if os.path.exists(out) else ""
             if existing != text:

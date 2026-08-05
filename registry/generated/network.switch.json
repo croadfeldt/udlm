@@ -1,0 +1,212 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.5.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
+  "resource_type": "Network.Switch",
+  "version": "0.5.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Network Switch",
+    "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Compute.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-07-04T20:12:42Z",
+    "converted_from": "flat spec Network.Switch@0.4.4 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Network",
+          "version": "1.0.0",
+          "uuid": "b4309667-2eed-4330-88d3-96bc94d54436"
+        },
+        {
+          "class": "Network.Switch",
+          "version": "0.5.0",
+          "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "lifecycle_state": {
+        "type": "string",
+        "enum": [
+          "available",
+          "allocated",
+          "retired"
+        ],
+        "default": "available",
+        "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated; allocated = adopted into the managed lifecycle."
+      },
+      "composition_visibility": {
+        "type": "string",
+        "enum": [
+          "opaque",
+          "transparent",
+          "selective"
+        ],
+        "default": "opaque",
+        "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connects_to link records)."
+      },
+      "identity": {
+        "type": "object",
+        "description": "Chassis identity (SPEC-DESIGN-REQUIREMENTS §27).",
+        "properties": {
+          "chassis_id": {
+            "type": "string",
+            "description": "LLDP chassis identifier — normally the chassis MAC (IEEE 802.1AB Chassis ID TLV). Primary discovered-identity key; stable across renames/re-IPs."
+          },
+          "serial_number": {
+            "type": "string",
+            "description": "Vendor serial."
+          },
+          "asset_tag": {
+            "type": "string"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "system_name": {
+            "type": "string",
+            "description": "Configured system name (LLDP System Name TLV) — mutable, secondary to chassis_id."
+          }
+        }
+      },
+      "ports": {
+        "type": "object",
+        "description": "Reconciled port rollup (§26) — aggregate of contained Hardware.NetworkInterface when modeled.",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Physical port count."
+          },
+          "speed": {
+            "type": "string",
+            "pattern": "^[0-9]+(Mbps|Gbps|Tbps)$",
+            "description": "Predominant port speed, e.g. 1Gbps."
+          }
+        }
+      },
+      "management_vlan_ref": {
+        "description": "Reference to Network.VLAN — the switch's management VLAN. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Short form — the handle of an existing Platform.StorageClass."
+          },
+          {
+            "$ref": "../common-elements.schema.json#/$defs/Reference"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "lifecycle_state": "allocated",
+        "composition_visibility": "opaque",
+        "identity": {
+          "chassis_id": "00:00:5e:00:53:01",
+          "serial_number": "SW-OBS-0001",
+          "asset_tag": "ASSET-SW-0001",
+          "manufacturer": "ExampleNet",
+          "model": "EN-48T",
+          "system_name": "leaf-sw-01"
+        },
+        "ports": {
+          "count": 48,
+          "speed": "1Gbps"
+        },
+        "management_vlan_ref": "mgmt-vlan"
+      }
+    ]
+  },
+  "outputs": {
+    "management_address": {
+      "type": "string",
+      "description": "Reachable management endpoint (IP/hostname) once Realized."
+    },
+    "firmware_version": {
+      "type": "string",
+      "description": "Observed firmware/OS version (LLDP System Description carries it) — Discovered-state data; drift input for fleet-consistency checks."
+    }
+  },
+  "immutable": [
+    "identity.chassis_id",
+    "identity.serial_number"
+  ],
+  "relationships": [
+    {
+      "edge_type": "depends_on",
+      "target": "Facility.PowerFeed",
+      "cardinality": "0..n",
+      "description": "Power source(s) the switch draws from; a UPS-backed switch outlives the hosts in a reverse-topo shutdown (connectivity goes last)."
+    },
+    {
+      "edge_type": "references",
+      "name": "management_vlan",
+      "target": "Network.VLAN",
+      "cardinality": "0..1",
+      "description": "management_vlan — the Network.VLAN the switch management interface lives on, referenced not inlined (R5)."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standard_name": "Switch",
+      "role": "switch-as-asset vocabulary (chassis identity, ports collection)",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "IEEE 802.1AB",
+      "version": "2016",
+      "standard_name": "LLDP",
+      "role": "discovered chassis identity (Chassis ID / System Name / System Description TLVs) — how a switch enters as a Discovered resource",
+      "source": "https://standards.ieee.org/ieee/802.1AB/",
+      "license": "IEEE",
+      "license_compatibility": "reference-only",
+      "disposition": "tier1_value"
+    },
+    {
+      "standard": "RFC 8345",
+      "version": "8345",
+      "standard_name": "ietf-network (node)",
+      "role": "topology vocabulary — a switch is a node whose termination points (ports) anchor links",
+      "source": "https://www.rfc-editor.org/rfc/rfc8345",
+      "license": "IETF-Trust-TLP",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "context": {
+    "purpose": "Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.",
+    "plain_description": "One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normally the chassis MAC — stable and discoverable), a port rollup — the `ports` object (count, predominant speed) — and its management VLAN by reference (`management_vlan_ref`; the switch record carries no management address of its own — addresses live on its interface records). Identity facts — the `chassis_id`, serial, model, manufacturer, system name — nest under the `identity` block, not at the top level. Its individual ports are not a separate type — they are Hardware.NetworkInterface records contained by the switch, the same type host NICs use, which is what lets a cable be a single edge between two interface records. A switch can enter the model as discovered (via LLDP) before being formally adopted; vendor specifics stay with the provider.",
+    "use_when": [
+      "You need the switching fabric in the dependency graph so connectivity-outlives-compute is derivable in shutdown ordering.",
+      "You need per-port records (VLAN membership, host adjacency) on real switch hardware.",
+      "You need brownfield discovery — switches found via LLDP, then adopted."
+    ],
+    "not_for": [
+      "A software bridge on a host — Hardware.NetworkInterface with device_class bridge.",
+      "The routed/NAT edge — Network.Gateway.",
+      "The VLAN segments themselves — Network.VLAN; the switch carries segments, it doesn't define them."
+    ],
+    "works_with": [
+      "Hardware.NetworkInterface — its ports, and the host NICs those ports connect to.",
+      "Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.",
+      "Network.VLAN — segments carried on the fabric, including the referenced management VLAN."
+    ]
+  }
+}

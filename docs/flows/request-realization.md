@@ -12,7 +12,7 @@ builds it. Portable in, provider-ready out — never dispatched half-built.
 
 ## Start vendor-agnostic; add specifics on top
 
-Every request starts from a **vendor-agnostic base**. A portable `Compute.VirtualMachine` carries the things
+Every request starts from a **vendor-agnostic base**. A portable `Compute.VM` carries the things
 true of *any* VM — `guest_os`, size, disks, networks — and deliberately leaves out one provider's mechanics
 like Kubernetes' `namespace`. Keeping those off the base is what makes the type portable: another provider
 can still read it ([ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) — the type models
@@ -45,7 +45,7 @@ flowchart TD
 ```
 
 > This is the readable on-ramp — a six-step view. The **authoritative** assembly process (nine steps, with
-> the exact layer-resolution and policy phases) is [`foundations/layering-and-versioning.md`](../../foundations/layering-and-versioning.md)
+> the exact layer-resolution and policy phases) is [`docs/spec/foundations/layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md)
 > §6. Where the two differ, the spec wins.
 
 Step by step, with `namespace` threaded through:
@@ -93,7 +93,7 @@ stable. The engine loops around *place → enrich → evaluate → reserve* unti
 commits once. Re-evaluation is idempotent by contract, so it converges rather than thrashes.
 ([ADR-006](../adr/ADR-006-convergence-control-model.md) — re-entrant policy and convergence;
 [ADR-011](../adr/ADR-011-validate-and-reserve.md) — validate-and-reserve; and the placement loop /
-reserve-phase participation in [`layering-and-versioning.md`](../../foundations/layering-and-versioning.md).)
+reserve-phase participation in [`layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md).)
 
 ## Where the value comes from
 
@@ -101,7 +101,7 @@ Step 4 fills a field the request didn't *already* carry — `namespace`. (If the
 time, it's already set — flagged non-portable — so this step leaves it alone.)
 
 The value lives in **data**, and a **policy selects it** — the model's original split at work: *layers set
-the stage for data; policies refine and validate it* ([ADR-024](../adr/ADR-024-filling-provider-required-inputs.md)).
+the stage for data; policies refine and validate it* ([ADR-024](../adr/README.md)).
 A governed layer holds the values — the tenant's namespace, or a small table of provider → value — and a
 post-placement enrichment policy looks up the right one for the chosen provider and injects it. The value
 stays data; the only logic is the lookup.
@@ -111,7 +111,7 @@ for Kubernetes VMs") — caught at reserve, never a silent gap. A plain layer de
 aren't provider-conditional and need no selecting.
 
 Whichever value wins is recorded in provenance, and a compliance policy can still override it for sovereignty
-or security (the merge precedence, [`layering-and-versioning.md`](../../foundations/layering-and-versioning.md)
+or security (the merge precedence, [`layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md)
 §5–§5a). What the model insists on is only the outcome: **every field the provider requires has a value, with
 a recorded origin, before reserve.**
 
@@ -135,8 +135,8 @@ widen it past what policy allows.
 stays portable); ask for more and get precision (fewer fit, and you may tie the request to one provider's
 ground). Neither is more correct — it's the user's call, and the flow runs the same either way.
 
-(Grounded in the specificity spectrum, `contracts/policy-contract.md` §2.4; the request `placement` block;
-and soft-vs-hard dependencies, `contracts/provider-contract.md` §1b — "any resolvable name" vs "this exact
+(Grounded in the specificity spectrum, `docs/spec/contracts/policy-contract.md` §2.4; the request `placement` block;
+and soft-vs-hard dependencies, `docs/spec/contracts/provider-contract.md` §1b — "any resolvable name" vs "this exact
 FQDN" is the same idea one level down.)
 
 ## The rules that always hold
@@ -181,8 +181,8 @@ The performance: [dcm-project/dcm `docs/flows/request-realization.md`](https://g
 | Piece | Governing spec |
 |---|---|
 | Provider-specific config off the portable type | [ADR-016](../adr/ADR-016-resource-type-role-graph-audit-not-config.md) · ADR-038 (Provider-Class elements) |
-| Provider declares the data it requires | `contracts/provider-contract.md` §base-level #2 |
-| Data layers + provider-aware enrichment | [`foundations/layering-and-versioning.md`](../../foundations/layering-and-versioning.md) |
-| Enrichment as a policy | `contracts/policy-contract.md` §12 |
+| Provider declares the data it requires | `docs/spec/contracts/provider-contract.md` §base-level #2 |
+| Data layers + provider-aware enrichment | [`docs/spec/foundations/layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md) |
+| Enrichment as a policy | `docs/spec/contracts/policy-contract.md` §12 |
 | Reserve-then-commit (check before build) | [ADR-011](../adr/ADR-011-validate-and-reserve.md) |
-| The four states (Intent → Requested → Realized) | [`foundations/four-states.md`](../../foundations/four-states.md) |
+| The four states (Intent → Requested → Realized) | [`docs/spec/foundations/four-states.md`](../spec/foundations/four-states.md) |

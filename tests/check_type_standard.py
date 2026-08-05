@@ -41,7 +41,8 @@ ADOPT_TOKENS = re.compile(r"\bADOPT\b|\badopts\b|\bOCI\b|\bpurl\b|\bSPDX\b|\bCyc
 def load_types():
     out = {}
     for f in sorted(glob.glob(os.path.join(TYPES, "**", "*.json"), recursive=True)
-                    + glob.glob(os.path.join(TYPES, "**", "*.yaml"), recursive=True)):
+                    + glob.glob(os.path.join(TYPES, "**", "*.yaml"), recursive=True)
+                    + glob.glob(os.path.join(ROOT, "registry", "generated", "*.json"))):
         with open(f, encoding="utf-8") as fh:
             out[f] = json.load(fh) if f.endswith(".json") else yaml.safe_load(fh)
     return out
@@ -79,6 +80,13 @@ def is_reference_shape(prop):
 def main():
     types = load_types()
     registered = {d.get("resource_type") for d in types.values() if isinstance(d, dict)}
+    # Class names of ANY tier are legal relationship targets: an edge to a category base
+    # (e.g. Job -> Automation) is POLYMORPHIC — "any member of the category" (the
+    # executes_definition case). Bases aren't served specs, but they are addressable targets.
+    for cp in glob.glob(os.path.join(ROOT, "registry", "classes", "**", "*.yaml"), recursive=True):
+        cd = yaml.safe_load(open(cp, encoding="utf-8")) or {}
+        if cd.get("record_type") == "class":
+            registered.add(cd.get("resource_type"))
     baseline = {}
     if os.path.exists(BASELINE):
         baseline = yaml.safe_load(open(BASELINE, encoding="utf-8")) or {}

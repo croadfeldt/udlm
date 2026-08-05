@@ -18,12 +18,12 @@
     "uuid": {
       "type": "string",
       "format": "uuid",
-      "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (entities/composite-service-model.md)."
+      "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (docs/spec/foundations/composite-service-model.md)."
     },
     "tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "REQUIRED owning Tenant — the uuid of a tenant_boundary DCMGroup (registry/dcm-group.schema.json). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, entities/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
+      "description": "REQUIRED owning Tenant — the uuid of a tenant_boundary DCMGroup (registry/dcm-group.schema.json). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, docs/spec/foundations/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
     },
     "conforms_to": {
       "type": "string",
@@ -46,7 +46,7 @@
     },
     "type_ref": {
       "type": "string",
-      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "The `$id` of the pinned Resource Type Spec."
     },
     "lifecycle_state": {
@@ -57,7 +57,7 @@
         "Discovered",
         "Decommissioned"
       ],
-      "description": "The entity's current state in the four-state model (foundations/four-states.md)."
+      "description": "The entity's current state in the four-state model (docs/spec/foundations/four-states.md)."
     },
     "generation": {
       "type": "integer",
@@ -213,7 +213,7 @@
               "soft"
             ],
             "default": "hard",
-            "description": "depends_on only. hard = target unavailability blocks this entity; soft = degrade-don't-break (entities/service-dependencies.md DEP-006) — informs ordering but never blocks."
+            "description": "depends_on only. hard = target unavailability blocks this entity; soft = degrade-don't-break (docs/spec/foundations/service-dependencies.md DEP-006) — informs ordering but never blocks."
           },
           "relation": {
             "type": "string",
@@ -225,7 +225,7 @@
     },
     "constituents": {
       "type": "array",
-      "description": "For a Composite Entity: the constituents and their per-component realized state (entities/composite-service-model.md).",
+      "description": "For a Composite Entity: the constituents and their per-component realized state (docs/spec/foundations/composite-service-model.md).",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -299,7 +299,7 @@
     "expected_observation": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The DECLARED observation expectation this entity is judged against (ADR-048 — staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; no verdict is ever stored. Where absent, the OBS-005 profile TTL (entities/service-dependencies.md) applies as the fallback. When the expectation is composed at a coarser scope (e.g. a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value — its provenance rides the standard per-field provenance record, never a hand-typed copy.",
+      "description": "The DECLARED observation expectation this entity is judged against (ADR-048 — staleness as declared expectation). Staleness verdicts — current | stale_expected | stale_deviant — are DERIVED by comparing observation age (states.discovered.at / drift.checked_at) with this declaration; no verdict is ever stored. Where absent, the OBS-005 profile TTL (docs/spec/foundations/service-dependencies.md) applies as the fallback. When the expectation is composed at a coarser scope (e.g. a group-wide offline window resolved per ADR-015), this block carries the RESOLVED value — its provenance rides the standard per-field provenance record, never a hand-typed copy.",
       "properties": {
         "cadence": {
           "type": "string",
@@ -494,7 +494,7 @@
     },
     "handle": {
       "type": "string",
-      "description": "ADVISORY human-readable identity (contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."
+      "description": "ADVISORY human-readable identity (docs/spec/contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."
     },
     "metadata": {
       "type": "object",
@@ -572,7 +572,7 @@
     "process": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Process-execution axis (resource-service-entities §6.3; data-model-core §3 [D7]). REQUIRED on entities whose Resource Type has entity_type: Process (Automation.Job) — validate.py enforces this via the registry. The universal lifecycle_state still applies (a playbook that exists and is adopted is Realized/Discovered); execution_state is a SEPARATE axis tracking each RUN and never changes lifecycle_state.",
+      "description": "Process-execution axis (resource-service-entities §6.3; data-model-core §3 [D7]). REQUIRED on entities whose Resource Type has family: Process (the Job class) — validate.py enforces this via the registry. The universal lifecycle_state still applies (a playbook that exists and is adopted is Realized/Discovered); execution_state is a SEPARATE axis tracking each RUN and never changes lifecycle_state.",
       "required": [
         "execution_state"
       ],
@@ -587,16 +587,6 @@
             "CANCELLED"
           ],
           "description": "The current run's state (§6.2). Distinct from lifecycle_state."
-        },
-        "process_type": {
-          "enum": [
-            "playbook",
-            "workflow",
-            "pipeline",
-            "automation_job",
-            "script",
-            "other"
-          ]
         },
         "affected_entities": {
           "type": "array",
@@ -624,39 +614,6 @@
               "effect_description": {
                 "type": "string"
               }
-            }
-          }
-        },
-        "execution_record": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "initiated_at": {
-              "type": "string",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
-            },
-            "completed_at": {
-              "type": "string",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
-            },
-            "executing_provider_uuid": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-            },
-            "authorized_by_policy_uuid": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-            },
-            "max_execution_time": {
-              "type": "string",
-              "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
-            },
-            "on_max_exceeded": {
-              "enum": [
-                "terminate",
-                "notify",
-                "escalate"
-              ]
             }
           }
         }
@@ -757,7 +714,7 @@
           "additionalProperties": {
             "$ref": "#/$defs/data_role"
           },
-          "description": "Field/section role OVERRIDES, keyed by a dot-path into `fields` (a leaf = field-level; a prefix = section-level). Default is `execution` (dispatched); list ONLY non-execution exceptions here (succinct usage). Precedence: field-level path > section-level prefix > default execution (contracts/data-roles.md cascade)."
+          "description": "Field/section role OVERRIDES, keyed by a dot-path into `fields` (a leaf = field-level; a prefix = section-level). Default is `execution` (dispatched); list ONLY non-execution exceptions here (succinct usage). Precedence: field-level path > section-level prefix > default execution (docs/spec/contracts/data-roles.md cascade)."
         },
         "assembly": {
           "type": "object",
@@ -906,7 +863,7 @@
           "additionalProperties": {
             "$ref": "#/$defs/data_role"
           },
-          "description": "Field/section role OVERRIDES, keyed by a dot-path into `fields` (a leaf = field-level; a prefix = section-level). Default is `execution` (dispatched); list ONLY non-execution exceptions here (succinct usage). Precedence: field-level path > section-level prefix > default execution (contracts/data-roles.md cascade)."
+          "description": "Field/section role OVERRIDES, keyed by a dot-path into `fields` (a leaf = field-level; a prefix = section-level). Default is `execution` (dispatched); list ONLY non-execution exceptions here (succinct usage). Precedence: field-level path > section-level prefix > default execution (docs/spec/contracts/data-roles.md cascade)."
         }
       }
     },
@@ -919,7 +876,7 @@
         "cost"
       ],
       "x-extensible-enum": true,
-      "description": "Data ROLE — the purpose axis (ADR-PROV-001; contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
+      "description": "Data ROLE — the purpose axis (ADR-PROV-001; docs/spec/contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); docs/spec/governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
     }
   }
 }

@@ -23,13 +23,12 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(REPO, "registry", "profile-settings-index.md")
 
 PROFILES = ["minimal", "dev", "standard", "prod", "fsi", "sovereign"]
-SCOPE = ["contracts", "foundations", "governance", "entities", "observability",
-         "lifecycle", "design-principles", "registry"]
+SCOPE = ["docs/spec", "registry"]
 # The master scaling table + the index itself legitimately enumerate profiles.
-ALWAYS_OK = {"design-principles/design-priorities.md", "registry/profile-settings-index.md"}
-# A doc path referenced in the index (e.g. governance/credentials.md).
-DOCPATH_RE = re.compile(r"\b((?:contracts|foundations|governance|entities|observability|lifecycle|"
-                        r"design-principles|registry)/[A-Za-z0-9_.-]+\.md)\b")
+ALWAYS_OK = {"docs/spec/principles/design-priorities.md", "registry/profile-settings-index.md"}
+# A doc path referenced in the index (e.g. docs/spec/governance/credentials.md).
+DOCPATH_RE = re.compile(r"\b((?:docs/spec/(?:contracts|foundations|governance|lifecycle|principles)"
+                        r"|docs/guides|registry)/[A-Za-z0-9_.-]+\.md)\b")
 
 
 def _cells(line):

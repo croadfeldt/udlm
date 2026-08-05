@@ -6,7 +6,7 @@ policy is evaluated **over that effect**, and the whole thing is scoped to a ten
 it is dispatched. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and
 documents only what this case adds.
 
-> **Use Case:** `governance/governed-automation`. **Persona:** platform-engineer · **Profile:** prod.
+> **Use Case:** `docs/spec/governance/governed-automation`. **Persona:** platform-engineer · **Profile:** prod.
 
 **In one breath.** A tenant submits an automation to run. Before anything dispatches, its **effect-profile**
 is resolved — the resources it targets and the actions it takes, from its *declared* intent or *derived by
@@ -68,4 +68,4 @@ Everything inside dispatch is request-realization; the automation provider is th
   (information firewall), [ADR-057](../adr/ADR-057-sovereignty-placement-and-provenance.md) (sovereignty /
   approved-host), [uc-16](uc-16-policy-override-approval.md) (approval / SoD),
   [uc-19](uc-19-policy-resolution-capability.md) / [uc-20](uc-20-profile-resolution-capability.md)
-  (profile-closed policy, set-containment). UC source: `governance/governed-automation`.
+  (profile-closed policy, set-containment). UC source: `docs/spec/governance/governed-automation`.

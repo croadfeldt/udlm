@@ -1,0 +1,17 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Security/1.0.0
+conforms_to: udlm/0.1
+uuid: b20ae678-fccc-400c-9cbb-ce25822e8d18
+record_type: class
+class: base
+resource_type: Security
+version: 1.0.0
+family: Resource
+status: active
+metadata:
+  authority: canonical
+  display_name: Security Base Class
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-08-04T00:00:00Z'
+  description: Empty Security category base — the promotion target for elements the Security.* types share
+    (ADR-039 scope promotion; factoring waves per family).
+elements: []

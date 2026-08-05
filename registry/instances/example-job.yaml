@@ -1,0 +1,41 @@
+# The runs system-of-record, exercised: ONE Job class for every execution — the definition it
+# executes gives the domain (a filter, never a subtype). Immutable intent [definition_ref,
+# parameters]; run facts are typed outputs; the execution axis (data-model-core [D7]) moves
+# per run and never touches lifecycle_state.
+uuid: 4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44
+handle: cexample/jobs/nightly-backup
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Job
+type_version: 1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Job/1.0.0
+lifecycle_state: Realized
+states:
+  requested:
+    fields:
+      definition_ref: {target_handle: cexample/automation/nightly-backup-playbook}
+      parameters: {scope: database, snapshot: true}
+      targets:
+        - {target_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21}
+      max_execution_time: PT1H
+      on_max_exceeded: terminate
+      trigger: schedule
+    at: "2026-07-07T01:55:00Z"
+    time_source: example clock, NTP-synced
+  realized:
+    fields:
+      definition_ref: {target_handle: cexample/automation/nightly-backup-playbook}
+      parameters: {scope: database, snapshot: true}
+      max_execution_time: PT1H
+      on_max_exceeded: terminate
+      trigger: schedule
+    outputs:
+      started_at: "2026-07-07T02:00:00Z"
+      completed_at: "2026-07-07T02:12:00Z"
+      results: {status: COMPLETED, snapshots_taken: 1}
+    at: "2026-07-07T02:12:05Z"
+    time_source: example clock, NTP-synced
+process:
+  execution_state: COMPLETED
+  affected_entities:
+    - {entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21, effect_type: read, effect_description: "snapshotted the database"}

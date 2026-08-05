@@ -12,9 +12,9 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 - **`README.md`** — project entry point and orientation. *Owns:* nothing normative; summarizes and links.
 - **`CONFORMANCE.md`** — what wire-level conformance certifies (and does not), the declaration shape, levels, and the wire-compatibility checklist. *Owns:* conformance levels, the `.well-known` declaration, the required-contracts list (§5), the wire-compat checklist (§6).
-- **`GLOSSARY.md`** — human-readable term definitions. *Owns:* short prose glosses only; the machine taxonomy lives in `registry/resource-types/knowledge/taxonomy-term.json`.
+- **`GLOSSARY.md`** — human-readable term definitions. *Owns:* short prose glosses only; the machine taxonomy lives in `registry/generated/taxonomy-term.json`.
 
-## `foundations/` — the core model everything else builds on
+## `docs/spec/foundations/` — the core model everything else builds on
 
 - **`foundations.md`** — the three abstractions (Data · Provider · Policy). *Owns:* the abstraction triad.
 - **`data-model-core.md`** — *normative* core. *Owns:* the `lifecycle_state` five-value enum, the drift-severity enum, the `edge_type`+`relation` relationship model (§4), and the `[D1]–[D7]` core rules — including that operational/health are `status.conditions` and Process run dynamics are `execution_state`.
@@ -27,15 +27,14 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`context-and-purpose.md`** — orientation/summary; defers to the canonical homes.
 - **`examples.md`** — non-normative worked examples.
 
-## `contracts/` — the wire contracts between DCM and providers/peers
+## `docs/spec/contracts/` — the wire contracts between DCM and providers/peers
 
 - **`provider-contract.md`** — the unified provider base contract + capability extensions (§8). *Owns:* the base registration/health/lifecycle floor, `PRV-*`, the reserve/commit two-phase realize.
-- **`capability-discovery.md`** — supersession stub (folded 2026-07-23). The capability model, registration shape, default-deny ceiling, and the discovery wire protocol (`DISC-*`) are all owned by `provider-contract.md` (§§2, 8–10).
 - **`policy-contract.md`** — the unified policy contract. *Owns:* policy evaluation surface, `POL-*`.
 - **`data-store-contracts.md`** — enforcement contracts for the four data domains + audit. *Owns:* the Realized/Audit store domain invariants.
 - **`storage-providers.md`** — the storage capability extension. *Owns:* store sub-profiles (GitOps/snapshot/event/search/audit) and `STO-*` — *not* provider types.
 - **`information-providers.md`** — the `serve_data` capability. *Owns:* information-provider registration.
-- **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules (`INF-*` is now solely the information-provider family — data-contracts' former `INF` family renumbered to `DSC-*`).
+- **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules.
 - **`error-model.md`** — *Owns:* the error envelope (RFC 9457).
 - **`event-catalog.md`** — *Owns:* the event catalog and delivery semantics (the wire event shapes).
 - **`identifier-scheme.md`** — *Owns:* the UUID / handle / reference identity contract.
@@ -47,15 +46,15 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`data-roles.md`** (PROPOSED) — *Owns:* the `role:` data-role vocabulary that crosses the dispatch boundary.
 - **`cost-metering-linkage.md`** (PROPOSED) — *Owns:* the cost-engine linkage contract.
 
-## `design-principles/` — see `design-principles/README.md` for the in-directory index
+## `docs/spec/principles/` — see its `README.md` for the in-directory index
 
 - **`core-tenets.md`** — hard boundaries. *Owns:* `T1–T6`.
 - **`design-priorities.md`** — ranked priorities + the profile and authority-tier *vocabularies*. *Owns:* `Priority 1–4`, `DPO-*`, the profile name vocabulary (nature of a profile defers to ADR-007).
 - **`cross-cutting-requirements.md`** — always-on obligations. *Owns:* `P0–P4`.
 - **`adopted-standards.md`** — how external standards enter (the *Adopt* disposition). *Owns:* the absorb/embed/adopt test + adoption constructs.
-- **`data-contracts.md`** — the data-contract principle + the four persistent domains. *Owns:* `DSC-001–DSC-007` (persistence; the former data-contracts `INF-*` family, renumbered).
+- **`data-contracts.md`** — the data-contract principle + the four persistent domains. *Owns:* `DSC-001–DSC-007` (persistence).
 
-## `governance/`
+## `docs/spec/governance/`
 
 - **`credentials.md`** — *Owns:* the closed `credential_types` vocabulary (§2), the `credential_capability` declaration (§9), and the credential record / scope wire-shape (§5) — the single home for anything credential-shaped.
 - **`auth-providers.md`** — the auth capability. *Owns:* auth provider registration + authentication-mode taxonomy (credential vocabulary defers to `credentials.md`).
@@ -65,14 +64,14 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`federated-contribution-model.md`** — *Owns:* the federated-contribution (shadow-mode) model.
 - **`registry-governance.md`** — *Owns:* registry governance + sunset policy (`REG-DP-*`); versioning defers to `registry/VERSIONING.md`.
 
-## `entities/`
+## `docs/spec/foundations/` — entity deep-dives
 
 - **`resource-service-entities.md`** — resource/service entity lifecycle + Process entities. *Owns:* `RSE-*`; the operational-phase overlay (coarse lifecycle defers to data-model-core §3).
 - **`composite-service-model.md`** — *Owns:* composite composition + compensation semantics.
-- **`entity-relationships.md`** — the universal relationship *structure*. Note: the relationship type model is **superseded by data-model-core §4**; this file retains the inverse vocabulary + `XTA-*` cross-tree rules.
+- **`entity-relationships.md`** — everything built ON the edge model (which is data-model-core §4 / common-elements §9). *Owns:* `XTA-*` cross-tenant rules, the allocated- and shared-resource operational models, relationship lifecycle policies, declaration tiers, bundled expansion, notification traversal (`REL-022..024`), graph depth (`REL-021`), and `ERL-*` graph integrity.
 - **`service-dependencies.md`** — *Owns:* the dependency graph, rehydration ordering, `DEP-*`.
 - **`resource-grouping.md`** — *Owns:* grouping, tenant boundaries, the DCMGroup / `GRP-*` model.
-- **`resource-type-hierarchy.md`** — *Owns:* the resource-type hierarchy + service-catalog structure.
+- **`resource-type-hierarchy.md`** — *Owns:* the four hierarchy levels (Category → Type → Specification → Catalog Item), the canonical categories (§2.2), the field-constraint model (§3a/2.1b), portability classification, request-resolution narrowing (§7), the hierarchy deprecation cascade rules, and the FQN/uuid type-reference contract. Specialization defers to ADR-038 class composition; registration to provider-contract §2; versioning to VERSIONING.md.
 - **`knowledge-family.md`** — *Owns:* the Knowledge entity family (Capability, TaxonomyTerm) — anchored by DAV.
 - **`identity-escrow.md`** — *Owns:* the identity-escrow contract (identity state surviving host re-realization), `ESC-*`.
 
@@ -88,13 +87,13 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`../registry/UDLM-0.1-SCOPE.md`** — the 0.1 scope + the 1.0 exit criteria.
 - **`README.md`** — registry overview.
 
-## `observability/`
+## `docs/spec/` — groups and audit
 
 - **`audit-provenance-observability.md`** — *Owns:* the audit/provenance/observability model, `AUD-*` / `OBS-*`.
 - **`universal-audit.md`** — *Owns:* the universal audit record model.
 - **`universal-groups.md`** — *Owns:* the universal group model (`GRP-*` where it extends grouping).
 
-## `lifecycle/`
+## `docs/spec/lifecycle/`
 
 - **`ingestion-model.md`** — *Owns:* the ingestion model.
 - **`operational-models.md`** — *Owns:* operational models, `OPS-*`.
@@ -109,7 +108,6 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`docs/design/`** — design rationale + decision trails (scoped-class hierarchy, registry design notes).
 - **`docs/examples/`** — non-normative worked examples (VM end-to-end trace, the DAV knowledge case study, provider accreditation).
 - **`docs/flows/`** — the flow tier (stage-level walkthroughs; see its README).
-- **`docs/internal/`** — tracked working/review artifacts (review packages, decision-support artifacts such as the 0.1 ratification-readiness and conformance-suite plans, the data-point necessity audit); not part of the published spec surface.
 - **`docs/research/`** — prior art, proposals, and vision explorations (architecture-as-code, LikeC4, OSAC, holistic vision).
 
 ---
@@ -118,17 +116,13 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 ## Unindexed-until-now (linked here so nothing is orphaned)
 
-- **`docs/consumer-perspective.md`** — consumer-facing walkthrough of the model (promoted 2026-07-23; maintained with the spec — the cleanliness sweep covers it).
-- **`docs/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
-- **`docs/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via Hardware.NetworkInterface; Kea/NMstate projection).
-- **`docs/design/standing-model-gaps.md`** — the open model gaps with a proposal each (demand, current surface, candidate shapes, recommendation, corpus case). *Owns:* nothing normative — every entry awaits a maintainer ruling.
-- **`docs/design/scoped-class-hierarchy/compute-class-render.md`** — worked render of the Compute Base/Type/Provider Class hierarchy (ADR-038).
-- **`docs/design/scoped-class-hierarchy/identity-class-render.md`** — worked render of the Identity class hierarchy (ADR-038).
-- **`docs/design/scoped-class-hierarchy/custom-classes-best-practice.md`** — Provider-Class authoring best practice (search-first reuse; define at highest allowed scope).
-- **`docs/design/scoped-class-hierarchy/request-pipeline-layers.md`** — how scoped classes ride the request pipeline layer assembly.
+- **`docs/guides/consumer-perspective.md`** — consumer-facing walkthrough of the model (promoted 2026-07-23; maintained with the spec — the cleanliness sweep covers it).
+- **`docs/guides/dependency-modeling.md`** — how the model represents dependencies (typed `edge_type` edges) and the four authoring patterns; resolution is DCM's.
+- **`docs/guides/host-network-and-config-model.md`** — host-network modeling design (bond/bridge via Hardware.NetworkInterface; Kea/NMstate projection).
+- **`docs/design/custom-classes-best-practice.md`** — Provider-Class authoring best practice (search-first reuse; define at highest allowed scope).
 - **`docs/examples/vm-end-to-end-example.md`** — a VM from intent to realized, end to end.
 - **`docs/examples/provider-accreditation-worked-example.md`** — accreditation flow worked example (claim → attestation → verdict).
 - **`docs/research/architecture-as-code-ingestion.md`** — research: mapping CALM/LikeC4 architecture-as-code into UDLM edges.
 - **`docs/research/likec4-and-udlm.md`** — research: LikeC4 view layer over UDLM data.
-- **`docs/udlm-0.1-engineering-handoff.md`** — the 0.1 engineering handoff (what to read in which order).
+- **`docs/guides/udlm-0.1-engineering-handoff.md`** — the 0.1 engineering handoff (what to read in which order).
 - **`registry/rule-id-naming.md`** — the rule-ID naming rules behind the registry (ADR-028).

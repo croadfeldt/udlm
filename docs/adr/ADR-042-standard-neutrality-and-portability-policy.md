@@ -6,18 +6,18 @@ property + a portability-strictness knob) is **consumer-gated — recorded, not 
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. This decision sits on the standards-adoption mechanism
-([`adopted-standards.md`](../../design-principles/adopted-standards.md) — the `adopts[]` / `adopted_standard_support`
+([`adopted-standards.md`](../spec/principles/adopted-standards.md) — the `adopts[]` / `adopted_standard_support`
 absorb/embed/adopt dispositions) and the **existing** per-standard record
 ([`standards-adoption-register.md`](../../registry/standards-adoption-register.md), rule `ADOPT-001`), whose
 `Body:` field already names each standard's **governing body** — the signal `neutrality` derives from. The
 evaluation rides the policy firewall ([ADR-041](ADR-041-policy-information-firewall.md)); the neutral-vs-provider
 trade-off is the same **portability-by-scope** it has in the data-element domain
 ([ADR-038](ADR-038-scoped-resource-type-classes.md)). Putting the *stance* in a profile rather than the data
-applies the established **strictness-is-Policy** pattern ([ADR-025 §6](ADR-025-resource-references.md),
-[`DPO-001`](../../design-principles/design-priorities.md)); *deriving* the property rather than storing it follows
+applies the established **strictness-is-Policy** pattern ([ADR-025 §6](README.md),
+[`DPO-001`](../spec/principles/design-priorities.md)); *deriving* the property rather than storing it follows
 [ADR-027](ADR-027-entity-family-model.md)'s addendum discipline. The **DCM implementation** belongs on the
 control-plane side — **DCM ADR-021** (adopting external standards) + `adopted-standards-dcm.md`. Throughout,
-[core-tenets **T5**](../../design-principles/core-tenets.md) (adopt outward) and the standing directive: UDLM is an
+[core-tenets **T5**](../spec/principles/core-tenets.md) (adopt outward) and the standing directive: UDLM is an
 **enablement** substrate, not an arbiter.
 
 **Settles:** the **pattern** for adding an *opt-in* governance capability over adopted standards **without UDLM
@@ -41,7 +41,7 @@ vSphere — no portability when carried on the type). `Compute.VM` adopting Kube
 silently shrinks the portable subset. Surfacing that could help a portability-strict estate — but **no consumer
 is asking for it today.**
 
-The instinct to make it a governance/profile item hits a trap: enforcing it seems to require an
+The instinct to make it a docs/spec/governance/profile item hits a trap: enforcing it seems to require an
 **approved-standards allowlist** — UDLM deciding *for everyone* (who curates it? whose list?), which is exactly
 the top-down mandate we reject. This ADR records how to avoid that trap; it does **not** build the feature.
 

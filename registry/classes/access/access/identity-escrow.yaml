@@ -1,0 +1,184 @@
+$id: https://udlm.dev/registry/udlm/0.1/class/Access.IdentityEscrow/0.2.0
+conforms_to: udlm/0.1
+uuid: ead1ea4f-d7db-4b90-887a-2bc67edf4b9b
+record_type: class
+class: type
+resource_type: Access.IdentityEscrow
+parent: Access
+version: 0.2.1
+family: Access
+status: active
+metadata:
+  display_name: Identity Escrow
+  description: 'The contract for identity state that must SURVIVE its host entity''s re-realization: which
+    items are captured before a host is wiped or rebuilt, and restored — as a convergence gate — when
+    it is re-realized. Each item wraps a Security.CredentialRef (custody stays with the escrow store as
+    issuer; the value never enters the model); the escrow binds to the host''s entity UUID (which re-provisioning
+    preserves), never to a realization generation. The escrowed_items list is the exhaustive survival
+    allowlist: anything not listed does not survive the wipe default. Normative rules: ESC-* (docs/spec/foundations/identity-escrow.md).
+    Demand case: a field-device fleet adopter whose devices are re-imaged on a fixed cadence but must
+    keep their remote-access and application identities.'
+  maintainer: udlm-registry
+  origination_timestamp: '2026-07-25T00:00:00Z'
+  converted_from: flat spec Access.IdentityEscrow@0.1.1 (bulk mechanical conversion 2026-08-04; factoring
+    later via scope promotion)
+elements:
+- element: escrowed_items
+  scope: Access.IdentityEscrow
+  optional: false
+  state: canonical
+  description: 'The exhaustive survival allowlist (ESC-005): every piece of identity state that survives
+    the host''s re-realization, one item each. Anything not listed here does not survive — the wipe default
+    is deletion.'
+  schema:
+    type: array
+    minItems: 1
+    description: 'The exhaustive survival allowlist (ESC-005): every piece of identity state that survives
+      the host''s re-realization, one item each. Anything not listed here does not survive — the wipe
+      default is deletion.'
+    items:
+      type: object
+      additionalProperties: false
+      required:
+      - item_id
+      - item_kind
+      - credential_ref
+      properties:
+        item_id:
+          type: string
+          description: Stable identifier of this item within the escrow (unique per record); the key capture/restore
+            evidence in outputs refers to.
+        item_kind:
+          type: string
+          enum:
+          - remote_access_identity
+          - application_session
+          - device_certificate
+          - host_key
+          x-extensible-enum: true
+          description: 'What class of identity state this item is. Extensible: adopters may declare further
+            kinds; the listed values are the registered core.'
+        credential_ref:
+          description: Reference to the Security.CredentialRef under which the escrow store custodies
+            this item's material. The escrow store is the issuer; only the reference and resolution facts
+            are ever recorded — never the value (the CredentialRef discipline).
+          oneOf:
+          - type: string
+            description: Short form — the handle of an existing Security.CredentialRef.
+          - $ref: ../../common-elements.schema.json#/$defs/Reference
+        capture_on:
+          type: array
+          items:
+            type: string
+            enum:
+            - registration
+            - pre_wipe
+            x-extensible-enum: true
+          default:
+          - registration
+          description: The lifecycle moments at which this item's material is captured into the escrow
+            store.
+        restore_on:
+          type: array
+          items:
+            type: string
+            enum:
+            - re_realization
+            x-extensible-enum: true
+          default:
+          - re_realization
+          description: The lifecycle moments at which this item is restored to the host.
+        required:
+          type: boolean
+          default: false
+          description: 'Whether restore of this item gates convergence: a re-realization of the bound
+            host does not reach Converged while a required item is unrestored (ESC-002). The failure is
+            typed and visible, never a silent identity loss.'
+spec_examples:
+- escrowed_items:
+  - item_id: remote-access
+    item_kind: remote_access_identity
+    credential_ref: credential/unit-042-remote-access
+    capture_on:
+    - registration
+    restore_on:
+    - re_realization
+    required: true
+  - item_id: app-session
+    item_kind: application_session
+    credential_ref: credential/unit-042-app-session
+    capture_on:
+    - registration
+    - pre_wipe
+    restore_on:
+    - re_realization
+    required: false
+outputs:
+  last_captured_at:
+    type: string
+    description: DERIVED — computed from the escrow's audit records (capture and restore are audited acts
+      per the ESC rules; compute-never-store). Declared as the stable binding surface for that derivation.
+      RFC 3339 instant of the most recent successful capture into the escrow store (provider-reported
+      evidence; never the material).
+  last_restored_at:
+    type: string
+    description: DERIVED — computed from the escrow's audit records (capture and restore are audited acts
+      per the ESC rules; compute-never-store). Declared as the stable binding surface for that derivation.
+      RFC 3339 instant of the most recent successful restore to the bound host (provider-reported evidence).
+  restore_verified:
+    type: boolean
+    description: Whether the most recent restore was verified against the escrowed reference (the evidence
+      the registration provider reports; the ESC-002 convergence gate reads this).
+  items_restored:
+    type: array
+    description: The item_id values restored in the most recent restore — the typed per-item evidence
+      a fleet view reads instead of copying identity values.
+relationships:
+- edge_type: binds_to
+  target: Compute.BareMetalHost
+  cardinality: 0..1
+  enforcement: example
+  description: 'The host entity whose re-realization triggers restore. Deliberately binds_to (soft), NOT
+    contained_by — containment would cascade decommission and destroy identity state with the box (ESC-001/ESC-004).
+    The binding is to the entity UUID, which re-provisioning preserves; that is the survives-re-realization
+    mechanism stated structurally. Illustrative target: any realizable host type an adopter escrows identity
+    for.'
+- edge_type: references
+  target: Security.CredentialRef
+  cardinality: 1..n
+  enforcement: structural
+  description: Every escrowed item wraps exactly one credential reference; the escrow cannot exist without
+    its custody leg.
+context:
+  purpose: Declares which identity state survives a host's re-realization — captured before the wipe,
+    restored as part of converge — without the secret material ever entering the model.
+  plain_description: 'Some machines are routinely wiped and rebuilt, but parts of their identity must
+    not die with the disk: a remote-access enrollment, an application session, a device certificate. This
+    record is the contract for that state. It lists the items to escrow, when each is captured (at registration,
+    before a wipe) and when it is restored (on re-realization), and whether restore is required for the
+    rebuild to count as converged. Each item points at a credential reference — the escrow store holds
+    the material; the model only ever holds the pointer and the capture/restore evidence. Because the
+    escrow is bound to the host''s stable entity UUID rather than to any one installation, a re-imaged
+    machine gets its identity back by contract, and a brand-new machine can never silently claim another
+    machine''s identity.'
+  use_when:
+  - A host is periodically re-imaged or replaced and named identity state must survive the rebuild by
+    contract, not by operator memory.
+  - You need one legible allowlist of what persists across a wipe — everything else dying by default.
+  - 'You need restore to gate convergence: a rebuilt host with a required item unrestored is visibly not
+    converged, never silently identity-less.'
+  - You need decommission of an identity-bearing host to force an explicit, audited disposition of its
+    escrowed identity (destroy or transfer).
+  not_for:
+  - The credential reference itself — that is Security.CredentialRef; an escrow item wraps one, it does
+    not replace it.
+  - General backup or data protection of a host's contents — this carries identity state only, not data-migration
+    payloads.
+  - The identity that acts in requests — that is the Access family's Identity types (Identity.Person /
+    Identity.ServiceAccount); an escrow preserves identity state across realizations, it is not itself
+    an actor.
+  works_with:
+  - Security.CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.
+  - Compute.BareMetalHost — the typical host entity whose re-realization triggers restore.
+  - Identity.ServiceAccount — the acting identity an escrowed credential may authenticate.
+entity_type: Escrow

@@ -1,0 +1,332 @@
+# UDLM — Entity Types
+
+> The three foundational abstractions — Data, Provider, and Policy — are defined in
+> [foundations.md](foundations.md).
+>
+> The Data abstraction — typed entity extensions (Resource, Process; each Atomic or Composite)
+
+**Related Documents:** [Entity-Type Families](entity-type-families.md) | [Context and Purpose](context-and-purpose.md) | [Four States](four-states.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md) | [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)
+
+> **Families & shape.** The entity kinds below split by **family**: **Resource** (maintained states) and
+> **Process** (bounded executions) — see [Entity-Type Families](entity-type-families.md). A family is a
+> *logical grouping*, **not** a usage boundary. Within a family, the **shape** is **derived** (`has_constituents`, not stored) —
+> **Atomic** (owns no constituents) or **Composite** (owns constituents) — so "Composite" is a shape a
+> Resource *or* Process can take, not a separate family. The **Knowledge family** (Capability, TaxonomyTerm,
+> …), anchored by DAV, is in [../entities/knowledge-family.md](knowledge-family.md).
+
+---
+
+## 1. Purpose
+
+This document defines the complete taxonomy of entity types in UDLM. Every resource, service, group, and process an implementation manages is an entity — and every entity belongs to one of the types defined here. The entity type determines the lifecycle state machine, the ownership model, the decommission behavior, and which data model fields are applicable — i.e. it is the discriminator a consumer uses to know how an entity behaves.
+
+Understanding entity types is prerequisite to understanding:
+- How lifecycle states are assigned and transition
+- How ownership and allocation interact
+- How drift detection operates at different levels
+- How decommission cascades through dependent entities
+
+---
+
+## 2. The Primary Entity Families — Resource and Process
+
+The primary split is by **family**, on one axis — is the entity a *maintained state* or a *bounded execution*?
+
+- **Resource** (`family: Resource`) — a maintained state the system holds and continuously reconciles.
+- **Process** (`family: Process`) — a bounded execution that runs to a terminal outcome.
+
+Duration is *not* the discriminator: a Resource that lives one hour and one that lives a year are the same kind. Within either family the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`), not stored. Composite is a shape, not a third kind: a composite Resource owns more than one constituent resource; a composite Process is one DCM itself sequences across more than one constituent process call (§2.2).
+
+### 2.1 Resource — a maintained state
+
+A **Resource** is a realized physical or virtual entity that exists as a **maintained state**: the system records its desired/realized state and continuously reconciles observed reality against it. What makes something a Resource is that it is *kept and reconciled* — drift-detected, suspendable, explicitly decommissioned — not how long it lasts.
+
+**Characteristics:**
+- Persists after provisioning — it continues to exist and consume resources until explicitly decommissioned
+- Owned by exactly one Tenant at any point in time
+- Has a full operational lifecycle including operational and suspended *phases* — carried as `status.conditions`; the coarse `lifecycle_state` is the five-value enum (data-model-core §3)
+- Subject to drift detection — its Realized State is continuously compared against Discovered State
+- Subject to TTL management — may declare an expiry after which decommission is triggered
+- May have relationships to other entities — dependencies, attachments, allocations, business data
+- Carries field-level provenance across its full lifecycle
+
+**Operational phase machine** (the `status` overlay — *not* `lifecycle_state`, which is the five-value enum in data-model-core §3). `REQUESTED`/`REALIZED`/`DECOMMISSIONED` below coincide with the `lifecycle_state` values `Requested`/`Realized`/`Decommissioned`; the rest (`PENDING`, `PROVISIONING`, `OPERATIONAL`, `SUSPENDED`, `DECOMMISSIONING`, `PENDING_REVIEW`, `FAILED`) are `status.conditions`:
+
+```mermaid
+stateDiagram-v2
+    [*] --> REQUESTED
+    REQUESTED --> PENDING: provider dispatch
+    PENDING --> PROVISIONING: provider begins work
+    PROVISIONING --> REALIZED: provider confirms implementation
+    REALIZED --> OPERATIONAL: passes health checks
+    OPERATIONAL --> SUSPENDED: suspend request
+    SUSPENDED --> OPERATIONAL: resume
+    OPERATIONAL --> DECOMMISSIONING: decommission request
+    SUSPENDED --> DECOMMISSIONING: decommission
+    DECOMMISSIONING --> DECOMMISSIONED: provider confirms removal
+    DECOMMISSIONED --> [*]
+
+    note right of OPERATIONAL
+        Primary operational state —
+        drift detection, cost analysis,
+        and policy evaluation are active.
+    end note
+    note right of DECOMMISSIONED
+        Terminal — removed from infra;
+        audit records preserved.
+    end note
+    note left of REQUESTED
+        From any state except DECOMMISSIONED:
+        • PROVISIONING_FAILED → rolls back to REQUESTED, or terminal FAILED
+        • PENDING_REVIEW → sovereignty/tenancy conflict during rehydration (§2.1.2)
+    end note
+```
+
+State meanings: **REQUESTED** (Intent assembled, Requested committed) · **PENDING** (awaiting provider capacity / dependency resolution) · **PROVISIONING** (provider actively realizing) · **REALIZED** (provider-confirmed, full Realized record) · **OPERATIONAL** (active, healthy, in use) · **SUSPENDED** (paused, not in active use, may be billed at reduced rate) · **DECOMMISSIONING** (provider removing, dependencies being released) · **DECOMMISSIONED** (terminal).
+
+**Applicable to:** VM, VLAN, IPAddress, StorageVolume, Container, LoadBalancer, DNSRecord, FirewallRule, NetworkPort, Subnet — and every other entity the system maintains as a reconciled state.
+
+#### 2.1.1 Resource Data Model
+
+The field set is not incidental — each group exists to serve a specific capability the entity type promises: **ownership/allocation** fields drive decommission safety and cost attribution (ownership-sharing-allocation.md); **provider** fields carry the realized identity that changes across rehydration; **TTL/billing** fields drive expiry and chargeback; **drift** fields carry the last Discovered-vs-Realized comparison; **rehydration** fields gate and record re-instantiation; **provenance** makes every value auditable. An implementation that does not use a capability simply leaves its fields null — they are optional carriers, not mandatory ceremony.
+
+```yaml
+resource_entity:
+  # Universal artifact metadata
+  uuid: <uuid>                          # stable across full lifecycle including rehydration
+  handle: <string>                      # human-readable stable identifier
+  resource_type: <fqn>                  # e.g., Compute.VM
+  resource_type_spec_version: <semver>
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>
+  # ^ the ONLY lifecycle enum — five values (docs/spec/foundations/data-model-core.md §3, four-states.md §2.5).
+  #   Finer operational phase + health (provisioning, operational, degraded, maintenance, suspended,
+  #   failed, pending_review, decommissioning) are `status.conditions` overlays, NOT lifecycle_state.
+  created_at: <ISO 8601>
+  updated_at: <ISO 8601>
+
+  # Ownership
+  owned_by_tenant_uuid: <uuid>          # exactly one Tenant; mandatory
+  created_by_actor_uuid: <uuid>
+
+  # Ownership model — see doc 04b
+  ownership_model: <whole_allocation|allocation|shareable>
+  # whole_allocation: consumer owns this entity outright
+  # allocation:       this entity is an allocation carved from a pool (consumer owns it)
+  # shareable:        consumer has a stake; ownership remains with pool owner
+
+  # If this is an allocation from a pool resource
+  allocated_from_pool_uuid: <uuid>      # UUID of the pool entity; null if not an allocation
+  allocation_ref_uuid: <uuid>           # UUID of the AllocationRecord relationship
+
+  # If this is a shareable stake
+  shared_resource_uuid: <uuid>          # UUID of the shared resource; null if not a stake
+
+  # Provider details (populated after REALIZED)
+  provider_uuid: <uuid>
+  provider_entity_id: <string>          # provider's own identifier (e.g., "vm-12345")
+  provider_entity_id_history: [...]     # history of provider IDs (rehydration changes these)
+
+  # Lifecycle constraints
+  ttl: <ISO 8601 duration|null>
+  ttl_expires_at: <ISO 8601|null>
+  on_expiry: <decommission|suspend|notify|escalate>
+  billing_state: <billable|non_billable|reduced_rate>
+
+  # Rehydration — UUID preserved on a restore in place; a rebuild is a new UUID (RHY-005). No separate rehydration_history
+  # structure: provider-side ID changes are in provider_entity_id_history and the event is
+  # in the REHYDRATE audit trail, so it is reconstructable (four-states.md §5). A minimum
+  # auth level to rehydrate is an authorization POLICY, not an entity field.
+
+  # Drift tracking
+  last_discovered_at: <ISO 8601|null>
+  drift_status: <clean|drifted|unknown>
+  last_drift_severity: <minor|significant|critical|null>
+
+  # Relationships (see docs/spec/foundations/entity-relationships.md)
+  relationships: [...]
+
+  # Field-level provenance on all data fields (see foundations.md §4)
+  # [all resource-type-specific fields carry provenance metadata]
+```
+
+#### 2.1.2 The PENDING_REVIEW Condition
+
+`PENDING_REVIEW` is a `status.conditions` entry on Resources (not Processes) — an operational hold, not a `lifecycle_state` (the five-value enum, data-model-core §3, is unchanged while it is set). An entity enters `PENDING_REVIEW` when an automated operation detects a conflict that requires human resolution before the operation can proceed. **Why a distinct state rather than FAILED:** the underlying resource is unchanged and healthy — the conflict is a *governance* question (sovereignty/authorization), not a provisioning fault. `FAILED` would imply the resource is broken and invite teardown; `PENDING_REVIEW` preserves the resource intact while a human or policy resolves the conflict, and it is never auto-resolved.
+
+| Trigger | Description |
+|---------|-------------|
+| Rehydration sovereignty conflict | Rehydration discovers the target provider no longer satisfies the entity's sovereignty constraints |
+| Cross-tenant authorization revoked | An authorization enabling a cross-tenant resource reference was revoked while the resource is still allocated |
+| Ownership transfer conflict | An ownership transfer request conflicts with active relationships that prevent transfer |
+
+An entity in `PENDING_REVIEW`:
+- Is not actively drifting from its Realized State (the underlying resource is unchanged)
+- Has an active `pending_review_record` on the entity with trigger, timestamp, and resolution options
+- Generates notifications to the entity owner, Tenant admin, and platform admin
+- Remains in `PENDING_REVIEW` until a resolution action is taken (re_authorize, release, escalate, or manual override)
+- Is never automatically resolved — all resolutions require explicit human or policy authorization
+
+### 2.2 Atomic and Composite — the derived shape (`has_constituents`)
+
+Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Composite** (owns constituents) — is **derived** (`has_constituents`, from the constituent list), **not a stored `entity_type` field** (ADR-027 addendum, 2026-07-20: 0 behavioral consumers, fully derivable). Composite is not a separate kind — it is a shape any Resource or Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery as an Atomic one; it additionally declares constituents and a `composite_health` axis. A composite Resource is produced by a composite resource type specification that orchestrates multiple constituent Resources into a higher-order service (a composite Process is one DCM itself sequences across several constituent process calls, the same way — whereas a single call, even an Ansible workflow the provider orchestrates internally, is Atomic). The composite is a first-class entity — its own UUID, Tenant ownership, and lifecycle — and its constituents each retain their own entity identity. the derived `has_constituents` is queryable and policy-gateable at the catalog and instance layers; "find all composites" = `has_constituents` (derived from `constituents[]`). (The specific type — `Compute.VM`, `Automation.Workflow` — is `resource_type`, a finer gate.)
+
+**Characteristics:**
+- Represents the logical aggregate, not a physical resource
+- Owned by exactly one Tenant (the Tenant that requested the composite service)
+- Constituents may be owned by the same Tenant or may be allocations/stakes in pool resources owned by another Tenant
+- Drift detection operates at two levels: the composite level (is the composite healthy as a whole?) and the constituent level (is each underlying resource still in its expected state?)
+- Decommission is staged: composite decommissioned first, then constituents in reverse dependency order
+
+**Lifecycle state machine:** Same as Resource — and the lifecycle enum is **unchanged** for composites. Aggregate constituent health is a **separate health axis** (`composite_health`, a `status.conditions`-style overlay per [data-model-core](data-model-core.md) §3): a composite is healthy only when all required constituents are operational, and **`DEGRADED` is a condition/health value, never a lifecycle state** — a composite with a failed partial constituent stays in its lifecycle state while `composite_health: degraded` records the impairment.
+
+**Constituent relationship:** Each constituent is recorded as a `constituent_of` relationship from the constituent to the composite. The composite holds `has_constituent` relationships to each constituent. The composite UUID is the correlation key across all constituent audit records.
+
+```yaml
+composite_entity:
+  uuid: <uuid>
+  resource_type: <fqn>                  # e.g., ApplicationStack.WebApp
+  lifecycle_state: <same as Infrastructure>
+  owned_by_tenant_uuid: <uuid>
+  composition_visibility: <opaque|transparent|selective>
+  # opaque:      consumers see composite only; constituents hidden
+  # transparent: consumers see composite and all constituents
+  # selective:   policy declares which constituents are visible
+
+  constituents:
+    - constituent_entity_uuid: <uuid>
+      role: <primary|supporting|optional>
+      required_for_composite_operational: <bool>
+      # If a required constituent fails, composite_health becomes degraded/failed —
+      # a health-axis condition (data-model-core §3), NOT a lifecycle_state value
+      constituent_lifecycle_state: <mirrors constituent entity>
+  composite_health: <healthy|degraded|failed>   # health axis (status overlay) — separate from lifecycle_state
+```
+
+### 2.3 Process — a bounded execution (family: Process)
+
+A **Process** is a bounded execution — an automation job, playbook, pipeline, workflow, or script run. It is defined by its *form*, not its effect: it runs to a terminal outcome (COMPLETED, FAILED, or CANCELLED) and is never a maintained state — no drift, no suspend, no reconciliation. It may read or change Resources (and records which entity UUIDs it affected), but a Process itself is not kept. Automation is the archetype.
+
+Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored) — and the line is drawn from the **implementation's (DCM's) perspective**, its orchestration scope, *not* the process's internal complexity: **Atomic** is a *single call DCM makes* — one job, one playbook run, **or an Ansible/AWX workflow invoked as one call** (the provider orchestrates its own internal jobs; DCM made a single call, so it is still Atomic). **Composite** is when *DCM itself* sequences more than one distinct process call, tracking them as constituents. A composite Process's constituents are those sub-process calls, recorded via the **same constituent-relationship model** a composite Resource uses. The specific tool is the `resource_type` (`Automation.AnsiblePlaybook`, `Automation.Job`) — vendor-specifics like "playbook" live there, at the finer gate.
+
+**Characteristics:**
+- Does not persist after reaching a terminal state — no ongoing Realized State to manage
+- Must declare `max_execution_time` — mandatory, not optional
+- If max_execution_time is exceeded, the process enters FAILED state and a `PROCESS_TIMEOUT` event is generated (catalogued as `process.timeout` — docs/spec/contracts/event-catalog.md §17a)
+- If the process modifies any Resource, it must record the modified entity UUIDs in its provenance
+- Owned by the Tenant that initiated the execution
+- Subject to audit — every process execution produces a full audit trail
+
+**Lifecycle state machine:**
+
+```
+REQUESTED → INITIATED → EXECUTING → COMPLETED (terminal)
+                                  → FAILED     (terminal)
+                                  → CANCELLED  (terminal — requires explicit cancel request)
+```
+
+No SUSPENDED state. No PENDING_REVIEW state. Processes are transient — they do not enter states that require ongoing management.
+
+```yaml
+process_entity:
+  uuid: <uuid>
+  resource_type: <fqn>                  # e.g., Automation.AnsiblePlaybook
+  lifecycle_state: <Intent|Requested|Realized|Discovered|Decommissioned>  # universal coarse lifecycle of the process entity
+  execution_state: <REQUESTED|INITIATED|EXECUTING|COMPLETED|FAILED|CANCELLED>  # per-RUN dynamics — separate axis (data-model-core §3 [D7])
+  owned_by_tenant_uuid: <uuid>
+  created_by_actor_uuid: <uuid>
+
+  max_execution_time: <ISO 8601 duration>  # mandatory
+  started_at: <ISO 8601|null>
+  completed_at: <ISO 8601|null>
+  execution_timeout_at: <ISO 8601|null>   # computed: started_at + max_execution_time
+
+  # Entities this process modified (mandatory if any modifications made)
+  affected_entity_uuids: [<uuid>, ...]
+
+  # Execution details
+  provider_uuid: <uuid>                 # which automation provider executed this
+  provider_job_id: <string>             # provider's own job identifier
+  exit_status: <success|failure|timeout|cancelled|null>
+  execution_log_ref: <uuid|null>        # reference to log store entry
+
+  # Provenance on all execution parameters carries field-level lineage
+```
+
+---
+
+## 3. Sub-Types and Specializations
+
+### 3.1 Shared Resource Entity (Resource sub-type)
+
+A **Shared Resource Entity** is an Resource where multiple consumers hold stakes — references, attachments, or dependencies — without any consumer owning an allocation of the resource. The resource has a single owner (typically a platform or network operations Tenant). Consumers reference it through relationships.
+
+See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for the complete model.
+
+**Examples:** VLAN, NetworkSegment, SharedStorageCluster, DNS Zone, NTP Server, Certificate Authority.
+
+**Key property:** `ownership_model: shareable`
+
+Decommission is deferred while any active stakeholder relationships exist. The `minimum_relationship_count` on the resource type spec declares the safe minimum — typically 0 (can be decommissioned when all stakes are released) but may be higher for infrastructure that must always have at least one consumer.
+
+### 3.2 Allocatable Pool Resource (Resource sub-type)
+
+An **Allocatable Pool Resource** is an Resource that serves as a pool from which consumers receive owned allocations. The pool itself is owned by a platform Tenant. Each allocation request produces a new, independently owned Resource carved from the pool.
+
+See [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md) for the complete model.
+
+**Examples:** IPAddressPool (allocates IPAddress entities), SubnetPool (allocates Subnet entities), VLANPool (allocates VLAN entities), StoragePool (allocates StorageVolume entities).
+
+**Key property:** `ownership_model: whole_allocation` on the pool entity; allocation products have `ownership_model: allocation`.
+
+The pool tracks available capacity. Allocation requests go through the placement engine like any other resource request. The produced allocation entity is owned by the requesting Tenant.
+
+---
+
+## 4. Entity Identity Invariants
+
+These invariants apply to all entity types without exception:
+
+| Invariant | Rule |
+|-----------|------|
+| UUID stability | An entity's UUID never changes across its full lifecycle, including rehydration and provider migration |
+| Single Tenant ownership | Every Resource and Process is owned by exactly one Tenant at all times |
+| Composite constituent ownership | A Composite's constituents are owned individually — the composite UUID does not override constituent Tenant ownership |
+| Immutable Realized State | Realized State events are append-only; a new event is created for every state change |
+| Audit trail preservation | Audit records for an entity are never destroyed while any related entity is active; preservation policy governs post-terminal retention |
+| Provider ID separation | The entity UUID is the UDLM stable identity; the provider entity ID is the provider's own reference. These are separate and the provider ID may change on rehydration |
+
+---
+
+## 5. Entity Type to Resource Type Mapping
+
+Not all resource types produce the same entity type. The entity type is declared in the Resource Type Specification:
+
+```yaml
+resource_type_spec:
+  fqn: Compute.VM
+  family: Resource        # ADR-027 family (state vs execution)
+  ownership_model: whole_allocation       # whole_allocation | allocation | shareable
+  allocatable_from_pool_type: null        # if allocation: the pool resource type this comes from
+  pool_resource_type: null                # if pool: declare this is a pool resource
+  shareable: false                        # if shareable: true
+```
+
+---
+
+## 6. Entity-Type Invariants
+
+These `ENT-00x` rows are invariants of the entity-type model — constraints a
+conformant implementation guarantees, not runtime governance policy.
+
+| Invariant | Rule |
+|--------|------|
+| `ENT-001` | Every Resource must be owned by exactly one Tenant at all times |
+| `ENT-002` | Processes must declare max_execution_time — this field has no default and is not optional |
+| `ENT-003` | Processes must record all affected entity UUIDs if any infrastructure modifications are made during execution |
+| `ENT-004` | Composite aggregate constituent health is carried on the `composite_health` axis (a status/conditions overlay — data-model-core §3): healthy only when all required constituents are operational. DEGRADED/degraded is a health-axis value, never a lifecycle_state — the lifecycle enum is unchanged for composites |
+| `ENT-005` | PENDING_REVIEW is a valid Resource **condition** (`status.conditions`, data-model-core §3 — not a `lifecycle_state`) requiring human resolution — it is never an error state and never automatically resolved |
+| `ENT-006` | The entity UUID is immutable across the full entity lifecycle including rehydration, provider migration, and ownership transfer |
+
+---
+
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*

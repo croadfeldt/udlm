@@ -1,0 +1,1236 @@
+# UDLM — Unified Policy Contract
+
+**What this settles.** The one base contract every policy implements — match conditions,
+enforcement level, domain precedence, artifact structure, lifecycle — the evaluation model,
+the eight typed output schemas, the override model, and the `POL-*` system policies.
+
+**In one breath.** Every policy is the same artifact with one varying part: its **output
+schema** — what it produces when its match conditions are satisfied. **Adding a new policy
+type = defining a new output schema** (POL-006); the base contract, evaluation algorithm,
+lifecycle, and audit obligations are inherited. A policy fires when the data matches its
+declared conditions — never by pre-assignment or routing table — and every evaluation is
+audited (POL-002).
+
+**Background — read first** (skip if you have it):
+[foundations.md](../foundations/foundations.md) — the Data·Provider·Policy triad; policy is
+the deciding abstraction · [layering-and-versioning.md](../foundations/layering-and-versioning.md)
+§1b — policies apply *over* the merged layers, they are not layers ·
+[governance-matrix.md](../governance/governance-matrix.md) — the boolean matrix one output
+schema projects onto.
+
+---
+
+## 2. Base Contract — Match Conditions
+
+**A policy fires when the data says it should fire** — declared match conditions against data
+fields, never pre-assignment, routing tables, or static configuration. Any piece of data in
+the request can be the trigger.
+
+### 2.1 Four Match Sources
+
+Policies can match against data from four sources, all available during evaluation:
+
+| Source | What it contains | Examples |
+|--------|-----------------|---------|
+| **Request payload** | Consumer's declared fields + assembled layers + provenance | `resource_type`, `cpu_count`, `network_segment`, `sovereignty_zone`, `environment`, `application_uuid`, custom tags |
+| **Operation context** | What lifecycle operation is being performed and what changed | `operation.type`, `operation.changed_fields`, `operation.pipeline_stage` |
+| **Evaluation Context** | Constraints emitted by policies earlier in this evaluation pass | `allowed_zones`, `distribution_requirement`, `cost_ceiling`, `excluded_providers` |
+| **Entity metadata** | Tenant, actor, resource classification, lifecycle state | `tenant_uuid`, `actor.roles`, `data_classification`, `lifecycle_state`, `cost_center` |
+
+All four sources are addressable via dot-notation field paths.
+
+### 2.2 Lifecycle Operation Types
+
+Every request into DCM carries an `operation.type` that identifies what lifecycle operation is being performed. This is the primary dimension for scoping which policies fire on which operations.
+
+| Operation Type | When it occurs | Description |
+|---------------|---------------|-------------|
+| `initial_provisioning` | Day 0 — first request for a new resource | Full pipeline: assembly, all policies, placement, dispatch |
+| `update` | Day 2 — modify an existing operational resource | Partial pipeline: assembly with existing entity as base, policies evaluate changed fields |
+| `scale` | Day 2 — change capacity (replicas, CPU, memory, storage) | Subset of update — only scaling-related fields change |
+| `rehydration` | Rebuild from stored state (DR, migration, refresh) | Full pipeline: all current policies re-evaluate from intent or realized state |
+| `decommission` | Day N — request to remove a resource | Decommission pipeline: dependency checks, notification, revocation, provider teardown |
+| `ownership_transfer` | Transfer entity between tenants | Re-evaluates tenant-scoped policies under new tenant context |
+| `subscription_renewal` | Subscription approaching expiry or renewal | Subscription lifecycle policies fire; may trigger re-evaluation of placement |
+| `drift_remediation` | Discovered state diverges from realized state | Remediation policies fire; may re-provision or accept drift |
+| `provider_migration` | Move entity to a different provider | Full placement re-evaluation; sovereignty re-evaluation |
+| `compliance_rescan` | Policy change triggers re-evaluation of existing resources | All matching policies re-evaluate; no placement unless policy requires it |
+
+**`operation.changed_fields`** — For `update` and `scale` operations, this is an array of field paths that changed from the current realized state. This enables policies to fire only when relevant fields change:
+
+```yaml
+# Fire only when placement-affecting fields change
+match:
+  conditions:
+    - field: operation.type
+      operator: in
+      value: [initial_provisioning, rehydration, provider_migration]
+  condition_logic: any
+
+# OR: fire on updates, but only when network or zone fields changed
+match:
+  conditions:
+    - field: operation.type
+      operator: equals
+      value: "update"
+    - field: operation.changed_fields
+      operator: contains
+      value: "placement.zone"
+  condition_logic: all
+```
+
+### 2.3 Policy Lifecycle Scope
+
+Each policy declares which lifecycle operations it applies to. This is configured per policy via `lifecycle_scope`:
+
+```yaml
+policy_artifact:
+  handle: "placement/sovereignty-zone-check"
+  lifecycle_scope:
+    operations: [initial_provisioning, rehydration, provider_migration]
+    # This policy fires on: new resources, rebuilds, and provider moves
+    # Does NOT fire on: memory updates, scaling, decommissions
+
+policy_artifact:
+  handle: "validation/vm-size-limits"
+  lifecycle_scope:
+    operations: [initial_provisioning, update, scale]
+    changed_field_filter: ["cpu_count", "memory_gb", "storage_gb"]
+    # Fires on new resources AND on updates that change sizing fields
+    # Does NOT fire on: tag changes, owner changes, etc.
+
+policy_artifact:
+  handle: "sovereignty/data-residency"
+  lifecycle_scope:
+    operations: all                         # fires on EVERY lifecycle operation
+    # Sovereignty is always checked — no exceptions
+```
+
+**Default lifecycle scope by policy type:**
+
+| Policy Type | Default `lifecycle_scope.operations` | Rationale |
+|-------------|-------------------------------------|-----------|
+| Validation (compliance-class) | `all` | Compliance rules should always be checked |
+| Validation (structural-class) | `[initial_provisioning, update, scale, rehydration]` | Structural validation on any data change |
+| Transformation | `[initial_provisioning, rehydration]` | Inject/enrich on new builds and rebuilds; skip on minor updates |
+| Recovery | `all` | Recovery posture always applicable |
+| Orchestration Flow | `[initial_provisioning, rehydration, decommission]` | Pipeline orchestration on major lifecycle transitions |
+| Governance Matrix Rule | `all` | Boundary controls always checked |
+| Lifecycle | `all` | TTL/expiry constraints always active |
+| ITSM Action | `[initial_provisioning, update, decommission]` | ITSM records on provisioning, changes, and teardown |
+
+These defaults can be overridden per policy. Profile-governed minimums prevent downgrading below security requirements:
+
+| Profile | Minimum lifecycle scope |
+|---------|------------------------|
+| `homelab`, `dev` | No minimum — any scope permitted |
+| `standard`, `prod` | Compliance-class Validation Policy and Governance Matrix must be `all` |
+| `fsi`, `sovereign` | Compliance-class Validation Policy, Governance Matrix, and sovereignty-concern policies must be `all` — cannot be scoped to skip any lifecycle operation |
+
+### 2.4 Specificity Spectrum
+
+The same match model expresses policies at every level of specificity:
+
+```yaml
+# Universal — fires on everything (no conditions)
+match:
+  conditions: []
+
+# Classification-scoped — fires on any resource handling PHI
+match:
+  conditions:
+    - field: request.data_classification
+      operator: in
+      value: ["phi", "pci"]
+
+# Resource-type scoped — fires on all VMs
+match:
+  conditions:
+    - field: request.resource_type
+      operator: equals
+      value: "Compute.VM"
+
+# Zone + segment scoped — fires on any resource in DMZ in zone A
+match:
+  conditions:
+    - field: request.network_segment
+      operator: equals
+      value: "dmz"
+    - field: request.placement.zone
+      operator: equals
+      value: "zone-a"
+  condition_logic: all
+
+# Fully specific — VMs in DMZ in zone A for one application
+match:
+  conditions:
+    - field: request.resource_type
+      operator: equals
+      value: "Compute.VM"
+    - field: request.network_segment
+      operator: equals
+      value: "dmz"
+    - field: request.placement.zone
+      operator: equals
+      value: "zone-a"
+    - field: request.application_uuid
+      operator: equals
+      value: "xxxx-xxxx-xxxx"
+  condition_logic: all
+
+# Context-aware — fires when sovereignty has restricted zones
+match:
+  conditions:
+    - field: context.constraints.zone_restriction
+      operator: exists
+  condition_logic: all
+```
+
+### 2.5 Match Operators
+
+| Operator | Description |
+|----------|------------|
+| `equals` | Exact match |
+| `not_equals` | Negation |
+| `in` | Value is in a list |
+| `not_in` | Value is not in a list |
+| `exists` | Field is present (any value) |
+| `not_exists` | Field is absent |
+| `minimum` | Numeric ≥ threshold |
+| `maximum` | Numeric ≤ threshold |
+| `contains` | String/array contains substring/element |
+| `matches` | Regex match |
+| `starts_with` | Field path prefix match (for hierarchical resource types) |
+
+`condition_logic: all` (default) requires all conditions to match. `condition_logic: any` requires at least one.
+
+### 2.6 Boundary Match Conditions (Governance Matrix)
+
+Governance Matrix Rules use a four-axis boundary model for matching — subject, data, target, and context. These are structurally the same as field conditions but organized by the four axes of the Governance Matrix:
+
+```yaml
+match:
+  subject:
+    type: <subject_type>
+    identity: { ... }
+    tenant: { ... }
+  data:
+    classification: <level>
+    resource_type: <fqn>
+    field_paths: { mode: allowlist | blocklist, paths: [...] }
+  target:
+    type: <target_type>
+    sovereignty_zone: { match: <zone_id> }
+    accreditation_held: { includes: [...] }
+    trust_posture: <posture>
+  context:
+    profile: { deployment_posture: <posture> }
+    zero_trust_posture: { minimum: <level> }
+    federated: true | false
+```
+
+---
+
+## 3. Base Contract — Enforcement Level
+
+```yaml
+enforcement: hard | soft
+
+# hard: cannot be relaxed by any downstream rule at any domain level
+#        A hard DENY cannot be overridden by any Tenant, entity, or operator override
+#        Reserved for: sovereign/classified data boundaries, regulatory hard requirements
+
+# soft: establishes a default that downstream rules can tighten
+#        A soft ALLOW can be restricted to DENY by a more-specific rule
+#        A soft DENY cannot be relaxed to ALLOW by a downstream rule
+```
+
+Most policies are soft. Hard enforcement is reserved for absolute security constraints.
+
+---
+
+## 4. Base Contract — Domain Precedence
+
+Policies operate within a domain hierarchy. More-specific domains win within the same concern type:
+
+```
+system (most trusted — DCM built-in)
+  └── platform (platform admin declared)
+        └── tenant (Tenant admin declared)
+              └── resource_type (per resource type spec)
+                    └── entity (per specific entity — most specific)
+```
+
+Within the same domain level, DENY wins over ALLOW. More-specific domain wins over less-specific.
+
+---
+
+## 5. Base Contract — Artifact Structure
+
+All policies are first-class DCM Data artifacts. They share the standard artifact metadata and lifecycle:
+
+```yaml
+policy_artifact:
+  # Standard DCM artifact metadata (all artifacts carry this)
+  artifact_metadata:
+    uuid: <uuid>
+    handle: "<domain>/<concern>/<name>"
+    version: "1.0.0"
+    status: developing | proposed | active | deprecated | retired
+    owned_by: { display_name: "<team>", email: "<email>" }
+    created_by: { display_name: "<actor>" }
+    created_via: pr | api | migration | system
+
+  # Policy classification
+  policy_type: <type>                    # validation | transformation |
+                                         # recovery | orchestration_flow |
+                                         # governance_matrix_rule | lifecycle
+  concern_type: <concern>                # security | compliance | operational |
+                                         # recovery_posture | zero_trust_posture |
+                                         # data_authorization_boundary | orchestration_flow
+
+  domain: system | platform | tenant | resource_type | entity
+
+  # Match conditions (Model A or B — see Section 2)
+  match: { ... }
+
+  # Enforcement
+  enforcement: hard | soft
+
+  # Output schema (varies by policy_type — see Sections 8-14)
+  output: { ... }
+
+  # Audit
+  audit_on: [ALLOW, DENY, STRIP_FIELD]   # which decisions produce audit records
+  notification_on: [DENY]               # which decisions trigger notifications
+  notification_urgency: low | medium | high | critical
+
+  # Compliance reference
+  compliance_basis: "<regulatory citation>"
+  review_required_before: "<ISO 8601 date>"
+```
+
+---
+
+## 6. Base Contract — Lifecycle
+
+All policies follow the five-status lifecycle:
+
+| Status | Behavior |
+|--------|---------|
+| `developing` | Dev mode only. Not applied in any environment. |
+| `proposed` | Shadow mode: executes against real traffic; output captured but never applied. Used for safe validation. |
+| `active` | Applied to all matching requests. |
+| `deprecated` | Still active; replacement available; warning on evaluation. |
+| `retired` | Terminal; cannot be used. |
+
+**Shadow mode (proposed status):** The policy evaluates against real traffic. Its output is captured in the Validation Store. Platform admins review shadow results before promoting to active. This is the primary mechanism for safe policy change management.
+
+---
+
+## 7. Evaluation Model
+
+### 7.1 Evaluation Context
+
+Every request evaluation creates a transient **Evaluation Context** — a shared constraint space that policies read from and write to during evaluation. The context accumulates constraints, hints, and resolutions across evaluation passes.
+
+```yaml
+evaluation_context:
+  request_uuid: <uuid>
+  pass_number: 1
+  max_passes: 3                         # configurable; default 3
+
+  # Constraints accumulate — each has provenance
+  constraints:
+    - constraint_uuid: <uuid>
+      source_policy: "<handle>"
+      source_domain: system | platform | tenant | resource_type | entity
+      constraint_type: <string>         # zone_restriction, distribution_requirement, cost_ceiling, etc.
+      field: "<dot-notation path>"
+      operator: restrict_to | require | prefer | exclude
+      value: <any>
+      binding: hard | soft              # hard = cannot be overridden; soft = preference
+      reason: "<human-readable>"
+      pass_added: <int>
+
+  # Hints flow between policies — transient, never persisted as entity data
+  hints:
+    - from_policy: "<handle>"
+      to_concern: "<concern_type>"      # placement, security, compliance, etc.
+      hint_type: <string>
+      value: <any>
+      pass_added: <int>
+
+  # Resolutions record how conflicts were handled
+  resolutions:
+    - conflict: "<description>"
+      strategy: <string>                # from on_conflict declaration
+      result: "<description>"
+      resolved_by: auto | human | escalation
+      pass_resolved: <int>
+
+  # Resolved constraint set — what downstream policies and placement use
+  resolved_constraints: { ... }
+```
+
+The Evaluation Context is **transient** — it exists only during request evaluation. Hints are ephemeral. But the complete context snapshot at each pass is captured in the audit record.
+
+### 7.2 Evaluation — the contract, not the algorithm
+
+Evaluation is **re-entrant and convergent** (ADR-006). The contract fixes *what* must hold, not *how* an
+engine gets there:
+
+1. **Collect** — every policy whose match conditions hold emits its constraints into the Evaluation Context
+   (§7.1/§7.3), each with provenance and a `hard`/`soft` binding. No final decisions at this step — only
+   constraint declarations.
+2. **Resolve** — conflicting constraints are reconciled by the conflicting policies' declared `on_conflict`
+   strategies; a conflict with no available resolution is surfaced (the request is paused for a decision),
+   never silently dropped.
+3. **Apply + re-validate** — the resolved constraint set is applied and the assembled payload re-validated
+   against it; an unmet check becomes a new constraint and evaluation re-enters.
+
+Two invariants bind any conforming implementation: a `hard` constraint cannot be overridden downstream (a
+`soft` one is a default a more-specific policy may tighten); and re-evaluation is **idempotent** (ADR-006 —
+re-evaluating unchanged state must not double-apply). Given the same context, two implementations must reach
+the same resolved constraint set.
+
+*How* an engine reaches convergence — the multi-pass loop, its pass bound, the concrete
+collection→resolution→application scheduling, and the worked convergence/escalation traces — is a
+**implementation concern**, specified in the DCM architecture docs, not fixed here (§7.2a: built-in or
+delegated, the contract is identical).
+
+### 7.2a Policy engine — built-in vs. delegated (external)
+
+This document is the policy **contract**. *Where* policies live and *who* evaluates them is an implementation choice, in one of two modes — the contract is identical either way:
+
+- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For DCM specifically, **policies are DCM-controlled**: the policy engine is a core DCM component and its policy store sits under DCM's governance. Whether that store is *physically* the same database as other DCM Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
+- **Delegated to an external engine.** An implementation MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the implementation sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
+
+Wire-compatibility holds regardless: a peer cannot tell — and need not care — whether a decision came from a built-in or a delegated engine, only that it conforms to §2–§5 and the re-entrant, convergent evaluation contract (§7.2; ADR-006).
+
+If evaluation cannot converge, the request fails with a full conflict report — every constraint, every conflict, and every attempted resolution. The convergence bound itself (e.g. a maximum pass count) is an engine parameter, set by the implementation (DCM), not by this contract.
+
+### 7.3 Constraint Emission
+
+Policies declare what constraints they emit via `emits_constraints` in their artifact:
+
+```yaml
+policy_artifact:
+  handle: "sovereignty/eu-data-residency"
+  policy_type: validation
+  match:
+    conditions:
+      - field: request.data_classification
+        operator: in
+        value: ["restricted", "phi", "pci"]
+
+  # What this policy contributes to the evaluation context
+  enforcement_class: compliance
+  emits_constraints:
+    - field: "placement.allowed_zones"
+      constraint_type: zone_restriction
+      binding: hard
+    - field: "placement.excluded_providers"
+      constraint_type: provider_exclusion
+      binding: hard
+
+  # How to handle conflicts with this policy's constraints
+  on_conflict:
+    default: deny                       # hard sovereignty — no auto-resolution
+```
+
+```yaml
+policy_artifact:
+  handle: "tier/tier-1-ha-distribution"
+  policy_type: transformation
+  match:
+    conditions:
+      - field: request.tier
+        operator: equals
+        value: "tier-1"
+
+  emits_constraints:
+    - field: "placement.zone_distribution"
+      constraint_type: distribution_requirement
+      binding: hard
+
+  on_conflict:
+    zone_shortage: redistribute         # auto-resolve: spread across available zones
+    replica_shortage: deny              # can't reduce replicas — deny
+    default: escalate
+```
+
+### 7.4 Evaluation Order
+
+Within a single pass:
+
+1. **Domain precedence** — system evaluates first, then platform, then tenant, then resource_type, then entity. More-specific domains evaluate after (and can override) less-specific.
+2. **Within a domain level** — policies evaluate in declared priority order.
+3. **Parallel evaluation** — policies with no data dependencies on each other evaluate concurrently within the same domain level and phase.
+4. **Context-dependent policies** — policies matching on `context.constraints.*` evaluate after the policies that emit those constraints.
+5. **DENY wins** — at the same domain level, any DENY blocks regardless of other policies at that level.
+
+### 7.5 Per-Pass Audit
+
+Every evaluation pass produces an audit record. The record captures the complete state — not just the outcome:
+
+```yaml
+policy_evaluation_audit:
+  request_uuid: <uuid>
+  pass_number: <int>
+  evaluation_context_snapshot: { ... }    # full context at this pass
+  policies_evaluated:
+    - policy_uuid: <uuid>
+      policy_version: "<semver>"
+      matched: true | false
+      output: { ... }
+      constraints_emitted: [...]
+      hints_emitted: [...]
+      duration_ms: <int>
+  conflicts_detected: [...]
+  resolutions_applied: [...]
+  pass_result: converged | loop | escalated | failed
+  total_duration_ms: <int>
+```
+
+Every pass, every constraint, every hint, every resolution — fully auditable. If an auditor asks "why 3/3 instead of 2/2/2?" the trail shows: sovereignty restricted zones, tier auto-resolved via redistribute, placement honored resolved constraints.
+
+---
+
+### 7.6 Reserve-phase reconciliation participation
+
+Implementation is two-phase (ADR-011): the **reserve phase** is a reconciliation loop in which holds land incrementally, each yielding new reserved facts (a reserved segment, a placement), converging to a fixed point before the commit barrier. Policy evaluation is **re-entrant** (ADR-006) — but a policy **declares whether it participates in that loop**, via the `reconciliation` block (`registry/policy.schema.json`):
+
+- **`participates: true`** — the policy is **re-evaluated as new reserved data arrives** during reconciliation (filtered by `reevaluate_on`: `reservation_added` | `reservation_changed` | `reservation_released` | `fact_updated`). This is the right setting for rules that must act on the *enriched* reserved graph as it converges — **placement**, **cycle/graph** integrity, **quota** (running totals across landing holds), and **governance-matrix** boundary rules whose inputs are reserved facts. Reserved facts are addressable as `reserved.*` match sources.
+- **`participates: false` (default)** — the policy is evaluated **once, at the commit barrier**, against the completed reserved graph. Correct for cheap, static, or request-only checks (a data-residency `deny`, a fixed compliance gate) that gain nothing from re-running each iteration and would only add cost.
+
+Two obligations hold regardless: re-evaluation MUST be **idempotent** (ADR-006 — re-evaluating unchanged state must not double-apply), and **every** applicable policy — participating or not — MUST be green at the commit barrier before anything commits (§commit barrier, ADR-011). Participation changes *when and how often* a policy runs during reserve, never whether it must ultimately pass.
+
+### 7.7 Policy evaluation outcome — three states (governance honesty)
+
+A policy's result in the durable `policy_results` (Requested domain, data-store-contracts §2.2) is one of **three** states, never two:
+
+- **`evaluated_pass`** — the match conditions applied AND the policy passed (allow / valid).
+- **`evaluated_fail`** — the match conditions applied AND the policy failed (deny / invalid).
+- **`out_of_scope`** — the match conditions did **not** apply to this request; the policy was not evaluated.
+
+**`out_of_scope` is recorded, never collapsed into `evaluated_pass`.** A request that *no* compliance policy applied to is not the same as a request that *every* compliance policy passed — the first is **ungoverned**, the second is **governed-and-clean**. Folding out-of-scope into pass hides ungoverned requests, so the distinction is a governance-honesty invariant: a compliance auditor MUST be able to tell "0 policies applied" from "12 policies passed." This lifts the per-pass audit `matched` flag (§7.5: `matched: false` → `out_of_scope`) into the stored per-policy outcome.
+
+```yaml
+policy_results:
+  - policy_uuid: <uuid>
+    policy_version: "<semver>"
+    outcome: evaluated_pass | evaluated_fail | out_of_scope
+    detail: { ... }              # field_results / decision / reason (per output schema)
+coverage:
+  applicable: <int>              # policies with outcome != out_of_scope
+  out_of_scope: <int>
+  # applicable == 0 for a governed concern => the request is UNGOVERNED for it — surfaced, not hidden.
+```
+
+## 8. Constraint Type Registry
+
+Constraint types are the shared vocabulary of the Evaluation Context. Every constraint emitted by a policy and every context field matched by a policy must reference a registered constraint type. Freeform strings are not permitted — if two policies should interact, they must agree on the vocabulary, and the registry enforces that agreement.
+
+### 8.1 Registry Entry
+
+```yaml
+constraint_type:
+  handle: "zone_restriction"
+  version: "1.0.0"
+  tier: core                              # core (DCM built-in) | organization (custom)
+  schema:                                 # OpenAPI v3 schema for the constraint value
+    type: object
+    properties:
+      allowed:
+        type: array
+        items: { type: string }
+        description: "Zones where placement is permitted"
+      excluded:
+        type: array
+        items: { type: string }
+        description: "Zones where placement is prohibited"
+    additionalProperties: false
+  semantic: "Restricts which zones a resource may be placed in"
+  binding_levels: [hard, soft]
+  emittable_by: [validation, governance_matrix_rule]
+  consumable_by: [transformation, validation]
+```
+
+### 8.2 Built-In Constraint Types (Core Tier)
+
+| Constraint Type | Schema (key fields) | Emitted by | Consumed by |
+|----------------|---------------------|------------|-------------|
+| `zone_restriction` | `{allowed: [string], excluded: [string]}` | Sovereignty, compliance | Placement, distribution |
+| `provider_restriction` | `{allowed: [uuid], excluded: [uuid]}` | Sovereignty, accreditation | Placement |
+| `distribution_requirement` | `{min_replicas: int, min_zones: int, distribution: enum}` | Tier/HA policies | Placement |
+| `cost_ceiling` | `{max_per_unit_hour: decimal, currency: string}` | Budget policies | Placement, approval |
+| `network_restriction` | `{allowed_segments: [string], excluded: [string]}` | Security, compliance | Transformation, placement |
+| `resource_limits` | `{max_cpu: int, max_memory_gb: int, max_storage_gb: int}` | Tier policies, quotas | Validation |
+| `compliance_requirement` | `{frameworks: [string], controls: [string]}` | Compliance profiles | Validation, transformation |
+| `sovereignty_boundary` | `{data_residency: string, jurisdictions: [string]}` | Sovereignty | All downstream |
+| `approval_requirement` | `{required: bool, approvers: [string], quorum: int}` | Tier, compliance | Approval flow |
+| `scheduling_constraint` | `{maintenance_window: cron, blackout_periods: [range]}` | Operational | Placement, lifecycle |
+
+Organizations can register custom constraint types (same as custom resource types). A financial services org might register `trading_window_restriction` or `pci_scope_boundary`.
+
+### 8.3 Hint Types
+
+Hints are soft, advisory signals — not hard constraints. They follow the same registry pattern:
+
+```yaml
+hint_type:
+  handle: "cost_preference"
+  version: "1.0.0"
+  schema:
+    type: object
+    properties:
+      preferred_zones: { type: array, items: { type: string } }
+      reason: { type: string }
+  semantic: "Advisory preference for lower-cost zones"
+  emittable_by: [transformation, validation]
+  consumable_by: [validation, transformation]
+```
+
+### 8.4 Validation at Policy Activation
+
+When a policy is promoted from `developing` to `proposed` (shadow mode), policy activation validates:
+
+1. Every `emits_constraints[].constraint_type` is a registered constraint type
+2. The emitted value structure matches the registered schema
+3. The emitting policy's type is in the constraint type's `emittable_by` list
+4. Every `match.conditions[].field` referencing `context.constraints.*` corresponds to a registered constraint type
+5. The consuming policy's type is in the constraint type's `consumable_by` list
+
+If any check fails, the policy cannot be activated. Vocabulary mismatches are caught at authoring time, not when a production request fails silently.
+
+---
+
+## 9. Policy Templates
+
+Policy templates separate reusable policy logic from instance-specific configuration, following the OPA Gatekeeper ConstraintTemplate pattern as the reference model. A template declares its parameter schema, emitted constraint types, and consumed constraint types — the contract — and carries the logic in the implementation's policy language. Rego/OPA is shown throughout this section as the reference example, not a mandate: a delegated engine may express the same logic differently (§7.2a). A policy artifact is an instance of a template with bound parameters and match conditions.
+
+### 9.1 Template Definition
+
+```yaml
+policy_template:
+  handle: "dcm.sovereignty.zone-restriction"
+  version: "1.0.0"
+  tier: core
+
+  # Parameters this template accepts (OpenAPI v3 schema)
+  parameter_schema:
+    type: object
+    required: [classification_levels, allowed_zones]
+    properties:
+      classification_levels:
+        type: array
+        items: { type: string }
+      allowed_zones:
+        type: array
+        items: { type: string }
+
+  # Registered constraint types this template emits
+  emits: [zone_restriction, provider_restriction]
+
+  # Registered constraint types this template reads from context
+  consumes: []
+
+  # Rego logic
+  rego: |
+    package dcm.sovereignty.zone_restriction
+    import data.dcm.constraint_types
+
+    emit_constraint[constraint] {
+      input.request.data_classification == input.parameters.classification_levels[_]
+      constraint := constraint_types.zone_restriction({
+        "allowed": input.parameters.allowed_zones,
+        "excluded": [],
+      })
+    }
+
+    deny[msg] {
+      not input.request.placement.zone == input.parameters.allowed_zones[_]
+      msg := sprintf("Zone %v not in allowed zones %v for %v data",
+        [input.request.placement.zone,
+         input.parameters.allowed_zones,
+         input.request.data_classification])
+    }
+```
+
+### 9.2 Policy Artifact (Template Instance)
+
+```yaml
+policy_artifact:
+  handle: "sovereignty/eu-data-residency"
+  template: "dcm.sovereignty.zone-restriction"
+  version: "1.0.0"
+  domain: system
+  policy_type: validation
+  enforcement_class: compliance
+
+  parameters:
+    classification_levels: [restricted, phi, pci]
+    allowed_zones: [eu-west-1, eu-central-1]
+
+  match:
+    conditions:
+      - field: request.data_classification
+        operator: in
+        value: [restricted, phi, pci]
+
+  enforcement: hard
+  on_conflict:
+    default: deny
+```
+
+### 9.3 Constraint-type constructor libraries (implementation-provided)
+
+The contract is that every emitted constraint references a **registered constraint type** (§8) — freeform
+constraint objects are not permitted. *How* an implementation makes that ergonomic for policy authors — e.g.
+auto-generating an engine-native constructor library from the Constraint Type Registry so wrong field
+names/types are caught at bundle-compile time rather than at runtime — is an implementation concern. The DCM
+implementation ships such a library for its engine; that library and its packaging live in the DCM
+architecture docs, not in this contract.
+
+### 9.4 Template Registration Validation
+
+When a template is registered:
+
+1. Rego compiles without errors
+2. Parameter schema is valid OpenAPI v3
+3. All emitted constraint types are registered in the Constraint Type Registry
+4. All consumed constraint types are registered
+5. Emitted constraints reference registered constraint types (§8), not freeform objects (however the implementation's engine enforces this)
+
+When a policy artifact is created from a template:
+
+1. Parameters validate against the template's parameter schema
+2. Match conditions reference valid field paths
+3. Emitted/consumed constraint types match the template's declarations
+
+---
+
+## 10. Output Schema — Validation Policy (compliance-class)
+
+**Fires on:** Request payload at assembly time.
+**Produces:** An allow or deny decision for the request.
+
+```yaml
+validation_compliance_output:
+  decision: allow | deny
+  reason: "<human-readable — required for deny>"
+  field_locks:                           # optional: lock specific fields as immutable
+    - field: <field_path>
+      lock_type: immutable | constrained
+      constraint_schema: <JSON Schema>   # if constrained
+  warnings: ["<optional advisory messages>"]
+```
+
+**Application semantics:**
+- `allow` → request proceeds; field_locks applied to payload
+- `deny` → request blocked; `reason` included in consumer error response
+- Any active compliance-class Validation Policy producing `deny` → request blocked (all must allow)
+
+---
+
+## 11. Output Schema — Validation Policy (structural-class)
+
+**Fires on:** Request payload; validates correctness of field values.
+**Produces:** Pass or fail with field-level detail.
+
+```yaml
+validation_output:
+  result: pass | fail
+  field_results:
+    - field: <field_path>
+      result: valid | invalid
+      message: "<validation failure description>"
+      suggested_value: <value>           # optional
+  advisory: ["<non-blocking notes>"]
+```
+
+**Application semantics:**
+- `pass` → request proceeds
+- `fail` → request blocked; `field_results` included in consumer error response
+
+**Egress guard on the consumer-error path** (`docs/spec/contracts/error-model.md` §8a — a refusal is
+itself a boundary crossing): `field_results` names only fields the submitting actor named or
+is entitled to read — a field outside the actor's read scope is reported through the
+scope-violation refusal (`GMX-012`/`GMX-013`), never enumerated here; and `suggested_value`
+MUST NOT carry a value derived from data the actor cannot read. The validation output an
+internal evaluator sees and the one a consumer receives may therefore lawfully differ; the
+filter runs before serialization.
+
+---
+
+## 12. Output Schema — Transformation
+
+**Fires on:** Request payload; enriches, modifies, or injects field values.
+**Produces:** A set of field mutations to apply to the payload.
+
+```yaml
+transformation_output:
+  mutations:
+    - field: <field_path>
+      operation: set | append | delete | lock
+      value: <new_value>                 # for set/append
+      reason: "<why this mutation was made>"
+      source_type: enrichment | injection | normalization | correction
+```
+
+**Application semantics:** All mutations from all active Transformation policies are collected and applied to the payload. Each mutation is recorded in field-level provenance with the policy_uuid as source.
+
+---
+
+## 13. Output Schema — Recovery
+
+**Fires on:** A failure or ambiguity trigger condition (DISPATCH_TIMEOUT, PARTIAL_REALIZATION, CANCELLATION_FAILED, etc.).
+**Produces:** A recovery action and parameters.
+
+```yaml
+recovery_output:
+  action: DRIFT_RECONCILE | DISCARD_AND_REQUEUE | DISCARD_NO_REQUEUE |
+          ACCEPT_LATE_REALIZATION | COMPENSATE_AND_FAIL |
+          NOTIFY_AND_WAIT | ESCALATE | RETRY
+  action_parameters:
+    requeue_delay: PT0S                  # for DISCARD_AND_REQUEUE
+    max_attempts: 3                      # for RETRY
+    backoff: exponential                 # for RETRY
+    deadline: PT4H                       # for NOTIFY_AND_WAIT
+    on_deadline_exceeded: ESCALATE       # for NOTIFY_AND_WAIT
+  notify_before_action: true
+  notification_urgency: high
+```
+
+**Application semantics:** The first matching Recovery policy's action is executed. Recovery policies follow the same domain precedence — resource_type override wins over tenant override wins over profile default.
+
+---
+
+## 14. Output Schema — Orchestration Flow
+
+**The two-level orchestration model:**
+
+Orchestration operates at two levels that compose through the same policy-evaluation contract:
+
+- **Level 1 — Named Workflow Artifacts:** Orchestration Flow Policies with `ordered: true` declare an explicit, visible, auditable sequence of steps. Each step references a payload type from the closed vocabulary. This is what operators see and reason about. Adding a step = adding to a workflow Policy.
+- **Level 2 — Dynamic Policies:** Validation, Transformation, Recovery, and Governance Matrix Policies fire when their conditions match, within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
+
+Both named workflow steps and dynamic policies evaluate against the same payload-type events, through the same evaluation contract; an implementation's event bus routes them (DCM). The workflow provides the skeleton; dynamic policies fill in conditional behavior.
+
+**Fires on:** Pipeline payload type events.
+**Produces:** A flow directive governing step ordering.
+
+```yaml
+orchestration_flow_output:
+  ordered: true | false
+  steps:
+    - step: 1
+      policy_handle: "<policy to execute at this step>"
+      condition: "<additional condition for this step>"
+      on_fail: halt | skip | escalate
+  parallel_groups:                       # steps that may execute in parallel
+    - [step_1_id, step_2_id]
+```
+
+**Step vocabulary** — steps reference payload types from the closed vocabulary, mapping to control plane operations:
+
+| Payload type | Maps to |
+|-------------|---------|
+| `request.initiated` | Start of request pipeline |
+| `request.layers_assembled` | Layer assembly complete |
+| `request.policies_evaluated` | All policies evaluated |
+| `request.placement_complete` | Provider selected |
+| `request.dispatched` | Sent to provider |
+| `discovery.cycle_complete` | Discovery cycle done |
+| `drift.detected` | Drift found |
+| `recovery.timeout_fired` | Dispatch timeout |
+| `provider_update.received` | Provider update notification |
+
+Custom steps extend this vocabulary by publishing new payload types.
+
+**Application semantics:** When `ordered: true`, steps execute in declared sequence. When `ordered: false`, steps with no data dependencies may execute in parallel (the scheduling is an implementation detail). Orchestration Flow policies compose with standard Validation and Transformation policies — both types evaluate in the same pipeline.
+
+---
+
+## 15. Output Schema — Governance Matrix Rule
+
+**Fires on:** Any cross-boundary interaction (DCM → Provider, DCM → Peer DCM, Provider → DCM).
+**Produces:** A boundary control decision with optional field permissions.
+
+```yaml
+governance_matrix_output:
+  decision: ALLOW | DENY | ALLOW_WITH_CONDITIONS | STRIP_FIELD | REDACT | AUDIT_ONLY
+  conditions:                            # for ALLOW_WITH_CONDITIONS
+    - field: <axis_field>
+      operator: <operator>
+      value: <value>
+  field_permissions:
+    mode: allowlist | blocklist | passthrough
+    paths: ["<field_path>", ...]
+    on_blocked_field: STRIP_FIELD | DENY_REQUEST | REDACT
+  audit_on: [ALLOW, DENY, STRIP_FIELD]
+  notification_on: [DENY]
+  notification_urgency: critical
+```
+
+**Application semantics:** Hard DENY evaluated first — any hard DENY is terminal. Soft decisions evaluated by domain precedence; DENY wins over ALLOW at the same level. Field permissions applied after decision determined. Audit record always written.
+
+---
+
+## 16. Output Schema — Lifecycle Policy
+
+**Fires on:** Relationship events (related entity state changes, relationship creation/release).
+**Produces:** A lifecycle action to apply to related entities.
+
+```yaml
+lifecycle_policy_output:
+  on_related_destroy: cascade | protect | detach | notify
+  on_related_suspend: cascade | ignore | notify
+  on_last_relationship_released: destroy | retain | notify
+  propagation_depth: 1 | 2 | N          # how many relationship hops to propagate
+  action_delay: PT0S                     # grace period before executing action
+```
+
+**Application semantics:** When a relationship event occurs, all matching Lifecycle policies on both related entities are evaluated. The most restrictive action wins (save beats destroy). Conflicts between policies at the same domain level produce a CONFLICT_ERROR at policy ingestion time.
+
+---
+
+## 17. Output Schema — ITSM Action
+
+The ITSM Action policy type triggers actions in connected ITSM systems as a side-effect of DCM pipeline events.
+
+```yaml
+itsm_action_output:
+  type: itsm_action
+  itsm_provider_uuid: <uuid>       # registered ITSM integration UUID
+  action: create_change_request | update_change_request | close_change_request |
+          create_incident | update_incident | close_incident |
+          update_cmdb_ci | create_cmdb_ci | retire_cmdb_ci |
+          create_service_request | link_parent_record
+  action_payload:
+    <field>: <value | "{{ template_expression }}">
+  store_reference_on_entity: <bool>   # default: false
+  reference_label: <string>
+  block_until_created: <bool>         # default: false — see ITSM-005
+  block_timeout: <ISO 8601 duration>  # required if block_until_created: true
+  on_failure: log_and_continue | alert_and_continue | alert_only
+```
+
+> **ITSM Integration** (implementation-specific; see DCM repo) covers full ITSM integration registration, capability declarations, supported ITSM systems (ServiceNow, Jira, Remedy, Freshservice, PagerDuty, generic REST), policy examples, and system policies (ITSM-001–007, ITSM-POL-001–004).
+
+**Key constraints:**
+- ITSM Action policies are side-effect only — they do not produce allow/deny decisions
+- `block_until_created: true` creates a pipeline gate with mandatory timeout (ITSM-005)
+- Multiple ITSM Action policies on the same event fire independently (ITSM-POL-004)
+- Full audit record produced on every evaluation (ITSM-POL-003)
+
+## 18. Policy Override Model
+
+Overrides and `route-to-review` are a **last-resort path**, not a common one — a human-in-the-loop point is a necessary anti-pattern to minimize (`design-priorities.md` `DPO-007`): the goal is that a policy decides automatically, and a request routes to a human only for a genuine authorized exception. When a block genuinely needs override, five override mechanisms are available, organized by severity. Every override — regardless of mechanism — produces a Merkle tree audit leaf capturing the override justification, authorizer identity, and the policy that was overridden.
+
+### 18.1 Override Policy (Planned Exceptions)
+
+A policy artifact that explicitly overrides another policy for a defined scope. Goes through the standard policy lifecycle (developing → proposed → active) with review and shadow testing.
+
+```yaml
+policy_artifact:
+  handle: "override/payments-team-zone-c-exception"
+  policy_type: override
+  overrides: "sovereignty/eu-data-residency"
+  scope:
+    tenant_tags: ["payments"]
+    resource_types: ["Compute.VM"]
+    operations: [rehydration, provider_migration]
+  effect: relax                              # relax a deny → allow
+  justification: "Payments team DR requires zone-c replica per BCP-2026-04"
+  expires_at: "2027-01-01"
+  review_required_before: "2026-10-01"
+  compensating_controls: []                  # optional — see Model 5
+```
+
+**Constraint:** Override policies cannot target `enforcement: hard` policies. Hard policies can only be overridden via Exception Grant or Manual Override with dual-approval. This is validated at policy activation — attempting to create an override policy targeting a hard policy is rejected.
+
+### 18.2 Exception Grant (Pre-Authorized Waivers)
+
+A pre-authorized, time-bounded, scope-limited waiver registered before any specific request needs it. Used for known upcoming needs (DR exercises, compliance transition periods, migration windows).
+
+```yaml
+exception_grant:
+  grant_uuid: <uuid>
+  policy_handle: "sovereignty/eu-data-residency"
+  scope:
+    tenants: ["payments-team"]
+    resource_types: ["Compute.VM"]
+    operations: [rehydration, provider_migration]
+  effect: relax
+  compensating_controls:
+    - "audit/enhanced-logging"               # require field-granularity audit during grant
+    - "notification/security-team-alert"     # notify security team on every use
+  authorized_by: <actor_uuid>
+  approved_by: <actor_uuid>                  # dual-approval required for hard policies
+  justification: "BCP-2026-04 DR requires zone-c capability during Q2"
+  effective_from: "2026-04-01"
+  expires_at: "2026-07-01"
+  review_required_before: "2026-06-15"
+  renewable: true
+  max_renewals: 2
+  max_usage: null                            # null = unlimited within time window
+  # usage is DERIVED from the grant's audit trail — every use is an audited event;
+  # max_usage caps that derived count, there is no stored counter
+```
+
+Exception Grants can target hard enforcement policies — but require dual-approval. Compensating controls are mandatory when overriding hard policies.
+
+### 18.3 Manual Override (Immediate Authorization)
+
+A human with override authority grants a one-time exception for a specific blocked request. Used when a request is blocked and needs to proceed immediately (DR scenario, production incident, time-sensitive deployment).
+
+```yaml
+manual_override:
+  override_uuid: <uuid>
+  request_uuid: <uuid>                       # tied to a specific request
+  policy_overridden: "sovereignty/eu-data-residency"
+  authorized_by: <actor_uuid>                # must have override authority role
+  approved_by: <actor_uuid | null>           # second approver (required for hard policies)
+  reason: "DR scenario — zone-a unavailable, need zone-c placement"
+  scope: single_request                      # this request only — cannot be reused
+  expires_at: "2026-04-05T00:00:00Z"         # expires if not used within window
+  compensating_controls:
+    - "audit/enhanced-logging"
+```
+
+**Constraint:** Manual overrides of `enforcement: hard` policies require dual-approval (see §18.4). A single person can never override a hard policy.
+
+### 18.4 Dual-Approval Escalation
+
+Not a separate override mechanism — a modifier on Exception Grants and Manual Overrides that applies whenever a `hard` enforcement policy is being overridden. Two authorized individuals from different roles must independently approve.
+
+```yaml
+dual_approval:
+  first_approver:
+    actor_uuid: <uuid>
+    role: security_officer                   # must be from security role
+    approved_at: <ISO 8601>
+  second_approver:
+    actor_uuid: <uuid>
+    role: operations_lead                    # must be from operations role
+    approved_at: <ISO 8601>
+  role_separation_enforced: true             # same role cannot fill both slots
+```
+
+Dual-approval is automatically required whenever:
+- A Manual Override targets a `hard` enforcement policy
+- An Exception Grant targets a `hard` enforcement policy
+- Profile is `fsi` or `sovereign` and any override mechanism is used
+
+### 18.5 Compensating Control Substitution
+
+Instead of overriding a policy, substitute a different set of controls that satisfies the same security/compliance intent through a different mechanism. The original policy is not relaxed — it is satisfied differently.
+
+```yaml
+compensating_control:
+  control_uuid: <uuid>
+  replaces_policy: "sovereignty/eu-data-residency"
+  when:
+    conditions:
+      - field: operation.type
+        operator: equals
+        value: rehydration
+  substitute_controls:
+    - policy_handle: "sovereignty/sovereign-grade-encryption"
+    - policy_handle: "audit/field-granularity-override"
+    - policy_handle: "notification/security-team-immediate"
+  justification: "Zone-c permitted for DR if sovereign-grade encryption and enhanced audit active"
+  validated_by: <actor_uuid>                 # compliance officer who validated equivalence
+```
+
+Compensating controls are the only mechanism that does not actually override the policy — it replaces the enforcement with equivalent protection. Not all policies have meaningful compensating controls (data residency laws cannot be compensated by encryption).
+
+### 18.6 Severity Spectrum Summary
+
+| Severity | Mechanism | When | Who | Can target hard? | Audit |
+|----------|-----------|------|-----|-----------------|-------|
+| **Planned** | Override Policy | Known recurring exception | Policy author + reviewer | No — caught at activation | Full policy lifecycle |
+| **Pre-authorized** | Exception Grant | Known upcoming need | Dual-approval authority | Yes — with dual-approval + compensating controls | Grant record + usage tracking |
+| **Immediate** | Manual Override | Blocked request, needs to proceed now | Override authority | Yes — with dual-approval | Override record + justification |
+| **Structural** | Compensating Control | Policy can be met differently | Policy author + compliance | N/A — policy is satisfied, not overridden | Substitute control record |
+| **Modifier** | Dual-Approval | Any override of hard policy | Two individuals, different roles | Required | Both approver records |
+
+### 18.7 Override Audit
+
+Every override produces its own Merkle tree leaf:
+
+```yaml
+audit_leaf:
+  stage: policy_override
+  source: "override/payments-team-zone-c-exception"  # or exception_grant/manual_override UUID
+  source_type: override_policy | exception_grant | manual_override | compensating_control
+  override_target: "sovereignty/eu-data-residency"
+  override_effect: relax
+  authorized_by: <actor_uuid>
+  approved_by: <actor_uuid | null>
+  dual_approval: true | false
+  compensating_controls: [...]
+  justification: "..."
+  input_payload_hash: <sha-256>
+  output_payload_hash: <sha-256>
+  before_context_hash: <sha-256>
+  after_context_hash: <sha-256>
+  signature: <ed25519>
+```
+
+An auditor asking "why did this request bypass sovereignty?" gets the complete answer: which override mechanism was used, who authorized it, what compensating controls were active, and the cryptographic proof that the override was properly authorized.
+
+### 18.8 Policy Block Resolution
+
+When a policy blocks a request and no automatic resolution exists, DCM does not silently enter an override queue. The consumer is notified with actionable guidance: what blocked the request, why, and what their options are to resolve it.
+
+**Resolution precedence (contract).** When a policy blocks a request, automatic resolution is attempted in
+a fixed order — an active **Override Policy**, then an **Exception Grant**, then a **Compensating Control**
+covering the scope; the first that applies lets the request continue. If none applies, the request takes the
+`POLICY_BLOCKED` outcome (§7.7), carrying the resolution guidance below. *How* an implementation then surfaces
+the block and drives the consumer's choice — the events it publishes, the notifications it routes, the API
+it exposes — is control-plane, specified in the DCM architecture docs, not fixed by this contract.
+
+**Resolution options presented to the consumer:**
+
+| Option | Action | What happens |
+|--------|--------|-------------|
+| **Modify request** | Consumer changes the blocked fields to be compliant | Request re-enters pipeline from assembly with updated fields. All policies re-evaluate. |
+| **Request override** | Consumer requests an override with justification | Request enters PENDING_OVERRIDE. Override approval flow begins (§18.9). |
+| **Cancel request** | Consumer abandons the request | Request moves to CANCELLED. Audit trail records cancellation with blocking context. |
+| **Escalate** | Consumer requests review by the responsible policy domain owner | Notification routed to the role responsible for the blocking policy domain (e.g., sovereignty admin, security admin, cost admin) with full context. The domain owner can modify policies, register exception grant, or advise consumer. Routing is configurable per policy domain and profile. |
+
+**Resolution guidance (data shape):**
+
+```yaml
+policy_block_resolution:
+  request_uuid: <uuid>
+  status: POLICY_BLOCKED
+  blocking_details:
+    - policy_handle: "sovereignty/eu-data-residency"
+      enforcement: hard
+      reason: "Zone eu-west-3 not in allowed zones [eu-west-1, eu-central-1]"
+      blocking_fields:
+        - field: placement.zone
+          current_value: "eu-west-3"
+          allowed_values: ["eu-west-1", "eu-central-1"]
+
+  resolution_options:
+    modify:
+      available: true
+      guidance:
+        - field: placement.zone
+          suggestion: "Change to eu-west-1 or eu-central-1 to comply with data residency policy"
+          compliant_values: ["eu-west-1", "eu-central-1"]
+    request_override:
+      available: true                        # false if profile prohibits consumer-initiated overrides
+      requires: dual_approval                # derived from enforcement level and profile
+      eligible_approver_roles: [security_officer, operations_lead]
+    cancel:
+      available: true                        # always available
+    escalate:
+      available: true
+      routes_to: [platform_admin]
+
+  timeout_at: <ISO 8601>                     # how long the request stays in POLICY_BLOCKED before auto-cancel
+```
+
+The `compliant_values` guidance is derived from the blocking policy's constraint output: a sovereignty policy with `allowed_zones: [eu-west-1, eu-central-1]` yields those as the suggestion; a Validation Policy with `max_cpu: 32` against a request for 64 yields values ≤ 32. For complex multi-policy interactions the guidance provides what can be determined and flags when manual review is needed. (Producing it is an implementation function; the shape above is the contract.)
+
+The consumer-facing resolution API (`GET …/resolution`, `POST …:resolve` with a `modify` / `request_override`
+/ `cancel` / `escalate` action) and the `request.policy_blocked` / `request.resolution_chosen` / `override.*`
+lifecycle events are the implementation's control-plane surface — specified in the DCM architecture docs and the
+[event catalog](event-catalog.md), not fixed by this contract.
+
+### 18.9 Override Approval Flow
+
+When the consumer chooses "request override," the request moves from `POLICY_BLOCKED` to `PENDING_OVERRIDE` and an approval flow begins. The implementation provides the approval gate, the audit trail, and the API; the organization provides the deliberation process. The override itself is a **data record** (below); the flow that drives it is control-plane.
+
+**Override request record:**
+
+```yaml
+override_request:
+  override_request_uuid: <uuid>
+  request_uuid: <uuid>
+  blocking_policy_handle: "sovereignty/eu-data-residency"
+  blocking_policy_enforcement: hard | soft
+  blocking_reason: "Zone eu-west-3 not in allowed zones [eu-west-1, eu-central-1]"
+  required_approval_type: single | dual
+  eligible_approver_roles: [security_officer, operations_lead]
+  consumer_justification: "DR scenario — zone-a unavailable"
+  consumer_compensating_controls: ["audit/enhanced-logging"]
+  status: pending | approved | rejected | expired
+  timeout_at: <ISO 8601>
+  created_at: <ISO 8601>
+  first_approval:
+    actor_uuid: <uuid>
+    role: <role>
+    justification: "Approved — DR scenario confirmed, enhanced logging active"
+    approved_at: <ISO 8601>
+  second_approval:
+    actor_uuid: <uuid>
+    role: <role>
+    approved_at: <ISO 8601>
+```
+
+**Control-plane surface (implementation / DCM).** The approver Admin API
+(`POST …/overrides/{id}/approve|reject`, `GET …/overrides`), the notification routing (which roles and
+webhooks are notified per policy domain and enforcement level), and the block/override **timeout values**
+are implementation control-plane — specified in the DCM architecture docs, not fixed by this contract.
+
+Three facts the contract *does* fix:
+- **Timeouts are profile-governed.** A `POLICY_BLOCKED` request has a bounded window for a consumer action
+  before auto-cancel, and a `PENDING_OVERRIDE` request a bounded window for approver action; stricter
+  profiles cut both (see [ADR-007 — Profile model](../../adr/ADR-007-profile-model.md)). The concrete
+  per-profile durations are an implementation/profile setting.
+- **Resume is deterministic.** On approval the pipeline resumes **from the stage where it was blocked** —
+  the assembled payload, earlier policy evaluations, and the Evaluation Context are preserved — with the
+  approved override injected into the Evaluation Context as a constraint modification before the blocked
+  policy re-evaluates. On modify, the request re-enters from assembly and all policies re-evaluate.
+- **Every path is audited.** Modify → a modification leaf + re-evaluation leaves; override → an
+  override-approval leaf (§18.7) + a re-evaluation leaf. All are Merkle audit leaves.
+
+---
+
+## 19. Policy Composition
+
+Policies compose through four mechanisms:
+
+**Domain precedence** (Section 4) — more-specific domains override less-specific:
+```
+System policy (Validation Policy: cpu_count max 64)
+  └── Platform policy (Validation Policy: prod VMs require manager approval)
+        └── Tenant policy (Validation Policy: payments team max cpu_count 32)
+              └── Resource-type policy (Transformation: inject monitoring)
+```
+
+**Evaluation Context** (Section 7) — policies inform each other through constraints and hints. Sovereignty emits zone restrictions; tier distribution reads them and adjusts. Conflicts are detected and resolved automatically or escalated.
+
+**Policy Groups** — Data artifacts that group related policies by concern_type. Profiles activate Policy Groups. "Apply the HIPAA profile" activates the HIPAA compliance domain's Policy Group.
+
+**Override Model** (Section 18) — Override policies, exception grants, manual overrides, compensating controls, and dual-approval provide governed mechanisms for exceptions. Every override is auditable and time-bounded.
+
+For a single request, all active matching policies at all domain levels evaluate across multiple passes if needed. Active overrides modify the evaluation: an override policy relaxes or tightens a specific policy's effect; an exception grant temporarily suspends a policy for a scoped set of requests; a manual override suspends a policy for one request. Overrides participate in the Evaluation Context — downstream policies see the override's effect.
+
+---
+
+## 20. System Policies (`POL-*`)
+
+| Policy | Rule |
+|--------|------|
+| `POL-001` | All DCM policy types implement the unified base contract. The output schema is the only thing that varies. |
+| `POL-002` | Every policy evaluation produces an audit record. No evaluation is silent. |
+| `POL-003` | Hard enforcement policies require dual-approval to override. Override policies (Model 1) cannot target hard policies — caught at activation. |
+| `POL-004` | Policies in `proposed` status execute in shadow mode — output is captured and never applied. Shadow mode is the primary mechanism for safe policy change management. |
+| `POL-005` | The policy evaluator is the sole evaluator of all policies. No component bypasses it to enforce rules directly. |
+| `POL-006` | Adding a new policy type requires defining a new output schema. The base contract, evaluation algorithm, lifecycle, and audit obligations are inherited. |
+| `POL-007` | Policies ARE the orchestration. Pipeline steps are Policies firing on payload type events. Static flows are Orchestration Flow Policies with `ordered: true`. |
+| `POL-008` | Every override produces a Merkle tree audit leaf. Override justification, authorizer identity, compensating controls, and the overridden policy are captured. |
+| `POL-009` | Exception Grants and Manual Overrides must have expiry dates. Permanent overrides are not permitted — use an Override Policy with a review cycle instead. |
+| `POL-010` | Compensating controls must be validated by a compliance officer role before activation. Self-validation is not permitted. |
+
+---
+
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*

@@ -18,14 +18,13 @@ OUT = os.path.join(ROOT, "registry", "TYPE-CATALOG.md")
 
 def render():
     types = []
-    for f in sorted(glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*.json"), recursive=True) +
-                    glob.glob(os.path.join(ROOT, "registry", "resource-types", "**", "*.yaml"), recursive=True)):
+    for f in sorted(glob.glob(os.path.join(ROOT, "registry", "generated", "*.json"))):
         with open(f, encoding="utf-8") as fh:
             d = json.load(fh) if f.endswith(".json") else yaml.safe_load(fh)
         if isinstance(d, dict):
             types.append(d)
     lines = ["# Type catalog — every resource type, in plain English", "",
-             "> GENERATED from the `context` blocks in `registry/resource-types/` by",
+             "> GENERATED from the `context` blocks in `registry/generated/` by",
              "> `registry/tools/generate_type_catalog.py` — edit the spec, regenerate, never edit here.",
              "> Missing entries are types without a `context` block yet (tracked by the rule-36 gate).", ""]
     by_cat = {}

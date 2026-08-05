@@ -36,7 +36,7 @@ detection — without re-expressing the topology language itself.
 
 3. **T5 is designed for this.** Architecture-as-code specifications are
    Tier 2 adopted standards under the disposition test
-   (`design-principles/adopted-standards.md` §1): they standardize the
+   (`docs/spec/principles/adopted-standards.md` §1): they standardize the
    *shape of a whole dataset* (a topology graph), their versions change
    their shape, and UDLM should carry only the identity + pointer — never
    re-express the topology schema.
@@ -128,7 +128,7 @@ assembled at the appropriate layer level (typically Core or Intermediate).
 
 ## T5 adoption mechanics
 
-Under the adopted-standards framework (`design-principles/adopted-standards.md`):
+Under the adopted-standards framework (`docs/spec/principles/adopted-standards.md`):
 
 - **Disposition:** Adopt (not absorb). UDLM carries the identity (entity
   UUIDs mapped from node unique-ids) and a version-pinned reference to the
