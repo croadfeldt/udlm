@@ -1,6 +1,4 @@
 ---
-Document Status: ✅ Stable — Consumer narrative (promoted 2026-07-23, maintainer ruling)
-Document Type: Consumer/User Narrative
 Established: 2026-05-26
 Maps to: UDLM consumption
 ---
