@@ -1,7 +1,5 @@
 # UDLM — Knowledge Entity-Type Family
 
-**Document Status:** Draft (introduced 2026-06-08)
-**Document Type:** Entity Reference
 **Family:** Knowledge (architecture / capability knowledge) — first exercised by the **DAV**
 implementation (a non-normative example; UDLM depends on no implementation — see `GLOSSARY.md`)
 
@@ -12,7 +10,6 @@ implementation (a non-normative example; UDLM depends on no implementation — s
 > **free to use by any implementation, regardless of family** — DCM or any peer may use a
 > `Capability` exactly as DAV does. Constraints apply to *instances* (ownership,
 > classification, scope), never to these definitions.
->
 > **Implementation:** `dav/docs/capability-catalog-design.md`. Case study:
 > [`../../examples/case-study-dav-knowledge-realization.md`](../../examples/case-study-dav-knowledge-realization.md).
 

@@ -1,23 +1,11 @@
 # UDLM — Service Dependencies
 
-
-
-**Document Status:** ✅ Complete  
 **Related Documents:** [Entity Relationships](entity-relationships.md) | [Resource Type Hierarchy](resource-type-hierarchy.md) | [Resource/Service Entities](resource-service-entities.md)
 
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA**
+> [foundations.md](foundations.md).
 >
 > The Data abstraction — dependency graph as embedded data structure
-
-
 
 > **Scope:** This document covers dependency declaration, rehydration ordering, and failure handling. The underlying data structure is the Entity Relationship Graph defined in [Entity Relationships](entity-relationships.md).
 
@@ -443,9 +431,7 @@ catalog_item:
 > garbage collection — is DCM-runtime responsibility (the Kubernetes lesson: integrity is a
 > platform service, not a consumer obligation). The spec deliberately defines no controller.
 
-
 ---
-
 
 > **Instance-layer vocabulary:** at the realized-entity (instance) layer the tombstone state is `lifecycle_state: Decommissioned` — the schema's enum term. "Retired" in this rule's prose names the same phase; records and validators MUST use `Decommissioned`.
 
@@ -572,8 +558,6 @@ composite_service_registration:
 
 ---
 
-
-
 - **Resource Type Specification** — declares type-level dependencies for a Resource Type
 - **Provider Catalog Item** — declares provider-specific additional dependencies
 - **Request Payload Processor** — constructs the dependency graph during assembly
@@ -581,7 +565,6 @@ composite_service_registration:
 - **Intent Portability** — rehydration uses Intent State to allow replay with different providers
 - **Field-Level Provenance** — dependency payload data is recorded with source Entity UUID
 - **Resource Grouping** — rehydration can be scoped to groups and tenants
-
 
 ---
 

@@ -1,28 +1,15 @@
 # UDLM — Resource Grouping
 
-
-
 > **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to `group_class` values in that model.
->
 > **Machine-validatable schema:** Tenants, Resource Groups, and cross-tenant authorizations are
 > DCMGroup instances validating against [`registry/dcm-group.schema.json`](../../../registry/dcm-group.schema.json).
 
-**Document Status:** ✅ Complete  
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)
 
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM data model.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA**
+> [foundations.md](foundations.md).
 >
 > The Data abstraction — DCMGroup typed extensions (Tenant, Resource Group, Cross-Tenant Auth)
-
-
 
 ---
 
@@ -316,7 +303,6 @@ custom_group_type_registration:
 - **Drift Detection** — can be scoped to a group
 - **Rehydration** — can target a group as the unit of reconstruction
 - **Field-Level Provenance** — group membership changes are recorded in entity provenance
-
 
 ---
 

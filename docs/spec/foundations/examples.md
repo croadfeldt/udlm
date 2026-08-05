@@ -1,17 +1,7 @@
 # UDLM — Worked Examples
 
-**Document Status:** ✅ Stable — UDLM substrate illustration
-**Document Type:** Reference Examples
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM substrate.
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: DATA + PROVIDER + POLICY**
+> [foundations.md](foundations.md).
 >
 > Worked examples showing all three abstractions in operation.
 

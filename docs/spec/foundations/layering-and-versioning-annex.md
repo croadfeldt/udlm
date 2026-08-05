@@ -1,6 +1,5 @@
 # UDLM — Data Layers and the Assembly Process — Annex (Non-Normative)
 
-**Document Status:** ✅ Complete (non-normative)  
 **Companion to:** [Data Layers and the Assembly Process](layering-and-versioning.md)
 
 > **This annex is non-normative.** It collects the long worked examples, the
@@ -339,6 +338,5 @@ request:
 | 11 | What is the minimum validation review period for a proposed policy before it can be activated? | Policy governance | ✅ Resolved — Validation Policy (compliance-class)=14d, Validation Policy (operational-class)=7d, Transformation=3d × profile multiplier (homelab=0×, dev=0.5×, standard=1×, prod=1.5×, fsi/sovereign=2×); DCM enforces; emergency bypass requires dual-approval audit (OPS-004) |
 
 ---
-
 
 *Non-normative annex — part of the UDLM specification. See the [normative core](layering-and-versioning.md).*

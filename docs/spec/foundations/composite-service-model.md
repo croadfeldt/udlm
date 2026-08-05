@@ -1,7 +1,5 @@
 # UDLM — Composite Service Composition Model
 
-**Document Type:** Architecture Reference — Composite Service Specification
-**Status:** Active
 **Audience:** Architects, Service Provider implementers, Policy authors
 
 > **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs (wave-3.2 deferral closed, wave 3.3). Machine-validatable schema:** Composite Service catalog items validate against
