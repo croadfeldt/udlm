@@ -30,12 +30,11 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 ## `contracts/` — the wire contracts between DCM and providers/peers
 
 - **`provider-contract.md`** — the unified provider base contract + capability extensions (§8). *Owns:* the base registration/health/lifecycle floor, `PRV-*`, the reserve/commit two-phase realize.
-- **`capability-discovery.md`** — supersession stub (folded 2026-07-23). The capability model, registration shape, default-deny ceiling, and the discovery wire protocol (`DISC-*`) are all owned by `provider-contract.md` (§§2, 8–10).
 - **`policy-contract.md`** — the unified policy contract. *Owns:* policy evaluation surface, `POL-*`.
 - **`data-store-contracts.md`** — enforcement contracts for the four data domains + audit. *Owns:* the Realized/Audit store domain invariants.
 - **`storage-providers.md`** — the storage capability extension. *Owns:* store sub-profiles (GitOps/snapshot/event/search/audit) and `STO-*` — *not* provider types.
 - **`information-providers.md`** — the `serve_data` capability. *Owns:* information-provider registration.
-- **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules (`INF-*` is now solely the information-provider family — data-contracts' former `INF` family renumbered to `DSC-*`).
+- **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules.
 - **`error-model.md`** — *Owns:* the error envelope (RFC 9457).
 - **`event-catalog.md`** — *Owns:* the event catalog and delivery semantics (the wire event shapes).
 - **`identifier-scheme.md`** — *Owns:* the UUID / handle / reference identity contract.
@@ -53,7 +52,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`design-priorities.md`** — ranked priorities + the profile and authority-tier *vocabularies*. *Owns:* `Priority 1–4`, `DPO-*`, the profile name vocabulary (nature of a profile defers to ADR-007).
 - **`cross-cutting-requirements.md`** — always-on obligations. *Owns:* `P0–P4`.
 - **`adopted-standards.md`** — how external standards enter (the *Adopt* disposition). *Owns:* the absorb/embed/adopt test + adoption constructs.
-- **`data-contracts.md`** — the data-contract principle + the four persistent domains. *Owns:* `DSC-001–DSC-007` (persistence; the former data-contracts `INF-*` family, renumbered).
+- **`data-contracts.md`** — the data-contract principle + the four persistent domains. *Owns:* `DSC-001–DSC-007` (persistence).
 
 ## `governance/`
 
@@ -69,7 +68,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 
 - **`resource-service-entities.md`** — resource/service entity lifecycle + Process entities. *Owns:* `RSE-*`; the operational-phase overlay (coarse lifecycle defers to data-model-core §3).
 - **`composite-service-model.md`** — *Owns:* composite composition + compensation semantics.
-- **`entity-relationships.md`** — the universal relationship *structure*. Note: the relationship type model is **superseded by data-model-core §4**; this file retains the inverse vocabulary + `XTA-*` cross-tree rules.
+- **`entity-relationships.md`** — the universal relationship *structure*. *Owns:* the inverse vocabulary + `XTA-*` cross-tree rules (the relationship model itself is data-model-core §4).
 - **`service-dependencies.md`** — *Owns:* the dependency graph, rehydration ordering, `DEP-*`.
 - **`resource-grouping.md`** — *Owns:* grouping, tenant boundaries, the DCMGroup / `GRP-*` model.
 - **`resource-type-hierarchy.md`** — *Owns:* the resource-type hierarchy + service-catalog structure.

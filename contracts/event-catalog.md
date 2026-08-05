@@ -177,7 +177,7 @@ payload:
 | Event Type | Urgency | Trigger |
 |-----------|---------|---------|
 | `entity.realized` | medium | Entity first realized; Realized State written |
-| `entity.state_changed` | medium | Entity lifecycle state transition. *Absorbs the former appendix `entity.state_transition` (merged 2026-07-06 — one state-transition event, not two).* |
+| `entity.state_changed` | medium | Entity lifecycle state transition. |
 | `entity.modified` | info | Entity fields updated (Day-2 operation) |
 | `entity.ttl_warning` | medium | TTL expires within declared warning window |
 | `entity.ttl_expired` | high | TTL reached; expiry action triggered |
@@ -187,7 +187,7 @@ payload:
 | `entity.suspended` | high | Entity entered SUSPENDED state |
 | `entity.resumed` | medium | Entity exited SUSPENDED state |
 | `entity.decommissioning` | medium | Decommission pipeline initiated |
-| `entity.decommissioned` | low | Entity fully decommissioned; resources released. *Absorbs the former `entity.deleted` (merged 2026-07-06 — one terminal decommission event, not two).* |
+| `entity.decommissioned` | low | Entity fully decommissioned; resources released. |
 | `entity.decommission_deferred` | medium | Decommission blocked by active stakes |
 | `entity.ownership_transferred` | medium | Ownership moved to a different Tenant |
 | `entity.pending_review` | medium | Entity entered PENDING_REVIEW state |

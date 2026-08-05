@@ -131,8 +131,7 @@ with a hard external constraint: it conforms to **AEP** (`aep.dev`, the dcm-proj
 adopted API-design standard, enforced by the `aep-dev/aep-openapi-linter`), and AEP's prescribed fields
 are snake_case (`page_size`, `*_time`). Native-universal consumption **+** AEP-bound API therefore jointly
 force one casing — **snake_case** — across UDLM and DCM. (camelCase would re-introduce the very
-translation layer native consumption exists to eliminate; it was tried and reverted — VERSIONING.md
-surface-change log.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
+translation layer native consumption exists to eliminate.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
 protobuf/gRPC, and AEP itself; fully supported via tags in Go; only K8s/CRDs prefer camelCase, reached by
 an **export adapter** at that domain boundary (not native consumption).
 
@@ -217,8 +216,7 @@ composability). Normative rules:
    across ≥2 independent vendors/orgs, the remedy is a backward-compatible Tier-1 MINOR (the
    IETF response to augmentation fragmentation), promoted through registry governance §3.
 4. **The formal `extends` mechanism** is **RESOLVED** — Provider-Class `SharedDataElement`s
-   (ADR-038; supersedes ADR-PROV-004/#198 — the `provider_extensions` carrier is retired and
-   removed, #202 executed). A provider extends an instance **additively** at its Provider Class,
+   (ADR-038). A provider extends an instance **additively** at its Provider Class,
    never by modifying the closed base spec. **No-override is structural**: the base type-spec is
    `additionalProperties: false`, and an element may not shadow a base field. Any provider-specific
    data **computes a portability degradation** (`portability_breaking: true`, classification

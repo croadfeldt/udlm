@@ -594,15 +594,3 @@ The declaration shape (`required_for_delivery: required|partial|optional`, `comp
 order, highest `compensation_order` first, governed by Recovery Policy (CMP-005). Runtime execution and
 compensation-failure handling: [operational-models](../lifecycle/operational-models.md) §6.
 
-### 14.1 Retired rules
-
-| Policy | Rule |
-|--------|------|
-| `DEP-010` | Retired — superseded by composite-service-model §2.4a (reverse dependency order, highest `compensation_order` first) under CMP-005. |
-| `DEP-011` | Retired — superseded by composite-service-model §2.4a + operational-models §6.3 (COMPENSATION_FAILED + immediate orphan detection). |
-| `DEP-012` | Retired — superseded by composite-service-model §2.4/§2.4a (`partial` constituents are not compensation-triggering; failure yields DEGRADED, CMP-004). |
-
-
----
-
-*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../CONTRIBUTING.md).*

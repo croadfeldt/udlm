@@ -77,28 +77,25 @@ lifecycle/        Operational models, recovery state machine
 Estate **values** in examples stay anonymized — `cexample/*` org names and RFC 5737 addresses are the
 anonymization vocabulary (the estate-token gate enforces it); only the real repo pointers above are literal.
 
-## Current state (2026-07-25)
+## Current state
 
 **0.1 surface is complete** (the September release is **0.1**; 1.0 is only the earned milestone —
 never conflate them). All ADRs and DecisionRecords are **Proposed**: ratification sits with the
 engineering team (issue #217) — never claim Accepted/ratified status.
 
-**Settled this cycle (write to this reality):**
+**Write to this reality:**
 - **Edge model:** `edge_type` (`depends_on`|`contained_by`|`binds_to`|`references`) + `strength`
   (hard|soft) + declared `relation`; nature is derived; the Atomic/Composite **shape is derived**
   (`has_constituents`), never stored (ADR-027 addendum); `kind`/`dependency_type`/
-  `relationship_type` are retired and guarded (tests/check_model_vocabulary.py, incl. prose).
-- **`provider_extensions` is removed** (ADR-038 subsumption executed; validator rejects it).
+  `relationship_type` are rejected vocabulary, guarded by tests/check_model_vocabulary.py (incl. prose).
+- **No `provider_extensions`** — the validator rejects it; provider-specific data is a
+  Provider-Class `SharedDataElement` (ADR-038).
 - **provider-contract.md owns the whole provider/capability surface**: registration §2, sovereignty
-  obligations `SOV-*` §2a, capability profiles §8, registry §9, discovery wire protocol §10
-  (capability-discovery.md is a stub — never cite it as a home).
-- **Six profiles:** homelab → dev → standard → prod → fsi → sovereign (`docs/profiles.md`;
-  `minimal` is retired).
+  obligations `SOV-*` §2a, capability profiles §8, registry §9, discovery wire protocol §10.
+- **Six profiles:** homelab → dev → standard → prod → fsi → sovereign (`docs/profiles.md`).
 - **Audit is Merkle** (RFC 9162): events are `audit.integrity_alert`/`audit.integrity_break`;
   linear hash-chain wording is a defect.
 - **Core tenet T9:** the substrate never translates into a provider's native spec.
-- **ADR-029 Hardware ancillary types landed** (StorageDevice / Processor / GraphicsProcessor 0.2.0)
-  — the private estate validates 288+ records / 0 failures against main.
 
 **In flight:** engineering ratification pass (#217); the dcm-project downstream publishing wave
 (UC-priority split per the Jordi criteria — 21-UC-required PRs first); `SharedDataElement` schema

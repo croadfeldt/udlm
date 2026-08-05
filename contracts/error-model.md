@@ -70,18 +70,6 @@ The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (
 
 Peers MUST reject problem objects missing required members with `type: validation.error_envelope_malformed`.
 
-### 2a. Mapping from the former bespoke envelope
-
-| Was | Now |
-|---|---|
-| `error_code` | **`type`** (same closed vocabulary, §3) |
-| `message` | split into **`title`** (stable problem-type text) + **`detail`** (this-occurrence text) |
-| `audit_uuid` | carried by **`instance`** as `urn:udlm:audit:<uuid>` |
-| `details` (nested object) | **flattened to top-level extension members** (AEP-193) |
-| `request_id`, `retryable`, `retry_after_seconds`, `timestamp` | **RFC 9457 extension members** (unchanged semantics) |
-
----
-
 ## 3. Closed error code vocabulary
 
 Error codes use a `namespace.code` pattern and are the values of the problem
