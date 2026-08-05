@@ -1,36 +1,23 @@
 # UDLM — Unified Provider Contract
 
+**What this settles.** The whole provider/capability surface: the base contract every provider
+implements (registration §2, sovereignty obligations `SOV-*` §2a, health §3, governance-matrix
+enforcement §4, zero trust §5, lifecycle §6, two-phase realize §6a, observability §7), the
+capability extension model §8, the capability registry §9, the discovery wire protocol §10,
+and the `PRV-*` system policies.
 
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Foundation
-**Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Policy Contract](policy-contract.md) | [Governance Matrix](../governance/governance-matrix.md) | [Accreditation](../governance/accreditation-and-authorization-matrix.md)
+**In one breath.** Every provider is the same base contract with one varying part: its
+**capability extension** — the operations exposed, the data flowing each direction, and the
+typed schemas of that exchange. **Adding a new provider type = base contract + a capability
+extension** (PRV-005); nothing in the core changes. Federation is this same abstraction — a
+peer DCM instance is a typed provider (PRV-004).
 
----
-
-> > **Design Priority:** Provider types implement all four design priorities simultaneously. Security properties (mTLS, scoped credentials, sovereignty declarations, accreditation) are present in all provider registrations. The capability extension model (Priority 3) enables new provider types without changing the base contract. See [Design Priorities](../principles/design-priorities.md).
-
-## 1. The Unified Provider Contract
-
-Every Provider in DCM — regardless of type — implements a single base contract. What varies between provider types is the **capability extension**: the specific operations exposed, the data that flows in each direction, and the typed schemas for that exchange.
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                BASE PROVIDER CONTRACT                    │
-│                                                          │
-│  Registration · Health · Sovereignty · Accreditation    │
-│  Governance Matrix · Zero Trust · Lifecycle              │
-│                                                          │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │           CAPABILITY EXTENSION                   │   │
-│  │                                                  │   │
-│  │  What operations this provider type exposes.     │   │
-│  │  What data flows in which direction.             │   │
-│  │  What schemas govern the exchange.               │   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
-```
-
-**Adding a new provider type** = implement the base contract + define a capability extension. No changes to the core required.
+**Background — read first** (skip if you have it):
+[foundations.md](../foundations/foundations.md) — the Data·Provider·Policy triad; the provider
+is the mechanism abstraction (T8: wrap tools, don't reimplement) ·
+[policy-contract.md](policy-contract.md) — the policies evaluated at every boundary crossing ·
+[accreditation-and-authorization-matrix.md](../governance/accreditation-and-authorization-matrix.md)
+— how a declared capability becomes a trusted one (claim ≠ trust).
 
 **Transport.** The contract is **HTTP/REST + JSON** (AEP-conformant). REST is the floor every provider can meet — it keeps the barrier to implementing a provider in any language low and matches the rest of the API surface. The contract is deliberately transport-shaped (operations + typed request/response schemas), so a **gRPC binding can be added post-1.0** if provider demand warrants it; it is not in v1. gRPC is a later projection of the same operations, not a parallel contract.
 
@@ -1035,7 +1022,7 @@ The substrate requires the following invariants on capability discovery interact
 
 ---
 
-## 11. Related Policies
+## 11. System Policies (`PRV-*`)
 
 | Policy | Rule |
 |--------|------|
@@ -1053,4 +1040,4 @@ The substrate requires the following invariants on capability discovery interact
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*
