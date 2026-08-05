@@ -8,10 +8,10 @@ author each so CI accepts it.
 A process is the Process family (`family: Process`): a bounded execution, not a maintained state. The two
 shapes are:
 
-- **A Process-family Class** (`registry/classes/automation*.yaml`, validated against
+- **A Process-family Class** (`registry/classes/process/automation*`, validated against
   `registry/class.schema.json`) — the portable, multi-engine definition. Use it when the *point* is that
   more than one engine can honor the same process, so migration between engines is a provider swap.
-- **The `Automation.Job` resource type** (`registry/classes/job.yaml`,
+- **The `Automation.Job` resource type** (`registry/classes/process/job.yaml`,
   validated against `registry/resource-type-spec.schema.json`) — a job as a first-class node in the
   dependency graph. Use it when you need the job's dependencies and blast-radius as data, without the
   full multi-provider Class apparatus.
@@ -52,7 +52,7 @@ Follow [`scoped-class.md`](scoped-class.md) for the full Class procedure; the Pr
    the re-run semantics), `timeout`, `retry_policy`, `compensation`, and **`affected_entities`** (the
    blast-radius declaration — which records this run may mutate). Your Type Class (`Automation.OSPatch`)
    extends it with the domain intent (`targets`, `patch_policy`, `reboot_policy`) under Liskov.
-   **Produces:** `registry/classes/automation.yaml` + `registry/classes/automation.ospatch.yaml`.
+   **Produces:** `registry/classes/process/automation.yaml` + `registry/classes/process/automation/ospatch.yaml`.
 2. **Author a Provider Class per engine.** Each engine (`Automation.OSPatch.EngineBlue`,
    `…EngineGreen`) adds only its engine-native elements (`definition_ref`, `control_server`,
    `start_jitter`) — never contradicting the portable Type. **Two engines declaring the same Type Class
@@ -106,11 +106,11 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
 
 ## 4. A worked pointer
 
-- **Process-family Class:** copy `registry/classes/automation.yaml` (Base — note the `affected_entities`
-  blast-radius element and the `idempotency` codelist), `registry/classes/automation.ospatch.yaml` (Type),
-  and `registry/classes/automation.ospatch.engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
+- **Process-family Class:** copy `registry/classes/process/automation.yaml` (Base — note the `affected_entities`
+  blast-radius element and the `idempotency` codelist), `registry/classes/process/automation/ospatch.yaml` (Type),
+  and `registry/classes/process/automation/ospatch/engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
   that make migration a provider swap).
-- **`Automation.Job` resource type:** copy `registry/classes/job.yaml` — the
+- **`Automation.Job` resource type:** copy `registry/classes/process/job.yaml` — the
   first Process-family resource type, with `depends_on` graph edges, the portable-intent block
   (`definition_ref` / `parameters` / `targets` / `schedule`), the `outputs-exempt` stance, its
   `spec.examples`, and its `coverage:` block naming `use-cases/automation/run-automation-job.yaml`
