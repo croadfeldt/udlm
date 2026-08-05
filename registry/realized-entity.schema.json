@@ -46,7 +46,7 @@
     },
     "type_ref": {
       "type": "string",
-      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+\\.[A-Z][A-Za-z0-9]+/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "The `$id` of the pinned Resource Type Spec."
     },
     "lifecycle_state": {
