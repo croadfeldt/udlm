@@ -3,6 +3,13 @@
 **Status:** Proposed
 **Date:** 2026-08-04
 
+**Background — read first (the cold reader's on-ramp; skip if you have the context).**
+[ADR-061](ADR-061-class-directory-hierarchy.md) — the same path-as-verified-projection
+discipline this ADR extends from class records to documents; the engineering ratification pass
+(#217) — the process whose surface this layout makes a single path expression;
+[`docs/file-index.md`](../file-index.md) — the per-file ownership index the layout composes
+with.
+
 ## Context
 
 The repository had grown fifteen top-level directories: seven normative prose
