@@ -30,28 +30,6 @@ Some machines are routinely wiped and rebuilt, but parts of their identity must 
 
 ## Automation
 
-### Automation.Job (0.6.0)
-
-**Purpose:** Makes an automation job (playbook, pipeline, script) a first-class node in the dependency graph — carrying the job's own portable intent (definition_ref, parameters, targets, schedule) — so what the job needs stays up while it runs and the job itself survives an engine change. outputs-exempt: run-scoped — every run-history fact (state, timestamps, counts, the change-set a run produced, its evidence artifact) is an output of a RUN INSTANCE, not of the job: runs instantiate the process (Process-family model) and carry their own records. Job-level copies would project instance facts onto the definition — the compute-never-store rule forbids storing them, and the definition/instance separation forbids homing them here even as derivations. The run instance type (Process family, P1) declares these outputs; bindings that need them bind there.
-
-A record of a job that automation runs — a playbook, a CI pipeline, a backup script. It is modeled like infrastructure because it has real dependencies: the host it executes on, the network fabric it traverses, the name service it resolves through. While the job runs, none of those may be taken down, which is how ordered operations like a UPS-triggered graceful shutdown come out of the data instead of hand-written runbooks. The record also carries the automation intent itself: which definition the job executes (definition_ref), the parameters it is invoked with, the resources it operates on (targets), and — for scheduled jobs — when it runs and how overlapping or missed runs are handled (schedule). Because that intent lives on the record and not inside any engine, moving the job to a different engine is a provider change on an untouched definition. Each run publishes typed outputs — terminal state, timestamp, run count, a change-set, and an evidence reference — so two engines running the same job are comparable by diffing declared outputs. The engine that runs the job is a provider detail, not part of the type.
-
-**Use when:**
-- You need a shutdown or upgrade sequence to know an orchestration job is running and must finish before its executor host stops.
-- You need to record which automation created or modified a resource, so the resource's provenance can cite the job.
-- You need a scheduled or event-triggered job (cron, a UPS on-battery event) tracked with a hard execution-time limit.
-- You need the job's automation intent — definition, parameters, targets, schedule — recorded portably so an engine migration is a provider swap that leaves the intent and the job's identity untouched.
-- You need to verify a new engine (or an engine upgrade) against the incumbent by re-running an idempotent job and requiring an empty change-set in the typed outputs.
-
-**Not for:**
-- The long-running service a job might deploy — that is Software.Service; a service has no scheduled end, a job must declare max_execution_time.
-- The workload container a job runs in — that is Compute.Container; the job is the process, not the runtime.
-
-**Works with:**
-- Compute.BareMetalHost — the executor host a running job pins (the orchestrator stops last).
-- Network.Switch — the fabric the job traverses; connectivity outlives whatever the job operates on.
-- Network.AddressService — the name resolution the job needs to reach its targets.
-
 ### Automation.OSPatch (1.2.0)
 
 **Purpose:** The portable OS-patching process — what org policy gates, schedules reference, and compliance reports against, independent of which engine executes it.
@@ -1055,4 +1033,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*51 types; 51 with context, 0 pending.*
+*50 types; 50 with context, 0 pending.*

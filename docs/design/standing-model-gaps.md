@@ -333,7 +333,7 @@ day) adds the neighbouring vocabulary: an aggregation-shaped output must declare
 with its source or `OBSERVED`, or the type must carry the same exemption token. The first demand —
 `binding-surface/002`'s "types with legitimately empty outputs are distinguishable from types that
 merely forgot" — is **met today**, and the six zero-output types split cleanly: three `Knowledge`
-records, and `Automation.Job`, `Hardware.Processor`, `Hardware.GraphicsProcessor` all carrying
+records, and `Job` (né `Automation.Job`), `Hardware.Processor`, `Hardware.GraphicsProcessor` all carrying
 written exemptions.
 
 **What actually remains** — three things, all small, all real.
@@ -347,7 +347,7 @@ written exemptions.
   twenty-three respectively — with no exempt/gap split, because splitting them means parsing prose.
 - **Exemptions differ in kind and nothing says which.** `Hardware.Processor`'s exemption is permanent
   by nature — an opaque inventory component whose attributes are discovered facts on its host.
-  `Automation.Job`'s is a *forward pointer*: run-history facts belong to a run instance, and "the run
+  `Job` (né `Automation.Job`)'s is a *forward pointer*: run-history facts belong to a run instance, and "the run
   instance type (Process family) declares these outputs" — a type that is not registered. That is a
   deferral wearing an exemption's clothes, and today they read identically.
 
@@ -362,7 +362,7 @@ written exemptions.
   type or issue the deferral waits on. The human rationale stays in the description where it reads
   well; the machine reads one field.
 - **C. Derive exemption from family.** The cleanest-sounding option and it under-determines the
-  answer: `Knowledge` types are exempt by family, but `Automation.Job` (Process) and the two
+  answer: `Knowledge` types are exempt by family, but `Job` (né `Automation.Job`) (Process) and the two
   `Hardware` components (Resource) are legitimately exempt too. Family alone would flag three
   correct types as gaps.
 
@@ -376,7 +376,7 @@ permanent-looking claim.
 **Corpus case.** `binding-surface/003` — the classification comes from the registry and a newly
 registered realizable type with no outputs appears as a gap immediately. A second, sharper case is
 worth adding: an exemption that points at an unregistered type should surface as *deferred*, not as
-settled, which is the `Automation.Job` situation today.
+settled, which is the `Job` (né `Automation.Job`) situation today.
 
 ---
 

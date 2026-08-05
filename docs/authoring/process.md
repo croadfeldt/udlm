@@ -11,7 +11,7 @@ shapes are:
 - **A Process-family Class** (`registry/classes/automation*.yaml`, validated against
   `registry/class.schema.json`) — the portable, multi-engine definition. Use it when the *point* is that
   more than one engine can honor the same process, so migration between engines is a provider swap.
-- **The `Automation.Job` resource type** (`registry/resource-types/automation/automation.job.json`,
+- **The `Automation.Job` resource type** (`registry/classes/job.yaml`,
   validated against `registry/resource-type-spec.schema.json`) — a job as a first-class node in the
   dependency graph. Use it when you need the job's dependencies and blast-radius as data, without the
   full multi-provider Class apparatus.
@@ -110,7 +110,7 @@ Follow [`resource-type.md`](resource-type.md); the process-specific parts:
   blast-radius element and the `idempotency` codelist), `registry/classes/automation.ospatch.yaml` (Type),
   and `registry/classes/automation.ospatch.engine-blue.yaml` + `…engine-green.yaml` (the two Provider Classes
   that make migration a provider swap).
-- **`Automation.Job` resource type:** copy `registry/resource-types/automation/automation.job.json` — the
+- **`Automation.Job` resource type:** copy `registry/classes/job.yaml` — the
   first Process-family resource type, with `depends_on` graph edges, the portable-intent block
   (`definition_ref` / `parameters` / `targets` / `schedule`), the `outputs-exempt` stance, its
   `spec.examples`, and its `coverage:` block naming `use-cases/automation/run-automation-job.yaml`
