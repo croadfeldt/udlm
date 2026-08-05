@@ -161,7 +161,7 @@ accreditation:
     geographic_scope: [US]                      # residency/jurisdiction this attests — the axis a
                                                 #   sovereignty claim's jurisdictions/residency match against
     data_classifications: [phi, restricted]     # which data classifications this covers
-    framework_capabilities: [data_at_rest, data_in_transit, access_control, audit_logging]  # compliance-framework capabilities — a DIFFERENT axis from capability_scope (renamed from `capabilities` to disambiguate)
+    framework_capabilities: [data_at_rest, data_in_transit, access_control, audit_logging]  # compliance-framework capabilities — a DIFFERENT axis from capability_scope
     exclusions: [<explicit exclusions from scope>]
 
   # Evidence
