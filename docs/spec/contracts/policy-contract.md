@@ -1,39 +1,30 @@
 # UDLM — Unified Policy Contract
 
+**What this settles.** The one base contract every policy implements — match conditions,
+enforcement level, domain precedence, artifact structure, lifecycle — the evaluation model,
+the eight typed output schemas, the override model, and the `POL-*` system policies.
 
-**Document Status:** ✅ Complete
-**Document Type:** Architecture Foundation
-**Related Documents:** [Foundational Abstractions](../foundations/foundations.md) | [Provider Contract](provider-contract.md) | [Governance Matrix](../governance/governance-matrix.md)
+**In one breath.** Every policy is the same artifact with one varying part: its **output
+schema** — what it produces when its match conditions are satisfied. **Adding a new policy
+type = defining a new output schema** (POL-006); the base contract, evaluation algorithm,
+lifecycle, and audit obligations are inherited. A policy fires when the data matches its
+declared conditions — never by pre-assignment or routing table — and every evaluation is
+audited (POL-002).
 
----
-
-## 1. The Unified Policy Contract
-
-Every Policy in DCM — regardless of type — implements a single base contract. What varies between policy types is the **output schema**: what the Policy produces when its match conditions are satisfied.
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                 BASE POLICY CONTRACT                     │
-│                                                          │
-│  Match Conditions · Enforcement Level · Domain          │
-│  Lifecycle · Audit · Shadow Mode                         │
-│                                                          │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │              OUTPUT SCHEMA                       │   │
-│  │                                                  │   │
-│  │  What this policy type produces when it fires.   │   │
-│  │  Eight typed output schemas.                     │   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
-```
-
-**Adding a new policy type** = define a new output schema. The base contract, evaluation algorithm, lifecycle, and audit obligations are inherited.
+**Background — read first** (skip if you have it):
+[foundations.md](../foundations/foundations.md) — the Data·Provider·Policy triad; policy is
+the deciding abstraction · [layering-and-versioning.md](../foundations/layering-and-versioning.md)
+§1b — policies apply *over* the merged layers, they are not layers ·
+[governance-matrix.md](../governance/governance-matrix.md) — the boolean matrix one output
+schema projects onto.
 
 ---
 
 ## 2. Base Contract — Match Conditions
 
-**A policy fires when the data says it should fire.** There is no pre-assignment of policies to resource types, no routing tables, no static configuration. A policy declares its match conditions against data fields. If the data matches, the policy evaluates. Any piece of data in the request can be an inclusion trigger for a policy.
+**A policy fires when the data says it should fire** — declared match conditions against data
+fields, never pre-assignment, routing tables, or static configuration. Any piece of data in
+the request can be the trigger.
 
 ### 2.1 Four Match Sources
 
@@ -1225,7 +1216,7 @@ For a single request, all active matching policies at all domain levels evaluate
 
 ---
 
-## 20. Related Policies
+## 20. System Policies (`POL-*`)
 
 | Policy | Rule |
 |--------|------|
@@ -1242,4 +1233,4 @@ For a single request, all active matching policies at all domain levels evaluate
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Part of the UDLM specification. For contributions see [CONTRIBUTING.md](../../../CONTRIBUTING.md).*
