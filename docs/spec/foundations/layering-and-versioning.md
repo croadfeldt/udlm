@@ -967,36 +967,10 @@ When a policy artifact is in `proposed` status, it runs in **shadow mode** again
 - Shadow output feeds the Validation Dashboard for reviewer analysis
 - Policy authors can see aggregate impact before activation
 
-```yaml
-# Shadow output record — captured per real request evaluated
-proposed_evaluation_record:
-  policy_uuid: <uuid>
-  policy_version: <version>
-  request_uuid: <real request being shadowed>
-  tenant_uuid: <tenant>
-  evaluated_at: <ISO 8601>
-  would_have_applied: <true|false>
-  shadow_output:
-    would_have_rejected: <true|false>
-    rejection_reason: <if would_have_rejected>
-    would_have_patched:
-      - field: <field path>
-        current_value: <value in real payload>
-        would_have_set: <value policy would have applied>
-        reason: <policy reason>
-    would_have_locked:
-      - field: <field path>
-        lock_type: <constrained|immutable>
-        reason: <policy reason>
-    would_have_selected_provider: <provider UUID — if policy sets provider constraints>
-  impact_assessment:
-    category: <none|low|medium|high|critical>
-    # none:     policy would not have applied to this request
-    # low:      minor enrichment only
-    # medium:   significant field modifications
-    # high:     would have rejected or locked critical fields
-    # critical: would have rejected or overridden consumer intent
-```
+Per real request evaluated, DCM captures durably: the shadow policy identity (uuid + version),
+the request and tenant, whether the policy would have applied, and the full would-have output
+(rejection + reason, patches, warnings) — never applied to the request, feeding the Validation
+Dashboard. The capture's shape is DCM's implementation; this content is the contract.
 
 ### 4b.4 Contact Info — Two Modes
 

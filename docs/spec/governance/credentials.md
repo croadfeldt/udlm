@@ -764,17 +764,12 @@ credential_capability:
 
 ## 11. Idle Credential Detection
 
-A credential issued but never retrieved within the declared threshold is a security signal — it may indicate a provisioning error, a failed delivery, or an abandoned resource.
-
-```yaml
-idle_credential_record:
-  credential_uuid: <uuid>
-  issued_at: <ISO 8601>
-  threshold_hours: 48           # from profile credential_profile.idle_detection_threshold
-  last_checked_at: <ISO 8601>
-  retrieval_count: 0
-  status: idle_alert_pending
-```
+A credential issued but never retrieved within the declared threshold is a security signal — it
+may indicate a provisioning error, a failed delivery, or an abandoned resource. Idle detection
+opens an **idle-credential finding** (ADR-060 — open once, closed by citing the resolution:
+retrieval, revocation, or expiry). The retrieval count is **derived from the custody audit
+trail** (every retrieval is an audited event — §7), never a stored counter; the threshold comes
+from the profile (`credential_profile.idle_detection_threshold`).
 
 When an idle alert fires:
 - Platform admin notified: "Credential {uuid} for entity {entity_uuid} has not been retrieved in {N} hours"

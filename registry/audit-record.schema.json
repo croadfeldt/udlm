@@ -126,7 +126,6 @@
             "provider",
             "configuration",
             "authorization",
-            "ingestion_record",
             "audit_record",
             "catalog_item"
           ]

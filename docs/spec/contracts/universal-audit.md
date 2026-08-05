@@ -90,7 +90,7 @@ audit_record:
   subject:
     entity_uuid: <uuid of the artifact that changed>
     entity_type: <resource_entity|policy|layer|group|relationship|provider|
-                  configuration|authorization|ingestion_record|audit_record>
+                  configuration|authorization|audit_record>
     entity_handle: <human-readable handle — non-authoritative, display only>
     entity_version_before: <Major.Minor.Revision — version before change>
     entity_version_after: <Major.Minor.Revision — version after change>
