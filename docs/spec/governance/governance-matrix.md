@@ -1,25 +1,13 @@
 # UDLM — Unified Governance Matrix
 
-**Document Status:** ✅ Stable — UDLM substrate contract
-**Document Type:** Substrate Reference
-
-> **Foundation Document Reference**
->
-> This document is a detailed reference for a specific domain of the UDLM substrate.
-> The three foundational abstractions — Data, Provider, and Policy — are defined in
-> [foundations.md](../foundations/foundations.md). All concepts in this document map to one or
-> more of those three abstractions.
-> See also: [Provider Contract](../contracts/provider-contract.md) | [Policy Contract](../contracts/policy-contract.md)
->
-> **This document maps to: POLICY**
->
-> The Policy abstraction — Governance Matrix Rule output schema for boundary control.
-
-**Related Documents:** [Federated Contribution Model](federated-contribution-model.md) | [Accreditation and Authorization Matrix](accreditation-and-authorization-matrix.md) | [Layering and Versioning](../foundations/layering-and-versioning.md)
+**Background — read first** (skip if you have it):
+[foundations.md](../foundations/foundations.md) — the triad; the matrix is Policy's boundary
+face · [accreditation-and-authorization-matrix.md](accreditation-and-authorization-matrix.md)
+— accreditation status and data classification, the two inputs every evaluation consumes ·
+[provider-contract.md](../contracts/provider-contract.md) §4 — the boundary crossings where
+the matrix is evaluated, every time, no bypass.
 
 ---
-
-> **Federated Contribution:** The Governance Matrix enforces contributor permission boundaries at artifact submission time. See the [Federated Contribution Model](federated-contribution-model.md) for the complete contributor permission table and the hard DENY rules applied to out-of-scope contributions.
 
 ## 1. Purpose
 
