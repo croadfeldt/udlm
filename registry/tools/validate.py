@@ -2,7 +2,6 @@
 """Valid-by-construction gate. Validates:
   - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
   - registry/profiles/*        against  profile.schema.json                   (deployment PROFILES)
-  - registry/decisions/*       against  decision-record.schema.json           (shipped DECISION records)
   - registry/taxonomies/*      against  the taxonomy-seed shape               (governed VOCABULARY seeds)
   - registry/examples/*        against  realized-entity.schema.json           (worked EXAMPLE records)
                         or against  policy / layer / catalog-item / audit / accreditation schemas
@@ -335,7 +334,7 @@ def _reference_data_index():
     """uuid -> the reference_data layer it identifies, for {ref_uuid,ref_name} integrity (ADR-012).
     Scans the record directories for record_type: layer + layer_type: reference_data."""
     index = {}
-    for base in (ROOT / "examples", ROOT / "profiles", ROOT / "decisions", ROOT / "taxonomies"):
+    for base in (ROOT / "examples", ROOT / "profiles", ROOT / "taxonomies"):
         if not base.exists():
             continue
         for path in base.glob("*"):
@@ -628,7 +627,7 @@ def _reverse_reference_graph():
     This is what lets change-impact cascade TRANSITIVELY up the graph (ADR-012 #2): a record referencing
     a reference_data layer that is itself referenced, and so on — e.g. deployment → image → library."""
     nodes, referrers = {}, {}
-    for subdir in ("examples", "decisions", "taxonomies", "profiles"):
+    for subdir in ("examples", "taxonomies", "profiles"):
         base = ROOT / subdir
         if not base.exists():
             continue
@@ -696,8 +695,6 @@ def main() -> int:
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
     print("== profiles (activatable deployment postures) ==")
     failures += validate_dir("profiles", pick_instance)
-    print("== decisions (machine-readable decision records) ==")
-    failures += validate_dir("decisions", pick_instance)
     print("== taxonomies (governed vocabulary seeds) ==")
     failures += validate_dir("taxonomies", pick_instance)
     print("== examples (worked records: entities, layers, policies, audit, accreditations) ==")

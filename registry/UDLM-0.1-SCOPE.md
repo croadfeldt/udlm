@@ -93,7 +93,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 1. **Ratify the decisions.** All `docs/adr/` records (now **ADR-001–016** — the 2026-07-15 session added
    012 data-references, 013 hardware-component-scope, 014 optionality-with-conformity, 015
-   settings-and-config-bundles, 016 resource-type-role) and the `registry/decisions/*.json`
+   settings-and-config-bundles, 016 resource-type-role) and the ADR/DR prose in `docs/adr/` + `docs/dr/`
    DecisionRecords are `Proposed`; 1.0 commits to backward-compat and cannot ship on unratified decisions.
    **Ready to ratify** (settled, exercised by the 21 UCs): ADR-005–011 and the provider/boundary
    DecisionRecords (PROV-001/002/003, RBAC-001, udlm-dcm-boundary, resource-type-extension). The

@@ -23,7 +23,7 @@ Do **not** reach here for:
 - proving a capability *behaves* — that is a Use Case ([`use-case.md`](use-case.md));
 - narrating a lifecycle across types — that is a flow ([`flow.md`](flow.md));
 - a decision recorded as **machine-validated data** rather than prose — that is a `DecisionRecord`
-  instance under `registry/examples/` (the `ADR-<FAMILY>-NNN` namespace, e.g. `ADR-PROV-004`),
+  instance under `registry/examples/` (the `ADR-<FAMILY>-NNN` namespace, e.g. `ADR-038`),
   validated against [`../../registry/decision-record.schema.json`](../../registry/decision-record.schema.json).
   A file-based ADR and an instance record are the same entity in two homes; the schema's own
   description says an ADR *is* a `DecisionRecord` whose anchor is architecture. Use the instance form

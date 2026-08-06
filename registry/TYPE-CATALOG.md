@@ -363,7 +363,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## Identity
 
-### Identity.Group (0.3.1)
+### Identity.Group (0.3.2)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -381,7 +381,7 @@ A named set of person and service-account identities, keyed by its required `han
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.4.1)
+### Identity.Person (0.4.2)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -401,7 +401,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.4.1)
+### Identity.ServiceAccount (0.4.2)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 

@@ -27,7 +27,7 @@ and validation rules.
 
 ## 2. Error envelope — RFC 9457 Problem Details
 
-The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (Problem Details for HTTP APIs)** via **[AEP-193](https://aep.dev/193/)** (ADR-AEP-001; a Tier-2 record adoption per [adopted-standards.md](../principles/adopted-standards.md) §1a). This *replaces* UDLM's former bespoke envelope — the closed error-code vocabulary (§3) and the `retryable` semantics survive as the problem `type` and extension members; the custom envelope shape is retired (net-negative surface). Every error emitted on an interop surface MUST be an RFC 9457 problem object:
+The error envelope **adopts [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (Problem Details for HTTP APIs)** via **[AEP-193](https://aep.dev/193/)** (DR-AEP-001; a Tier-2 record adoption per [adopted-standards.md](../principles/adopted-standards.md) §1a). This *replaces* UDLM's former bespoke envelope — the closed error-code vocabulary (§3) and the `retryable` semantics survive as the problem `type` and extension members; the custom envelope shape is retired (net-negative surface). Every error emitted on an interop surface MUST be an RFC 9457 problem object:
 
 ```json
 {
@@ -374,7 +374,7 @@ A conformant implementation MUST:
 
 ## 10. Adopted standards & related contracts
 
-**Adopted (ADR-AEP-001, Tier-2 per [adopted-standards.md](../principles/adopted-standards.md)):**
+**Adopted (DR-AEP-001, Tier-2 per [adopted-standards.md](../principles/adopted-standards.md)):**
 - [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) — Problem Details for HTTP APIs (the error envelope, §2)
 - [AEP-193](https://aep.dev/193/) — the AEP error model, which adopts RFC 9457
 - [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562) — UUIDs (`request_id`, audit id) · [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) — `timestamp`

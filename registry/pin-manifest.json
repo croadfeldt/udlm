@@ -22,21 +22,21 @@
  },
  "decision_record:ADR-AEP-001": {
   "current": "1.0.0",
-  "path": "registry/decisions/aep-alignment.json",
+  "path": "registry/instances/adr-aep-alignment.json",
   "versions": {
    "1.0.0": "sha256:7bb710ca9f8d031f656f19c4ff1c8e2c98d323778256b28e1d5b28e68723d0f7"
   }
  },
  "decision_record:ADR-COST-001": {
   "current": "1.0.0",
-  "path": "registry/decisions/cost-metering-placement.json",
+  "path": "registry/instances/adr-cost-metering-placement.json",
   "versions": {
    "1.0.0": "sha256:663ddfefc1a3473ab2d3086bb3f1011253734e533bea3e29b9b5287b6f7ee17d"
   }
  },
  "decision_record:ADR-COST-002": {
   "current": "1.0.0",
-  "path": "registry/decisions/cost-metering-linkage.json",
+  "path": "registry/instances/adr-cost-metering-linkage.json",
   "versions": {
    "1.0.0": "sha256:6a3f8c4dd62752a4eba63cb7732134309a822187a7f2ab4a337db15622d0911e"
   }
@@ -50,42 +50,42 @@
  },
  "decision_record:ADR-PROV-001": {
   "current": "1.0.0",
-  "path": "registry/decisions/provider-dispatch-role.json",
+  "path": "registry/instances/adr-provider-dispatch-role.json",
   "versions": {
    "1.0.0": "sha256:836e080fbf35e324a494c94c7dde1d0a4a1b65b9891701a108943a0895d1c048"
   }
  },
  "decision_record:ADR-PROV-002": {
   "current": "1.0.0",
-  "path": "registry/decisions/provider-capabilities-categories.json",
+  "path": "registry/instances/adr-provider-capabilities-categories.json",
   "versions": {
    "1.0.0": "sha256:42895ad225b7bd7b83f96f56a20ba474ed6347c42d452f99a096e0c986e8a75e"
   }
  },
  "decision_record:ADR-PROV-003": {
   "current": "1.0.0",
-  "path": "registry/decisions/provider-capability-admission.json",
+  "path": "registry/instances/adr-provider-capability-admission.json",
   "versions": {
    "1.0.0": "sha256:8c08a67fd430352334ab466ce7d25375c81f735dbb2333c91ee367e62f07a8a5"
   }
  },
  "decision_record:ADR-PROV-004": {
   "current": "1.0.0",
-  "path": "registry/decisions/resource-type-extension.json",
+  "path": "registry/instances/adr-resource-type-extension.json",
   "versions": {
    "1.0.0": "sha256:c5c7367b5c84e82c36e5bd4401392b5c9da638faf1558a9cb4f76b6b020a1b20"
   }
  },
  "decision_record:ADR-RBAC-001": {
   "current": "1.0.0",
-  "path": "registry/decisions/dcm-rbac-function-matrix.json",
+  "path": "registry/instances/adr-dcm-rbac-function-matrix.json",
   "versions": {
    "1.0.0": "sha256:48a4c97f1be7298561642a4f63c8b17096875f9643029172ab2954db42da39a6"
   }
  },
  "decision_record:ADR-UDLM-DCM-001": {
   "current": "1.0.0",
-  "path": "registry/decisions/udlm-dcm-boundary.json",
+  "path": "registry/instances/adr-udlm-dcm-boundary.json",
   "versions": {
    "1.0.0": "sha256:5612aea8fb0a5c72387a455b960fd09b69cc98dfb62578bea8e395a8800fefbc"
   }
@@ -503,32 +503,35 @@
   }
  },
  "type:Identity.Group": {
-  "current": "0.3.1",
+  "current": "0.3.2",
   "path": "registry/classes/access/identity/group.yaml",
   "versions": {
    "0.2.2": "sha256:6d4a638b981efb7aed5151f4351152720634c030d47425ef54a366174a837558",
    "0.3.0": "sha256:6b7016862273fc5e719eb4a01f726e64d4a844167e085e7ee5bbc84112b89f59",
-   "0.3.1": "sha256:73922e499992575e2a093e3e29c46571887c78019abf6ed599d4b3f46beb104f"
+   "0.3.1": "sha256:73922e499992575e2a093e3e29c46571887c78019abf6ed599d4b3f46beb104f",
+   "0.3.2": "sha256:bf37b58ce611681c4481c29696c7b03e5cc9700803d96b85747e40dbdcf89395"
   }
  },
  "type:Identity.Person": {
-  "current": "0.4.1",
+  "current": "0.4.2",
   "path": "registry/classes/access/identity/person.yaml",
   "versions": {
    "0.3.2": "sha256:9d41b4f7691af6ca06540c2447f0003ecf1d2d3ca3d3d83344bf47925d175c1f",
    "0.3.3": "sha256:132b1c0b6bbe7de3fa392d2d282982adb56a66348b2a5ff22667bc72c4fc18e7",
    "0.4.0": "sha256:974756bafa48b6e94f6f98aa610a3e402fd8d9dcb185c230a230b0b5f631b167",
-   "0.4.1": "sha256:be402685eb5bd58a10ee143fc1599c50e65fbae14553bb38d08bc95482ef3531"
+   "0.4.1": "sha256:be402685eb5bd58a10ee143fc1599c50e65fbae14553bb38d08bc95482ef3531",
+   "0.4.2": "sha256:db606c75d6a4944d85b5644c2690be7adc2e60edc0b414d3aeefd84b819c986c"
   }
  },
  "type:Identity.ServiceAccount": {
-  "current": "0.4.1",
+  "current": "0.4.2",
   "path": "registry/classes/access/identity/service-account.yaml",
   "versions": {
    "0.3.2": "sha256:86b1ce01e7cf652b533869d8a71c555062c06969893493450974a642c2775db9",
    "0.3.3": "sha256:9c0995f151533a93d74b40741014d234f1e5c89a3f61aa1b7bee01b49ca13786",
    "0.4.0": "sha256:20c10fdbf66941934ac8ae72c83e5c77262b12fb9cf0ba3225a7b3e9bda1dd6f",
-   "0.4.1": "sha256:0c625b4e60d23dc811405903b29ea65c451fbf63649f94dceab73a68ed33867c"
+   "0.4.1": "sha256:0c625b4e60d23dc811405903b29ea65c451fbf63649f94dceab73a68ed33867c",
+   "0.4.2": "sha256:880416cc666b762633bd80e2af773d6c97b3ddd071a29aadb1d33001c4f5b416"
   }
  },
  "type:Job": {

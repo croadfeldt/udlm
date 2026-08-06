@@ -65,7 +65,7 @@ EXEMPT = {
     # revisions are point-in-time records — never edited to satisfy a living-prose gate (the
     # rotation doctrine: a revision is history). Grandfathered by file+rule, not by directory:
     # every OTHER instance record is scanned.
-    "registry/decisions/resource-type-extension.json": {"provider_extensions"},
+    "docs/adr/ADR-038-scoped-resource-type-classes.md": {"provider_extensions"},
 }
 
 # Per-line exemption: the line documents the change itself. Words only — a bare arrow is

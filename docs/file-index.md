@@ -14,6 +14,8 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`CONFORMANCE.md`** — what wire-level conformance certifies (and does not), the declaration shape, levels, and the wire-compatibility checklist. *Owns:* conformance levels, the `.well-known` declaration, the required-contracts list (§5), the wire-compat checklist (§6).
 - **`GLOSSARY.md`** — human-readable term definitions. *Owns:* short prose glosses only; the machine taxonomy lives in `registry/generated/taxonomy-term.json`.
 
+- **`docs/dr/`** — project/process decision records (how we build): conventions adopted, where prose lives. Architecture decisions are ADRs in `docs/adr/`.
+
 ## `docs/spec/foundations/` — the core model everything else builds on
 
 - **`foundations.md`** — the three abstractions (Data · Provider · Policy). *Owns:* the abstraction triad.

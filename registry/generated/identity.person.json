@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.4.2",
   "conforms_to": "udlm/0.1",
   "uuid": "679b14ef-f169-441e-968d-dacafffe1966",
   "resource_type": "Identity.Person",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Person",
-    "description": "A human identity/account — an ACTOR that DCM authenticates and authorizes (ADR-RBAC-001). Fills the named-but-unbuilt Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity). Holds NO secret material — credentials are referenced (Security.CredentialRef). Backs the built-in auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type is `human`, from the one closed actor-type vocabulary (universal-audit).",
+    "description": "A human identity/account — an ACTOR that DCM authenticates and authorizes (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix). Fills the named-but-unbuilt Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity). Holds NO secret material — credentials are referenced (Security.CredentialRef). Backs the built-in auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type is `human`, from the one closed actor-type vocabulary (universal-audit).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "converted_from": "flat spec Identity.Person@0.3.3 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
@@ -23,7 +23,7 @@
         },
         {
           "class": "Identity.Person",
-          "version": "0.4.1",
+          "version": "0.4.2",
           "uuid": "679b14ef-f169-441e-968d-dacafffe1966"
         }
       ]
@@ -106,7 +106,7 @@
       "edge_type": "contained_by",
       "target": "Identity.Group",
       "cardinality": "0..n",
-      "description": "Member of an access grouping (access_grouping) or Identity.Group; membership drives role binding (ADR-RBAC-001)."
+      "description": "Member of an access grouping (access_grouping) or Identity.Group; membership drives role binding (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix)."
     },
     {
       "edge_type": "references",

@@ -16,7 +16,7 @@ here (DCM realizes the model; see the isolation table below).
 docs/spec/        THE normative prose tier (ADR-062): foundations/ (four states, entity
                   types/families, entities, layering, groups), contracts/, governance/,
                   lifecycle/, principles/ — ratification covers docs/spec/ + registry/
-docs/             everything else humans read: adr/ design/ authoring/ flows/ guides/
+docs/             everything else humans read: adr/ dr/ design/ authoring/ flows/ guides/
                   examples/ research/ + file-index.md
 registry/         Resource-type registry + the meta-schema + the definition RULES + common elements
   SPEC-DESIGN-REQUIREMENTS.md   ← THE rules every type/element MUST follow (read this first)

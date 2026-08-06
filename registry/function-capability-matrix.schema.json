@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/function-capability-matrix.schema.json",
-  "title": "UDLM DCM Function Capability Matrix + Role Assignment (ADR-RBAC-001)",
+  "title": "UDLM DCM Function Capability Matrix + Role Assignment (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix)",
   "description": "Two record shapes for DCM RBAC, enforced by the ONE Governance Matrix (no new engine). `role_capability` binds an access-role to the DCM functions it may perform (default-deny: only listed functions permitted). `role_assignment` binds an actor or access-group to a role (optionally tenant-scoped, time-bounded). Roles are access-role TaxonomyTerms; functions are dcm-function TaxonomyTerms. Role-assignment CHANGES are audited as immutable forward events (CAPABILITY_ADMIT-style; SPEC-DESIGN §18a-e) — this record is the current binding. Authored as data so it PROJECTS onto Kessel/SpiceDB (roles->relations, functions->computed permissions) without depending on it.",
   "type": "object",
   "required": ["record_type"],

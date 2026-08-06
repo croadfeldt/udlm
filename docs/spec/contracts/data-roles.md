@@ -26,7 +26,7 @@ They compose: sensitivity says *whether* a datum may cross a boundary; role says
 | **`assembly`** | Control-plane assembly record: unapplied contributions, excluded layers (the "road not taken") | No (opt-in) |
 | **`governance`** | Governance/policy decision metadata | No (opt-in) |
 | **`audit`** | Audit-only annotations | No (opt-in) |
-| **`cost`** | Cost/metering attribution ([ADR-COST-002](../../../registry/decisions/cost-metering-linkage.json)) | No (opt-in) |
+| **`cost`** | Cost/metering attribution ([ADR-COST-002](../../../docs/adr/ADR-COST-002-cost-metering-linkage-hooks.md)) | No (opt-in) |
 
 The enum is extensible (`x-extensible-enum`). **`execution` is the only role dispatched by default.**
 
