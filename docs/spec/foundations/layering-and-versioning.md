@@ -454,18 +454,21 @@ Gathering a layer into a request is a **two-sided** decision — a *publish ⋈ 
 one-way pull. Each side declares its half as **data** on the layer record; DCM's assembly engine
 computes the match (the acting side).
 
-- **Target (the layer publishes):** `covers` — a §10 selector list (authority + `Category.Type.Provider`
-  + attribute predicates, wildcarded) naming which resources the layer *may* inject into; and
+- **Target (the layer publishes):** `covers` — ONE URF filter (identifier-scheme §9;
+  e.g. `estate?resource_type==Compute.*` or `estate?labels.concern==payments`) naming which
+  resources the layer *may* inject into; and
   `applies_on` — the convergence scenario(s) it injects during, named by ADR-030's vocabulary
   (`realize` · `reconcile` · `reconfigure` · `rehydrate` · `decommission`; absent = every scenario).
-- **Source (the request/policy layer subscribes):** `from_layers` — an **optional override** naming
-  which layers feed *this* request; and `skip` — the governed negative form.
+- **Source (the request/policy layer subscribes):** `from_layers` — an **optional override**, a URF
+  filter selecting which layers feed *this* request; and `skip` — the governed negative form, the
+  same grammar.
 
 **`covers` does not replace `resource_type` — it generalizes it.** A type-scoped layer already names
-its target in `resource_type` (§4.1), so `resource_type: X` **is** `covers: ["X.*"]` and its `covers`
-is derived and omitted. Declare `covers` explicitly only for targeting *broader* than one type — many
-categories, attribute predicates, authority-qualified. When both are present they must agree (`covers`
-includes the layer's own type — `validate.py check_layer`); you never restate one in the other.
+its target in `resource_type` (§4.1), so `resource_type: X` **is** `covers:
+"estate?resource_type==X.*"` and its `covers` is derived and omitted. Declare `covers` explicitly
+only for targeting *broader* than one type — many categories, attribute predicates,
+authority-qualified. When both are present they must agree (`covers` matches the layer's own type —
+`validate.py check_layer`); you never restate one in the other.
 
 **Tenant isolation is the default, not a re-declaration.** Absent `from_layers`, assembly is
 tenant-scoped from the existing ownership fields: a request draws its own tenant's layers
@@ -473,9 +476,10 @@ tenant-scoped from the existing ownership fields: a request draws its own tenant
 tenant-A request excludes a tenant-B layer whose `covers` would match, with no `from_layers` needed.
 `from_layers`/`skip` are for selecting an *explicit subset* beyond that default.
 
-**Injection is the intersection.** A layer `L` injects into a request `R` iff
-`R.target ∈ L.covers` (or `L.resource_type`) **and** `R.operation ∈ L.applies_on` **and**
-`L ∈ R.from_layers` (default: `R`'s tenant + platform) **and not** `L ∈ R.skip`. `covers` says
+**Injection is the intersection.** A layer `L` injects into a request `R` iff `R.target`
+matches `L.covers` (or `L.resource_type`) **and** `R.operation ∈ L.applies_on` **and** `L`
+matches `R.from_layers` (default: `R`'s tenant + platform) **and** `L` is not matched by
+`R.skip`. `covers` says
 *who may*; `from_layers` says *who does*. Because injection lands data into the assembled spec it is an
 **ingress crossing**: the policy information firewall's admission applies (`PROJ-P6`, ADR-041).
 Authoritative: [ADR-054](../../adr/ADR-054-references-context-and-field-projection.md).

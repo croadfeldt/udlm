@@ -488,11 +488,27 @@ def check_layer_scoping(doc):
     rt, covers = doc.get("resource_type"), doc.get("covers")
     if not rt or not covers:
         return []
-    if not any(_selector_covers_type(s, rt) for s in covers):
-        loc = f"layer {doc.get('name', '?')} ({str(doc.get('uuid', ''))[:8]})"
-        return [f"{loc}: resource_type {rt!r} and covers {covers} disagree — covers must include the "
-                f"layer's own type (resource_type X ≡ covers ['X.*']); omit covers for the derived "
-                f"default, or add an entry covering {rt}."]
+    # covers is ONE URF filter (identifier-scheme §9). The agreement check: some
+    # resource_type term in the expression must cover the layer's own type (exact or glob).
+    import importlib.util as _ilu, pathlib as _pl
+    _spec = _ilu.spec_from_file_location("urf", _pl.Path(__file__).parent / "urf.py")
+    _urf = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_urf)
+    loc = f"layer {doc.get('name', '?')} ({str(doc.get('uuid', ''))[:8]})"
+    try:
+        parsed = _urf.parse(covers)
+    except _urf.URFError as e:
+        return [f"{loc}: covers is not a valid URF filter — {e}"]
+    import re as _re
+    terms = _re.findall(r"resource_type==([A-Za-z0-9.*]+)", covers) +             [m for grp in _re.findall(r"resource_type=in=\(([^)]*)\)", covers) for m in grp.split(",")]
+    if not terms:
+        return [f"{loc}: covers carries no resource_type term — cannot agree with resource_type {rt!r}"]
+    def sel_covers(sel, t):
+        if sel.endswith("*"):
+            return t.startswith(sel[:-1]) or (sel[:-1].rstrip('.') == t)
+        return sel == t or t.startswith(sel + ".")
+    if not any(sel_covers(s2, rt) for s2 in terms):
+        return [f"{loc}: resource_type {rt!r} and covers {covers!r} disagree — covers must match the "
+                f"layer's own type; omit covers for the derived default."]
     return []
 
 
