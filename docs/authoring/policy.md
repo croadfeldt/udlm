@@ -32,7 +32,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
 
 ## 2. The steps, in order
 
-1. **Write the record** at `registry/instances/<your-policy>.yaml` (or a provider/profile bundle if it ships
+1. **Write the record** at `registry/instances/<your-policy>.yaml` (or a provider/profile record if it ships
    with one). Set the required fields (`policy.schema.json` `required`): `record_type: policy`, a fresh v4
    `uuid`, `conforms_to: udlm/0.1`, `name`, `version` (semver), `tenant_uuid` (the platform tenant for a
    system-domain policy), `policy_type`, `match`, `output`.

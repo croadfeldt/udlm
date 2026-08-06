@@ -15,7 +15,7 @@ metadata:
     its costs, policy scope, drift scope, and audit scope roll up here.
   notes:
   - at: '2026-08-06T00:00:00Z'
-    author: bundle/grouping cutover
+    author: profile/grouping cutover
     text: 'isolation_level shared_rls; store_bindings: commit_log=postgresql-reference, state_store=postgresql-reference,
       audit_store=postgresql-reference, discovered_stream=postgresql-reference'
 states:

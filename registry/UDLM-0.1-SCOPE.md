@@ -69,7 +69,7 @@ but executed by DCM (ADR-008).
 | 17 | libvirt-vm-provider/provider-registration-capability | provider-contract §8.1a `resource_advertisement` (capacity) | Covered |
 | 18 | cross-domain/provider-portable-rebuild | naturalization; portability + `bound_providers`; four-states §5.3 | Covered (re-resolution = DCM) |
 | 19 | docs/spec/governance/policy-resolution-capability | policy-contract §7.7 three-state; profile-resolution | Covered |
-| 20 | cross-domain/profile-resolution-capability | profile-resolution; the `bundle` record + instances | Covered |
+| 20 | cross-domain/profile-resolution-capability | profile-resolution; the `profile` record + instances | Covered |
 | 21 | docs/spec/governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |
 
 **Net:** all 21 are enabled at the UDLM layer. Residual items for this set are either already closed
@@ -80,7 +80,7 @@ by the merged spec (ADR-010 / §8.1a / realized-entity) or are DCM-runtime by th
 | P# | Item | Status |
 |---|---|---|
 | P1 | VM enrichment (placement/networks/power) | ✅ `compute.vm` 0.3.0 |
-| P2 | Profile schema | ✅ `bundle.schema.json` (a profile IS a bundle) |
+| P2 | Profile schema | ✅ `profile.schema.json` |
 | P3 | Provider capacity/inventory advertisement | ✅ provider-contract §8.1a `resource_advertisement` |
 | P4 | Fault domains / SharedFaultDomain | ✅ ADR-010 |
 | P5 | Blast-radius / redundancy / UnmetDependency | ✅ ADR-010 + `policy.schema` graph.* |

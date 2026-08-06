@@ -1,8 +1,8 @@
 # UDLM — Resource Grouping
 
-> **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to the grouping/bundle record kind values in that model.
+> **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to the grouping record kind values in that model.
 > **Machine-validatable schema:** Tenants, Resource Groups, and cross-tenant authorizations are
-> `Access.Grouping` records validating against `registry/bundle.schema.json` (bundles) / the `Access.Grouping` class (groupings).
+> `Access.Grouping` records validating against `registry/profile.schema.json` (profiles) / the `Access.Grouping` class (groupings).
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)
 
@@ -114,7 +114,7 @@ Each group membership is a different dimension of context — not a hierarchy wi
 
 ### 3.2 Resource Group Subclasses
 
-> **the grouping/bundle record kind has ONE vocabulary** — the closed set defined in
+> **the grouping vocabulary is ONE closed set** — the closed set defined in
 > [Universal Group Model](universal-groups.md) §2.2
 > ([data-model-core](data-model-core.md) §5). Every Resource Group carries
 > `resource_type: Access.Grouping` from that model. The `dcm_default | custom` distinction

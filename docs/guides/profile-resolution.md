@@ -1,6 +1,6 @@
 # Profile resolution — the machine surface behind ADR-007
 
-**What this settles:** ADR-007 decided *what a profile is* (a composed **set** with **floors**, built-ins immutable, **fork-on-modify**). This specifies the mechanics DCM runs against the profile record (`bundle.schema.json`, `record_type: bundle`, the `profile` block): how a profile **resolves** for a request, how two profiles **compare**, how they **compose**, and how a tenant **onboards** onto one. UDLM carries the record and defines these operations; DCM (Policy) executes them.
+**What this settles:** ADR-007 decided *what a profile is* (a composed **set** with **floors**, built-ins immutable, **fork-on-modify**). This specifies the mechanics DCM runs against the profile record (`profile.schema.json`, `record_type: profile`, the `profile` block): how a profile **resolves** for a request, how two profiles **compare**, how they **compose**, and how a tenant **onboards** onto one. UDLM carries the record and defines these operations; DCM (Policy) executes them.
 
 ## 1. Resolution — which profile applies
 
@@ -45,4 +45,4 @@ Onboarding a tenant onto a profile is **all-or-nothing**. Creating the tenant (`
 
 The `profile` record, the containment operator, and the composition rule are **UDLM** — a peer must resolve and compare profiles identically or two systems disagree on what a `sovereign` deployment guarantees. The onboarding transaction, the resolution engine, and provisioning the mechanics are **DCM**.
 
-See ADR-007 (the decision), `bundle.schema.json` (the record), `policy-contract.md` (domain precedence + the policies a floor references), `docs/spec/governance/governance-matrix.md` (profile-bound defaults).
+See ADR-007 (the decision), `profile.schema.json` (the record), `policy-contract.md` (domain precedence + the policies a floor references), `docs/spec/governance/governance-matrix.md` (profile-bound defaults).

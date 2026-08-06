@@ -38,9 +38,9 @@ it governs.
   `Category.Type` (single-segment permitted for cross-cutting types, e.g. `Topology`) — and
   the instance schema accepts exactly the same name grammar as the type schema.
 - **Machine-validatable surface** — the model is only as solid as its schemas. Current: type
-  spec, realized-entity, provider-adopted-standards, bundle. **[D8] Committed program**, in
-  priority order: (1) Tenant + grouping — **DONE** (`registry/bundle.schema.json` / `Access.Grouping` + required
-  instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on the grouping/bundle record kind),
+  spec, realized-entity, provider-adopted-standards, profile. **[D8] Committed program**, in
+  priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Access.Grouping` + required
+  instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on `record_type`),
   (2) catalog item — **DONE** (`registry/catalog-item.schema.json`, dispatched on
   `record_type: catalog_item` + validate.py semantic checks; the application model — an
   application IS a Composite catalog item — and the DCM ADR-016 evidence;
@@ -115,7 +115,7 @@ it governs.
 - **[D3] Every instance carries `tenant_uuid` (schema-required).** TEN-001/003 become
   schema-enforceable, not prose. Existing stores migrate by minting their tenants and
   backfilling (the estate: one tenant per lab).
-- Tenants are groupings. **the grouping/bundle record kind has ONE vocabulary** — the universal-groups closed
+- Tenants are groupings. **the grouping vocabulary is ONE closed set** — the universal-groups closed
   set (tenant_boundary, resource_grouping, …, plus cross_tenant_authorization added to the
   table); resource-grouping's `dcm_default|custom` becomes `group_subclass`. One membership
   record shape (the universal-groups form: added_at/added_by/valid_from/membership_status).
@@ -184,7 +184,7 @@ One definition each; everything else defers here:
 
 A rule may claim **[enforced]** only if a running validator checks it. Current honest state:
 schema validation (type spec, realized-entity — incl. required `tenant_uuid` [D3] — provider
-matrices, grouping via `registry/bundle.schema.json` / `Access.Grouping` with per-class conditionals:
+matrices, grouping via `registry/profile.schema.json` / `Access.Grouping` with per-class conditionals:
 tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth
 grant fields, and Composite Service catalog items via `registry/catalog-item.schema.json` —
 incl. required `tenant_uuid` — plus validate.py semantic checks: component_id uniqueness,

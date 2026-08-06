@@ -5,7 +5,7 @@
                         or against  profile.schema.json                       (PROFILE records — activatable postures)
                         or against  catalog-item.schema.json                  (Composite Service catalog items)
 Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
-schema); legacy discriminators remain — a document with a top-level the grouping/bundle record kind is a
+schema); legacy discriminators remain — a document with `record_type: profile` is a profile;
 grouping; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
 groupings). Catalog items additionally get semantic checks JSON Schema cannot express
 (component_id uniqueness, sibling depends_on/binding resolution, cycle rejection,
@@ -527,8 +527,8 @@ def check_profile(doc):
       (a) every `contains[].ref` and `composes[]` entry parses as a URF reference;
       (b) an `off` entry on a security-relevant artifact carries a `reason` — a disabled
           security control is a deliberate, reviewable act, never a bare absence;
-      (c) NO WEAKENING ON COMPOSITION: a bundle may not downgrade to `advisory`/`off` an
-          entry a bundle it composes marks `required` (the immutable-ceiling discipline).
+      (c) NO WEAKENING ON COMPOSITION: a profile may not downgrade to `advisory`/`off` an
+          entry a profile it composes marks `required` (the immutable-ceiling discipline).
           Composed profiles are resolved from the instances directory by handle."""
     import importlib.util as _ilu, pathlib as _pl
     _spec = _ilu.spec_from_file_location("urf", _pl.Path(__file__).parent / "urf.py")

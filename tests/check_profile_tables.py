@@ -4,8 +4,9 @@
 The single-source guard (check_single_source.py) catches a duplicate rule-ID, but a duplicated
 *value table* — a `minimal | dev | standard | prod | fsi | sovereign` table of settings — has no ID,
 so it slips through. That is how the interaction-credential lifetime (A5) came to be defined twice and
-drift. ADR-015 (settings & config bundles) says a profile-governed setting is defined once, in its
-owning bundle; everywhere else references it.
+drift. ADR-015 says a profile-governed setting is defined once, in its owning doc's config
+block; everywhere else references it — and a profile record names it (registry/profile.schema.json
+contains[].settings), never restates the table.
 
 This check finds every **profile table** (a Markdown table row carrying >=3 profile names) and flags any
 that sits in a doc the profile-settings index (registry/profile-settings-index.md) does not name as a
