@@ -1,7 +1,7 @@
 # Built-in profile: PROD — hardened production posture.
 # policy_profile grouping (DCM ADR-007). Superset of standard: tighter timeouts, mandatory recovery,
 # blast-radius-aware change control, and dual approval for destructive operations.
-record_type: bundle
+record_type: profile
 uuid: 213eaf12-a0ff-4811-a98f-c0201096dee2
 handle: udlm/profile/prod
 conforms_to: udlm/0.1

@@ -2,7 +2,7 @@
 # policy_profile grouping (DCM ADR-007). Superset of prod: tamper-evident (merkle) audit,
 # attestation-gated providers, regulatory retention, governance-matrix on ALL lifecycle operations,
 # and the override-approval workflow. Full production architecture — implemented against dev in Sept.
-record_type: bundle
+record_type: profile
 uuid: 6c86370c-0b54-4417-bd60-6359c748d1e5
 handle: udlm/profile/fsi
 conforms_to: udlm/0.1

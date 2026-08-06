@@ -1,8 +1,8 @@
 # Built-in profile: DEVELOPMENT / EVALUATION — the September implementation target.
-# A bundle (registry/bundle.schema.json; DCM ADR-007 — a profile is a composed
+# A profile record (registry/profile.schema.json; DCM ADR-007 — a profile is a composed
 # SET with a floor, NOT a level). Relaxed floor for co-engineering/evaluation; the architecture and
 # wire contracts are identical to the production profiles — only the required floor differs.
-record_type: bundle
+record_type: profile
 uuid: cf28544a-6d7e-46d6-ae3f-ddb1c07a354e
 handle: udlm/profile/dev
 conforms_to: udlm/0.1

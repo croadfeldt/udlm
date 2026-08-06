@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udlm.dev/registry/udlm/0.1/bundle.schema.json",
-  "title": "UDLM Bundle",
-  "description": "A BUNDLE is one activatable unit: activating it turns on (or off) the capabilities, policies, settings, and mechanisms it names, so a deployment gets the posture appropriate to its use and environment. The record is an INERT, reusable definition — 'which bundle this deployment runs' is deployment state, not a field here. A bundle REFERENCES governed artifacts; it never defines them (content lives in its own artifact, named by URF — identifier-scheme §9). Profiles are bundles: `udlm/profile/dev` is a bundle whose contents are the governance artifacts that profile turns on — a profile is not a distinct record kind (filter, never subtype). ADR-015 (settings and configuration bundles) is the deciding record; ADR-007 supplies the floor semantics preserved in `contains[].state`.",
+  "$id": "https://udlm.dev/registry/udlm/0.1/profile.schema.json",
+  "title": "UDLM Profile",
+  "description": "A PROFILE (a DEPLOYMENT profile — the posture a deployment engages) is one activatable unit: activating it turns on (or off) the capabilities, policies, settings, and mechanisms it names, so a deployment gets the posture appropriate to its use and environment — 'engage the fsi profile'. The record is an INERT, reusable definition: which profile a deployment runs is deployment state, never a field here. A profile REFERENCES governed artifacts; it never defines them (content lives in its own artifact, named by URF — identifier-scheme §9). ADR-007 supplies the composed-set and floor semantics preserved in `contains[].state`; ADR-015 (settings and configuration bundles) is the deciding record — its 'bundle' is this profile record, one term for one concept.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,7 +16,7 @@
   ],
   "properties": {
     "record_type": {
-      "const": "bundle"
+      "const": "profile"
     },
     "uuid": {
       "type": "string",
@@ -25,7 +25,7 @@
     },
     "handle": {
       "type": "string",
-      "description": "Human-readable stable name, e.g. udlm/profile/dev."
+      "description": "Human-readable stable name, e.g. udlm/profile/dev. Organization-authored profiles take their own namespace (acme/profile/regulated-eu) — never udlm/."
     },
     "conforms_to": {
       "type": "string",
@@ -65,11 +65,11 @@
     "tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Owning tenant for an organization-authored bundle; absent for platform/built-in bundles."
+      "description": "Owning tenant for an organization-authored profile; absent for platform/built-in profiles."
     },
     "composes": {
       "type": "array",
-      "description": "Other bundles this one contains, by URF reference. Activation is transitive: activating this bundle activates everything the composed bundles turn on. A composing bundle MUST NOT weaken a composed bundle's `required` entry to `advisory` or `off` — refused at validation (the immutable-ceiling discipline; most-restrictive-wins for security-relevant entries).",
+      "description": "Other profiles this one contains, by URF reference. Activation is transitive: activating this bundle activates everything the composed profiles turn on. A composing profile MUST NOT weaken a composed profile's `required` entry to `advisory` or `off` — refused at validation (the immutable-ceiling discipline; most-restrictive-wins for security-relevant entries).",
       "items": {
         "type": "string",
         "format": "udlm-ref-url"
@@ -77,7 +77,7 @@
     },
     "contains": {
       "type": "array",
-      "description": "The flat list of what this bundle turns on or off — one entry per governed artifact, any kind (policy, capability, mechanism, layer, vocabulary). The entry's kind is whatever its reference resolves to; the bundle does not classify it. AN UNLISTED ARTIFACT IS AVAILABLE BUT NOT MANDATED — the ADR-007 floor semantic: a floor is a minimum, never a filter, so omission never means disabled. `off` is the explicit, auditable way to disable.",
+      "description": "The flat list of what this profile turns on or off — one entry per governed artifact, any kind (policy, capability, mechanism, layer, vocabulary). The entry's kind is whatever its reference resolves to; the profile does not classify it. AN UNLISTED ARTIFACT IS AVAILABLE BUT NOT MANDATED — the ADR-007 floor semantic: a floor is a minimum, never a filter, so omission never means disabled. `off` is the explicit, auditable way to disable.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -112,12 +112,12 @@
     },
     "settings": {
       "type": "object",
-      "description": "Bundle-level configuration values that have no artifact to reference. Values only — a setting whose home is an artifact belongs in that entry's `settings`."
+      "description": "Profile-level configuration values that have no artifact to reference. Values only — a setting whose home is an artifact belongs in that entry's `settings`."
     },
     "activation": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Properties OF THE DEFINITION — not deployment state. Which bundle a deployment currently runs is recorded by the deployment, never here.",
+      "description": "Properties OF THE DEFINITION — not deployment state. Which profile a deployment currently runs is recorded by the deployment, never here.",
       "properties": {
         "is_builtin": {
           "type": "boolean",
@@ -125,7 +125,7 @@
         },
         "default": {
           "type": "boolean",
-          "description": "The out-of-box choice when a deployment selects no bundle."
+          "description": "The out-of-box choice when a deployment selects no profile."
         },
         "approved": {
           "type": "boolean",
@@ -140,7 +140,7 @@
   },
   "examples": [
     {
-      "record_type": "bundle",
+      "record_type": "profile",
       "uuid": "f9985d7f-c298-408d-a9da-6da0dd820570",
       "handle": "udlm/profile/homelab",
       "conforms_to": "udlm/0.1",
