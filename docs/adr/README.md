@@ -13,6 +13,14 @@ Prose ADRs are short, reviewable records of the **why**. Each is a
 §4.5); UDLM **adopts the ADR/MADR format by reference**, it does not coin its own. DCM keeps its
 own ADRs in `architecture/adr/` (the control-plane side); UDLM ADRs here cross-reference them.
 
+## Where decisions live
+
+- **`docs/adr/`** (this directory) — **architecture** decisions: a peer implementing UDLM must
+  honor them, and the ratification pass (#217) judges them.
+- **[`../dr/`](../dr/)** — **project/process** decisions: how *we* build (conventions adopted,
+  where prose lives). Same prose shape, different subject.
+- **The register below** indexes both, plus row-only rulings whose content lives at its home.
+
 ## How these ADRs are written (the authoring standard)
 
 An ADR is **explanation** (Diátaxis) — it justifies one decision. It is not reference (the schema)
@@ -55,20 +63,20 @@ ADR-014 and DCM ADR-014. Always qualify a control-plane reference as `DCM ADR-0X
 DCM repo `architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.
 
 **Instance-backed decision records (`ADR-<FAMILY>-NNN`).** A third namespace: decisions recorded as
-machine-validated `DecisionRecord` JSON in [`registry/decisions/`](../../registry/decisions), not as files
-here. A reference like `ADR-PROV-004` resolves there. Current records:
+prose here (this directory) and, for project/process decisions, in [`../dr/`](../dr/), not as machine records
+here. A reference like `ADR-038` resolves there. Current records:
 
 | Handle | Decision | State |
 |---|---|---|
-| [ADR-PROV-001](../../registry/decisions/provider-dispatch-role.json) | Data-role classification — a provider receives execution data only; the dispatch payload is filtered by role | PROPOSED |
-| [ADR-PROV-002](../../registry/decisions/provider-capabilities-categories.json) | Provider capabilities + capability categories — one unified declaration interface | PROPOSED |
-| [ADR-PROV-003](../../registry/decisions/provider-capability-admission.json) | Capability admission — platform-admin disposition over a provider's *declared* capabilities (default-deny) | PROPOSED |
-| [ADR-PROV-004](../../registry/decisions/resource-type-extension.json) | Resource-type extension model (`provider_extensions`) — additive, no-override, portability-degrading | **DEPRECATED** — superseded by ADR-038; interim carrier retiring per #202 |
-| [ADR-RBAC-001](../../registry/decisions/dcm-rbac-function-matrix.json) | DCM RBAC — default (no-IdP) admin groups/accounts/roles + governed change | PROPOSED |
-| [ADR-COST-001](../../registry/decisions/cost-metering-placement.json) | Metering/billing is *referenced* by UDLM, not modeled in it — cost decisions are admin policy | PROPOSED |
-| [ADR-COST-002](../../registry/decisions/cost-metering-linkage.json) | Cost/metering linkage hooks — a reciprocal contract; the engine computes, never decides | PROPOSED |
-| [ADR-AEP-001](../../registry/decisions/aep-alignment.json) | Adopt AEP — RFC 9457 error model + resource-oriented design + the Spectral linter | PROPOSED |
-| [ADR-UDLM-DCM-001](../../registry/decisions/udlm-dcm-boundary.json) | UDLM = data model, DCM = implementation — runtime-architecture prose belongs in DCM (the instance record behind [ADR-008](ADR-008-udlm-dcm-boundary.md), which is authoritative) | PROPOSED |
+| [ADR-PROV-001](../../docs/adr/ADR-PROV-001-data-role-classification.md) | Data-role classification — a provider receives execution data only; the dispatch payload is filtered by role | PROPOSED |
+| [ADR-PROV-002](../../docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md) | Provider capabilities + capability categories — one unified declaration interface | PROPOSED |
+| [ADR-PROV-003](../../docs/adr/ADR-PROV-003-provider-capability-admission.md) | Capability admission — platform-admin disposition over a provider's *declared* capabilities (default-deny) | PROPOSED |
+| [ADR-038](../../docs/adr/ADR-038-scoped-resource-type-classes.md) | Resource-type extension model (`provider_extensions`) — additive, no-override, portability-degrading | **DEPRECATED** — superseded by ADR-038; interim carrier retiring per #202 |
+| [the RBAC bridge (`Access.Grouping` subject_bindings + the function-capability matrix)](../../registry/function-capability-matrix.schema.json) | DCM RBAC — default (no-IdP) admin groups/accounts/roles + governed change | PROPOSED |
+| [ADR-COST-001](../../docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md) | Metering/billing is *referenced* by UDLM, not modeled in it — cost decisions are admin policy | PROPOSED |
+| [ADR-COST-002](../../docs/adr/ADR-COST-002-cost-metering-linkage-hooks.md) | Cost/metering linkage hooks — a reciprocal contract; the engine computes, never decides | PROPOSED |
+| [DR-AEP-001](../../docs/dr/DR-AEP-001-adopt-aep-conventions.md) | Adopt AEP — RFC 9457 error model + resource-oriented design + the Spectral linter | PROPOSED |
+| [DR-UDLM-DCM-001](../../docs/dr/DR-UDLM-DCM-001-runtime-prose-lives-in-dcm.md) | UDLM = data model, DCM = implementation — runtime-architecture prose belongs in DCM (the instance record behind [ADR-008](ADR-008-udlm-dcm-boundary.md), which is authoritative) | PROPOSED |
 
 A `PROPOSED` record binds nothing (ADR-031); rules citing one carry the proposal, not a ratified mandate.
 
@@ -142,5 +150,10 @@ fully scoped. Foundational across UDLM, DCM, and DAV (`SPEC-DESIGN-REQUIREMENTS`
 | [060](ADR-060-findings-are-sealed-interpretations.md) | Findings — one shape for every detected condition (drift, tamper, staleness, cadence-miss): a **sealed ledger interpretation** with open-once/close-by-citing-resolution lifecycle, never a record field; drift = divergence outside an active convergence (ADR-052 consulted first), detected event-driven, severity + field relevance by policy; current status always derived on read; the accept mechanism deliberately open (delegated to DCM OBL-003). Consumes ADR-059; ratifies separately | Proposed |
 | 064 | **Profile** is the one term and the one record: activating a profile turns on (or off) the capabilities, policies, settings, and mechanisms it names, giving a deployment the posture for its use and environment. Contents are a flat list of URF references with a state (`required` \| `advisory` \| `off`; unlisted = available-not-mandated, preserving ADR-007's floor semantic); composition is transitive and may never weaken a composed `required`. The record is inert — activation is deployment state. No separate "bundle" kind: one concept, one term (ADR-015's bundle primitive lands here, under the operational name) | Ruled — row-only; content homes: `registry/profile.schema.json` + `docs/authoring/profile.md` |
 | 063 | Groups = the native grouping ANCHOR, not a container — `Access.Grouping`: opaque RBAC subject-bindings (determination stays external, ADR-008) + membership DERIVED from a stored URF criterion (never a member list, DRV-001) + unit obligations (isolation). A grouping earns a record iff referenced by identity or carrying bindings/obligations | Ruled — row-only; content homes: `registry/classes/access/grouping.yaml` + identifier-scheme §9; grouping surface = removal candidate (URF PR series) |
+| [ADR-PROV-001](ADR-PROV-001-data-role-classification.md) | Data-role classification — the dispatch payload IS the `role: execution` slice; non-execution roles are control-plane only | Proposed |
+| [ADR-PROV-002](ADR-PROV-002-provider-capabilities-and-categories.md) | Provider capabilities as (verb × domain) with a governed taxonomy; "provider type" retired as a contract concept | Proposed |
+| [ADR-PROV-003](ADR-PROV-003-provider-capability-admission.md) | Capability admission — default-deny; `effective_capabilities` = declared ∩ admitted, an intersecting ceiling | Proposed |
+| [ADR-COST-001](ADR-COST-001-metering-placement-reference-dont-model.md) | Metering & billing is referenced, never modeled — cost has its own lifecycle; calculation is a provider | Proposed |
+| [ADR-COST-002](ADR-COST-002-cost-metering-linkage-hooks.md) | Cost linkage hooks — `spec.metering.dimensions[]` + `priced_by`; the engine computes, it never decides | Proposed |
 | [062](ADR-062-repository-layout.md) | Prose lives under `docs/`; the normative tier is the path prefix `docs/spec/` (ratification = `docs/spec/` + `registry/`); single-file directories dissolve; machine surfaces and corpora (`registry/`, `use-cases/`, `tests/`, `scripts/`) stay out of docs. Top level = five directories | Proposed |
 | [061](ADR-061-class-directory-hierarchy.md) | The classes directory mirrors the class hierarchy — `registry/classes/<family>/<segments-as-path>.yaml` (index-file template: a base — childless included — is a directory holding `_base.yaml`; types/providers are leaf files until they gain children; no tier/version dirs). The path RESTATES record facts, so it is admitted only as a **verified projection**: `CLS-PATH-001` gates path == family + segment chain and parent == directory ancestry; records stay the sole source, paths are navigation | Proposed |

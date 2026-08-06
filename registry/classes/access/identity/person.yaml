@@ -1,16 +1,16 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Person/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Person/0.4.2
 conforms_to: udlm/0.1
 uuid: 679b14ef-f169-441e-968d-dacafffe1966
 record_type: class
 class: type
 resource_type: Identity.Person
 parent: Identity
-version: 0.4.1
+version: 0.4.2
 family: Access
 status: active
 metadata:
   display_name: Person
-  description: A human identity/account — an ACTOR that DCM authenticates and authorizes (ADR-RBAC-001).
+  description: A human identity/account — an ACTOR that DCM authenticates and authorizes (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix).
     Fills the named-but-unbuilt Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity).
     Holds NO secret material — credentials are referenced (Security.CredentialRef). Backs the built-in
     auth provider's local users and, when federated, references the external IdP subject (PIP). Its actor_type
@@ -112,7 +112,7 @@ relationships:
   target: Identity.Group
   cardinality: 0..n
   description: Member of an access grouping (access_grouping) or Identity.Group; membership drives role
-    binding (ADR-RBAC-001).
+    binding (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix).
 - edge_type: references
   target: Security.CredentialRef
   cardinality: 0..n

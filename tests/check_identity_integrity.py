@@ -18,6 +18,8 @@ groups — are mutable). Rule matrix, each rule with an in-memory negative in `-
        record: new uuid + `supersedes` naming the predecessor; reusing the file as carrier
        is legal exactly when it does both)
   R4b  immutable record deleted                                -> FAIL (records never vanish)
+       ...unless DECLARED in registry/renames.yaml `retired:` (a retirement is stated,
+       never silent — the entry names what supersedes it)
   R5   nested provider.uuid / capabilities[].capability_uuid changed -> FAIL (frozen anchors
        accreditations bind to; the provider definition's version must bump instead)
   R6   renamed files are diffed against their base-ref path via registry/renames.yaml (kept
@@ -208,6 +210,20 @@ def pair_documents(old_docs, new_docs):
     return pairs, unmatched_old, unmatched_new
 
 
+def _retired_paths():
+    """Paths declared retired in registry/renames.yaml `retired:` — a removal that is STATED,
+    with the entry naming what supersedes it. Silent deletion still fails R4b."""
+    p = os.path.join(ROOT, "registry", "renames.yaml")
+    if not os.path.exists(p):
+        return set()
+    try:
+        import yaml
+        doc = yaml.safe_load(open(p)) or {}
+    except Exception:
+        return set()
+    return set((doc.get("retired") or {}).keys())
+
+
 def check_file(rel, old_docs, new_docs, fails, warns):
     pairs, gone, _new = pair_documents(old_docs, new_docs)
     for od, nd in pairs:
@@ -296,7 +312,7 @@ def main():
     r = subprocess.run(["git", "-C", ROOT, "ls-tree", "-r", "--name-only", BASE, "registry/"],
                        capture_output=True, text=True)
     if r.returncode == 0:
-        renamed_old = set(renamed.values())
+        renamed_old = set(renamed.values()) | _retired_paths()
         for rel in r.stdout.splitlines():
             if not rel.endswith((".json", ".yaml")) or rel in current_files or rel in renamed_old:
                 continue
