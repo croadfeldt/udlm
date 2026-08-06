@@ -401,46 +401,65 @@ def _find_data_references(obj, path=""):
 
 
 def check_data_references(doc):
-    """A data reference — {ref_uuid, ref_name?, reference_data_type?} (UDLM ADR-012; k8s ObjectReference
-    shape, ref_uuid AUTHORITATIVE / ref_name ADVISORY) — MUST resolve to an ACTIVE reference_data layer
-    of the declared reference_data_type. Enforced deterministically (minimal-custom-surface findings
-    #1/#2): a dangling ref_uuid, a non-active or non-reference_data target, a reference_data_type
-    mismatch, or a wrong advisory ref_name is a FAIL — the advisory name must stay honest even though
-    resolution uses only the uuid."""
-    refs = _find_data_references(doc)
-    if not refs:
-        return []
-    index = _reference_data_index()
-    errors = []
-    for loc, ref in refs:
-        extra = set(ref) - {"ref_uuid", "ref_name", "ref_version", "reference_data_type"}
-        if extra:
-            errors.append(f"{loc}: data reference has unexpected key(s) {sorted(extra)} — allowed: ref_uuid, ref_name, ref_version, reference_data_type")
-        ru = ref.get("ref_uuid")
-        if not ru or not _UUID_V4_RE.match(ru):
-            errors.append(f"{loc}: data reference ref_uuid {ru!r} is not a canonical RFC 9562 v4 uuid")
-            continue
-        target = index.get(ru)
-        if target is None:
-            errors.append(f"{loc}: data reference ref_uuid {ru} does not resolve to any reference_data layer (dangling reference)")
-            continue
-        if target["state"] == "retired":
-            errors.append(f"{loc}: data reference resolves to reference_data layer {ru} but it is RETIRED (withdrawn) — retired data must not be referenced")
-        # NOTE: a deprecated/superseded target is NOT a failure — layer versions are IMMUTABLE, so an
-        # existing reference to an older version stays valid. That a newer version exists is surfaced by
-        # impact_report(), not failed here.
-        want = ref.get("reference_data_type")
-        if want and target["reference_data_type"] and want != target["reference_data_type"]:
-            errors.append(f"{loc}: data reference declares reference_data_type {want!r} but layer {ru} is {target['reference_data_type']!r}")
-        name = ref.get("ref_name")
-        if name and name not in (target["handle"], target["name"]):
-            errors.append(f"{loc}: data reference ref_name {name!r} does not match the resolved layer "
-                          f"(handle {target['handle']!r}, name {target['name']!r}) — advisory name must stay honest; resolution uses ref_uuid")
-        rv = ref.get("ref_version")
-        if rv and target["version"] and rv != target["version"]:
-            errors.append(f"{loc}: data reference ref_version {rv!r} does not match the resolved layer version {target['version']!r} "
-                          f"— advisory version must stay honest; resolution uses ref_uuid (the immutable version)")
+    """A data reference is a URF string — `uuid/<v4>[@version][?reference_data_type==<kind>]`
+    (ADR-012 + identifier-scheme §9). It MUST parse, and MUST resolve to an ACTIVE reference_data
+    layer of the declared kind. Enforced deterministically: a malformed URF, a dangling uuid, a
+    non-active or non-reference_data target, or a reference_data_type mismatch is a FAIL. The
+    advisory-name drift check is GONE with the advisory name — the URL carries identity, and a
+    name that duplicated the resolved handle was a stored derivable (DRV-001)."""
+    import importlib.util as _ilu, pathlib as _pl, re as _re
+    _spec = _ilu.spec_from_file_location("urf", _pl.Path(__file__).parent / "urf.py")
+    _urf = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_urf)
+    index, errors = _reference_data_index(), []
+
+    def walk(node, path):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                walk(v, f"{path}.{k}" if path else k)
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                walk(v, f"{path}[{i}]")
+        elif isinstance(node, str) and node.startswith("uuid/") and "reference_data_type==" in node:
+            loc = f"{doc.get('handle') or doc.get('uuid', '?')} at {path}"
+            try:
+                u = _urf.parse(node)
+            except _urf.URFError as e:
+                errors.append(f"{loc}: data reference is not a valid URF — {e}")
+                return
+            ru = u.path[1] if len(u.path) > 1 else None
+            target = index.get(ru)
+            if not target:
+                errors.append(f"{loc}: data reference {ru} does not resolve to any reference_data "
+                              f"layer (dangling reference)")
+                return
+            if target.get("state") != "active":
+                errors.append(f"{loc}: data reference {ru} resolves to a "
+                              f"{target.get('state')!r} layer — must be active")
+            want = _re.search(r"reference_data_type==([A-Za-z0-9_.*-]+)", node)
+            if want and target.get("reference_data_type") != want.group(1):
+                errors.append(f"{loc}: reference_data_type {want.group(1)!r} != resolved layer's "
+                              f"{target.get('reference_data_type')!r}")
+            if u.pin and target.get("version") and u.pin != target["version"]:
+                errors.append(f"{loc}: pinned @{u.pin} != resolved layer version "
+                              f"{target['version']} — a pin names an immutable revision")
+
+    walk(doc.get("fields") or doc.get("states") or {}, "")
     return errors
+
+def _retired_identities():
+    """Identities the maintainer deliberately removed, declared in `registry/renames.yaml` under
+    `retired:` as `<path>#<uuid>` (ADR-051: a removal is declared, never silent). A `supersedes` may
+    name one — the predecessor is documented, just no longer carried in-tree — so lineage treats it as
+    resolved-and-gone rather than dangling. Type/version comparisons are skipped: there is nothing left
+    to compare against, and the retirement line states what replaced it."""
+    out = set()
+    path = ROOT / "renames.yaml"
+    if not path.exists() or yaml is None:
+        return out
+    for key in (yaml.safe_load(path.read_text()) or {}).get("retired") or {}:
+        if "#" in str(key):
+            out.add(str(key).rsplit("#", 1)[1])
+    return out
 
 
 def check_layer_lineage(doc):
@@ -459,6 +478,8 @@ def check_layer_lineage(doc):
             errors.append(f"supersedes: {sid} points at itself"); continue
         prior = index.get(sid)
         if prior is None:
+            if sid in _retired_identities():
+                continue                          # predecessor removed by declared retirement, not missing
             errors.append(f"supersedes: {sid} does not resolve to a reference_data layer (dangling lineage link)"); continue
         if self_type and prior["reference_data_type"] and self_type != prior["reference_data_type"]:
             errors.append(f"supersedes: {sid} is reference_data_type {prior['reference_data_type']!r}, but this layer is {self_type!r} — lineage stays within one type")

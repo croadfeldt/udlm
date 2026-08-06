@@ -1,26 +1,30 @@
 {
   "attestation_subject": "model-validation",
-  "registry_ref": "a9418b8d070c944a5f86cf471c3a95b9e1d16845",
+  "registry_ref": "6283cbddedc963cb2f454488c55796ab8ab164f1",
   "scoreboard": {
     "scoreboard": "udlm-model-health/1",
     "totals": {
-      "types": 50,
+      "types": 51,
       "by_family": {
-        "Access": 4,
+        "Access": 5,
         "Knowledge": 5,
         "Process": 2,
         "Resource": 39
       }
     },
     "discrimination": {
-      "mutations_attempted": 4275,
-      "mutations_rejected": 4275,
+      "mutations_attempted": 4268,
+      "mutations_rejected": 4268,
       "density": 1.0,
       "findings": 0,
       "per_type": {
+        "Access.Grouping": {
+          "attempted": 57,
+          "rejected": 57
+        },
         "Access.IdentityEscrow": {
-          "attempted": 120,
-          "rejected": 120
+          "attempted": 130,
+          "rejected": 130
         },
         "Automation.OSPatch": {
           "attempted": 122,
@@ -31,20 +35,20 @@
           "rejected": 38
         },
         "Compute.BareMetalHost": {
-          "attempted": 209,
-          "rejected": 209
+          "attempted": 204,
+          "rejected": 204
         },
         "Compute.Cluster": {
-          "attempted": 208,
-          "rejected": 208
+          "attempted": 203,
+          "rejected": 203
         },
         "Compute.Container": {
-          "attempted": 344,
-          "rejected": 344
+          "attempted": 334,
+          "rejected": 334
         },
         "Compute.VM": {
-          "attempted": 217,
-          "rejected": 217
+          "attempted": 227,
+          "rejected": 227
         },
         "Data.Database": {
           "attempted": 70,
@@ -71,8 +75,8 @@
           "rejected": 74
         },
         "Hardware.NetworkInterface": {
-          "attempted": 151,
-          "rejected": 151
+          "attempted": 156,
+          "rejected": 156
         },
         "Hardware.Processor": {
           "attempted": 85,
@@ -83,20 +87,20 @@
           "rejected": 90
         },
         "Identity.Group": {
-          "attempted": 37,
-          "rejected": 37
+          "attempted": 42,
+          "rejected": 42
         },
         "Identity.Person": {
-          "attempted": 46,
-          "rejected": 46
+          "attempted": 51,
+          "rejected": 51
         },
         "Identity.ServiceAccount": {
-          "attempted": 34,
-          "rejected": 34
+          "attempted": 44,
+          "rejected": 44
         },
         "Job": {
-          "attempted": 157,
-          "rejected": 157
+          "attempted": 85,
+          "rejected": 85
         },
         "Network.AddressService": {
           "attempted": 32,
@@ -115,8 +119,8 @@
           "rejected": 142
         },
         "Network.Gateway": {
-          "attempted": 130,
-          "rejected": 130
+          "attempted": 109,
+          "rejected": 109
         },
         "Network.IPAddress": {
           "attempted": 29,
@@ -127,8 +131,8 @@
           "rejected": 77
         },
         "Network.Switch": {
-          "attempted": 79,
-          "rejected": 79
+          "attempted": 84,
+          "rejected": 84
         },
         "Network.VLAN": {
           "attempted": 32,
@@ -147,32 +151,32 @@
           "rejected": 22
         },
         "Platform.Namespace": {
-          "attempted": 35,
-          "rejected": 35
+          "attempted": 40,
+          "rejected": 40
         },
         "Platform.NodePool": {
-          "attempted": 105,
-          "rejected": 105
+          "attempted": 110,
+          "rejected": 110
         },
         "Platform.ResourceQuota": {
-          "attempted": 43,
-          "rejected": 43
+          "attempted": 48,
+          "rejected": 48
         },
         "Platform.StorageClass": {
           "attempted": 88,
           "rejected": 88
         },
         "Security.CredentialRef": {
-          "attempted": 65,
-          "rejected": 65
+          "attempted": 70,
+          "rejected": 70
         },
         "Security.DirectoryService": {
           "attempted": 56,
           "rejected": 56
         },
         "Software.Service": {
-          "attempted": 121,
-          "rejected": 121
+          "attempted": 90,
+          "rejected": 90
         },
         "SoftwareImage": {
           "attempted": 45,
@@ -191,8 +195,8 @@
           "rejected": 44
         },
         "Storage.FileShare": {
-          "attempted": 115,
-          "rejected": 115
+          "attempted": 120,
+          "rejected": 120
         },
         "Storage.Layout": {
           "attempted": 89,
@@ -203,8 +207,8 @@
           "rejected": 122
         },
         "Storage.Volume": {
-          "attempted": 48,
-          "rejected": 48
+          "attempted": 53,
+          "rejected": 53
         },
         "TaxonomyTerm": {
           "attempted": 56,
@@ -221,11 +225,12 @@
       }
     },
     "strictness": {
-      "strict_specs": 50,
-      "total": 50
+      "strict_specs": 51,
+      "total": 51
     },
     "outputs": {
       "per_type": {
+        "Access.Grouping": 0,
         "Access.IdentityEscrow": 4,
         "Automation.OSPatch": 3,
         "Capability": 1,
@@ -278,6 +283,7 @@
         "Vulnerability": 0
       },
       "zero_output_types": [
+        "Access.Grouping",
         "Hardware.GraphicsProcessor",
         "Hardware.Processor",
         "SoftwareImage",
@@ -312,14 +318,15 @@
       ]
     },
     "context": {
-      "with_context": 50,
-      "total": 50,
+      "with_context": 51,
+      "total": 51,
       "missing": []
     },
     "relationships": {
       "with_relationships": 44,
-      "total": 50,
+      "total": 51,
       "missing": [
+        "Access.Grouping",
         "Automation.OSPatch",
         "Facility.PowerFeed",
         "Observability.LogShipper",
@@ -368,6 +375,7 @@
         "Vulnerability"
       ],
       "uncovered": [
+        "Access.Grouping",
         "Facility.Location",
         "Facility.PowerFeed",
         "Hardware.BMC",
@@ -411,6 +419,7 @@
         ]
       },
       "named_by_none": [
+        "Access.Grouping",
         "Access.IdentityEscrow",
         "Automation.OSPatch",
         "Capability",
@@ -457,7 +466,7 @@
         "Topology",
         "Vulnerability"
       ],
-      "consumed_by_at_least_one": 50
+      "consumed_by_at_least_one": 51
     },
     "expressibility_coverage": {
       "value": null,

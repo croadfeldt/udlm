@@ -98,10 +98,11 @@
   }
  },
  "layer:intermediate/app-tier/network-binding": {
-  "current": "1.0.0",
+  "current": "2.0.0",
   "path": "registry/examples/example-layer-referencing.yaml",
   "versions": {
-   "1.0.0": "sha256:a4b4b8bd5e94e6d54d5a12d236dfa56742d7815e68595c5855f1a38ef68d45a1"
+   "1.0.0": "sha256:a4b4b8bd5e94e6d54d5a12d236dfa56742d7815e68595c5855f1a38ef68d45a1",
+   "2.0.0": "sha256:399ddc40938a1f909f32d7aa656e91ebac4eeb907085fb5f8b4ff7ea0bd95870"
   }
  },
  "layer:intermediate/dc-alpha/rack-a12": {
@@ -112,10 +113,11 @@
   }
  },
  "layer:intermediate/frontend/profile-binding": {
-  "current": "1.0.0",
+  "current": "2.0.0",
   "path": "registry/examples/example-layer-referencing-app-profile.yaml",
   "versions": {
-   "1.0.0": "sha256:6ab1a045486c3992cad9ebf0862269ad2c7073806416bbbc0ad465e34b5ed640"
+   "1.0.0": "sha256:6ab1a045486c3992cad9ebf0862269ad2c7073806416bbbc0ad465e34b5ed640",
+   "2.0.0": "sha256:d5213ede119a333456bd872e1e05bdb77676767a633a3fa669ff3acd3ce50ad3"
   }
  },
  "layer:org-eu-hardening": {
@@ -126,10 +128,11 @@
   }
  },
  "layer:platform/app-profiles/web-tier": {
-  "current": "1.0.0",
+  "current": "2.0.0",
   "path": "registry/examples/example-reference-data-app-profile.yaml",
   "versions": {
-   "1.0.0": "sha256:420c22b14761a9ad1c26ff4c08eb24512507d1a45e5a2026e84d9062d7c5a167"
+   "1.0.0": "sha256:420c22b14761a9ad1c26ff4c08eb24512507d1a45e5a2026e84d9062d7c5a167",
+   "2.0.0": "sha256:0fc512da44e75d97993a39b4e6791cc00ee4679657dae0c54a2a8f87aec57d30"
   }
  },
  "layer:platform/network-zones/dmz-restricted": {
@@ -541,11 +544,12 @@
   }
  },
  "type:Job": {
-  "current": "1.1.0",
+  "current": "1.2.0",
   "path": "registry/classes/process/job/_base.yaml",
   "versions": {
    "1.0.0": "sha256:df3916a76072426854257089815099bdf764d883d3c5838ff268b6ccbf88b804",
-   "1.1.0": "sha256:c66010ad6b8aed9edf8ce9d7155f426a878d9145c7bc5f3e325b3d1ce2352f3d"
+   "1.1.0": "sha256:c66010ad6b8aed9edf8ce9d7155f426a878d9145c7bc5f3e325b3d1ce2352f3d",
+   "1.2.0": "sha256:a83798908089ba8e234ae6549407531920bfe8ccc76dde4378c058032415582b"
   }
  },
  "type:Network": {

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.0
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.1.0
+version: 1.2.0
 family: Process
 status: active
 metadata:
@@ -39,16 +39,12 @@ elements:
       (ADR-012) pinning an immutable automation_definition reference-data layer version — the pin that
       lets each promotion stage run exactly the definition version it verified, and lets rehydration replay
       the intent together with its payload. Optional: a job discovered on a brownfield engine may not
-      yet cite its definition.'
-    oneOf:
-    - $ref: ../../common-elements.schema.json#/$defs/Reference
-    - allOf:
-      - $ref: ../../data-reference.schema.json#/$defs/data_reference
-      - required:
-        - reference_data_type
-        properties:
-          reference_data_type:
-            const: automation_definition
+      yet cite its definition. Either form of URF reference is legal: a resource reference (estate/<handle>)
+      to the entity carrying the definition, or a data reference (uuid/<v4>?reference_data_type==<kind>)
+      pinning an immutable reference-data revision — the URL says which, and check_data_references enforces
+      the kind on the data-reference form.'
+    type: string
+    format: udlm-ref-url
 - element: parameters
   scope: Job
   optional: true
@@ -68,15 +64,17 @@ elements:
   scope: Job
   optional: true
   state: canonical
-  description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme §9),
-    never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored; DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target
-    set i'
+  description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme
+    §9), never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored;
+    DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target set
+    i'
   schema:
     type: array
     items:
       $ref: ../../common-elements.schema.json#/$defs/Reference
-    description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme §9),
-      never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored; DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target
+    description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme
+      §9), never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored;
+      DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target
       set is engine-neutral and unchanged by an engine migration. Distinct from the informational affected_entities
       edge: targets is authored intent (what the job is FOR); affected_entities records what a run actually
       touched.'

@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4287,
-    "mutations_rejected": 4287,
+    "mutations_attempted": 4268,
+    "mutations_rejected": 4268,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -32,20 +32,20 @@
         "rejected": 38
       },
       "Compute.BareMetalHost": {
-        "attempted": 209,
-        "rejected": 209
+        "attempted": 204,
+        "rejected": 204
       },
       "Compute.Cluster": {
-        "attempted": 208,
-        "rejected": 208
+        "attempted": 203,
+        "rejected": 203
       },
       "Compute.Container": {
-        "attempted": 344,
-        "rejected": 344
+        "attempted": 334,
+        "rejected": 334
       },
       "Compute.VM": {
-        "attempted": 232,
-        "rejected": 232
+        "attempted": 227,
+        "rejected": 227
       },
       "Data.Database": {
         "attempted": 70,
@@ -96,8 +96,8 @@
         "rejected": 44
       },
       "Job": {
-        "attempted": 79,
-        "rejected": 79
+        "attempted": 85,
+        "rejected": 85
       },
       "Network.AddressService": {
         "attempted": 32,

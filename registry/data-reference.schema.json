@@ -1,43 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/data-reference.schema.json",
-  "title": "Data reference (object reference to a Reference Data Layer)",
-  "description": "The canonical in-field reference shape (UDLM ADR-012) — a field points at shared, governed data instead of inlining a copy. Modelled on the Kubernetes ObjectReference / ownerReference idiom: ref_uuid is AUTHORITATIVE (resolution uses only the uuid), ref_name is ADVISORY (human-readable, kept honest but never the resolution key). A data reference MUST resolve to an ACTIVE `layer` record with layer_type: reference_data whose reference_data_type equals the reference's declared reference_data_type (docs/spec/foundations/layering-and-versioning.md §3.7). Referential integrity is enforced by registry/tools/validate.py (check_data_references): a dangling ref_uuid, a type mismatch, or a wrong advisory ref_name is a hard failure — invalid edges resolve deterministically, never silently (minimal-custom-surface-and-graph-resilience findings #1/#2). Other schemas that allow a field to be a reference $ref this $defs/data_reference in a oneOf against the inline value.",
+  "title": "Data reference (URF pointer at a Reference Data Layer)",
+  "description": "The canonical in-field reference to shared, governed data (UDLM ADR-012) — a field points at a Reference Data Layer instead of inlining a copy. The shape is a URF reference string (identifier-scheme §9), not an object: `uuid/<v4>[@version][?reference_data_type==<kind>]`. It MUST resolve to an ACTIVE `layer` record with layer_type: reference_data whose reference_data_type equals the kind the reference declares (docs/spec/foundations/layering-and-versioning.md §3.7). Referential integrity is enforced by registry/tools/validate.py (check_data_references): a dangling uuid, a kind mismatch, or a pin naming a version other than the resolved one is a hard failure — invalid edges resolve deterministically, never silently. A schema that lets a field be either a reference or an inline value $refs this $defs/data_reference on one branch of a oneOf.",
   "type": "object",
   "$defs": {
     "data_reference": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["ref_uuid"],
-      "properties": {
-        "ref_uuid": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-          "description": "AUTHORITATIVE. RFC 9562 v4 uuid of the reference_data layer. Layers are IMMUTABLE RECORDS (the ADR-051 immutable-record family; ADR-012): a change is published as a NEW record — its own identity uuid, a higher version, `supersedes` naming the predecessor — never an edit, so this uuid pins an exact, reproducible revision by identity alone. Resolution uses only this. A uuid that resolves to nothing is a dangling reference (hard fail), never a silent rebind onto a same-named record."
-        },
-        "ref_name": {
-          "type": "string",
-          "description": "ADVISORY. The resolved layer's handle or name, carried for human readability. Validated to match the resolved target at authoring time (honesty gate) but never used to resolve."
-        },
-        "ref_version": {
-          "type": "string",
-          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-          "description": "ADVISORY. The semver of the pinned version, recorded for readability + drift detection. Validated to equal the resolved layer's version (honesty gate). Impact analysis reads it to report when a newer version of the same handle exists (the reference is pinned to a superseded version)."
-        },
-        "reference_data_type": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
-          "description": "The kind the reference expects (e.g. network_zone, os_image, container_image, location, topology_capability). Must equal the resolved layer's reference_data_type — the match axis that stops a field from binding data of the wrong kind."
-        },
-        "residency": {
-          "type": "string",
-          "description": "RESOLUTION PROVENANCE — NOT consumer-authored (a value supplied at authoring time is ignored). DCM records where the resolved target resides (ISO 3166 jurisdiction / sovereignty zone) at resolution, so a reference that resolves ACROSS a jurisdiction is visible and policy-gated by the sovereignty hard-gate (DCM ADR-024 §1)."
-        },
-        "resolving_authority": {
-          "type": "string",
-          "description": "RESOLUTION PROVENANCE — NOT consumer-authored. The identity/authority DCM used to resolve this reference (which registry/authority served the target), recorded so a resolution is auditable and a cross-authority resolve is attributable (DCM ADR-024 §1)."
-        }
-      }
+      "$comment": "",
+      "type": "string",
+      "format": "udlm-ref-url",
+      "description": "A pointer at IMMUTABLE reference-data (ADR-012), written as a URF reference (identifier-scheme §9): `uuid/<v4>[@version][?reference_data_type==<kind>]`. The uuid path is AUTHORITATIVE — resolution uses only it, and a reference_data layer is an immutable record, so a change is a NEW record with its own uuid linked by `supersedes` (never an in-place edit). The pin axis carries the version; the query term carries the expected kind, which the resolved layer must match. The former object (ref_uuid/ref_name/ref_version/reference_data_type/residency/resolving_authority) is REMOVED because the URL SUBSUMES every one of its parts: uuid and version are axes, the kind is a query term, and `resolving_authority` — ADR-038 §10's routing root, *who* resolves the reference — is the URL's authority axis (`//state.mn/uuid/<v4>`), which keeps that root distinct from `residency`, the attribute you resolve *to* (a field on the target record, filterable as `?residency==state.mn`). The advisory `ref_name` is simply dropped — it duplicated what resolution returns (DRV-001: the model does not store what it can derive), and its drift-check existed only to police that duplicate. Distinct from a resource Reference (common-elements §2.5), which points at a resource rather than reference-data.",
+      "examples": [
+        "uuid/b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50@1.0.0?reference_data_type==network_zone",
+        "uuid/a1b2c3d4-1111-4d20-8a40-0f1e2d3c4b51?reference_data_type==os_image"
+      ]
     }
   },
   "$ref": "#/$defs/data_reference"

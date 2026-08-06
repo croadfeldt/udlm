@@ -33,10 +33,9 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
    (`layer.schema.json` `required`): `record_type: layer`, a fresh v4 `uuid`, `conforms_to: udlm/0.1`,
    `name`, `version`, `tenant_uuid`, `layer_type: reference_data`, and `fields`.
 2. **Set `reference_data_type`** — **required when `layer_type` is `reference_data`** (the schema's `allOf`
-   enforces it). This is the *match axis*: **ADR-012 — a `data_reference` is `{ref_uuid (authoritative),
-   ref_name (advisory), reference_data_type}`, and it resolves only to an *active* reference-data layer of the
-   *same* `reference_data_type`; the type stops a field binding a `network_zone` where an `os_image` was
-   meant.** Use a stable snake_case token (`storage_tier`, `os_image`, `network_zone`).
+   enforces it). This is the *match axis*: **ADR-012 — a `data_reference` is a URF string,
+   `uuid/<v4>[@version]?reference_data_type==<kind>`, and it resolves only to an *active* reference-data layer of
+   the *same* kind; the type stops a field binding a `network_zone` where an `os_image` was meant.** Use a stable snake_case token (`storage_tier`, `os_image`, `network_zone`).
 3. **Put the governed content in `fields`** — a **named requirements bundle, not a bare enum value.** A
    storage tier is not the string `"performance"`; it is `{tier_code, min_iops, min_throughput_mbps,
    description}` — the shared SLA floor the name *means*. That bundle is exactly what makes the vocabulary
@@ -59,7 +58,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 | Ships with the vocabulary term | Why | Gate |
 |---|---|---|
 | Validates against `layer.schema.json` (required fields; `reference_data_type` present) | Valid by construction | `registry/tools/validate.py` |
-| Every `data_reference` to this vocabulary resolves — active target, matching type, honest `ref_name` | Referential integrity (ADR-012 `check_data_references`) | `registry/tools/validate.py` |
+| Every `data_reference` to this vocabulary resolves — active target, matching kind, pin naming the resolved version | Referential integrity (ADR-012 `check_data_references`) | `registry/tools/validate.py` |
 | Each `supersedes` uuid resolves to a same-type layer at a strictly lower version | Lineage integrity (`check_layer_lineage`) | `registry/tools/validate.py` |
 | Fresh `uuid`; a revision is a new record, never an in-place edit | Immutable-record family (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
 | Any normative rule the vocabulary doc introduces uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |

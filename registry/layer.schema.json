@@ -98,7 +98,7 @@
     "reference_data_type": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
-      "description": "REQUIRED when layer_type is reference_data (enforced below): the kind of shared dataset this layer governs — e.g. location, os_image, vm_size, network_zone, storage_class, gpu_profile, environment, topology_capability (layering-and-versioning §3.7). A data reference ({ref_uuid, ref_name, reference_data_type}; UDLM ADR-012) is only valid against a reference_data layer of the SAME reference_data_type — the type is the match axis the reference declares. Meaningless on non-reference_data layers."
+      "description": "REQUIRED when layer_type is reference_data (enforced below): the kind of shared dataset this layer governs — e.g. location, os_image, vm_size, network_zone, storage_class, gpu_profile, environment, topology_capability (layering-and-versioning §3.7). A data reference (a URF string `uuid/<v4>[@version][?reference_data_type==<kind>]`; UDLM ADR-012) is only valid against a reference_data layer of the SAME reference_data_type — the type is the match axis the reference declares. Meaningless on non-reference_data layers."
     },
     "covers": {
       "type": "string",
