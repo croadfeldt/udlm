@@ -2,7 +2,7 @@
 
 **A profile — a *deployment* profile — is one activatable unit**: its contents are the
 governance artifacts that posture turns on, and engaging it is a deployment act (`registry/profile.schema.json`; the six
-built-ins are `registry/instances/profile-*.yaml`). Authoring your own posture:
+built-ins are `registry/profiles/*.yaml`). Authoring your own posture:
 [`../authoring/profile.md`](../authoring/profile.md).
 
 **What this settles (orientation, non-normative).** One page defining each built-in profile on five criteria —
@@ -10,7 +10,7 @@ built-ins are `registry/instances/profile-*.yaml`). Authoring your own posture:
 plus its expected use cases and the characteristics that actually differ between profiles. The authorities this
 page defers to: **ADR-007** (what a profile *is*: a composed **set with a floor**, built-ins immutable,
 fork-on-modify, platform-scoped), the per-profile ADRs (**017–022**, the *why* of each floor), the shipped
-instances (`registry/instances/profile-*.yaml`, the floors themselves), and
+instances (`registry/profiles/*.yaml`, the floors themselves), and
 [`registry/profile-settings-index.md`](../../registry/profile-settings-index.md) (one home per profile-governed
 setting — **the** index for "what settings does a profile turn").
 

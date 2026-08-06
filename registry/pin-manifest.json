@@ -198,42 +198,42 @@
  },
  "profile:udlm/profile/dev": {
   "current": "1.1.0",
-  "path": "registry/instances/profile-dev.yaml",
+  "path": "registry/profiles/dev.yaml",
   "versions": {
    "1.1.0": "sha256:f08128f026caf528369229cbeed4c6281e852e29087177ae61abedfb9df84c65"
   }
  },
  "profile:udlm/profile/fsi": {
   "current": "1.1.0",
-  "path": "registry/instances/profile-fsi.yaml",
+  "path": "registry/profiles/fsi.yaml",
   "versions": {
    "1.1.0": "sha256:1f734f52c315a00be12e7fa579566e539bb26fc27cd832abde78c542c9394673"
   }
  },
  "profile:udlm/profile/homelab": {
   "current": "1.1.0",
-  "path": "registry/instances/profile-homelab.yaml",
+  "path": "registry/profiles/homelab.yaml",
   "versions": {
    "1.1.0": "sha256:0633f36e7c5b7d541889b7c5f1c55d573be8db8974e89f5bea395af44af4c14d"
   }
  },
  "profile:udlm/profile/prod": {
   "current": "1.1.0",
-  "path": "registry/instances/profile-prod.yaml",
+  "path": "registry/profiles/prod.yaml",
   "versions": {
    "1.1.0": "sha256:2d4d8f31beb4cfd981f240ce8548e5919596ee7e9b0947aada1051dd02a32fe0"
   }
  },
  "profile:udlm/profile/sovereign": {
   "current": "1.1.0",
-  "path": "registry/instances/profile-sovereign.yaml",
+  "path": "registry/profiles/sovereign.yaml",
   "versions": {
    "1.1.0": "sha256:a94f0169446793b15a363e611fa59c8a80439acc2eb9b0ce8e22fd237b05d3b3"
   }
  },
  "profile:udlm/profile/standard": {
   "current": "1.1.0",
-  "path": "registry/instances/profile-standard.yaml",
+  "path": "registry/profiles/standard.yaml",
   "versions": {
    "1.1.0": "sha256:11ffefd642bfbc32349b5b627b410e614cfebd388040ca8ef4ae9afbaae8699d"
   }
