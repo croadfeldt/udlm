@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Storage.Volume",
-          "version": "0.9.0",
+          "version": "0.10.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]
@@ -59,15 +59,7 @@
       },
       "storage_class": {
         "description": "Resource reference to a Platform.StorageClass (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
-        "oneOf": [
-          {
-            "type": "string",
-            "description": "Short form — the handle of an existing Platform.StorageClass."
-          },
-          {
-            "$ref": "../common-elements.schema.json#/$defs/Reference"
-          }
-        ]
+        "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "retain_on_release": {
         "type": "boolean",

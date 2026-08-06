@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.3.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b",
   "resource_type": "Access.IdentityEscrow",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Access.IdentityEscrow",
-          "version": "0.2.1",
+          "version": "0.3.0",
           "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b"
         }
       ]
@@ -63,15 +63,7 @@
             },
             "credential_ref": {
               "description": "Reference to the Security.CredentialRef under which the escrow store custodies this item's material. The escrow store is the issuer; only the reference and resolution facts are ever recorded — never the value (the CredentialRef discipline).",
-              "oneOf": [
-                {
-                  "type": "string",
-                  "description": "Short form — the handle of an existing Security.CredentialRef."
-                },
-                {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
-                }
-              ]
+              "$ref": "../common-elements.schema.json#/$defs/Reference"
             },
             "capture_on": {
               "type": "array",

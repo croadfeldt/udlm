@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a",
   "resource_type": "Platform.ResourceQuota",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Platform.ResourceQuota",
-          "version": "0.4.0",
+          "version": "0.5.0",
           "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a"
         }
       ]
@@ -35,15 +35,7 @@
     "properties": {
       "namespace_ref": {
         "description": "Resource reference to a Platform.Namespace (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
-        "oneOf": [
-          {
-            "type": "string",
-            "description": "Short form — the handle of an existing Platform.Namespace."
-          },
-          {
-            "$ref": "../common-elements.schema.json#/$defs/Reference"
-          }
-        ]
+        "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "hard": {
         "type": "object",

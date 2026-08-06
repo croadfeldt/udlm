@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.Gateway/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.Gateway/0.6.0
 conforms_to: udlm/0.1
 uuid: ceb29900-486a-4c51-ac66-d686d8030711
 record_type: class
 class: type
 resource_type: Network.Gateway
 parent: Network
-version: 0.5.0
+version: 0.6.0
 family: Resource
 status: active
 metadata:
@@ -56,10 +56,7 @@ elements:
           description: Reference to Network.VLAN — the VLAN this gateway segment serves. Common-elements
             Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable,
             never an opaque string.
-          oneOf:
-          - type: string
-            description: Short form — the handle of an existing Platform.StorageClass.
-          - $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../common-elements.schema.json#/$defs/Reference
 - element: ip_family
   scope: Network.Gateway
   optional: true
@@ -86,9 +83,7 @@ spec_examples:
     vlan_ref: lan-vlan
   - cidr: 198.51.100.0/24
     role: dmz
-    vlan_ref:
-      resource_type: Network.VLAN
-      target_handle: dmz-vlan
+    vlan_ref: estate/dmz-vlan?resource_type==Network.VLAN
   ip_family: ipv4
 outputs:
   external_address:

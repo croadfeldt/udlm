@@ -28,7 +28,7 @@ A named handle for 'a suite of things treated as a unit' — a tenant, a team's 
 - The governance matrix — obligations enforcement and binding-edit meta-governance
 - Access.IdentityEscrow — the Access-family sibling
 
-### Access.IdentityEscrow (0.2.1)
+### Access.IdentityEscrow (0.3.0)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
 
@@ -158,7 +158,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.2.0)
+### Compute.VM (1.3.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -302,7 +302,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 - Compute.VM — the guest a passthrough or partition is presented to.
 - Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.
 
-### Hardware.NetworkInterface (0.11.0)
+### Hardware.NetworkInterface (0.12.0)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -363,7 +363,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## Identity
 
-### Identity.Group (0.3.2)
+### Identity.Group (0.4.0)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -381,7 +381,7 @@ A named set of person and service-account identities, keyed by its required `han
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.4.2)
+### Identity.Person (0.5.0)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -401,7 +401,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.4.2)
+### Identity.ServiceAccount (0.5.0)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -422,7 +422,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Job
 
-### Job (1.0.0)
+### Job (1.1.0)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -518,7 +518,7 @@ One DNS zone — its required `zone_name`, e.g. example.com — with its authori
 - Security.DirectoryService — when a directory service serves the zone.
 - Network.AddressService — the operated DNS capability answering for the zone.
 
-### Network.Gateway (0.5.0)
+### Network.Gateway (0.6.0)
 
 **Purpose:** Models the network edge — routing, NAT, and firewalling between segments and to the outside — as a node the graph can reason about.
 
@@ -577,7 +577,7 @@ A range of addresses that individual address records are carved from: the requir
 - Network.VirtualNetwork — the segment the pool serves.
 - Network.DHCPScope — the service-side projection of the same subnet.
 
-### Network.Switch (0.5.0)
+### Network.Switch (0.6.0)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -682,7 +682,7 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.Namespace (0.4.0)
+### Platform.Namespace (0.5.0)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -701,7 +701,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 - Platform.ResourceQuota — hard limits scoped to this namespace.
 - Compute.Container / Software.Service — workloads placed into it.
 
-### Platform.NodePool (0.4.0)
+### Platform.NodePool (0.5.0)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -719,7 +719,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - Compute.Cluster — the cluster the pool belongs to.
 - Platform.Namespace — namespaces whose workloads schedule onto pools.
 
-### Platform.ResourceQuota (0.4.0)
+### Platform.ResourceQuota (0.5.0)
 
 **Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
 
@@ -759,7 +759,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## Security
 
-### Security.CredentialRef (0.4.1)
+### Security.CredentialRef (0.5.0)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -801,7 +801,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## Software
 
-### Software.Service (0.6.0)
+### Software.Service (0.7.0)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -905,7 +905,7 @@ The consumable unit of host-local storage — its required `dataset_kind` says w
 - Compute.BareMetalHost — the host the dataset is local to.
 - Storage.Dataset — the parent dataset, when nested.
 
-### Storage.FileShare (0.4.0)
+### Storage.FileShare (0.5.0)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -970,7 +970,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.9.0)
+### Storage.Volume (0.10.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 

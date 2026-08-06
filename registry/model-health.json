@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4332,
-    "mutations_rejected": 4332,
+    "mutations_attempted": 4287,
+    "mutations_rejected": 4287,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -20,8 +20,8 @@
         "rejected": 57
       },
       "Access.IdentityEscrow": {
-        "attempted": 120,
-        "rejected": 120
+        "attempted": 130,
+        "rejected": 130
       },
       "Automation.OSPatch": {
         "attempted": 122,
@@ -44,8 +44,8 @@
         "rejected": 344
       },
       "Compute.VM": {
-        "attempted": 217,
-        "rejected": 217
+        "attempted": 232,
+        "rejected": 232
       },
       "Data.Database": {
         "attempted": 70,
@@ -72,8 +72,8 @@
         "rejected": 74
       },
       "Hardware.NetworkInterface": {
-        "attempted": 151,
-        "rejected": 151
+        "attempted": 156,
+        "rejected": 156
       },
       "Hardware.Processor": {
         "attempted": 85,
@@ -84,20 +84,20 @@
         "rejected": 90
       },
       "Identity.Group": {
-        "attempted": 37,
-        "rejected": 37
+        "attempted": 42,
+        "rejected": 42
       },
       "Identity.Person": {
-        "attempted": 46,
-        "rejected": 46
+        "attempted": 51,
+        "rejected": 51
       },
       "Identity.ServiceAccount": {
-        "attempted": 34,
-        "rejected": 34
+        "attempted": 44,
+        "rejected": 44
       },
       "Job": {
-        "attempted": 157,
-        "rejected": 157
+        "attempted": 79,
+        "rejected": 79
       },
       "Network.AddressService": {
         "attempted": 32,
@@ -116,8 +116,8 @@
         "rejected": 142
       },
       "Network.Gateway": {
-        "attempted": 130,
-        "rejected": 130
+        "attempted": 109,
+        "rejected": 109
       },
       "Network.IPAddress": {
         "attempted": 29,
@@ -128,8 +128,8 @@
         "rejected": 77
       },
       "Network.Switch": {
-        "attempted": 79,
-        "rejected": 79
+        "attempted": 84,
+        "rejected": 84
       },
       "Network.VLAN": {
         "attempted": 32,
@@ -148,32 +148,32 @@
         "rejected": 22
       },
       "Platform.Namespace": {
-        "attempted": 35,
-        "rejected": 35
+        "attempted": 40,
+        "rejected": 40
       },
       "Platform.NodePool": {
-        "attempted": 105,
-        "rejected": 105
+        "attempted": 110,
+        "rejected": 110
       },
       "Platform.ResourceQuota": {
-        "attempted": 43,
-        "rejected": 43
+        "attempted": 48,
+        "rejected": 48
       },
       "Platform.StorageClass": {
         "attempted": 88,
         "rejected": 88
       },
       "Security.CredentialRef": {
-        "attempted": 65,
-        "rejected": 65
+        "attempted": 70,
+        "rejected": 70
       },
       "Security.DirectoryService": {
         "attempted": 56,
         "rejected": 56
       },
       "Software.Service": {
-        "attempted": 121,
-        "rejected": 121
+        "attempted": 90,
+        "rejected": 90
       },
       "SoftwareImage": {
         "attempted": 45,
@@ -192,8 +192,8 @@
         "rejected": 44
       },
       "Storage.FileShare": {
-        "attempted": 115,
-        "rejected": 115
+        "attempted": 120,
+        "rejected": 120
       },
       "Storage.Layout": {
         "attempted": 89,
@@ -204,8 +204,8 @@
         "rejected": 122
       },
       "Storage.Volume": {
-        "attempted": 48,
-        "rejected": 48
+        "attempted": 53,
+        "rejected": 53
       },
       "TaxonomyTerm": {
         "attempted": 56,

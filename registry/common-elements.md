@@ -63,16 +63,29 @@ portably, without UDLM prescribing a fixed resource math.
 - `address`: an IP string (an `outputs` value, per existing `network.ip-address`).
 
 ### 2.5 `Reference`
-A typed cross-entity pointer to another **resource** — `resource_type` + a **handle** (`target_handle`),
-which is the authoring key. DCM resolves the handle and pins `target_uuid` at reserve (ADR-025, adopting
-**AEP-124 resource association**); resolution tolerates a not-yet-existing target — the resource stays
-`Requested` until it resolves (claim-before-define). The uuid is the target's frozen **identity**
-(ADR-051); a consumer that needs revision exactness carries the optional pin pair `target_version` /
-`target_digest` (the `thing@version` / `thing@sha256:<hex>` grammar), and the optional authored
-`target_authority` (dotted, ADR-038 §10 form; absent = the local estate) lets boundary policy match the
-owning authority without dereferencing (ADR-041; standing-gap §4 closure). Distinct from a
-`data_reference` (ADR-012), which points at immutable reference-**data** by uuid. The only cross-type
-binding surface besides typed `outputs` (E2). Never a provider-native id.
+A typed cross-entity pointer to another **resource**, written as a **URF reference**
+(`docs/spec/contracts/identifier-scheme.md` §9): `[//authority/]path[@pin]`, resolving to exactly
+one target — more than one match refuses `ambiguous` rather than narrowing silently.
+
+Authored by handle (`cexample/orders-db` — ADR-025 adopting **AEP-124 resource association**),
+resolved to the uuid form (`uuid/<v4>`) at reserve; both ends are the same grammar, and resolution
+tolerates a not-yet-existing target — the resource stays `Requested` until it resolves
+(claim-before-define). The uuid is the target's frozen **identity** (ADR-051); a consumer needing
+revision exactness pins with `@version` or `@sha256:<hex>` — ADR-051's grammar, carried verbatim as
+the URL's pin axis. A federated target carries its authority (`//state.mn/estate/…`, ADR-038 §10),
+and a type constraint rides as a query term (`?resource_type==Compute.VM`).
+
+```yaml
+definition_ref: cexample/automation/nightly-backup-playbook      # authored by handle
+targets:
+  - cexample/orders-db?resource_type==Data.Database              # with a type constraint
+  - cexample/hosts/host-01@1.2.0                                   # version-pinned
+resolved_ref:  uuid/4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44@sha256:…   # after reserve
+```
+
+The former six-field object (`target_handle`/`target_uuid`/`resource_type`/`target_version`/
+`target_digest`/`target_authority`) is **removed** — every field became an axis of the one URL.
+Distinct from a `data_reference` (ADR-012), which points at immutable reference-data.
 
 ### 2.6 `Condition` (status)  *(adopt OSAC/K8s vocabulary)*
 ```json
