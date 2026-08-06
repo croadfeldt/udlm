@@ -11,8 +11,8 @@ The scenario:
 - **State sovereignty (Minnesota) for containers.**
 - **No sovereignty accreditation for Cluster Lifecycle** at all.
 
-The two accreditations are live, validated instances — `registry/instances/accreditation-region-us-ca.yaml`
-and `registry/instances/accreditation-state-mn.yaml`. The provider declaration is **not a repo
+The two accreditations are live, validated instances — `registry/examples/accreditation-region-us-ca.yaml`
+and `registry/examples/accreditation-state-mn.yaml`. The provider declaration is **not a repo
 artifact**: capabilities are declared at **DCM registration** (the classes a provider supports, or
 provider classes it injects — [provider-contract §2](../spec/contracts/provider-contract.md)), and the
 payload below is what crosses the wire, validating against

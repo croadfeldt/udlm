@@ -106,7 +106,7 @@ auth_provider_registration:
     concurrent_sessions: 3
 
   # Role mapping — external groups → implementation roles. `role` values are governed access-role
-  # TaxonomyTerms (ADR-RBAC-001; registry/instances/access-role-taxonomy.yaml) — the ONE role
+  # TaxonomyTerms (ADR-RBAC-001; registry/taxonomies/access-role.yaml) — the ONE role
   # vocabulary, not free strings. An external-group→role map is one way to ASSIGN a role; the
   # authoritative record is a role_assignment (function-capability-matrix.schema.json).
   role_mapping:

@@ -822,7 +822,7 @@ process_provider_capabilities:
 
 ## 9. Capability & Category Registry
 
-The Capability & Category Registry is the authoritative, governed list of the **capabilities and capability categories** (the provider-capability taxonomy — verb × domain; `registry/instances/provider-capability-taxonomy.yaml`) that a DCM deployment accepts registrations for. It follows the three-tier registry model (Core / Verified Community / Organization). It replaces the old "Provider Type Registry" — there are **no provider types**, only capabilities and the categories they form (ADR-PROV-002).
+The Capability & Category Registry is the authoritative, governed list of the **capabilities and capability categories** (the provider-capability taxonomy — verb × domain; `registry/taxonomies/provider-capability.yaml`) that a DCM deployment accepts registrations for. It follows the three-tier registry model (Core / Verified Community / Organization). It replaces the old "Provider Type Registry" — there are **no provider types**, only capabilities and the categories they form (ADR-PROV-002).
 
 ```yaml
 capability_registry_entry:

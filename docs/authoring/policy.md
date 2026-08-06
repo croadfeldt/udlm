@@ -32,7 +32,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
 
 ## 2. The steps, in order
 
-1. **Write the record** at `registry/instances/<your-policy>.yaml` (or a provider/profile record if it ships
+1. **Write the record** at `registry/examples/<your-policy>.yaml` (or a provider/profile record if it ships
    with one). Set the required fields (`policy.schema.json` `required`): `record_type: policy`, a fresh v4
    `uuid`, `conforms_to: udlm/0.1`, `name`, `version` (semver), `tenant_uuid` (the platform tenant for a
    system-domain policy), `policy_type`, `match`, `output`.
@@ -74,7 +74,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
 
 ## 4. A worked pointer
 
-Copy [`../../registry/instances/example-policy.yaml`](../../registry/instances/example-policy.yaml) — a
+Copy [`../../registry/examples/example-policy.yaml`](../../registry/examples/example-policy.yaml) — a
 `validation`/`compliance` policy: it denies any request whose `data_classification` is `eu_personal` unless
 its `sovereignty_zone` is EU, with `enforcement: hard`, `lifecycle_scope.operations: [all]`, and an
 `output: {decision: deny, reason: …}`. It shows the match→output shape, the compliance-basis citation, and

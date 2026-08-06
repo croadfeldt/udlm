@@ -89,7 +89,7 @@ block. [`../../contracts/provider-contract.md §8 (serve_data)`](../spec/contrac
 is the `information`-kind counterpart.
 
 For the matching accreditation, see
-[`../../registry/instances/accreditation-state-mn.yaml`](../../registry/instances/accreditation-state-mn.yaml)
+[`../../registry/examples/accreditation-state-mn.yaml`](../../registry/examples/accreditation-state-mn.yaml)
 — it attests `full-stack-sp`'s Container capability, narrowed to `realize_resources/Container` and scoped to
 Minnesota (`US-MN`) sovereignty, showing how `subject_uuid`/`capability_uuid`/`scope` line up with the
 declaration in A. (The provider *lifecycle* — how a declaration is registered and admitted — is documented in

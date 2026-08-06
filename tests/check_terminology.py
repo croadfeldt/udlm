@@ -25,7 +25,7 @@ Evasions closed 2026-07-25 (each with the live corpus violation it exposed):
   3. HYPHENATION — "gating-policy" evaded `gating\\s+polic`. Separators are now `[-\\s]+`.
   4. BLANKET EXEMPTIONS — whole-file and whole-directory exemptions hid every rule, not the one
      the file legitimately names. Exemptions are now (file → rules), and the
-     `registry/instances/` directory exemption is one file + one rule.
+     `registry/examples/` directory exemption is one file + one rule.
 Known limit (deliberate): the join is pairwise, so a term spread across three lines still
 evades; and matching is per-file, so a term reintroduced in a binary or untracked file is
 out of scope.
@@ -65,7 +65,7 @@ EXEMPT = {
     # revisions are point-in-time records — never edited to satisfy a living-prose gate (the
     # rotation doctrine: a revision is history). Grandfathered by file+rule, not by directory:
     # every OTHER instance record is scanned.
-    "registry/instances/adr-resource-type-extension.json": {"provider_extensions"},
+    "registry/decisions/resource-type-extension.json": {"provider_extensions"},
 }
 
 # Per-line exemption: the line documents the change itself. Words only — a bare arrow is
