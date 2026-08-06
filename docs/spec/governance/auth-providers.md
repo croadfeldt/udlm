@@ -142,7 +142,7 @@ The substrate defines a closed taxonomy of authentication modes. Any conformant 
 
 Substrate-required default. Always registered. Cannot be deregistered — only deprioritized.
 
-This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (ADR-RBAC-001): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a DCMGroup with `group_class: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
+This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (ADR-RBAC-001): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a grouping with `record kind: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
 
 ```yaml
 built_in_auth_provider:

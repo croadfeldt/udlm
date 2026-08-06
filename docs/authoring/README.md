@@ -37,6 +37,7 @@ you can run it yourself (all run in `.github/workflows/validate.yml`; `./scripts
 | A **resource type** (VM, Volume, Service, DNSZone…) | [`scoped-class.md`](scoped-class.md) — author a Type Class; the flat spec is generated | `class.schema.json` | Liskov, generate_class_specs, EXG-001/002, COV-001/002, fuzz, rule-36 |
 | A **Class** (Base/Type/Provider scoped-Class) | [`scoped-class.md`](scoped-class.md) | `class.schema.json` | Liskov, generate_class_specs, COV |
 | A **process** (a job/operation with blast-radius) | [`process.md`](process.md) | `class.schema.json` (Process family; executions are `Job` records) | as Class / resource type |
+| A **bundle** / a custom **profile** (an activatable posture) | [`bundle.md`](bundle.md) | `bundle.schema.json` | validate.py `check_bundle`, check_urf, identity integrity |
 | A **policy** (schedule, validation, override…) | [`policy.md`](policy.md) | `policy.schema.json` | validate, rule-IDs, terminology |
 | A **provider / API** (a naturalizing backend) | [`provider-api.md`](provider-api.md) | `provider-adopted-standards.schema.json`, `function-capability-matrix.schema.json` | provider-contracts, standards-registered |
 | **Reference data** (a governed vocabulary) | [`reference-data.md`](reference-data.md) | `layer.schema.json` (`reference_data_type`) | validate, single-source |

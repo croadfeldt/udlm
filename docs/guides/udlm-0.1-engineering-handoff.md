@@ -39,7 +39,7 @@ Hold these seven concepts and the rest follows:
 | `provider-adopted-standards.schema.json` | provider capability declaration (adopted standards + per-capability blocks) |
 | `accreditation.schema.json` | a verifiable accreditation (`proof`, `trust_anchor`, scope) |
 | `policy.schema.json` | a policy record (the 8 policy types) |
-| `dcm-group.schema.json` | DCMGroups — tenants and profiles |
+| `bundle.schema.json` | groupings — tenants and profiles |
 | `catalog-item.schema.json` | a Composite Service catalog item |
 | `decision-record.schema.json` | a DecisionRecord (the substrate form of an ADR) |
 | `audit-record` / `audit-leaf` / `commit-log-entry` | audit + tamper-evidence (Merkle, RFC 9162) |

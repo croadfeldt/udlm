@@ -173,8 +173,8 @@ def qualified_handle(doc):
     provider = doc.get("provider")
     if isinstance(provider, dict) and provider.get("name") and provider.get("version"):
         return f"provider:{provider['name']}", provider["version"]
-    if "group_class" in doc and doc.get("handle") and version:
-        return f"{doc['group_class']}:{doc['handle']}", version
+    if "record kind" in doc and doc.get("handle") and version:
+        return f"{doc['record kind']}:{doc['handle']}", version
     if "uuid" in doc and doc.get("handle") and version:
         return f"instance:{doc['handle']}", version
     return None

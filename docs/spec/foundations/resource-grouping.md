@@ -1,15 +1,15 @@
 # UDLM — Resource Grouping
 
-> **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to `group_class` values in that model.
+> **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to the grouping/bundle record kind values in that model.
 > **Machine-validatable schema:** Tenants, Resource Groups, and cross-tenant authorizations are
-> DCMGroup instances validating against [`registry/dcm-group.schema.json`](../../../registry/dcm-group.schema.json).
+> `Access.Grouping` records validating against `registry/bundle.schema.json` (bundles) / the `Access.Grouping` class (groupings).
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)
 
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md).
 >
-> The Data abstraction — DCMGroup typed extensions (Tenant, Resource Group, Cross-Tenant Auth)
+> The Data abstraction — grouping typed extensions (Tenant, Resource Group, Cross-Tenant Auth)
 
 ---
 
@@ -114,11 +114,11 @@ Each group membership is a different dimension of context — not a hierarchy wi
 
 ### 3.2 Resource Group Subclasses
 
-> **`group_class` has ONE vocabulary** — the closed set defined in
+> **the grouping/bundle record kind has ONE vocabulary** — the closed set defined in
 > [Universal Group Model](universal-groups.md) §2.2
 > ([data-model-core](data-model-core.md) §5). Every Resource Group carries
-> `group_class: resource_grouping` from that model. The `dcm_default | custom` distinction
-> defined here is a **`group_subclass`** — the open, advisory axis — not a group_class.
+> `resource_type: Access.Grouping` from that model. The `dcm_default | custom` distinction
+> defined here is a **`group_subclass`** — the open, advisory axis — not a record kind.
 
 DCM defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:
 
@@ -139,7 +139,7 @@ resource_group:
   uuid: <uuid>
   name: <human-readable name>
   description: <description>
-  group_class: resource_grouping        # from the closed universal-groups §2.2 vocabulary
+  resource_type: Access.Grouping        # from the closed universal-groups §2.2 vocabulary
   group_subclass: <dcm_default|custom>  # advisory axis — this document's two subclasses
   group_type: <for custom groups — e.g., CostCenter, BusinessUnit, RegulatoryScope>
   version: <Major.Minor.Revision>
@@ -308,7 +308,7 @@ custom_group_type_registration:
 
 ## 10. Cross-Tenant Authorization (reference)
 
-A cross-tenant authorization is a DCMGroup with `group_class: cross_tenant_authorization`. Its **one home** is
+A cross-tenant authorization is a grouping with `record kind: cross_tenant_authorization`. Its **one home** is
 [universal-groups](universal-groups.md) §13 — the wire shape (`receiving_tenant_uuid`,
 `authorized_resources[].permitted_operations`), lifecycle (creation §13.3, revocation/expiry §13.4 with the
 PT72H per-profile resolution deadline), and the `CTX-*` rules. Nothing here redefines it.

@@ -1,38 +1,51 @@
 # Built-in profile: PROD — hardened production posture.
-# policy_profile DCMGroup (DCM ADR-007). Superset of standard: tighter timeouts, mandatory recovery,
+# policy_profile grouping (DCM ADR-007). Superset of standard: tighter timeouts, mandatory recovery,
 # blast-radius-aware change control, and dual approval for destructive operations.
+record_type: bundle
 uuid: 213eaf12-a0ff-4811-a98f-c0201096dee2
 handle: udlm/profile/prod
 conforms_to: udlm/0.1
-group_class: policy_profile
 name: Production
-description: >-
-  Hardened production profile — the standard floor plus blast-radius impact policy (DCM ADR-010),
-  dual-approval gating on destructive operations, and mandatory recovery with tightened dispatch
-  timeouts. For production workloads without a specific regulatory overlay.
-version: 1.0.0
+description: Hardened production profile — the standard floor plus blast-radius impact policy (DCM ADR-010),
+  dual-approval gating on destructive operations, and mandatory recovery with tightened dispatch timeouts.
+  For production workloads without a specific regulatory overlay.
+version: 1.1.0
 status:
   state: active
-profile:
+contains:
+- ref: estate/policy/structural-validation
+  state: required
+- ref: estate/policy/tenant-isolation
+  state: required
+- ref: estate/policy/resolved-profile-evaluation
+  state: required
+- ref: estate/policy/governance-matrix
+  state: required
+- ref: estate/policy/recovery
+  state: required
+- ref: estate/policy/drift-reconciliation
+  state: required
+- ref: estate/policy/blast-radius-impact
+  state: required
+- ref: estate/policy/dual-approval-destructive
+  state: required
+- ref: estate/audit/append-only-log
+  state: required
+- ref: estate/lifecycle/four-state-tracking
+  state: required
+- ref: estate/store/requested
+  state: required
+- ref: estate/store/realized
+  state: required
+- ref: estate/store/discovered
+  state: required
+- ref: estate/time-sync/causal
+  state: required
+- ref: estate/discovery/scheduled
+  state: required
+- ref: estate/recovery/bounded-convergence
+  state: required
+activation:
   is_builtin: true
   default: false
   approved: true
-  composed_from: []
-  floor:
-    - policy/structural-validation
-    - policy/tenant-isolation
-    - policy/resolved-profile-evaluation
-    - policy/governance-matrix
-    - policy/recovery
-    - policy/drift-reconciliation
-    - policy/blast-radius-impact              # graph.blast_radius gating (DCM ADR-010)
-    - policy/dual-approval-destructive        # gating: destructive ops require dual_approval
-    - audit/append-only-log
-    - lifecycle/four-state-tracking
-  required_mechanics:
-    - store/requested
-    - store/realized
-    - store/discovered
-    - time-sync/causal
-    - discovery/scheduled
-    - recovery/bounded-convergence            # bounded retries + terminal failure (DCM ADR-006)

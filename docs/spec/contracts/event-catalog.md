@@ -93,7 +93,7 @@ links:
 | `process.*` | 1 | Process Resource execution events (§17a) |
 | `accreditation.*` | 7 | Accreditation verification lifecycle (§20) |
 | `itsm.*` | 3 | ITSM integration record lifecycle (§21) |
-| `group.*` | 4 | DCMGroup lifecycle (appendix) |
+| `group.*` | 4 | grouping lifecycle (appendix) |
 | `authorization.*` | 1 | Cross-tenant authorization events (appendix) |
 | **Total** | **102** | across 27 domains |
 
@@ -1039,8 +1039,8 @@ authorization.granted
 
 | Event Type | Description | Key Fields | Consumers |
 |------------|-------------|-----------|----------|
-| `group.deleted` | A DCMGroup has been deleted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
-| `group.member_added` | A member (actor or entity) has been added to a DCMGroup | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
-| `group.member_removed` | A member (actor or entity) has been removed from a DCMGroup (actual removal only) | entity_uuid, group_uuid, member_uuid | LCM, AUD, OBS |
+| `group.deleted` | A grouping has been deleted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
+| `group.member_added` | A member (actor or entity) has been added to a grouping | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |
+| `group.member_removed` | A member (actor or entity) has been removed from a grouping (actual removal only) | entity_uuid, group_uuid, member_uuid | LCM, AUD, OBS |
 | `group.membership_expired` | A time-bounded group membership reached expires_at ([universal-groups](../foundations/universal-groups.md) §9a.4, GRP-014) — distinct from removal: the `notify`/`suspend_member` on_expiry actions emit ONLY this event; the `remove` action additionally emits `group.member_removed` | group_uuid, member_uuid, expires_at, on_expiry action taken | LCM, AUD, OBS |
 | `authorization.granted` | A cross-tenant authorization has been granted | entity_uuid, from_state, to_state (where applicable) | LCM, AUD, OBS |

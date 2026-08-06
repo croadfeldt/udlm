@@ -1,5 +1,10 @@
 # The six built-in profiles — personas, environments, and what actually differs
 
+**A profile IS a bundle** — one activatable unit whose contents are the governance artifacts
+that posture turns on (`registry/bundle.schema.json`; the six built-ins are
+`registry/instances/profile-*.yaml`). Authoring your own posture is authoring a bundle:
+[`../authoring/bundle.md`](../authoring/bundle.md).
+
 **What this settles (orientation, non-normative).** One page defining each built-in profile on five criteria —
 **persona, target environment & estate lifetime, durability posture, failure semantics, approvals/automation** —
 plus its expected use cases and the characteristics that actually differ between profiles. The authorities this

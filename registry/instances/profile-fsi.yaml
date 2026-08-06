@@ -1,47 +1,64 @@
 # Built-in profile: FSI — financial-services / regulated posture.
-# policy_profile DCMGroup (DCM ADR-007). Superset of prod: tamper-evident (merkle) audit,
+# policy_profile grouping (DCM ADR-007). Superset of prod: tamper-evident (merkle) audit,
 # attestation-gated providers, regulatory retention, governance-matrix on ALL lifecycle operations,
 # and the override-approval workflow. Full production architecture — implemented against dev in Sept.
+record_type: bundle
 uuid: 6c86370c-0b54-4417-bd60-6359c748d1e5
 handle: udlm/profile/fsi
 conforms_to: udlm/0.1
-group_class: policy_profile
 name: FSI (Financial Services)
-description: >-
-  Regulated financial-services profile — the prod floor plus tamper-evident Merkle audit with
-  inclusion/consistency proofs (universal-audit §8, RFC 9162), attestation-gated provider admission
-  (accreditation matrix; DCM ADR-022), regulatory retention, governance-matrix evaluated on every
-  lifecycle operation (no scope-out), and the time-bounded override-approval workflow
-  (policy-contract §18). Architecture is production-grade; September implements it against the dev
-  floor for co-engineering.
-version: 1.0.0
+description: Regulated financial-services profile — the prod floor plus tamper-evident Merkle audit with
+  inclusion/consistency proofs (universal-audit §8, RFC 9162), attestation-gated provider admission (accreditation
+  matrix; DCM ADR-022), regulatory retention, governance-matrix evaluated on every lifecycle operation
+  (no scope-out), and the time-bounded override-approval workflow (policy-contract §18). Architecture
+  is production-grade; September implements it against the dev floor for co-engineering.
+version: 1.1.0
 status:
   state: active
-profile:
+contains:
+- ref: estate/policy/structural-validation
+  state: required
+- ref: estate/policy/tenant-isolation
+  state: required
+- ref: estate/policy/resolved-profile-evaluation
+  state: required
+- ref: estate/policy/governance-matrix-all-operations
+  state: required
+- ref: estate/policy/recovery
+  state: required
+- ref: estate/policy/drift-reconciliation
+  state: required
+- ref: estate/policy/blast-radius-impact
+  state: required
+- ref: estate/policy/dual-approval-destructive
+  state: required
+- ref: estate/policy/override-approval
+  state: required
+- ref: estate/audit/merkle-transparency-log
+  state: required
+- ref: estate/lifecycle/four-state-tracking
+  state: required
+- ref: estate/store/requested
+  state: required
+- ref: estate/store/realized
+  state: required
+- ref: estate/store/discovered
+  state: required
+- ref: estate/time-sync/attested
+  state: required
+- ref: estate/discovery/scheduled
+  state: required
+- ref: estate/recovery/bounded-convergence
+  state: required
+- ref: estate/audit/merkle-log
+  state: required
+- ref: estate/accreditation/attestation
+  state: required
+- ref: estate/accreditation/verifiable
+  state: required
+- ref: estate/retention/regulatory
+  state: required
+activation:
   is_builtin: true
   default: false
   approved: true
-  composed_from: []
-  floor:
-    - policy/structural-validation
-    - policy/tenant-isolation
-    - policy/resolved-profile-evaluation
-    - policy/governance-matrix-all-operations # cannot scope out any lifecycle operation
-    - policy/recovery
-    - policy/drift-reconciliation
-    - policy/blast-radius-impact
-    - policy/dual-approval-destructive
-    - policy/override-approval                 # time-bounded, approved soft-policy override (policy-contract §18)
-    - audit/merkle-transparency-log            # signed tree heads + inclusion/consistency proofs (universal-audit §8)
-    - lifecycle/four-state-tracking
-  required_mechanics:
-    - store/requested
-    - store/realized
-    - store/discovered
-    - time-sync/attested                       # attested clock, not causal-only (DCM ADR-005 profile-scoped)
-    - discovery/scheduled
-    - recovery/bounded-convergence
-    - audit/merkle-log                          # append-only Merkle tree (audit-leaf.schema.json)
-    - accreditation/attestation                 # provider admission gated on resolved accreditation (DCM ADR-022)
-    - accreditation/verifiable                   # accreditation carries a VC proof chaining to a trust anchor; DCM verifies the signature BEFORE appraising scope (two-gate, matrix §3.7)
-    - retention/regulatory                       # regulatory-grade audit/data retention

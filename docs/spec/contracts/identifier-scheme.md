@@ -336,7 +336,7 @@ appears inside a stored criterion.
 **Replaces** (each removed in the PR that lands its URF form — no parallel mechanisms):
 the ADR-038 §10 class-address as a separate grammar (subsumed here), the ADR-054 `covers`
 selector grammar, the structured `Reference`/`data_reference` object serializations, the
-policy match-condition array, and DCMGroup member semantics. **Deliberately does not
+policy match-condition array, and grouping member semantics. **Deliberately does not
 replace:** graph diagnostics (blast radius, reachability — edge traversal is never in the
 filter grammar; `member_of` is the one sanctioned bridge), the ADR-041 firewall (URF is the
 *addressing*; PROJ is the *policy* at the address), and the pin grammar (ADR-051, carried

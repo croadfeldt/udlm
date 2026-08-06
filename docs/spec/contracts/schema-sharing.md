@@ -239,7 +239,7 @@ canonical URL a bundle references; `validate_registry.py` enforces that a spec's
 `$id` spec-segment matches its `conforms_to`, so the core-schema URLs move with
 the spec version at the 0.1→1.0 cutover (VERSIONING.md). The baseline includes:
 
-- The record schemas — `realized-entity`, `dcm-group`, `policy`, `catalog-item`,
+- The record schemas — `realized-entity`, `bundle`, `policy`, `catalog-item`,
   `layer`, `decision-record`, `audit-record`, `audit-leaf`, `commit-log-entry`,
   `regeneration-manifest`, `finding-routing-record`,
   `function-capability-matrix`, `provider-adopted-standards`, and the

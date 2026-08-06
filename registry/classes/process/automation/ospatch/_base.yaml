@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Automation.OSPatch/1.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Automation.OSPatch/1.2.1
 conforms_to: udlm/0.1
 uuid: 65a1d324-0d7e-44ef-bff6-d510ecf973e2
 record_type: class
 class: type
 resource_type: Automation.OSPatch
 parent: Automation
-version: 1.2.0
+version: 1.2.1
 family: Process
 status: active
 metadata:
@@ -21,7 +21,7 @@ elements:
 - element: targets
   scope: Automation.OSPatch
   state: canonical
-  description: The hosts to patch — references to Compute.* hosts or a DCMGroup (refines the Base inputs).
+  description: The hosts to patch — references to Compute.* hosts or a grouping (refines the Base inputs).
   schema:
     type: array
     items:

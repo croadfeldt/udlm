@@ -2,12 +2,12 @@
 """Valid-by-construction gate. Validates:
   - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
   - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
-                        or against  dcm-group.schema.json                     (DCMGroup records)
+                        or against  bundle.schema.json                        (BUNDLE records — activatable units)
                         or against  catalog-item.schema.json                  (Composite Service catalog items)
 Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
-schema); legacy discriminators remain — a document with a top-level `group_class` is a
-DCMGroup; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
-DCMGroups). Catalog items additionally get semantic checks JSON Schema cannot express
+schema); legacy discriminators remain — a document with a top-level the grouping/bundle record kind is a
+grouping; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
+groupings). Catalog items additionally get semantic checks JSON Schema cannot express
 (component_id uniqueness, sibling depends_on/binding resolution, cycle rejection,
 binding⊆depends_on ordering).
 Loads JSON and YAML natively. Exit non-zero if anything is invalid. Wire into CI."""
@@ -29,7 +29,7 @@ except ImportError:
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.schema.json").read_text()))
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
-GROUP_VALIDATOR = Draft202012Validator(json.loads((ROOT / "dcm-group.schema.json").read_text()))
+BUNDLE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "bundle.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
 LAYER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "layer.schema.json").read_text()))
@@ -522,9 +522,57 @@ def check_realized_entity(doc):
     return check_process_entity(doc) + check_provider_extensions(doc) + check_data_references(doc)
 
 
+def check_bundle(doc):
+    """Bundle semantic checks JSON Schema cannot express (bundle.schema.json):
+      (a) every `contains[].ref` and `composes[]` entry parses as a URF reference;
+      (b) an `off` entry on a security-relevant artifact carries a `reason` — a disabled
+          security control is a deliberate, reviewable act, never a bare absence;
+      (c) NO WEAKENING ON COMPOSITION: a bundle may not downgrade to `advisory`/`off` an
+          entry a bundle it composes marks `required` (the immutable-ceiling discipline).
+          Composed bundles are resolved from the instances directory by handle."""
+    import importlib.util as _ilu, pathlib as _pl
+    _spec = _ilu.spec_from_file_location("urf", _pl.Path(__file__).parent / "urf.py")
+    _urf = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_urf)
+    errors, loc = [], f"bundle {doc.get('handle', '?')}"
+    SECURITY_HINTS = ("audit", "attestation", "governance", "sovereign", "credential", "policy/tenant")
+
+    def parse_ref(ref, where):
+        try:
+            _urf.parse(ref)
+        except _urf.URFError as e:
+            errors.append(f"{loc}: {where} {ref!r} is not a valid URF reference — {e}")
+
+    own = {}
+    for entry in doc.get("contains") or []:
+        ref, state = entry.get("ref", ""), entry.get("state")
+        parse_ref(ref, "contains[].ref")
+        own[ref] = state
+        if state == "off" and any(h in ref for h in SECURITY_HINTS) and not entry.get("reason"):
+            errors.append(f"{loc}: {ref!r} is turned off without a reason — a disabled "
+                          f"security-relevant artifact states why (bundle.schema.json contains[].reason)")
+    # (c) composition may not weaken
+    by_handle = {}
+    for path in sorted((ROOT / "instances").glob("*.y*ml")):
+        for other in load_all(path):
+            if isinstance(other, dict) and other.get("record_type") == "bundle":
+                by_handle[other.get("handle")] = other
+    for cref in doc.get("composes") or []:
+        parse_ref(cref, "composes[]")
+        target = by_handle.get(cref.split("estate/", 1)[-1]) or by_handle.get(cref)
+        if not target:
+            continue
+        for entry in target.get("contains") or []:
+            ref = entry.get("ref")
+            if entry.get("state") == "required" and own.get(ref) in ("advisory", "off"):
+                errors.append(f"{loc}: weakens {ref!r} to {own[ref]!r}, but composed bundle "
+                              f"{target.get('handle')!r} marks it required — composition may not "
+                              f"weaken a required entry")
+    return errors
+
+
 def pick_instance(doc):
     """Dispatch: `record_type` first (catalog_item ⇒ catalog item, + semantic checks);
-    legacy keys — `group_class` ⇒ DCMGroup; `resource_type` ⇒ realized entity."""
+`record_type: bundle` ⇒ an activatable bundle; `resource_type` ⇒ realized entity."""
     if isinstance(doc, dict) and doc.get("record_type") == "catalog_item":
         return (CATALOG_VALIDATOR,
                 lambda d: f"catalog item {d['name']} v{d['version']} {d['uuid'][:8]} ({len(d['constituents'])} constituents)",
@@ -559,8 +607,11 @@ def pick_instance(doc):
         return (TAXONOMY_SEED_VALIDATOR,
                 lambda d: f"taxonomy seed '{d.get('root', '?')}' ({len(d.get('terms', []))} terms)",
                 check_taxonomy_seed)
-    if isinstance(doc, dict) and "group_class" in doc:
-        return GROUP_VALIDATOR, lambda d: f"DCMGroup {d['group_class']} {d['uuid'][:8]} [{d.get('status', {}).get('state', '?')}]"
+    if isinstance(doc, dict) and doc.get("record_type") == "bundle":
+        return (BUNDLE_VALIDATOR,
+                lambda d: f"bundle {d['handle']} v{d['version']} {d['uuid'][:8]} "
+                          f"({len(d.get('contains') or [])} entries)",
+                check_bundle)
     return (INSTANCE_VALIDATOR,
             lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]",
             check_realized_entity)
@@ -639,7 +690,7 @@ def main() -> int:
         "generated",
         lambda doc: (TYPE_VALIDATOR,
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
-    print("== instances (realized entities + DCMGroups + catalog items) ==")
+    print("== instances (realized entities + groupings + catalog items) ==")
     failures += validate_dir("instances", pick_instance)
     print("== classes (scoped-Class artifacts — ADR-038 / P0 substrate) ==")
     failures += validate_dir(

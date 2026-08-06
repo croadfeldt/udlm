@@ -206,7 +206,7 @@ The model is designed to be extended without modifying the core. Every extension
 abstractions:
 
 **Extending Data:** New entity types, new artifact types, new resource types, new group classes — all are
-typed extensions of the Data abstraction. Register them in the Resource Type Registry or DCMGroup registry.
+typed extensions of the Data abstraction. Register them in the Resource Type Registry or grouping registry.
 
 **Extending Providers:** New provider types (a Billing Provider, a CMDB Provider, an AI/ML Provider) —
 implement the unified Provider base contract with a new capability declaration extension. Register in the

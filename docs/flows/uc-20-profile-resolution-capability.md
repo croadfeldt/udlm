@@ -19,7 +19,7 @@ compared as capability sets by set-containment — never ranked.
   UC is where that profile is *resolved* — from the instance's approved list and default.
 - **Profiles are capability sets, compared by containment.** One profile is "more" than another only if its
   capability set contains the other's — there is no numeric rank. Comparison is by content, not by tier.
-- **Onboarding is atomic.** Identity boundary, profile binding (a `policy_profile` DCMGroup), quotas, and auth
+- **Onboarding is atomic.** Identity boundary, profile binding (a `policy_profile` grouping), quotas, and auth
   claims either all persist or none do. A partial tenant is never left behind.
 - **Overlays compose, they don't merge in.** A compliance/sovereignty overlay is layered *with* the profile so
   it stays separable and auditable — not baked into the profile where it would be invisible.
@@ -39,7 +39,7 @@ Requests from this tenant then run request-realization under the bound profile.
 
 ## Success criteria (from the UC)
 - DCM resolves the instance profile from the platform approved list and default.
-- Tenant onboarding binds the tenant to the resolved profile via a `policy_profile` DCMGroup.
+- Tenant onboarding binds the tenant to the resolved profile via a `policy_profile` grouping.
 - Onboarding is atomic — either all steps persist or none do.
 - A compliance/sovereignty overlay is composed with the profile, not folded into it.
 - Profiles are capability sets compared by content set-containment, not by rank.

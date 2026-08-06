@@ -1,49 +1,71 @@
 # Built-in profile: SOVEREIGN — data-sovereignty posture (strictest built-in floor).
-# policy_profile DCMGroup (DCM ADR-007). Superset of FSI: in-boundary key material, sovereign-only
+# policy_profile grouping (DCM ADR-007). Superset of FSI: in-boundary key material, sovereign-only
 # placement, and sub-processor restriction. Full production architecture — implemented against dev in Sept.
+record_type: bundle
 uuid: 6ed686f0-0ade-4d0b-b204-5cf1bb747dd0
 handle: udlm/profile/sovereign
 conforms_to: udlm/0.1
-group_class: policy_profile
 name: Sovereign
-description: >-
-  Data-sovereignty profile — the FSI floor plus in-boundary signing/key material (audit STH keys never
-  leave the sovereignty boundary, universal-audit AUD-012), sovereign-only placement (realization
-  confined to authorized jurisdictions/zones, sovereignty declaration attested not self-asserted,
-  DCM ADR-022), and sub-processor restriction. Every mechanic is production-grade; September implements
-  it against the dev floor for evaluation.
-version: 1.0.0
+description: Data-sovereignty profile — the FSI floor plus in-boundary signing/key material (audit STH
+  keys never leave the sovereignty boundary, universal-audit AUD-012), sovereign-only placement (realization
+  confined to authorized jurisdictions/zones, sovereignty declaration attested not self-asserted, DCM
+  ADR-022), and sub-processor restriction. Every mechanic is production-grade; September implements it
+  against the dev floor for evaluation.
+version: 1.1.0
 status:
   state: active
-profile:
+contains:
+- ref: estate/policy/structural-validation
+  state: required
+- ref: estate/policy/tenant-isolation
+  state: required
+- ref: estate/policy/resolved-profile-evaluation
+  state: required
+- ref: estate/policy/governance-matrix-all-operations
+  state: required
+- ref: estate/policy/recovery
+  state: required
+- ref: estate/policy/drift-reconciliation
+  state: required
+- ref: estate/policy/blast-radius-impact
+  state: required
+- ref: estate/policy/dual-approval-destructive
+  state: required
+- ref: estate/policy/override-approval
+  state: required
+- ref: estate/policy/sovereign-placement
+  state: required
+- ref: estate/policy/sub-processor-restriction
+  state: required
+- ref: estate/audit/merkle-transparency-log
+  state: required
+- ref: estate/lifecycle/four-state-tracking
+  state: required
+- ref: estate/store/requested
+  state: required
+- ref: estate/store/realized
+  state: required
+- ref: estate/store/discovered
+  state: required
+- ref: estate/time-sync/attested
+  state: required
+- ref: estate/discovery/scheduled
+  state: required
+- ref: estate/recovery/bounded-convergence
+  state: required
+- ref: estate/audit/merkle-log
+  state: required
+- ref: estate/accreditation/sovereign-attestation
+  state: required
+- ref: estate/accreditation/verifiable
+  state: required
+- ref: estate/sovereignty/data-plane-attested
+  state: required
+- ref: estate/retention/regulatory
+  state: required
+- ref: estate/key-material/in-boundary
+  state: required
+activation:
   is_builtin: true
   default: false
   approved: true
-  composed_from: []
-  floor:
-    - policy/structural-validation
-    - policy/tenant-isolation
-    - policy/resolved-profile-evaluation
-    - policy/governance-matrix-all-operations
-    - policy/recovery
-    - policy/drift-reconciliation
-    - policy/blast-radius-impact
-    - policy/dual-approval-destructive
-    - policy/override-approval
-    - policy/sovereign-placement                # placement confined to authorized jurisdiction/zone
-    - policy/sub-processor-restriction          # no data access by unauthorized sub-processors
-    - audit/merkle-transparency-log
-    - lifecycle/four-state-tracking
-  required_mechanics:
-    - store/requested
-    - store/realized
-    - store/discovered
-    - time-sync/attested
-    - discovery/scheduled
-    - recovery/bounded-convergence
-    - audit/merkle-log
-    - accreditation/sovereign-attestation       # sovereign accreditation, attested not self-asserted (DCM ADR-022)
-    - accreditation/verifiable                   # accreditation carries a VC proof chaining to a trust anchor; DCM verifies before appraising scope (two-gate, matrix §3.7)
-    - sovereignty/data-plane-attested            # data-plane (data-at-rest residency) enforcement conveyed to and attested by the enforcing provider — enforcement_plane, matrix §3.8
-    - retention/regulatory
-    - key-material/in-boundary                   # signing/key material stays within the sovereignty boundary (AUD-012)
