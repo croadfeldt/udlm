@@ -80,10 +80,10 @@ in `registry/rule-id-registry.yaml` **before** you use it.
 
 ## 4. A worked pointer
 
-Copy [`../adr/ADR-055-in-spec-examples.md`](../adr/README.md) — it is the exemplar
+Copy [`../adr/ADR-048-staleness-as-declared-expectation.md`](../adr/ADR-048-staleness-as-declared-expectation.md) — it is the exemplar
 for every section: a `Background — read first` on-ramp (rule-36, ADR-051, the coverage gate, each cited
 once with what it settles), a one-decision-area body with numbered clauses, the
-"standards, and what each settles here" table, the Data · Policy · Provider lens, and a scope edge. Its
+Data · Policy · Provider lens, and a scope edge. Its
 one-line index row in `../adr/README.md` shows the gist a new ADR must supply.
 
 ## 5. Run the gates
