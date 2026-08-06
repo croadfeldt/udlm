@@ -13,29 +13,37 @@ lifecycle_state: Realized
 states:
   requested:
     fields:
-      definition_ref: {target_handle: cexample/automation/nightly-backup-playbook}
-      parameters: {scope: database, snapshot: true}
+      definition_ref: estate/cexample/automation/nightly-backup-playbook
+      parameters:
+        scope: database
+        snapshot: true
       targets:
-        - {target_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21}
+      - uuid/7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
       max_execution_time: PT1H
       on_max_exceeded: terminate
       trigger: schedule
-    at: "2026-07-07T01:55:00Z"
+    at: '2026-07-07T01:55:00Z'
     time_source: example clock, NTP-synced
   realized:
     fields:
-      definition_ref: {target_handle: cexample/automation/nightly-backup-playbook}
-      parameters: {scope: database, snapshot: true}
+      definition_ref: estate/cexample/automation/nightly-backup-playbook
+      parameters:
+        scope: database
+        snapshot: true
       max_execution_time: PT1H
       on_max_exceeded: terminate
       trigger: schedule
     outputs:
-      started_at: "2026-07-07T02:00:00Z"
-      completed_at: "2026-07-07T02:12:00Z"
-      results: {status: COMPLETED, snapshots_taken: 1}
-    at: "2026-07-07T02:12:05Z"
+      started_at: '2026-07-07T02:00:00Z'
+      completed_at: '2026-07-07T02:12:00Z'
+      results:
+        status: COMPLETED
+        snapshots_taken: 1
+    at: '2026-07-07T02:12:05Z'
     time_source: example clock, NTP-synced
 process:
   execution_state: COMPLETED
   affected_entities:
-    - {entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21, effect_type: read, effect_description: "snapshotted the database"}
+  - entity_uuid: 7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21
+    effect_type: read
+    effect_description: snapshotted the database

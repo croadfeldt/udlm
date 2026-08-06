@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.0
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.6.0
+version: 0.7.0
 family: Resource
 status: active
 metadata:
@@ -62,10 +62,7 @@ elements:
           description: Reference to Compute.Container — the container realizing this constituent. Common-elements
             Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable,
             never an opaque string.
-          oneOf:
-          - type: string
-            description: Short form — the handle of an existing Platform.StorageClass.
-          - $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../common-elements.schema.json#/$defs/Reference
         host:
           type: string
           description: handle of the host/VM the systemd units run on (form=systemd).
@@ -106,9 +103,7 @@ spec_examples:
 - service_kind: application
   constituents:
   - form: container
-    container_ref:
-      resource_type: Compute.Container
-      target_handle: storefront-web
+    container_ref: estate/storefront-web?resource_type==Compute.Container
   endpoints:
   - name: https
     url: https://storefront.svc.internal

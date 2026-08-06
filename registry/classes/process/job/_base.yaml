@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.1.0
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.0.0
+version: 1.1.0
 family: Process
 status: active
 metadata:
@@ -68,20 +68,15 @@ elements:
   scope: Job
   optional: true
   state: canonical
-  description: 'The resources this job operates on — typed resource References (common-elements §2.5),
-    never inventory strings. Each entry is authored by target_handle (ADR-025 §2 — a uuid is never hand-authored;
-    DCM resolves and pins target_uuid at reserve). Part of the portable automation intent: the target
+  description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme §9),
+    never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored; DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target
     set i'
   schema:
     type: array
     items:
-      allOf:
-      - $ref: ../../common-elements.schema.json#/$defs/Reference
-      - required:
-        - target_handle
-    description: 'The resources this job operates on — typed resource References (common-elements §2.5),
-      never inventory strings. Each entry is authored by target_handle (ADR-025 §2 — a uuid is never hand-authored;
-      DCM resolves and pins target_uuid at reserve). Part of the portable automation intent: the target
+      $ref: ../../common-elements.schema.json#/$defs/Reference
+    description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme §9),
+      never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored; DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target
       set is engine-neutral and unchanged by an engine migration. Distinct from the informational affected_entities
       edge: targets is authored intent (what the job is FOR); affected_entities records what a run actually
       touched.'
@@ -232,15 +227,12 @@ spec_examples:
 - max_execution_time: PT1H
   on_max_exceeded: terminate
   trigger: schedule
-  definition_ref:
-    resource_type: Automation.Definition
-    target_handle: nightly-backup-playbook
+  definition_ref: estate/nightly-backup-playbook?resource_type==Automation.Definition
   parameters:
     retention_days: 30
     compression: zstd
   targets:
-  - resource_type: Data.Database
-    target_handle: orders-db
+  - estate/orders-db?resource_type==Data.Database
   schedule:
     expression: 0 2 * * *
     overlap_policy: forbid

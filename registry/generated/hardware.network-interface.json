@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.11.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.12.0",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Hardware.NetworkInterface",
-          "version": "0.11.0",
+          "version": "0.12.0",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -166,15 +166,7 @@
           "properties": {
             "network_vlan_ref": {
               "description": "Reference to Network.VLAN — the VLAN this membership tags. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
-              "oneOf": [
-                {
-                  "type": "string",
-                  "description": "Short form — the handle of an existing Platform.StorageClass."
-                },
-                {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
-                }
-              ]
+              "$ref": "../common-elements.schema.json#/$defs/Reference"
             },
             "mode": {
               "type": "string",

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8",
   "resource_type": "Platform.Namespace",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Platform.Namespace",
-          "version": "0.4.0",
+          "version": "0.5.0",
           "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8"
         }
       ]
@@ -39,15 +39,7 @@
       },
       "cluster_ref": {
         "description": "Resource reference to a Compute.Cluster (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
-        "oneOf": [
-          {
-            "type": "string",
-            "description": "Short form — the handle of an existing Compute.Cluster."
-          },
-          {
-            "$ref": "../common-elements.schema.json#/$defs/Reference"
-          }
-        ]
+        "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "tenant_uuid": {
         "type": "string",

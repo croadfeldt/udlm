@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.3.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.2.0
+version: 1.3.0
 family: Resource
 status: active
 metadata:
@@ -74,10 +74,7 @@ elements:
       whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
       Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent.
       Also carried as a references->Storage.Layout relationship (storage_layout).
-    oneOf:
-    - type: string
-      description: Short form — the handle of an existing Storage.Layout.
-    - $ref: ../../common-elements.schema.json#/$defs/Reference
+    $ref: ../../common-elements.schema.json#/$defs/Reference
 - element: networks
   scope: Compute.VM
   optional: true
@@ -101,20 +98,14 @@ elements:
         network_ref:
           description: The Network.VirtualNetwork this interface attaches to — common-elements Reference
             (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.
-          oneOf:
-          - type: string
-            description: Short form — the handle of an existing Network.VirtualNetwork.
-          - $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../common-elements.schema.json#/$defs/Reference
         mac:
           type: string
           description: Optional requested MAC address.
         ip_address_ref:
           description: A pre-allocated Network.IPAddress to bind to this interface (optional — omitted
             means the address service allocates at realization). Common-elements Reference shape.
-          oneOf:
-          - type: string
-            description: Short form — the handle of an existing Network.IPAddress.
-          - $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../common-elements.schema.json#/$defs/Reference
 - element: placement
   scope: Compute.VM
   optional: true

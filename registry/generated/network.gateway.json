@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Gateway/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ceb29900-486a-4c51-ac66-d686d8030711",
   "resource_type": "Network.Gateway",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.Gateway",
-          "version": "0.5.0",
+          "version": "0.6.0",
           "uuid": "ceb29900-486a-4c51-ac66-d686d8030711"
         }
       ]
@@ -63,15 +63,7 @@
             },
             "vlan_ref": {
               "description": "Reference to Network.VLAN — the VLAN this gateway segment serves. Common-elements Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque string.",
-              "oneOf": [
-                {
-                  "type": "string",
-                  "description": "Short form — the handle of an existing Platform.StorageClass."
-                },
-                {
-                  "$ref": "../common-elements.schema.json#/$defs/Reference"
-                }
-              ]
+              "$ref": "../common-elements.schema.json#/$defs/Reference"
             }
           }
         }
@@ -107,10 +99,7 @@
           {
             "cidr": "198.51.100.0/24",
             "role": "dmz",
-            "vlan_ref": {
-              "resource_type": "Network.VLAN",
-              "target_handle": "dmz-vlan"
-            }
+            "vlan_ref": "estate/dmz-vlan?resource_type==Network.VLAN"
           }
         ],
         "ip_family": "ipv4"
