@@ -54,7 +54,7 @@ the thing to be absent, and say why in `reason` (required for security-relevant 
 ## 3. Authoring your own profile — the steps
 
 1. **Start from the nearest built-in.** Six ship: `homelab`, `dev`, `standard`, `prod`, `fsi`,
-   `sovereign` (`registry/instances/profile-*.yaml`; the characteristics are in
+   `sovereign` (`registry/profiles/*.yaml`; the characteristics are in
    [`../guides/profiles.md`](../guides/profiles.md)). Pick the one whose posture is closest —
    you will either compose it or copy it.
 2. **Compose, don't copy, when you are adding.** If your posture is "`prod` plus our two
@@ -106,7 +106,7 @@ is a question you ask the deployment, not the registry.
 
 ## 6. A worked pointer
 
-Read `registry/instances/profile-homelab.yaml` — the built-in that exercises every state:
+Read `registry/profiles/homelab.yaml` — the built-in that exercises every state:
 `required` floor entries, `advisory` operational entries with their settings, and one `off`
-with its reason. `registry/instances/profile-fsi.yaml` shows a compliance posture where nearly
+with its reason. `registry/profiles/fsi.yaml` shows a compliance posture where nearly
 everything is `required`; `profile.schema.json`'s inline `examples` entry is the minimal shape.

@@ -14,7 +14,9 @@ registry/
   classes/<family>/…               # ALL definitions (ADR-061: base = dir + _base.yaml;
                                    #   type/provider = leaf file until it gains children)
   generated/                       # the SERVED flat specs — compiled, one per type, never authored
-  instances/                       # worked INSTANCE records (realized entities, policies, layers, …)
+  profiles/                        # the deployment PROFILES — activatable postures (six built-in)
+  instances/                       # worked example records (realized entities, policies, layers, …)
+                                   #   and the shipped decision/taxonomy records
   realized-entity.schema.json      # the instance meta-schema (four states + ownership)
   VERSIONING.md                    # two-axis versioning + the publish law
   pin-manifest.json                # the digest referrer behind the publish law (append-only)

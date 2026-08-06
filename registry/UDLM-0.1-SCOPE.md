@@ -27,7 +27,7 @@ called out below and are **not** 0.1 spec gaps.
 
 The architecture and wire contracts are **identical across profiles**; only the required *floor*
 differs (DCM ADR-007 — a profile is a composed set with a floor, not a level). The six built-in
-profiles are now defined as `policy_profile` records (`registry/instances/profile-*.yaml`), floors
+profiles are now defined as `policy_profile` records (`registry/profiles/*.yaml`), floors
 nesting by set-containment (`docs/guides/profile-resolution.md`). **dev** and **homelab** are on-ramp
 siblings (small substrate, low ceremony), not rungs on the production ladder:
 

@@ -22,6 +22,7 @@ registry/         Resource-type registry + the meta-schema + the definition RULE
   SPEC-DESIGN-REQUIREMENTS.md   ← THE rules every type/element MUST follow (read this first)
   resource-type-spec.schema.json ← the flat-spec meta-schema (generated/ artifacts validate against it)
   class.schema.json              ← the CLASS meta-schema — classes/ is the authored surface
+  profiles/                      ← the deployment profiles (activatable postures)
   classes/<family>/…/_base.yaml  ← ALL definitions (ADR-061 index-file hierarchy); flat specs are
                                    GENERATED projections in registry/generated/ (never authored)
   common-elements.md             ← canonical shared shapes (Quantity, ComputeResources, Identity, …)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Valid-by-construction gate. Validates:
   - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
+  - registry/profiles/*        against  profile.schema.json                   (deployment PROFILES)
   - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
                         or against  profile.schema.json                       (PROFILE records — activatable postures)
                         or against  catalog-item.schema.json                  (Composite Service catalog items)
@@ -552,7 +553,7 @@ def check_profile(doc):
                           f"security-relevant artifact states why (profile.schema.json contains[].reason)")
     # (c) composition may not weaken
     by_handle = {}
-    for path in sorted((ROOT / "instances").glob("*.y*ml")):
+    for path in sorted((ROOT / "profiles").glob("*.y*ml")):
         for other in load_all(path):
             if isinstance(other, dict) and other.get("record_type") == "profile":
                 by_handle[other.get("handle")] = other
@@ -691,6 +692,8 @@ def main() -> int:
         lambda doc: (TYPE_VALIDATOR,
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
     print("== instances (realized entities + groupings + catalog items) ==")
+    print("== profiles (activatable deployment postures) ==")
+    failures += validate_dir("profiles", pick_instance)
     failures += validate_dir("instances", pick_instance)
     print("== classes (scoped-Class artifacts — ADR-038 / P0 substrate) ==")
     failures += validate_dir(
