@@ -111,6 +111,19 @@ renames:
 # identity gate consults this map so a deliberate removal is not read as a vanished record.
 # The decision itself survives where the superseding artifact records it.
 retired:
+  # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
+  # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),
+  # so each is a NEW record with a new identity; the old identities are retired here rather
+  # than kept as historical clutter.
+  registry/examples/example-layer-referencing.yaml#b7a3f0c1-2020-4d20-9a40-0f1e2d3c4b60: >-
+    superseded by 10e5d911-2ce6-49e4-aca2-e0d65593d7fd — same example, URF data reference (the object form it
+    demonstrated was removed in cutover 4b)
+  registry/examples/example-layer-referencing-app-profile.yaml#a99c0de1-5050-4a10-9b20-1122334455bb: >-
+    superseded by 0984944a-9267-4a08-815a-aa7f79772eab — same example, URF data reference (the object form it
+    demonstrated was removed in cutover 4b)
+  registry/examples/example-reference-data-app-profile.yaml#a99c0de1-4040-4a10-8b20-1122334455aa: >-
+    superseded by 035e8844-4fa2-40f7-8dd3-fa6dfb0c2e33 — same example, URF data reference (the object form it
+    demonstrated was removed in cutover 4b)
   registry/instances/adr-resource-type-extension.json: >-
     ADR-PROV-004 — superseded by ADR-038 (Provider-Class SharedDataElement); its mechanism
     (provider_extensions) is retired and now only a rejection guard. ADR-038 records the

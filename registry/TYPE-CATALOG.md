@@ -422,7 +422,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Job
 
-### Job (1.1.0)
+### Job (1.2.0)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 

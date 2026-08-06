@@ -514,10 +514,7 @@ spec:
       type: ssd
   networks:
     - name: eth0
-      network_ref:
-        ref_uuid: "b7e3f1a2-..."        # → existing Network.VirtualNetwork
-        ref_name: "prod-vlan-40"         # advisory (human-readable)
-        reference_data_type: network
+      network_ref: uuid/b7e3f1a2-...   # → existing Network.VirtualNetwork
       ip_mode: dynamic
 
 # Provider-specific references are Provider-Class `SharedDataElement`s (ADR-038), declared by
@@ -534,8 +531,8 @@ request_context:
 
 ### References, not strings
 
-Every field that points at another resource uses the canonical data-reference shape (ADR-012):
-`ref_uuid` is authoritative (immutable, version-pinned), `ref_name` is advisory (human-readable).
+Every field that points at another resource carries a URF reference (identifier-scheme §9): one URL
+string whose uuid path resolves the target and whose optional `@pin` names an immutable version.
 
 - `network_ref` → `Network.VirtualNetwork`
 - `namespace_ref` → `Platform.Namespace`
@@ -548,7 +545,7 @@ resource type in the registry and gets a reference, not a bare string. A bare st
 system: it can't be queried by policies, it can't be drift-detected, and impact analysis can't trace
 through it. A reference is a graph edge the system can walk.
 
-References are version-pinned via `ref_uuid` (each version is a new immutable record with its
+References are version-pinned on the URL's `@pin` axis (each version is a new immutable record with its
 own identity uuid — the ADR-051 family rule), but the referenced
 resource's **handle** remains stable across versions — so a consumer or policy can reference
 "tenant-alpha-prod" by handle and the system resolves to the current version.
@@ -597,9 +594,7 @@ realized:
   vcpu: 4
   memory: 16384
   fqdn: "vm-0042.tenant-alpha-prod.k8s-east.internal"
-  ip_address:
-    ref_uuid: "c9d4e5f6-..."            # → realized Network.IPAddress
-    ref_name: "10.128.4.42"
+  ip_address: uuid/c9d4e5f6-...         # → realized Network.IPAddress
   storage_path: "/dev/rbd0"
 
 outputs:
@@ -610,16 +605,12 @@ relationships_created:
   - edge_type: binds_to
     relation: attaches_to
     target_type: Storage.Volume
-    target_ref:
-      ref_uuid: "d8e9f0a1-..."          # → realized Storage.Volume
-      ref_name: "pvc-a1b2c3"
+    target_ref: uuid/d8e9f0a1-...        # → realized Storage.Volume
     target_native_id: "ceph/pvc-a1b2c3"   # provider's native id for correlation
   - edge_type: binds_to
     relation: connects_to
     target_type: Network.VirtualNetwork
-    target_ref:
-      ref_uuid: "b7e3f1a2-..."          # → same Network.VirtualNetwork from intent
-      ref_name: "prod-vlan-40"
+    target_ref: uuid/b7e3f1a2-...        # → same Network.VirtualNetwork from intent
     target_native_id: "vlan-40"
 ```
 

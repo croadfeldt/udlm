@@ -2,12 +2,14 @@
 # directly — but the app_profile it references does, so this record is TRANSITIVELY impacted (ADR-012 #2).
 # validate.py impact_report() prints this as a "↳ transitively impacted" line under the app_profile.
 record_type: layer
-uuid: a99c0de1-5050-4a10-9b20-1122334455bb
+uuid: 0984944a-9267-4a08-815a-aa7f79772eab
 handle: intermediate/frontend/profile-binding
 conforms_to: udlm/0.1
 name: Frontend profile binding
 description: Binds the frontend to the governed web-tier app profile by reference.
-version: 1.0.0
+version: 2.0.0
+supersedes:
+  - a99c0de1-5050-4a10-9b20-1122334455bb   # the object-form example this replaces (URF cutover 4b)
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status:
   state: active
@@ -18,8 +20,4 @@ contributor:
   contributor_type: platform_admin
   review: per_profile
 fields:
-  app_profile:
-    ref_uuid: a99c0de1-4040-4a10-8b20-1122334455aa    # -> web-tier app_profile (which references superseded network_zone v1)
-    ref_name: platform/app-profiles/web-tier
-    ref_version: 1.0.0
-    reference_data_type: app_profile
+  app_profile: uuid/035e8844-4fa2-40f7-8dd3-fa6dfb0c2e33@2.0.0?reference_data_type==app_profile

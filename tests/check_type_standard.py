@@ -7,7 +7,8 @@ fails CI. Shrink the baseline with every fix-wave PR; never grow it.
   G1 outputs-nonempty   realizable type (family Resource|Process) declares >=1 output OR an
                         explicit exclusion note ("outputs-exempt:" token in the spec description)
   G2 target-exists      every relationships[].target resolves to a registered resource_type
-  G3 reference-lint     *_ref spec properties use the common-elements Reference oneOf, not bare string
+  G3 reference-lint     *_ref spec properties are URF references (format: udlm-ref-url), never
+                        an unconstrained bare string
   G5 adopts-parity      adoption claims in prose require adopts[] entries (structured half of
                         check_standards_registered)
   G6 property-strict    schema-authoring keys inside spec.properties subtrees come from the JSON
@@ -65,15 +66,15 @@ def walk_props(node, path, hits):
 
 
 def is_reference_shape(prop):
-    """common-elements §2.5: oneOf(handle string | Reference object)."""
+    """A reference is a URF string (common-elements §2.5 / identifier-scheme §9): the property
+    either declares `format: udlm-ref-url` directly or $refs a definition that does."""
     if not isinstance(prop, dict):
         return False
-    if "$ref" in json.dumps(prop):
+    if prop.get("format") in ("udlm-ref-url", "udlm-filter-url"):
         return True
-    for alt in prop.get("oneOf", []):
-        if isinstance(alt, dict) and alt.get("type") == "object" and \
-           any(k in alt.get("properties", {}) for k in ("uuid", "ref_uuid", "handle")):
-            return True
+    blob = json.dumps(prop)
+    if "$ref" in blob or "udlm-ref-url" in blob:
+        return True
     return False
 
 
@@ -116,7 +117,7 @@ def main():
         # G3
         for pk, pv in (spec.get("properties") or {}).items():
             if pk.endswith("_ref") and isinstance(pv, dict) and pv.get("type") == "string" and not is_reference_shape(pv):
-                found.append(("G3", rt, pk, "bare-string *_ref — use the common-elements Reference oneOf"))
+                found.append(("G3", rt, pk, "bare-string *_ref — declare format: udlm-ref-url (identifier-scheme §9)"))
 
         # G8: no absolute $refs — validation must never depend on the network. Relative
         # sibling refs only. Found live twice (ResourceQuota, then the VM's
@@ -129,7 +130,7 @@ def main():
                 if isinstance(items, dict):
                     for ik, iv in (items.get("properties") or {}).items():
                         if ik.endswith("_ref") and isinstance(iv, dict) and iv.get("type") == "string" and not is_reference_shape(iv):
-                            found.append(("G3", rt, f"{pk}[].{ik}", "bare-string *_ref — use the common-elements Reference oneOf"))
+                            found.append(("G3", rt, f"{pk}[].{ik}", "bare-string *_ref — declare format: udlm-ref-url (identifier-scheme §9)"))
 
         # G5
         meta_desc = (d.get("metadata", {}) or {}).get("description", "") or d.get("description", "") or ""

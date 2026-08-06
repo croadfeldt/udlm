@@ -43,12 +43,10 @@ constituents:
     spec_defaults:
       vcpu: { count: 8 }
       memory: { size: 32GB }
-      guest_os:
-        reference_data_type: os_image
-        ref_uuid: 8a2b1c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d   # the os_image vocabulary entry that
-                                                          # tracks the current server image —
-                                                          # deferred resolution, no runtime
-                                                          # directory-listing discovery
+      guest_os: uuid/8a2b1c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d?reference_data_type==os_image
+                                            # the os_image vocabulary entry that tracks the
+                                            # current server image — deferred resolution, no
+                                            # runtime directory-listing discovery
       disks:
         - size: 128GB
           storage_class: cexample/host-default   # tier intent, not a filesystem path; the
