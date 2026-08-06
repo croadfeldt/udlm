@@ -54,7 +54,7 @@
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow. Constrained by `family` (see allOf). The specific type (e.g. Compute.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow | Grouping. Constrained by `family` (see allOf). The specific type (e.g. Compute.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
     },
     "lifecycle_archetype": {
       "enum": [
@@ -577,7 +577,8 @@
           "entity_type": {
             "enum": [
               "Identity",
-              "Escrow"
+              "Escrow",
+              "Grouping"
             ]
           }
         },

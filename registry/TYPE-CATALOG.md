@@ -6,6 +6,28 @@
 
 ## Access
 
+### Access.Grouping (0.1.0)
+
+**Purpose:** The native grouping anchor: the one identity a subject-expression binds to, the referent tenant_uuid / ownership / policy targets / unit operations resolve against, and the carrier of unit-level obligations. It contains nothing — the member set is DERIVED by evaluating the criterion (a URF filter, identifier-scheme 9); point-in-time membership is answered by replaying record states.
+
+A named handle for 'a suite of things treated as a unit' — a tenant, a team's resources, an exemption set. External RBAC decides WHO may act (its group binds to this record); the criterion — a filter URL — decides WHAT is in the set, computed fresh each time, so membership can never drift from reality. Obligations like physical isolation attach here and the engine enforces them over the derived set.
+
+**Use when:**
+- Something references the set by identity — tenant_uuid, owned_by, a policy target, a unit operation ('evacuate team X')
+- The set carries external subject bindings (the RBAC bridge) or unit-level obligations (isolation)
+- Otherwise: use an inline URF filter — a once-consulted set earns no record
+
+**Not for:**
+- Access DETERMINATION — external RBAC/IdP owns who-may; the live answer is authoritative at enforcement (ADR-008)
+- Storing member lists — membership is DERIVED from the criterion (DRV-001)
+- Conditional/attribute grants (policies) or per-field release (the ADR-041 firewall)
+
+**Works with:**
+- Security.DirectoryService and auth-capability providers — subject_bindings evaluate there
+- Every estate record — criteria filter their declared fields (identifier-scheme 9)
+- The governance matrix — obligations enforcement and binding-edit meta-governance
+- Access.IdentityEscrow — the Access-family sibling
+
 ### Access.IdentityEscrow (0.2.1)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
@@ -1033,4 +1055,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*50 types; 50 with context, 0 pending.*
+*51 types; 51 with context, 0 pending.*

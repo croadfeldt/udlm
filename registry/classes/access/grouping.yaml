@@ -1,0 +1,109 @@
+# Access.Grouping — the native grouping anchor. Membership is DERIVED from the criterion
+# (a stored URF filter) — never a stored member list.
+uuid: 2c8b6270-2eae-4ac4-8faa-3375dde3da3e
+record_type: class
+resource_type: Access.Grouping
+class: type
+parent: Access
+family: Access
+entity_type: Grouping
+version: 0.1.0
+conforms_to: udlm/0.1
+status: active
+context:
+  purpose: 'The native grouping anchor: the one identity a subject-expression binds to, the referent tenant_uuid
+    / ownership / policy targets / unit operations resolve against, and the carrier of unit-level obligations.
+    It contains nothing — the member set is DERIVED by evaluating the criterion (a URF filter, identifier-scheme
+    9); point-in-time membership is answered by replaying record states.'
+  plain_description: A named handle for 'a suite of things treated as a unit' — a tenant, a team's resources,
+    an exemption set. External RBAC decides WHO may act (its group binds to this record); the criterion
+    — a filter URL — decides WHAT is in the set, computed fresh each time, so membership can never drift
+    from reality. Obligations like physical isolation attach here and the engine enforces them over the
+    derived set.
+  use_when:
+  - Something references the set by identity — tenant_uuid, owned_by, a policy target, a unit operation
+    ('evacuate team X')
+  - The set carries external subject bindings (the RBAC bridge) or unit-level obligations (isolation)
+  - 'Otherwise: use an inline URF filter — a once-consulted set earns no record'
+  not_for:
+  - Access DETERMINATION — external RBAC/IdP owns who-may; the live answer is authoritative at enforcement
+    (ADR-008)
+  - Storing member lists — membership is DERIVED from the criterion (DRV-001)
+  - Conditional/attribute grants (policies) or per-field release (the ADR-041 firewall)
+  works_with:
+  - Security.DirectoryService and auth-capability providers — subject_bindings evaluate there
+  - Every estate record — criteria filter their declared fields (identifier-scheme 9)
+  - The governance matrix — obligations enforcement and binding-edit meta-governance
+  - Access.IdentityEscrow — the Access-family sibling
+elements:
+- element: subject_bindings
+  scope: Access.Grouping
+  optional: true
+  schema:
+    type: array
+    items:
+      type: object
+      required:
+      - provider_ref
+      - expression
+      additionalProperties: false
+      properties:
+        provider_ref:
+          type: string
+          format: udlm-ref-url
+          description: The auth-capability provider that evaluates this expression (cardinality-1 URF).
+        expression:
+          type: string
+          description: OPAQUE provider-scoped subject expression — an LDAP DN, an OIDC claim, a K8s subject.
+            Never parsed or evaluated by UDLM.
+        note:
+          type: string
+  description: 'The RBAC bridge: external subject-expressions whose holders this grouping is FOR. Opaque
+    by design — parsing or evaluating one would re-import the permission engine the model excludes.
+
+    '
+  state: canonical
+- element: membership_criterion
+  scope: Access.Grouping
+  schema:
+    type: string
+    format: udlm-filter-url
+  description: 'The RULE that derives the member set — a stored URF filter (identifier-scheme 9; declared
+    fields only, URF-005), never the set itself. Idioms: tenancy "estate?tenant_uuid=={self}" (exclusivity
+    is structural — the field is scalar); ownership "estate?owned_by=={self}"; labels "estate?labels.concern==payments";
+    explicit set "estate?uuid=in=(a,b)" — the marked exception, prefer any derivable form; exclusion "estate?tenant_uuid==abc;member_of!=access/groupings/hold".
+
+    '
+  state: canonical
+- element: obligations
+  scope: Access.Grouping
+  optional: true
+  schema:
+    type: object
+    additionalProperties: false
+    properties:
+      isolation:
+        type: string
+        enum:
+        - none
+        - logical
+        - physical
+  description: 'Unit-level requirements the engine enforces over the derived set — physical: stores and
+    placement partition by this grouping''s uuid (IdP group -> binding -> this anchor -> tenant_uuid ->
+    partitioned stores; every hop on existing machinery).
+
+    '
+  state: canonical
+spec_examples:
+- subject_bindings:
+  - provider_ref: estate/providers/directory
+    expression: cn=payments,cn=groups,dc=cexample,dc=example
+  membership_criterion: estate?tenant_uuid=={self}
+  obligations:
+    isolation: physical
+metadata:
+  display_name: Grouping
+  description: 'The native grouping anchor: RBAC bridge + derived-membership criterion + unit obligations.'
+  maintainer: UDLM project
+  origination_timestamp: '2026-08-05T00:00:00Z'
+$id: https://udlm.dev/registry/udlm/0.1/class/Access.Grouping/0.1.0
