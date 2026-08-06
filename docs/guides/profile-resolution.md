@@ -1,6 +1,6 @@
 # Profile resolution — the machine surface behind ADR-007
 
-**What this settles:** ADR-007 decided *what a profile is* (a composed **set** with **floors**, built-ins immutable, **fork-on-modify**). This specifies the mechanics DCM runs against the profile record (`dcm-group.schema.json`, `group_class: policy_profile`, the `profile` block): how a profile **resolves** for a request, how two profiles **compare**, how they **compose**, and how a tenant **onboards** onto one. UDLM carries the record and defines these operations; DCM (Policy) executes them.
+**What this settles:** ADR-007 decided *what a profile is* (a composed **set** with **floors**, built-ins immutable, **fork-on-modify**). This specifies the mechanics DCM runs against the profile record (`bundle.schema.json`, `record_type: bundle`, the `profile` block): how a profile **resolves** for a request, how two profiles **compare**, how they **compose**, and how a tenant **onboards** onto one. UDLM carries the record and defines these operations; DCM (Policy) executes them.
 
 ## 1. Resolution — which profile applies
 
@@ -39,10 +39,10 @@ Any modification of a **built-in** (`is_builtin: true`) profile **produces a new
 
 ## 5. Atomic tenant onboarding
 
-Onboarding a tenant onto a profile is **all-or-nothing**. Creating the tenant (`group_class: tenant_boundary`) with a resolved profile atomically binds the profile's **floor** — its policies, its `required_mechanics` (attestation, time-sync capability, stores, retention), and the `store_bindings` the profile requires. The tenant is **not live until its profile floor is provisioned and operative**; a partial bind rolls back. This is why a profile declares *mechanics and data*, not just policy defaults (ADR-007 rejected policy-only): onboarding must be able to verify the whole floor is present before the tenant accepts requests.
+Onboarding a tenant onto a profile is **all-or-nothing**. Creating the tenant (`resource_type: Access.Grouping`) with a resolved profile atomically binds the profile's **floor** — its policies, its `required_mechanics` (attestation, time-sync capability, stores, retention), and the `store_bindings` the profile requires. The tenant is **not live until its profile floor is provisioned and operative**; a partial bind rolls back. This is why a profile declares *mechanics and data*, not just policy defaults (ADR-007 rejected policy-only): onboarding must be able to verify the whole floor is present before the tenant accepts requests.
 
 ## Boundary (ADR-008)
 
 The `profile` record, the containment operator, and the composition rule are **UDLM** — a peer must resolve and compare profiles identically or two systems disagree on what a `sovereign` deployment guarantees. The onboarding transaction, the resolution engine, and provisioning the mechanics are **DCM**.
 
-See ADR-007 (the decision), `dcm-group.schema.json` (the record), `policy-contract.md` (domain precedence + the policies a floor references), `docs/spec/governance/governance-matrix.md` (profile-bound defaults).
+See ADR-007 (the decision), `bundle.schema.json` (the record), `policy-contract.md` (domain precedence + the policies a floor references), `docs/spec/governance/governance-matrix.md` (profile-bound defaults).

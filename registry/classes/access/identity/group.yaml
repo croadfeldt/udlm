@@ -1,20 +1,20 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Group/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Group/0.3.1
 conforms_to: udlm/0.1
 uuid: 679b1fad-95f4-4910-99ae-72147eef4dbd
 record_type: class
 class: type
 resource_type: Identity.Group
 parent: Identity
-version: 0.3.0
+version: 0.3.1
 family: Access
 status: active
 metadata:
   display_name: Identity Group
   description: 'An identity-side group of persons/service-accounts — identity DATA (ADR-RBAC-001). Distinct
-    from a DCMGroup: a DCMGroup with group_class `access_grouping` is the DCM-native RBAC subject-set
+    from a grouping: a grouping with record kind `access_grouping` is the DCM-native RBAC subject-set
     that role-assignments bind to (and that the authority-enforcement voting model references); an Identity.Group
     models a group as it exists in a directory / IdP (e.g. an external group mapped to roles via auth-providers
-    role_mapping) or a native logical grouping of accounts. A DCMGroup (access_grouping) MAY reference
+    role_mapping) or a native logical grouping of accounts. A grouping (access_grouping) MAY reference
     an Identity.Group as its membership source. The two are kept distinct so external directory groups
     stay referenced (PIP), not custodied.'
   maintainer: udlm-registry
@@ -86,7 +86,7 @@ spec_examples:
 outputs:
   group_ref:
     type: string
-    description: Referenced by a DCMGroup (access_grouping) membership source and by auth-providers role_mapping.
+    description: Referenced by a grouping (access_grouping) membership source and by auth-providers role_mapping.
 relationships:
 - edge_type: references
   target: Identity.Person

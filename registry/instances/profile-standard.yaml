@@ -1,34 +1,44 @@
 # Built-in profile: STANDARD — baseline production posture.
-# policy_profile DCMGroup (DCM ADR-007). Floor is a superset of dev's by set-containment
+# policy_profile grouping (DCM ADR-007). Floor is a superset of dev's by set-containment
 # (profile-resolution.md): adds governance-matrix enforcement, recovery, and drift reconciliation.
+record_type: bundle
 uuid: 7ce1ac91-4a8b-4dbb-82c2-f468e9eb0499
 handle: udlm/profile/standard
 conforms_to: udlm/0.1
-group_class: policy_profile
 name: Standard
-description: >-
-  Baseline production profile — the dev/evaluation floor plus governance-matrix enforcement, recovery
-  policy, and steady-state drift reconciliation. The default posture for non-regulated workloads.
-version: 1.0.0
+description: Baseline production profile — the dev/evaluation floor plus governance-matrix enforcement,
+  recovery policy, and steady-state drift reconciliation. The default posture for non-regulated workloads.
+version: 1.1.0
 status:
   state: active
-profile:
+contains:
+- ref: estate/policy/structural-validation
+  state: required
+- ref: estate/policy/tenant-isolation
+  state: required
+- ref: estate/policy/resolved-profile-evaluation
+  state: required
+- ref: estate/policy/governance-matrix
+  state: required
+- ref: estate/policy/recovery
+  state: required
+- ref: estate/policy/drift-reconciliation
+  state: required
+- ref: estate/audit/append-only-log
+  state: required
+- ref: estate/lifecycle/four-state-tracking
+  state: required
+- ref: estate/store/requested
+  state: required
+- ref: estate/store/realized
+  state: required
+- ref: estate/store/discovered
+  state: required
+- ref: estate/time-sync/causal
+  state: required
+- ref: estate/discovery/scheduled
+  state: required
+activation:
   is_builtin: true
   default: false
   approved: true
-  composed_from: []
-  floor:
-    - policy/structural-validation
-    - policy/tenant-isolation
-    - policy/resolved-profile-evaluation
-    - policy/governance-matrix               # boundary enforcement on every DCM→Provider crossing
-    - policy/recovery                         # partial-realization / timeout handling (operational-models)
-    - policy/drift-reconciliation             # discovered-vs-realized drift → remediation
-    - audit/append-only-log
-    - lifecycle/four-state-tracking
-  required_mechanics:
-    - store/requested
-    - store/realized
-    - store/discovered
-    - time-sync/causal
-    - discovery/scheduled                     # drift needs a discovery cadence (operational-models)

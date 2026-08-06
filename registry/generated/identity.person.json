@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Person/0.4.1",
   "conforms_to": "udlm/0.1",
   "uuid": "679b14ef-f169-441e-968d-dacafffe1966",
   "resource_type": "Identity.Person",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Identity.Person",
-          "version": "0.4.0",
+          "version": "0.4.1",
           "uuid": "679b14ef-f169-441e-968d-dacafffe1966"
         }
       ]
@@ -98,7 +98,7 @@
   "outputs": {
     "actor_uuid": {
       "type": "string",
-      "description": "The stable actor id referenced by role-assignments and by DCMGroup (access_grouping) membership."
+      "description": "The stable actor id referenced by role-assignments and by grouping (access_grouping) membership."
     }
   },
   "relationships": [
@@ -106,7 +106,7 @@
       "edge_type": "contained_by",
       "target": "Identity.Group",
       "cardinality": "0..n",
-      "description": "Member of an access DCMGroup (access_grouping) or Identity.Group; membership drives role binding (ADR-RBAC-001)."
+      "description": "Member of an access grouping (access_grouping) or Identity.Group; membership drives role binding (ADR-RBAC-001)."
     },
     {
       "edge_type": "references",

@@ -1,31 +1,31 @@
 # UDLM — Universal Group Model
 
-> **Machine-validatable schema:** DCMGroup instances validate against
-> [`registry/dcm-group.schema.json`](../../../registry/dcm-group.schema.json)
-> (`registry/tools/validate.py` dispatches any instance carrying `group_class` to it).
+> **Machine-validatable schema:** `Access.Grouping` records validate against
+> `registry/bundle.schema.json` (bundles) / the `Access.Grouping` class (groupings)
+> (`registry/tools/validate.py` dispatches any instance carrying the grouping/bundle record kind to it).
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Grouping](resource-grouping.md) | [Entity Relationships](entity-relationships.md)
 
 > The three foundational abstractions — Data, Provider, and Policy — are defined in
 > [foundations.md](foundations.md).
 >
-> The Data abstraction — DCMGroup as universal grouping artifact
+> The Data abstraction — grouping as universal grouping artifact
 
 ---
 
 ## 1. Purpose
 
-The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `DCMGroup` entity distinguished by `group_class` metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
+The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `grouping` entity distinguished by the grouping/bundle record kind metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
 
 **The model:**
-- Every grouping construct is a `group_class` value on `DCMGroup`; per-class APIs are class-filtered views of the one group store
+- Every grouping construct is a the grouping/bundle record kind value on `grouping`; per-class APIs are class-filtered views of the one group store
 - Structural invariants are per-class (one Tenant per resource, no constituent cross-tenant, etc.)
 - Policy enforcement is governed by the active Profile, not per-group configuration
 - `tenant_boundary` groups carry the hard-tenancy isolation guarantees
 
 ---
 
-## 2. The DCMGroup Entity
+## 2. The grouping Entity
 
 ### 2.1 Universal Structure
 
@@ -47,7 +47,7 @@ dcm_group:
   concern_tags: [payments, pci-scope, eu-west]  # free tagging — discoverability
 
   # WHAT KIND OF GROUP
-  group_class: <see Section 2.2>
+  record kind: <see Section 2.2>
   group_subclass: <user-defined semantic label — advisory only, no system behavior>
   # group_subclass examples: cost_center, business_unit, compliance_scope, project
 
@@ -114,7 +114,7 @@ dcm_group:
 
 ### 2.2 Group Classes
 
-| group_class | Replaces | member_types_permitted | exclusivity.per_member | enforcement_model |
+| record kind | Replaces | member_types_permitted | exclusivity.per_member | enforcement_model |
 |-------------|---------|----------------------|----------------------|------------------|
 | `tenant_boundary` | Tenant | resource_entity, group | one (structural lock) | profile-governed |
 | `resource_grouping` | Resource Group, Custom Resource Group | resource_entity | many | advisory |
@@ -134,7 +134,7 @@ class is `enforced` — CTX-001 gates cross-tenant relationships on an active au
 
 ### 2.3 Structural Invariants — Non-Overridable
 
-Regardless of `enforcement_model`, `group_class`, or active Profile, the following structural invariants always hold:
+Regardless of `enforcement_model`, the grouping/bundle record kind, or active Profile, the following structural invariants always hold:
 
 | Invariant | Applies To | Rule |
 |-----------|-----------|------|
@@ -156,7 +156,7 @@ Regardless of `enforcement_model`, `group_class`, or active Profile, the followi
 
 ```yaml
 dcm_group:
-  group_class: tenant_boundary
+  resource_type: Access.Grouping
   member_types_permitted: [resource_entity, group]
   exclusivity:
     per_member: one   # STRUCTURAL LOCK — cannot be changed by policy
@@ -187,7 +187,7 @@ dcm_group:
 
 ```yaml
 dcm_group:
-  group_class: resource_grouping
+  resource_type: Access.Grouping
   group_subclass: cost_center   # advisory — CostCenter, BusinessUnit, Project, Team...
   member_types_permitted: [resource_entity]
   exclusivity:
@@ -202,7 +202,7 @@ dcm_group:
 
 ```yaml
 dcm_group:
-  group_class: policy_collection
+  record kind: policy_collection
   concern_tags: [pci-dss, encryption, network-segmentation]
   member_types_permitted: [policy]
   enforcement_model: enforced
@@ -220,7 +220,7 @@ dcm_group:
 
 ```yaml
 dcm_group:
-  group_class: policy_profile
+  record_type: bundle
   member_types_permitted: [group]   # only policy_collection groups
   extends: <parent profile uuid>    # inherits all parent's groups
   enforcement_model: enforced
@@ -232,7 +232,7 @@ dcm_group:
 
 ```yaml
 dcm_group:
-  group_class: composite
+  record kind: composite
   name: "Payments Platform"
   concern_tags: [payments, pci-scope]
   member_types_permitted: [resource_entity, policy, layer, group, provider]
@@ -268,7 +268,7 @@ policy:
 
 ```yaml
 dcm_group:
-  group_class: federation
+  record kind: federation
   name: "Global FSI Federation"
   member_types_permitted: [group]   # tenant_boundary groups only
   enforcement_model: advisory       # federation cannot override member Tenant isolation
@@ -383,11 +383,11 @@ The universal registry exposes class-filtered views for convenience:
 
 | Endpoint | Equivalent Query |
 |----------|----------------|
-| `GET /tenants` | `GET /groups?group_class=tenant_boundary` |
-| `GET /resource-groups` | `GET /groups?group_class=resource_grouping` |
-| `GET /policy-groups` | `GET /groups?group_class=policy_collection` |
-| `GET /policy-profiles` | `GET /groups?group_class=policy_profile` |
-| `GET /federations` | `GET /groups?group_class=federation` |
+| `GET /tenants` | `GET /groups?record kind=tenant_boundary` |
+| `GET /resource-groups` | `GET /groups?record kind=resource_grouping` |
+| `GET /policy-groups` | `GET /groups?record kind=policy_collection` |
+| `GET /policy-profiles` | `GET /groups?record kind=policy_profile` |
+| `GET /federations` | `GET /groups?record kind=federation` |
 
 Existing API references continue to work unchanged. New API consumers can use the universal endpoint.
 
@@ -424,7 +424,7 @@ policies below add behavior on top of those invariants:
 
 ### 9a.1 Community Subclass Catalog (Q35)
 
-The `group_class` set is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
+The the grouping/bundle record kind set is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
 
 ```yaml
 # Community subclass catalog (advisory — not enforced, not validated)
@@ -451,9 +451,9 @@ Organizations freely declare subclasses not in the catalog — there is no valid
 
 ### 9a.2 Group Sovereignty Interaction (Q36)
 
-Sovereignty interaction is group_class-specific:
+Sovereignty interaction is record kind-specific:
 
-| group_class | Cross-Sovereignty | Notes |
+| record kind | Cross-Sovereignty | Notes |
 |-------------|-----------------|-------|
 | `tenant_boundary` | **Never** | Structural — not configurable |
 | `resource_grouping` | Permitted by default | Policy may restrict for classified resources |
@@ -468,7 +468,7 @@ policy:
   type: validation
   enforcement_class: compliance
   rule: >
-    If group.group_class == resource_grouping
+    If group.record kind == resource_grouping
     AND member.classification_level IN [confidential, restricted]
     AND member.sovereignty_zone != group.primary_sovereignty_zone
     THEN gate: "Classified resources cannot join cross-sovereignty resource groups"
@@ -530,9 +530,9 @@ removed).
 
 ### 9a.5 Group Policy Inheritance — Nested Groups (Q39)
 
-Policy inheritance for nested groups is group_class-specific and profile-governed:
+Policy inheritance for nested groups is record kind-specific and profile-governed:
 
-| group_class | Default | Profile Override |
+| record kind | Default | Profile Override |
 |-------------|---------|----------------|
 | `tenant_boundary` | `opt_out` (parent cascades unless child excludes) | `opt_in` for homelab/dev/fsi/sovereign |
 | `resource_grouping` | Not applicable | Resource groups are tags — policies target them, not inherit through them |
@@ -543,7 +543,7 @@ Policy inheritance for nested groups is group_class-specific and profile-governe
 ```yaml
 # Nested group policy inheritance declaration
 dcm_group:
-  group_class: tenant_boundary
+  resource_type: Access.Grouping
   parent_group_uuid: <corporate-tenant-uuid>
   policy_inheritance: opt_out     # governed by active Profile
   parent_policy_exclusions:
@@ -556,16 +556,16 @@ dcm_group:
 
 | Policy | Rule |
 |--------|------|
-| `GRP-011` | The group_class set is closed — system behavior is tied to declared classes only. group_subclass is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference. No validation or enforcement on subclass values. |
-| `GRP-012` | Sovereignty interaction is group_class-specific. tenant_boundary groups never span sovereignty boundaries (structural). resource_grouping groups may span sovereignty boundaries by default — policy may restrict for classified resources. policy_collection and layer_grouping groups always permitted cross-sovereignty. composite groups are governed by the sovereignty rules of their most restrictive member type. |
+| `GRP-011` | The record kind set is closed — system behavior is tied to declared classes only. group_subclass is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference. No validation or enforcement on subclass values. |
+| `GRP-012` | Sovereignty interaction is record kind-specific. tenant_boundary groups never span sovereignty boundaries (structural). resource_grouping groups may span sovereignty boundaries by default — policy may restrict for classified resources. policy_collection and layer_grouping groups always permitted cross-sovereignty. composite groups are governed by the sovereignty rules of their most restrictive member type. |
 | `GRP-013` | Tenant decommission requires pre-decommission validation (resource state, cross-tenant relationships, compliance holds, child group resolution). Resources follow declared lifecycle policy. Child tenant_boundary groups must be resolved before parent decommission. Audit records enter post-lifecycle retention — never destroyed as part of Tenant decommission. |
 | `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBERSHIP_EXPIRE audit record (event group.membership_expired); MEMBER_REMOVE is additionally produced only by the `remove` on_expiry action, when the member is actually removed. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
-| `GRP-015` | Group policy inheritance is group_class-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (homelab/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
+| `GRP-015` | Group policy inheritance is record kind-specific and profile-governed. tenant_boundary: opt_out (standard/prod) or opt_in (homelab/dev/fsi/sovereign). federation: always opt_in — peer consent required. composite: opt_out by default. resource_grouping and policy_collection: not applicable. |
 
 ## 11. Related Concepts
 
-- **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `group_class: resource_grouping`
-- **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `group_class: policy_collection` and `group_class: policy_profile`
+- **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `resource_type: Access.Grouping`
+- **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `record kind: policy_collection` and `record_type: bundle`
 - **[entity-relationships.md](entity-relationships.md)** — cross-tenant authorized relationships between groups
 - **[universal-audit.md](../contracts/universal-audit.md)** — all group changes produce audit records
 - **[ingestion-model.md](../lifecycle/ingestion-model.md)** — migration of existing constructs to universal groups
@@ -576,7 +576,7 @@ dcm_group:
 
 ### 13.1 What Cross-Tenant Authorizations Are
 
-A `cross_tenant_authorization` is a DCMGroup with `group_class: cross_tenant_authorization`. It is the formal mechanism by which one Tenant grants another Tenant permission to reference, allocate from, or stake a resource that belongs to the granting Tenant.
+A `cross_tenant_authorization` is a grouping with `record kind: cross_tenant_authorization`. It is the formal mechanism by which one Tenant grants another Tenant permission to reference, allocate from, or stake a resource that belongs to the granting Tenant.
 
 Without a cross-tenant authorization, entities in different Tenants cannot form relationships. The authorization is the bridge that enables cross-Tenant resource sharing while maintaining isolation.
 

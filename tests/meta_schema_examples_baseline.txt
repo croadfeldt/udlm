@@ -9,7 +9,6 @@ catalog-item.schema.json
 commit-log-entry.schema.json
 common-elements.schema.json
 data-reference.schema.json
-dcm-group.schema.json
 decision-record.schema.json
 finding-routing-record.schema.json
 function-capability-matrix.schema.json

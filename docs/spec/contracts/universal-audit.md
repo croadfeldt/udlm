@@ -118,7 +118,7 @@ audit_record:
     # For MEMBER_ADD, MEMBER_REMOVE, MEMBERSHIP_EXPIRE
     membership_detail:
       group_uuid: <uuid>
-      group_class: <class>
+      record kind: <class>
       member_role: <role>
       time_bounded: <true|false>
       expires_at: <RFC 3339 UTC 'Z' — if time-bounded>

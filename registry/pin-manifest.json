@@ -13,6 +13,54 @@
    "1.0.0": "sha256:c25c5b18fa269d48b801b90b23e1029de6e2a647c97f3905b74ccbf56508f496"
   }
  },
+ "bundle:udlm/profile/dev": {
+  "current": "1.1.0",
+  "path": "registry/instances/profile-dev.yaml",
+  "versions": {
+   "1.0.0": "sha256:633be664f3aa0e34e88bde243f85e4f1add5ceb8d27412c829cbad6651edb93e",
+   "1.1.0": "sha256:f050ba2b90dd8ab3538242112143803ad5ca5cef231724debfdae365d1c2effe"
+  }
+ },
+ "bundle:udlm/profile/fsi": {
+  "current": "1.1.0",
+  "path": "registry/instances/profile-fsi.yaml",
+  "versions": {
+   "1.0.0": "sha256:1e7e3405595c077d38a988f617e548122774572b39b6bfd62250004cdb460108",
+   "1.1.0": "sha256:d39c0d95d7be12d703bb8d35baf3f6ca3360c8fcf739315bdc748c279890d038"
+  }
+ },
+ "bundle:udlm/profile/homelab": {
+  "current": "1.1.0",
+  "path": "registry/instances/profile-homelab.yaml",
+  "versions": {
+   "1.0.0": "sha256:d4f58f7c84fea3c03d13712646f924d41fb8185222822d131f60b8952873c044",
+   "1.1.0": "sha256:d969a3a4c566ee0fe2affbfb9f3e126d816a5cf1c5227aa160884443232722d7"
+  }
+ },
+ "bundle:udlm/profile/prod": {
+  "current": "1.1.0",
+  "path": "registry/instances/profile-prod.yaml",
+  "versions": {
+   "1.0.0": "sha256:b1a6f4261bb2ce594a6549b751f5c0cf2a5c058295f8bf51917a5ade6449948d",
+   "1.1.0": "sha256:83da4177d2db0269b3aae4dc09934f3841deca13c00b7a76126a1d665b1d53ee"
+  }
+ },
+ "bundle:udlm/profile/sovereign": {
+  "current": "1.1.0",
+  "path": "registry/instances/profile-sovereign.yaml",
+  "versions": {
+   "1.0.0": "sha256:0ba53487d12d85e473417e2a6de5647624147f9bba041f00a24b5700a4f0b6f2",
+   "1.1.0": "sha256:5e4af43943ef38c39828cfa489fa84723a124f4ea93b43592945f352219752ef"
+  }
+ },
+ "bundle:udlm/profile/standard": {
+  "current": "1.1.0",
+  "path": "registry/instances/profile-standard.yaml",
+  "versions": {
+   "1.0.0": "sha256:6eaa3a77cc135f8165beca5d506aadde6d3e4f400e23a935c3bdf8769c6dd42a",
+   "1.1.0": "sha256:14f2dbbd0ed5838480d3c3bddf24b17f22e2dfd197d78f3dbb15749cdda341f1"
+  }
+ },
  "catalog_item:org/catalog/example-three-tier-app": {
   "current": "1.0.0",
   "path": "registry/instances/example-catalog-item.yaml",
@@ -264,10 +312,11 @@
   }
  },
  "type:Automation.OSPatch": {
-  "current": "1.2.0",
+  "current": "1.2.1",
   "path": "registry/classes/process/automation/ospatch/_base.yaml",
   "versions": {
-   "1.2.0": "sha256:bb08e74073c4d9267ea0d6af58fade1aef72fe684e94577894f0794b1a92a0a6"
+   "1.2.0": "sha256:bb08e74073c4d9267ea0d6af58fade1aef72fe684e94577894f0794b1a92a0a6",
+   "1.2.1": "sha256:45c213a5f223542999d5504a8dd9e17a03cb53e5b8f33e8cf16d80a57ffd462b"
   }
  },
  "type:Automation.OSPatch.EngineBlue": {
@@ -459,29 +508,32 @@
   }
  },
  "type:Identity.Group": {
-  "current": "0.3.0",
+  "current": "0.3.1",
   "path": "registry/classes/access/identity/group.yaml",
   "versions": {
    "0.2.2": "sha256:6d4a638b981efb7aed5151f4351152720634c030d47425ef54a366174a837558",
-   "0.3.0": "sha256:6b7016862273fc5e719eb4a01f726e64d4a844167e085e7ee5bbc84112b89f59"
+   "0.3.0": "sha256:6b7016862273fc5e719eb4a01f726e64d4a844167e085e7ee5bbc84112b89f59",
+   "0.3.1": "sha256:73922e499992575e2a093e3e29c46571887c78019abf6ed599d4b3f46beb104f"
   }
  },
  "type:Identity.Person": {
-  "current": "0.4.0",
+  "current": "0.4.1",
   "path": "registry/classes/access/identity/person.yaml",
   "versions": {
    "0.3.2": "sha256:9d41b4f7691af6ca06540c2447f0003ecf1d2d3ca3d3d83344bf47925d175c1f",
    "0.3.3": "sha256:132b1c0b6bbe7de3fa392d2d282982adb56a66348b2a5ff22667bc72c4fc18e7",
-   "0.4.0": "sha256:974756bafa48b6e94f6f98aa610a3e402fd8d9dcb185c230a230b0b5f631b167"
+   "0.4.0": "sha256:974756bafa48b6e94f6f98aa610a3e402fd8d9dcb185c230a230b0b5f631b167",
+   "0.4.1": "sha256:be402685eb5bd58a10ee143fc1599c50e65fbae14553bb38d08bc95482ef3531"
   }
  },
  "type:Identity.ServiceAccount": {
-  "current": "0.4.0",
+  "current": "0.4.1",
   "path": "registry/classes/access/identity/service-account.yaml",
   "versions": {
    "0.3.2": "sha256:86b1ce01e7cf652b533869d8a71c555062c06969893493450974a642c2775db9",
    "0.3.3": "sha256:9c0995f151533a93d74b40741014d234f1e5c89a3f61aa1b7bee01b49ca13786",
-   "0.4.0": "sha256:20c10fdbf66941934ac8ae72c83e5c77262b12fb9cf0ba3225a7b3e9bda1dd6f"
+   "0.4.0": "sha256:20c10fdbf66941934ac8ae72c83e5c77262b12fb9cf0ba3225a7b3e9bda1dd6f",
+   "0.4.1": "sha256:0c625b4e60d23dc811405903b29ea65c451fbf63649f94dceab73a68ed33867c"
   }
  },
  "type:Job": {

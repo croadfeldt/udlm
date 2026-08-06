@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/bundle.schema.json",
+  "title": "UDLM Bundle",
+  "description": "A BUNDLE is one activatable unit: activating it turns on (or off) the capabilities, policies, settings, and mechanisms it names, so a deployment gets the posture appropriate to its use and environment. The record is an INERT, reusable definition — 'which bundle this deployment runs' is deployment state, not a field here. A bundle REFERENCES governed artifacts; it never defines them (content lives in its own artifact, named by URF — identifier-scheme §9). Profiles are bundles: `udlm/profile/dev` is a bundle whose contents are the governance artifacts that profile turns on — a profile is not a distinct record kind (filter, never subtype). ADR-015 (settings and configuration bundles) is the deciding record; ADR-007 supplies the floor semantics preserved in `contains[].state`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "handle",
+    "conforms_to",
+    "name",
+    "version",
+    "status"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "bundle"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "RFC 9562 identity — frozen for the bundle's life (ADR-051)."
+    },
+    "handle": {
+      "type": "string",
+      "description": "Human-readable stable name, e.g. udlm/profile/dev."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "developing",
+            "proposed",
+            "active",
+            "deprecated",
+            "retired"
+          ]
+        },
+        "since": {
+          "type": "string"
+        }
+      }
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Owning tenant for an organization-authored bundle; absent for platform/built-in bundles."
+    },
+    "composes": {
+      "type": "array",
+      "description": "Other bundles this one contains, by URF reference. Activation is transitive: activating this bundle activates everything the composed bundles turn on. A composing bundle MUST NOT weaken a composed bundle's `required` entry to `advisory` or `off` — refused at validation (the immutable-ceiling discipline; most-restrictive-wins for security-relevant entries).",
+      "items": {
+        "type": "string",
+        "format": "udlm-ref-url"
+      }
+    },
+    "contains": {
+      "type": "array",
+      "description": "The flat list of what this bundle turns on or off — one entry per governed artifact, any kind (policy, capability, mechanism, layer, vocabulary). The entry's kind is whatever its reference resolves to; the bundle does not classify it. AN UNLISTED ARTIFACT IS AVAILABLE BUT NOT MANDATED — the ADR-007 floor semantic: a floor is a minimum, never a filter, so omission never means disabled. `off` is the explicit, auditable way to disable.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ref",
+          "state"
+        ],
+        "properties": {
+          "ref": {
+            "type": "string",
+            "format": "udlm-ref-url",
+            "description": "URF reference to the governed artifact this entry governs (identifier-scheme §9)."
+          },
+          "state": {
+            "enum": [
+              "required",
+              "advisory",
+              "off"
+            ],
+            "description": "required — must be present and enforcing (the floor). advisory — enabled, non-blocking (surfaces findings, does not refuse). off — deliberately disabled in this posture; explicit and auditable, distinct from unlisted."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Per-entry configuration for the referenced artifact — the values that tune it in this posture (cadence, mode, thresholds). Values only; the artifact owns its schema."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this disposition in this posture — required for `off` on a security-relevant artifact so a reviewer sees the intent, not just the absence."
+          }
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "description": "Bundle-level configuration values that have no artifact to reference. Values only — a setting whose home is an artifact belongs in that entry's `settings`."
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Properties OF THE DEFINITION — not deployment state. Which bundle a deployment currently runs is recorded by the deployment, never here.",
+      "properties": {
+        "is_builtin": {
+          "type": "boolean",
+          "description": "Ships with the substrate (as opposed to organization-authored)."
+        },
+        "default": {
+          "type": "boolean",
+          "description": "The out-of-box choice when a deployment selects no bundle."
+        },
+        "approved": {
+          "type": "boolean",
+          "description": "Cleared for activation under the governing review process."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Human-facing context (display name, notes, maintainer)."
+    }
+  },
+  "examples": [
+    {
+      "record_type": "bundle",
+      "uuid": "f9985d7f-c298-408d-a9da-6da0dd820570",
+      "handle": "udlm/profile/homelab",
+      "conforms_to": "udlm/0.1",
+      "name": "Homelab",
+      "description": "Single-operator posture: the smallest required floor, stronger controls available and one toggle away.",
+      "version": "1.0.0",
+      "status": {
+        "state": "active"
+      },
+      "contains": [
+        {
+          "ref": "estate/policy/structural-validation",
+          "state": "required"
+        },
+        {
+          "ref": "estate/policy/tenant-isolation",
+          "state": "required"
+        },
+        {
+          "ref": "estate/policy/governance-matrix",
+          "state": "advisory",
+          "settings": {
+            "enforcement": "advisory"
+          }
+        },
+        {
+          "ref": "estate/discovery/scheduled",
+          "state": "advisory",
+          "settings": {
+            "schedule": "daily"
+          }
+        },
+        {
+          "ref": "estate/audit/merkle-transparency",
+          "state": "off",
+          "reason": "no transparency-log operator in a single-operator lab; append-only audit still required"
+        }
+      ],
+      "activation": {
+        "is_builtin": true,
+        "default": false,
+        "approved": true
+      }
+    }
+  ]
+}
