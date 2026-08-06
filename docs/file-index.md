@@ -37,7 +37,7 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`information-providers-advanced.md`** — confidence, authority, schema versioning for information providers. *Owns:* `authority_level` not-self-declared and the IP `INF-*` rules.
 - **`error-model.md`** — *Owns:* the error envelope (RFC 9457).
 - **`event-catalog.md`** — *Owns:* the event catalog and delivery semantics (the wire event shapes).
-- **`identifier-scheme.md`** — *Owns:* the UUID / handle / reference identity contract.
+- **`identifier-scheme.md`** — *Owns:* the UUID / handle / reference identity contract **and the URF reference/filter URL** (§9 — the one grammar for references, filters, criteria, and addresses; `URF-*`).
 - **`time-and-clock.md`** — *Owns:* the timestamp format and clock model.
 - **`schema-sharing.md`** — *Owns:* the schema-sharing/extension protocol.
 - **`rate-limit-and-backpressure.md`** — *Owns:* rate-limit + backpressure semantics.

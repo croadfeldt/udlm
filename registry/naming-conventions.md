@@ -175,6 +175,10 @@ YAML is allowed for authoring (VERSIONING.md §Serialization).
 
 ## 6. Instance handles & IDs
 
+**Reserved characters (URF).** `@`, `?`, and `#` are reserved by the reference/filter URL
+grammar (`docs/spec/contracts/identifier-scheme.md` §9, `URF-003`) and are illegal in handles
+and name segments — this formalizes the existing charset; no current handle uses them.
+
 - Instance / graph node ids: lowercase **kebab-case**, short and stable (`ocp-control01`, `ups-rack`).
 - Type UUIDs are UUIDv4, immutable for the type's life; handles are mutable/rebindable
   (SPEC-DESIGN §18, `docs/spec/contracts/identifier-scheme.md`).
