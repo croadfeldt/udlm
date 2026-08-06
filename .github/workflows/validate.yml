@@ -64,6 +64,9 @@ jobs:
       # Scoped-Class substrate (ADR-038 / P0): Liskov extension gate + generated-spec freshness
       - run: python3 tests/check_class_liskov.py
       - run: python3 tests/check_class_paths.py
+      # URF (identifier-scheme §9): grammar self-test (adversarial + canonical identity +
+      # block round-trip + criterion-cycle refusal) and stored-URF scan over registry content.
+      - run: python3 tests/check_urf.py
       - run: python3 registry/tools/generate_class_specs.py --check
       - run: python3 tests/check_class_address_resolution.py
       # Spec-completeness gate (rule-36 — every spec ships with a UC + example + flow, declared in
