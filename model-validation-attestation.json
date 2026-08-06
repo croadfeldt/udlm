@@ -1,27 +1,23 @@
 {
   "attestation_subject": "model-validation",
-  "registry_ref": "33ff2b82d90c2582d2ffa13594345a29af4d5c9b",
+  "registry_ref": "a9418b8d070c944a5f86cf471c3a95b9e1d16845",
   "scoreboard": {
     "scoreboard": "udlm-model-health/1",
     "totals": {
-      "types": 51,
+      "types": 50,
       "by_family": {
-        "Access": 5,
+        "Access": 4,
         "Knowledge": 5,
         "Process": 2,
         "Resource": 39
       }
     },
     "discrimination": {
-      "mutations_attempted": 4332,
-      "mutations_rejected": 4332,
+      "mutations_attempted": 4275,
+      "mutations_rejected": 4275,
       "density": 1.0,
       "findings": 0,
       "per_type": {
-        "Access.Grouping": {
-          "attempted": 57,
-          "rejected": 57
-        },
         "Access.IdentityEscrow": {
           "attempted": 120,
           "rejected": 120
@@ -225,12 +221,11 @@
       }
     },
     "strictness": {
-      "strict_specs": 51,
-      "total": 51
+      "strict_specs": 50,
+      "total": 50
     },
     "outputs": {
       "per_type": {
-        "Access.Grouping": 0,
         "Access.IdentityEscrow": 4,
         "Automation.OSPatch": 3,
         "Capability": 1,
@@ -283,7 +278,6 @@
         "Vulnerability": 0
       },
       "zero_output_types": [
-        "Access.Grouping",
         "Hardware.GraphicsProcessor",
         "Hardware.Processor",
         "SoftwareImage",
@@ -318,15 +312,14 @@
       ]
     },
     "context": {
-      "with_context": 51,
-      "total": 51,
+      "with_context": 50,
+      "total": 50,
       "missing": []
     },
     "relationships": {
       "with_relationships": 44,
-      "total": 51,
+      "total": 50,
       "missing": [
-        "Access.Grouping",
         "Automation.OSPatch",
         "Facility.PowerFeed",
         "Observability.LogShipper",
@@ -375,7 +368,6 @@
         "Vulnerability"
       ],
       "uncovered": [
-        "Access.Grouping",
         "Facility.Location",
         "Facility.PowerFeed",
         "Hardware.BMC",
@@ -419,7 +411,6 @@
         ]
       },
       "named_by_none": [
-        "Access.Grouping",
         "Access.IdentityEscrow",
         "Automation.OSPatch",
         "Capability",
@@ -466,7 +457,7 @@
         "Topology",
         "Vulnerability"
       ],
-      "consumed_by_at_least_one": 51
+      "consumed_by_at_least_one": 50
     },
     "expressibility_coverage": {
       "value": null,

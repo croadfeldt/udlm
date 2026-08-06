@@ -36,36 +36,17 @@ Audit queries provenance to answer its questions. Observability does not use pro
 
 ### 2.2 Provenance Structure
 
-See [Context and Purpose — Section 4.4](../foundations/context-and-purpose.md) for the complete field-level provenance structure. The key elements:
+The shape audit reads is
+[`registry/realized-entity.schema.json`](../../../registry/realized-entity.schema.json)
+`provenance` — per-field ordered modification chains whose entries map 1:1 to the audit
+modification records (origin = the first entry); `source.kind` is the canonical source
+vocabulary (`layer | policy | actor | provider | discovery | rehydration | override` — a
+consumer acts as an authenticated `actor`). Override-control metadata is the Layering §5a
+model. Neither shape is restated here — the schema binds.
 
-```yaml
-field_name:
-  value: <current value>
-  metadata:
-    override: <allow|constrained|immutable>
-    basis_for_value: <human-readable — why this value was set>
-    baseline_value: <original default before any override>
-    locked_by_policy_uuid: <uuid — if constrained or immutable>
-    locked_at_level: <global|tenant|user>
-  provenance:
-    origin:
-      value: <original value>
-      source_type: <layer|policy|actor|provider|discovery|rehydration|override>
-      # Canonical provenance source-kind vocabulary (data-model-core §6/§7,
-      # realized-entity.schema.json provenance source.kind). The former `consumer`
-      # value maps to `actor` — a consumer acts as an authenticated actor.
-      source_uuid: <uuid of originating entity>
-      timestamp: <ISO 8601>
-    modifications:
-      - sequence: 1
-        previous_value: <value before>
-        modified_value: <value after>
-        source_uuid: <uuid of modifying entity>
-        operation_type: <enrichment|transformation|gating|lock|grant|rehydration>
-        actor_uuid: <uuid of actor that caused this modification>
-        timestamp: <ISO 8601>
-        reason: <human-readable>
-```
+> **Supersession (ADR-059).** In-record provenance is superseded by the `udlm_provenance`
+> seal facet on the sealed ledger; it retires when the receipt shape lands. Audit's
+> consumption moves with it — the ledger, not the record, is where history claims live.
 
 ### 2.3 Provenance Obligations
 
@@ -86,7 +67,7 @@ The provenance chain for a single field may span multiple lifecycle stages:
 
 ```
 Base Layer sets encryption_standard: AES-128
-  origin: {source_type: base_layer, source_uuid: layer-uuid-001}
+  origin: {source: {kind: layer, uuid: layer-uuid-001}}
 
 Transformation Policy enriches to AES-256
   modification: {source_uuid: policy-uuid-001, operation: transformation,
