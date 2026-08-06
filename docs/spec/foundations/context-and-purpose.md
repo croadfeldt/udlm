@@ -89,50 +89,26 @@ permitted (ADR-059's claims discipline).
 
 ### 4.4 Provenance Metadata Structure
 
-Every field that can be created or modified by any process carries provenance metadata alongside its value. The conceptual structure is:
+The field-level provenance shape has **one home**:
+[`registry/realized-entity.schema.json`](../../../registry/realized-entity.schema.json)
+`provenance` — keyed by dot-path into the spec, an ordered modification chain per field, each
+entry carrying `source.kind` (the canonical vocabulary:
+`layer | policy | actor | provider | discovery | rehydration | override`), the source uuid,
+the timestamp, and optional `operation_type`/`sequence`. Field override control
+(`allow | constrained | immutable` and the actor matrix) is the Layering spec's model —
+[layering-and-versioning.md §5a](layering-and-versioning.md) — set exclusively by policy
+evaluation, never by data layers or request assembly. This document does not restate either
+shape.
 
-```yaml
-field_name:
-  value: <current value>
-  metadata:
-    # Simple override declaration (Level 2) — most fields only need this
-    override: <allow|constrained|immutable>
-    # OR matrix declaration (Level 3) — for actor-specific governance
-    override_matrix:
-      default: <allow|constrained|deny>
-      actors: <list of actor permissions>
-      trusted_grants: <list of explicit expansion grants>
-
-    # Always present regardless of level
-    basis_for_value: <human-readable — why this value was set>
-    baseline_value: <the original default before any override>
-    locked_by_policy_uuid: <uuid of policy that set this>
-    locked_at_level: <global|tenant|user>
-    constraint_schema: <JSON Schema — if constrained>
-
-  provenance:
-    origin:
-      value: <original value>
-      source_type: <catalog_item|base_layer|intermediate_layer|service_layer|policy|consumer|discovery|provider>
-      source_uuid: <uuid of originating entity>
-      timestamp: <ISO 8601 timestamp>
-    modifications:
-      - sequence: 1
-        previous_value: <value before this modification>
-        modified_value: <value after this modification>
-        source_type: <policy|layer|component|provider>
-        source_uuid: <uuid of modifying entity>
-        operation_type: <enrichment|transformation|validation|gating|override|lock|grant>
-        actor: <actor type that performed this operation>
-        timestamp: <ISO 8601 timestamp>
-        reason: <human-readable description of why the change was made>
-```
-
-**Note:** The `metadata` block is set exclusively by policy evaluation. Data layers and request assembly never set override control. `operation_type: lock` is used when a compliance-class Validation Policy sets `override: immutable`. `operation_type: grant` is used when a trusted_grant is issued. The three levels of override control are: Level 1 (no declaration — fully overridable), Level 2 (simple `override:` property), Level 3 (full `override_matrix:` with per-actor permissions). See the Layering and Assembly document Section 5a for the complete model.
+> **Supersession (ADR-059 — the working record and its provenance chains).** The in-record
+> provenance block is the *current* mechanism and is **superseded**: the working record
+> carries state claims only (states + pin + integrity chain), and field provenance migrates
+> to the `udlm_provenance` seal facet on the sealed ledger. The block retires when the
+> receipt shape lands; until then the schema above binds.
 
 ### 4.5 The Provenance Obligation
 
-Provenance recording is a **data-model obligation, not optional**: any entity that creates or modifies a field value records, alongside that value, the source UUID and source type that produced it, the timestamp, and — for modifications — the operation type and reason (§4.4). A process that modifies data without recording this violates the data-model contract.
+Provenance recording is a **data-model obligation, not optional**: any entity that creates or modifies a field value records, alongside that value, the source UUID and source type that produced it, the timestamp, and — for modifications — the operation type and reason (the schema shape §4.4 points at). A process that modifies data without recording this violates the data-model contract.
 
 This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (LAY-00x / OPS-00x), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
 
