@@ -67,7 +67,7 @@ The registry layout you will navigate:
 |---|---|
 | `registry/generated/` | the served type specs, compiled from the classes (compute.vm, network.vlan, …) |
 | `registry/classes/` | the authored surface — the scoped Classes (ADR-061 hierarchy) |
-| `registry/instances/` | worked instances of records (policies, layers, decision records, accreditations) |
+| `registry/examples/` | worked instances of records (policies, layers, decision records, accreditations) |
 | `registry/*.schema.json` | the meta-schemas every artifact validates against |
 | `registry/consumers/` | the consumer manifests — where you declare *your* read surface (§3) |
 | `registry/pin-manifest.json` | the generated map of every published `thing → version → digest` (§4) |

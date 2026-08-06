@@ -67,3 +67,43 @@ renames:
   registry/resource-types/taxonomy-term.json: registry/resource-types/knowledge/taxonomy-term.json
   registry/resource-types/topology.json: registry/resource-types/resource/topology.json
   registry/resource-types/vulnerability.json: registry/resource-types/knowledge/vulnerability.json
+
+  # 2026-08-06 — record directories say what they hold: profiles (activatable postures),
+  # decisions (machine-readable DecisionRecords), taxonomies (governed vocabulary seeds);
+  # instances/ becomes examples/ (it held 5 instances and 37 other kinds). Identities and
+  # bytes ride through untouched — the immutable records were restored byte-for-byte after
+  # a citation sweep touched three of them.
+  registry/instances/access-role-taxonomy.yaml: registry/taxonomies/access-role.yaml
+  registry/instances/accreditation-region-us-ca.yaml: registry/examples/accreditation-region-us-ca.yaml
+  registry/instances/accreditation-state-mn.yaml: registry/examples/accreditation-state-mn.yaml
+  registry/instances/adr-aep-alignment.json: registry/decisions/aep-alignment.json
+  registry/instances/adr-cost-metering-linkage.json: registry/decisions/cost-metering-linkage.json
+  registry/instances/adr-cost-metering-placement.json: registry/decisions/cost-metering-placement.json
+  registry/instances/adr-dcm-rbac-function-matrix.json: registry/decisions/dcm-rbac-function-matrix.json
+  registry/instances/adr-provider-capabilities-categories.json: registry/decisions/provider-capabilities-categories.json
+  registry/instances/adr-provider-capability-admission.json: registry/decisions/provider-capability-admission.json
+  registry/instances/adr-provider-dispatch-role.json: registry/decisions/provider-dispatch-role.json
+  registry/instances/adr-resource-type-extension.json: registry/decisions/resource-type-extension.json
+  registry/instances/adr-udlm-dcm-boundary.json: registry/decisions/udlm-dcm-boundary.json
+  registry/instances/dcm-function-taxonomy.yaml: registry/taxonomies/dcm-function.yaml
+  registry/instances/example-audit-leaf.yaml: registry/examples/example-audit-leaf.yaml
+  registry/instances/example-audit-record.yaml: registry/examples/example-audit-record.yaml
+  registry/instances/example-catalog-item.yaml: registry/examples/example-catalog-item.yaml
+  registry/instances/example-commit-log-entry.yaml: registry/examples/example-commit-log-entry.yaml
+  registry/instances/example-decision-record.yaml: registry/examples/example-decision-record.yaml
+  registry/instances/example-finding-routing-record.yaml: registry/examples/example-finding-routing-record.yaml
+  registry/instances/example-identity-escrow.yaml: registry/examples/example-identity-escrow.yaml
+  registry/instances/example-job.yaml: registry/examples/example-job.yaml
+  registry/instances/example-layer-base.yaml: registry/examples/example-layer-base.yaml
+  registry/instances/example-layer-intermediate.yaml: registry/examples/example-layer-intermediate.yaml
+  registry/instances/example-layer-multidoc.yaml: registry/examples/example-layer-multidoc.yaml
+  registry/instances/example-layer-referencing-app-profile.yaml: registry/examples/example-layer-referencing-app-profile.yaml
+  registry/instances/example-layer-referencing.yaml: registry/examples/example-layer-referencing.yaml
+  registry/instances/example-policy.yaml: registry/examples/example-policy.yaml
+  registry/instances/example-reference-data-app-profile.yaml: registry/examples/example-reference-data-app-profile.yaml
+  registry/instances/example-reference-data-network-zone-v2.yaml: registry/examples/example-reference-data-network-zone-v2.yaml
+  registry/instances/example-reference-data-network-zone.yaml: registry/examples/example-reference-data-network-zone.yaml
+  registry/instances/example-reference-data-storage-tier.yaml: registry/examples/example-reference-data-storage-tier.yaml
+  registry/instances/example-regeneration-manifest.yaml: registry/examples/example-regeneration-manifest.yaml
+  registry/instances/orders-db.json: registry/examples/orders-db.json
+  registry/instances/provider-capability-taxonomy.yaml: registry/taxonomies/provider-capability.yaml

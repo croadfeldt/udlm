@@ -8,7 +8,7 @@
 > to it, and additionally enforces the cross-field rules JSON Schema cannot express:
 > component_id uniqueness, sibling depends_on/binding resolution, cycle rejection, and
 > binding⊆depends_on ordering). Worked example:
-> [`registry/instances/example-catalog-item.yaml`](../../../registry/instances/example-catalog-item.yaml).
+> [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml).
 
 > A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary DCM policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is DCM's standard machinery.
 
@@ -65,7 +65,7 @@ The registering provider's execution responsibility is limited to: naturalizing 
 
 ### 1.4 Applications Are Composite Catalog Items
 
-An "application" is modeled as a Composite catalog item — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/instances/example-catalog-item.yaml`](../../../registry/instances/example-catalog-item.yaml) is a three-tier application expressed this way.
+An "application" is modeled as a Composite catalog item — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml) is a three-tier application expressed this way.
 
 ---
 

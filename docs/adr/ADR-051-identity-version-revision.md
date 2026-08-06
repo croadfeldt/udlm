@@ -81,7 +81,7 @@ set is deliberately tiny and additions are an ADR-level call.
   `supersedes`; editing or deleting a published record is refused. The layer `ref_uuid`
   machinery survives untouched: an identity pin on an immutable record is already exact.
 - The in-repo worked examples of immutable records evolve the same way — the v2-file pattern
-  (`registry/instances/example-reference-data-network-zone-v2.yaml` is the standing
+  (`registry/examples/example-reference-data-network-zone-v2.yaml` is the standing
   precedent): a revised fixture is a new record with a new uuid superseding the old, whose
   bytes remain in the revision store (git history). Stated here so the first fixture edit
   that the gate refuses is not a surprise.

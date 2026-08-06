@@ -466,7 +466,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Worked example(s): a registry/instances/ handle or path — an instance of this type."
+          "description": "Worked example(s): a registry/examples/ handle or path — an instance of this type."
         },
         "flows": {
           "type": "array",

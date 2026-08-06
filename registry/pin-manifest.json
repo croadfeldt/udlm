@@ -1,140 +1,140 @@
 {
  "accreditation:accreditations/providers/full-stack-sp/region-us-ca": {
   "current": "1.0.0",
-  "path": "registry/instances/accreditation-region-us-ca.yaml",
+  "path": "registry/examples/accreditation-region-us-ca.yaml",
   "versions": {
    "1.0.0": "sha256:826b53b98769c63f416f6e7f8e6a761ddd9b6dfd403e2825974168763eacd793"
   }
  },
  "accreditation:accreditations/providers/full-stack-sp/state-mn-containers": {
   "current": "1.0.0",
-  "path": "registry/instances/accreditation-state-mn.yaml",
+  "path": "registry/examples/accreditation-state-mn.yaml",
   "versions": {
    "1.0.0": "sha256:c25c5b18fa269d48b801b90b23e1029de6e2a647c97f3905b74ccbf56508f496"
   }
  },
  "catalog_item:org/catalog/example-three-tier-app": {
   "current": "1.0.0",
-  "path": "registry/instances/example-catalog-item.yaml",
+  "path": "registry/examples/example-catalog-item.yaml",
   "versions": {
    "1.0.0": "sha256:6e0a318d621b3e431a344c12c66b3718728db702c6c4a5c30bb05915658c74ea"
   }
  },
  "decision_record:ADR-AEP-001": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-aep-alignment.json",
+  "path": "registry/decisions/aep-alignment.json",
   "versions": {
    "1.0.0": "sha256:7bb710ca9f8d031f656f19c4ff1c8e2c98d323778256b28e1d5b28e68723d0f7"
   }
  },
  "decision_record:ADR-COST-001": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-cost-metering-placement.json",
+  "path": "registry/decisions/cost-metering-placement.json",
   "versions": {
    "1.0.0": "sha256:663ddfefc1a3473ab2d3086bb3f1011253734e533bea3e29b9b5287b6f7ee17d"
   }
  },
  "decision_record:ADR-COST-002": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-cost-metering-linkage.json",
+  "path": "registry/decisions/cost-metering-linkage.json",
   "versions": {
    "1.0.0": "sha256:6a3f8c4dd62752a4eba63cb7732134309a822187a7f2ab4a337db15622d0911e"
   }
  },
  "decision_record:ADR-EXAMPLE-001": {
   "current": "1.0.0",
-  "path": "registry/instances/example-decision-record.yaml",
+  "path": "registry/examples/example-decision-record.yaml",
   "versions": {
    "1.0.0": "sha256:987e9a90db4d5ac1c855ad1f5600da0069b30469f55e672d1038f0a000ac2acd"
   }
  },
  "decision_record:ADR-PROV-001": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-provider-dispatch-role.json",
+  "path": "registry/decisions/provider-dispatch-role.json",
   "versions": {
    "1.0.0": "sha256:836e080fbf35e324a494c94c7dde1d0a4a1b65b9891701a108943a0895d1c048"
   }
  },
  "decision_record:ADR-PROV-002": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-provider-capabilities-categories.json",
+  "path": "registry/decisions/provider-capabilities-categories.json",
   "versions": {
    "1.0.0": "sha256:42895ad225b7bd7b83f96f56a20ba474ed6347c42d452f99a096e0c986e8a75e"
   }
  },
  "decision_record:ADR-PROV-003": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-provider-capability-admission.json",
+  "path": "registry/decisions/provider-capability-admission.json",
   "versions": {
    "1.0.0": "sha256:8c08a67fd430352334ab466ce7d25375c81f735dbb2333c91ee367e62f07a8a5"
   }
  },
  "decision_record:ADR-PROV-004": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-resource-type-extension.json",
+  "path": "registry/decisions/resource-type-extension.json",
   "versions": {
    "1.0.0": "sha256:c5c7367b5c84e82c36e5bd4401392b5c9da638faf1558a9cb4f76b6b020a1b20"
   }
  },
  "decision_record:ADR-RBAC-001": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-dcm-rbac-function-matrix.json",
+  "path": "registry/decisions/dcm-rbac-function-matrix.json",
   "versions": {
    "1.0.0": "sha256:48a4c97f1be7298561642a4f63c8b17096875f9643029172ab2954db42da39a6"
   }
  },
  "decision_record:ADR-UDLM-DCM-001": {
   "current": "1.0.0",
-  "path": "registry/instances/adr-udlm-dcm-boundary.json",
+  "path": "registry/decisions/udlm-dcm-boundary.json",
   "versions": {
    "1.0.0": "sha256:5612aea8fb0a5c72387a455b960fd09b69cc98dfb62578bea8e395a8800fefbc"
   }
  },
  "layer:base/rack-network-defaults": {
   "current": "1.0.0",
-  "path": "registry/instances/example-layer-multidoc.yaml",
+  "path": "registry/examples/example-layer-multidoc.yaml",
   "versions": {
    "1.0.0": "sha256:b9a7d5f74419ab1ac85d44610dff406a057f20e5c976d0948858ac57d35d3133"
   }
  },
  "layer:intermediate/app-tier/network-binding": {
   "current": "1.0.0",
-  "path": "registry/instances/example-layer-referencing.yaml",
+  "path": "registry/examples/example-layer-referencing.yaml",
   "versions": {
    "1.0.0": "sha256:a4b4b8bd5e94e6d54d5a12d236dfa56742d7815e68595c5855f1a38ef68d45a1"
   }
  },
  "layer:intermediate/dc-alpha/rack-a12": {
   "current": "1.0.0",
-  "path": "registry/instances/example-layer-multidoc.yaml",
+  "path": "registry/examples/example-layer-multidoc.yaml",
   "versions": {
    "1.0.0": "sha256:e80717d50704df4ad9cb5473e94ad8d19714840dd6d4865e3fbfa93f48169cfe"
   }
  },
  "layer:intermediate/frontend/profile-binding": {
   "current": "1.0.0",
-  "path": "registry/instances/example-layer-referencing-app-profile.yaml",
+  "path": "registry/examples/example-layer-referencing-app-profile.yaml",
   "versions": {
    "1.0.0": "sha256:6ab1a045486c3992cad9ebf0862269ad2c7073806416bbbc0ad465e34b5ed640"
   }
  },
  "layer:org-eu-hardening": {
   "current": "1.0.0",
-  "path": "registry/instances/example-layer-intermediate.yaml",
+  "path": "registry/examples/example-layer-intermediate.yaml",
   "versions": {
    "1.0.0": "sha256:b5f35895982f596e91f546339cf1f8b487469f7dc91f59c19427f4c1e16106d6"
   }
  },
  "layer:platform/app-profiles/web-tier": {
   "current": "1.0.0",
-  "path": "registry/instances/example-reference-data-app-profile.yaml",
+  "path": "registry/examples/example-reference-data-app-profile.yaml",
   "versions": {
    "1.0.0": "sha256:420c22b14761a9ad1c26ff4c08eb24512507d1a45e5a2026e84d9062d7c5a167"
   }
  },
  "layer:platform/network-zones/dmz-restricted": {
   "current": "2.0.0",
-  "path": "registry/instances/example-reference-data-network-zone-v2.yaml",
+  "path": "registry/examples/example-reference-data-network-zone-v2.yaml",
   "versions": {
    "1.0.0": "sha256:fb48e1fe5152d00b857f44358a85da08ed723b018b85c48b9106fb4b2d104f79",
    "2.0.0": "sha256:9027444fb16d3f7510d27cde621f7cf7d739e7c45fa9bce7a502e7776f2747cf"
@@ -142,14 +142,14 @@
  },
  "layer:platform/storage-tiers/performance": {
   "current": "1.0.0",
-  "path": "registry/instances/example-reference-data-storage-tier.yaml",
+  "path": "registry/examples/example-reference-data-storage-tier.yaml",
   "versions": {
    "1.0.0": "sha256:3d233668b5c2cb9edc729aac2f59d8817eaf7bd68c903b6f65e81524366ea3a9"
   }
  },
  "policy:eu-data-residency-gate": {
   "current": "1.0.0",
-  "path": "registry/instances/example-policy.yaml",
+  "path": "registry/examples/example-policy.yaml",
   "versions": {
    "1.0.0": "sha256:25a8011533e471bd06656b7f227dd6d435a0f04eb550104d1ccabef61702179b"
   }
@@ -388,7 +388,7 @@
  },
  "type:Compute.VirtualMachine": {
   "current": "1.0.0",
-  "path": "registry/instances/example-layer-base.yaml",
+  "path": "registry/examples/example-layer-base.yaml",
   "versions": {
    "0.6.4": "sha256:fa6d189bfa3ded29c13c753f62c0879b2daf6b7756fa52b145fbd9486ae61073",
    "0.7.0": "sha256:245e144a5e0ce377324360be2749a3b986f6005f12a1b3f732373d29d33fb7c7",

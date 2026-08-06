@@ -16,7 +16,7 @@ version: 1.0.0
 status:
   state: active
 
-# Owned by the example tenant (registry/instances/example-tenant.yaml) — coherent worked
+# Owned by the example tenant (registry/examples/example-tenant.yaml) — coherent worked
 # set with orders-db and the example resource group. Ownership only: other tenants consume
 # via requests + cross-tenant authorization, never shared ownership ([D3]).
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7

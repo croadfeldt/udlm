@@ -68,7 +68,7 @@ Three terms here are easy to collide; keep them distinct.
   a closed-vocabulary verb (`realize_resources`, `serve_data`, `authenticate`, `federate`, `execute_workflows`)
   scoped to a resource-type **Category** (§2, the domain). Declared explicitly by the provider; organized by
   the governed **provider-capability taxonomy** (a `TaxonomyTerm` subtree under the `provider-capability` root,
-  `registry/instances/provider-capability-taxonomy.yaml`). This is **not** the Knowledge-family
+  `registry/taxonomies/provider-capability.yaml`). This is **not** the Knowledge-family
   **`Capability [Knowledge]`** — that is DAV's *architecture-capability* sense ("what an architecture
   provides," `docs/spec/foundations/knowledge-family.md §4.1`), a **disjoint** `TaxonomyTerm` subtree under
   `architecture-capability`. One shared `TaxonomyTerm` **type**, two disjoint subtrees; parent chains never cross.
@@ -93,7 +93,7 @@ reusable and avoids a `FreeIPA.Everything` corner.
 
 Before adding a type, check whether the concept is already expressed by an existing mechanism:
 - **An instance of a type** is a **realized entity** (`registry/realized-entity.schema.json`,
-  `registry/instances/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
+  `registry/examples/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
   (`docs/spec/foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —

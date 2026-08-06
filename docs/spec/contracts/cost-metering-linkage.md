@@ -1,10 +1,10 @@
 # UDLM — Cost / Metering Linkage (PROPOSED)
 
-**Related:** [ADR-COST-001](../../../registry/instances/adr-cost-metering-placement.json) (placement) | [information-providers.md](information-providers.md) | [ownership-sharing-allocation.md](../foundations/ownership-sharing-allocation.md)
+**Related:** [ADR-COST-001](../../../registry/decisions/cost-metering-placement.json) (placement) | [information-providers.md](information-providers.md) | [ownership-sharing-allocation.md](../foundations/ownership-sharing-allocation.md)
 
 > **This document maps to: DATA + PROVIDER.** It defines the *hooks* UDLM carries so an implementation
 > can exchange cost with an external cost engine. It defines no rates and no calculation — those are
-> the engine's ([ADR-COST-001](../../../registry/instances/adr-cost-metering-placement.json)).
+> the engine's ([ADR-COST-001](../../../registry/decisions/cost-metering-placement.json)).
 
 ---
 
@@ -25,7 +25,7 @@ Cost is a **two-way** contract between a UDLM-conformant implementation (e.g. DC
 - **Outbound (UDLM/DCM → engine):** for a resource, the implementation hands the engine (a) the `priced_by` cost-model reference and (b) the resolved values of the resource's meterable dimensions. This is the "give the engine a method to look up resource data."
 - **Inbound (engine → UDLM/DCM):** the engine returns cost (`cost.attributed`, provider-contract §10), which the implementation **consumes** — attributing it to the owning tenant, and OPTIONALLY feeding it into its own decisions (placement, budgets). 
 
-**The engine computes; it never decides.** No placement, budget, or quota decision is delegated into the cost calculation. Those decisions stay in the implementation as **policy** ([ADR-COST-001](../../../registry/instances/adr-cost-metering-placement.json)), using returned cost as an *input*. The cost engine is a pure function: `(resource dimensions + cost model) → cost`.
+**The engine computes; it never decides.** No placement, budget, or quota decision is delegated into the cost calculation. Those decisions stay in the implementation as **policy** ([ADR-COST-001](../../../registry/decisions/cost-metering-placement.json)), using returned cost as an *input*. The cost engine is a pure function: `(resource dimensions + cost model) → cost`.
 
 ---
 

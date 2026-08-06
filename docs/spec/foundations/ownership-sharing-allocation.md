@@ -259,7 +259,7 @@ What the ownership model fixes is the **cost-accountable Tenant** — a data-mod
 - **Whole Allocation and Allocation:** the owning Tenant is accountable for the entity's cost.
 - **Shareable:** the resource owner Tenant is accountable by default; costs may be redistributed to stakeholders (owner-bears-all, equal split, proportional-by-usage, chargeback).
 
-UDLM does not model or calculate cost. Which cost model applies, and any redistribution across stakeholders, is admin **policy** evaluated against an external metering model — see [ADR-COST-001](../../../registry/instances/adr-cost-metering-placement.json) and the metering & billing extension. UDLM carries only the accountability edge (who bears the cost) via the ownership and stake relationships above.
+UDLM does not model or calculate cost. Which cost model applies, and any redistribution across stakeholders, is admin **policy** evaluated against an external metering model — see [ADR-COST-001](../../../registry/decisions/cost-metering-placement.json) and the metering & billing extension. UDLM carries only the accountability edge (who bears the cost) via the ownership and stake relationships above.
 
 ---
 
