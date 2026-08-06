@@ -5,22 +5,49 @@
   "description": "Machine-validatable Data Layer (docs/spec/foundations/layering-and-versioning.md; DCM ADR-012). A request payload is assembled by merging ordered layers lowest-authority-first; every field a layer sets records that layer's uuid as its provenance source. UDLM carries the layer records; DCM's assembly engine merges them. Layers carry DATA (the what); Policies (policy.schema.json) decide/transform (the how). data-model-core.md §2 [D8.4].",
   "type": "object",
   "additionalProperties": false,
-  "required": ["record_type", "uuid", "conforms_to", "name", "version", "tenant_uuid", "layer_type", "fields"],
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "name",
+    "version",
+    "tenant_uuid",
+    "layer_type",
+    "fields"
+  ],
   "properties": {
-    "record_type": {"const": "layer", "description": "Dispatch discriminator (data-model-core §2)."},
+    "record_type": {
+      "const": "layer",
+      "description": "Dispatch discriminator (data-model-core §2)."
+    },
     "uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
       "description": "RFC 9562 v4 identity. This uuid is the field-provenance source recorded for every field this layer sets (layering-and-versioning §provenance)."
     },
-    "handle": {"type": "string"},
-    "conforms_to": {"type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$"},
-    "name": {"type": "string"},
-    "description": {"type": "string"},
-    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "handle": {
+      "type": "string"
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
     "supersedes": {
       "type": "array",
-      "items": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      },
       "description": "LINEAGE — the single, explicit mechanism (UDLM ADR-012; the decision-record 'never edit, supersede' idiom; layers are the reference member of ADR-051's immutable-record family). A layer version is IMMUTABLE: any change is a NEW record (its own identity uuid + a higher version), never an edit of the old one, and this array names the uuid(s) of the version(s) it directly supersedes. Absent = a lineage ROOT (a first version, or a genuinely new entity). Because it is a uuid array it expresses ANY lineage shape — linear (supersedes the one prior), fork (two records each supersede the same prior), merge (one record supersedes several), rename (supersede a prior at a different handle). It is authoritative (uuid-based); `handle` is advisory display only and is NOT a lineage signal. Each uuid MUST resolve to an existing layer of the same reference_data_type with a strictly lower version (validate.py check_layer_lineage). Change-impact is derived from this DAG plus the reverse reference index — which records reference a version that has since been superseded."
     },
     "tenant_uuid": {
@@ -32,16 +59,40 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "state": {"enum": ["active", "deprecated", "retired"]},
-        "deprecation_date": {"type": "string"},
-        "sunset_date": {"type": "string"},
-        "replacement_uuid": {"type": "string"},
-        "deprecation_reason": {"type": "string"},
-        "migration_guidance": {"type": "string"}
+        "state": {
+          "enum": [
+            "active",
+            "deprecated",
+            "retired"
+          ]
+        },
+        "deprecation_date": {
+          "type": "string"
+        },
+        "sunset_date": {
+          "type": "string"
+        },
+        "replacement_uuid": {
+          "type": "string"
+        },
+        "deprecation_reason": {
+          "type": "string"
+        },
+        "migration_guidance": {
+          "type": "string"
+        }
       }
     },
     "layer_type": {
-      "enum": ["base", "core", "intermediate", "service", "request", "policy", "reference_data"],
+      "enum": [
+        "base",
+        "core",
+        "intermediate",
+        "service",
+        "request",
+        "policy",
+        "reference_data"
+      ],
       "description": "The six+ layer types (layering-and-versioning §3): base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization), service (catalog/provider), request (consumer's direct declarations — highest data authority), policy (applied over the merged result), reference_data (shared lookup data)."
     },
     "reference_data_type": {
@@ -50,27 +101,37 @@
       "description": "REQUIRED when layer_type is reference_data (enforced below): the kind of shared dataset this layer governs — e.g. location, os_image, vm_size, network_zone, storage_class, gpu_profile, environment, topology_capability (layering-and-versioning §3.7). A data reference ({ref_uuid, ref_name, reference_data_type}; UDLM ADR-012) is only valid against a reference_data layer of the SAME reference_data_type — the type is the match axis the reference declares. Meaningless on non-reference_data layers."
     },
     "covers": {
-      "type": "array",
-      "items": {"type": "string"},
-      "description": "TARGET scoping (publish side; ADR-054 two-sided scoping). A \u00a710 selector list \u2014 authority + Category.Type.Provider + attribute predicates, wildcarded \u2014 naming which resources this layer MAY inject into. DCM's assembly engine GATHERS every layer whose `covers` matches the target, then orders by precedence. `covers` says *who may*; the request's `from_layers` says *who does*. **OPTIONAL \u2014 do not duplicate `resource_type`.** `resource_type` is the single-type shorthand: a type-scoped layer (`domain: resource_type`, `resource_type: X`) already targets `X`, i.e. `resource_type: X` \u2261 `covers: [\"X.*\"]`, so its `covers` is DERIVED and omitted. Declare `covers` explicitly only for targeting BROADER than one type-affiliation \u2014 multiple categories, attribute predicates, or authority-qualified. When both are set, `covers` MUST include the layer's own `resource_type` (validate.py `check_layer`). `covers` is Data (the declaration); the match is Policy (the assembly engine)."
+      "type": "string",
+      "format": "udlm-filter-url",
+      "description": "TARGET scoping (publish side; ADR-054 two-sided scoping): ONE URF filter (identifier-scheme §9) naming which resources this layer MAY inject into — e.g. estate?resource_type==Compute.* or estate?labels.concern==payments. The assembly engine GATHERS every layer whose covers matches the target, then orders by precedence; covers says *who may*, the request's from_layers says *who does*. OPTIONAL — do not duplicate resource_type: a type-scoped layer (resource_type: X) already targets X (≡ covers \"estate?resource_type==X.*\"), so its covers is DERIVED and omitted. When both are set, covers MUST match the layer's own resource_type (validate.py check_layer). covers is Data (the declaration); the match is Policy (the assembly engine)."
     },
     "applies_on": {
       "type": "array",
-      "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
-      "description": "TARGET scoping (publish side; ADR-054). The convergence scenario(s) this layer injects during \u2014 named by ADR-030's colloquial vocabulary (realize \u00b7 reconcile \u00b7 reconfigure \u00b7 rehydrate \u00b7 decommission; migration is a realize/rehydrate onto a new provider). These are trigger/gap-shape shortcuts for the one Converge act (ADR-030), not distinct mechanisms, so the value is an open lowercase token set rather than a closed enum. Absent = injects on every scenario. Injection requires the request's convergence operation \u2208 this list."
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "description": "TARGET scoping (publish side; ADR-054). The convergence scenario(s) this layer injects during — named by ADR-030's colloquial vocabulary (realize · reconcile · reconfigure · rehydrate · decommission; migration is a realize/rehydrate onto a new provider). These are trigger/gap-shape shortcuts for the one Converge act (ADR-030), not distinct mechanisms, so the value is an open lowercase token set rather than a closed enum. Absent = injects on every scenario. Injection requires the request's convergence operation ∈ this list."
     },
     "from_layers": {
-      "type": "array",
-      "items": {"type": "string"},
-      "description": "SOURCE scoping (subscribe side; ADR-054 two-sided scoping). **OPTIONAL OVERRIDE \u2014 tenant isolation is the DEFAULT, not a re-declaration.** Absent, assembly is tenant-scoped from the existing ownership fields: a request draws its own tenant's layers (`tenant_uuid`) plus platform/system-domain layers (`domain`), and never another tenant's \u2014 so a tenant-A request excludes tenant-B layers whose `covers` would match, with no `from_layers` needed. Declare `from_layers` only to select an EXPLICIT subset narrower or otherwise different from that default. Injection = the intersection: layer L injects into request R iff R.target \u2208 L.covers (or L.resource_type) \u2227 R.operation \u2208 L.applies_on \u2227 L \u2208 R.from_layers (default: R's tenant + platform) \u2227 L \u2209 R.skip. Because injection lands data into the spec it is an ingress crossing \u2014 PROJ-P6 admission applies (ADR-041). (The retirement of `reference_data` from layer_type and the entity-target resolver are the ADR-054 edge-model slice, tracked separately in #189.)"
+      "type": "string",
+      "format": "udlm-filter-url",
+      "description": "SOURCE scoping (subscribe side; ADR-054): ONE URF filter selecting which layers feed THIS request. OPTIONAL OVERRIDE — tenant isolation is the DEFAULT, not a re-declaration: absent, assembly draws the request's own tenant's layers plus platform/system-domain layers, never another tenant's. Declare only to select an EXPLICIT subset. Injection = the intersection: L injects into R iff R.target matches L.covers (or L.resource_type) ∧ R.operation ∈ L.applies_on ∧ L matches R.from_layers (default: tenant+platform) ∧ L not matched by R.skip. Injection is an ingress crossing — PROJ-P6 admission applies (ADR-041)."
     },
     "skip": {
-      "type": "array",
-      "items": {"type": "string"},
-      "description": "SOURCE scoping (subscribe side; ADR-054). The negative form of `from_layers`, declared by a request/policy layer: a selector naming layers to EXCLUDE even though their `covers` matches. Governed \u2014 freely skippable for defaults, but `narrow_only`/compliance layers require authorization to skip (skip authorization is a DCM policy step). A layer named here is excluded from injection regardless of `covers`/`from_layers`."
+      "type": "string",
+      "format": "udlm-filter-url",
+      "description": "SOURCE scoping (subscribe side; ADR-054): the negative form — ONE URF filter naming layers to EXCLUDE even though their covers matches. Governed: freely skippable for defaults, but narrow_only/compliance layers require authorization to skip (a DCM policy step)."
     },
     "precedence_class": {
-      "enum": ["base", "core", "intermediate", "service", "request", "policy"],
+      "enum": [
+        "base",
+        "core",
+        "intermediate",
+        "service",
+        "request",
+        "policy"
+      ],
       "description": "Position in the assembly precedence chain, lowest-authority first: base → core → intermediate → service → request, with policy applied over the result. Higher classes override lower field-by-field (narrow-never-widen for constraint profiles, E1). Usually equals layer_type; reference_data layers are looked up, not merged, so they declare their functional class."
     },
     "precedence_order": {
@@ -78,7 +139,13 @@
       "description": "Optional fine-grained ordering WITHIN a precedence_class (e.g. multiple stacked intermediate layers); higher wins. Ties break by class then by declared chain order."
     },
     "domain": {
-      "enum": ["system", "platform", "tenant", "resource_type", "entity"],
+      "enum": [
+        "system",
+        "platform",
+        "tenant",
+        "resource_type",
+        "entity"
+      ],
       "description": "Ownership/precedence scope. resource_type-scoped layers MUST declare resource_type."
     },
     "resource_type": {
@@ -91,8 +158,24 @@
       "additionalProperties": false,
       "description": "Who may author this layer + the review it requires (layering-and-versioning §2; federated-contribution-model §3).",
       "properties": {
-        "contributor_type": {"enum": ["platform_admin", "tenant_admin", "consumer", "provider", "system"]},
-        "review": {"enum": ["auto", "per_profile", "none", "dual_approval"], "description": "request layers = none (direct consumer declaration); all others flow through the GitOps PR review model."}
+        "contributor_type": {
+          "enum": [
+            "platform_admin",
+            "tenant_admin",
+            "consumer",
+            "provider",
+            "system"
+          ]
+        },
+        "review": {
+          "enum": [
+            "auto",
+            "per_profile",
+            "none",
+            "dual_approval"
+          ],
+          "description": "request layers = none (direct consumer declaration); all others flow through the GitOps PR review model."
+        }
       }
     },
     "fields": {
@@ -108,18 +191,33 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "display_name": {"type": "string"},
-        "description": {"type": "string"},
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
         "notes": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["at", "author", "text"],
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
             "properties": {
-              "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
-              "author": {"type": "string"},
-              "text": {"type": "string"}
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              },
+              "author": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
             }
           }
         }
@@ -128,12 +226,35 @@
   },
   "allOf": [
     {
-      "if": {"properties": {"domain": {"const": "resource_type"}}},
-      "then": {"required": ["resource_type"]}
+      "if": {
+        "properties": {
+          "domain": {
+            "const": "resource_type"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "resource_type"
+        ]
+      }
     },
     {
-      "if": {"properties": {"layer_type": {"const": "reference_data"}}, "required": ["layer_type"]},
-      "then": {"required": ["reference_data_type"]}
+      "if": {
+        "properties": {
+          "layer_type": {
+            "const": "reference_data"
+          }
+        },
+        "required": [
+          "layer_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "reference_data_type"
+        ]
+      }
     }
   ]
 }
