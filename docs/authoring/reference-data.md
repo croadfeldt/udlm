@@ -29,7 +29,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 
 ## 2. The steps, in order
 
-1. **Write one term per record** at `registry/instances/<vocab>-<term>.yaml`. Each is a `layer`
+1. **Write one term per record** at `registry/examples/<vocab>-<term>.yaml`. Each is a `layer`
    (`layer.schema.json` `required`): `record_type: layer`, a fresh v4 `uuid`, `conforms_to: udlm/0.1`,
    `name`, `version`, `tenant_uuid`, `layer_type: reference_data`, and `fields`.
 2. **Set `reference_data_type`** — **required when `layer_type` is `reference_data`** (the schema's `allOf`
@@ -67,7 +67,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 ## 4. A worked pointer
 
 Copy
-[`../../registry/instances/example-reference-data-storage-tier.yaml`](../../registry/instances/example-reference-data-storage-tier.yaml)
+[`../../registry/examples/example-reference-data-storage-tier.yaml`](../../registry/examples/example-reference-data-storage-tier.yaml)
 — the `performance` term of the `storage_tier` vocabulary: a `layer` with `layer_type: reference_data`,
 `reference_data_type: storage_tier`, `contributor.review: dual_approval`, and `fields: {tier_code: performance,
 min_iops: 20000, min_throughput_mbps: 500, description: …}`. It is the canonical illustration of the rule in

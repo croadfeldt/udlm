@@ -4,7 +4,7 @@
 **instance** — the operational record of one entity (or Composite Entity) as it flows through the four
 states. It is the data substrate **DCM reads and writes**; UDLM carries the records, DCM applies the
 policy that produces them (`core-tenets.md` G3). Validate instances with `tools/validate.py`
-(`registry/instances/*`); `instances/orders-db.json` is a worked example.
+(`registry/examples/*`); `instances/orders-db.json` is a worked example.
 
 ## What it carries — and the DCM capability it serves
 

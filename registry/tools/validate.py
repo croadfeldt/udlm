@@ -2,7 +2,10 @@
 """Valid-by-construction gate. Validates:
   - registry/generated/*       against  resource-type-spec.schema.json        (served TYPE projections)
   - registry/profiles/*        against  profile.schema.json                   (deployment PROFILES)
-  - registry/instances/*       against  realized-entity.schema.json           (INSTANCE records)
+  - registry/decisions/*       against  decision-record.schema.json           (shipped DECISION records)
+  - registry/taxonomies/*      against  the taxonomy-seed shape               (governed VOCABULARY seeds)
+  - registry/examples/*        against  realized-entity.schema.json           (worked EXAMPLE records)
+                        or against  policy / layer / catalog-item / audit / accreditation schemas
                         or against  profile.schema.json                       (PROFILE records — activatable postures)
                         or against  catalog-item.schema.json                  (Composite Service catalog items)
 Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
@@ -286,7 +289,7 @@ def check_process_entity(doc):
 
 
 def check_taxonomy_seed(doc):
-    """A taxonomy seed (registry/instances/*-taxonomy.yaml, term_type: TaxonomyTerm) is a batch of
+    """A taxonomy seed (registry/examples/*-taxonomy.yaml, term_type: TaxonomyTerm) is a batch of
     governed vocabulary terms, not a realized entity. Each term MUST carry `term` + `definition`;
     every non-root `parent` MUST resolve to a term in the file (dangling-parent check)."""
     errors = []
@@ -330,24 +333,24 @@ def check_provider_extensions(doc):
 
 def _reference_data_index():
     """uuid -> the reference_data layer it identifies, for {ref_uuid,ref_name} integrity (ADR-012).
-    Scans instances/ for record_type: layer + layer_type: reference_data."""
+    Scans the record directories for record_type: layer + layer_type: reference_data."""
     index = {}
-    base = ROOT / "instances"
-    if not base.exists():
-        return index
-    for path in base.glob("*"):
-        if path.suffix not in (".json", ".yaml", ".yml"):
+    for base in (ROOT / "examples", ROOT / "profiles", ROOT / "decisions", ROOT / "taxonomies"):
+        if not base.exists():
             continue
-        for doc in load_all(path):                       # multi-doc aware (`---` streams)
-            if isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data":
-                index[doc.get("uuid")] = {
-                    "reference_data_type": doc.get("reference_data_type"),
-                    "handle": doc.get("handle"),
-                    "name": doc.get("name"),
-                    "version": doc.get("version"),
-                    "state": (doc.get("status") or {}).get("state"),
-                    "supersedes": doc.get("supersedes") or [],
-                }
+        for path in base.glob("*"):
+            if path.suffix not in (".json", ".yaml", ".yml"):
+                continue
+            for doc in load_all(path):                       # multi-doc aware (`---` streams)
+                if isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data":
+                    index[doc.get("uuid")] = {
+                        "reference_data_type": doc.get("reference_data_type"),
+                        "handle": doc.get("handle"),
+                        "name": doc.get("name"),
+                        "version": doc.get("version"),
+                        "state": (doc.get("status") or {}).get("state"),
+                        "supersedes": doc.get("supersedes") or [],
+                    }
     return index
 
 
@@ -625,7 +628,7 @@ def _reverse_reference_graph():
     This is what lets change-impact cascade TRANSITIVELY up the graph (ADR-012 #2): a record referencing
     a reference_data layer that is itself referenced, and so on — e.g. deployment → image → library."""
     nodes, referrers = {}, {}
-    for subdir in ("instances",):
+    for subdir in ("examples", "decisions", "taxonomies", "profiles"):
         base = ROOT / subdir
         if not base.exists():
             continue
@@ -691,10 +694,14 @@ def main() -> int:
         "generated",
         lambda doc: (TYPE_VALIDATOR,
                      lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
-    print("== instances (realized entities + groupings + catalog items) ==")
     print("== profiles (activatable deployment postures) ==")
     failures += validate_dir("profiles", pick_instance)
-    failures += validate_dir("instances", pick_instance)
+    print("== decisions (machine-readable decision records) ==")
+    failures += validate_dir("decisions", pick_instance)
+    print("== taxonomies (governed vocabulary seeds) ==")
+    failures += validate_dir("taxonomies", pick_instance)
+    print("== examples (worked records: entities, layers, policies, audit, accreditations) ==")
+    failures += validate_dir("examples", pick_instance)
     print("== classes (scoped-Class artifacts — ADR-038 / P0 substrate) ==")
     failures += validate_dir(
         "classes",

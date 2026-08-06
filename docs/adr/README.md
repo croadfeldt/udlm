@@ -55,20 +55,20 @@ ADR-014 and DCM ADR-014. Always qualify a control-plane reference as `DCM ADR-0X
 DCM repo `architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.
 
 **Instance-backed decision records (`ADR-<FAMILY>-NNN`).** A third namespace: decisions recorded as
-machine-validated `DecisionRecord` JSON in [`registry/instances/`](../../registry/instances), not as files
+machine-validated `DecisionRecord` JSON in [`registry/decisions/`](../../registry/decisions), not as files
 here. A reference like `ADR-PROV-004` resolves there. Current records:
 
 | Handle | Decision | State |
 |---|---|---|
-| [ADR-PROV-001](../../registry/instances/adr-provider-dispatch-role.json) | Data-role classification — a provider receives execution data only; the dispatch payload is filtered by role | PROPOSED |
-| [ADR-PROV-002](../../registry/instances/adr-provider-capabilities-categories.json) | Provider capabilities + capability categories — one unified declaration interface | PROPOSED |
-| [ADR-PROV-003](../../registry/instances/adr-provider-capability-admission.json) | Capability admission — platform-admin disposition over a provider's *declared* capabilities (default-deny) | PROPOSED |
-| [ADR-PROV-004](../../registry/instances/adr-resource-type-extension.json) | Resource-type extension model (`provider_extensions`) — additive, no-override, portability-degrading | **DEPRECATED** — superseded by ADR-038; interim carrier retiring per #202 |
-| [ADR-RBAC-001](../../registry/instances/adr-dcm-rbac-function-matrix.json) | DCM RBAC — default (no-IdP) admin groups/accounts/roles + governed change | PROPOSED |
-| [ADR-COST-001](../../registry/instances/adr-cost-metering-placement.json) | Metering/billing is *referenced* by UDLM, not modeled in it — cost decisions are admin policy | PROPOSED |
-| [ADR-COST-002](../../registry/instances/adr-cost-metering-linkage.json) | Cost/metering linkage hooks — a reciprocal contract; the engine computes, never decides | PROPOSED |
-| [ADR-AEP-001](../../registry/instances/adr-aep-alignment.json) | Adopt AEP — RFC 9457 error model + resource-oriented design + the Spectral linter | PROPOSED |
-| [ADR-UDLM-DCM-001](../../registry/instances/adr-udlm-dcm-boundary.json) | UDLM = data model, DCM = implementation — runtime-architecture prose belongs in DCM (the instance record behind [ADR-008](ADR-008-udlm-dcm-boundary.md), which is authoritative) | PROPOSED |
+| [ADR-PROV-001](../../registry/decisions/provider-dispatch-role.json) | Data-role classification — a provider receives execution data only; the dispatch payload is filtered by role | PROPOSED |
+| [ADR-PROV-002](../../registry/decisions/provider-capabilities-categories.json) | Provider capabilities + capability categories — one unified declaration interface | PROPOSED |
+| [ADR-PROV-003](../../registry/decisions/provider-capability-admission.json) | Capability admission — platform-admin disposition over a provider's *declared* capabilities (default-deny) | PROPOSED |
+| [ADR-PROV-004](../../registry/decisions/resource-type-extension.json) | Resource-type extension model (`provider_extensions`) — additive, no-override, portability-degrading | **DEPRECATED** — superseded by ADR-038; interim carrier retiring per #202 |
+| [ADR-RBAC-001](../../registry/decisions/dcm-rbac-function-matrix.json) | DCM RBAC — default (no-IdP) admin groups/accounts/roles + governed change | PROPOSED |
+| [ADR-COST-001](../../registry/decisions/cost-metering-placement.json) | Metering/billing is *referenced* by UDLM, not modeled in it — cost decisions are admin policy | PROPOSED |
+| [ADR-COST-002](../../registry/decisions/cost-metering-linkage.json) | Cost/metering linkage hooks — a reciprocal contract; the engine computes, never decides | PROPOSED |
+| [ADR-AEP-001](../../registry/decisions/aep-alignment.json) | Adopt AEP — RFC 9457 error model + resource-oriented design + the Spectral linter | PROPOSED |
+| [ADR-UDLM-DCM-001](../../registry/decisions/udlm-dcm-boundary.json) | UDLM = data model, DCM = implementation — runtime-architecture prose belongs in DCM (the instance record behind [ADR-008](ADR-008-udlm-dcm-boundary.md), which is authoritative) | PROPOSED |
 
 A `PROPOSED` record binds nothing (ADR-031); rules citing one carry the proposal, not a ratified mandate.
 
