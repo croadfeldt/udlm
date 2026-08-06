@@ -44,7 +44,7 @@ filter):
 - `off` — deliberately disabled in this posture. **Explicit and auditable**, and different
   from omission.
 - **unlisted** — available but not mandated. Omission never means disabled; anyone can turn
-  it on without changing the bundle.
+  it on without changing the profile.
 
 That distinction is the one people get wrong: `homelab` does not *disable* the governance
 matrix — it declines to mandate it (`advisory`), and a homelab operator who wants enforcement
@@ -81,7 +81,7 @@ the thing to be absent, and say why in `reason` (required for security-relevant 
    (`acme/profile/regulated-eu` — never `udlm/…`, which is the substrate's), start at `1.0.0`,
    and version it like any artifact: a published (identity, version) pair is immutable, so any
    change ships a bump (`registry/VERSIONING.md`).
-6. **Validate.** `python3 registry/tools/validate.py` — the bundle must validate against
+6. **Validate.** `python3 registry/tools/validate.py` — the profile must validate against
    `profile.schema.json` and pass `check_profile` (URF-parseable refs, `off` reasons on
    security-relevant entries, no weakening on composition). `bash scripts/signoff.sh` runs
    everything CI will.
@@ -89,7 +89,7 @@ the thing to be absent, and say why in `reason` (required for security-relevant 
 ## 4. What activation means
 
 A profile record is **inert**. Activating it is a deployment act — *this deployment runs this
-profile* — and that state is recorded by the deployment, never inside the bundle. Two
+profile* — and that state is recorded by the deployment, never inside the profile record. Two
 consequences worth internalizing: the same profile is byte-identical everywhere it is used
 (which is what makes it a governed, shareable artifact), and "which posture are we running?"
 is a question you ask the deployment, not the registry.

@@ -21,7 +21,7 @@
     "uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "RFC 9562 identity — frozen for the bundle's life (ADR-051)."
+      "description": "RFC 9562 identity — frozen for the profile's life (ADR-051)."
     },
     "handle": {
       "type": "string",

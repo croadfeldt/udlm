@@ -25,7 +25,7 @@ policy that produces them (`core-tenets.md` G3). Validate instances with `tools/
 | `metadata` (display_name, description, attributed `notes[]`) | human-facing context; notes are auditable records, never anonymous mutable blobs (common-elements §8.2) |
 | `adopted_standards` (per-standard negotiated binding) | **adopt-by-reference (T5)** — the realized record of DCM's version negotiation (requested/provider/effective version + translation) |
 | `correlation_ids` (scheme + value natural keys) | **entity resolution across discovery sources** — one real resource, one uuid (dcm ADR-017 Decision C) |
-| **`tenant_uuid`** (required) | **tenancy (TEN-001/003)** — the owning Tenant: the uuid of a `tenant_boundary` grouping (`bundle.schema.json`); schema-required per data-model-core §5 [D3]. Brownfield stores migrate by minting their tenants and backfilling. `instances/example-tenant.yaml` is the worked example orders-db belongs to |
+| **`tenant_uuid`** (required) | **tenancy (TEN-001/003)** — the owning Tenant: the uuid of a `tenant_boundary` grouping (`profile.schema.json`); schema-required per data-model-core §5 [D3]. Brownfield stores migrate by minting their tenants and backfilling. `instances/example-tenant.yaml` is the worked example orders-db belongs to |
 
 That set is what the **v1.0 surface** must carry to be **complete for DCM capabilities**: lifecycle,
 audit, observability, dependency graph, sovereignty, field ownership, drift, and version pinning all

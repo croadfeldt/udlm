@@ -1,8 +1,8 @@
 # UDLM — Universal Group Model
 
 > **Machine-validatable schema:** `Access.Grouping` records validate against
-> `registry/bundle.schema.json` (bundles) / the `Access.Grouping` class (groupings)
-> (`registry/tools/validate.py` dispatches any instance carrying the grouping/bundle record kind to it).
+> `registry/profile.schema.json` (profiles) / the `Access.Grouping` class (groupings)
+> (`registry/tools/validate.py` dispatches on `record_type` to it).
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Grouping](resource-grouping.md) | [Entity Relationships](entity-relationships.md)
 
@@ -15,10 +15,10 @@
 
 ## 1. Purpose
 
-The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `grouping` entity distinguished by the grouping/bundle record kind metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
+The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `grouping` entity distinguished by the grouping record kind metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
 
 **The model:**
-- Every grouping construct is a the grouping/bundle record kind value on `grouping`; per-class APIs are class-filtered views of the one group store
+- Every grouping construct is one `Access.Grouping` record; per-class APIs are class-filtered views of the one group store
 - Structural invariants are per-class (one Tenant per resource, no constituent cross-tenant, etc.)
 - Policy enforcement is governed by the active Profile, not per-group configuration
 - `tenant_boundary` groups carry the hard-tenancy isolation guarantees
@@ -134,7 +134,7 @@ class is `enforced` — CTX-001 gates cross-tenant relationships on an active au
 
 ### 2.3 Structural Invariants — Non-Overridable
 
-Regardless of `enforcement_model`, the grouping/bundle record kind, or active Profile, the following structural invariants always hold:
+Regardless of `enforcement_model`, grouping kind, or active profile, the following structural invariants always hold:
 
 | Invariant | Applies To | Rule |
 |-----------|-----------|------|
@@ -220,7 +220,7 @@ dcm_group:
 
 ```yaml
 dcm_group:
-  record_type: bundle
+  record_type: profile
   member_types_permitted: [group]   # only policy_collection groups
   extends: <parent profile uuid>    # inherits all parent's groups
   enforcement_model: enforced
@@ -424,7 +424,7 @@ policies below add behavior on top of those invariants:
 
 ### 9a.1 Community Subclass Catalog (Q35)
 
-The the grouping/bundle record kind set is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
+The grouping vocabulary is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
 
 ```yaml
 # Community subclass catalog (advisory — not enforced, not validated)
@@ -565,7 +565,7 @@ dcm_group:
 ## 11. Related Concepts
 
 - **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `resource_type: Access.Grouping`
-- **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `record kind: policy_collection` and `record_type: bundle`
+- **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `record kind: policy_collection` and `record_type: profile`
 - **[entity-relationships.md](entity-relationships.md)** — cross-tenant authorized relationships between groups
 - **[universal-audit.md](../contracts/universal-audit.md)** — all group changes produce audit records
 - **[ingestion-model.md](../lifecycle/ingestion-model.md)** — migration of existing constructs to universal groups

@@ -14,7 +14,7 @@ metadata:
   description: Groups the resources that make up the example orders deployment.
   notes:
   - at: '2026-08-06T00:00:00Z'
-    author: bundle/grouping cutover
+    author: profile/grouping cutover
     text: non-exclusive advisory grouping; explicit membership is the marked exception — a derivable criterion
       (labels/ownership) is preferred where one exists
 states:

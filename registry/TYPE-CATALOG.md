@@ -205,7 +205,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## Facility
 
-### Facility.Location (0.4.0)
+### Facility.Location (0.4.1)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
