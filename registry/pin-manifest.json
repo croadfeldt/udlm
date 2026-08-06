@@ -232,6 +232,13 @@
    "1.0.0": "sha256:415e03eb062518d7353e90cd0aa42f737d79752ceb6c6c66c55ab5342d3fd069"
   }
  },
+ "type:Access.Grouping": {
+  "current": "0.1.0",
+  "path": "registry/classes/access/grouping.yaml",
+  "versions": {
+   "0.1.0": "sha256:fc840e996161b0bb8f612c191bf6a97447befb6d7c6279dad7b35985e80f838f"
+  }
+ },
  "type:Access.IdentityEscrow": {
   "current": "0.2.1",
   "path": "registry/classes/access/identity-escrow.yaml",
