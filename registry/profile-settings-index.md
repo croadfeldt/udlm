@@ -4,7 +4,7 @@
 
 **The master overview** — the shape of profile scaling (which dimension tightens across profiles) — is the Profile Scaling Table in [`docs/spec/principles/design-priorities.md`](../docs/spec/principles/design-priorities.md). It is illustrative; the **authoritative per-profile values** live in each setting's owning bundle below.
 
-**Bundle kinds** (ADR-015 §2): `base` (substrate default) · `module` (a subsystem's config block) · `profile` (the profile overlay). A profile-governed setting's per-profile default set lives in its owning **module** doc's config block; the profile bundle selects among them.
+**Where a profile-governed setting lives** (ADR-015 §2 — its `base`/`module`/`profile` tiers are one record kind now, the **profile**): the per-profile default set lives in its owning doc's config block, and a profile record selects among them by naming the artifact and its settings (`registry/profile.schema.json` `contains[].settings`).
 
 | Setting | Bundle / owning block | What it governs per profile |
 |---|---|---|

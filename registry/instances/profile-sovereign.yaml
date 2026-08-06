@@ -1,7 +1,7 @@
 # Built-in profile: SOVEREIGN — data-sovereignty posture (strictest built-in floor).
 # policy_profile grouping (DCM ADR-007). Superset of FSI: in-boundary key material, sovereign-only
 # placement, and sub-processor restriction. Full production architecture — implemented against dev in Sept.
-record_type: bundle
+record_type: profile
 uuid: 6ed686f0-0ade-4d0b-b204-5cf1bb747dd0
 handle: udlm/profile/sovereign
 conforms_to: udlm/0.1

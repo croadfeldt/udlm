@@ -1,5 +1,5 @@
 # Built-in profile: HOMELAB — the single-operator on-ramp.
-# A bundle (registry/bundle.schema.json; ADR-007 — a profile is a composed SET
+# A profile record (registry/profile.schema.json; ADR-007 — a profile is a composed SET
 # with a floor, NOT a level). Goal: pure value for a self-hosting individual, with zero enterprise
 # ceremony required. The floor is deliberately the SMALLEST that still delivers UDLM's headline value
 # out of the box (dependency graph → ordered shutdown, drift visibility, rehydration).
@@ -9,7 +9,7 @@
 # every capability the production profiles require stays fully AVAILABLE and one toggle away. Homelab
 # simply doesn't *mandate* them, and pre-tunes the optional ones for a home environment via
 # operational_config. Same architecture, types, and wire contracts as dev/standard/prod/fsi/sovereign.
-record_type: bundle
+record_type: profile
 uuid: f9985d7f-c298-408d-a9da-6da0dd820570
 handle: udlm/profile/homelab
 conforms_to: udlm/0.1
