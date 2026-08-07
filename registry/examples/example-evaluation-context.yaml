@@ -1,0 +1,80 @@
+# A worked evaluation context — the snapshot captured at the end of pass 2 of a request evaluation
+# (policy-contract §7.1). Validates against registry/evaluation-context.schema.json.
+#
+# The story it tells, and why it takes two passes:
+#   Pass 1  the EU-residency policy reads data_classification and sovereignty_zone, and emits a HARD
+#           `allowed_zones` constraint narrowing placement to the EU.
+#   Pass 2  a tier policy reads that constraint AS A FACT — `allowed_zones` is in the policy-fact
+#           taxonomy's evaluation-context subtree — and emits a SOFT distribution requirement inside
+#           the narrowed set. That is the round-trip the context exists for: what pass 1 emitted
+#           under a name is what pass 2 read under the same name.
+#   Also    a cost policy emitted a soft ceiling that conflicts with the distribution requirement;
+#           the resolution records that the hard constraint won and why.
+#
+# Every constraint carries its provenance (source_policy, source_domain, pass_added) because conflict
+# resolution is only possible when a constraint can be attributed — an unattributable constraint
+# cannot be weighed, overridden, or explained afterwards.
+#
+# This is TRANSIENT data. It is shown as a record here only because a schema needs something to
+# validate; in a running system it exists for the life of one evaluation and survives only inside
+# the audit snapshot.
+
+request_uuid: 7c1e4a92-3b8d-4f61-9e05-2ad7c6b1f840
+pass_number: 2
+max_passes: 3
+
+constraints:
+  # --- emitted in pass 1 ---
+  - constraint_uuid: e4a1b7c3-9d2f-4e58-8a10-5c3b7e9d1f26
+    source_policy: eu-data-residency-gate
+    source_domain: tenant
+    constraint_type: allowed_zones
+    operator: restrict_to
+    value: [eu-west, eu-central, eu-north]
+    binding: hard
+    reason: eu_personal data may only be realized in an EU sovereignty zone (GDPR Art. 44)
+    pass_added: 1
+
+  # --- emitted in pass 2, having READ allowed_zones as a fact ---
+  - constraint_uuid: b93c5d17-6e40-4a2b-9f83-1d7e2c4a8b05
+    source_policy: tier-1-ha-distribution
+    source_domain: platform
+    constraint_type: distribution_requirement
+    field: placement.zone_distribution
+    operator: require
+    value: {minimum_zones: 2}
+    binding: hard
+    reason: tier-1 workloads span at least two zones; satisfiable inside the narrowed EU set
+    pass_added: 2
+
+  - constraint_uuid: 2f8d6b04-1c7a-4e93-85b2-9a0e3f7c6d14
+    source_policy: tenant-cost-ceiling
+    source_domain: tenant
+    constraint_type: cost_ceiling
+    operator: prefer
+    value: {monthly_usd: 400}
+    binding: soft
+    reason: tenant budget guidance, not a hard bound
+    pass_added: 2
+
+hints:
+  - from_policy: eu-data-residency-gate
+    to_concern: placement
+    hint_type: residency_narrowed
+    value: {narrowed_from: 11, narrowed_to: 3}
+    pass_added: 1
+
+resolutions:
+  - conflict: >-
+      Two-zone distribution inside the EU set exceeds the preferred monthly cost ceiling.
+    strategy: hard_constraint_wins
+    result: >-
+      Distribution requirement upheld; the cost ceiling is soft and was recorded as exceeded rather
+      than enforced. The tenant is notified, not blocked.
+    resolved_by: auto
+    pass_resolved: 2
+
+resolved_constraints:
+  allowed_zones: [eu-west, eu-central, eu-north]
+  distribution_requirement: {minimum_zones: 2}
+  cost_ceiling: {monthly_usd: 400, status: exceeded_advisory}

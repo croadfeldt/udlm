@@ -321,7 +321,10 @@ evaluation_context:
     - constraint_uuid: <uuid>
       source_policy: "<handle>"
       source_domain: system | platform | tenant | resource_type | entity
-      constraint_type: <string>         # zone_restriction, distribution_requirement, cost_ceiling, etc.
+      # A canonical `evaluation-context` term (registry/taxonomies/policy-fact.yaml) — the SAME name
+      # a later policy reads this back under. One vocabulary for both directions: emit
+      # `allowed_zones`, read `allowed_zones`.
+      constraint_type: allowed_zones | distribution_requirement | cost_ceiling | excluded_providers | …
       field: "<dot-notation path>"
       operator: restrict_to | require | prefer | exclude
       value: <any>
@@ -348,6 +351,12 @@ evaluation_context:
   # Resolved constraint set — what downstream policies and placement use
   resolved_constraints: { ... }
 ```
+
+The shape above is normative and validated: `registry/evaluation-context.schema.json`, with a
+worked two-pass example at `registry/examples/example-evaluation-context.yaml`. Provenance
+(`source_policy`, `source_domain`, `pass_added`) and `binding` are REQUIRED — conflict
+resolution is only possible when a constraint can be attributed and its overridability is
+stated, never inferred.
 
 The Evaluation Context is **transient** — it exists only during request evaluation. Hints are ephemeral. But the complete context snapshot at each pass is captured in the audit record.
 

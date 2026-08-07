@@ -35,6 +35,7 @@ INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.sc
 PROFILE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "profile.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
+EVAL_CONTEXT_VALIDATOR = Draft202012Validator(json.loads((ROOT / "evaluation-context.schema.json").read_text()))
 LAYER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "layer.schema.json").read_text()))
 AUDIT_RECORD_VALIDATOR = Draft202012Validator(json.loads((ROOT / "audit-record.schema.json").read_text()))
 COMMIT_LOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "commit-log-entry.schema.json").read_text()))
@@ -462,6 +463,37 @@ def _retired_identities():
     return out
 
 
+def _eval_context_terms():
+    """Canonical `evaluation-context` accumulator names from the policy-fact taxonomy."""
+    path = ROOT / "taxonomies" / "policy-fact.yaml"
+    if not path.exists() or yaml is None:
+        return set()
+    doc = yaml.safe_load(path.read_text()) or {}
+    return {t.get("term") for t in (doc.get("terms") or [])
+            if isinstance(t, dict) and t.get("parent") == "evaluation-context"}
+
+
+def check_evaluation_context(doc):
+    """A constraint's `constraint_type` names the accumulator it contributes to — and that is the SAME
+    name a later policy reads it back under (policy-contract §7.1). That round-trip is the whole point
+    of the context, and it only holds if one vocabulary serves both directions: emit `allowed_zones`,
+    read `allowed_zones`. Left ungoverned it had already drifted — §7.1's prose said `zone_restriction`
+    for the accumulator the taxonomy calls `allowed_zones`, two names for one thing, which is exactly
+    the break this check exists to prevent."""
+    if not (isinstance(doc, dict) and "request_uuid" in doc and "pass_number" in doc
+            and "record_type" not in doc):
+        return []
+    terms = _eval_context_terms()
+    errors = []
+    for i, c in enumerate(doc.get("constraints") or []):
+        ct = c.get("constraint_type") if isinstance(c, dict) else None
+        if ct and terms and ct not in terms:
+            errors.append(f"constraints[{i}]: constraint_type {ct!r} is not a canonical "
+                          f"`evaluation-context` term in the policy-fact taxonomy — a policy would "
+                          f"emit under one name and read back under another")
+    return errors
+
+
 def check_layer_lineage(doc):
     """Lineage is EXPLICIT and the single mechanism (ADR-012): `supersedes` names the uuid(s) this
     reference_data version directly supersedes. Absent = a lineage root. When present, each uuid MUST
@@ -603,6 +635,14 @@ def pick_instance(doc):
                 check_catalog_item)
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
+    # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —
+    # no identity uuid, no lifecycle, no version of its own. Giving it a record_type to satisfy the
+    # dispatcher would make the model assert something untrue about it (policy-contract §7.1).
+    if isinstance(doc, dict) and "request_uuid" in doc and "pass_number" in doc and "record_type" not in doc:
+        return (EVAL_CONTEXT_VALIDATOR,
+                lambda d: f"evaluation_context pass {d['pass_number']} req {d['request_uuid'][:8]} "
+                          f"({len(d.get('constraints') or [])} constraints)",
+                check_evaluation_context)
     if isinstance(doc, dict) and doc.get("record_type") == "layer":
         return (LAYER_VALIDATOR,
                 lambda d: f"layer {d['name']} ({d['layer_type']}) {d['uuid'][:8]}",
