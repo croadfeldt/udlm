@@ -166,8 +166,43 @@ record rather than a transient payload.
 
 ## Worked example — a VM with network and storage
 
-Each component needs different data, from a different source, at a different moment. The consumer supplies
-one line for each; everything else arrives later.
+One request, four components. Each needs different data, from a **different source**, at a **different
+moment** — which is the whole reason this example is worth drawing rather than listing.
+
+```mermaid
+flowchart LR
+  subgraph WHO["WHO declares it — before the request exists"]
+    direction TB
+    CONS["Consumer<br/>application-team-member"]
+    PLAT["Platform engineer<br/>+ tenant-admin"]
+    SEC["Security officer /<br/>sovereignty authority"]
+    OSAC["Cloud operator<br/>(OSAC)"]
+    NETP["Network provider"]
+  end
+
+  subgraph WHAT["WHAT each component needs"]
+    direction TB
+    CVM["<b>VM</b><br/>vcpu · memory · guest_os<br/>+ tenant, environment<br/>+ OSAC instance type<br/>⇒ instance hold"]
+    CST["<b>Storage</b><br/>size · class<br/>+ quota check<br/>+ OSAC volume type, encryption<br/>⇒ volume handle"]
+    CNW["<b>Network</b><br/>which network<br/>+ segment allowed for tenant<br/>+ OSAC subnet native form<br/>⇒ segment attachment"]
+    CIP["<b>Address</b><br/>consumer asks for NOTHING<br/>no layer · no policy<br/>⇒ <b>the address itself</b>"]
+  end
+
+  CONS -->|"the portable ask"| CVM
+  CONS --> CST
+  CONS --> CNW
+  PLAT -->|"defaults · tenant · quota<br/>(at assemble)"| CVM
+  PLAT --> CST
+  PLAT --> CNW
+  SEC -->|"compliance fields<br/>(policy, every pass)"| CVM
+  SEC --> CST
+  OSAC -->|"provider-native form<br/>(at enrich, before placement)"| CVM
+  OSAC --> CST
+  OSAC --> CNW
+  NETP -->|"allocated at RESERVE —<br/>knowable no earlier"| CIP
+```
+
+Read it as columns: **who** on the left, **what** in the middle, and the *when* on each arrow.
 
 | Component | Consumer declares | Added at assemble/policy | Added at enrich (provider known) | Reserved fact |
 |---|---|---|---|---|
@@ -184,6 +219,11 @@ earlier, which is exactly why reserve exists as its own phase before commit.
 **Data flows between components at commit.** The VM needs the volume handle to attach it and the segment
 attachment to connect. Those are pulled during validate-and-reserve in the ordinary case; a component may
 need more during final provisioning, and the commit phase passes it as each is built.
+
+**Four sources, four moments** — the table above is the same story in reference form: the consumer at
+request time, the layers and tenant binding at assemble, policy on every pass, the provider's native form
+at enrich (before placement), and the reserved facts at reserve. No single actor could have supplied all
+of it, and no earlier moment could have produced the address.
 
 ---
 
