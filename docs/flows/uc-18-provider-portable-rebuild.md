@@ -6,7 +6,7 @@ rebuild proceeds from intent alone. A **lighter** flow — it **builds on
 [request-realization](request-realization.md)**; the trigger is a provider failure, and the new twist is
 rewriting naturalized references.
 
-> **Use Case:** `cross-domain/provider-portable-rebuild`. **Persona:** platform-engineer · **Profile:** standard.
+> **Use Case:** `osac/provider-portability-new-cloud`. **Persona:** platform-engineer · **Profile:** standard.
 
 **In one breath.** A provider goes away — health check fails, or it is deregistered — while resources depend on
 it. Placement re-resolves the affected resources onto an alternate eligible provider, the provider-specific
@@ -52,4 +52,4 @@ The re-realize step is request-realization, run with the failed provider exclude
 - **Provider:** the original is detected unavailable; an alternate eligible provider re-realizes the resources.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). Whole-environment rebuild: [UC-10](uc-10-dynamic-rehydration.md). UC source: `cross-domain/provider-portable-rebuild`.
+- Base flow: [request-realization](request-realization.md). Whole-environment rebuild: [UC-10](uc-10-dynamic-rehydration.md). UC source: `osac/provider-portability-new-cloud`.

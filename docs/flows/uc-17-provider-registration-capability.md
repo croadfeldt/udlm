@@ -2,7 +2,7 @@
 
 **What this settles:** how a compute provider becomes *eligible* — it registers, advertises the `compute/virtual-machine` capability, and publishes per-host capacity — so placement has real capability and capacity to choose from. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `libvirt-vm-provider/standard/provider-registration-capability`. **Persona:** platform-operator · **Profile:** standard.
+> **Use Case:** `osac/cloud-provider-registration`. **Persona:** platform-operator · **Profile:** standard.
 
 **In one breath.** request-realization's Place step "narrows to the providers that fit" — this case is what makes a libvirt provider *one of those providers* in the first place. It registers, advertises the capability it serves (`compute/virtual-machine`), and publishes each host's cpu/memory/storage capacity. Placement then selects an eligible provider *and host* from advertised capability and capacity — the inputs the base flow's Place step consumes.
 
@@ -39,5 +39,5 @@ The Place step is request-realization's; this UC supplies what it selects over.
 
 ## Pointers
 
-- Base flow: [request-realization](request-realization.md) — this UC feeds its **Place** step. UC source: `libvirt-vm-provider/standard/provider-registration-capability`.
+- Base flow: [request-realization](request-realization.md) — this UC feeds its **Place** step. UC source: `osac/cloud-provider-registration`.
 - What a provider declares it requires (a sibling of what it advertises): `docs/spec/contracts/provider-contract.md`.

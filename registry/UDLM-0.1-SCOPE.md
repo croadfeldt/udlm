@@ -58,7 +58,7 @@ but executed by DCM (ADR-008).
 | 6 | storage/provision-volume-bound-to-pool | `storage.volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
 | 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
 | 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
-| 9 | libvirt-vm-provider/dependency-failure-impact | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
+| 9 | intent-fulfillment/operational-dependency-cascade | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
 | 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = DCM) |
 | 11 | compute/vm-provision-provider-failure-refused | policy §13 recovery; four-states §2.5 conditions; ADR-011 release | Covered |
 | 12 | docs/spec/contracts/rehydration-rto-measurement | ADR-003 rto/rpo; realized snapshots | DCM/Observability-runtime |
@@ -66,8 +66,8 @@ but executed by DCM (ADR-008).
 | 14 | docs/spec/contracts/drift-detection-remediation | four-states §6 drift record; policy §13 | Covered |
 | 15 | docs/spec/governance/audit-merkle-tree-verification | universal-audit §8 (RFC 9162); AUD-012 key residency | Covered |
 | 16 | docs/spec/governance/policy-override-approval | policy-contract §18; **`override` policy_type** (now on schema) | **Closed this release (P6)** |
-| 17 | libvirt-vm-provider/provider-registration-capability | provider-contract §8.1a `resource_advertisement` (capacity) | Covered |
-| 18 | cross-domain/provider-portable-rebuild | naturalization; portability + `bound_providers`; four-states §5.3 | Covered (re-resolution = DCM) |
+| 17 | osac/cloud-provider-registration | provider-contract §8.1a `resource_advertisement` (capacity) | Covered |
+| 18 | osac/provider-portability-new-cloud | naturalization; portability + `bound_providers`; four-states §5.3 | Covered (re-resolution = DCM) |
 | 19 | docs/spec/governance/policy-resolution-capability | policy-contract §7.7 three-state; profile-resolution | Covered |
 | 20 | cross-domain/profile-resolution-capability | profile-resolution; the `profile` record + instances | Covered |
 | 21 | docs/spec/governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |

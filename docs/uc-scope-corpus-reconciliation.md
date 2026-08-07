@@ -2,14 +2,17 @@
 
 **What this settles:** which of the 21 release-scope use cases (`registry/UDLM-0.1-SCOPE.md`) already
 exist in the `use-cases/` corpus under a different handle, and which are genuinely absent. The corpus
-is the broader register (149 entries) and **should contain the 21**; today **none of the 21 resolve**.
+is the broader register (149 entries) and **should contain the 21**; when this was written, **none of
+the 21 resolved** and all 23 flow citations dangled.
 
-**Why it matters now:** every `uc-NN-*.md` flow ends with `UC source: <handle>`, and all 23 of those
-pointers dangle. An engineer reading a flow and wanting the authoritative scenario — success criteria,
-actors, refusal cases — has nowhere to go. The pointer is the one line that makes a flow traceable.
+**Why it matters:** every `uc-NN-*.md` flow ends with `UC source: <handle>` — the one pointer that makes
+a flow traceable back to its authoritative scenario (success criteria, actors, refusal cases). Without
+it an engineer reading a flow has nowhere to go.
 
-Nothing validates any of this: `check_uc_dimensions` and `check_uc_personas` gate the corpus's internal
-vocabularies, but no gate connects flow → scope → corpus.
+**State as of 2026-08-07:** 7 mapped (section A), 14 to author (section B), 0 unresolved. 14 of 44
+citations resolve; the rest are declared debt in `tests/uc_traceability_baseline.txt`, which only
+shrinks — `tests/check_uc_traceability.py` fails if a fixed pointer re-breaks OR if a resolved one is
+left in the baseline.
 
 ---
 
@@ -24,8 +27,13 @@ decision, not authoring work.
 | 11 | `compute/vm-provision-with-provider-failure` | `compute/vm-provision-provider-failure-refused` | Corpus adds the `-refused` suffix its must-reject convention uses. |
 | 06 | `data/persistent-volume-provision` | `storage/provision-volume-bound-to-pool` | Same scenario; corpus namespace is `storage/`, not `data/`, and names the pool binding. |
 | 02 | `cross-domain/solution-architecture-deployment` | `architecture/solution-architecture-decomposition` | Same actor and output. *Deployment* vs *decomposition* is a real difference in emphasis — confirm the corpus entry covers the deploy leg, not just the decompose leg. |
+| 09 | `libvirt-vm-provider/dependency-failure-impact` | `intent-fulfillment/operational-dependency-cascade` | **Ruled 2026-08-07.** Two of three criteria covered (unmet dependency named, dependent blocked). The third — blast-radius derivable — is uncovered and tracked below. |
+| 17 | `libvirt-vm-provider/provider-registration-capability` | `osac/cloud-provider-registration` | **Ruled 2026-08-07.** The OSAC framing is additive: proving registration + declared capability + advertised capacity for a sovereign cloud proves the generic mechanism. |
+| 18 | `cross-domain/provider-portable-rebuild` | `osac/provider-portability-new-cloud` | **Ruled 2026-08-07.** Same — portable intent becoming eligible on another provider, with naturalization at that provider's edge. |
 
 ## B — Absent: no corpus entry covers this scenario
+
+Ten from the first pass, plus UC-07, 08, 10, and 16 from the section-C rulings — **fourteen**.
 
 These need authoring. Checked against the full 149 — the near-miss column names the closest entry and
 why it is **not** the same use case.
@@ -41,25 +49,39 @@ why it is **not** the same use case.
 | 13 | `compute/idempotent-reconvergence` | `process-migration/blue-green-engine-verification` | Behavioural equivalence between engines, not resubmit-and-stop-before-dispatch. |
 | 19 | `…/policy-resolution-capability` | `vocabulary-intake/near-match-never-silently-bound` | Vocabulary binding, not "evaluate only the policies in the resolved profile". |
 | 05 | `libvirt-vm-provider/vm-status-provenance` | `compute/provision-vm-standard` | Provisioning publishes outputs; UC-05 is specifically *field-level provenance* — who produced each realized field, in which run, when. |
-| 01 | `libvirt-vm-provider/vm-resource-representation` | `compute/provision-vm-standard` | UC-01 is about the **type**: what `Compute.VM` is made of (spec, lifecycle intent, realized status). The corpus entry is a provisioning scenario that *uses* the type. Possibly better served by the `scoped-class/` set — see C. |
+| 01 | `libvirt-vm-provider/vm-resource-representation` | `compute/provision-vm-standard` | UC-01 is about the **type**: what `Compute.VM` is made of (spec, lifecycle intent, realized status). The corpus entry is a provisioning scenario that *uses* the type. Check the `scoped-class/` set before authoring. |
+| 07 | `dcm-core/udlm-dependency-graph-data-model` | `intent-fulfillment/*` (9 entries) | **Ruled.** That set proves how dependencies *behave*; UC-07 claims what the graph *is* — `edge_type`s as declared data, fault-domain and blast-radius derived from them. |
+| 08 | `libvirt-vm-provider/cross-provider-dependency-ordering` | `intent-fulfillment/request-dependency-atomic` | **Ruled.** That entry is atomicity across peer VMs. UC-08 is `depends_on` crossing *provider boundaries*, converging topologically and tearing down in reverse. |
+| 10 | `cross-domain/dynamic-rehydration` | 3 domain-specific rehydration entries | **Ruled.** Each proves rehydration in its domain; none asserts UC-10's claim that the plan is *derived from stored intent and the live graph, never replayed*. |
+| 16 | `…/policy-override-approval` | `change-control/expedite-break-glass` | **Ruled.** Shares the elevated-approver ceremony but governs *change windows*. UC-16 is policy override — time-scoped, hard policies unoverridable, suppressed events audit-linked. |
 
-## C — Needs a ruling before it can be classified
+## C — Rulings (closed 2026-08-07)
 
-| UC | Scope handle | The question |
+All seven resolved. Three became mappings (folded into section A above); four moved to section B.
+
+| UC | Ruling | Why |
 |---|---|---|
-| 07 | `dcm-core/udlm-dependency-graph-data-model` | The `intent-fulfillment/` set (9 entries) covers dependency semantics thoroughly. Is UC-07 satisfied *collectively* by that set, or does the release register need one entry asserting "the graph is modeled data, not runtime inference"? |
-| 08 | `libvirt-vm-provider/cross-provider-dependency-ordering` | `intent-fulfillment/request-dependency-atomic` is close. Does it carry the *cross-provider* boundary, or only ordering within one provider? |
-| 09 | `libvirt-vm-provider/dependency-failure-impact` | `intent-fulfillment/operational-dependency-cascade` and `operational-transitive-refusal` split this between them. One release UC, two corpus entries — is that a mapping or a gap? |
-| 10 | `cross-domain/dynamic-rehydration` | Three rehydration entries exist (`osac/cloud-rehydration-from-intent`, `bare-metal/host-rehydration-replay-intent`, `multi-cluster/self-managed-hub-rehydration`). Is the cross-domain case the union of these, or its own scenario? |
-| 16 | `…/policy-override-approval` | `change-control/expedite-break-glass` is the closest. Break-glass and policy-override-with-approval may be the same mechanism under two names. |
-| 17 | `libvirt-vm-provider/provider-registration-capability` | `osac/cloud-provider-registration` covers registration + capability + capacity. Is UC-17 the generic case that entry already proves, or does a compute-provider-specific one belong alongside it? |
-| 18 | `cross-domain/provider-portable-rebuild` | `osac/provider-portability-new-cloud` covers intent moving to a new cloud unchanged. Is the "rebuild onto an alternate provider after failure" leg the same UC? |
+| 07 | **Author** | The `intent-fulfillment/` set proves how dependencies *behave*; UC-07 claims what the graph *is* — ordering `edge_type`s as declared data, with fault-domain and blast-radius derived from them. Different assertion, no home record. |
+| 08 | **Author** | Decided by evidence, not judgment: `request-dependency-atomic` is ten peer VMs coupled as a unit — atomicity. UC-08 is `depends_on` crossing *provider boundaries*, converging topologically and tearing down in reverse. Different property. |
+| 09 | **Map** → `operational-dependency-cascade`, with the blast-radius gap tracked. |
+| 10 | **Author** | The three rehydration entries prove it works per domain; UC-10's claim is that the plan is *derived from stored intent and the live graph, never replayed from a recorded sequence*. That is the rehydration tenet, and no record states it. |
+| 16 | **Author** | Decided by evidence: `expedite-break-glass` shares the elevated-approver ceremony but governs *change windows*. UC-16 is policy override — time-scoped grants, hard policies unoverridable, suppressed events audit-linked. Same ceremony, different mechanism. |
+| 17 | **Map** → `osac/cloud-provider-registration`. |
+| 18 | **Map** → `osac/provider-portability-new-cloud`. |
+
+### Open gap from the UC-09 ruling
+
+**Blast-radius derivability has no corpus coverage.** UC-09's third criterion — *impact / blast-radius
+of the missing dependency is derivable from the graph* — is in no entry, and `operational-dependency-cascade`
+does not carry it. It is the same derived-property claim UC-07 makes, so the two should be settled
+together: whichever record asserts that fault-domain and blast-radius are *derived* from the declared
+graph (ADR-010) is where this criterion belongs.
 
 ---
 
 ## Two structural problems the mapping exposes
 
-**Three scope handles are document paths, not use cases.** UC-12, UC-14, UC-15, UC-16, UC-19, and UC-21
+**Six scope handles are document paths, not use cases.** UC-12, UC-14, UC-15, UC-16, UC-19, and UC-21
 are spelled `docs/spec/contracts/…` and `docs/spec/governance/…` in the scope register's handle column.
 A document is not a use case; those rows never had a corpus handle to dangle *from*. This is why the
 `docs/spec/*` rows cluster in section B — the register recorded where the *requirement* is written, not
@@ -69,21 +91,17 @@ what the *scenario* is.
 UCs use them. The corpus organizes by domain (`compute/`, `storage/`, `network/`) rather than by
 provider, so those five need a namespace decision, not just a rename.
 
-## Recommended sequence
+## What remains
 
-1. **Section A first** — four rename decisions, no authoring, and it immediately makes four flows
-   traceable. Decide which name wins per row; the corpus name is usually the better one (it follows the
-   corpus's own conventions, and the register's is often a paraphrase).
-2. **Section C rulings** — seven judgment calls, each cheap to answer and each potentially removing a
-   row from section B.
-3. **Section B authoring** — whatever survives. Expect fewer than ten.
-4. **A gate** — once the mapping holds, `UC source:` in a flow and the handle column in the scope
-   register must both resolve to a corpus handle. Without it this drifts straight back: the register and
-   the corpus have already diverged completely with nothing to catch it.
+**Author 14 corpus entries** (section B). Before writing each, check the near-miss column's entry one
+more time — section B's confidence is high for 04/12/20 and for the four section-C rulings, medium for
+the rest, since those were assessed against closest candidates rather than all 149 entries.
 
-## Confidence
+**Settle blast-radius derivability** (the UC-09 gap above) together with UC-07 — they are the same
+derived-property claim.
 
-Section A is high confidence (read both records). Section B is high confidence for 04/12/20 (checked the
-full corpus by keyword and by namespace) and **medium** for the rest — I read the closest candidates, not
-all 149 entries against each of the 21. Section C is explicitly unresolved. Treat B's medium rows as
-"probably absent, worth one more look before authoring".
+**Decide two namespace questions** the mapping exposed, both of which affect how the remaining entries
+are named:
+- The six document-path rows need real use-case handles, since a document is not a scenario.
+- `libvirt-vm-provider/*` and `dcm-core/*` do not exist in the corpus, which organizes by domain. Three
+  such rows remain unmapped (01, 05, 08).
