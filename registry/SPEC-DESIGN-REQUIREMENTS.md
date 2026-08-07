@@ -401,6 +401,20 @@ Each hard constraint cites the UDLM contract it derives from.
     §37 derivability violation that will drift. A request is this document with each range collapsed
     to one selected value (or nothing, where optional); layers and policies perform the collapse.
 
+41. **UDLM ships no defaults — a base or type class states what is VALID, never what is CHOSEN.**
+    A `default` in a portable type is one organisation's opinion delivered to every consumer of that
+    type, and it arrives with **no provenance**: nothing records who chose it, and nothing can tell
+    an intended value from an inherited one.
+
+    The mechanism for defaults already exists and is strictly better. A `base`/`core` **layer**
+    contributes values to the assembled payload and **every field records the layer uuid that set
+    it**; a **profile** carries `settings`. A layer-supplied default is therefore attributable, and
+    policy can override it traceably. An opinionated implementation ships a layer — that is exactly
+    the right place for an opinion.
+
+    A **provider** class is exempt: a provider IS an opinionated implementation, and stating what it
+    does when unasked is its job. Enforced by `tests/check_no_shipped_defaults.py` (NDF-001).
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
