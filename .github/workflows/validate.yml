@@ -39,6 +39,10 @@ jobs:
       - run: python3 tests/check_uc_dimensions.py
       # UC persona vocabulary — canonical persona set, single-sourced (PER-001)
       - run: python3 tests/check_uc_personas.py
+      # Policy-fact vocabulary (policy-contract §2.1): UDLM does not specify the predicate
+      # language, so the FACTS a policy may reference are the deliverable — governed here
+      # rather than as prose in a field description, which is how five rival spellings grew.
+      - run: python3 tests/check_policy_facts.py
       - run: python3 tests/check_definition_single_source.py
       # Rule-ID single-source: every normative rule-ID prefix must be registered in
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,

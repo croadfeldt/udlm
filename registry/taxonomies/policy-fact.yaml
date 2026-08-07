@@ -1,0 +1,271 @@
+# Policy-fact taxonomy — the governed vocabulary of facts a policy engine may reference.
+#
+# UDLM does NOT specify a policy language or engine (policy-contract §7.2a: an external engine "is,
+# in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage"). What
+# UDLM owes an engine is the ability to REFERENCE THE CORRECT INFORMATION — so the fact vocabulary,
+# not the predicate grammar, is the deliverable.
+#
+# That vocabulary previously existed only as prose inside the description of
+# `policy.schema.json` match.conditions[].field — a paragraph, enforced by nothing, which is why it
+# drifted into five disagreeing spellings across the spec. Here it is a curated vocabulary: closed
+# where it can be, validated, and citable by uuid.
+#
+# Each entry is a TaxonomyTerm (registry/classes/knowledge/taxonomy-term), curation-governed
+# (registry-governance §2). This is the `policy-fact` ROOT subtree — DISJOINT from access-role,
+# dcm-function, and provider-capability. One shared TaxonomyTerm TYPE, distinct subtrees.
+#
+# The four source subtrees mirror policy-contract §2.1: every fact belongs to exactly one, and the
+# subtree says WHERE the value comes from during evaluation — which is what an engine needs to know
+# to bind it, and what impact analysis needs to know when the source changes.
+#
+# Scope note: this vocabulary is what a policy may READ. What a policy may WRITE is the decision /
+# constraint shape, which policy.schema.json already specifies per `policy_type` (its allOf block:
+# validation -> decision, placement -> constraints, override -> scope + expires_at). The two halves
+# together are UDLM's side of the engine contract.
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: policy-fact
+
+terms:
+  # ---- root ----
+  - term: policy-fact
+    root: policy-fact
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the vocabulary of facts a policy engine may reference during evaluation. A policy
+      declares the facts it consumes from this subtree; it never declares how it compares them —
+      the predicate language belongs to the engine.
+
+  # ---- the four sources (policy-contract §2.1) ----
+  - term: request-payload
+    root: policy-fact
+    parent: policy-fact
+    category: request payload
+    curation_state: canonical
+    definition: >-
+      The consumer's declared fields plus the assembled layers and their provenance. OPEN subtree —
+      any spec dot-path of the requested resource type is addressable here, so the named terms below
+      are the cross-type facts, not the whole surface.
+
+  - term: operation-context
+    root: policy-fact
+    parent: policy-fact
+    category: operation context
+    curation_state: canonical
+    definition: >-
+      What lifecycle operation is being performed and what changed. CLOSED subtree — the operation
+      surface is defined by this spec, not by a resource type.
+
+  - term: evaluation-context
+    root: policy-fact
+    parent: policy-fact
+    category: evaluation context
+    curation_state: canonical
+    definition: >-
+      Constraints emitted by policies earlier in the same evaluation pass, plus the derived
+      diagnostics computed for that pass. Re-entrant: a fact here may be the output of another
+      policy, which is what makes evaluation convergent rather than single-shot (ADR-006).
+
+  - term: entity-metadata
+    root: policy-fact
+    parent: policy-fact
+    category: entity metadata
+    curation_state: canonical
+    definition: >-
+      Tenant, actor, classification, and lifecycle state carried on the record rather than requested
+      by the consumer. CLOSED subtree.
+
+  # ---- request payload ----
+  - term: resource_type
+    root: policy-fact
+    parent: request-payload
+    curation_state: canonical
+    definition: The fully-qualified Class name being requested (e.g. Compute.VM). The primary specificity axis.
+
+  - term: sovereignty_zone
+    root: policy-fact
+    parent: request-payload
+    curation_state: canonical
+    definition: >-
+      The declared placement zone. Note the open finding: an entity's zone is an operator-coined
+      label while accreditation scopes are ISO 3166, and nothing binds the two (matrix §3.8).
+
+  - term: application_uuid
+    root: policy-fact
+    parent: request-payload
+    curation_state: canonical
+    definition: The application this request belongs to — the grouping axis for application-scoped policy.
+
+  # ---- operation context ----
+  - term: operation.type
+    root: policy-fact
+    parent: operation-context
+    curation_state: canonical
+    definition: >-
+      The lifecycle operation being performed (initial_provisioning, update, rehydration,
+      provider_migration, decommission, compliance_rescan …). The axis that lets a policy fire on
+      change rather than on every evaluation.
+
+  - term: operation.changed_fields
+    root: policy-fact
+    parent: operation-context
+    curation_state: canonical
+    definition: The set of fields this operation modifies — how a policy scopes itself to placement-affecting change.
+
+  - term: operation.pipeline_stage
+    root: policy-fact
+    parent: operation-context
+    curation_state: canonical
+    definition: Which stage of the pipeline is evaluating, so a policy can bind to a specific barrier.
+
+  # ---- evaluation context: emitted constraints ----
+  - term: allowed_zones
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Zone set narrowed by an earlier policy in this pass — the placement-constraint accumulator.
+
+  - term: distribution_requirement
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Spread/anti-affinity requirement emitted by an earlier policy in this pass.
+
+  - term: cost_ceiling
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Cost bound emitted by an earlier policy in this pass.
+
+  - term: excluded_providers
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Providers ruled out by an earlier policy in this pass.
+
+  # ---- evaluation context: graph diagnostics (docs/guides/graph-integrity.md) ----
+  - term: graph.has_cycle
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      Whether the effective dependency graph contains a cycle. Computed over the effective graph,
+      never a stored field — which is why it is a fact of the pass, not of the record.
+
+  - term: graph.cycle_severity
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Severity of the detected cycle — the axis a blocking-vs-advisory policy keys on.
+
+  - term: graph.cycle_members
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: The entities participating in the cycle.
+
+  - term: graph.cycle_mechanisms
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: The relationship mechanisms through which the cycle closes.
+
+  - term: graph.fault_domain
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: The fault domain a placement would land in — the redundancy axis (ADR-010).
+
+  - term: graph.blast_radius
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: What a failure of this entity would reach — the impact axis (ADR-010).
+
+  - term: graph.unmet_dependency
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: A declared dependency with no satisfying entity, carrying its own severity.
+
+  # ---- evaluation context: reserve-phase facts (ADR-011) ----
+  - term: reserved
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      Reserve-phase holds as they land, exposed during the reconciliation loop so a participating
+      policy evaluates against them BEFORE commit. OPEN subtree — `reserved.<component>.<fact>` is
+      addressable per component (e.g. reserved.segment_ref).
+
+  # ---- evaluation context: quota (the commit barrier) ----
+  - term: quota.dimension
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Which quota dimension is being consumed.
+
+  - term: quota.used
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: Consumption against the dimension at evaluation time.
+
+  - term: quota.limit
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: The declared bound for the dimension.
+
+  - term: quota.exceeded
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      Whether consumption exceeds the limit — precomputed rather than left to the engine to derive.
+      A comparison the model performs itself is a fact an auditor can read and verify; a comparison
+      left to policy text is one they must re-derive.
+
+  # ---- entity metadata ----
+  - term: tenant_uuid
+    root: policy-fact
+    parent: entity-metadata
+    curation_state: canonical
+    definition: The owning tenant — the isolation axis every tenant-domain policy binds to.
+
+  - term: data_classification
+    root: policy-fact
+    parent: entity-metadata
+    curation_state: canonical
+    definition: The sensitivity classification carried on the data, governing where it may be realized.
+
+  - term: data_role
+    root: policy-fact
+    parent: entity-metadata
+    curation_state: canonical
+    definition: >-
+      The role the data plays at a boundary (ADR-PROV-001) — parallel to data_classification, and
+      what lets a Governance-Matrix policy control which roles a provider may receive at the
+      DCM→Provider boundary.
+
+  - term: actor.roles
+    root: policy-fact
+    parent: entity-metadata
+    curation_state: canonical
+    definition: >-
+      The requesting actor's granted roles. UDLM carries the fact; the access DETERMINATION stays
+      external (ADR-008) — a policy may read a role, never adjudicate one.
+
+  - term: lifecycle_state
+    root: policy-fact
+    parent: entity-metadata
+    curation_state: canonical
+    definition: Where the entity sits in its lifecycle — the axis a state-gated policy binds to.
+
+  - term: cost_center
+    root: policy-fact
+    parent: entity-metadata
+    curation_state: canonical
+    definition: The chargeback attribution carried on the record.
