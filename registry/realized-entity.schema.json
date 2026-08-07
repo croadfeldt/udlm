@@ -46,8 +46,8 @@
     },
     "type_ref": {
       "type": "string",
-      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?/[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "description": "The `$id` of the pinned Resource Type Spec."
+      "pattern": "^https://udlm\\.dev/registry/udlm/[0-9]+\\.[0-9]+/(class/[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){1,2}|[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?)/[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The `$id` of the pinned spec this instance was realized against. TWO forms are legal, and which one appears says how far the request got: a served Resource Type Spec (`.../udlm/0.1/Compute.VM/1.0.0`) before placement resolves a provider, or a PROVIDER CLASS (`.../udlm/0.1/class/Compute.VM.CExampleCloud/1.0.0`) once it has. After placement the spec that actually governs IS the Provider Class — its narrowed ranges are what the selection must satisfy — so no separate field records the placement. `resource_type` stays the PORTABLE two-segment name either way: the entity is a Compute.VM, and that does not change because of where it landed. A consumer parsing this MUST handle both forms."
     },
     "lifecycle_state": {
       "enum": [
@@ -320,7 +320,10 @@
             },
             "recurs": {
               "type": "string",
-              "enum": ["none", "annually"],
+              "enum": [
+                "none",
+                "annually"
+              ],
               "x-extensible-enum": true,
               "default": "none",
               "description": "Whether the window repeats (a seasonal fleet declares annually)."
@@ -329,7 +332,10 @@
         },
         "on_exceeded": {
           "type": "string",
-          "enum": ["normal", "finding"],
+          "enum": [
+            "normal",
+            "finding"
+          ],
           "default": "finding",
           "description": "What an overdue observation MEANS: normal -> the derived verdict is stale_expected (a healthy state); finding -> stale_deviant (the alarm). This is the judgment declaration that lets seasonal absence be healthy while true deviance still alarms."
         }
@@ -352,10 +358,17 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["plane", "verification_result"],
+            "required": [
+              "plane",
+              "verification_result"
+            ],
             "properties": {
               "plane": {
-                "enum": ["data", "control", "both"],
+                "enum": [
+                  "data",
+                  "control",
+                  "both"
+                ],
                 "description": "Which enforcement plane this attestation covers (provider-contract §2 enforcement_plane)."
               },
               "accreditation_uuid": {
@@ -364,7 +377,11 @@
                 "description": "The accreditation artifact that satisfies the plane requirement — the authorizing evidence the claim binds to."
               },
               "verification_result": {
-                "enum": ["verified", "failed", "unverified"],
+                "enum": [
+                  "verified",
+                  "failed",
+                  "unverified"
+                ],
                 "description": "The two-gate appraisal outcome (accreditation-and-authorization-matrix.md §3.7). An unattested/failed plane cannot satisfy a regulated-zone requirement on the provider's word."
               },
               "verified_at": {
@@ -465,7 +482,12 @@
       "description": "INSTANCE portability: the realized entity's actual portability, DEGRADED from the type's declared classification when the entity carries provider-specific data (Provider-Class `SharedDataElement`s — ADR-038; schema realization #199; the retired `provider_extensions` carrier is removed per #202). Base-type-declared, instance-degraded — never silently presented as fully portable. When degraded, the consumer MUST be notified before/at realization (resource-type-hierarchy Transparency principle); a portability-degradation event is emitted.",
       "properties": {
         "classification": {
-          "enum": ["portable", "partial", "provider-specific", "exclusive"],
+          "enum": [
+            "portable",
+            "partial",
+            "provider-specific",
+            "exclusive"
+          ],
           "description": "Effective instance classification. Narrows from the type's declared value when provider-specific data is present (e.g. portable -> provider-specific). COMPUTED by DCM, not provider-declared."
         },
         "portability_breaking": {
@@ -478,7 +500,9 @@
         },
         "bound_providers": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Provider handles this entity is bound to via provider-specific data. Moving to a provider not in this set would drop that data."
         },
         "consumer_notified": {
@@ -486,8 +510,15 @@
           "additionalProperties": false,
           "description": "Transparency record (resource-type-hierarchy Transparency principle): the deviation MUST be surfaced to the consumer before/at realization — silent non-portability is prohibited.",
           "properties": {
-            "at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
-            "event_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The emitted portability-degradation notification event." }
+            "at": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "event_uuid": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "The emitted portability-degradation notification event."
+            }
           }
         }
       }
@@ -623,10 +654,20 @@
       "type": "object",
       "additionalProperties": false,
       "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). Per-INSTANCE cost-model reference override — overrides the resource type's `priced_by` default for this entity (per-customer/contract pricing, whose lifecycle stays external). UDLM never defines the model's contents (ADR-COST-001).",
-      "required": ["information_provider_uuid", "external_model_id"],
+      "required": [
+        "information_provider_uuid",
+        "external_model_id"
+      ],
       "properties": {
-        "information_provider_uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The registered serve_data:cost provider (the cost engine)."},
-        "external_model_id": {"type": "string", "description": "Opaque id of the cost model within that engine."}
+        "information_provider_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "The registered serve_data:cost provider (the cost engine)."
+        },
+        "external_model_id": {
+          "type": "string",
+          "description": "Opaque id of the cost model within that engine."
+        }
       }
     }
   },

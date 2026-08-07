@@ -75,6 +75,10 @@ jobs:
       - run: python3 registry/tools/generate_pin_manifest.py --check
       # Scoped-Class substrate (ADR-038 / P0): Liskov extension gate + generated-spec freshness
       - run: python3 tests/check_class_liskov.py
+      # The collapse: a request is the provider's offer with each range collapsed to one
+      # selected value. This proves the collapse landed INSIDE the offer — which is what makes
+      # placement eligibility computable rather than asserted.
+      - run: python3 tests/check_offer_collapse.py
       - run: python3 tests/check_class_paths.py
       # URF (identifier-scheme §9): grammar self-test (adversarial + canonical identity +
       # block round-trip + criterion-cycle refusal) and stored-URF scan over registry content.

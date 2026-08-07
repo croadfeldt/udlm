@@ -1,0 +1,71 @@
+# A VM whose request has COLLAPSED onto a provider's offer — the other half of the worked
+# Provider Class, and the subject the collapse gate needs to be non-vacuous.
+#
+# The Provider Class (registry/examples/classes/resource/compute/vm/cexample-cloud.yaml) declares
+# RANGES. This record is that document with every range collapsed to ONE selected value:
+#
+#   memory  offered as [512Mi,1Gi,2Gi,4Gi] or 8Gi-384Gi (general) or 8Gi-768Gi (memory-optimized)
+#           -> selected 512Gi, which is ONLY legal because instance_family is memory-optimized.
+#              Under `general` the same value would be an invalid COMBINATION, and the gate says so.
+#   cpu     offered 1-64                    -> selected 16
+#   the three REQUIRED elements the provider adds are all present, because a required element may
+#   not collapse to nothing.
+#
+# `resource_type` stays the PORTABLE two-segment name — the entity is a Compute.VM, and that does
+# not change because of where it landed. `type_ref` pins WHICH spec it was realized against, and
+# after placement that is the Provider Class. No new field was needed to record the placement.
+
+uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
+handle: cexample/web01
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Compute.VM
+type_version: 1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Compute.VM.CExampleCloud/1.0.0
+lifecycle_state: Realized
+
+states:
+  intent:
+    # What the consumer asked for — portable, and deliberately incomplete. No provider, no
+    # namespace, no instance family: those are not the consumer's to choose.
+    fields:
+      cpu: {count: 16}
+      memory: {size: 512Gi}
+    at: "2026-08-07T09:14:02Z"
+    time_source: dcm-api
+
+  requested:
+    # The CONVERGED selection: every range collapsed to a value. The three provider-required
+    # elements were filled by layers and policy during the loop, not by the consumer.
+    fields:
+      cpu: {count: 16}
+      memory: {size: 512Gi}
+      instance_family: memory-optimized
+      namespace: tenant-dev
+      native_storage_class: cexample/ssd-nvme
+    at: "2026-08-07T09:14:06Z"
+    time_source: dcm-api
+
+  realized:
+    fields:
+      cpu: {count: 16}
+      memory: {size: 512Gi}
+      instance_family: memory-optimized
+      namespace: tenant-dev
+      native_storage_class: cexample/ssd-nvme
+    outputs:
+      instance_id: cexample-i-0a1b2c3d
+      power_state: running
+    at: "2026-08-07T09:15:31Z"
+    time_source: provider-callback
+    provider: cexample-cloud
+
+metadata:
+  display_name: web01 on CExample Cloud
+  notes:
+    - at: "2026-08-07T15:00:00Z"
+      author: claude-opus-5 (provider-supports series)
+      text: >-
+        Worked example of the collapse. Exists so tests/check_offer_collapse.py has a real subject —
+        a gate whose only cases are its own self-tests proves the code runs, not that the model
+        holds.
