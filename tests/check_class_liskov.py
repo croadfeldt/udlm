@@ -24,11 +24,18 @@ from jsonschema.exceptions import ValidationError as _VErr
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSES = os.path.join(ROOT, "registry", "classes")
+# Worked-example classes mirror the class hierarchy under registry/examples/classes/. They are
+# loaded HERE because an example that is not gate-checked is an illustration, not a demonstration —
+# the whole point of a worked Provider Class is that CI fails if its narrowing is wrong. They are
+# deliberately NOT loaded by check_class_paths' has-children logic: an example must never force a
+# real registry class into the index-file layout.
+EXAMPLE_CLASSES = os.path.join(ROOT, "registry", "examples", "classes")
 
 
 def load_classes():
     by_name = {}
-    for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
+    roots = [CLASSES, EXAMPLE_CLASSES]
+    for path in sorted(p for r in roots for p in glob.glob(os.path.join(r, "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         if doc.get("record_type") == "class":
             by_name[doc["resource_type"]] = doc
