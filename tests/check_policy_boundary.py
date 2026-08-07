@@ -20,6 +20,12 @@ without a gate would simply invite it back, one convenience field at a time, so:
             taxonomy. Enforced in full by tests/check_policy_facts.py; asserted here as a
             structural floor so the two gates cannot both be satisfied by an empty match.
 
+  PBND-004  a rule names its engine dialect, as a canonical term in the policy-engine taxonomy.
+            The name is what lets a peer refuse rather than guess (ADR-065), and that decision
+            cannot rest on a free string — `rego`/`Rego`/`opa` would be three answers to one
+            question. Governing the NAME is not picking the engine: the vocabulary is open, and a
+            new engine is a curation-ladder contribution (ADR-039), not a spec change.
+
 Deliberately NOT flagged: the `output`/decision shapes. What a policy PRODUCES is UDLM's — the
 schema specifies it per `policy_type` (validation -> decision, placement -> constraints,
 override -> scope + expires_at) and that is the contract's other half.
@@ -36,6 +42,7 @@ import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCHEMA = os.path.join(ROOT, "registry", "policy.schema.json")
+ENGINE_VOCAB = os.path.join(ROOT, "registry", "taxonomies", "policy-engine.yaml")
 
 # Spellings seen in the wild across the five drifted vocabularies. Matching on VALUES rather than on
 # a key name, because the key is the easy thing to rename and the vocabulary is the actual smell.
@@ -110,7 +117,29 @@ def check_records():
                 if isinstance(m, dict) and legacy in m:
                     fails.append(f"PBND-003 {rel}: match carries '{legacy}' — the predicate surface "
                                  f"was removed; the comparison belongs in match.rule, opaque to UDLM")
+            # PBND-004 — the dialect a peer refuses on must be a governed name
+            rule = m.get("rule") if isinstance(m, dict) else None
+            if isinstance(rule, dict):
+                engine = rule.get("engine")
+                if not engine:
+                    fails.append(f"PBND-004 {rel}: match.rule names no engine — a peer's "
+                                 f"refuse-or-evaluate decision has nothing to rest on")
+                elif engine not in _engine_terms():
+                    fails.append(f"PBND-004 {rel}: engine '{engine}' is not a canonical term in the "
+                                 f"policy-engine taxonomy — add it there (a new engine is a curation "
+                                 f"contribution, not a spec change) rather than spelling it freely")
     return checked
+
+
+def _engine_terms():
+    """Canonical dialect names. Governing the NAME is not picking the engine — the vocabulary is
+    open by construction; what it refuses is four spellings of one dialect."""
+    try:
+        doc = yaml.safe_load(open(ENGINE_VOCAB, encoding="utf-8")) or {}
+    except Exception:
+        return set()
+    return {t["term"] for t in (doc.get("terms") or [])
+            if isinstance(t, dict) and t.get("term") and t.get("term") != "policy-engine"}
 
 
 # Surfaces that carry a predicate but are NOT the policy contract: a layer's activation condition
