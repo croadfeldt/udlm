@@ -5,7 +5,7 @@ policy check — and the two guarantees that ride along with it: an **audit reco
 what happened, and **idempotency** (re-asking doesn't build a second VM). A **lighter** flow — it **builds on
 [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `compute/vm-standard-provision`. **Persona:** application-team-member · **Profile:** standard.
+> **Use Case:** `compute/provision-vm-standard`. **Persona:** application-team-member · **Profile:** standard.
 
 **In one breath.** An application team asks for a VM in the standard profile. The system runs the profile's
 policy check, allocates through the one eligible provider, and writes an audit record carrying actor, intent,
@@ -45,4 +45,4 @@ Everything else (assemble, place, enrich, reserve, commit, converge) is request-
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Idempotency detail: [UC-13](uc-13-idempotent-reconvergence.md).
-- UC source: `compute/vm-standard-provision`.
+- UC source: `compute/provision-vm-standard`.
