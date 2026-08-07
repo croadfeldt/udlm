@@ -35,6 +35,17 @@ flowchart TD
 - **Policy:** `human_escalation_required` — an unmet dependency blocks and escalates rather than auto-filling.
 - **Provider:** reports the bridge absent at reserve; DCM turns that into a named, blocking unmet-edge rather than a runtime blackhole.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`platform-operator`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 
 - Base flow: [request-realization](request-realization.md). UC source: `intent-fulfillment/operational-dependency-cascade`.

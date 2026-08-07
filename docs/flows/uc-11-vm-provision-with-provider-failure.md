@@ -48,5 +48,16 @@ Everything up to commit (assemble, place, enrich, reserve) is request-realizatio
 - **Policy:** the recovery policy — classify the partial state, choose requeue / hold / fail.
 - **Provider:** the primary accepts dispatch then goes unreachable; an alternate eligible provider may take the requeue.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`application-team-member`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 - Base flow: [request-realization](request-realization.md). UC source: `compute/vm-provision-provider-failure-refused`.

@@ -43,6 +43,17 @@ Everything else (assemble, place, enrich, reserve, commit, converge) is request-
 - **Policy:** the standard profile's resolved policy set, evaluated as a single validation before allocation.
 - **Provider:** the one eligible service provider allocates the VM and reports its native id back.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`application-team-member`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Idempotency detail: [UC-13](uc-13-idempotent-reconvergence.md).
 - UC source: `compute/provision-vm-standard`.

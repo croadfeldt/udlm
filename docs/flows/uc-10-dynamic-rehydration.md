@@ -88,6 +88,17 @@ Everything inside each rebuild step is request-realization.
   data-migration provider repopulates the data. DCM orchestrates the replay (placement re-evaluation, leases,
   the `PENDING_REVIEW` pause); UDLM contributes the stored record, the derived order, and the `RHY` invariants.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`platform-engineer`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Measured and validated by
   [UC-12](uc-12-rehydration-rto-measurement.md). End-to-end implementation walkthrough: the DCM how-to
