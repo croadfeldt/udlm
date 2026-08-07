@@ -21,12 +21,12 @@ state records provider provenance identifying OSAC — the whole intent-to-reali
 
 ## The flow
 
-Assemble, policy, enrichment, and placement are **all inside policy application**, and that block is
-**re-entrant**: placement produces data (the provider, its zone, its capabilities) that the earlier steps
-have not yet seen, so the payload goes back through assemble → policy → enrich, is validated and enriched
-again now informed by the placement, and keeps looping until the data **converges** — no further policy
-changes it. Only then does each component validate and reserve, and only when every component holds a
-reservation does anything commit.
+The loop runs **assemble → validate → enrich → placement**, then round again — until every policy is
+valid and complete. Layer assembly, transformation, validation and enrichment all happen *before*
+placement; placement is the **last step of an iteration**, and what it chooses is data the earlier steps
+have not seen. There is no separate post-placement phase: **the post-placement work is the next
+iteration.** Only once it converges does each component validate and reserve, and only when every
+component holds does anything commit.
 
 ```mermaid
 flowchart TD
@@ -36,13 +36,15 @@ flowchart TD
     direction TB
     A["Assemble<br/>layers merge; every field records where it came from"]
     A --> PO["Policies<br/>transform · validate · comply"]
-    PO --> PL["Placement<br/>narrow to eligible providers, select one (OSAC)"]
-    PL --> EN["Enrich<br/>data only knowable once the provider is known"]
-    EN --> PO2["Policies again<br/>validate + enrich, now informed by placement"]
-    PO2 -->|"new data changes an earlier answer"| A
+    PO --> EN["Enrich<br/>add what a provider will need"]
+    EN --> PL["Placement<br/>narrow to eligible providers, select one (OSAC)"]
+    PL -->|"not yet converged — round again on placement-informed data"| A
   end
 
-  CONV -->|"converged — no policy changes the payload further"| VR
+  I -.->|"stored on receipt, never modified"| DI[("Intent state")]
+  CONV -.->|"the CONVERGED request, before dispatch"| DR[("Requested state")]
+
+  CONV -->|"converged — every policy valid and complete"| VR
 
   subgraph VR["VALIDATE + RESERVE — per component"]
     direction LR
@@ -53,14 +55,19 @@ flowchart TD
   end
 
   VR -->|"every component validated and held"| CM["Commit<br/>data passed between components as each is built"]
-  CM --> R["Realized — provider provenance = OSAC"]
+  CM --> RC["Reconcile<br/>store what came back · MATCH it against requested"]
+  RC -.->|"the payload OSAC returned — success only"| DZ[("Realized state")]
+  RC -->|"matches"| R["Status to the user — provenance = OSAC"]
+  RC -.->|"realized DIFFERS — policies decide the action"| CONV
+  CM -. "realization failed — nothing written to realized" .-> CONV
 
   CONV -.->|"cannot converge"| X["Stop — conflict report<br/>(never reaches the provider)"]
   VR -.->|"any component unsatisfiable"| X
 ```
 
-**Why the loop matters.** A single forward pass cannot work: policies that depend on *where* a resource
-lands can only run after placement, and their output can invalidate the placement that produced it. The
+**Why the loop matters.** A single forward pass cannot work: a policy that depends on *where* a resource
+lands can only be satisfied once a placement exists, and satisfying it can invalidate the placement that
+produced it. So the payload goes round again rather than through a separate post-placement stage. The
 loop is bounded — the convergence limit is an engine parameter, and failure to converge is a full conflict
 report, never a silent best-effort (see [ADR-006](../adr/ADR-006-convergence-control-model.md)).
 
@@ -115,7 +122,7 @@ as a non-portable pin, but it is **narrowing**, not placing.
 | Tenant identity, quota, allowed classes | the tenant binding (tenant-admin) | assemble |
 | Compliance-driven fields and constraints | policies (security-officer, sovereignty-authority) | policy application |
 | **The provider** | **nobody — derived by placement** | placement |
-| Provider-specific fields (namespace, storage class native form) | the Provider Class declaration (provider-owner / cloud-operator) | enrich, post-placement |
+| Provider-specific fields (namespace, storage class native form) | the Provider Class declaration (provider-owner / cloud-operator) | enrich — **before** placement, refined each pass |
 | Reserved facts — the IP, the volume handle, the segment | the provider, at reserve | validate + reserve |
 
 Every one of these records **who set it** — field-level provenance is not a nice-to-have here; it is how
@@ -130,6 +137,30 @@ of data other personas declared, not a decision anyone makes at request time.
 This is the single most important thing to take from this flow. If a request lands somewhere unexpected,
 nobody "set" it wrongly: either a capability declaration, a capacity advertisement, or a policy said so.
 The placement record names which.
+
+### 5. When policy is engaged — three times, not once
+
+The clearest answer to *when*:
+
+| # | Moment | What policy decides |
+|---|---|---|
+| 1 | **Convergence**, before dispatch | whether the payload is valid and complete — the loop |
+| 2 | **On failure** of realization | the response. Nothing is written to realized; most likely the user is told |
+| 3 | **On difference**, after realization | the action — notify, instruct the provider to change the resource, or update the request where the provider's change is the one that has to win |
+
+Same mechanism, three moments. Neither UDLM nor DCM has a built-in action for (2) or (3): the model
+carries the facts, policy carries the decision. A profile may extend what the options are.
+
+### The three stores
+
+| Store | What it holds | Written |
+|---|---|---|
+| **Intent** | what the consumer asked for | on receipt, never modified afterwards |
+| **Requested** | what the system decided to ask the providers for | once the loop converges — that is what makes it storable |
+| **Realized** | the payload the provider returned | on success only |
+
+Reconcile matches **realized against requested** — which is why the middle one has to exist as a stored
+record rather than a transient payload.
 
 ---
 

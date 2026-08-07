@@ -38,15 +38,17 @@ flowchart TD
 
   subgraph CONV["POLICY APPLICATION — re-entrant until convergence"]
     direction TB
-    A["Assemble — fill in defaults from the data layers"]
+    A["Assemble — merge the layer stack"]
     A --> PO["Policies — transform · validate · comply"]
-    PO --> P["Place — narrow to the providers that fit, pick one"]
-    P --> E["Enrich — add what this provider needs (→ namespace)"]
-    E --> PO2["Policies again — validate + enrich, now informed by the placement"]
-    PO2 -->|"new data changes an earlier answer"| A
+    PO --> E["Enrich — add what a provider will need"]
+    E --> P["Place — narrow to the providers that fit, pick one"]
+    P -->|"not yet converged — round again on placement-informed data"| A
   end
 
-  CONV -->|"converged"| R
+  I -.->|"stored on receipt, never modified"| DI[("Intent state")]
+  CONV -.->|"the CONVERGED request, before dispatch"| DR[("Requested state")]
+
+  CONV -->|"converged — every policy valid and complete"| R
   subgraph R["VALIDATE + RESERVE — per component"]
     direction LR
     RV["VM"]
@@ -54,16 +56,33 @@ flowchart TD
     RN["Network"]
     RI["IP"]
   end
-  R -->|"every component held"| C["Commit — build it, passing data between components (Realized)"]
+  R -->|"every component held"| C["Commit — build it, passing data between components"]
+  C --> RC["Reconcile — store what came back, MATCH it against requested"]
+  RC -.->|"the payload the provider returned — success only"| DZ[("Realized state")]
+  RC -->|"matches"| U["Status to the user"]
+  RC -.->|"realized DIFFERS — policies decide the action"| CONV
+  C -. "realization failed — nothing written to realized" .-> CONV
   CONV -. "cannot converge" .-> F["Stop here — conflict report<br/>(never reaches the provider's API)"]
   R -. "any component unsatisfiable" .-> F
 ```
 
-**Read the block, not the arrows.** Assemble, policy, placement, and enrichment are **one re-entrant
-application**, not a pipeline with a policy gate in front of it. Placement produces data the earlier steps
-have not seen — the provider, its zone, its capabilities — so the payload goes back through them, is
-validated and enriched again on the placement-informed data, and loops until nothing further changes it.
-Only then does each component validate and reserve; only when all of them hold does anything commit.
+**Read the block, not the arrows.** The loop runs **assemble → validate → enrich → placement**, then
+round again — until every policy is valid and complete. Layer assembly, transformation, validation and
+enrichment all happen *before* placement; placement is the last step of an iteration, and its result is
+data the earlier steps have not seen. There is no separate post-placement phase: **the post-placement
+work is the next iteration.** Only once it converges does each component validate and reserve, and only
+when all of them hold does anything commit.
+
+**Three stores, three moments.** The **intent** is what the consumer asked for, stored on receipt and
+never modified. The **requested** state is what the system decided to ask the providers for — it exists
+only once the loop converges, which is what makes it storable. The **realized** state is the payload the
+provider returned, stored on success only.
+
+**Policy is engaged three times in one request** — and that is the thing worth carrying away:
+convergence before dispatch, the response when realization fails, and the action when realized differs
+from requested. Same mechanism, three moments. A failure writes nothing to realized; a difference is not
+resolved here either — policies decide whether to notify, to instruct the provider to change the
+resource, or to update the request where the provider's change is the one that has to win.
 
 > This is the readable on-ramp. The **authoritative** assembly process (nine steps, with
 > the exact layer-resolution and policy phases) is [`docs/spec/foundations/layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md)
@@ -83,16 +102,20 @@ values on top) resolve the fields, and every field remembers where its value cam
 cpu, memory, guest_os — still no `namespace`, because no layer on a portable type carries a provider-specific
 field.
 
-**3. Place — pick a provider that fits.** The system narrows to the providers that satisfy the request and
-the policies (sovereignty, cost, capability), then picks one. The vaguer the request, the more providers fit
-and the more the system decides; the more exact, the fewer fit. Only now — with a specific provider chosen —
-do we know what that provider requires. (The Kubernetes provider needs a `namespace`; an enterprise virtualization platform would need a `cluster`.)
-
-**4. Enrich — add what this provider needs.** The system compares what the provider requires against what
-the request already has, and fills the difference — here, `namespace`. The value lands in
-the provider's Provider-Class element (ADR-038 — off the portable Base/Type Class) with its origin recorded, and
-`enrichment_status` moves toward `complete`. *Where* the value comes from is the organization's choice — see
+**3. Enrich — add what a provider will need.** The system fills what the portable request does not carry
+— here, `namespace`. The value lands in the provider's Provider-Class element (ADR-038 — off the portable
+Base/Type Class) with its origin recorded, and `enrichment_status` moves toward `complete`. *Where* the
+value comes from is the organization's choice — see
 [Where the value comes from](#where-the-value-comes-from).
+
+**4. Place — pick a provider that fits.** The system narrows to the providers that satisfy the request and
+the policies (sovereignty, cost, capability), then picks one. The vaguer the request, the more providers fit
+and the more the system decides; the more exact, the fewer fit.
+
+Placement is the **last step of an iteration**, not the end of the road. What it chooses is data steps 2–3
+have not seen, so the payload goes round again — re-assembled, re-validated, re-enriched, and re-placed —
+until nothing changes. That is why there is no "post-placement" step in this list: **the post-placement
+work is the next pass through steps 2–4.**
 
 **5. Validate + reserve — check before building, per component.** A request is rarely one resource: a VM
 carries storage, a network attachment, and an address, each a separate component with its own provider and
