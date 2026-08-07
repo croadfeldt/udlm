@@ -1,0 +1,161 @@
+# Compute.VM.CExampleCloud — a PROVIDER CLASS, and the worked example of a provider declaring
+# WHAT IT OFFERS.
+#
+# This is the demonstration the model was missing. Provider Classes existed and the Liskov gate
+# enforced refine-or-add, but nothing in the tree actually NARROWED anything — the only two
+# Provider Classes merely added string elements. So "a provider defines the range of values it can
+# support" was a claim with no worked case behind it.
+#
+# Read the `supports` blocks two ways, because they are one declaration:
+#   as an OFFER  — what this provider can satisfy
+#   as a MENU    — what a consumer may select
+# The catalog reads this. It is not restated anywhere.
+#
+# And read the whole file as the OTHER half of the provider's contract: the elements it ADDS with
+# `optional: false` are what it REQUIRES to realize a request. Offer and requirement are two
+# declarations on the same element set — "here is what I need, and here is the range of it I can
+# satisfy."
+#
+# A request is this document with every range collapsed to one selected value (or nothing, where
+# the element is optional). Layers and policies perform that collapse; the convergence loop runs
+# until every range has become a value.
+
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM.CExampleCloud/1.0.0
+conforms_to: udlm/0.1
+uuid: 9d4e1f28-3a76-4b05-8c91-2e6f7a0b5d34
+record_type: class
+class: provider
+resource_type: Compute.VM.CExampleCloud
+parent: Compute.VM
+version: 1.0.0
+family: Resource
+status: active
+
+metadata:
+  authority: proposed
+  display_name: Compute.VM on CExample Cloud
+  title: Compute.VM.CExampleCloud Provider Class
+  maintainer: UDLM maintainers
+  origination_timestamp: "2026-08-07T14:00:00Z"
+
+coverage:
+  use_cases:
+    - scoped-class/provider-declares-supported-ranges
+  flows:
+    - docs/flows/scoped-class-lifecycle.md
+
+immutable: []
+adopts: []
+
+elements:
+  # ---- NARROWED: what the portable Type Class allows, reduced to what this provider offers ----
+
+  - element: cpu
+    scope: Compute.VM.CExampleCloud
+    state: proposed
+    optional: true
+    description: >-
+      Narrowed at the nested property the parent left open — the parent sets `count.minimum: 1` and
+      no ceiling; this provider tops out at 64. The Liskov gate recurses into properties, so this
+      is a checked refinement, not a comment.
+    schema:
+      type: object
+      required: [count]
+      properties:
+        count:
+          type: integer
+          minimum: 1
+          maximum: 64
+    supports:
+      - min: 1
+        max: 64
+        reason: Largest shape CExample Cloud builds; above this the request is refused, not queued.
+
+  - element: memory
+    scope: Compute.VM.CExampleCloud
+    state: proposed
+    optional: true
+    description: >-
+      The case a JSON Schema range cannot express. Memory is a `Quantity` — a patterned string by
+      canonical design (the Kubernetes resource.Quantity form) — so "1Gi to 512Gi" is not sayable by
+      narrowing the pattern. `supports` carries it as data instead.
+    schema:
+      type: object
+      required: [size]
+      properties:
+        size:
+          type: string
+          pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
+    supports:
+      # the small end is a fixed set, not a continuum
+      - values: [512Mi, 1Gi, 2Gi, 4Gi]
+        reason: Shared-tenancy shapes come in fixed sizes.
+      # above that, a stepped range — and the ceiling depends on the family selected
+      - min: 8Gi
+        max: 384Gi
+        step: 8Gi
+        when:
+          instance_family: general
+        reason: General-purpose hosts cap at 384Gi.
+      - min: 8Gi
+        max: 768Gi
+        step: 8Gi
+        when:
+          instance_family: memory-optimized
+        reason: >-
+          The grouped case — 512Gi is a real offer under memory-optimized and NOT under general.
+          A value can be individually supported and still be an invalid combination.
+
+  - element: networks
+    scope: Compute.VM.CExampleCloud
+    state: proposed
+    optional: true
+    description: Cardinality bound — this provider attaches at most 8 interfaces.
+    schema:
+      type: array
+      maxItems: 8
+
+  # ---- ADDED + REQUIRED: what this provider needs that no portable intent carries ----
+
+  - element: namespace
+    scope: Compute.VM.CExampleCloud
+    state: proposed
+    optional: false
+    description: >-
+      REQUIRED. The provider cannot build without it, and no portable intent contains it — this is
+      the enrichment step's job, filled from governed layers before placement. `optional: false` is
+      how a provider says "I require this".
+    schema:
+      type: string
+      pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+
+  - element: instance_family
+    scope: Compute.VM.CExampleCloud
+    state: proposed
+    optional: false
+    description: >-
+      REQUIRED, and the selection other clauses key on. Choosing it narrows what memory is
+      offerable — which is why a consumer form derives its ordering from `supports[].when` rather
+      than being told the order.
+    schema:
+      type: string
+      enum: [general, memory-optimized]
+    supports:
+      - values: [general, memory-optimized]
+
+  - element: native_storage_class
+    scope: Compute.VM.CExampleCloud
+    state: proposed
+    optional: false
+    description: >-
+      REQUIRED. Declared as a GOVERNED vocabulary rather than an inline enum, so the offered terms
+      are curated reference data and change without a spec edit — the same mechanism that makes a
+      named-shape matrix expressible.
+    schema:
+      type: string
+    values:
+      reference_data_type: storage_tier
+
+outputs: {}
+relationships: []
+

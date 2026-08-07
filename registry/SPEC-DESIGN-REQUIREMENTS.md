@@ -379,6 +379,28 @@ Each hard constraint cites the UDLM contract it derives from.
     naturalization) or the organization's (policy) to state. UDLM carries the comparable shape;
     it never bakes one party's requirement into the shared type.
 
+40. **A provider states its offer on its Provider Class — and that offer IS the consumer's option
+    list.** §39 says the actual requirement is the provider's to state; this says where and how.
+    Two declarations on the same element set: **what it REQUIRES** is an element it adds marked
+    `optional: false`; **what it SUPPORTS** is `supports` on the element — a list of clauses whose
+    union is the offer, each carrying discrete `values`, a `min`/`max` range (optionally with
+    `step`), or both, and optionally a `when` scoping the clause to other selections (that is how a
+    support *matrix* is expressed).
+
+    `schema` says what shape is **valid** and stays portable; `supports` says what is **offered
+    here**. The offer MUST narrow what the schema permits and MUST NOT exceed it, and a child
+    Class's clauses MUST be contained in its parent's — a widened offer is the same defect as a
+    widened enum (`tests/check_class_liskov.py`).
+
+    The matrix is declared as **data**, never as JSON Schema `if`/`then`: containment over declared
+    clauses is decidable, containment over conditional schema logic is not, so a conditional would
+    validate as JSON Schema while being ungated for subtyping.
+
+    **Do not restate the offer as a consumer-facing option list.** It is the same declaration read
+    from the other side — an offer to the provider, a menu to the consumer — and a second copy is a
+    §37 derivability violation that will drift. A request is this document with each range collapsed
+    to one selected value (or nothing, where optional); layers and policies perform the collapse.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
