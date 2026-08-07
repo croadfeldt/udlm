@@ -22,6 +22,7 @@ run "model vocabulary"                  hard python3 tests/check_model_vocabular
 run "session narration"                 hard python3 tests/check_session_narration.py
 run "profile tables"                    hard python3 tests/check_profile_tables.py
 run "Policy-fact vocabulary (policy-contract 2.1)" hard python3 tests/check_policy_facts.py
+run "Policy-engine boundary (ADR-065)" hard python3 tests/check_policy_boundary.py
 run "URF grammar (identifier-scheme 9)" hard python3 tests/check_urf.py
 run "URF conformance (dereference + portability)" hard python3 tests/check_urf_conformance.py
 run "URF grammar fuzz (combinatorial)" hard python3 registry/tools/fuzz_urf.py

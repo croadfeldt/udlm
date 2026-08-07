@@ -151,10 +151,11 @@
   }
  },
  "policy:eu-data-residency-gate": {
-  "current": "1.0.0",
+  "current": "2.0.0",
   "path": "registry/examples/example-policy.yaml",
   "versions": {
-   "1.0.0": "sha256:25a8011533e471bd06656b7f227dd6d435a0f04eb550104d1ccabef61702179b"
+   "1.0.0": "sha256:25a8011533e471bd06656b7f227dd6d435a0f04eb550104d1ccabef61702179b",
+   "2.0.0": "sha256:742bedc43158bc871e522a3d1179a50bc331b97208c669da825a8449c52d11f8"
   }
  },
  "policy_profile:udlm/profile/dev": {

@@ -331,16 +331,18 @@ filters **declared fields only** — identity-stable data (`tenant_uuid`, owners
 type). Operational state (`run_state`, drift, staleness) composes at query time and never
 appears inside a stored criterion.
 
-### 9.8 What URF replaces — and deliberately does not
+### 9.8 What URF deliberately does not replace
 
-**Replaces** (each removed in the PR that lands its URF form — no parallel mechanisms):
-the ADR-038 §10 class-address as a separate grammar (subsumed here), the ADR-054 `covers`
-selector grammar, the structured `Reference`/`data_reference` object serializations, the
-policy match-condition array, and grouping member semantics. **Deliberately does not
-replace:** graph diagnostics (blast radius, reachability — edge traversal is never in the
-filter grammar; `member_of` is the one sanctioned bridge), the ADR-041 firewall (URF is the
-*addressing*; PROJ is the *policy* at the address), and the pin grammar (ADR-051, carried
-verbatim, not duplicated).
+**Graph diagnostics** — blast radius, reachability. Edge traversal is never in the filter
+grammar; `member_of` is the one sanctioned bridge.
+
+**The ADR-041 firewall** — URF is the *addressing*; PROJ is the *policy* at the address.
+
+**The pin grammar** — ADR-051, carried verbatim, not duplicated.
+
+**The policy predicate language** — a policy declares the FACTS it reads (policy-contract
+§2.1); how it compares them is the engine's, in the engine's own language (ADR-065). URF is
+not a policy predicate grammar and does not become one.
 
 ### 9.9 Rules
 
