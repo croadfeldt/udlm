@@ -51,5 +51,16 @@ The re-realize step is request-realization, run with the failed provider exclude
 - **Policy:** validation policies re-evaluate for the alternate provider — the move is governed, not blind.
 - **Provider:** the original is detected unavailable; an alternate eligible provider re-realizes the resources.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`platform-engineer`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Whole-environment rebuild: [UC-10](uc-10-dynamic-rehydration.md). UC source: `osac/provider-portability-new-cloud`.

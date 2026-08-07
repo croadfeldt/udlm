@@ -48,5 +48,16 @@ The rebuild itself is [UC-10](uc-10-dynamic-rehydration.md); each resource build
 - **Policy:** none — this UC is `no_policy`; it observes rather than governs.
 - **Provider:** none of its own; provider-assigned fields are simply granted a tolerance in the comparison.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`platform-engineer`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Measures [UC-10](uc-10-dynamic-rehydration.md). UC source: `docs/spec/contracts/rehydration-rto-measurement`.

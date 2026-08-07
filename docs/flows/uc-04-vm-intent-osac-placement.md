@@ -78,154 +78,25 @@ nothing has been created ([ADR-011](../adr/ADR-011-validate-and-reserve.md)).
 
 ---
 
-## Who provides what, and when
+## Who provides what, and when — and what THIS case changes
 
-The four questions engineering needs answered from this flow. **Who and what — deliberately not how.**
+The lifecycle answer — the personas, what a request contains, what is added and by whom, why nobody
+sets placement, and the VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case; only the delta belongs here.
 
-### 1. The personas
+**What UC-04 changes:** one row of that table, and only its *value*.
 
-| Persona | What they do for this request | When |
+| | Lifecycle answer | UC-04 |
 |---|---|---|
-| **application-team-member** | Submits the intent. This is the *only* per-request actor. | at request |
-| **platform-engineer** | Maintains the data layers that supply defaults (environment, zone, tags). | before, standing |
-| **tenant-admin** | Binds the tenant: isolation, quota, which storage classes and networks it may use. | before, standing |
-| **security-officer** · **sovereignty-authority** | Author the policies that constrain where and how the request may be realized. | before, standing |
-| **cloud-operator** (OSAC) · **provider-owner** | Declare the provider's capabilities, capacity, and residency guarantees. | before, standing |
+| Who declares capability, capacity, residency | cloud-operator / provider-owner | **an OSAC cloud-operator** — the residency guarantee is real, not nominal |
+| Provider-specific fields added at enrich | the selected provider's Provider Class | **OSAC's** — namespace, native storage class, native subnet |
+| Which persona sets placement | nobody; it is derived | **unchanged** — OSAC is *selected*, never assigned |
+| Reserved facts at reserve | from the component's provider | **unchanged** |
 
-**Only one persona acts per request.** Everything else was declared earlier as governed data — which is
-the point: a request succeeds because other people's declarations were already in place, not because
-someone was asked at the time.
-
-### 2. What a user request contains
-
-Only the **portable** fields the type declares as consumer-supplied:
-
-```yaml
-resource_type: Compute.VM
-vcpu: 4
-memory: 16GiB
-guest_os: <reference to a governed OS image>
-network: <reference to a governed network>
-storage: [{ size: 100GiB, class: <reference to a governed storage class> }]
-```
-
-What a consumer **never** supplies: the provider, the host, the datastore path, the namespace, the IP
-address, the volume handle. Those are either derived or supplied by someone else. A consumer *may*
-narrow the choice (a zone, a required capability, even a named provider) — that is allowed and recorded
-as a non-portable pin, but it is **narrowing**, not placing.
-
-### 3. What must be added before a provider can act — and who supplies it
-
-| What is added | Who supplies it | When |
-|---|---|---|
-| Defaults — environment, zone, tags | the data layers (platform-engineer) | assemble |
-| Tenant identity, quota, allowed classes | the tenant binding (tenant-admin) | assemble |
-| Compliance-driven fields and constraints | policies (security-officer, sovereignty-authority) | policy application |
-| **The provider** | **nobody — derived by placement** | placement |
-| Provider-specific fields (namespace, storage class native form) | the Provider Class declaration (provider-owner / cloud-operator) | enrich — **before** placement, refined each pass |
-| Reserved facts — the IP, the volume handle, the segment | the provider, at reserve | validate + reserve |
-
-Every one of these records **who set it** — field-level provenance is not a nice-to-have here; it is how
-this table is answerable after the fact for a specific record.
-
-### 4. Which persona sets placement
-
-**None.** Placement is **derived** — the engine narrows to providers whose declared capability and
-capacity satisfy the request, and whose selection satisfies every applicable policy. It is an *outcome*
-of data other personas declared, not a decision anyone makes at request time.
-
-This is the single most important thing to take from this flow. If a request lands somewhere unexpected,
-nobody "set" it wrongly: either a capability declaration, a capacity advertisement, or a policy said so.
-The placement record names which.
-
-### 5. When policy is engaged — three times, not once
-
-The clearest answer to *when*:
-
-| # | Moment | What policy decides |
-|---|---|---|
-| 1 | **Convergence**, before dispatch | whether the payload is valid and complete — the loop |
-| 2 | **On failure** of realization | the response. Nothing is written to realized; most likely the user is told |
-| 3 | **On difference**, after realization | the action — notify, instruct the provider to change the resource, or update the request where the provider's change is the one that has to win |
-
-Same mechanism, three moments. Neither UDLM nor DCM has a built-in action for (2) or (3): the model
-carries the facts, policy carries the decision. A profile may extend what the options are.
-
-### The three stores
-
-| Store | What it holds | Written |
-|---|---|---|
-| **Intent** | what the consumer asked for | on receipt, never modified afterwards |
-| **Requested** | what the system decided to ask the providers for | once the loop converges — that is what makes it storable |
-| **Realized** | the payload the provider returned | on success only |
-
-Reconcile matches **realized against requested** — which is why the middle one has to exist as a stored
-record rather than a transient payload.
-
----
-
-## Worked example — a VM with network and storage
-
-One request, four components. Each needs different data, from a **different source**, at a **different
-moment** — which is the whole reason this example is worth drawing rather than listing.
-
-```mermaid
-flowchart LR
-  subgraph WHO["WHO declares it — before the request exists"]
-    direction TB
-    CONS["Consumer<br/>application-team-member"]
-    PLAT["Platform engineer<br/>+ tenant-admin"]
-    SEC["Security officer /<br/>sovereignty authority"]
-    OSAC["Cloud operator<br/>(OSAC)"]
-    NETP["Network provider"]
-  end
-
-  subgraph WHAT["WHAT each component needs"]
-    direction TB
-    CVM["<b>VM</b><br/>vcpu · memory · guest_os<br/>+ tenant, environment<br/>+ OSAC instance type<br/>⇒ instance hold"]
-    CST["<b>Storage</b><br/>size · class<br/>+ quota check<br/>+ OSAC volume type, encryption<br/>⇒ volume handle"]
-    CNW["<b>Network</b><br/>which network<br/>+ segment allowed for tenant<br/>+ OSAC subnet native form<br/>⇒ segment attachment"]
-    CIP["<b>Address</b><br/>consumer asks for NOTHING<br/>no layer · no policy<br/>⇒ <b>the address itself</b>"]
-  end
-
-  CONS -->|"the portable ask"| CVM
-  CONS --> CST
-  CONS --> CNW
-  PLAT -->|"defaults · tenant · quota<br/>(at assemble)"| CVM
-  PLAT --> CST
-  PLAT --> CNW
-  SEC -->|"compliance fields<br/>(policy, every pass)"| CVM
-  SEC --> CST
-  OSAC -->|"provider-native form<br/>(at enrich, before placement)"| CVM
-  OSAC --> CST
-  OSAC --> CNW
-  NETP -->|"allocated at RESERVE —<br/>knowable no earlier"| CIP
-```
-
-Read it as columns: **who** on the left, **what** in the middle, and the *when* on each arrow.
-
-| Component | Consumer declares | Added at assemble/policy | Added at enrich (provider known) | Reserved fact |
-|---|---|---|---|---|
-| **VM** | vcpu, memory, guest_os | tenant, environment, compliance fields | OSAC instance type, image in native form | instance hold |
-| **Storage** | size, storage class | quota check against the tenant's bound classes | OSAC volume type, encryption per policy | volume handle |
-| **Network** | which network | segment allowed for this tenant | OSAC subnet in native form | segment attachment |
-| **IP** | *nothing* | — | address family / pool from the segment | **the address itself** |
-
-**The IP row is the teaching case.** The consumer never mentions an IP, no layer carries one, and no policy
-sets one. It exists only as a *reserved fact* — the network provider allocates it during reserve and hands
-it back, and it becomes part of the record with the provider named as its source. It cannot be known
-earlier, which is exactly why reserve exists as its own phase before commit.
-
-**Data flows between components at commit.** The VM needs the volume handle to attach it and the segment
-attachment to connect. Those are pulled during validate-and-reserve in the ordinary case; a component may
-need more during final provisioning, and the commit phase passes it as each is built.
-
-**Four sources, four moments** — the table above is the same story in reference form: the consumer at
-request time, the layers and tenant binding at assemble, policy on every pass, the provider's native form
-at enrich (before placement), and the reserved facts at reserve. No single actor could have supplied all
-of it, and no earlier moment could have produced the address.
-
----
+That last row is the point of the whole use case: a sovereign cloud participates through the ordinary
+contract. If UC-04 needed a *different* answer to any of these questions, OSAC would not be "just a
+provider" — and the claim this flow settles would be false.
 
 ## Success criteria (from the UC)
 - Consumer submits the VM intent through the DCM API.

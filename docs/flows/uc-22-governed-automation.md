@@ -63,6 +63,17 @@ Everything inside dispatch is request-realization; the automation provider is th
 - **Provider:** the automation platform is the **realizer** — it runs only the governed, in-scope automation
   and reports the realized effect back for reconciliation.
 
+## Who provides what, and when
+
+The lifecycle answer — the personas, what a request contains, what data is added and **by whom**, why
+**nobody sets placement**, and the worked VM-with-network-and-storage example — lives once in
+[request-realization § Who provides what, and when](request-realization.md#who-provides-what-and-when).
+It holds for every use case.
+
+**This case's delta:** the driving persona is **`platform-engineer`**. Everything that persona relies on —
+layers, tenant binding, policies, provider capability — was declared by the others *before* this
+request existed, exactly as the lifecycle answer describes.
+
 ## Pointers
 - Base flow: [request-realization](request-realization.md). Related: [ADR-041](../adr/ADR-041-policy-information-firewall.md)
   (information firewall), [ADR-057](../adr/ADR-057-sovereignty-placement-and-provenance.md) (sovereignty /
