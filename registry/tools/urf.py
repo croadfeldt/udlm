@@ -192,6 +192,11 @@ def _parse_term(t):
                 if not (val.startswith("(") and val.endswith(")")):
                     raise URFError(f"{op} takes a parenthesized list: {t!r}")
                 members = [m for m in val[1:-1].split(",") if m]
+                if not members:
+                    # An empty set is a criterion that can never match — the same silent-failure
+                    # class as a regex-as-literal (URF-008). If the intent is "nothing", say so
+                    # some other way; do not spell it as a filter that quietly returns nothing.
+                    raise URFError(f"{op} with an empty member list matches nothing: {t!r}")
                 if any("*" in m and not m.startswith("'") for m in members):
                     raise URFError(f"wildcard not valid inside {op} members (§9.2)")
                 return (op, sel, sorted(_decode_value(m) for m in members))
