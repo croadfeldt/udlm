@@ -67,6 +67,14 @@ jobs:
       # URF (identifier-scheme §9): grammar self-test (adversarial + canonical identity +
       # block round-trip + criterion-cycle refusal) and stored-URF scan over registry content.
       - run: python3 tests/check_urf.py
+      # The two conformance tests §9 declares as DEFINING the mechanism — dereference (every
+      # authored URF denotes something that exists) and portability (one filter, one canonical
+      # form, across every carrier) — plus URF-004/URF-007, which check_urf never exercised.
+      - run: python3 tests/check_urf_conformance.py
+      # Combinatorial grammar coverage: the cross-product of axes x comparators x value forms,
+      # asserting parse/idempotence/equivalence/projection/url-safety per form, and a negative
+      # matrix that reports any rule arm whose refusals never fire.
+      - run: python3 registry/tools/fuzz_urf.py
       - run: python3 registry/tools/generate_class_specs.py --check
       - run: python3 tests/check_class_address_resolution.py
       # Spec-completeness gate (rule-36 — every spec ships with a UC + example + flow, declared in
