@@ -1,0 +1,46 @@
+# UC traceability burn-down baseline
+#
+# Citations that do NOT yet resolve to a corpus use case. This is DECLARED DEBT, not an exemption:
+# the row-by-row mapping and the plan to close it live in docs/uc-scope-corpus-reconciliation.md.
+#
+# The baseline only SHRINKS. When a citation starts resolving, the gate FAILS until its line is
+# removed here — so progress cannot silently reverse, and a fixed pointer cannot quietly re-break.
+# New flows and new register rows get no grace: they are never added to this file.
+#
+# Seeded 2026-08-07, after the four section-A renames closed 8 of 44 citations.
+UCT-001 secure-software-supply-chain.md docs/spec/governance/secure-software-supply-chain
+UCT-001 uc-01-vm-resource-representation.md libvirt-vm-provider/standard/vm-resource-representation
+UCT-001 uc-04-vm-intent-osac-placement.md compute/vm-intent-osac-placement
+UCT-001 uc-05-vm-status-provenance.md libvirt-vm-provider/standard/vm-status-provenance
+UCT-001 uc-07-udlm-dependency-graph-data-model.md dcm-core/standard/udlm-dependency-graph-data-model
+UCT-001 uc-08-cross-provider-dependency-ordering.md libvirt-vm-provider/standard/cross-provider-dependency-ordering
+UCT-001 uc-09-dependency-failure-impact.md libvirt-vm-provider/standard/dependency-failure-impact
+UCT-001 uc-10-dynamic-rehydration.md cross-domain/dynamic-rehydration
+UCT-001 uc-12-rehydration-rto-measurement.md docs/spec/contracts/rehydration-rto-measurement
+UCT-001 uc-13-idempotent-reconvergence.md compute/idempotent-reconvergence
+UCT-001 uc-14-drift-detection-remediation.md docs/spec/contracts/drift-detection-remediation
+UCT-001 uc-15-audit-merkle-tree-verification.md docs/spec/governance/audit-merkle-tree-verification
+UCT-001 uc-16-policy-override-approval.md docs/spec/governance/policy-override-approval
+UCT-001 uc-17-provider-registration-capability.md libvirt-vm-provider/standard/provider-registration-capability
+UCT-001 uc-18-provider-portable-rebuild.md cross-domain/provider-portable-rebuild
+UCT-001 uc-19-policy-resolution-capability.md docs/spec/governance/policy-resolution-capability
+UCT-001 uc-20-profile-resolution-capability.md cross-domain/profile-resolution-capability
+UCT-001 uc-21-audit-chain-proofs-capability.md docs/spec/governance/audit-chain-proofs-capability
+UCT-001 uc-22-governed-automation.md docs/spec/governance/governed-automation
+UCT-002 UC-01 libvirt-vm-provider/vm-resource-representation
+UCT-002 UC-04 compute/vm-intent-osac-placement
+UCT-002 UC-05 libvirt-vm-provider/vm-status-provenance
+UCT-002 UC-07 dcm-core/udlm-dependency-graph-data-model
+UCT-002 UC-08 libvirt-vm-provider/cross-provider-dependency-ordering
+UCT-002 UC-09 libvirt-vm-provider/dependency-failure-impact
+UCT-002 UC-10 cross-domain/dynamic-rehydration
+UCT-002 UC-12 docs/spec/contracts/rehydration-rto-measurement
+UCT-002 UC-13 compute/idempotent-reconvergence
+UCT-002 UC-14 docs/spec/contracts/drift-detection-remediation
+UCT-002 UC-15 docs/spec/governance/audit-merkle-tree-verification
+UCT-002 UC-16 docs/spec/governance/policy-override-approval
+UCT-002 UC-17 libvirt-vm-provider/provider-registration-capability
+UCT-002 UC-18 cross-domain/provider-portable-rebuild
+UCT-002 UC-19 docs/spec/governance/policy-resolution-capability
+UCT-002 UC-20 cross-domain/profile-resolution-capability
+UCT-002 UC-21 docs/spec/governance/audit-chain-proofs-capability

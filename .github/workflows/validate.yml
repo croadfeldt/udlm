@@ -39,6 +39,10 @@ jobs:
       - run: python3 tests/check_uc_dimensions.py
       # UC persona vocabulary — canonical persona set, single-sourced (PER-001)
       - run: python3 tests/check_uc_personas.py
+      # UC traceability: a flow's `UC source:` and the release register's handle column must
+      # name a real corpus use case. All 44 citations dangled before 2026-08-07; the burn-down
+      # baseline only shrinks (docs/uc-scope-corpus-reconciliation.md has the row-by-row map).
+      - run: python3 tests/check_uc_traceability.py
       # Policy-fact vocabulary (policy-contract §2.1): UDLM does not specify the predicate
       # language, so the FACTS a policy may reference are the deliverable — governed here
       # rather than as prose in a field description, which is how five rival spellings grew.

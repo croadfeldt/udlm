@@ -4,7 +4,7 @@
 to an existing VM — plus tenant-plane isolation, data residency, and quota accounting. A **lighter** flow —
 it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `data/persistent-volume-provision`. **Persona:** application-team-member · **Profile:** dev.
+> **Use Case:** `storage/provision-volume-bound-to-pool`. **Persona:** application-team-member · **Profile:** dev.
 
 **In one breath.** A dev team asks for a persistent block volume attached to a VM they already own. The
 storage provider allocates it from a storage class the tenant is authorized to use, attaches it to the target
@@ -44,4 +44,4 @@ Everything else (assemble, place, enrich, reserve, commit, converge) is request-
 - **Provider:** the storage provider allocates the volume; a service provider attaches it to the VM.
 
 ## Pointers
-- Base flow: [request-realization](request-realization.md). UC source: `data/persistent-volume-provision`.
+- Base flow: [request-realization](request-realization.md). UC source: `storage/provision-volume-bound-to-pool`.
