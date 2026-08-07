@@ -2,7 +2,7 @@
 
 **What this settles:** a missing or misconfigured dependency is made **explicit and blocking** before implementation — the macvtap-vs-bridge class of failure surfaces as a named unmet edge, not a silent blackhole. A **lighter** flow — it **builds on [request-realization](request-realization.md)** and documents only what this case adds.
 
-> **Use Case:** `libvirt-vm-provider/standard/dependency-failure-impact`. **Persona:** platform-operator · **Profile:** standard.
+> **Use Case:** `intent-fulfillment/operational-dependency-cascade`. **Persona:** platform-operator · **Profile:** standard.
 
 **In one breath.** UC-08 orders good dependencies; this case handles the broken one. A VM's NIC declares `depends_on` a host bridge that doesn't exist. Instead of building a VM that quietly blackholes traffic, DCM flags the *specific* unmet edge, blocks the VM's convergence until it's satisfied, and — from the same graph — tells you the blast-radius of the gap. This is the drift-detection, `provider_failure` side of the base flow: caught and reported, not crashed.
 
@@ -37,5 +37,5 @@ flowchart TD
 
 ## Pointers
 
-- Base flow: [request-realization](request-realization.md). UC source: `libvirt-vm-provider/standard/dependency-failure-impact`.
+- Base flow: [request-realization](request-realization.md). UC source: `intent-fulfillment/operational-dependency-cascade`.
 - Edges + impact queries come from [UC-07](uc-07-udlm-dependency-graph-data-model.md); the happy-path ordering is [UC-08](uc-08-cross-provider-dependency-ordering.md).
