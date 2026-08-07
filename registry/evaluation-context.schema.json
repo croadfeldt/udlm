@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/evaluation-context.schema.json",
+  "title": "Evaluation context (the policy-engine interface)",
+  "description": "The transient shared space a request evaluation creates, which policies read from and write to across passes (policy-contract §7.1). This is THE INTERFACE: under ADR-065 the engine is a black box, so the context shape is one of the few things that must be exact for two implementations to interoperate. It is transient — never persisted as entity data — but the snapshot at each pass is captured in the audit record, which is the form this schema governs. Not a record: it has no uuid identity, no lifecycle, and no version of its own; it belongs to the request evaluation that created it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_uuid",
+    "pass_number"
+  ],
+  "properties": {
+    "request_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "The request evaluation this context belongs to. RFC 9562 v4."
+    },
+    "pass_number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Which evaluation pass produced this snapshot. Re-entrant evaluation (§7.2, ADR-006) means the same policy may contribute across passes; the pass number is what makes an accumulated constraint attributable to a moment rather than to the set."
+    },
+    "max_passes": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The convergence bound for this evaluation. An ENGINE PARAMETER set by the implementation, not by the contract (§7.2a) — carried here so an audit snapshot records the bound that was in force, not so UDLM prescribes one."
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Constraints emitted by policies, accumulating across passes. Each carries provenance because conflict resolution is only possible when a constraint can be attributed — a constraint whose source is unknown cannot be weighed against another, overridden, or explained in an audit.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "constraint_uuid",
+          "source_policy",
+          "source_domain",
+          "constraint_type",
+          "operator",
+          "binding",
+          "pass_added"
+        ],
+        "properties": {
+          "constraint_uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "description": "Identity of this constraint within the evaluation. RFC 9562 v4."
+          },
+          "source_policy": {
+            "type": "string",
+            "description": "The policy that emitted it — the WHO of provenance. Required: an unattributable constraint cannot be resolved against a conflicting one."
+          },
+          "source_domain": {
+            "enum": [
+              "system",
+              "platform",
+              "tenant",
+              "resource_type",
+              "entity"
+            ],
+            "description": "The domain the emitting policy belongs to — the precedence axis (§4). Required for the same reason: precedence cannot be applied to a constraint whose domain is unknown."
+          },
+          "constraint_type": {
+            "type": "string",
+            "description": "Which accumulator this constraint contributes to — a canonical term in the `evaluation-context` subtree of the policy-fact taxonomy (registry/taxonomies/policy-fact.yaml), enforced by tests/check_policy_facts.py. This is the round-trip the evaluation context exists for: what a policy EMITS under a name is what a later policy READS as a fact under that same name (`allowed_zones` emitted, `allowed_zones` read). One name for the two directions — governing it is what keeps them from drifting apart."
+          },
+          "field": {
+            "type": "string",
+            "description": "The dot-path this constraint targets within the accumulator, when narrower than the accumulator itself (e.g. `placement.zone_distribution`). Optional: a constraint may apply to the accumulator as a whole."
+          },
+          "operator": {
+            "enum": [
+              "restrict_to",
+              "require",
+              "prefer",
+              "exclude"
+            ],
+            "description": "How the constraint applies. This is EMISSION, not comparison — what a policy produces, which is UDLM's side of the contract (ADR-065 keeps the decision and constraint shapes). It is deliberately NOT the removed predicate vocabulary: a policy compares facts in its engine's language, then emits a constraint in this one."
+          },
+          "value": {
+            "description": "The constraint's payload — a zone set, a ceiling, a distribution rule. Untyped here because its shape follows constraint_type."
+          },
+          "binding": {
+            "enum": [
+              "hard",
+              "soft"
+            ],
+            "description": "hard = cannot be overridden by a later pass or a lower-precedence domain; soft = a preference. Required: whether a constraint can be relaxed is not a detail a resolver may infer."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Human-readable justification, surfaced in the conflict report when evaluation cannot converge."
+          },
+          "pass_added": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Which pass emitted it — the WHEN of provenance, and what makes convergence auditable rather than merely asserted."
+          }
+        }
+      }
+    },
+    "hints": {
+      "type": "array",
+      "description": "Advisory signals flowing between policies within an evaluation. EPHEMERAL — never persisted as entity data (§7.1). A hint carries no binding and cannot constrain; a policy that needs to bind emits a constraint instead.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from_policy",
+          "to_concern",
+          "hint_type",
+          "pass_added"
+        ],
+        "properties": {
+          "from_policy": {
+            "type": "string",
+            "description": "The policy that offered the hint."
+          },
+          "to_concern": {
+            "type": "string",
+            "description": "The concern_type the hint is addressed to (placement, security, compliance …) — hints are routed by concern, not to a named policy, so a hint survives the addressee being replaced."
+          },
+          "hint_type": {
+            "type": "string",
+            "description": "What kind of signal this is."
+          },
+          "value": {
+            "description": "The hint payload."
+          },
+          "pass_added": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Which pass offered it."
+          }
+        }
+      }
+    },
+    "resolutions": {
+      "type": "array",
+      "description": "How conflicts were handled. The record that makes convergence explainable: §7.2 requires a full conflict report when evaluation cannot converge, and this is what that report is assembled from.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conflict",
+          "strategy",
+          "result",
+          "resolved_by",
+          "pass_resolved"
+        ],
+        "properties": {
+          "conflict": {
+            "type": "string",
+            "description": "What conflicted."
+          },
+          "strategy": {
+            "type": "string",
+            "description": "The strategy applied, from the emitting policy's on_conflict declaration."
+          },
+          "result": {
+            "type": "string",
+            "description": "What the resolution produced."
+          },
+          "resolved_by": {
+            "enum": [
+              "auto",
+              "human",
+              "escalation"
+            ],
+            "description": "Who resolved it. `human` and `escalation` are recorded, never elided — a decision that left the machine is the one an auditor most needs to find."
+          },
+          "pass_resolved": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Which pass resolved it."
+          }
+        }
+      }
+    },
+    "resolved_constraints": {
+      "type": "object",
+      "description": "The settled constraint set downstream policies and placement consume — the accumulator's value once the pass completes. Derived from `constraints` (DRV-001): carried in an audit snapshot because recomputing it later would require replaying the evaluation, not because it is an independent fact."
+    }
+  },
+  "examples": [
+    {
+      "request_uuid": "7c1e4a92-3b8d-4f61-9e05-2ad7c6b1f840",
+      "pass_number": 1,
+      "max_passes": 3,
+      "constraints": [
+        {
+          "constraint_uuid": "e4a1b7c3-9d2f-4e58-8a10-5c3b7e9d1f26",
+          "source_policy": "eu-data-residency-gate",
+          "source_domain": "tenant",
+          "constraint_type": "allowed_zones",
+          "operator": "restrict_to",
+          "value": [
+            "eu-west",
+            "eu-central",
+            "eu-north"
+          ],
+          "binding": "hard",
+          "reason": "eu_personal data may only be realized in an EU sovereignty zone",
+          "pass_added": 1
+        }
+      ],
+      "resolved_constraints": {
+        "allowed_zones": [
+          "eu-west",
+          "eu-central",
+          "eu-north"
+        ]
+      }
+    }
+  ]
+}
