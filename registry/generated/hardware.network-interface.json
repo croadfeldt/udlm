@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.12.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.13.0",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Hardware.NetworkInterface",
-          "version": "0.12.0",
+          "version": "0.13.0",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -43,7 +43,6 @@
           "aggregate",
           "bridge"
         ],
-        "default": "physical",
         "description": "Device realization (common-elements.md §7). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N→1 inverse of partition's 1→N.",
         "x-extensible-enum": true
       },

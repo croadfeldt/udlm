@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "Network.Switch",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.Switch",
-          "version": "0.6.0",
+          "version": "0.7.0",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]
@@ -40,7 +40,6 @@
           "allocated",
           "retired"
         ],
-        "default": "available",
         "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated; allocated = adopted into the managed lifecycle."
       },
       "composition_visibility": {
@@ -50,7 +49,6 @@
           "transparent",
           "selective"
         ],
-        "default": "opaque",
         "description": "Whether ports are modeled as first-class Hardware.NetworkInterface entities (§26). opaque = the `ports` rollup only; transparent/selective = ports addressable individually (required for connects_to link records)."
       },
       "identity": {

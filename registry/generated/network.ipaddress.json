@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.9.0",
   "conforms_to": "udlm/0.1",
   "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a",
   "resource_type": "Network.IPAddress",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.IPAddress",
-          "version": "0.8.0",
+          "version": "0.9.0",
           "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a"
         }
       ]
@@ -49,7 +49,6 @@
           "link-layer",
           "random"
         ],
-        "default": "dhcp",
         "description": "Origin discriminator (RFC 8344 `origin` = NMstate). `static` = a fixed reservation bound to the interface (== a static DHCP reservation); `dhcp` = leased; `link-layer`/`random` = SLAAC/privacy."
       }
     },

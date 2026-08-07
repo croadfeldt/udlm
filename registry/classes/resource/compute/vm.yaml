@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.4.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.3.0
+version: 1.4.0
 family: Resource
 status: active
 metadata:
@@ -43,15 +43,12 @@ elements:
         enum:
         - bios
         - uefi
-        default: uefi
         description: Firmware interface presented to the guest.
       secure_boot:
         type: boolean
-        default: false
         description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
       vtpm:
         type: boolean
-        default: false
         description: Virtual TPM 2.0 device presented to the guest.
 - element: boot_order
   scope: Compute.VM
@@ -170,7 +167,6 @@ elements:
         - running
         - stopped
         - suspended
-        default: running
         description: Target guest run state.
 - element: guest_os
   scope: Compute.VM

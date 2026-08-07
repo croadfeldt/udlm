@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.10.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.0",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Storage.Volume",
-          "version": "0.10.0",
+          "version": "0.11.0",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]
@@ -54,7 +54,6 @@
           "filesystem",
           "block"
         ],
-        "default": "filesystem",
         "description": "Filesystem-mounted vs raw block device (Kubernetes PVC volumeMode)."
       },
       "storage_class": {
@@ -63,7 +62,6 @@
       },
       "retain_on_release": {
         "type": "boolean",
-        "default": false,
         "description": "Reclaim policy: true = Retain (keep data after the consumer releases it), false = Delete."
       },
       "layout_entry": {

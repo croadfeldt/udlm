@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.IPAddressPool",
-          "version": "0.4.0",
+          "version": "0.5.0",
           "uuid": "00257168-ae65-475c-bf34-f14f2e39f855"
         }
       ]
@@ -69,7 +69,6 @@
           "static",
           "mixed"
         ],
-        "default": "dynamic",
         "description": "How addresses leave the pool: dynamic = leased on request (DHCP), static = fixed reservations bound ahead of time, mixed = both. Aligns with Network.IPAddress.allocation on the carved record."
       },
       "exclusions": {

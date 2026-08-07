@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Security.DirectoryService/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Security.DirectoryService/0.7.0
 conforms_to: udlm/0.1
 uuid: b5a74015-f60e-49ff-9ff8-c704152cb958
 record_type: class
 class: type
 resource_type: Security.DirectoryService
 parent: Security
-version: 0.6.0
+version: 0.7.0
 family: Resource
 status: active
 metadata:
@@ -60,7 +60,6 @@ elements:
     - primary
     - replica
     - standalone
-    default: standalone
     description: Topology role within the directory cluster.
 spec_examples:
 - protocols:

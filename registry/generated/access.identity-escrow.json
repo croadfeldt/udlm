@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.4.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b",
   "resource_type": "Access.IdentityEscrow",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Access.IdentityEscrow",
-          "version": "0.3.0",
+          "version": "0.4.0",
           "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b"
         }
       ]
@@ -75,9 +75,6 @@
                 ],
                 "x-extensible-enum": true
               },
-              "default": [
-                "registration"
-              ],
               "description": "The lifecycle moments at which this item's material is captured into the escrow store."
             },
             "restore_on": {
@@ -89,14 +86,10 @@
                 ],
                 "x-extensible-enum": true
               },
-              "default": [
-                "re_realization"
-              ],
               "description": "The lifecycle moments at which this item is restored to the host."
             },
             "required": {
               "type": "boolean",
-              "default": false,
               "description": "Whether restore of this item gates convergence: a re-realization of the bound host does not reach Converged while a required item is unrestored (ESC-002). The failure is typed and visible, never a silent identity loss."
             }
           }

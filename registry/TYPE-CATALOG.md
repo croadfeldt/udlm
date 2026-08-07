@@ -28,7 +28,7 @@ A named handle for 'a suite of things treated as a unit' — a tenant, a team's 
 - The governance matrix — obligations enforcement and binding-edit meta-governance
 - Access.IdentityEscrow — the Access-family sibling
 
-### Access.IdentityEscrow (0.3.0)
+### Access.IdentityEscrow (0.4.0)
 
 **Purpose:** Declares which identity state survives a host's re-realization — captured before the wipe, restored as part of converge — without the secret material ever entering the model.
 
@@ -93,7 +93,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## Compute
 
-### Compute.BareMetalHost (0.9.1)
+### Compute.BareMetalHost (0.10.0)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -137,7 +137,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.6.0)
+### Compute.Container (0.7.0)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -158,7 +158,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.3.0)
+### Compute.VM (1.4.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -184,7 +184,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## Data
 
-### Data.Database (0.6.0)
+### Data.Database (0.7.0)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -224,7 +224,7 @@ A physical place, at whatever granularity is useful: a site contains rooms, a ro
 - Compute.BareMetalHost — the equipment that declares its location.
 - Topology — the failure-domain view of the same physical reality.
 
-### Facility.PowerFeed (0.4.0)
+### Facility.PowerFeed (0.5.0)
 
 **Purpose:** Models a power source — utility circuit, UPS, PDU, generator — as the root that shutdown/startup ordering of everything drawing from it hangs on.
 
@@ -245,7 +245,7 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 
 ## Hardware
 
-### Hardware.BMC (0.5.0)
+### Hardware.BMC (0.6.0)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
@@ -264,7 +264,7 @@ The always-on management controller inside a server that answers even when the h
 - Security.CredentialRef — the BMC credential, by reference.
 - Hardware.BiosProfile — firmware profiles applied over the BMC's out-of-band path.
 
-### Hardware.BiosProfile (0.5.0)
+### Hardware.BiosProfile (0.6.0)
 
 **Purpose:** Captures a reusable desired BIOS/firmware configuration that a fleet of hosts converge to.
 
@@ -283,7 +283,7 @@ A named set of BIOS settings, written once and applied to many hosts. The attrib
 - Hardware.BiosProfile — an optional base profile this one derives from.
 - Hardware.BMC — the out-of-band path the profile is applied through.
 
-### Hardware.GraphicsProcessor (0.4.0)
+### Hardware.GraphicsProcessor (0.5.0)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -302,7 +302,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 - Compute.VM — the guest a passthrough or partition is presented to.
 - Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.
 
-### Hardware.NetworkInterface (0.12.0)
+### Hardware.NetworkInterface (0.13.0)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -324,7 +324,7 @@ One network interface, of any kind: device_class says whether it is a physical N
 - Network.VLAN — the segments the port is a member of.
 - Network.ConnectionProfile — the declarative config realized onto this interface.
 
-### Hardware.Processor (0.4.0)
+### Hardware.Processor (0.5.0)
 
 **Purpose:** Inventories a CPU — a physical socket or a vCPU presented to a guest — as a first-class component when the host rollup is not enough.
 
@@ -342,7 +342,7 @@ One processor as its own record: `cores` (required), `threads`, `architecture`, 
 - Compute.BareMetalHost — the host the socket is installed in, which carries the reconciled rollup.
 - Compute.VM — the guest a virtual CPU is presented to.
 
-### Hardware.StorageDevice (0.4.0)
+### Hardware.StorageDevice (0.5.0)
 
 **Purpose:** Inventories a disk/SSD/NVMe — physical drive or virtual disk — with the identity (WWN, serial, bay) that ties failures and replacements to one device.
 
@@ -381,7 +381,7 @@ A named set of person and service-account identities, keyed by its required `han
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.5.0)
+### Identity.Person (0.6.0)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -401,7 +401,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.5.0)
+### Identity.ServiceAccount (0.6.0)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -481,7 +481,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 - Hardware.NetworkInterface — the adapter or port the profile applies to.
 - Network.VLAN — the segments the configured VLANs and sub-interfaces ride.
 
-### Network.DHCPScope (0.7.0)
+### Network.DHCPScope (0.8.0)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -500,7 +500,7 @@ One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased f
 - Network.AddressService — the operated service serving this scope.
 - Compute.BareMetalHost / Compute.VM — the servers the scope is served from.
 
-### Network.DNSZone (0.4.0)
+### Network.DNSZone (0.5.0)
 
 **Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
 
@@ -538,7 +538,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - Network.DHCPScope — scopes serving the segments the gateway routes.
 - Network.Switch — the fabric behind the edge.
 
-### Network.IPAddress (0.8.0)
+### Network.IPAddress (0.9.0)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -558,7 +558,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Compute.VM — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.4.0)
+### Network.IPAddressPool (0.5.0)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -577,7 +577,7 @@ A range of addresses that individual address records are carved from: the requir
 - Network.VirtualNetwork — the segment the pool serves.
 - Network.DHCPScope — the service-side projection of the same subnet.
 
-### Network.Switch (0.6.0)
+### Network.Switch (0.7.0)
 
 **Purpose:** Models a physical network switch as a managed asset — the fabric peer of a bare-metal host, with its ports as contained interface records.
 
@@ -641,7 +641,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Observability
 
-### Observability.LogShipper (0.5.0)
+### Observability.LogShipper (0.6.0)
 
 **Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
 
@@ -661,7 +661,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Platform
 
-### Platform.Hub (0.2.0)
+### Platform.Hub (0.3.0)
 
 **Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
 
@@ -737,7 +737,7 @@ The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod c
 - Platform.Namespace — the one namespace this quota constrains.
 - Compute.Container — workloads whose aggregate consumption the quota caps.
 
-### Platform.StorageClass (0.6.0)
+### Platform.StorageClass (0.7.0)
 
 **Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
 
@@ -759,7 +759,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## Security
 
-### Security.CredentialRef (0.5.0)
+### Security.CredentialRef (0.6.0)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -778,7 +778,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
 - Compute.Container / Software.Service / Storage.FileShare — consumers that reference it from env, mounts, or config.
 
-### Security.DirectoryService (0.6.0)
+### Security.DirectoryService (0.7.0)
 
 **Purpose:** Models the directory server — LDAP and optionally Kerberos — that identities authenticate against and services bind to.
 
@@ -885,7 +885,7 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 - Storage.Volume — volumes provisioned from the cluster.
 - Platform.StorageClass — the class records naming what this cluster serves.
 
-### Storage.Dataset (0.4.0)
+### Storage.Dataset (0.5.0)
 
 **Purpose:** Models a dataset carved from a host-local pool — the mounted filesystem or block device host workloads use.
 
@@ -905,7 +905,7 @@ The consumable unit of host-local storage — its required `dataset_kind` says w
 - Compute.BareMetalHost — the host the dataset is local to.
 - Storage.Dataset — the parent dataset, when nested.
 
-### Storage.FileShare (0.5.0)
+### Storage.FileShare (0.6.0)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -970,7 +970,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.10.0)
+### Storage.Volume (0.11.0)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 

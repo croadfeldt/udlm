@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.StorageDevice/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.StorageDevice/0.5.0
 conforms_to: udlm/0.1
 uuid: b9b08521-7927-479c-8671-6d4fdadc9f1b
 record_type: class
 class: type
 resource_type: Hardware.StorageDevice
 parent: Hardware
-version: 0.4.0
+version: 0.5.0
 family: Resource
 status: active
 metadata:
@@ -31,7 +31,6 @@ elements:
     - virtual
     - passthrough
     - partition
-    default: physical
     description: Device realization (common-elements.md §7). virtual = a guest virtual disk (binds_to
       its backing volume); passthrough = whole physical disk to a guest.
 - element: partition_mechanism
