@@ -1,0 +1,60 @@
+# Policy-engine taxonomy — the governed names of the engine dialects a policy rule may be written in.
+#
+# UDLM does not pick a policy engine (ADR-065). It does govern the NAME, because the name is what a
+# peer reads to decide whether it can evaluate a rule at all — and "refuses rather than guessing"
+# only works if `rego`, `Rego`, `opa`, and `open-policy-agent` are not four different answers to the
+# same question. A free string cannot support that decision; this can.
+#
+# Same pattern as `provider-capability`: UDLM does not choose providers either, but it governs the
+# capability names so declarations are comparable across implementations.
+#
+# OPEN by construction — a new engine is added here, not refused. That is what the curation ladder
+# (ADR-039) is for: a term enters as `proposed` and is promoted to `canonical` once it is real.
+# Adding an engine is a vocabulary contribution, never a spec change.
+#
+# Each entry is a TaxonomyTerm (registry/classes/knowledge/taxonomy-term), curation-governed
+# (registry-governance §2). This is the `policy-engine` ROOT subtree — DISJOINT from policy-fact,
+# access-role, dcm-function, and provider-capability.
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: policy-engine
+
+terms:
+  - term: policy-engine
+    root: policy-engine
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the vocabulary of policy-engine dialects. A policy rule declares the dialect its body
+      is written in so a consuming implementation knows whether it can evaluate it. UDLM never
+      evaluates a rule and never prefers one dialect over another.
+
+  - term: builtin
+    root: policy-engine
+    parent: policy-engine
+    curation_state: canonical
+    definition: >-
+      The evaluating implementation's own engine (policy-contract §7.2a, built-in mode) — the
+      dialect is implementation-defined and NOT portable. A peer reading `builtin` knows immediately
+      that it cannot evaluate this rule and must treat the owning implementation as the only
+      authority for it. Naming that explicitly is the point: an unevaluatable rule should be
+      obvious, not discovered at evaluation time.
+
+  - term: rego
+    root: policy-engine
+    parent: policy-engine
+    curation_state: canonical
+    definition: >-
+      Rego, the policy language of Open Policy Agent (CNCF). The expected dialect when evaluation is
+      delegated to OPA — which policy-contract §7.2a models as a Provider of policy decisions.
+
+  - term: cel
+    root: policy-engine
+    parent: policy-engine
+    curation_state: canonical
+    definition: >-
+      Common Expression Language — the dialect used by Kubernetes ValidatingAdmissionPolicy, Istio,
+      Envoy RBAC, and GCP IAM Conditions. Listed because it is what an implementation embedded in
+      those ecosystems will most likely carry; UDLM expresses no preference between it and any other
+      entry here (ADR-065 evaluated and declined adopting it as a UDLM-level language).

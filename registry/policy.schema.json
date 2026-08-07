@@ -150,11 +150,11 @@
           "required": [
             "engine"
           ],
-          "description": "The engine-native rule body — OPAQUE to UDLM, which never parses, validates, or interprets it. Same treatment a provider's internal implementation gets (T9: the substrate never translates into a provider's native spec). Carried so a policy record stays a complete governed artifact under §6 lifecycle, provenance, and audit; a peer that does not run this engine can still read the record's identity, facts, decision shape, and audit obligations without being able to evaluate it.",
+          "description": "The engine-native rule body — OPAQUE to UDLM, which never parses, validates, or interprets it. Same treatment a provider's internal implementation gets (T9: the substrate never translates into a provider's native spec). Carried so a policy record stays a complete governed artifact under §6 lifecycle, provenance, and audit; a peer that does not run this engine can still read the record's identity, facts, decision shape, and audit obligations without being able to evaluate it. OPTIONAL BY CONTRACT, not by oversight: under §7.2a's delegated mode the implementation \"does not see or store the external engine's policies — only the data in and the decision out\", so a policy record bound to an external engine legitimately declares its facts and carries no body. When the body is absent the engine still MUST be named, because a peer's refuse-or-evaluate decision depends on it and not on whether the body happens to travel.",
           "properties": {
             "engine": {
               "type": "string",
-              "description": "Which engine dialect the body is written for (e.g. 'rego'). A peer reads this to know whether it can evaluate the rule at all — and refuses rather than guessing when it cannot."
+              "description": "Which engine dialect the body is written in — a canonical term from the `policy-engine` taxonomy (registry/taxonomies/policy-engine.yaml), enforced by tests/check_policy_boundary.py (PBND-004). A peer reads this to decide whether it can evaluate the rule at all, and refuses rather than guessing when it cannot — a decision a free string cannot support, since `rego`/`Rego`/`opa` would be three answers to one question. The vocabulary is OPEN (a new engine is a curation-ladder contribution, ADR-039) but each term is canonical. `builtin` names the evaluating implementation's own engine: not portable, and knowably so."
             },
             "body": {
               "type": "string",
