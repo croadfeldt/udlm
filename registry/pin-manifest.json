@@ -377,12 +377,19 @@
  },
  "type:Compute.VM": {
   "current": "1.3.0",
-  "path": "registry/classes/resource/compute/vm.yaml",
+  "path": "registry/classes/resource/compute/vm/_base.yaml",
   "versions": {
    "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7",
    "1.1.0": "sha256:2788d939cb89269010f3483d0a3f7e58706e40cc90e2863a21b79412b6bf21fe",
    "1.2.0": "sha256:e1766bb3717315e543b788ba58bc458604c36837a074c78dc9e5303aa2dda2f9",
    "1.3.0": "sha256:b4a75d1aea0b47ed0933ca07c94edcbb74f4ab3d72ac3e91e2441271fb9f9f8a"
+  }
+ },
+ "type:Compute.VM.CExampleCloud": {
+  "current": "1.0.0",
+  "path": "registry/classes/resource/compute/vm/cexample-cloud.yaml",
+  "versions": {
+   "1.0.0": "sha256:f8eeb34a1772da14dc8c133c93713ff944400a03864b5e1b015d8f43b4da888d"
   }
  },
  "type:Compute.VM.OCPVirt": {

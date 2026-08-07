@@ -110,6 +110,11 @@ renames:
 # Retired records — removed, not renamed. A retirement is DECLARED (never silent), and the
 # identity gate consults this map so a deliberate removal is not read as a vanished record.
 # The decision itself survives where the superseding artifact records it.
+  # 2026-08-07 — Compute.VM gains a child (Compute.VM.CExampleCloud, the worked provider offer),
+  # so ADR-061's index-file template applies: a class with children becomes a directory holding
+  # `_base.yaml`. Same uuid, same identity — only the path moved (CLS-PATH-001).
+  registry/classes/resource/compute/vm.yaml: registry/classes/resource/compute/vm/_base.yaml
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),

@@ -82,6 +82,32 @@ These two terms are frequently conflated throughout the documentation. They are 
 
 **In the anti-vocabulary:** "Catalog Item" should not be used when "Resource Type Specification" is meant, and vice versa. The hierarchy is: Resource Type Category → Resource Type → Resource Type Specification → Provider Catalog Item.
 
+**Where the offer is declared (2026-08-07).** A provider does not describe its offering in prose
+beside the type — it declares it *through the class hierarchy*, on the Provider Class:
+
+| The provider declares | How |
+|---|---|
+| **What it REQUIRES** to realize a request | an element it adds, marked `optional: false` |
+| **What it SUPPORTS** — the values and ranges on offer | `supports` on the element |
+
+`schema` says what shape is **valid** and stays portable; `supports` says what is **offered here**.
+The offer may narrow what the schema permits and may never exceed it, and a child Class's clauses
+must be contained in its parent's — enforced by `tests/check_class_liskov.py`.
+
+**That declaration is also the consumer's option list.** One artifact, two readings: as an *offer* it
+says what the provider can satisfy; as a *menu* it says what a consumer may select. A catalog
+**reads** it. Restating the options in a second surface is a DRV-001 violation — the model does not
+store what it can derive — and the two copies drift.
+
+**A request is the offer with the ranges collapsed.** Each range becomes one selected value, or
+nothing where the element is optional; layers and policies perform the collapse, and the convergence
+loop runs until every range has become a value. This is what makes placement eligibility computable
+rather than asserted: a provider is eligible exactly when every selected value falls inside its
+declared clauses and every element it requires is present.
+
+Worked example: `registry/classes/resource/compute/vm/cexample-cloud.yaml`. Authoring guide:
+`docs/authoring/scoped-class.md` §3a.
+
 ### 2.1 Registry Principles
 
 - The registry is **open** — third parties, implementors, and the community can propose new resource type definitions

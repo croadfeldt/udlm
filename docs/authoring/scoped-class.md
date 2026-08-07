@@ -67,6 +67,8 @@ Do **not** author a Class when:
 | Ships with the Class | Enforced by |
 |---|---|
 | Validates against `class.schema.json`; a Type/Provider Class names its `parent` | `registry/tools/validate.py`, `tests/validate_registry.py` |
+| `supports` clauses are well-formed (min ≤ max, bounds comparable, `step` inside a range) and never exceed the element's own schema | `tests/check_class_liskov.py` |
+| A child's `supports` clauses are contained in its parent's — the offer narrows, never widens | `tests/check_class_liskov.py` |
 | Every element's `scope` equals the Class's `resource_type` | `tests/check_class_liskov.py` — scope check |
 | Every redeclared element **refines** its ancestor (add-or-refine, never contradict) | `tests/check_class_liskov.py` — **LSK-001** (type change / enum widen / looser bound / dropped required) |
 | The Type Class compiles to a spec that validates against `resource-type-spec.schema.json` | `registry/tools/generate_class_specs.py --check` — **GEN-002** (compiled spec not conformant) |
@@ -87,15 +89,79 @@ Three ideas the gates encode, worth holding in mind as you author:
   `--check` can verify by faithful recompilation. Consumers never break: same meta-schema, same wire
   contract.
 
+## 3a. Declaring what a provider OFFERS — `supports`
+
+A Provider Class does two things, and they are different declarations on the same element set:
+
+| It says | How |
+|---|---|
+| **what I REQUIRE** to realize a request | add the element and mark it `optional: false` |
+| **what I SUPPORT** — the values and ranges on offer | `supports` on the element |
+
+`schema` says what shape is **valid** and stays portable. `supports` says what is **offered here**.
+It narrows the offer; it may never widen what the schema permits, and a gate enforces both.
+
+Read it two ways, because it is one declaration:
+
+- as an **offer** — what this provider can satisfy
+- as a **menu** — what a consumer may select
+
+The catalog reads this. **It is not restated anywhere** — a second copy in a weaker vocabulary is a
+DRV-001 violation, and it drifts.
+
+```yaml
+- element: memory
+  scope: Compute.VM.CExampleCloud
+  schema: { ... }                       # unchanged: what is VALID, and portable
+  supports:
+    - values: [512Mi, 1Gi, 2Gi, 4Gi]    # discrete — the small end is fixed sizes
+    - min: 8Gi
+      max: 384Gi
+      step: 8Gi
+      when: { instance_family: general }        # GROUPED: this range only under this family
+    - min: 8Gi
+      max: 768Gi
+      step: 8Gi
+      when: { instance_family: memory-optimized }
+```
+
+The supported set is the **union of the clauses**. A clause with no `when` always applies; a clause
+with `when` applies only when those other selections hold. That is how a support **matrix** is
+expressed — and it is why `512Gi` can be a real offer under one family and an invalid *combination*
+under another.
+
+**Why the matrix is data and not JSON Schema `if`/`then`.** Containment stays decidable: a child's
+clauses must sit inside its parent's, which is a comparison over declared clauses. Conditional
+schema *logic* is undecidable in general, so a Provider Class using it would validate as JSON Schema
+while being ungated for subtyping. **Data narrows checkably; logic does not.**
+
+**Use a governed vocabulary for named shapes.** Where the offer is a curated list that changes
+without a spec edit — instance families, storage tiers, OS images — declare
+`values.reference_data_type` rather than an inline enum. Ranges cover the continuous axes;
+vocabularies cover the discrete rows.
+
+**A request is this document with the ranges collapsed.** Each range becomes one selected value —
+or nothing, where the element is optional. Layers and policies perform that collapse, and the
+convergence loop runs until every range has become a value. That is also what makes placement
+eligibility computable: a provider is eligible exactly when every selected value falls inside its
+declared clauses and every required element is present.
+
 ## 4. A worked pointer
 
 Copy the pair **`registry/classes/resource/compute/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
-`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm.yaml`** (the Type Class
+`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm/_base.yaml`** (the Type Class
 — `parent: Compute`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is
 `registry/generated/compute.vm.json` (7 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
+
+For the **provider tier**, copy **`registry/classes/resource/compute/vm/cexample-cloud.yaml`**. It is the
+worked case of an offer: `cpu` narrowed at a nested property, `memory` carrying a grouped
+`supports` matrix a JSON Schema range cannot express, `networks` bounded by cardinality, and three
+REQUIRED elements the provider adds because no portable intent carries them. Note what a provider
+class does **not** carry: no `context`, no `spec_examples`, no `spec_constraints` — the provider tier
+serves no portable spec surface.
 
 ## 5. Run the gates
 
