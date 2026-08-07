@@ -149,14 +149,19 @@ declared clauses and every required element is present.
 ## 4. A worked pointer
 
 Copy the pair **`registry/classes/resource/compute/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
-`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm/_base.yaml`** (the Type Class
+`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm.yaml`** (the Type Class
 — `parent: Compute`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is
 `registry/generated/compute.vm.json` (7 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
 
-For the **provider tier**, copy **`registry/classes/resource/compute/vm/cexample-cloud.yaml`**. It is the
+For the **provider tier**, copy **`registry/examples/classes/resource/compute/vm/cexample-cloud.yaml`**.
+Worked-example classes live under `registry/examples/classes/`, **mirroring the class hierarchy** —
+`check_class_paths` enforces the mirror, and `check_class_liskov` validates the example against its
+real parent, so a worked example that stops being a legal refinement fails CI like any other class.
+They are excluded from the has-children rule on purpose: an example never forces a registry class
+into the index-file layout. It is the
 worked case of an offer: `cpu` narrowed at a nested property, `memory` carrying a grouped
 `supports` matrix a JSON Schema range cannot express, `networks` bounded by cardinality, and three
 REQUIRED elements the provider adds because no portable intent carries them. Note what a provider

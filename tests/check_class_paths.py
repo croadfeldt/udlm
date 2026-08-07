@@ -17,6 +17,11 @@ import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSES = os.path.join(ROOT, "registry", "classes")
+# Worked-example classes MIRROR the class hierarchy under registry/examples/classes/. Checked
+# against their own root with the same rule, so "the examples mirror the classes" is mechanical
+# rather than a convention someone remembers. They are excluded from the has-children logic on
+# purpose: an example must never force a real registry class into the index-file layout.
+EXAMPLE_CLASSES = os.path.join(ROOT, "registry", "examples", "classes")
 
 
 def kebab(seg):
@@ -41,8 +46,34 @@ def _all_docs():
     return _DOCS
 
 
+def expected_parts(doc, has_children):
+    """The path a class must sit at, from its own record. One rule, used for the registry and for
+    the worked-example mirror — duplicating it would be exactly the drift this gate prevents."""
+    rt, family = doc.get("resource_type", ""), doc.get("family", "")
+    segs = [kebab(s) for s in rt.split(".")]
+    # index-file template (maintainer ruling 2026-08-04): a BASE is always a directory with
+    # _base.yaml (childless bases included — Job); a type/provider class is a leaf file named
+    # by its own segment until it has children, then it too becomes <segment>/_base.yaml.
+    indexed = doc.get("class") == "base" or has_children
+    # family-segment dedup (maintainer ruling 2026-08-05): when the first name segment
+    # equals the family (Access.* under family Access), the directory is not repeated.
+    eff = segs[1:] if segs and segs[0] == family.lower() else segs
+    return ([family.lower()] + eff + ["_base"] if indexed else [family.lower()] + eff), indexed
+
+
 def main():
     fails, n = [], 0
+    for path in sorted(glob.glob(os.path.join(EXAMPLE_CLASSES, "**", "*.yaml"), recursive=True)):
+        doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
+        if doc.get("record_type") != "class":
+            continue
+        n += 1
+        rel = os.path.relpath(path, EXAMPLE_CLASSES)[: -len(".yaml")].split(os.sep)
+        want, _ = expected_parts(doc, has_children=False)
+        if rel != want:
+            fails.append(f"examples/classes/{'/'.join(rel)}.yaml: mirror path says "
+                         f"{'/'.join(rel)!r}, expected {'/'.join(want)!r} — worked-example classes "
+                         f"mirror the class hierarchy")
     for path in sorted(glob.glob(os.path.join(CLASSES, "**", "*.yaml"), recursive=True)):
         doc = yaml.safe_load(open(path, encoding="utf-8")) or {}
         if doc.get("record_type") != "class":
@@ -51,17 +82,10 @@ def main():
         rel = os.path.relpath(path, CLASSES)
         parts = rel[:-len(".yaml")].split(os.sep)
         rt, family = doc.get("resource_type", ""), doc.get("family", "")
-        segs = [kebab(s) for s in rt.split(".")]
-        # index-file template (maintainer ruling 2026-08-04): a BASE is always a directory with
-        # _base.yaml (childless bases included — Job); a type/provider class is a leaf file named
-        # by its own segment until it has children, then it too becomes <segment>/_base.yaml.
+        # has_children is computed over the REGISTRY only — a worked example must never force a
+        # real class into the index-file layout.
         has_children = any(c.get("parent") == rt for c in _all_docs())
-        indexed = doc.get("class") == "base" or has_children
-        # family-segment dedup (maintainer ruling 2026-08-05): when the first name segment
-        # equals the family (Access.* under family Access), the directory is not repeated —
-        # the family dir IS that segment's dir.
-        eff = segs[1:] if segs and segs[0] == family.lower() else segs
-        want = [family.lower()] + eff + ["_base"] if indexed else [family.lower()] + eff
+        want, indexed = expected_parts(doc, has_children)
         if parts != want:
             fails.append(f"{rel}: path says {'/'.join(parts)!r}, expected {'/'.join(want)!r} "
                          f"(family={family}, resource_type={rt}, "

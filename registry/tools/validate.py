@@ -633,6 +633,14 @@ def pick_instance(doc):
         return (CATALOG_VALIDATOR,
                 lambda d: f"catalog item {d['name']} v{d['version']} {d['uuid'][:8]} ({len(d['constituents'])} constituents)",
                 check_catalog_item)
+    # A class record validates as a CLASS wherever it lives. Worked-example classes mirror the
+    # class hierarchy under examples/classes/, and an example that is not checked the same way as
+    # the real thing is an illustration rather than a demonstration.
+    if isinstance(doc, dict) and doc.get("record_type") == "class":
+        return (CLASS_VALIDATOR,
+                lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — "
+                          f"{len(d.get('elements') or [])} element(s)",
+                check_class_constituents)
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
     # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —
