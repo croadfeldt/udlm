@@ -17,33 +17,163 @@ state records provider provenance identifying OSAC — the whole intent-to-reali
   *kind* participates through the ordinary contract.
 - **Provider provenance is explicit** — the `Realized` record names OSAC as the realizing provider. Provenance
   is already part of the four-state model; this UC makes "which provider" a checked outcome.
-- **Pre-placement-scoped policies run before placement** — the envelope's pre-placement leg (placement occurs during policy application; the pipeline's one home is DCM's request-realization flow). This UC's scenario declares that set contains one validation policy (`policy_complexity: single_gating` — a UC dimension, not a pipeline property),
-  same shape as the base's policy phase.
-- Everything after selection — enrich, reserve, commit — is request-realization unchanged.
+- Everything after convergence — reserve, commit — is request-realization unchanged.
 
-## The flow — only what's different
+## The flow
+
+Assemble, policy, enrichment, and placement are **all inside policy application**, and that block is
+**re-entrant**: placement produces data (the provider, its zone, its capabilities) that the earlier steps
+have not yet seen, so the payload goes back through assemble → policy → enrich, is validated and enriched
+again now informed by the placement, and keeps looping until the data **converges** — no further policy
+changes it. Only then does each component validate and reserve, and only when every component holds a
+reservation does anything commit.
+
 ```mermaid
 flowchart TD
-  I["VM intent via DCM API"] --> V{"Pre-placement policies<br/>(this UC: one validation)"}
-  V -- pass --> P["Placement selects the<br/>OSAC-backed provider"]
-  V -- fail --> X["Stop — policy error"]
-  P --> D["Dispatch to OSAC<br/>(reserve then commit)"]
-  D --> R["Realized recorded with<br/>provider provenance = OSAC"]
+  I["Consumer intent<br/>(portable — no provider detail)"] --> CONV
+
+  subgraph CONV["POLICY APPLICATION — re-entrant until convergence"]
+    direction TB
+    A["Assemble<br/>layers merge; every field records where it came from"]
+    A --> PO["Policies<br/>transform · validate · comply"]
+    PO --> PL["Placement<br/>narrow to eligible providers, select one (OSAC)"]
+    PL --> EN["Enrich<br/>data only knowable once the provider is known"]
+    EN --> PO2["Policies again<br/>validate + enrich, now informed by placement"]
+    PO2 -->|"new data changes an earlier answer"| A
+  end
+
+  CONV -->|"converged — no policy changes the payload further"| VR
+
+  subgraph VR["VALIDATE + RESERVE — per component"]
+    direction LR
+    CVM["VM"]
+    CST["Storage"]
+    CNW["Network"]
+    CIP["IP"]
+  end
+
+  VR -->|"every component validated and held"| CM["Commit<br/>data passed between components as each is built"]
+  CM --> R["Realized — provider provenance = OSAC"]
+
+  CONV -.->|"cannot converge"| X["Stop — conflict report<br/>(never reaches the provider)"]
+  VR -.->|"any component unsatisfiable"| X
 ```
-Everything else (assemble, enrich, reserve, commit, converge) is request-realization.
+
+**Why the loop matters.** A single forward pass cannot work: policies that depend on *where* a resource
+lands can only run after placement, and their output can invalidate the placement that produced it. The
+loop is bounded — the convergence limit is an engine parameter, and failure to converge is a full conflict
+report, never a silent best-effort (see [ADR-006](../adr/ADR-006-convergence-control-model.md)).
+
+**Why reserve is per component.** A VM request is not one thing. The VM, its storage, its network
+attachment, and its IP are separate resources with separate providers and separate ways of failing.
+Each is validated and held before *anything* is built, so a request that cannot be satisfied fails while
+nothing has been created ([ADR-011](../adr/ADR-011-validate-and-reserve.md)).
+
+---
+
+## Who provides what, and when
+
+The four questions engineering needs answered from this flow. **Who and what — deliberately not how.**
+
+### 1. The personas
+
+| Persona | What they do for this request | When |
+|---|---|---|
+| **application-team-member** | Submits the intent. This is the *only* per-request actor. | at request |
+| **platform-engineer** | Maintains the data layers that supply defaults (environment, zone, tags). | before, standing |
+| **tenant-admin** | Binds the tenant: isolation, quota, which storage classes and networks it may use. | before, standing |
+| **security-officer** · **sovereignty-authority** | Author the policies that constrain where and how the request may be realized. | before, standing |
+| **cloud-operator** (OSAC) · **provider-owner** | Declare the provider's capabilities, capacity, and residency guarantees. | before, standing |
+
+**Only one persona acts per request.** Everything else was declared earlier as governed data — which is
+the point: a request succeeds because other people's declarations were already in place, not because
+someone was asked at the time.
+
+### 2. What a user request contains
+
+Only the **portable** fields the type declares as consumer-supplied:
+
+```yaml
+resource_type: Compute.VM
+vcpu: 4
+memory: 16GiB
+guest_os: <reference to a governed OS image>
+network: <reference to a governed network>
+storage: [{ size: 100GiB, class: <reference to a governed storage class> }]
+```
+
+What a consumer **never** supplies: the provider, the host, the datastore path, the namespace, the IP
+address, the volume handle. Those are either derived or supplied by someone else. A consumer *may*
+narrow the choice (a zone, a required capability, even a named provider) — that is allowed and recorded
+as a non-portable pin, but it is **narrowing**, not placing.
+
+### 3. What must be added before a provider can act — and who supplies it
+
+| What is added | Who supplies it | When |
+|---|---|---|
+| Defaults — environment, zone, tags | the data layers (platform-engineer) | assemble |
+| Tenant identity, quota, allowed classes | the tenant binding (tenant-admin) | assemble |
+| Compliance-driven fields and constraints | policies (security-officer, sovereignty-authority) | policy application |
+| **The provider** | **nobody — derived by placement** | placement |
+| Provider-specific fields (namespace, storage class native form) | the Provider Class declaration (provider-owner / cloud-operator) | enrich, post-placement |
+| Reserved facts — the IP, the volume handle, the segment | the provider, at reserve | validate + reserve |
+
+Every one of these records **who set it** — field-level provenance is not a nice-to-have here; it is how
+this table is answerable after the fact for a specific record.
+
+### 4. Which persona sets placement
+
+**None.** Placement is **derived** — the engine narrows to providers whose declared capability and
+capacity satisfy the request, and whose selection satisfies every applicable policy. It is an *outcome*
+of data other personas declared, not a decision anyone makes at request time.
+
+This is the single most important thing to take from this flow. If a request lands somewhere unexpected,
+nobody "set" it wrongly: either a capability declaration, a capacity advertisement, or a policy said so.
+The placement record names which.
+
+---
+
+## Worked example — a VM with network and storage
+
+Each component needs different data, from a different source, at a different moment. The consumer supplies
+one line for each; everything else arrives later.
+
+| Component | Consumer declares | Added at assemble/policy | Added at enrich (provider known) | Reserved fact |
+|---|---|---|---|---|
+| **VM** | vcpu, memory, guest_os | tenant, environment, compliance fields | OSAC instance type, image in native form | instance hold |
+| **Storage** | size, storage class | quota check against the tenant's bound classes | OSAC volume type, encryption per policy | volume handle |
+| **Network** | which network | segment allowed for this tenant | OSAC subnet in native form | segment attachment |
+| **IP** | *nothing* | — | address family / pool from the segment | **the address itself** |
+
+**The IP row is the teaching case.** The consumer never mentions an IP, no layer carries one, and no policy
+sets one. It exists only as a *reserved fact* — the network provider allocates it during reserve and hands
+it back, and it becomes part of the record with the provider named as its source. It cannot be known
+earlier, which is exactly why reserve exists as its own phase before commit.
+
+**Data flows between components at commit.** The VM needs the volume handle to attach it and the segment
+attachment to connect. Those are pulled during validate-and-reserve in the ordinary case; a component may
+need more during final provisioning, and the commit phase passes it as each is built.
+
+---
 
 ## Success criteria (from the UC)
 - Consumer submits the VM intent through the DCM API.
-- Validation policies are evaluated **before** placement.
+- Validation policies are evaluated **before** placement — and again after it, on the placement-informed payload.
 - The placement engine selects the OSAC-backed service provider.
 - The request is dispatched to OSAC for implementation.
 - `Realized` state is recorded with provider provenance identifying OSAC.
 - The provisioned VM is reachable and operational; the full intent-to-realized lifecycle is auditable.
 
 ## Data · Policy · Provider
-- **Data:** the portable VM intent, and the `Realized` record carrying OSAC provenance.
-- **Policy:** the pre-placement policy set (in this UC, one gating validation); placement — within policy application — selecting OSAC.
-- **Provider:** the OSAC-backed service provider realizes the VM through the ordinary provider contract.
+- **Data:** the portable VM intent, the assembled payload with field-level provenance, and the `Realized`
+  record carrying OSAC provenance.
+- **Policy:** the whole convergence block — assemble, policy, placement, and enrichment are one re-entrant
+  application, not a sequence with a gate in front of it.
+- **Provider:** the OSAC-backed service provider declares capability and capacity, answers the reserve, and
+  realizes the VM through the ordinary provider contract.
 
 ## Pointers
 - Base flow: [request-realization](request-realization.md). UC source: `compute/vm-intent-osac-placement`.
+- Authoritative assembly process (steps 1–9, exact policy phases):
+  [`layering-and-versioning.md` §6](../spec/foundations/layering-and-versioning.md); the rendered
+  placement loop is in the [annex](../spec/foundations/layering-and-versioning-annex.md).

@@ -33,22 +33,44 @@ Kubernetes needs a `namespace` — where does it come from?* The answer is a rea
 
 ```mermaid
 flowchart TD
-  I["Intent — a portable request<br/>(cpu, memory, guest_os)<br/>as vague or exact as the user likes"] --> A
-  CC["Consumer specifics (optional)<br/>zone · capability · a named provider"] -.->|narrow the choice| P
-  A["Assemble — fill in defaults<br/>from the data layers"] --> P
-  P["Place — narrow to the providers that fit,<br/>pick one (→ the Kubernetes provider)"] --> E
-  E["Enrich — add what this provider needs<br/>(→ namespace) into its Provider-Class elements"] --> R
-  R{"Reserve — check + converge<br/>validate against the provider's requirements"}
-  R -. "not yet stable — new reserved facts re-evaluate policies" .-> P
-  R -- converged --> C["Commit — build it (Realized)"]
-  R -- unsatisfied --> F["Stop here — clear error<br/>(never reaches the provider's API)"]
+  I["Intent — a portable request<br/>(cpu, memory, guest_os)<br/>as vague or exact as the user likes"] --> CONV
+  CC["Consumer specifics (optional)<br/>zone · capability · a named provider"] -.->|narrow the choice| CONV
+
+  subgraph CONV["POLICY APPLICATION — re-entrant until convergence"]
+    direction TB
+    A["Assemble — fill in defaults from the data layers"]
+    A --> PO["Policies — transform · validate · comply"]
+    PO --> P["Place — narrow to the providers that fit, pick one"]
+    P --> E["Enrich — add what this provider needs (→ namespace)"]
+    E --> PO2["Policies again — validate + enrich, now informed by the placement"]
+    PO2 -->|"new data changes an earlier answer"| A
+  end
+
+  CONV -->|"converged"| R
+  subgraph R["VALIDATE + RESERVE — per component"]
+    direction LR
+    RV["VM"]
+    RS["Storage"]
+    RN["Network"]
+    RI["IP"]
+  end
+  R -->|"every component held"| C["Commit — build it, passing data between components (Realized)"]
+  CONV -. "cannot converge" .-> F["Stop here — conflict report<br/>(never reaches the provider's API)"]
+  R -. "any component unsatisfiable" .-> F
 ```
 
-> This is the readable on-ramp — a six-step view. The **authoritative** assembly process (nine steps, with
+**Read the block, not the arrows.** Assemble, policy, placement, and enrichment are **one re-entrant
+application**, not a pipeline with a policy gate in front of it. Placement produces data the earlier steps
+have not seen — the provider, its zone, its capabilities — so the payload goes back through them, is
+validated and enriched again on the placement-informed data, and loops until nothing further changes it.
+Only then does each component validate and reserve; only when all of them hold does anything commit.
+
+> This is the readable on-ramp. The **authoritative** assembly process (nine steps, with
 > the exact layer-resolution and policy phases) is [`docs/spec/foundations/layering-and-versioning.md`](../spec/foundations/layering-and-versioning.md)
 > §6. Where the two differ, the spec wins.
 
-Step by step, with `namespace` threaded through:
+Step by step, with `namespace` threaded through. The numbering is what each step *does*, not a promise
+that each runs once: steps 2–4 plus policy are the re-entrant block above.
 
 **1. Intent — the user asks for what they want.** The **required** part is the portable base — the user is
 never *forced* to supply anything provider-specific. They *may* add provider-specific extensions (even the
@@ -72,15 +94,19 @@ the provider's Provider-Class element (ADR-038 — off the portable Base/Type Cl
 `enrichment_status` moves toward `complete`. *Where* the value comes from is the organization's choice — see
 [Where the value comes from](#where-the-value-comes-from).
 
-**5. Reserve — check before building.** The provider validates the filled-in request against its own
-requirements, without creating anything. This is a loop, not a single check — reserving lands facts that can
-re-trigger enrichment and policy evaluation, converging before commit ([see below](#it-converges--the-flow-isnt-one-straight-pass)).
-Complete → it holds a spot and the flow commits. Still missing
-something → the request stops here with a clear, field-level error. An incomplete VM never reaches
-the provider's API; the gap surfaces as a plain validation failure, not a runtime crash.
+**5. Validate + reserve — check before building, per component.** A request is rarely one resource: a VM
+carries storage, a network attachment, and an address, each a separate component with its own provider and
+its own way of failing. **Every** component validates against its provider's requirements and takes a hold —
+without creating anything — and only when all of them hold does the flow commit (ADR-011). Reserving also
+lands facts that did not exist before (an address, a volume handle, a segment), which can re-trigger policy
+evaluation. Still missing something → the request stops here with a clear, field-level error. An incomplete
+VM never reaches the provider's API; the gap surfaces as a plain validation failure, not a runtime crash.
 
-**6. Commit — build it.** The provider creates the VM, reports back what it built and the id that ties the
-UDLM record to the provider's native one, and DCM records the result. What was *asked* and what was *built*
+**6. Commit — build it.** The providers create the resources, passing data between components as each is
+built (the VM needs the volume handle to attach it, the segment attachment to connect). Typically that data
+was already pulled during validate-and-reserve; a component may need more during final provisioning. Each
+reports back what it built and the id that ties the UDLM record to the provider's native one, and DCM
+records the result. What was *asked* and what was *built*
 are both stored, so they can be compared later.
 
 ## It converges — the flow isn't one straight pass
