@@ -19,6 +19,19 @@ OPERATIONAL_NAMES = {"page_size", "page_token", "order_by", "fields", "view"}
 RESERVED_SEGMENT_CHARS = set("@?#")
 COMPARATORS = ("==", "!=", "=gt=", "=ge=", "=lt=", "=le=", "=in=", "=out=")
 _SEG_RE = re.compile(r"^[A-Za-z0-9._\-{}']+$")
+# Regex metacharacters have no meaning in a URF value: the accepted subset (§9.2) matches with
+# `*` glob, not regex. Written into a value they parse as a LITERAL and compare byte-for-byte —
+# a criterion that silently never matches (a deny policy would fail OPEN). Refused, not coerced.
+# `{` `}` are excluded here and handled separately: `{self}` is the one blessed RFC 6570 template.
+_REGEX_METACHARS = set("^$[]|\\")
+_SELF_TEMPLATE_RE = re.compile(r"\{self\}")
+# RFC 3986 query charset: pchar / "/" / "?" — everything else percent-encodes (§9.5).
+_QUERY_SAFE = set(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    "-._~"            # unreserved
+    "!$&'()*+,;="     # sub-delims (the RSQL operators live here)
+    ":@/?"            # pchar extras
+)
 _PIN_RE = re.compile(r"^(\d+\.\d+\.\d+|sha256:[a-f0-9]{64})$")
 _SELECTOR_RE = re.compile(r"^[a-z0-9_]+(\.[a-z0-9_]+)*$")
 _NAME_RE = re.compile(r"^[A-Z][A-Za-z0-9]*(\.[A-Z][A-Za-z0-9]*)*$")
@@ -26,6 +39,49 @@ _NAME_RE = re.compile(r"^[A-Z][A-Za-z0-9]*(\.[A-Z][A-Za-z0-9]*)*$")
 
 class URFError(ValueError):
     pass
+
+
+def _split_outside_quotes(s, ch):
+    """Partition `s` at the FIRST `ch` that is not inside a single-quoted value.
+
+    The axis delimiters are stripped left-to-right off the whole string, but `'…'` quoting is a
+    QUERY-level construct — so a naive partition sees a delimiter inside a quoted value and splits
+    there. `estate?q=='a#b'` used to fail as `fragment "b'" is not a dot-path`. Quote-awareness has
+    to reach the axis split, not just the expression tokenizer.
+    """
+    inq = False
+    for i, c in enumerate(s):
+        if c == "'":
+            inq = not inq
+        elif c == ch and not inq:
+            return s[:i], s[i + 1:]
+    return s, None
+
+
+def _encode_value(v):
+    """Percent-encode a value for the canonical URL projection (§9.5: minimal, uppercase hex).
+
+    Only characters outside RFC 3986's query charset are touched, so every RSQL operator and
+    delimiter survives verbatim and the common case is byte-identical to its input. `{self}` is
+    exempt: §9.5 requires it LITERAL in the canonical form (it is substituted at resolution, and
+    encoding it would break identity comparison against an authored criterion).
+    """
+    def enc(chunk):
+        return "".join(c if c in _QUERY_SAFE else "".join(f"%{b:02X}" for b in c.encode("utf-8"))
+                       for c in chunk)
+    out, pos = [], 0
+    for m in _SELF_TEMPLATE_RE.finditer(v):
+        out.append(enc(v[pos:m.start()]))
+        out.append(m.group(0))
+        pos = m.end()
+    out.append(enc(v[pos:]))
+    return "".join(out)
+
+
+def _decode_value(v):
+    """Inverse of _encode_value. Applied per-value AFTER tokenizing, never before: decoding first
+    would let `%3B` inject a term separator that the author never wrote."""
+    return unquote(v)
 
 
 class URF:
@@ -131,14 +187,15 @@ def _parse_term(t):
                 raise URFError(f'double-quote not accepted (single-quote is canonical): {t!r}')
             if not _SELECTOR_RE.match(sel):
                 raise URFError(f"selector {sel!r} is not a snake_case dot-path")
+            _refuse_regex(val, t)
             if op in ("=in=", "=out="):
                 if not (val.startswith("(") and val.endswith(")")):
                     raise URFError(f"{op} takes a parenthesized list: {t!r}")
                 members = [m for m in val[1:-1].split(",") if m]
                 if any("*" in m and not m.startswith("'") for m in members):
                     raise URFError(f"wildcard not valid inside {op} members (§9.2)")
-                return (op, sel, sorted(members))
-            return (op, sel, val)
+                return (op, sel, sorted(_decode_value(m) for m in members))
+            return (op, sel, _decode_value(val))
     # single '=' -> operational term, only legal at live dereference; caller decides
     if "=" in t:
         k, _, v = t.partition("=")
@@ -146,6 +203,24 @@ def _parse_term(t):
             return ("op", k, v)
         raise URFError(f"single '=' is reserved for operational terms; use '==' ({t!r})")
     raise URFError(f"unrecognized term {t!r}")
+
+
+def _refuse_regex(val, term):
+    """A regex written into a value is an author error, not a pattern (URF-008).
+
+    The accepted subset matches with `*` glob; there is no regex operator. So `name=='^vm-[0-9]{4}$'`
+    is compared as a literal string and matches nothing — silently. For a deny policy that is a
+    fail-OPEN. Refuse at validation rather than let it validate green and mislead.
+    """
+    v = _SELF_TEMPLATE_RE.sub("", val)          # {self} is the one blessed template (RFC 6570 L1)
+    hits = sorted(_REGEX_METACHARS & set(v))
+    if "{" in v or "}" in v:
+        hits.append("{}")
+    if hits:
+        raise URFError(
+            f"regex metacharacter(s) {hits} in value of {term!r} — the accepted subset matches with "
+            f"`*` glob, not regex; a regex here compares as a literal and silently never matches "
+            f"(URF-008)")
 
 
 def _emit(ast):
@@ -158,8 +233,8 @@ def _emit(ast):
         return "(" + _emit(ast[1]) + ")"
     op, sel, val = ast
     if op in ("=in=", "=out="):
-        return f"{sel}{op}({','.join(val)})"
-    return f"{sel}{op}{val}"
+        return f"{sel}{op}({','.join(_encode_value(m) for m in val)})"
+    return f"{sel}{op}{_encode_value(val)}"
 
 
 # ---------- URL-level parse ----------
@@ -174,13 +249,10 @@ def parse(url, allow_operational=False):
         if not authority or not s:
             raise URFError("authority form requires //authority/path")
     frag = None
-    if "#" in s:
-        s, _, frag = s.partition("#")
-        if not _SELECTOR_RE.match(frag or ""):
-            raise URFError(f"fragment {frag!r} is not a dot-path")
-    query = None
-    if "?" in s:
-        s, _, query = s.partition("?")
+    s, frag = _split_outside_quotes(s, "#")
+    if frag is not None and not _SELECTOR_RE.match(frag):
+        raise URFError(f"fragment {frag!r} is not a dot-path")
+    s, query = _split_outside_quotes(s, "?")
     pin = None
     if "@" in s:
         s, _, pin = s.partition("@")

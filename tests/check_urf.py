@@ -58,6 +58,12 @@ def main():
     refuse("unbalanced paren", lambda: U.parse("estate?(a==1;b==2"))
     refuse("bad fragment", lambda: U.parse("Compute/VM#Cpu.Count"))
     refuse("empty", lambda: U.parse(""))
+    # URF-008 — a regex in a value parses as a LITERAL and silently never matches. On a deny
+    # criterion that is a fail-OPEN, so it is refused rather than accepted-and-misleading.
+    refuse("regex anchors", lambda: U.parse("estate?name==^vm-.*$"))
+    refuse("regex char class", lambda: U.parse("estate?name=='^vm-[0-9]{4}$'"))
+    refuse("regex alternation", lambda: U.parse("estate?env==(prod|staging)"))
+    refuse("regex in quoted value", lambda: U.parse("estate?n=='a|b'"))
 
     # --- legal + canonicalization ---
     c1 = ok("& alias", lambda: U.canonicalize("estate?b==2&a==1"))
@@ -86,6 +92,23 @@ def main():
     inl = ok("in-list sort", lambda: U.canonicalize("estate?uuid=in=(c,a,b)"))
     if inl != "estate?uuid=in=(a,b,c)":
         fails.append(f"in-list not sorted: {inl!r}")
+
+    # --- axis splitting is quote-aware: a delimiter inside a quoted value is DATA, not an axis ---
+    hashq = ok("'#' inside quoted value", lambda: U.canonicalize("estate?q=='a#b'"))
+    if hashq and U.canonicalize(hashq) != hashq:
+        fails.append(f"quoted '#' not idempotent: {hashq!r}")
+
+    # --- §9.5 percent-encoding: the canonical form is URL-projectable, stably ---
+    enc = ok("space encodes", lambda: U.canonicalize("estate?q=='has space'"))
+    if enc:
+        illegal = sorted({ch for ch in enc if ch in ' "<>\\^`{|}'})
+        if illegal:
+            fails.append(f"URF-001: canonical form carries URL-illegal char(s) {illegal}: {enc!r}")
+        if U.canonicalize(enc) != enc:
+            fails.append(f"canonicalization not idempotent under encoding: {enc!r} -> {U.canonicalize(enc)!r}")
+    slf = ok("{self} stays literal", lambda: U.canonicalize("estate?tenant_uuid=={self}"))
+    if slf != "estate?tenant_uuid=={self}":
+        fails.append(f"§9.5: {{self}} must be literal in canonical form, got {slf!r}")
 
     # --- block round-trip ---
     blk = {"path": "estate", "query": ["tenant_uuid=={self}", "resource_type==Compute.VM"]}

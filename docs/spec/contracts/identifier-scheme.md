@@ -211,7 +211,7 @@ block form §9.4, JSON embedding, English renderings) — never a second parse s
 
 | Axis | Delimiter | Carries | Values |
 |---|---|---|---|
-| authority | `//` | whose namespace; elided = local | dotted authority (ADR-038 §10; peer roots per ADR-040) |
+| authority | `//` | whose namespace; elided = local | dotted authority (ADR-038 §10; peer roots per governance-matrix.md — peers are distinct authorities that resolve their own estate) |
 | path | `/` | WHAT | `Category/Type[/Provider]` (registry space) · `estate/<handle>` (instance space) · `uuid/<v4>` (resolved form) |
 | pin | `@` | WHICH version/bytes | `@MAJOR.MINOR.REVISION` or `@sha256:<hex>` — ADR-051's grammar, carried verbatim |
 | query | `?` | WHICH ONES | one RSQL expression (§9.2) + operational terms (§9.3) |
@@ -353,3 +353,4 @@ verbatim, not duplicated).
 | `URF-005` | A stored URF filters declared fields only; a stored form containing an operational term (single `=`) or operational-state selector is refused. |
 | `URF-006` | Criterion→criterion references (`member_of` and future virtual fields) MUST be acyclic; a cycle is refused at validation. |
 | `URF-007` | Credentials or bearer material MUST NOT appear in any URF axis. |
+| `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in a URF value; the accepted subset matches with `*` glob and has no regex operator, so a regex compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. |

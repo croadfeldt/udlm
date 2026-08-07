@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.4"
+version: "1.0.5"
 
 prefixes:
   - prefix: ACC
@@ -226,7 +226,7 @@ prefixes:
   - prefix: URF
     name: Reference/filter URL
     home: docs/spec/contracts/identifier-scheme.md
-    domain: The URF grammar — parse validity, canonical identity, reserved charset, cardinality, stored-form and credential rules
+    domain: The URF grammar — parse validity, canonical identity, reserved charset, cardinality, stored-form, value content, and credential rules
     status: active
   - prefix: TEN
     name: Tenancy
