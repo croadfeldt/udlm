@@ -380,14 +380,10 @@ recovery_policy:
   trigger: DISPATCH_TIMEOUT         # the trigger condition this policy handles
   action: DISCARD_AND_REQUEUE       # the action to take
 
-  # Optional additional conditions
-  conditions:
-    - field: entity.resource_type
-      operator: in
-      value: [Compute.VM, Container.Pod]
-    - field: entity.owned_by_tenant.profile
-      operator: equals
-      value: prod
+  # Optional additional facts this policy reads (policy-contract §2.1); the comparison is the
+  # engine's, in match.rule
+  match:
+    facts: [resource_type, tenant_uuid]
 
   # Action parameters (depend on action type)
   action_parameters:

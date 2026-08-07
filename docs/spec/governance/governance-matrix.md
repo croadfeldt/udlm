@@ -209,17 +209,14 @@ governance_matrix_rule:
   # hard: cannot be relaxed by any downstream rule; ever
   # soft: downstream rules at same or higher domain can tighten further
 
-  # Conditions that must be met for ALLOW_WITH_CONDITIONS
-  conditions:
-    - field: target.trust_posture
-      operator: minimum
-      value: verified
-    - field: context.tls_mutual
-      operator: equals
-      value: required
-    - field: target.accreditation_held
-      operator: includes
-      value: hipaa
+  # Obligations that must hold for ALLOW_WITH_CONDITIONS. Declarative requirements, not
+  # comparisons: each names a REQUIRED STATE, and §3.8's subsumption rule says how a broader
+  # holding satisfies a narrower requirement. The decision shape is UDLM's (policy-contract §5);
+  # the comparison language is not (§2.5).
+  requires:
+    target.trust_posture: verified
+    context.tls_mutual: required
+    target.accreditation_held: [hipaa]
 
   # Field permission model (for ALLOW and ALLOW_WITH_CONDITIONS)
   field_permissions:
@@ -372,13 +369,9 @@ match:
   target.accreditation_held.includes: hipaa
   target.trust_posture: verified
 decision: ALLOW_WITH_CONDITIONS
-conditions:
-  - field: context.tls_mutual
-    operator: equals
-    value: required
-  - field: context.zero_trust_posture
-    operator: minimum
-    value: full
+requires:
+  context.tls_mutual: required
+  context.zero_trust_posture: full
 field_permissions:
   mode: allowlist
   paths:

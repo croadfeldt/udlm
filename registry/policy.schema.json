@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/policy.schema.json",
   "title": "DCM Policy record",
-  "description": "Machine-validatable Policy record (docs/spec/contracts/policy-contract.md; DCM ADR-006). Every Policy implements one base contract; what varies by policy_type is the `output` schema \u2014 what the policy PRODUCES when its match conditions are satisfied. UDLM carries the record; DCM's Policy Engine evaluates it (core-tenets G3). data-model-core.md \u00a72 [D8.3].",
+  "description": "Machine-validatable Policy record (docs/spec/contracts/policy-contract.md; DCM ADR-006). Every Policy implements one base contract; what varies by policy_type is the `output` schema — what the policy PRODUCES when its match conditions are satisfied. UDLM carries the record; DCM's Policy Engine evaluates it (core-tenets G3). data-model-core.md §2 [D8.3].",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,7 +19,7 @@
   "properties": {
     "record_type": {
       "const": "policy",
-      "description": "Dispatch discriminator (data-model-core \u00a72). record_type is the authoritative record kind; realized entities use resource_type, groups use group_class."
+      "description": "Dispatch discriminator (data-model-core §2). record_type is the authoritative record kind; realized entities use resource_type, groups use group_class."
     },
     "uuid": {
       "type": "string",
@@ -47,7 +47,7 @@
     "tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Owning tenant (TEN-001; data-model-core \u00a75 [D3]). A system-domain policy is owned by the platform tenant."
+      "description": "Owning tenant (TEN-001; data-model-core §5 [D3]). A system-domain policy is owned by the platform tenant."
     },
     "status": {
       "type": "object",
@@ -90,7 +90,7 @@
         "itsm_action",
         "override"
       ],
-      "description": "The policy's kind \u2014 determines the `output` schema (policy-contract.md \u00a78-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (DCM ADR-019) and itsm_action (\u00a717) extend it."
+      "description": "The policy's kind — determines the `output` schema (policy-contract.md §8-17). 'gating' is the renamed 'gatekeeper' (2026-07 rename). validation/transformation/recovery/orchestration_flow/governance_matrix_rule/lifecycle are the contract's core set; placement (DCM ADR-019) and itsm_action (§17) extend it."
     },
     "policy_class": {
       "enum": [
@@ -102,7 +102,7 @@
     },
     "concern_type": {
       "type": "string",
-      "description": "security | compliance | operational | recovery_posture | zero_trust_posture | data_authorization_boundary | orchestration_flow (policy-contract.md; open string \u2014 profile policy-group vocabularies extend it)."
+      "description": "security | compliance | operational | recovery_posture | zero_trust_posture | data_authorization_boundary | orchestration_flow (policy-contract.md; open string — profile policy-group vocabularies extend it)."
     },
     "domain": {
       "enum": [
@@ -117,54 +117,54 @@
     "match": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Match conditions (policy-contract.md \u00a72, Model A field-conditions). A policy fires when these are satisfied.",
+      "required": [
+        "facts"
+      ],
+      "description": "What the policy binds to — the FACTS it consumes, never how it compares them. UDLM specifies the policy-engine contract, not the predicate language (§7.2a: an external engine is 'a Provider of policy decisions, bound by the contract, not by shared storage'). The comparison lives in the engine's own rule body, in the engine's own language; UDLM carries the DEPENDENCY, which is what makes a policy analyzable without evaluating it — impact analysis when a fact changes, and a refusal when a policy binds to data the model does not carry.",
       "properties": {
-        "conditions": {
+        "facts": {
           "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "field",
-              "operator"
-            ],
-            "properties": {
-              "field": {
-                "type": "string",
-                "description": "A dot-path into the request/entity, or a known request attribute: data_classification | data_role | sovereignty_zone | tenant_uuid | resource_type | application_uuid | graph.has_cycle | graph.cycle_severity | graph.cycle_members | graph.cycle_mechanisms | graph.fault_domain | graph.blast_radius | graph.unmet_dependency | any spec dot-path (ADR-006 match sources; application_uuid is an allowed field). data_role (ADR-PROV-001) lets Governance-Matrix boundary policies control which roles a provider may receive at the DCM→Provider boundary — parallel to data_classification. The graph.* sources (docs/guides/graph-integrity.md) expose DependencyCycle diagnostics so policy governs cyclic estates — e.g. graph.cycle_severity eq blocking / graph.unmet_dependency.severity eq blocking → deny; graph.blast_radius / graph.fault_domain for redundancy + impact policy (ADR-010); matched against the effective dependency graph, not a stored field. During the reserve-phase reconciliation loop (ADR-011), reserved facts are exposed as reserved.* match sources (e.g. reserved.segment_ref, reserved.<component>.<fact>) so a participating policy (see `reconciliation`) evaluates against holds as they land, before commit. Tenant-quota consumption is exposed as quota.* match sources (quota.dimension, quota.used, quota.limit, quota.exceeded \u2014 dcm-group.schema.json quota block) so policy governs over-quota at the commit barrier (e.g. quota.exceeded eq true -> deny)."
-              },
-              "operator": {
-                "enum": [
-                  "eq",
-                  "ne",
-                  "in",
-                  "not_in",
-                  "exists",
-                  "not_exists",
-                  "matches",
-                  "gt",
-                  "lt",
-                  "gte",
-                  "lte"
-                ]
-              },
-              "value": {
-                "description": "Comparison value (omit for exists/not_exists)."
-              }
-            }
-          }
-        },
-        "all_of": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/condition"
+            "type": "string"
           },
-          "description": "Model B: nested boolean composition."
+          "description": "The facts this policy reads, each a canonical term in the `policy-fact` taxonomy (registry/taxonomies/policy-fact.yaml) or a dot-path under one of its OPEN subtrees (`request-payload` — any spec dot-path; `reserved` — reserved.<component>.<fact>). Enforced by tests/check_policy_facts.py (PFACT-001). Declaring a fact is not a predicate: it says the policy READS this, not what it concludes.",
+          "examples": [
+            [
+              "data_classification",
+              "sovereignty_zone"
+            ],
+            [
+              "quota.exceeded"
+            ],
+            [
+              "graph.has_cycle",
+              "graph.cycle_severity"
+            ]
+          ]
         },
-        "any_of": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/condition"
+        "rule": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "engine"
+          ],
+          "description": "The engine-native rule body — OPAQUE to UDLM, which never parses, validates, or interprets it. Same treatment a provider's internal implementation gets (T9: the substrate never translates into a provider's native spec). Carried so a policy record stays a complete governed artifact under §6 lifecycle, provenance, and audit; a peer that does not run this engine can still read the record's identity, facts, decision shape, and audit obligations without being able to evaluate it.",
+          "properties": {
+            "engine": {
+              "type": "string",
+              "description": "Which engine dialect the body is written for (e.g. 'rego'). A peer reads this to know whether it can evaluate the rule at all — and refuses rather than guessing when it cannot."
+            },
+            "body": {
+              "type": "string",
+              "description": "The rule source, verbatim. Never parsed by UDLM."
+            },
+            "ref": {
+              "type": "string",
+              "format": "udlm-ref-url",
+              "description": "A URF reference to the rule, for bodies that live outside the record."
+            }
           }
         }
       }
@@ -174,7 +174,7 @@
         "hard",
         "soft"
       ],
-      "description": "hard = blocking; soft = advisory (policy-contract \u00a7enforcement)."
+      "description": "hard = blocking; soft = advisory (policy-contract §enforcement)."
     },
     "lifecycle_scope": {
       "type": "object",
@@ -194,7 +194,7 @@
           }
         }
       },
-      "description": "Which lifecycle operations the policy evaluates on (policy-contract \u00a7default lifecycle scope). Compliance-class validation + governance_matrix must include 'all' at standard/prod; fsi/sovereign cannot scope out any operation."
+      "description": "Which lifecycle operations the policy evaluates on (policy-contract §default lifecycle scope). Compliance-class validation + governance_matrix must include 'all' at standard/prod; fsi/sovereign cannot scope out any operation."
     },
     "reconciliation": {
       "type": "object",
@@ -208,14 +208,21 @@
         },
         "reevaluate_on": {
           "type": "array",
-          "items": {"enum": ["reservation_added", "reservation_changed", "reservation_released", "fact_updated"]},
+          "items": {
+            "enum": [
+              "reservation_added",
+              "reservation_changed",
+              "reservation_released",
+              "fact_updated"
+            ]
+          },
           "description": "When participates=true, which reserve-phase changes re-trigger this policy. Omitted = all. A policy that only cares about newly reserved facts sets [fact_updated] to avoid needless re-runs."
         }
       }
     },
     "output": {
       "type": "object",
-      "description": "What the policy produces when it fires (policy-contract \u00a78-17). The required inner shape is conditional on policy_type (see allOf below). Additional per-type fields are permitted (extension surface).",
+      "description": "What the policy produces when it fires (policy-contract §8-17). The required inner shape is conditional on policy_type (see allOf below). Additional per-type fields are permitted (extension surface).",
       "additionalProperties": true
     },
     "audit_on": {
@@ -246,7 +253,7 @@
     "review_required_before": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-      "description": "RFC 3339 UTC 'Z' review deadline (common-elements \u00a78.1)."
+      "description": "RFC 3339 UTC 'Z' review deadline (common-elements §8.1)."
     },
     "metadata": {
       "type": "object",
@@ -449,51 +456,20 @@
             "properties": {
               "target_policy_uuid": {
                 "type": "string",
-                "description": "The soft policy this override suppresses (policy-contract \u00a718.1). Hard-enforcement policies are unoverridable (POL-003)."
+                "description": "The soft policy this override suppresses (policy-contract §18.1). Hard-enforcement policies are unoverridable (POL-003)."
               },
               "scope": {
-                "description": "The narrowed match scope the override applies to \u2014 never global (\u00a718.1)."
+                "description": "The narrowed match scope the override applies to — never global (§18.1)."
               },
               "expires_at": {
                 "type": "string",
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
-                "description": "Mandatory expiry \u2014 overrides are time-bounded (POL-009). RFC 3339 UTC 'Z'."
+                "description": "Mandatory expiry — overrides are time-bounded (POL-009). RFC 3339 UTC 'Z'."
               }
             }
           }
         }
       }
     }
-  ],
-  "$defs": {
-    "condition": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "field",
-        "operator"
-      ],
-      "properties": {
-        "field": {
-          "type": "string"
-        },
-        "operator": {
-          "enum": [
-            "eq",
-            "ne",
-            "in",
-            "not_in",
-            "exists",
-            "not_exists",
-            "matches",
-            "gt",
-            "lt",
-            "gte",
-            "lte"
-          ]
-        },
-        "value": {}
-      }
-    }
-  }
+  ]
 }

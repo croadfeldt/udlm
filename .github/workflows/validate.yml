@@ -43,6 +43,10 @@ jobs:
       # language, so the FACTS a policy may reference are the deliverable — governed here
       # rather than as prose in a field description, which is how five rival spellings grew.
       - run: python3 tests/check_policy_facts.py
+      # Policy-engine boundary (ADR-065): UDLM declares the facts a policy reads and the
+      # decision it produces; the comparison language stays with the engine. Anti-creep —
+      # the removed vocabulary must not return one convenience field at a time.
+      - run: python3 tests/check_policy_boundary.py
       - run: python3 tests/check_definition_single_source.py
       # Rule-ID single-source: every normative rule-ID prefix must be registered in
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,

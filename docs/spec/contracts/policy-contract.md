@@ -59,25 +59,25 @@ Every request into DCM carries an `operation.type` that identifies what lifecycl
 **`operation.changed_fields`** — For `update` and `scale` operations, this is an array of field paths that changed from the current realized state. This enables policies to fire only when relevant fields change:
 
 ```yaml
-# Fire only when placement-affecting fields change
+# A policy that fires on placement-affecting change declares WHICH facts it reads.
+# Whether "initial_provisioning" counts, and whether the changed set contains
+# "placement.zone", is the engine's comparison — in the engine's language.
 match:
-  conditions:
-    - field: operation.type
-      operator: in
-      value: [initial_provisioning, rehydration, provider_migration]
-  condition_logic: any
-
-# OR: fire on updates, but only when network or zone fields changed
-match:
-  conditions:
-    - field: operation.type
-      operator: equals
-      value: "update"
-    - field: operation.changed_fields
-      operator: contains
-      value: "placement.zone"
-  condition_logic: all
+  facts: [operation.type, operation.changed_fields]
+  rule:
+    engine: rego
+    body: |
+      package udlm.placement_affecting
+      fires if input.operation.type in {"initial_provisioning", "rehydration", "provider_migration"}
+      fires if {
+        input.operation.type == "update"
+        "placement.zone" in input.operation.changed_fields
+      }
 ```
+
+The declaration is what makes the policy analyzable **without evaluating it**: impact analysis
+knows this policy is affected when `operation.changed_fields` changes shape, and a policy binding
+to a fact the model does not carry is refused rather than silently never firing.
 
 ### 2.3 Policy Lifecycle Scope
 
@@ -129,84 +129,60 @@ These defaults can be overridden per policy. Profile-governed minimums prevent d
 
 ### 2.4 Specificity Spectrum
 
-The same match model expresses policies at every level of specificity:
+Specificity is a property of **which facts a policy reads** — a policy that declares one fact is
+broad, a policy that declares four is narrow. The comparison never enters into it:
 
 ```yaml
-# Universal — fires on everything (no conditions)
+# Universal — reads nothing, fires on everything
 match:
-  conditions: []
+  facts: []
 
-# Classification-scoped — fires on any resource handling PHI
+# Classification-scoped — one fact
 match:
-  conditions:
-    - field: request.data_classification
-      operator: in
-      value: ["phi", "pci"]
+  facts: [data_classification]
 
-# Resource-type scoped — fires on all VMs
+# Resource-type scoped
 match:
-  conditions:
-    - field: request.resource_type
-      operator: equals
-      value: "Compute.VM"
+  facts: [resource_type]
 
-# Zone + segment scoped — fires on any resource in DMZ in zone A
+# Zone + segment scoped — two facts, so twice as narrow a binding
 match:
-  conditions:
-    - field: request.network_segment
-      operator: equals
-      value: "dmz"
-    - field: request.placement.zone
-      operator: equals
-      value: "zone-a"
-  condition_logic: all
+  facts: [network_segment, placement.zone]
 
-# Fully specific — VMs in DMZ in zone A for one application
+# Fully specific — the narrowest binding in this spec
 match:
-  conditions:
-    - field: request.resource_type
-      operator: equals
-      value: "Compute.VM"
-    - field: request.network_segment
-      operator: equals
-      value: "dmz"
-    - field: request.placement.zone
-      operator: equals
-      value: "zone-a"
-    - field: request.application_uuid
-      operator: equals
-      value: "xxxx-xxxx-xxxx"
-  condition_logic: all
+  facts: [resource_type, network_segment, placement.zone, application_uuid]
 
-# Context-aware — fires when sovereignty has restricted zones
+# Context-aware — reads a constraint another policy emitted this pass
 match:
-  conditions:
-    - field: context.constraints.zone_restriction
-      operator: exists
-  condition_logic: all
+  facts: [allowed_zones]
 ```
 
-### 2.5 Match Operators
+Every name above is a term in the `policy-fact` taxonomy
+(`registry/taxonomies/policy-fact.yaml`), or a dot-path under one of its open subtrees. A fact that
+resolves to neither is refused (PFACT-001) — so a policy cannot silently bind to data the model
+does not carry.
 
-| Operator | Description |
-|----------|------------|
-| `equals` | Exact match |
-| `not_equals` | Negation |
-| `in` | Value is in a list |
-| `not_in` | Value is not in a list |
-| `exists` | Field is present (any value) |
-| `not_exists` | Field is absent |
-| `minimum` | Numeric ≥ threshold |
-| `maximum` | Numeric ≤ threshold |
-| `contains` | String/array contains substring/element |
-| `matches` | Regex match |
-| `starts_with` | Field path prefix match (for hierarchical resource types) |
+### 2.5 What UDLM does not specify
 
-`condition_logic: all` (default) requires all conditions to match. `condition_logic: any` requires at least one.
+**The comparison language is the engine's.** UDLM declares which facts a policy reads (§2.1) and
+which decision shape it produces (§5); how a policy compares a fact to a value — the operators, the
+boolean composition, the evaluation strategy — is the engine's, expressed in the engine's own
+language inside `match.rule`.
+
+This is §7.2a's rule applied to the record rather than only to the deployment: an external engine is
+a **Provider of policy decisions**, and UDLM no more specifies its predicate grammar than it
+specifies a provider's internal implementation (T9 — the substrate never translates into a
+provider's native spec). `match.rule` is carried, never parsed.
+
+What that buys: a policy record stays a complete governed artifact under §6 — identity, lifecycle,
+provenance, audit — and a peer that does not run this engine can still read its facts, its decision
+shape, and its audit obligations without being able to evaluate it. The engine is swappable; the
+record is not.
 
 ### 2.6 Boundary Match Conditions (Governance Matrix)
 
-Governance Matrix Rules use a four-axis boundary model for matching — subject, data, target, and context. These are structurally the same as field conditions but organized by the four axes of the Governance Matrix:
+Governance Matrix Rules organize their facts along the four axes of the Governance Matrix — subject, data, target, and context. This block names **axes, not operators**: it says which dimensions a boundary decision is made over, which is governance structure (ADR-008) and therefore UDLM's. The comparison within each axis remains the engine's, exactly as in §2.5.
 
 ```yaml
 match:
@@ -419,10 +395,7 @@ policy_artifact:
   handle: "sovereignty/eu-data-residency"
   policy_type: validation
   match:
-    conditions:
-      - field: request.data_classification
-        operator: in
-        value: ["restricted", "phi", "pci"]
+    facts: [data_classification]
 
   # What this policy contributes to the evaluation context
   enforcement_class: compliance
@@ -444,10 +417,7 @@ policy_artifact:
   handle: "tier/tier-1-ha-distribution"
   policy_type: transformation
   match:
-    conditions:
-      - field: request.tier
-        operator: equals
-        value: "tier-1"
+    facts: [request-payload.tier]
 
   emits_constraints:
     - field: "placement.zone_distribution"
@@ -674,10 +644,7 @@ policy_artifact:
     allowed_zones: [eu-west-1, eu-central-1]
 
   match:
-    conditions:
-      - field: request.data_classification
-        operator: in
-        value: [restricted, phi, pci]
+    facts: [data_classification]
 
   enforcement: hard
   on_conflict:
@@ -1033,10 +1000,7 @@ compensating_control:
   control_uuid: <uuid>
   replaces_policy: "sovereignty/eu-data-residency"
   when:
-    conditions:
-      - field: operation.type
-        operator: equals
-        value: rehydration
+    facts: [operation.type]
   substitute_controls:
     - policy_handle: "sovereignty/sovereign-grade-encryption"
     - policy_handle: "audit/field-granularity-override"
