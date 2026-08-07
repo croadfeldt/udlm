@@ -415,6 +415,30 @@ Each hard constraint cites the UDLM contract it derives from.
     A **provider** class is exempt: a provider IS an opinionated implementation, and stating what it
     does when unasked is its job. Enforced by `tests/check_no_shipped_defaults.py` (NDF-001).
 
+42. **Model enough to PROVISION, not enough to OPERATE — the depth boundary.** §38 says *which*
+    resources UDLM is the system of record for; §35 says *how* to frame them. This says **how much
+    of one to model**: enough data to provision the resource, and no further into its runtime
+    configuration or day-2 tuning.
+
+    **The failure mode is specific.** Model a platform's configuration surface fully and UDLM
+    becomes the *front end for that platform* — it inherits that platform's whole API, its release
+    cadence, and its semantics, and the portable type quietly turns into a translation of one
+    vendor's object. That is T9 inverted (the substrate never translates into a provider's native
+    spec), and it is how a portable model stops being portable.
+
+    **The boundary is on the AUTHORING surface, not on visibility.** Declining to model a runtime
+    setting does not mean the platform's state is invisible: it returns as realized state and typed
+    outputs, observed with provenance. *Not authored* is not *not known*.
+
+    The test for a candidate field: **could the resource be provisioned without it?** If yes, it is
+    probably operational config and belongs to the platform — reachable through outputs, governed by
+    policy, never authored as portable intent. If no, it is provisioning data and belongs in the
+    type.
+
+    *Working boundary, deliberately revisitable (2026-08-07).* Deeper lifecycle modelling is a
+    decision to make on evidence — a use case that cannot be satisfied — not a default to drift
+    into one field at a time.
+
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.
 - **Decouple the model from any runtime/controller** — the model outlives the engine that realizes it.
