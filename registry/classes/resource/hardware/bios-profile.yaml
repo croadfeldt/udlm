@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.BiosProfile/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.BiosProfile/0.6.0
 conforms_to: udlm/0.1
 uuid: 9e8dbb91-cf60-420f-9ab0-fc9df20d6ff4
 record_type: class
 class: type
 resource_type: Hardware.BiosProfile
 parent: Hardware
-version: 0.5.0
+version: 0.6.0
 family: Resource
 status: active
 metadata:
@@ -47,7 +47,6 @@ elements:
     - sum
     - ipmi
     - manual
-    default: redfish
     description: How DCM applies the profile out-of-band (UDLM's realization concern, not Redfish schema).
       `sum` = a board vendor's out-of-band settings utility (a supported board's Redfish Bios.Attributes
       is empty, so the vendor utility is the path).

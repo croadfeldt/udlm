@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.0
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: type
 resource_type: Data.Database
 parent: Data
-version: 0.6.0
+version: 0.7.0
 family: Resource
 status: active
 metadata:
@@ -43,7 +43,6 @@ elements:
     abstract; realized carries the concrete.'
   schema:
     type: string
-    default: latest
     description: 'Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints,
       E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults
       to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract

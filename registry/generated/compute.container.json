@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.0",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Compute.Container",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Compute.Container",
-          "version": "0.6.0",
+          "version": "0.7.0",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -270,8 +270,7 @@
                   "description": "handle/uuid of the mounted source (config/model snapshot, or a CredentialRef for secrets)."
                 },
                 "read_only": {
-                  "type": "boolean",
-                  "default": true
+                  "type": "boolean"
                 }
               }
             }
@@ -305,8 +304,7 @@
                   "enum": [
                     "tcp",
                     "udp"
-                  ],
-                  "default": "tcp"
+                  ]
                 },
                 "visibility": {
                   "type": "string",
@@ -314,8 +312,7 @@
                     "loopback",
                     "internal",
                     "external"
-                  ],
-                  "default": "internal"
+                  ]
                 }
               }
             }
@@ -332,13 +329,11 @@
               "always",
               "on-failure",
               "never"
-            ],
-            "default": "always"
+            ]
           },
           "replicas": {
             "type": "integer",
-            "minimum": 0,
-            "default": 1
+            "minimum": 0
           }
         },
         "description": "Converted verbatim from the flat Compute.Container spec."

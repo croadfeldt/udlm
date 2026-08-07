@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.GraphicsProcessor/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.GraphicsProcessor/0.5.0
 conforms_to: udlm/0.1
 uuid: 7456b9f8-f215-4b75-ae6a-edd8cc854949
 record_type: class
 class: type
 resource_type: Hardware.GraphicsProcessor
 parent: Hardware
-version: 0.4.0
+version: 0.5.0
 family: Resource
 status: active
 metadata:
@@ -33,7 +33,6 @@ elements:
     - virtual
     - passthrough
     - partition
-    default: physical
     description: Device realization (common-elements.md §7). passthrough = whole GPU to a guest; partition
       = vGPU/MIG slice (set parent_device + partition_mechanism).
 - element: partition_mechanism

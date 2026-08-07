@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.DHCPScope/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.DHCPScope/0.8.0
 conforms_to: udlm/0.1
 uuid: c71a7ad9-23ea-40fe-a07d-ee088a20cf42
 record_type: class
 class: type
 resource_type: Network.DHCPScope
 parent: Network
-version: 0.7.0
+version: 0.8.0
 family: Resource
 status: active
 metadata:
@@ -38,7 +38,6 @@ elements:
     enum:
     - ipv4
     - ipv6
-    default: ipv4
     description: 'Address family (common-elements: ip_family).'
 - element: pools
   scope: Network.DHCPScope

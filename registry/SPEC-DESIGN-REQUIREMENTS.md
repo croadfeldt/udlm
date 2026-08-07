@@ -415,29 +415,37 @@ Each hard constraint cites the UDLM contract it derives from.
     A **provider** class is exempt: a provider IS an opinionated implementation, and stating what it
     does when unasked is its job. Enforced by `tests/check_no_shipped_defaults.py` (NDF-001).
 
-42. **Model enough to PROVISION, not enough to OPERATE — the depth boundary.** §38 says *which*
-    resources UDLM is the system of record for; §35 says *how* to frame them. This says **how much
-    of one to model**: enough data to provision the resource, and no further into its runtime
-    configuration or day-2 tuning.
+42. **Facilitate, do not dictate — how much of a resource to manage is the ORGANIZATION's and the
+    PROVIDER's decision, never UDLM's.** This is the mission stated as a rule, and it is the test to
+    apply when a rule feels like it is about to prescribe: UDLM does not set the depth boundary. It
+    carries the data whatever depth is chosen, and makes the choice attributable.
 
-    **The failure mode is specific.** Model a platform's configuration surface fully and UDLM
-    becomes the *front end for that platform* — it inherits that platform's whole API, its release
-    cadence, and its semantics, and the portable type quietly turns into a translation of one
-    vendor's object. That is T9 inverted (the substrate never translates into a provider's native
-    spec), and it is how a portable model stops being portable.
+    Read the neighbouring rules as instances of it — §39 (the requirement is the provider's to
+    state), §40 (the provider declares its own offer), §41 (no shipped defaults; an opinion belongs
+    in a layer where it carries provenance). Each removes a decision from UDLM and gives it to the
+    party who owns it, with a mechanism to express it and a record of who did.
 
-    **The boundary is on the AUTHORING surface, not on visibility.** Declining to model a runtime
-    setting does not mean the platform's state is invisible: it returns as realized state and typed
-    outputs, observed with provenance. *Not authored* is not *not known*.
+    - A **provider** states what it requires to realize a request, and the range of values it
+      supports, on its Provider Class (§40). Depth it does not need, it does not declare.
+    - An **organization** states how much it wants to manage through **layers, policies, and
+      profiles** — the same mechanism that supplies defaults (§41), and for the same reason: the
+      value records which layer set it, so the decision is attributable and policy can override it
+      traceably.
+    - **UDLM** provides the shapes and the transport. A portable type carries what a resource IS,
+      so that any provider can express what it needs and any organization can express how much it
+      manages. It does not ration that on either party's behalf.
 
-    The test for a candidate field: **could the resource be provisioned without it?** If yes, it is
-    probably operational config and belongs to the platform — reachable through outputs, governed by
-    policy, never authored as portable intent. If no, it is provisioning data and belongs in the
-    type.
+    **What UDLM must avoid is a different thing: becoming the front end for a platform.** A portable
+    type that mirrors one platform's configuration surface inherits that platform's API, release
+    cadence, and semantics — T9 inverted (the substrate never translates into a provider's native
+    spec). The guard is not a depth limit; it is §35 (model the fact, never the mechanism) and §17
+    (no provider-specific data in the portable spec). Provider-specific depth belongs on a Provider
+    Class, where it is scoped and its portability position is explicit — not on the portable type,
+    where it would be everyone's.
 
-    *Working boundary, deliberately revisitable (2026-08-07).* Deeper lifecycle modelling is a
-    decision to make on evidence — a use case that cannot be satisfied — not a default to drift
-    into one field at a time.
+    **The boundary is on the AUTHORING surface, not on visibility.** Not modelling a runtime setting
+    as portable intent does not make it invisible: it returns as realized state and typed outputs,
+    observed with provenance. *Not authored* is not *not known*.
 
 ## Design principles (SHOULD)
 - **Minimal core, extensible at the edges** — don't over-model; add types via schema-sharing.

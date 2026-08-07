@@ -1,56 +1,12 @@
 # UDLM-shipped defaults — burn-down baseline
 #
-# The 46 default sites present when NDF-001 landed (2026-08-07). Each is one organisation's opinion
-# baked into a PORTABLE type: Data.Database.version "latest", Storage.FileShare.protocol "smb",
-# Storage.Volume.volume_mode "filesystem". They belong in a layer or a profile, where the value
-# carries provenance and policy can override it traceably.
+# EMPTY, and it stays that way. The 46 sites present when NDF-001 landed were removed in the same
+# change: Data.Database.version "latest", Storage.FileShare.protocol "smb",
+# Storage.Volume.volume_mode "filesystem", and 43 others. Each was one organisation's opinion baked
+# into a portable type, arriving with no provenance.
 #
-# Removal touches 27 class files and is its own reviewable change — this baseline records the debt
-# rather than hiding it. It only SHRINKS: a removed default that reappears fails the gate, and a
-# baseline line whose default is gone must be deleted. New classes are never added here.
-Access.IdentityEscrow escrowed_items items.properties.capture_on
-Access.IdentityEscrow escrowed_items items.properties.required
-Access.IdentityEscrow escrowed_items items.properties.restore_on
-Compute.BareMetalHost boot_mode (top)
-Compute.BareMetalHost composition_visibility (top)
-Compute.BareMetalHost image properties.checksum_type
-Compute.BareMetalHost lifecycle_state (top)
-Compute.BareMetalHost online (top)
-Compute.Container network properties.ports.items.properties.protocol
-Compute.Container network properties.ports.items.properties.visibility
-Compute.Container process properties.mounts.items.properties.read_only
-Compute.Container runtime properties.replicas
-Compute.Container runtime properties.restart_policy
-Compute.VM firmware properties.secure_boot
-Compute.VM firmware properties.type
-Compute.VM firmware properties.vtpm
-Compute.VM run_state properties.desired_state
-Data.Database version (top)
-Facility.PowerFeed redundancy (top)
-Hardware.BMC protocol (top)
-Hardware.BiosProfile management_interface (top)
-Hardware.GraphicsProcessor device_class (top)
-Hardware.NetworkInterface device_class (top)
-Hardware.Processor device_class (top)
-Hardware.StorageDevice device_class (top)
-Identity.Person status (top)
-Identity.ServiceAccount status (top)
-Network.DHCPScope ip_family (top)
-Network.DNSZone zone_type (top)
-Network.IPAddress allocation (top)
-Network.IPAddressPool allocation_mode (top)
-Network.Switch composition_visibility (top)
-Network.Switch lifecycle_state (top)
-Observability.LogShipper source (top)
-Platform.Hub hosted_control_planes (top)
-Platform.StorageClass allow_volume_expansion (top)
-Platform.StorageClass reclaim_policy (top)
-Platform.StorageClass volume_binding_mode (top)
-Security.CredentialRef version (top)
-Security.DirectoryService replication_role (top)
-Storage.Dataset dataset_kind (top)
-Storage.FileShare protocol (top)
-Storage.FileShare shares items.properties.browseable
-Storage.FileShare shares items.properties.read_only
-Storage.Volume retain_on_release (top)
-Storage.Volume volume_mode (top)
+# A default belongs in a layer or a profile, where the value records which layer set it and policy
+# can override it traceably. An opinionated implementation ships a layer.
+#
+# This file exists so the ratchet has a home if a default is ever knowingly accepted. Adding a line
+# means accepting debt — say why in the same change.

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Dataset/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f",
   "resource_type": "Storage.Dataset",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Storage.Dataset",
-          "version": "0.4.0",
+          "version": "0.5.0",
           "uuid": "90eb6692-1b70-4dc1-b43b-bfedf44c317f"
         }
       ]
@@ -41,7 +41,6 @@
           "snapshot",
           "other"
         ],
-        "default": "filesystem",
         "description": "ZFS dataset kind — filesystem (mounted), volume (zvol block device), or snapshot."
       },
       "mountpoint": {

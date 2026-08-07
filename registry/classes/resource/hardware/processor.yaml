@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.Processor/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.Processor/0.5.0
 conforms_to: udlm/0.1
 uuid: 418c9acb-3cd8-4e73-817d-8be2bdf13442
 record_type: class
 class: type
 resource_type: Hardware.Processor
 parent: Hardware
-version: 0.4.0
+version: 0.5.0
 family: Resource
 status: active
 metadata:
@@ -32,7 +32,6 @@ elements:
     - virtual
     - passthrough
     - partition
-    default: physical
     description: Device realization (common-elements.md §7). physical = a socket/package; virtual = vCPU.
 - element: partition_mechanism
   scope: Hardware.Processor

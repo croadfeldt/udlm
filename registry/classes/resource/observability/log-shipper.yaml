@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Observability.LogShipper/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Observability.LogShipper/0.6.0
 conforms_to: udlm/0.1
 uuid: 1f2eadd3-1144-4962-9342-dfb7fbb1f922
 record_type: class
 class: type
 resource_type: Observability.LogShipper
 parent: Observability
-version: 0.5.0
+version: 0.6.0
 family: Resource
 status: active
 metadata:
@@ -65,7 +65,6 @@ elements:
     enum:
     - journal
     - files
-    default: journal
     description: 'Which logs to ship: the systemd journal (default) or on-disk files. An outcome property
       — not a method detail.'
 - element: labels

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.9.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Compute.BareMetalHost",
-          "version": "0.9.1",
+          "version": "0.10.0",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -130,7 +130,6 @@
           "allocated",
           "retired"
         ],
-        "default": "available",
         "description": "Allocation state (common-elements §6, §28). available = inventoried/unallocated raw asset; allocated = adopted into the managed lifecycle. Adopts Metal3 BareMetalHost.status.provisioning.state."
       },
       "composition_visibility": {
@@ -140,7 +139,6 @@
           "transparent",
           "selective"
         ],
-        "default": "opaque",
         "description": "Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate host attributes, not component records (ADR-013). opaque = rollup only."
       },
       "identity": {
@@ -200,7 +198,6 @@
               "sha256",
               "sha512"
             ],
-            "default": "sha256",
             "description": "Checksum algorithm (Metal3 checksumType)."
           },
           "format": {
@@ -244,7 +241,6 @@
       },
       "online": {
         "type": "boolean",
-        "default": true,
         "description": "Desired power target (Metal3 online): true = powered on and kept on. The intent counterpart of the observed power_state output — the host analogue of the VM's run_state.desired_state."
       },
       "boot_mode": {
@@ -252,7 +248,6 @@
           "uefi",
           "legacy"
         ],
-        "default": "uefi",
         "description": "Firmware boot mode (Metal3 bootMode / Redfish Boot). Fleet note: converging this with the VM's firmware block into a common element is a candidate next MINOR — adopted vocabulary kept verbatim until then."
       }
     },

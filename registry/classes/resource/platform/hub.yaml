@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.3.0
 conforms_to: udlm/0.1
 uuid: e22decb9-0931-43ee-897e-6548459fd35a
 record_type: class
 class: type
 resource_type: Platform.Hub
 parent: Platform
-version: 0.2.0
+version: 0.3.0
 family: Resource
 status: active
 metadata:
@@ -35,7 +35,6 @@ elements:
     Hosted spokes are contained_by this hub; imported spokes are depends_on (soft).
   schema:
     type: boolean
-    default: false
     description: Whether this hub hosts spoke control planes inside itself (the hosted-control-planes
       pattern). Hosted spokes are contained_by this hub; imported spokes are depends_on (soft).
 spec_constraints:

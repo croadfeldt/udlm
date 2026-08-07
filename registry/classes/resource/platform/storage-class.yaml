@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.StorageClass/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.StorageClass/0.7.0
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: type
 resource_type: Platform.StorageClass
 parent: Platform
-version: 0.6.0
+version: 0.7.0
 family: Resource
 status: active
 metadata:
@@ -48,7 +48,6 @@ elements:
     - Retain
     - Delete
     - Recycle
-    default: Delete
     description: What happens to the underlying storage when a volume is released.
 - element: volume_binding_mode
   scope: Platform.StorageClass
@@ -61,7 +60,6 @@ elements:
     enum:
     - Immediate
     - WaitForFirstConsumer
-    default: Immediate
     description: When volume binding and provisioning occur — immediately at PVC creation or deferred
       until a consumer is scheduled.
 - element: allow_volume_expansion
@@ -71,7 +69,6 @@ elements:
   description: Whether volumes of this class can be expanded after creation.
   schema:
     type: boolean
-    default: false
     description: Whether volumes of this class can be expanded after creation.
 - element: tier
   scope: Platform.StorageClass

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.0
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: type
 resource_type: Compute.Container
 parent: Compute
-version: 0.6.0
+version: 0.7.0
 family: Resource
 status: active
 metadata:
@@ -136,7 +136,6 @@ elements:
                 for secrets).
             read_only:
               type: boolean
-              default: true
 - element: network
   scope: Compute.Container
   optional: true
@@ -165,14 +164,12 @@ elements:
               enum:
               - tcp
               - udp
-              default: tcp
             visibility:
               type: string
               enum:
               - loopback
               - internal
               - external
-              default: internal
 - element: runtime
   scope: Compute.Container
   optional: true
@@ -187,11 +184,9 @@ elements:
         - always
         - on-failure
         - never
-        default: always
       replicas:
         type: integer
         minimum: 0
-        default: 1
 spec_examples:
 - image:
     reference: registry.example.com/org/app:1.0
