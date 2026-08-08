@@ -1,3 +1,5 @@
+# asserts: CMP-002, CMP-009
+# proves: constituents, acyclic depends_on, and bindings resolved against declared outputs
 # Worked-example Composite Service catalog item (registry/catalog-item.schema.json).
 # A three-tier application — database / app / web — as a Composite catalog item:
 # constituents + dependency edges + declared bindings (entities/composite-service-model.md).
