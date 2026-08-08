@@ -3,9 +3,9 @@
 Eight files, one story: the same three-tier application expressed at every tier, plus the Workflow
 category, plus the negative set that decides whether any of it is real.
 
-**These are drafts, deliberately outside the registry.** Four decisions are still open and dropping
-half-designed classes into `registry/` would break the path, coverage, and traceability gates. Nothing
-here is committed.
+**These are drafts, deliberately outside the registry.** Decisions are still open and dropping
+half-designed classes into `registry/` would break the path, coverage, and traceability gates — so they
+live here, versioned but non-normative, rather than in the registry surface.
 
 | File | Tier | What it demonstrates |
 |---|---|---|
@@ -112,15 +112,17 @@ it is legal and carries an author.
    slots naming capabilities rather than classes — would use exactly that, and the ruling permits it.
    Is a Pattern a type-tier class with abstract constituents, or a record? I did not choose for you;
    `02-` shows the category reading only.
-3. **`ownership_model`** — in the ownership doc's examples, in zero schemas. Making constituent
-   ownership checkable needs it declared.
+3. **`ownership_model`** — ~~in the ownership doc's examples, in zero schemas~~ **landed in #420**
+   (OWN-007/OWN-008 enforceable). Constituent ownership is still not checkable, because that needs
+   the `edge:` field from item 1 — the type now declares its ownership model, and nothing yet
+   verifies a constituent's edge honours it (`08-`, case 2).
 4. **Does a Workflow inherit the sovereignty of what it touches?** May an operator in one zone run a
    workflow against a System in another? ADR-057 says UDLM carries the requirement and the Matrix
    decides; nothing says whether the requirement attaches to the run or only to its targets.
 
 ## Drive-bys found while building this
 
-- `registry/dcm-group.schema.json` **does not exist**; `realized-entity` and `catalog-item` cite it
+- a `dcm-group.schema.json` under registry/ **did not exist**; `realized-entity` and `catalog-item` cited it
   in 3 places. It was replaced by `Access.Grouping` and the pointers were never updated —
   `tenant_uuid`'s own description points at a missing file.
 - The `Job` class cites **ENT-004** for mandatory `max_execution_time`, twice. It is **ENT-002**;
