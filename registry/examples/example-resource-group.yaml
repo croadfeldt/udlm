@@ -1,4 +1,6 @@
-# Worked-example Resource Group: an Grouping using the EXPLICIT-set criterion —
+# asserts: GRP-INV-005
+# proves: a non-isolating grouping — many members, advisory, no exclusivity lock
+# Worked-example Resource Group: a Grouping using the EXPLICIT-set criterion —
 # the marked exception (identifier-scheme §9). A derivable criterion (labels, ownership)
 # is preferred wherever one exists; membership is still derived, never stored as a list.
 uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1

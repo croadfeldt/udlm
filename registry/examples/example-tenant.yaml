@@ -1,4 +1,6 @@
-# Worked-example Tenant: an Grouping — the tenancy anchor whose uuid every member
+# asserts: TEN-001, GRP-INV-001
+# proves: a tenant IS a Grouping.Tenant, and the membership criterion derives its members rather than storing them
+# Worked-example Tenant: a Grouping — the tenancy anchor whose uuid every member
 # record carries as tenant_uuid (TEN-001/003; data-model-core §5 [D3]). Membership is DERIVED
 # from the criterion, never a stored member list.
 uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
