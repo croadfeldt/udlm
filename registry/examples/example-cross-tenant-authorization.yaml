@@ -1,3 +1,5 @@
+# asserts: CTX-001, CTX-004
+# proves: the grant a cross-tenant relationship depends on; platform_managed is on the record because revocation acts on it
 # The recorded permission that makes the crossing legal (CTX-001). Without this record the VM below
 # references a resource another tenant owns, and nothing authorises it.
 #

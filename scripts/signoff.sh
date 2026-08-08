@@ -26,6 +26,7 @@ run "No UDLM-shipped defaults (NDF-001)" hard python3 tests/check_no_shipped_def
 run "Cited schema files exist (CSF-001)" hard python3 tests/check_cited_schema_files.py
 run "Required-grant set derives (GRD-001)" hard python3 tests/check_grant_derivation.py
 run "Negative corpus is refused (MRJ-001)" hard python3 tests/check_must_reject.py
+run "Examples say what they prove (ECV-001)" hard python3 tests/check_example_coverage.py
 run "UC traceability (flow -> corpus)" hard python3 tests/check_uc_traceability.py
 run "Policy-fact vocabulary (policy-contract 2.1)" hard python3 tests/check_policy_facts.py
 run "Policy-engine boundary (ADR-065)" hard python3 tests/check_policy_boundary.py

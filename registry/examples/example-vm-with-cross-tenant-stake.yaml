@@ -1,3 +1,5 @@
+# asserts: GRD-001, GRP-INV-002
+# proves: a cross-boundary edge is binds_to, never contained_by — the parts of one thing may not span two tenants
 # The subject the derivation gate needs: an entity in ONE tenant holding an edge to a resource
 # another tenant owns.
 #

@@ -1,3 +1,5 @@
+# asserts: OFR-001, OFR-002
+# proves: a request is the provider's offer with every range collapsed to one selected value
 # A VM whose request has COLLAPSED onto a provider's offer — the other half of the worked
 # Provider Class, and the subject the collapse gate needs to be non-vacuous.
 #

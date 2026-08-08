@@ -1,3 +1,5 @@
+# asserts: OWN-003
+# proves: a shareable resource: consumers hold stakes, the owner keeps it
 # A SHAREABLE resource, owned by the platform tenant. Network.VLAN declares
 # `ownership_model: shareable`, so a consumer takes a STAKE in this one record — it is never
 # carved, copied, or handed over. The platform tenant can see every active stake, which is how it

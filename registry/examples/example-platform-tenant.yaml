@@ -1,3 +1,5 @@
+# asserts: TEN-001
+# proves: a second tenant — a boundary needs two sides before a crossing exists
 # A SECOND tenant. The cross-tenant story needs two borders to have one crossing, and until now
 # every worked record belonged to the same tenant — so nothing in the examples could exercise it.
 uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
