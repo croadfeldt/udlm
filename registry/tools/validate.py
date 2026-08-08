@@ -154,6 +154,98 @@ def check_class_constituents(doc):
     return errors
 
 
+def check_ownership_declaration(doc):
+    """OWN-007 / OWN-008 made enforceable — the ownership declaration must be internally coherent
+    and its pool linkage must round-trip.
+
+    OWN-007 ("the ownership model for a resource type is declared in the Resource Type
+    Specification … a type-level invariant") and OWN-008 ("… or the resource type is declared as
+    publicly allocatable/stakeable in its Resource Type Spec") have been normative since 0.1 and
+    unenforceable the whole time: neither `ownership_model` nor `publicly_stakeable` existed in any
+    schema, so the rules named fields nothing could carry. These checks are the other half.
+
+    Applies identically to a Class (the authoring tier) and a compiled flat spec — same field names,
+    one checker.
+    """
+    om = doc.get("ownership_model")
+    pool_of = doc.get("allocated_from_pool_type")
+    produces = doc.get("allocation_produces_type")
+    errors = []
+
+    # an allocation is carved from a pool: the linkage is required, and meaningless without it
+    if om == "allocation" and not pool_of:
+        errors.append("OWN-007: ownership_model 'allocation' requires allocated_from_pool_type — "
+                      "an allocation with no pool to be carved from is not an allocation")
+    if pool_of and om != "allocation":
+        errors.append(f"OWN-007: allocated_from_pool_type is set but ownership_model is {om!r}; "
+                      f"it is meaningful only for 'allocation'")
+
+    # OWN-008's standing declarations are per-pattern: a stake is a stake, an allocation is carved
+    if doc.get("publicly_stakeable") and om != "shareable":
+        errors.append(f"OWN-008: publicly_stakeable requires ownership_model 'shareable' (got {om!r}) "
+                      f"— only a shareable resource is staked")
+    if doc.get("publicly_allocatable") and not produces:
+        errors.append("OWN-008: publicly_allocatable is meaningful only on a POOL — a type declaring "
+                      "allocation_produces_type")
+
+    # the pool <-> allocation pair must agree, or placement resolves to a type that disowns it
+    if produces:
+        idx = _ownership_index()
+        target = idx.get(produces)
+        if target is None:
+            errors.append(f"OWN-002: allocation_produces_type {produces!r} resolves to no known type")
+        else:
+            if target.get("ownership_model") != "allocation":
+                errors.append(f"OWN-002: this type is a pool producing {produces!r}, but that type "
+                              f"declares ownership_model {target.get('ownership_model')!r}, not 'allocation'")
+            back = target.get("allocated_from_pool_type")
+            if back != doc.get("resource_type"):
+                errors.append(f"OWN-002: pool linkage does not round-trip — {produces!r} is carved from "
+                              f"{back!r}, not from {doc.get('resource_type')!r}")
+    return errors
+
+
+_OWNERSHIP_INDEX = None
+def _ownership_index():
+    """resource_type -> its ownership declaration. Cached; built once because the round-trip check is
+    cross-record and every record asks the same question.
+
+    Sources are the AUTHORING tier only — classes/ plus the not-yet-migrated flat specs in
+    resource-types/ — deliberately NOT generated/. A compiled spec is a projection of its class and
+    contributes nothing the class does not already say, but indexing it lets a STALE artifact mask a
+    broken class: a first cut of this check indexed generated/ last, so breaking the pool linkage in
+    Network.IPAddress's class produced no failure because the stale compiled copy still round-tripped.
+    Staleness is GEN-001's job; this check must not depend on that gate having run first."""
+    global _OWNERSHIP_INDEX
+    if _OWNERSHIP_INDEX is None:
+        idx = {}
+        pats = [str(ROOT / "classes" / "**" / "*.yaml"),
+                str(ROOT / "resource-types" / "**" / "*.json")]
+        for pat in pats:
+            for path in glob.glob(pat, recursive=True):
+                try:
+                    d = (yaml.safe_load(open(path, encoding="utf-8")) if path.endswith(".yaml")
+                         else json.loads(open(path, encoding="utf-8").read())) or {}
+                except Exception:
+                    continue
+                rt = d.get("resource_type")
+                if not isinstance(d, dict) or not rt:
+                    continue
+                # nearest-wins is not a concern: a type is declared once, and the class and its
+                # compiled spec agree by construction (the generator copies the block verbatim)
+                idx.setdefault(rt, {}).update(
+                    {k: d[k] for k in ("ownership_model", "allocated_from_pool_type",
+                                       "allocation_produces_type") if k in d})
+        _OWNERSHIP_INDEX = idx
+    return _OWNERSHIP_INDEX
+
+
+def check_class_record(doc):
+    """Every semantic check a Class record gets: the composite definition and the ownership
+    declaration. Split into two functions because a flat spec gets the second and not the first."""
+    return check_class_constituents(doc) + check_ownership_declaration(doc)
+
+
 _KNOWN_TYPES = None
 def _known_type_names():
     """Class names (registry/classes) + flat resource types (registry/resource-types) — cached."""
@@ -640,7 +732,7 @@ def pick_instance(doc):
         return (CLASS_VALIDATOR,
                 lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — "
                           f"{len(d.get('elements') or [])} element(s)",
-                check_class_constituents)
+                check_class_record)
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
     # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —
@@ -761,7 +853,8 @@ def main() -> int:
     failures += validate_dir(
         "generated",
         lambda doc: (TYPE_VALIDATOR,
-                     lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})"))
+                     lambda d: f"{d['resource_type']} v{d['version']} (conforms_to {d['conforms_to']})",
+                     check_ownership_declaration))
     print("== profiles (activatable deployment postures) ==")
     failures += validate_dir("profiles", pick_instance)
     print("== taxonomies (governed vocabulary seeds) ==")
@@ -774,7 +867,7 @@ def main() -> int:
         lambda doc: (CLASS_VALIDATOR,
                      lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — {len(d.get('elements') or [])} element(s)"
                                + (f" + {len(d['constituents'])} constituent(s)" if d.get('constituents') else ""),
-                     check_class_constituents))
+                     check_class_record))
     impact_report()
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0

@@ -391,6 +391,26 @@
     "entity_type": {
       "type": "string",
       "description": "The Knowledge/Access family discriminator (resource-type-spec requires it on those families' branches) — pass-through to the compiled spec; meaningless on Resource/Process classes."
+    },
+    "ownership_model": {
+      "$ref": "resource-type-spec.schema.json#/properties/ownership_model",
+      "description": "IS the flat spec's `ownership_model` ($ref — one shape, single source); compile copies it verbatim. TYPE tier only, on the same reasoning as `context`: which ownership pattern a thing follows is a property of the type, not of the category above it (a `Compute` base cannot say whether its members are owned outright or staked) and not of one provider's projection (a provider does not get to change who owns the result). A childless instantiable base is served directly and so may carry it too."
+    },
+    "allocated_from_pool_type": {
+      "$ref": "resource-type-spec.schema.json#/properties/allocated_from_pool_type",
+      "description": "IS the flat spec's `allocated_from_pool_type` ($ref — one shape, single source). Type tier, with `ownership_model`."
+    },
+    "allocation_produces_type": {
+      "$ref": "resource-type-spec.schema.json#/properties/allocation_produces_type",
+      "description": "IS the flat spec's `allocation_produces_type` ($ref — one shape, single source). Type tier, with `ownership_model`."
+    },
+    "publicly_stakeable": {
+      "$ref": "resource-type-spec.schema.json#/properties/publicly_stakeable",
+      "description": "IS the flat spec's `publicly_stakeable` ($ref — one shape, single source). Type tier: a standing waiver of the per-grant authorization is a statement about the type, and a provider may not widen it."
+    },
+    "publicly_allocatable": {
+      "$ref": "resource-type-spec.schema.json#/properties/publicly_allocatable",
+      "description": "IS the flat spec's `publicly_allocatable` ($ref — one shape, single source). Type tier, with `publicly_stakeable`."
     }
   },
   "allOf": [
@@ -500,6 +520,50 @@
             "spec_constraints"
           ]
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "class": {
+            "enum": [
+              "type",
+              "base"
+            ]
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "ownership_model"
+              ]
+            },
+            {
+              "required": [
+                "allocated_from_pool_type"
+              ]
+            },
+            {
+              "required": [
+                "allocation_produces_type"
+              ]
+            },
+            {
+              "required": [
+                "publicly_stakeable"
+              ]
+            },
+            {
+              "required": [
+                "publicly_allocatable"
+              ]
+            }
+          ]
+        },
+        "description": "The ownership declaration is type-tier (or a childless instantiable base). A Provider Class may not restate it and may not widen it — who ends up owning a realized entity is a property of the type, not of the provider that realized it."
       }
     }
   ],

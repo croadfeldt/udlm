@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.9.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.10.0",
   "conforms_to": "udlm/0.1",
   "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a",
   "resource_type": "Network.IPAddress",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.IPAddress",
-          "version": "0.9.0",
+          "version": "0.10.0",
           "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a"
         }
       ]
@@ -135,5 +135,7 @@
       "Network.IPAddressPool — the pool the address was carved from.",
       "Compute.VM — consumers that request or bring addresses."
     ]
-  }
+  },
+  "ownership_model": "allocation",
+  "allocated_from_pool_type": "Network.IPAddressPool"
 }

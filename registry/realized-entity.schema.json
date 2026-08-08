@@ -23,7 +23,7 @@
     "tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "REQUIRED owning Tenant — the uuid of a tenant_boundary DCMGroup (registry/dcm-group.schema.json). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, docs/spec/foundations/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
+      "description": "REQUIRED owning Tenant — the uuid of an `Access.Grouping` of group class `tenant_boundary` (registry/classes/access/grouping.yaml; the group-class table is docs/spec/foundations/universal-groups.md §2.2). Every Resource/Service Entity belongs to exactly one Tenant at every lifecycle state (TEN-001/TEN-003, docs/spec/foundations/resource-grouping.md §2.2), schema-enforced per data-model-core §5 [D3]. Existing brownfield stores migrate by minting their tenants and backfilling this field."
     },
     "conforms_to": {
       "type": "string",

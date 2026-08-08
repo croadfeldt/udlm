@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.6.0",
   "conforms_to": "udlm/0.1",
   "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.IPAddressPool",
-          "version": "0.5.0",
+          "version": "0.6.0",
           "uuid": "00257168-ae65-475c-bf34-f14f2e39f855"
         }
       ]
@@ -168,5 +168,7 @@
       "Network.VirtualNetwork — the segment the pool serves.",
       "Network.DHCPScope — the service-side projection of the same subnet."
     ]
-  }
+  },
+  "ownership_model": "whole_allocation",
+  "allocation_produces_type": "Network.IPAddress"
 }
