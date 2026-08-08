@@ -1,0 +1,151 @@
+# Grouping.Authorization — the recorded exception that lets a relationship cross a grouping boundary.
+#
+# Deliberately NOT tenant-specific. `obligations.isolation` is declared on the base Grouping, so any
+# grouping can be a boundary, and a record that permits crossing one has no reason to hardcode which
+# kind. Tenants are the primary case (CTX-001 depends on it, CTX-002/003 act on it), and a federation
+# sharing resources across its members is the same shape at a different boundary.
+#
+# What this does NOT generalize: GRP-INV-002 (constituents may not cross a TENANT boundary) and
+# CTX-001 stay tenant-scoped, because it is tenancy's exclusivity that makes them meaningful. The
+# grant record is general; the rules that consume it stay as precise as they were. Each end's kind
+# is knowable from its `resource_type`, so a tenant-scoped rule can still say "when both ends are
+# Grouping.Tenant".
+#
+# Simplification against the §13.2 sketch, deliberate: that sketch gives each authorized resource its
+# own operation list. A grouping derives its members from a rule and has nowhere to hang a per-member
+# attribute, and inventing one would undo the property derived membership exists for. So the criterion
+# selects WHICH resources are in scope and `authorized_operations` says WHAT may be done with them;
+# resources needing different operations are different grants. Simpler, and it costs nothing a second
+# grant does not buy.
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping.Authorization/0.1.0
+uuid: 9d41c8e2-05b7-4a36-b8f9-1c7e3a604b52
+record_type: class
+resource_type: Grouping.Authorization
+class: type
+parent: Grouping
+family: Access
+entity_type: Grouping
+version: 0.1.0
+conforms_to: udlm/0.1
+status: active
+
+context:
+  purpose: >-
+    One grouping permitting another to use something it holds. The grant is a record with its own
+    identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
+  plain_description: >-
+    Permission for the members of one grouping to use resources held by another — who granted it, who
+    received it, which resources, what they may do, and until when. Usually two tenants; the same
+    record covers any pair of groupings that isolate. Withdrawing it does not seize anything: every
+    dependent entity moves to review, and a human or policy decides whether to re-authorize, release,
+    or migrate.
+  use_when:
+    - A relationship needs to cross a boundary that is otherwise closed — most often two tenants
+    - A shared resource is used by a grouping that does not hold it
+    - An allocation is carved from a pool another grouping holds
+    - Members of a federation share resources while staying independent
+  not_for:
+    - Deciding who may act inside a tenant — external RBAC owns that (ADR-008)
+    - Resource types that waive the per-grant requirement by standing declaration
+      (`publicly_stakeable` / `publicly_allocatable`, CTX-008) — those need no grant at all
+    - Ownership transfer. A grant never moves ownership; it permits use
+  works_with:
+    - Grouping.Tenant — the usual pair of boundaries a grant spans
+    - The required-grant set (CTX-005) — derived from a request's edges and diffed against these
+
+elements:
+  - element: granted_by
+    scope: Grouping.Authorization
+    optional: false
+    state: proposed
+    description: >-
+      The grouping that holds the resources and is giving permission — a Grouping.Tenant in the
+      common case, any isolating grouping in general. A grant across a grouping that declares
+      `obligations.isolation: none` permits nothing, because nothing was closed.
+    schema:
+      type: string
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+
+  - element: granted_to
+    scope: Grouping.Authorization
+    optional: false
+    state: proposed
+    description: >-
+      The grouping whose members receive permission. MUST differ from the granting grouping — a grant
+      to yourself is not a grant, and the boundary it would cross does not exist.
+    schema:
+      type: string
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+
+  - element: authorized_operations
+    scope: Grouping.Authorization
+    optional: false
+    state: proposed
+    description: >-
+      What the receiving grouping's members may do with the resources this grant scopes. `stake` takes a share of
+      a shareable resource; `allocate` carves an owned portion from a pool; `read` sees declared
+      fields without using it. Ownership is never among them — a grant permits use, never transfer.
+    schema:
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        type: string
+        enum: [stake, allocate, read]
+        x-extensible-enum: true
+
+  - element: valid_from
+    scope: Grouping.Authorization
+    optional: true
+    state: proposed
+    description: When the grant takes effect. Absent means immediately on creation.
+    schema:
+      type: string
+      pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$
+
+  - element: expires_at
+    scope: Grouping.Authorization
+    optional: true
+    state: proposed
+    description: >-
+      When the grant lapses. Expiry is treated exactly as explicit revocation (CTX-003): dependent
+      entities enter review, and nothing is seized. Absent means the grant runs until revoked —
+      #406 argues that is the wrong default and proposes bounding it, which this element makes
+      addressable.
+    schema:
+      type: string
+      pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$
+
+  - element: platform_managed
+    scope: Grouping.Authorization
+    optional: true
+    state: proposed
+    description: >-
+      Set when a platform administrator created this grant on a grouping's behalf rather than the
+      granting grouping creating it itself (CTX-004). It is visible to that grouping, not only to the
+      administrator (CTX-007) — a grant made in your name is one you can audit.
+
+      On the record rather than derived from the audit because revocation acts on it: a
+      platform-managed grant notifies the platform administrator as well as both groupings (§13.4),
+      and an operation should not have to walk the audit chain to know who to tell. WHO created the
+      grant is a different question and is NOT here — the audit record requires actor, subject, and
+      action on every act, and that is history rather than something an operation acts on (ADR-059).
+    schema:
+      type: boolean
+
+metadata:
+  display_name: Grouping Authorization
+  description: >-
+    One grouping's recorded permission for another to use resources it holds — who granted, who
+    received, which resources, what may be done, and until when. Usually two tenants, which is the
+    case CTX-001 depends on and revocation and expiry act on; the record itself is boundary-agnostic
+    because any grouping can declare isolation. A grant permits use and never transfers ownership.
+  maintainer: UDLM project
+  origination_timestamp: '2026-08-08T00:00:00Z'
+
+spec_examples:
+  - membership_criterion: estate?uuid=in=(9e4acf81-e521-4c64-b2f1-f98ff7d581c3)
+    granted_by: b061b526-f828-4c50-bd2b-8a2ec31a1d05
+    granted_to: 69fa6f6f-7b73-4d3c-92a6-8e5001ca5f00
+    authorized_operations: [stake, read]
+    expires_at: '2027-01-01T00:00:00Z'

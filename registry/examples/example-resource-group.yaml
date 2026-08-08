@@ -1,12 +1,12 @@
-# Worked-example Resource Group: an Access.Grouping using the EXPLICIT-set criterion —
+# Worked-example Resource Group: an Grouping using the EXPLICIT-set criterion —
 # the marked exception (identifier-scheme §9). A derivable criterion (labels, ownership)
 # is preferred wherever one exists; membership is still derived, never stored as a list.
 uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
 handle: org/resource-group/example-orders-deployment
 conforms_to: udlm/0.1
-resource_type: Access.Grouping
-type_version: 0.1.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Access.Grouping/0.1.0
+resource_type: Grouping
+type_version: 0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
 lifecycle_state: Realized
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 metadata:

@@ -326,7 +326,7 @@ existence-disclosure rule (not-found ≡ not-authorized).
 
 ### 9.7 Stored criteria
 
-A stored URF (an `Access.Grouping` criterion, layer targeting, any persisted filter)
+A stored URF (an `Grouping` criterion, layer targeting, any persisted filter)
 filters **declared fields only** — identity-stable data (`tenant_uuid`, ownership, labels,
 type). Operational state (`run_state`, drift, staleness) composes at query time and never
 appears inside a stored criterion.

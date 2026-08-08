@@ -1,7 +1,7 @@
 # UDLM — Universal Group Model
 
-> **Machine-validatable schema:** `Access.Grouping` records validate against
-> `registry/profile.schema.json` (profiles) / the `Access.Grouping` class (groupings)
+> **Machine-validatable schema:** `Grouping` records validate against
+> `registry/profile.schema.json` (profiles) / the `Grouping` class (groupings)
 > (`registry/tools/validate.py` dispatches on `record_type` to it).
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource Grouping](resource-grouping.md) | [Entity Relationships](entity-relationships.md)
@@ -18,7 +18,7 @@
 The **Universal Group Model** expresses every grouping need — tenancy, resource groups, policy groups and profiles, layer domains, activation scopes, cross-tenant authorization — as a single `grouping` entity distinguished by the grouping record kind metadata. One mental model. One API. One registry. The same UUID, versioning, lifecycle, policy targeting, and audit trail apply to every group regardless of its class, and a natural organizational structure ("everything related to Payments") is one construct, not eight.
 
 **The model:**
-- Every grouping construct is one `Access.Grouping` record; per-class APIs are class-filtered views of the one group store
+- Every grouping construct is one `Grouping` record; per-class APIs are class-filtered views of the one group store
 - Structural invariants are per-class (one Tenant per resource, no constituent cross-tenant, etc.)
 - Policy enforcement is governed by the active Profile, not per-group configuration
 - `tenant_boundary` groups carry the hard-tenancy isolation guarantees
@@ -156,7 +156,7 @@ Regardless of `enforcement_model`, grouping kind, or active profile, the followi
 
 ```yaml
 dcm_group:
-  resource_type: Access.Grouping
+  resource_type: Grouping
   member_types_permitted: [resource_entity, group]
   exclusivity:
     per_member: one   # STRUCTURAL LOCK — cannot be changed by policy
@@ -187,7 +187,7 @@ dcm_group:
 
 ```yaml
 dcm_group:
-  resource_type: Access.Grouping
+  resource_type: Grouping
   group_subclass: cost_center   # advisory — CostCenter, BusinessUnit, Project, Team...
   member_types_permitted: [resource_entity]
   exclusivity:
@@ -543,7 +543,7 @@ Policy inheritance for nested groups is record kind-specific and profile-governe
 ```yaml
 # Nested group policy inheritance declaration
 dcm_group:
-  resource_type: Access.Grouping
+  resource_type: Grouping
   parent_group_uuid: <corporate-tenant-uuid>
   policy_inheritance: opt_out     # governed by active Profile
   parent_policy_exclusions:
@@ -564,7 +564,7 @@ dcm_group:
 
 ## 11. Related Concepts
 
-- **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `resource_type: Access.Grouping`
+- **[resource-grouping.md](resource-grouping.md)** — original resource grouping model, now implemented via `resource_type: Grouping`
 - **Policy Organization** (now the policy-contract / policy-groups model) — Policy Groups and Profiles, now implemented via `record kind: policy_collection` and `record_type: profile`
 - **[entity-relationships.md](entity-relationships.md)** — cross-tenant authorized relationships between groups
 - **[universal-audit.md](../contracts/universal-audit.md)** — all group changes produce audit records

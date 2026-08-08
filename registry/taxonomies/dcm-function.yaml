@@ -1,4 +1,4 @@
-# DCM-function taxonomy (seed) — the RBAC bridge (`Access.Grouping` subject_bindings + the function-capability matrix).
+# DCM-function taxonomy (seed) — the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix).
 #
 # The governed catalog of DCM administrative FUNCTIONS (permission verbs), harvested from the
 # per-endpoint `Role:` gates in dcm-admin-api-spec and the prose gates (SCH-006, FCM-001, GUI-006/007,

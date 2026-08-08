@@ -39,7 +39,7 @@ it governs.
   the instance schema accepts exactly the same name grammar as the type schema.
 - **Machine-validatable surface** — the model is only as solid as its schemas. Current: type
   spec, realized-entity, provider-adopted-standards, profile. **[D8] Committed program**, in
-  priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Access.Grouping` + required
+  priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Grouping` + required
   instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on `record_type`),
   (2) catalog item — **DONE** (`registry/catalog-item.schema.json`, dispatched on
   `record_type: catalog_item` + validate.py semantic checks; the application model — an
@@ -184,7 +184,7 @@ One definition each; everything else defers here:
 
 A rule may claim **[enforced]** only if a running validator checks it. Current honest state:
 schema validation (type spec, realized-entity — incl. required `tenant_uuid` [D3] — provider
-matrices, grouping via `registry/profile.schema.json` / `Access.Grouping` with per-class conditionals:
+matrices, grouping via `registry/profile.schema.json` / `Grouping` with per-class conditionals:
 tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth
 grant fields, and Composite Service catalog items via `registry/catalog-item.schema.json` —
 incl. required `tenant_uuid` — plus validate.py semantic checks: component_id uniqueness,

@@ -22,7 +22,7 @@ Do **not** author a profile when:
 - You are defining the artifact itself — a policy, a capability, a layer. A profile
   **references, never defines**; the content lives in its own artifact and the profile names it.
 - You want a set of *resources* rather than a set of *governed artifacts* — that is an
-  [`Access.Grouping`](../../registry/classes/access/grouping.yaml) (membership derived from a
+  [`Grouping`](../../registry/classes/access/grouping/_base.yaml) (membership derived from a
   criterion), not a profile.
 - The value is a single setting with an obvious home — put it on the owning artifact's entry
   (`contains[].settings`) rather than minting a profile for it.

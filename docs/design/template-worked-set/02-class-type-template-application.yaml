@@ -49,7 +49,7 @@ context:
     - A run that completes — that is Template.Workflow
   works_with:
     - Template.Workflow — the day-2 activities bound to a realized Application
-    - Access.Grouping — the non-isolating groupings its parts join
+    - Grouping — the non-isolating groupings its parts join
 
 elements:
 

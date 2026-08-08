@@ -123,7 +123,7 @@ it is legal and carries an author.
 ## Drive-bys found while building this
 
 - a `dcm-group.schema.json` under registry/ **did not exist**; `realized-entity` and `catalog-item` cited it
-  in 3 places. It was replaced by `Access.Grouping` and the pointers were never updated —
+  in 3 places. It was replaced by `Grouping` and the pointers were never updated —
   `tenant_uuid`'s own description points at a missing file.
 - The `Job` class cites **ENT-004** for mandatory `max_execution_time`, twice. It is **ENT-002**;
   ENT-004 is composite health.

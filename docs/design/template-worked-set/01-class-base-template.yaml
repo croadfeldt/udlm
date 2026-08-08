@@ -108,7 +108,7 @@ elements:
 
   # ── NAMESPACE: grouping without isolation ───────────────────────────────────
   # Tenancy is a border; a namespace is a grouping. Different enforcement_model
-  # on the same primitive (Access.Grouping): tenant_boundary is a structural lock
+  # on the same primitive (Grouping): tenant_boundary is a structural lock
   # with exclusivity `one`; resource_grouping is advisory with exclusivity `many`.
   #
   # The System's OWN grouping is NOT declared here — it is derived (membership is
@@ -120,7 +120,7 @@ elements:
     state: proposed
     description: >-
       Additional NON-isolating groupings the realized constituents join — cost center, project,
-      business unit. References Access.Grouping records of class `resource_grouping` (advisory
+      business unit. References Grouping records of class `resource_grouping` (advisory
       enforcement, a member may belong to many). Deliberately NOT the System's own grouping, which is
       derived from the composite uuid and never stored (DRV-001), and deliberately NOT a tenant: a
       tenant_boundary is an isolation border with a structural exclusivity lock, and it is carried on

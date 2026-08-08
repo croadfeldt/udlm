@@ -132,3 +132,9 @@ retired:
     ADR-RBAC-001 — DCM-scoped and stale: its carrier (DCMGroup) was removed. The current
     RBAC bridge is Access.Grouping subject_bindings plus
     registry/function-capability-matrix.schema.json.
+
+  # 2026-08-08 — Grouping promoted from a type under Access to a base class in its own right
+  # (parallel to Identity in the same family), so kinds of grouping that add something become type
+  # classes below it and `resource_type` is the discriminator. Rationale + rejected alternatives:
+  # the class header. The uuid is unchanged — a rename never mints a new identity (ADR-051).
+  registry/classes/access/grouping.yaml: registry/classes/access/grouping/_base.yaml

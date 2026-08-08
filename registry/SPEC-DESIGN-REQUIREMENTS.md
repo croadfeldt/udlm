@@ -255,7 +255,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 32. **Tenancy is schema-enforced.** Every realized-entity instance carries a required
     `tenant_uuid` — the uuid of a `tenant_boundary` grouping validating against
-    `registry/profile.schema.json` / `Access.Grouping` (TEN-001/TEN-003, `docs/spec/foundations/resource-grouping.md` §2.2;
+    `registry/profile.schema.json` / `Grouping` (TEN-001/TEN-003, `docs/spec/foundations/resource-grouping.md` §2.2;
     `docs/spec/foundations/data-model-core.md` §5 [D3]). **[enforced]** (`registry/tools/validate.py`;
     referential existence of the tenant is a store-level check, not a schema one).
 

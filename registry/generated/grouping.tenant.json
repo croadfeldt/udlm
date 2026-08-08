@@ -1,0 +1,130 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7",
+  "resource_type": "Grouping.Tenant",
+  "version": "0.1.0",
+  "family": "Access",
+  "status": "active",
+  "metadata": {
+    "display_name": "Tenant",
+    "description": "The ownership and isolation border. Every record carries a tenant_uuid resolving to one of these, and it is the referent ownership, cost attribution, audit scope, drift accountability, and policy scope all agree on. A member belongs to exactly one at a time — a structural lock, not a convention — and tenants may nest, the child keeping its resources and its isolation while the parent holds governance overlay and rollup.",
+    "maintainer": "UDLM project",
+    "origination_timestamp": "2026-08-08T00:00:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Grouping",
+          "version": "0.2.0",
+          "uuid": "2c8b6270-2eae-4ac4-8faa-3375dde3da3e"
+        },
+        {
+          "class": "Grouping.Tenant",
+          "version": "0.1.0",
+          "uuid": "6b2f0a71-7d3e-4c58-9a14-2e8b5c03f4d7"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "subject_bindings": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "provider_ref",
+            "expression"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "provider_ref": {
+              "type": "string",
+              "format": "udlm-ref-url",
+              "description": "The auth-capability provider that evaluates this expression (cardinality-1 URF)."
+            },
+            "expression": {
+              "type": "string",
+              "description": "OPAQUE provider-scoped subject expression — an LDAP DN, an OIDC claim, a K8s subject. Never parsed or evaluated by UDLM."
+            },
+            "note": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "The RBAC bridge: external subject-expressions whose holders this grouping is FOR. Opaque by design — parsing or evaluating one would re-import the permission engine the model excludes.\n"
+      },
+      "membership_criterion": {
+        "type": "string",
+        "format": "udlm-filter-url",
+        "description": "The RULE that derives the member set — a stored URF filter (identifier-scheme 9; declared fields only, URF-005), never the set itself. Idioms: tenancy \"estate?tenant_uuid=={self}\" (exclusivity is structural — the field is scalar); ownership \"estate?owned_by=={self}\"; labels \"estate?labels.concern==payments\"; explicit set \"estate?uuid=in=(a,b)\" — the marked exception, prefer any derivable form; exclusion \"estate?tenant_uuid==abc;member_of!=access/groupings/hold\".\n"
+      },
+      "obligations": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "isolation"
+        ],
+        "properties": {
+          "isolation": {
+            "type": "string",
+            "enum": [
+              "none",
+              "logical",
+              "physical"
+            ]
+          }
+        },
+        "description": "REQUIRED here, where the base leaves it optional. A tenant IS an isolation border, so how strongly it isolates is not something to leave unsaid: `none` is a deliberate declaration, not an omission. The mechanism that delivers a level (row-level security, separate stores, separate hardware) is the implementation's choice and is not modelled here."
+      },
+      "parent_group_uuid": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+        "description": "The parent tenant this one nests inside (§4). A child tenant keeps complete isolation — its resources belong to it and never to the parent (GRP-INV-004) — while the parent holds governance overlay, cost rollup, and audit aggregation. Absent means a root tenant. Destroying a parent requires explicit resolution of every child first; there is no silent cascade (GRP-INV-003)."
+      }
+    },
+    "required": [
+      "membership_criterion",
+      "obligations"
+    ],
+    "examples": [
+      {
+        "membership_criterion": "estate?tenant_uuid=={self}",
+        "obligations": {
+          "isolation": "physical"
+        },
+        "subject_bindings": [
+          {
+            "provider_ref": "estate/providers/directory",
+            "expression": "cn=payments,cn=groups,dc=cexample,dc=example"
+          }
+        ]
+      }
+    ]
+  },
+  "outputs": {},
+  "entity_type": "Grouping",
+  "context": {
+    "purpose": "The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.",
+    "plain_description": "A tenant. A thing belongs to exactly one at a time, and that is a structural lock rather than a convention — crossing the border is a deliberate, recorded act, not a default. Tenants may nest: a child keeps its own resources and its own isolation, while the parent gets governance overlay, cost rollup, and audit aggregation across its children.",
+    "use_when": [
+      "Something must have exactly one owner, and moving it between owners must be visible",
+      "You need a boundary that cost, audit, drift, and policy all agree on",
+      "You are modelling a business unit, a customer, or a team that owns infrastructure"
+    ],
+    "not_for": [
+      "Grouping without isolation — a cost centre, a project, a label. That is a plain Grouping, where a member may belong to many and enforcement is advisory",
+      "Deciding who may act — external RBAC owns that (ADR-008); this decides what belongs to whom",
+      "Permitting one tenant to use another's resources — that is Grouping.Authorization"
+    ],
+    "works_with": [
+      "Grouping.Authorization — the recorded exception that lets a relationship cross this border",
+      "Every estate record — tenant_uuid resolves here (TEN-001/003, [D3])",
+      "The governance matrix — isolation obligations are enforced over the derived member set"
+    ]
+  }
+}
