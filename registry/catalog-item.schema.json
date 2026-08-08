@@ -51,7 +51,7 @@
       "required": [
         "state"
       ],
-      "description": "Catalog lifecycle status: active | deprecated | retired, with the universal deprecation fields when deprecated (same shape as dcm-group.schema.json).",
+      "description": "Catalog lifecycle status: active | deprecated | retired, with the universal deprecation fields when deprecated (the universal deprecation model, docs/spec/foundations/layering-and-versioning.md).",
       "properties": {
         "state": {
           "enum": [
@@ -88,7 +88,7 @@
     "tenant_uuid": {
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "REQUIRED owning Tenant — the uuid of a tenant_boundary DCMGroup (registry/dcm-group.schema.json), consistent with [D3] (data-model-core §5): every record belongs to exactly one Tenant. Ownership only — consumption of this catalog item by other tenants happens via requests and cross-tenant authorization grants, never by shared ownership."
+      "description": "REQUIRED owning Tenant — the uuid of an `Access.Grouping` of group class `tenant_boundary` (registry/classes/access/grouping.yaml), consistent with [D3] (data-model-core §5): every record belongs to exactly one Tenant. Ownership only — consumption of this catalog item by other tenants happens via requests and cross-tenant authorization grants, never by shared ownership."
     },
     "composition_visibility": {
       "enum": [

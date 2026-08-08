@@ -1,13 +1,18 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.9.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.0
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: type
 resource_type: Network.IPAddress
 parent: Network
-version: 0.9.0
+version: 0.10.0
 family: Resource
 status: active
+# OWN-007 — the ownership model is a type-level invariant, declared here and not settable per entity.
+# The canonical `allocation` case from ownership-sharing-allocation §2.2: the consumer owns the address
+# they were carved; NetworkOps keeps the pool. The pool linkage round-trips (validate.py enforces it).
+ownership_model: allocation
+allocated_from_pool_type: Network.IPAddressPool
 metadata:
   display_name: IP Address
   description: 'A single IP address as its own record (RFC 8344 / NMstate form) — `address` + `allocation`

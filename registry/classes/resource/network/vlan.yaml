@@ -1,13 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.0
 conforms_to: udlm/0.1
 uuid: 009c7bcb-53ae-4a3b-96fd-12ee35b3b426
 record_type: class
 class: type
 resource_type: Network.VLAN
 parent: Network
-version: 0.4.1
+version: 0.5.0
 family: Resource
 status: active
+# OWN-007 — the canonical `shareable` case (ownership-sharing-allocation §2.3): one VLAN entity exists,
+# consumers hold STAKES, and no consumer owns any portion of it (OWN-003). This is the declaration that
+# makes "a composite may take a stake in it, never ownership" checkable rather than prose.
+ownership_model: shareable
 metadata:
   display_name: VLAN / Network Segment ID
   description: 'A foundational network segment identifier — a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve)

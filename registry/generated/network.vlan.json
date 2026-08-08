@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.5.0",
   "conforms_to": "udlm/0.1",
   "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "Network.VLAN",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -23,7 +23,7 @@
         },
         {
           "class": "Network.VLAN",
-          "version": "0.4.1",
+          "version": "0.5.0",
           "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
         }
       ]
@@ -116,5 +116,6 @@
       "Network.Switch — the fabric carrying the segment.",
       "Network.Gateway — edge segments each ride a referenced VLAN."
     ]
-  }
+  },
+  "ownership_model": "shareable"
 }

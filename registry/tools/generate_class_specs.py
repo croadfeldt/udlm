@@ -25,6 +25,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSES = os.path.join(ROOT, "classes")
 OUT = os.path.join(ROOT, "generated")
 GENERATOR_VERSION = "class-spec-gen/1.1.0"
+# The ownership declaration (ownership-sharing-allocation §2) rides the compiled spec verbatim.
+# Type tier only — schema-enforced — so a Provider Class cannot restate or widen who owns the result.
+OWNERSHIP_PASSTHROUGH = ("ownership_model", "allocated_from_pool_type", "allocation_produces_type",
+                         "publicly_stakeable", "publicly_allocatable")
 SPEC_VALIDATOR = Draft202012Validator(json.load(open(os.path.join(ROOT, "resource-type-spec.schema.json"))))
 
 
@@ -119,6 +123,9 @@ def compile_spec(cls, by_name):
         spec["context"] = cls["context"]
     if cls.get("spec_examples"):                     # rule-36/ADR-055: the worked example rides the compiled spec
         spec["spec"]["examples"] = cls["spec_examples"]
+    for k in OWNERSHIP_PASSTHROUGH:                  # type tier only (schema-enforced); the ownership declaration
+        if cls.get(k) is not None:                   # is a property of the TYPE, so it rides the compiled spec
+            spec[k] = cls[k]
     _canonicalize_refs(spec)                         # generated specs live at a different depth than authored ones:
     return spec                                      # relative refs are rebased to generated/ depth (../../X -> ../X), staying relative per G8
 

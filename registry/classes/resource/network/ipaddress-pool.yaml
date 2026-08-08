@@ -1,13 +1,18 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.6.0
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: type
 resource_type: Network.IPAddressPool
 parent: Network
-version: 0.5.0
+version: 0.6.0
 family: Resource
 status: active
+# OWN-007 — the pool entity itself is owned outright by the platform Tenant; what it PRODUCES is an
+# allocation the consumer owns (ownership-sharing-allocation §2.2). `is_pool` from the 0.1 prose is
+# derived from allocation_produces_type, not stored (DRV-001).
+ownership_model: whole_allocation
+allocation_produces_type: Network.IPAddress
 metadata:
   display_name: IP Address Pool
   description: 'A first-class allocatable range of IP addresses that Network.IPAddress records are carved

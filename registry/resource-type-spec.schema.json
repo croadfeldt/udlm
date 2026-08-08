@@ -71,6 +71,32 @@
       ],
       "description": "Portability classification (docs/spec/foundations/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (DCM's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
     },
+    "ownership_model": {
+      "enum": [
+        "whole_allocation",
+        "allocation",
+        "shareable"
+      ],
+      "description": "Which of the three ownership patterns instances of this type follow (docs/spec/foundations/ownership-sharing-allocation.md §2) — the declaration that decides who ends up owning a realized entity, and therefore decommission safety, cost attribution, cross-tenant visibility, and drift accountability. `whole_allocation` = each request produces an entity owned entirely by the requesting Tenant (a VM, a Container). `allocation` = each instance is a distinct entity carved from a pool owned by someone else; the consumer owns the carve, the pool owner keeps the pool (an IPAddress from an IPAddressPool) — requires `allocated_from_pool_type`. `shareable` = one entity exists and consumers hold a STAKE rather than ownership; the owner keeps it (a VLAN, a DNS Zone). The pattern was normative prose with worked YAML from 0.1 and declarable in no schema, so nothing could check that a composite realizing a shareable resource took a stake rather than ownership; that is what this field makes gateable."
+    },
+    "allocated_from_pool_type": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+      "description": "For `ownership_model: allocation` — the pool type instances of this type are carved from (Network.IPAddress → Network.IPAddressPool). Required when the ownership model is `allocation` and meaningless otherwise (validate.py enforces both directions). The reciprocal of the pool's `allocation_produces_type`; the pair is what lets placement find an eligible pool and what an AllocationRecord relationship binds."
+    },
+    "allocation_produces_type": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
+      "description": "For a POOL type — the allocation type carving from this pool produces (Network.IPAddressPool → Network.IPAddress). Its presence is what makes a type a pool: `is_pool` from the 0.1 prose is DERIVED from this field and deliberately not stored (DRV-001). The named type MUST declare `ownership_model: allocation` and name this type back in `allocated_from_pool_type` (validate.py enforces the round trip)."
+    },
+    "publicly_stakeable": {
+      "type": "boolean",
+      "description": "A STANDING declaration that any Tenant may take a stake in instances of this type without a per-grant cross-tenant authorization — one of the two alternatives CTX-001 already names, previously citable in prose and declarable in no schema. This is how shared platform infrastructure (a cluster fabric, a house VLAN) stops requiring a grant dance per consumer. Only meaningful with `ownership_model: shareable`. It waives the GRANT, never the boundary: the resource stays owned by its Tenant, a stake is still a stake, and revocation and decommission behave exactly as they do for a granted stake."
+    },
+    "publicly_allocatable": {
+      "type": "boolean",
+      "description": "The pool-side twin of `publicly_stakeable` (CTX-001): any Tenant may allocate from pools of this type without a per-grant cross-tenant authorization. Only meaningful on a pool — a type declaring `allocation_produces_type`. The allocation the consumer receives is theirs outright, exactly as with a granted allocation; what is waived is the grant, not the ownership model."
+    },
     "status": {
       "enum": [
         "active",
