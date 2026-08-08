@@ -538,7 +538,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - Network.DHCPScope — scopes serving the segments the gateway routes.
 - Network.Switch — the fabric behind the edge.
 
-### Network.IPAddress (0.9.0)
+### Network.IPAddress (0.10.0)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -558,7 +558,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Compute.VM — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.5.0)
+### Network.IPAddressPool (0.6.0)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -598,7 +598,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.4.1)
+### Network.VLAN (0.5.0)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 

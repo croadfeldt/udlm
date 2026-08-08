@@ -23,6 +23,7 @@ run "session narration"                 hard python3 tests/check_session_narrati
 run "profile tables"                    hard python3 tests/check_profile_tables.py
 run "Offer collapse (selection inside the offer)" hard python3 tests/check_offer_collapse.py
 run "No UDLM-shipped defaults (NDF-001)" hard python3 tests/check_no_shipped_defaults.py
+run "Cited schema files exist (CSF-001)" hard python3 tests/check_cited_schema_files.py
 run "UC traceability (flow -> corpus)" hard python3 tests/check_uc_traceability.py
 run "Policy-fact vocabulary (policy-contract 2.1)" hard python3 tests/check_policy_facts.py
 run "Policy-engine boundary (ADR-065)" hard python3 tests/check_policy_boundary.py
