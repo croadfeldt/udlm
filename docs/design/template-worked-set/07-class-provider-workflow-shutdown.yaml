@@ -1,0 +1,149 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# THE CONCRETE WORKFLOW — #330, and your actual homelab case.
+#
+#   "hosts that are simultaneously hypervisor and storage nodes need shutdowns
+#    serialized on storage health — today that ordering discipline lives in
+#    operator habit, exactly the knowledge this domain exists to capture."
+#
+# Every constituent is `binds_to`: this workflow OWNS NOTHING. It operates on
+# things that already exist and outlive it. That is what a terminal yield looks
+# like — and it is why containment-vs-binding is not a stylistic choice. As
+# containment, a shutdown workflow would "own" the cluster it stops.
+#
+# It also crosses tenants by nature: PlatformOps runs it, and it stops AppTeam's
+# System. GRP-INV-002 makes that legal ONLY as an edge.
+# ─────────────────────────────────────────────────────────────────────────────
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Workflow.EstateControlledShutdown/1.0.0
+conforms_to: udlm/0.1
+uuid: ea356bf7-7c36-460b-b19d-38f18fee7219
+record_type: class
+class: provider
+resource_type: Template.Workflow.EstateControlledShutdown
+parent: Template.Workflow
+version: 1.0.0
+family: Resource
+status: active
+
+metadata:
+  display_name: Controlled estate shutdown
+  maintainer: platformops
+  origination_timestamp: '2026-08-07T00:00:00Z'
+  description: >-
+    Ordered shutdown of a converged estate slice — workloads first, then platform, then hosts —
+    serialized on storage health between host stops. The order is NOT authored: it is the
+    reverse-topological projection of the dependency graph the estate already carries.
+
+elements:
+  - element: max_execution_time
+    scope: Template.Workflow.EstateControlledShutdown
+    optional: false
+    state: proposed
+    description: Whole-run ceiling. Storage convergence between hosts dominates.
+    schema:
+      type: string
+      default: PT4H                          # LEGAL — provider tier (NDF-001 exempt)
+    supports:
+      - values: [PT2H, PT4H, PT8H]
+
+  - element: idempotency
+    scope: Template.Workflow.EstateControlledShutdown
+    optional: false
+    state: proposed
+    description: >-
+      Re-running a shutdown against an already-stopped estate is a no-op per step, so the composition
+      is idempotent — the honest answer, and not the one you get by assuming.
+    schema:
+      type: string
+      default: idempotent
+
+  - element: reversal
+    scope: Template.Workflow.EstateControlledShutdown
+    optional: true
+    state: proposed
+    description: The startup mirror. Same graph, forward order, plus readiness gates.
+    schema:
+      type: string
+      default: https://udlm.dev/registry/udlm/0.1/class/Template.Workflow.EstateControlledStartup/1.0.0
+
+  - element: health_gate
+    scope: Template.Workflow.EstateControlledShutdown
+    optional: false
+    state: proposed
+    description: >-
+      The condition that must hold before the NEXT host stop dispatches. This is the fault-domain
+      serialization rule made data instead of habit: a host is simultaneously an OCP node and a Ceph
+      OSD, so stopping two before the cluster reconverges loses quorum.
+    schema:
+      type: object
+      default:
+        subject: Storage.Cluster
+        condition: HEALTH_OK
+        between: each_constituent
+
+constituents:
+
+  # ── stop the workloads ─────────────────────────────────────────────────────
+  # `targets` names the System from 05-, which is AppTeam's. Cross-tenant, so it
+  # can only be an edge. This is the case that proves the rule: the thing being
+  # stopped is not, and can never be, a part of the thing stopping it.
+  - component_id: stop_workloads
+    resource_type: Job
+    edge: binds_to                            # ⚠️ PROPOSED FIELD
+    provided_by: external
+    fulfillment: platform
+    depends_on: []
+    failure_effect: required
+    spec_defaults:
+      definition_ref: //acme/estate/automation-graceful-app-stop
+      max_execution_time: PT30M
+      trigger: manual
+      targets: ["estate/appteam/shop-prod"]
+
+  # ── stop the platform ──────────────────────────────────────────────────────
+  - component_id: stop_platform
+    resource_type: Job
+    edge: binds_to
+    provided_by: external
+    fulfillment: platform
+    depends_on: [stop_workloads]
+    failure_effect: required
+    spec_defaults:
+      definition_ref: //acme/estate/automation-ocp-graceful-shutdown
+      max_execution_time: PT45M
+      trigger: manual
+      targets: ["estate/platformops/ocp-prod"]
+
+  # ── stop the hosts, serialized on storage health ───────────────────────────
+  # ⚠️  The whole point, and the thing that has NO expression today:
+  #     `serialize_on` is a constraint BETWEEN dispatches of one constituent's
+  #     cardinality. depends_on orders constituent-to-constituent; nothing orders
+  #     instance-to-instance WITHIN a constituent, and nothing gates a dispatch on
+  #     an external subject's health.
+  #
+  #     This is the same shape as the sovereignty `cohesion` gap in 01- and 05-:
+  #     a joint constraint across the set, evaluated only when the set is known.
+  #     Two independent findings pointing at one missing construct is worth
+  #     noticing before either is built separately.
+  - component_id: stop_hosts
+    resource_type: Job
+    edge: binds_to
+    provided_by: external
+    fulfillment: platform
+    depends_on: [stop_platform]
+    failure_effect: required
+    cardinality:                              # ⚠️ PROPOSED — one Job per host
+      from_reference: //acme/estate?resource_type==Compute.BareMetalHost;role==converged
+    serialize_on:                             # ⚠️ PROPOSED — no home today
+      subject: //acme/estate/ceph-prod
+      condition: HEALTH_OK
+    spec_defaults:
+      definition_ref: //acme/estate/automation-host-shutdown
+      max_execution_time: PT20M
+      trigger: manual
+
+# No `groupings:` and no `sovereignty_floor:` — a terminal run joins no grouping
+# and is placed nowhere. It INHERITS the sovereignty of what it touches, which is
+# an open question worth asking out loud: does an operator in one zone get to run
+# a workflow against a System in another? ADR-057 says UDLM carries the
+# requirement and the Matrix decides. Nothing says whether the requirement
+# attaches to the run or only to its targets.

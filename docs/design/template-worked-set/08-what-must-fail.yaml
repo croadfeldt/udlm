@@ -1,0 +1,158 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# THE NEGATIVE SET — nine things that must be refused, and whether anything
+# refuses them today.
+#
+# A gate that cannot fail proves nothing. Every claim in files 01–07 is only
+# worth what the corresponding refusal is worth, so this is the list that decides
+# whether the design is real or decorative.
+#
+#   ✅ = a shipping gate already refuses it
+#   ❌ = NOTHING refuses it today
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ❌ 1. CONTAINMENT ACROSS A TENANT BOUNDARY — the important one
+# ═════════════════════════════════════════════════════════════════════════════
+# GRP-INV-002: "Constituent relationships may not cross tenant_boundary group
+# boundaries." Non-overridable, regardless of profile or enforcement model.
+#
+# Not expressible as a refusal today, because catalog-item constituents have NO
+# edge_type — every constituent is implicitly containment. So this authors
+# cleanly, passes every existing check, and violates a structural invariant.
+must_fail_1:
+  case: an AppTeam Template lists a PlatformOps-owned VLAN as a constituent
+  authored:
+    - component_id: tenant_vlan
+      resource_type: Network.VLAN
+      provided_by: external
+      failure_effect: required
+  expected_refusal: >-
+    GRP-INV-002 — component 'tenant_vlan' resolves to a resource owned by tenant
+    b061b526 (PlatformOps); the composite is owned by 69fa6f6f (AppTeam). A constituent must be
+    co-tenant. Model it as `edge: binds_to` with a cross_tenant_authorization.
+  today: NOTHING REFUSES THIS
+  needs: the proposed `edge:` field, plus a gate that resolves each constituent's owning tenant
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ❌ 2. SILENT OWNERSHIP TRANSFER OF A SHAREABLE RESOURCE
+# ═════════════════════════════════════════════════════════════════════════════
+# ownership-sharing-allocation §2.3: a consumer gets a STAKE in a shareable
+# resource; the owner keeps ownership and "can see all active stakes — this is
+# how they know which consumers are affected by a planned decommission."
+#
+# `ownership_model` appears in that document's examples and in ZERO schemas
+# (verified). So the three patterns are prose, and nothing checks which one a
+# constituent is being realized under.
+must_fail_2:
+  case: a Template realizes a shareable VLAN as whole_allocation, moving it into the consumer's tenant
+  expected_refusal: >-
+    Network.VLAN declares ownership_model shareable; a composite may take a stake in it, never
+    ownership. Every other tenant staked on this resource would be silently affected.
+  today: NOTHING REFUSES THIS — ownership_model is not a declared field anywhere
+  needs: ownership_model on the type spec, and a gate that a constituent's edge matches it
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ❌ 3. SOVEREIGNTY COHESION — valid at every part, wrong as a whole
+# ═════════════════════════════════════════════════════════════════════════════
+# The joint constraint. This is the case that has no expression at all today,
+# and the one that makes a composite genuinely different from a bag of resources.
+must_fail_3:
+  case: floor is cohesion=same_zone; constituents land in two different compliant zones
+  realized:
+    database: {sovereignty: {zone: eu-central-sovereign, classification: restricted}}
+    app:      {sovereignty: {zone: eu-central-sovereign, classification: restricted}}
+    web:      {sovereignty: {zone: eu-west-sovereign,    classification: restricted}}
+  note: >-
+    Every constituent passes. Each zone is accredited, each classification satisfied, each
+    plane_attestation verified. The composite is still a breach.
+  expected_refusal: >-
+    sovereignty_floor.cohesion=same_zone — constituents span eu-central-sovereign and
+    eu-west-sovereign. Re-place or refuse.
+  today: NOTHING REFUSES THIS — placement is per-constituent; nothing compares the set
+  needs: >-
+    the cohesion element, and evaluation INSIDE the convergence loop — a post-placement check
+    could only report the breach, not fix it, because by then every constituent is placed and
+    re-placing one is a new iteration of the loop, not a correction after it
+  blocked_on: '#385 — the zone vocabulary vs ISO 3166 accreditation subjects is unresolved'
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ❌ 4. A SIBLING TARGET THAT NAMES NO SIBLING
+# ═════════════════════════════════════════════════════════════════════════════
+# `Job.targets` references EXISTING entities by handle or uuid. A Template is
+# authored before anything exists, so an activity's target has to resolve to a
+# sibling component_id — the same resolution `bindings.from_component` already
+# has and validate.py already enforces for bindings.
+must_fail_4:
+  case: an activity targets '{sibling:datbase}' — a typo
+  expected_refusal: >-
+    targets references sibling 'datbase', which is not a declared component_id. Declared:
+    database, app, web, platform_namespace, tenant_vlan, nightly_backup.
+  today: NOT EXPRESSIBLE — so not refusable
+  needs: sibling resolution on targets; the checker for it already exists for bindings
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ❌ 5. NESTED TEMPLATE component_id COLLISION
+# ═════════════════════════════════════════════════════════════════════════════
+# component_id is "unique within the item". Fine while composites are flat. The
+# Pattern -> Template ladder and #335 (consumer-authored bundles built from
+# existing catalog items) both require nesting, and then `depends_on: [database]`
+# is ambiguous the moment two nested templates each have one.
+must_fail_5:
+  case: a Template composes two Templates, each declaring component_id 'database'
+  expected_refusal: 'ambiguous sibling reference `database` — qualify it (inner.database)'
+  today: NOT EXPRESSIBLE — nesting has no expression, so the collision has no gate
+  needs: a component_id namespace scope, or explicit qualification on nesting
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ❌ 6. A WORKFLOW WITHOUT A CEILING
+# ═════════════════════════════════════════════════════════════════════════════
+must_fail_6:
+  case: a Template.Workflow provider class omits max_execution_time
+  expected_refusal: 'ENT-002 — max_execution_time has no default and is not optional'
+  today: >-
+    the rule exists in entity-types.md and Job marks the element optional:false, but nothing checks
+    a TEMPLATE. It becomes automatic once the class exists, since optional:false compiles into
+    `required` on the flat spec — one of the few gaps this design closes for free.
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ✅ 7. A BASE CLASS THAT DECLARES CONSTITUENTS
+# ═════════════════════════════════════════════════════════════════════════════
+must_fail_7:
+  case: base Template declares constituents
+  expected_refusal: >-
+    class.schema.json — constituents are permitted on type and provider tiers, never base
+    (maintainer ruling 2026-08-03)
+  today: RULED IN THE SCHEMA. Worth confirming the allOf conditional actually enforces it, since
+    zero classes exercise the property — an unexercised rule arm is an untested one.
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ✅ 8. A DEFAULT IN THE BASE OR TYPE TEMPLATE CLASS
+# ═════════════════════════════════════════════════════════════════════════════
+must_fail_8:
+  case: 'Template.Application declares transport_security: {default: true}'
+  expected_refusal: >-
+    NDF-001 — UDLM ships no defaults; supply it from a layer or profile, where it carries provenance
+  today: ✅ tests/check_no_shipped_defaults.py. The provider tier is exempt by design, which is
+    exactly why the concrete composition has to live there.
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ✅ 9. A SELECTION OUTSIDE THE OFFER
+# ═════════════════════════════════════════════════════════════════════════════
+must_fail_9:
+  case: 'exposure: public — not in Acme''s supports'
+  expected_refusal: 'OFR-001 — the collapse landed outside the offer'
+  today: ✅ tests/check_offer_collapse.py, including the grouped-clause combination case
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SCORE: 3 of 9 refusable today. Of the six that are not, five need the SAME
+# small set of additions:
+#
+#   edge: on a constituent          -> 1, 2
+#   a joint/set constraint          -> 3, and stop_hosts' serialize_on in 07-
+#   sibling resolution on targets   -> 4
+#   a component_id scope            -> 5
+#
+# Two independent findings (sovereignty cohesion, health-serialized host stops)
+# both land on "a constraint over the SET, evaluated once the set is known".
+# That is one construct, and it is worth building once rather than twice.
+# ─────────────────────────────────────────────────────────────────────────────

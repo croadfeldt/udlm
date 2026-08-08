@@ -1,0 +1,208 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# TIER 3 — the PROVIDER class. THE CONCRETE COMPOSITION.
+#
+# Why the specific template lands HERE and not at the type tier: it carries
+# OPINIONS — postgresql, two replicas, a pinned image. NDF-001 (rule 41) makes an
+# opinion legal at exactly one tier: provider, because "a provider IS an
+# opinionated implementation, and declaring what it does when unasked is its job."
+# The model forces this; it is not a preference.
+#
+# "Provider" here means AUTHORING AUTHORITY — a platform team — not an infra
+# provider. That reading should be stated out loud in the ADR, because the word
+# currently implies OCPVirt/AWS and here it means "whoever composed this".
+#
+# `supports` (#402) is the consumer's option list. It is not restated anywhere.
+# ─────────────────────────────────────────────────────────────────────────────
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/1.0.0
+conforms_to: udlm/0.1
+uuid: aa5c7426-0406-4273-962d-f999734007f6
+record_type: class
+class: provider
+resource_type: Template.Application.AcmeThreeTier
+parent: Template.Application
+version: 1.0.0
+family: Resource
+status: active
+
+metadata:
+  display_name: Acme three-tier web application
+  maintainer: acme-platform-team
+  origination_timestamp: '2026-08-07T00:00:00Z'
+  description: >-
+    Acme's opinionated three-tier web application — PostgreSQL, an app tier bound to its connection
+    output, a web tier bound to the app's internal endpoint. The composition that
+    registry/examples/example-catalog-item.yaml expresses today as a hand-authored catalog record.
+
+elements:
+
+  # The consumer's option list. ONE declaration, two readings: an offer (what I
+  # can satisfy) and a menu (what you may select). The catalog READS this — it
+  # does not compute a form from it and does not keep a second copy.
+  - element: exposure
+    scope: Template.Application.AcmeThreeTier
+    optional: false
+    state: proposed
+    description: Acme serves internal and private-network exposure. Public exposure is not offered.
+    schema:
+      type: string
+      enum: [internal, private_network]     # narrows the parent — Liskov-legal
+    supports:
+      - values: [internal, private_network]
+
+  - element: transport_security
+    scope: Template.Application.AcmeThreeTier
+    optional: true
+    state: proposed
+    description: Acme requires TLS on public-facing exposure and offers it on internal.
+    schema:
+      type: boolean
+      default: true          # LEGAL — provider tier. NDF-001 exempts it by design.
+    supports:
+      - values: [true]
+        when: {exposure: private_network}   # grouped clause: not optional out here
+      - values: [true, false]
+        when: {exposure: internal}
+
+  # ── the four orphans from #405 land here, properly ──────────────────────────
+  # `replicas` is NOT an element. It is CARDINALITY on the web constituent —
+  # which is where it was always trying to be. `environment` and `domain` are
+  # gone: environment is a layer selector, domain is a Network.DNSZone reference.
+  # `high_availability` is a property of the composition, so it is an element:
+  - element: high_availability
+    scope: Template.Application.AcmeThreeTier
+    optional: true
+    state: proposed
+    description: >-
+      Whether the composition is realized with redundancy across fault domains. A property of the
+      WHOLE, which is why it had no home while the only carrier was a per-constituent spec_default —
+      today's catalog item sets `high_availability` on Data.Database, a field that type does not have.
+    schema:
+      type: boolean
+      default: false
+    supports:
+      - values: [true, false]
+
+  # ── SOVEREIGNTY: the value, at the tier where values are legal ──────────────
+  - element: sovereignty_floor
+    scope: Template.Application.AcmeThreeTier
+    optional: true
+    state: proposed
+    description: >-
+      Acme composes this stack for EU-regulated workloads: every constituent must land in ONE zone
+      satisfying the floor. `cohesion: same_zone` is the whole point — the database and the web tier
+      landing in different compliant zones would satisfy every per-constituent check and still be a
+      breach.
+    schema:
+      type: object
+      default:
+        classification: restricted
+        cohesion: same_zone
+        # `zone:` deliberately absent — the vocabulary is unresolved (#385).
+
+# ═════════════════════════════════════════════════════════════════════════════
+# THE COMPOSITION
+#
+# Shape is `catalog-item.schema.json#/properties/constituents` verbatim, via the
+# $ref that class.schema.json already declares. Zero classes use this today.
+#
+# ⚠️  READ THE `edge:` KEYS. They DO NOT EXIST in the schema today. They are the
+#     proposed addition, and the two constituents that carry `binds_to` are the
+#     reason: as the schema stands, every constituent is implicitly CONTAINMENT,
+#     and GRP-INV-002 says "constituent relationships may not cross
+#     tenant_boundary group boundaries" — non-overridable, regardless of profile.
+#     See 08-what-must-fail.yaml.
+# ═════════════════════════════════════════════════════════════════════════════
+constituents:
+
+  # ── AppTeam-owned parts: containment is legal, they are co-tenant ───────────
+  - component_id: database
+    resource_type: Data.Database
+    edge: contained_by                    # ⚠️ PROPOSED FIELD
+    provided_by: external                 # Placement Engine selects the provider
+    fulfillment: platform
+    depends_on: []
+    failure_effect: required
+    spec_defaults:
+      engine: postgresql                  # an OPINION — legal at this tier only
+
+  - component_id: app
+    resource_type: Compute.Container
+    edge: contained_by                    # ⚠️ PROPOSED FIELD
+    provided_by: self
+    fulfillment: platform
+    depends_on: [database]
+    bindings:
+      - from_component: database
+        output: connection_string
+        to_field: env.database_url        # declared data movement, not transformation (T4)
+    failure_effect: required
+    spec_defaults:
+      image: registry.acme.example/shop/app:1.4.2
+
+  - component_id: web
+    resource_type: Compute.Container
+    edge: contained_by                    # ⚠️ PROPOSED FIELD
+    provided_by: self
+    fulfillment: platform
+    depends_on: [app]
+    bindings:
+      - from_component: app
+        output: internal_dns
+        to_field: env.upstream_host
+    failure_effect: partial               # degrades, does not halt
+    spec_defaults:
+      image: registry.acme.example/shop/web:1.4.2
+
+  # ── PlatformOps-owned parts: containment would be ILLEGAL ──────────────────
+  # These are the ones that make the case. Both are owned by a DIFFERENT tenant.
+  #
+  # `shareable` ownership (ownership-sharing-allocation §2.3): the consumer gets
+  # a STAKE, the platform keeps ownership. Model that as containment and the app
+  # team's System silently takes ownership of the platform's VLAN — and every
+  # other tenant staked on it.
+  - component_id: platform_namespace
+    resource_type: Platform.Namespace
+    edge: binds_to                        # ⚠️ PROPOSED — NOT a part. A stake.
+    provided_by: external
+    fulfillment: provider                 # the realizing provider brokers it at realize-time
+    depends_on: []
+    failure_effect: required
+    # NOTE: Platform.Namespace is a RESOURCE — a k8s-style isolation boundary you
+    # provision. It is NOT one of the three scoping paradigms. Do not let the word
+    # merge them. The canonical ADR-016 case: a provider-required field a consumer
+    # never names in portable intent; post-placement policy fills it.
+
+  - component_id: tenant_vlan
+    resource_type: Network.VLAN
+    edge: binds_to                        # ⚠️ PROPOSED — shareable, stake only
+    provided_by: external
+    fulfillment: consumer                 # consumer supplies an existing reference
+    depends_on: []
+    failure_effect: required
+
+  # ── a BOUND ACTIVITY — the Process half of ADR-033's Template ───────────────
+  # Nothing new is needed to express this. `Job` already carries `targets`
+  # (what it operates on), `trigger`, `schedule`, and `outputs.results`. The one
+  # real gap: `targets` references EXISTING entities by handle/uuid, and at
+  # authoring time the database does not exist. It needs the same sibling
+  # resolution `bindings.from_component` already has.
+  - component_id: nightly_backup
+    resource_type: Job
+    edge: binds_to                        # operates on the stack; is not part of it
+    provided_by: external
+    fulfillment: platform
+    depends_on: [database]
+    failure_effect: optional              # a failed backup does not fail the app
+    spec_defaults:
+      max_execution_time: PT2H            # ENT-002 — no default, not optional
+      trigger: schedule
+      schedule:
+        expression: "0 2 * * *"
+        overlap_policy: forbid
+        missed_run_policy: skip
+      targets: ["{sibling:database}"]     # ⚠️ PROPOSED — sibling resolution
+
+# ── NAMESPACE: non-isolating grouping ────────────────────────────────────────
+# The System's OWN grouping is derived and never written here.
+groupings:
+  - //acme/estate/grouping-cost-center-retail

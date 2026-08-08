@@ -1,0 +1,122 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# TIER 4 — the CATALOG ITEM. Where TENANCY enters. DERIVED, never authored.
+#
+# This is already ruled. class.schema.json's constituents description, verbatim:
+#
+#   "the catalog item is a projection rendered implementation-side (DCM, per-org
+#    curation + TENANCY), never authored beside the class — one declaration, two
+#    projections: registration presents it, the catalog offers it."
+#
+# So this file is OUTPUT. Nobody writes it. It is generated from
+# 03-class-provider-... the same way registry/generated/*.json is generated from
+# a Type Class, and it should be gated the same way (--check: regenerate and
+# diff, or it drifts).
+#
+# THE CLASS TIERS CARRY NO TENANCY AT ALL. entity-type-families.md:
+#   "Definitions are universal — free to use by all implementations ... Usage
+#    constraints live at the INSTANCE level. Definitions are the public
+#    dictionary; instances are the private documents written with it."
+# ─────────────────────────────────────────────────────────────────────────────
+record_type: catalog_item
+uuid: 71bd1f4d-61b8-4219-8b11-598e0d09097e
+
+# ── NAMESPACE #2: the authorship namespace ──────────────────────────────────
+# `[namespace/]name` (identifier-scheme §3). `udlm/` is reserved — profile.schema
+# says so explicitly: "Organization-authored profiles take their own namespace
+# (acme/profile/regulated-eu) — never udlm/". This is what makes #335
+# (consumer-authored composition) safe: a consumer bundle lives in the consumer's
+# namespace and can never collide with or impersonate the platform catalog.
+#
+# Advisory, and NOT portable across peers — rebound on import (identifier-scheme
+# §4). The uuid is the identity; never resolve by handle alone.
+handle: acme/catalog/three-tier-web-app
+
+conforms_to: udlm/0.1
+name: Template.Application.AcmeThreeTier
+version: 1.0.0
+status:
+  state: active
+
+# ── TENANCY, point 1: who OWNS the offering ─────────────────────────────────
+# The PlatformOps tenant authored and owns this catalog record. Ownership only —
+# other tenants consume via requests + cross-tenant authorization, never shared
+# ownership ([D3]).
+tenant_uuid: b061b526-f828-4c50-bd2b-8a2ec31a1d05    # PlatformOps
+
+# ── DERIVED FROM THE CLASS — every field below is a projection ──────────────
+# `consumer_fields` is GONE. It was a hand-maintained second copy of an answer
+# the model already holds, in a weaker vocabulary (four primitives that cannot
+# express a Quantity, a governed reference, or a nested object). The option list
+# IS `supports` on the provider class's elements, read directly.
+#
+# `spec_defaults` is GONE from the item. The opinions live on the provider class,
+# where NDF-001 makes them legal and where they carry an authoring identity.
+
+composition_visibility: transparent          # from the class element
+
+offered_selections:                          # PROJECTION of `supports` — read, not restated
+  exposure:
+    - internal
+    - private_network
+  transport_security:
+    - when: {exposure: private_network}
+      values: [true]
+    - when: {exposure: internal}
+      values: [true, false]
+  high_availability:
+    - values: [true, false]
+  web.replicas:                              # CARDINALITY of a constituent, not an element
+    - min: 2
+      max: 8
+
+constituents_summary:                        # PROJECTION — the shape, for the UI
+  - component_id: database
+    resource_type: Data.Database
+    edge: contained_by
+  - component_id: app
+    resource_type: Compute.Container
+    edge: contained_by
+  - component_id: web
+    resource_type: Compute.Container
+    edge: contained_by
+  - component_id: platform_namespace
+    resource_type: Platform.Namespace
+    edge: binds_to
+    note: not delivered to you — you receive a stake in a PlatformOps-owned resource
+  - component_id: tenant_vlan
+    resource_type: Network.VLAN
+    edge: binds_to
+    note: not delivered to you — you receive a stake in a PlatformOps-owned resource
+  - component_id: nightly_backup
+    resource_type: Job
+    edge: binds_to
+    note: an activity bound to your database, not a part of it
+
+# ── TENANCY, point 2: who may ORDER it ──────────────────────────────────────
+# Per-org curation. NOT on the class — the class is universal; this is the
+# implementation-side projection where an org decides who sees what.
+#
+# Every entry naming a tenant other than the owner requires a live
+# `cross_tenant_authorization` group (CTX-001 gates cross-tenant relationships on
+# an active authorization). The offering is not the grant.
+offered_to:
+  - tenant_uuid: 69fa6f6f-7b73-4d3c-92a6-8e5001ca5f00     # AppTeam
+    authorization_uuid: 03c76693-24d1-41cf-927a-2bb5d42ddfd6
+
+# ── SOVEREIGNTY, surfaced not enforced ──────────────────────────────────────
+# UDLM communicates the requirement; the Governance Matrix decides admission
+# at realization (ADR-057). Shown here so a consumer knows what they are
+# ordering into — guidance, exactly as you framed it.
+sovereignty_floor:
+  classification: restricted
+  cohesion: same_zone
+
+metadata:
+  display_name: Three-tier web application
+  notes:
+    - at: '2026-08-07T00:00:00Z'
+      author: worked example
+      text: >-
+        GENERATED ARTIFACT. Regenerating this from the provider class and diffing is the honest test
+        of the derivability claim — whatever fails to derive is either a gap in the class or
+        information that never belonged in the catalog.
