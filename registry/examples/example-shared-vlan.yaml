@@ -1,0 +1,24 @@
+# A SHAREABLE resource, owned by the platform tenant. Network.VLAN declares
+# `ownership_model: shareable`, so a consumer takes a STAKE in this one record — it is never
+# carved, copied, or handed over. The platform tenant can see every active stake, which is how it
+# knows who a planned decommission affects.
+uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
+handle: platform/vlan-1042
+conforms_to: udlm/0.1
+resource_type: Network.VLAN
+type_version: 0.5.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.5.0
+lifecycle_state: Realized
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+metadata:
+  display_name: Shared tenant fabric VLAN 1042
+states:
+  realized:
+    fields:
+      encapsulation: vlan
+      segment_id: 1042
+      name: tenant-fabric
+    outputs:
+      segment_ready: true
+    at: '2026-08-08T00:00:00Z'
+    time_source: authored example — no clock claim

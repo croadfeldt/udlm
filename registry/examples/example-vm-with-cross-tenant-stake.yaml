@@ -1,0 +1,30 @@
+# The subject the derivation gate needs: an entity in ONE tenant holding an edge to a resource
+# another tenant owns.
+#
+# The edge is `binds_to`, not `contained_by`. A stake in someone else's resource is not a part of
+# this VM, and GRP-INV-002 makes that structural rather than stylistic: the parts of one thing may
+# not span two tenants.
+uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
+handle: payments/app-01
+conforms_to: udlm/0.1
+resource_type: Compute.VM
+type_version: 0.12.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Compute.VM/0.12.0
+lifecycle_state: Realized
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+metadata:
+  display_name: Payments application host
+states:
+  realized:
+    fields:
+      cpu: {count: 4}
+      memory: {size: 16Gi}
+    outputs: {}
+    at: '2026-08-08T00:00:00Z'
+    time_source: authored example — no clock claim
+dependencies:
+  - edge_type: binds_to
+    target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
+    target_handle: platform/vlan-1042
+    bound_field: network_attachment
+    resolved_at: '2026-08-08T00:00:00Z'
