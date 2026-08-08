@@ -1,0 +1,120 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# THE OTHER CATEGORY — Template.Workflow. Why "workflow" is a real type and
+# "AaaS" / "Composite" are not.
+#
+# The discriminator is NOT "contains processes". ADR-033 already ruled that a
+# Template IS resources + bound processes — so every category may contain them,
+# and "contains processes" is a type everything belongs to (the same failure as
+# AaaS and Composite).
+#
+# The discriminator is THE YIELD:
+#
+#   Resource family lifecycle:  maintained  -> OPERATIONAL, drift, reconcile, decommission
+#   Process  family lifecycle:  TERMINAL    -> COMPLETED / FAILED / CANCELLED
+#                                              "no drift, no suspend, no reconciliation"
+#
+# That is entity-type-families.md's own lifecycle-archetype column, and it is
+# your #232 ruling one level up: Service = act, Resource = thing; name by yield.
+#
+# It earns a Type Class under the Job test (2026-08-04 — a category is a type
+# only if it ADDS ELEMENTS): max_execution_time is MANDATORY with no default
+# (ENT-002), which no maintained-yield template can have. A GUI renders this
+# category as a run history and a Run button, not a health panel.
+# ─────────────────────────────────────────────────────────────────────────────
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Workflow/0.1.0
+conforms_to: udlm/0.1
+uuid: 478fe512-10ba-4097-bf52-31cce38c69c2
+record_type: class
+class: type
+resource_type: Template.Workflow
+parent: Template
+version: 0.1.0
+family: Resource
+status: active
+# ^ family Resource, deliberately. entity-type-families.md is explicit that a
+#   family is "a logical grouping ... NOT a usage boundary, a scope, a permission,
+#   or an ownership" and "a family may freely reference definitions grouped under
+#   another". The Template is an orderable consumable; its constituents being
+#   Process-family definitions costs nothing. This is findability, not semantics —
+#   which makes #405's "which family?" a much smaller question than I made it.
+
+metadata:
+  display_name: Workflow Template
+  maintainer: UDLM maintainers
+  origination_timestamp: '2026-08-07T00:00:00Z'
+  description: >-
+    The category of service whose yield is TERMINAL — an ordered execution across existing resources
+    that runs to COMPLETED, FAILED, or CANCELLED. Its constituents are predominantly bound activities
+    operating on things that already exist, and any resources it does contain are ephemeral
+    scaffolding. The driving case is #330: controlled shutdown and startup of a service, application,
+    or system, ordered by the dependency graph and gated by policy.
+
+context:
+  purpose: >-
+    Order an ordered, governed execution across an existing estate — a controlled shutdown, a
+    migration, an onboarding run — as one unit, rather than as tribal knowledge in an operator's head.
+  plain_description: >-
+    A run you can order. It ends. You get an outcome and a record of what it touched.
+  use_when:
+    - The deliverable is a run that completes, not a thing that keeps running
+    - The order matters and comes from the dependency graph, not from a hand-written list
+  not_for:
+    - Anything expected to stay healthy afterwards — that is Template.Application
+    - A single automation call a provider orchestrates internally — that is an ordinary Job (Atomic
+      from DCM's perspective; §2.3 draws the line at DCM's orchestration scope, not internal complexity)
+  works_with:
+    - Job — every activity is one; Job already carries targets, trigger, schedule, and typed outputs
+    - Template.Application — the thing a shutdown workflow usually operates on
+
+elements:
+
+  - element: max_execution_time
+    scope: Template.Workflow
+    optional: false                # ENT-002: "no default and is not optional"
+    state: proposed
+    description: >-
+      Ceiling on the whole composition's execution. MANDATORY per ENT-002 — the element that makes
+      this a Type Class rather than a filter value, because no maintained-yield template can carry it.
+      (Drive-by: the Job class cites ENT-004 for this twice; ENT-004 is composite health. It is ENT-002.)
+    schema:
+      type: string
+      pattern: ^P(?!$)(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+S)?)?$
+
+  - element: on_max_exceeded
+    scope: Template.Workflow
+    optional: true
+    state: proposed
+    description: Action when the ceiling is exceeded. No default here — profile-governed.
+    schema:
+      type: string
+      enum: [terminate, notify, escalate]
+      x-extensible-enum: true
+
+  - element: idempotency
+    scope: Template.Workflow
+    optional: false
+    state: proposed
+    description: >-
+      Re-run semantics for the composition as a whole. A bounded codelist (PVD-001 form b) — fixed
+      semantics, not a growing vocabulary. A workflow whose constituents are individually idempotent
+      is not necessarily idempotent as a sequence, which is why this is declared and not derived.
+    schema:
+      type: string
+      enum: [idempotent, at-most-once, unsafe-repeat]
+
+  - element: reversal
+    scope: Template.Workflow
+    optional: true
+    state: proposed
+    description: >-
+      The Workflow that undoes this one, as a URF. #330's fourth point — "startup as the mirror, not
+      an afterthought, since rehydration depends on it." A reference, never an inline copy: the
+      reverse-topological order is DERIVED from the same dependency graph (ADR-005 — ordering is
+      structural), so the mirror is a pointer plus a direction, not a second hand-written sequence.
+    schema:
+      type: string
+      format: udlm-ref-url
+
+coverage:
+  use_cases: []
+  flows: []
