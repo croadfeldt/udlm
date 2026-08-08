@@ -651,6 +651,28 @@ Authorization revoked (by granting Tenant admin, platform admin, or expiry)
 | `CTX-002` | Cross-tenant authorization revocation places all active dependent entities in PENDING_REVIEW. Revocation does not immediately release allocations. |
 | `CTX-003` | Cross-tenant authorization expiry is treated identically to explicit revocation. |
 | `CTX-004` | Platform Admin may create cross-tenant authorizations on behalf of any Tenant. All platform-managed authorizations carry a platform_managed flag and are visible in the platform admin audit log. |
+| `CTX-005` | The **required-grant set** for a request or catalog offering is DERIVED from its edge graph — each cross-tenant edge resolved to its target's owning Tenant and diffed against the requesting Tenant's active authorizations — and surfaced to the requesting Tenant **before admission**. A cross-tenant relationship whose authorization is missing is refused at request validation, never first discovered at dispatch. The set is computed, never stored (DRV-001). |
+| `CTX-006` | **Structural release.** The existence of a cross-tenant edge, its relation and nature, its target's owning authority and resource type, and the grant's status are releasable to the requesting Tenant. The target's spec, configuration, and realized outputs are NOT. A tenant boundary governs what a subject may *do*, not what a subject may *know*; a profile may narrow what is released but may not withhold the existence of a required grant. |
+| `CTX-007` | A cross-tenant act is audited to **both** the granting and the receiving Tenant. A `platform_managed` authorization (CTX-004) is visible to the Tenant on whose behalf it was created, not only to the platform administrator — a grant made in a Tenant's name is auditable by that Tenant. |
+| `CTX-008` | A resource type declaring `publicly_stakeable` / `publicly_allocatable` satisfies CTX-001 as a **standing declaration**. The required-grant set reports it as *satisfied by standing declaration* rather than omitting it, so the relationship stays visible. The declaration waives the per-grant authorization, never the boundary: ownership, revocation, and decommission behave exactly as for a granted stake. |
+
+**Conformance targets (ADR-066; the discipline is #419).** Each rule above names the class of product
+it binds, and whether this repository can check it. A rule this repository cannot check is not
+thereby unenforced — it is evidenced by a peer implementation, and saying so is the point.
+
+- **CTX-005** — target **control-plane**. Not checkable here: the derivation is provable (a reference
+  implementation over the edge graph, the #321 split), but the refusal *timing* is runtime. Blocked on
+  #425 — the authorization record has no schema, so there is nothing to diff against.
+- **CTX-006** — target **control-plane**. Not checkable here: a release decision taken at query and
+  enforcement time (ADR-041 egress, structural surface).
+- **CTX-007** — target **control-plane**. Not checkable here: an audit-routing behavior.
+- **CTX-008** — target **udlm-artifact** *and* control-plane. The declaration's coherence **is** checked
+  here — `publicly_stakeable` requires `ownership_model: shareable`, `publicly_allocatable` requires a
+  pool (`registry/tools/validate.py` `check_ownership_declaration`, landed with OWN-007/OWN-008). Its
+  *effect* on the required-grant set is control-plane.
+
+This is the first rule family authored under the conformance-target discipline; the other rule
+families are backfilled separately rather than retrofitted here.
 
 ---
 
