@@ -1,0 +1,24 @@
+# A SECOND tenant. The cross-tenant story needs two borders to have one crossing, and until now
+# every worked record belonged to the same tenant — so nothing in the examples could exercise it.
+uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+handle: org/tenant/example-platform
+conforms_to: udlm/0.1
+resource_type: Grouping.Tenant
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
+lifecycle_state: Realized
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+metadata:
+  display_name: Example Platform Tenant
+  description: >-
+    Owns the shared fabric other tenants attach to. Holds the resources; never the workloads that
+    use them — a consumer takes a stake and the platform keeps ownership.
+states:
+  realized:
+    fields:
+      membership_criterion: estate?tenant_uuid=={self}
+      obligations:
+        isolation: logical
+    outputs: {}
+    at: '2026-08-08T00:00:00Z'
+    time_source: authored example — no clock claim

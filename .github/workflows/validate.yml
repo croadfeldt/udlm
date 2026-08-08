@@ -83,6 +83,7 @@ jobs:
       # A default belongs in a layer or profile, where it carries provenance.
       - run: python3 tests/check_no_shipped_defaults.py
       - run: python3 tests/check_cited_schema_files.py
+      - run: python3 tests/check_grant_derivation.py
       - run: python3 tests/check_class_paths.py
       # URF (identifier-scheme §9): grammar self-test (adversarial + canonical identity +
       # block round-trip + criterion-cycle refusal) and stored-URF scan over registry content.

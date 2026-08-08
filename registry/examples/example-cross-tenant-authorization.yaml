@@ -1,0 +1,30 @@
+# The recorded permission that makes the crossing legal (CTX-001). Without this record the VM below
+# references a resource another tenant owns, and nothing authorises it.
+#
+# granted_by / granted_to name the ROLE each grouping plays. Who CREATED the grant is deliberately
+# absent — the audit record requires actor, subject and action on every act, and no operation
+# consults it. platform_managed IS here, because revocation acts on it (§13.4).
+uuid: 18750c2a-b057-453b-80b2-95e251b1cd49
+handle: platform/grant/vlan-1042-to-payments
+conforms_to: udlm/0.1
+resource_type: Grouping.Authorization
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Authorization/0.1.0
+lifecycle_state: Realized
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+metadata:
+  display_name: VLAN 1042 stake for the payments tenant
+states:
+  realized:
+    fields:
+      # The criterion selects WHAT is in scope; authorized_operations says what may be done with it.
+      membership_criterion: estate?uuid=in=(b448b93d-49b8-4c4a-bae5-56bef93edd22)
+      granted_by: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+      granted_to: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+      authorized_operations: [stake, read]
+      valid_from: '2026-08-08T00:00:00Z'
+      expires_at: '2027-08-08T00:00:00Z'
+      platform_managed: false
+    outputs: {}
+    at: '2026-08-08T00:00:00Z'
+    time_source: authored example — no clock claim
