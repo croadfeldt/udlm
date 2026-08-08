@@ -1,0 +1,12 @@
+must_reject:
+  rule: OWN-008
+  gate: check_ownership_declaration
+  because: >-
+    A standing declaration that anyone may take a stake only means something for a resource that IS
+    staked. On a whole_allocation type — where each consumer gets their own entity outright — there
+    is no stake to waive a grant for, so the declaration silently permits nothing while reading as
+    though it permits something.
+record:
+  resource_type: Probe.WholeAllocationType
+  ownership_model: whole_allocation
+  publicly_stakeable: true

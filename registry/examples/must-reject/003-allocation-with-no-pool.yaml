@@ -1,0 +1,10 @@
+must_reject:
+  rule: OWN-007
+  gate: check_ownership_declaration
+  because: >-
+    An allocation is a portion carved from a pool someone else owns. Declaring the ownership model
+    without naming the pool leaves placement with nothing to carve from, and leaves the consumer's
+    entity with no answer to who retains the thing it came out of.
+record:
+  resource_type: Probe.OrphanAllocation
+  ownership_model: allocation

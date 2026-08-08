@@ -112,6 +112,11 @@ def validate_dir(subdir: str, pick) -> int:
     if not base.exists():
         return 0
     for path in sorted(base.rglob("*")):
+        # must-reject cases are INPUTS to a gate, not documents to validate — the ordinary validator
+        # would report the very errors they exist to provoke. tests/check_must_reject.py executes
+        # them, and fails if any is ACCEPTED.
+        if "must-reject" in path.parts:
+            continue
         if path.suffix not in (".json", ".yaml", ".yml"):
             continue
         docs = load_all(path)
@@ -793,6 +798,8 @@ def _reverse_reference_graph():
         if not base.exists():
             continue
         for path in sorted(base.rglob("*")):
+            if "must-reject" in path.parts:              # gate inputs, not documents (see validate_dir)
+                continue
             if path.suffix not in (".json", ".yaml", ".yml"):
                 continue
             for doc in load_all(path):                   # multi-doc aware (`---` streams)
