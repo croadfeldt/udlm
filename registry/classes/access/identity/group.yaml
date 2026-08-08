@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Group/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Group/0.4.1
 conforms_to: udlm/0.1
 uuid: 679b1fad-95f4-4910-99ae-72147eef4dbd
 record_type: class
 class: type
 resource_type: Identity.Group
 parent: Identity
-version: 0.4.0
+version: 0.4.1
 family: Access
 status: active
 metadata:
   display_name: Identity Group
   description: 'An identity-side group of persons/service-accounts — identity DATA (the RBAC bridge —
-    `Access.Grouping` subject_bindings plus the function-capability matrix). Distinct from a grouping:
+    `Grouping` subject_bindings plus the function-capability matrix). Distinct from a grouping:
     a grouping with record kind `access_grouping` is the DCM-native RBAC subject-set that role-assignments
     bind to (and that the authority-enforcement voting model references); an Identity.Group models a group
     as it exists in a directory / IdP (e.g. an external group mapped to roles via auth-providers role_mapping)

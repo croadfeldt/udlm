@@ -2,7 +2,7 @@
 
 > **Related:** See [Universal Group Model](universal-groups.md) for the canonical group model. The constructs here (Tenants, Resource Groups) map 1:1 to the grouping record kind values in that model.
 > **Machine-validatable schema:** Tenants, Resource Groups, and cross-tenant authorizations are
-> `Access.Grouping` records validating against `registry/profile.schema.json` (profiles) / the `Access.Grouping` class (groupings).
+> `Grouping` records validating against `registry/profile.schema.json` (profiles) / the `Grouping` class (groupings).
 
 **Related Documents:** [Context and Purpose](context-and-purpose.md) | [Resource/Service Entities](resource-service-entities.md) | [Service Dependencies](service-dependencies.md)
 
@@ -117,7 +117,7 @@ Each group membership is a different dimension of context — not a hierarchy wi
 > **the grouping vocabulary is ONE closed set** — the closed set defined in
 > [Universal Group Model](universal-groups.md) §2.2
 > ([data-model-core](data-model-core.md) §5). Every Resource Group carries
-> `resource_type: Access.Grouping` from that model. The `dcm_default | custom` distinction
+> `resource_type: Grouping` from that model. The `dcm_default | custom` distinction
 > defined here is a **`group_subclass`** — the open, advisory axis — not a record kind.
 
 DCM defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:
@@ -139,7 +139,7 @@ resource_group:
   uuid: <uuid>
   name: <human-readable name>
   description: <description>
-  resource_type: Access.Grouping        # from the closed universal-groups §2.2 vocabulary
+  resource_type: Grouping        # from the closed universal-groups §2.2 vocabulary
   group_subclass: <dcm_default|custom>  # advisory axis — this document's two subclasses
   group_type: <for custom groups — e.g., CostCenter, BusinessUnit, RegulatoryScope>
   version: <Major.Minor.Revision>

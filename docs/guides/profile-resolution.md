@@ -39,7 +39,7 @@ Any modification of a **built-in** (`is_builtin: true`) profile **produces a new
 
 ## 5. Atomic tenant onboarding
 
-Onboarding a tenant onto a profile is **all-or-nothing**. Creating the tenant (`resource_type: Access.Grouping`) with a resolved profile atomically binds the profile's **floor** — its policies, its `required_mechanics` (attestation, time-sync capability, stores, retention), and the `store_bindings` the profile requires. The tenant is **not live until its profile floor is provisioned and operative**; a partial bind rolls back. This is why a profile declares *mechanics and data*, not just policy defaults (ADR-007 rejected policy-only): onboarding must be able to verify the whole floor is present before the tenant accepts requests.
+Onboarding a tenant onto a profile is **all-or-nothing**. Creating the tenant (`resource_type: Grouping`) with a resolved profile atomically binds the profile's **floor** — its policies, its `required_mechanics` (attestation, time-sync capability, stores, retention), and the `store_bindings` the profile requires. The tenant is **not live until its profile floor is provisioned and operative**; a partial bind rolls back. This is why a profile declares *mechanics and data*, not just policy defaults (ADR-007 rejected policy-only): onboarding must be able to verify the whole floor is present before the tenant accepts requests.
 
 ## Boundary (ADR-008)
 

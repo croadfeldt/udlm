@@ -243,6 +243,50 @@ One source of power feeding equipment. Hosts and switches declare which feed the
 - Network.Switch — a UPS-backed switch outlives hosts in a shutdown; connectivity goes last.
 - Automation.Job — the shutdown job a feed's on-battery status triggers.
 
+## Grouping
+
+### Grouping.Authorization (0.1.0)
+
+**Purpose:** One grouping permitting another to use something it holds. The grant is a record with its own identity and lifecycle, so it can be found, audited, time-bounded, and withdrawn.
+
+Permission for the members of one grouping to use resources held by another — who granted it, who received it, which resources, what they may do, and until when. Usually two tenants; the same record covers any pair of groupings that isolate. Withdrawing it does not seize anything: every dependent entity moves to review, and a human or policy decides whether to re-authorize, release, or migrate.
+
+**Use when:**
+- A relationship needs to cross a boundary that is otherwise closed — most often two tenants
+- A shared resource is used by a grouping that does not hold it
+- An allocation is carved from a pool another grouping holds
+- Members of a federation share resources while staying independent
+
+**Not for:**
+- Deciding who may act inside a tenant — external RBAC owns that (ADR-008)
+- Resource types that waive the per-grant requirement by standing declaration (`publicly_stakeable` / `publicly_allocatable`, CTX-008) — those need no grant at all
+- Ownership transfer. A grant never moves ownership; it permits use
+
+**Works with:**
+- Grouping.Tenant — the usual pair of boundaries a grant spans
+- The required-grant set (CTX-005) — derived from a request's edges and diffed against these
+
+### Grouping.Tenant (0.1.0)
+
+**Purpose:** The ownership and isolation border. Every record in the model carries a tenant_uuid pointing at one of these, and it is the referent that ownership, cost attribution, audit scope, drift accountability, and policy scope all resolve against.
+
+A tenant. A thing belongs to exactly one at a time, and that is a structural lock rather than a convention — crossing the border is a deliberate, recorded act, not a default. Tenants may nest: a child keeps its own resources and its own isolation, while the parent gets governance overlay, cost rollup, and audit aggregation across its children.
+
+**Use when:**
+- Something must have exactly one owner, and moving it between owners must be visible
+- You need a boundary that cost, audit, drift, and policy all agree on
+- You are modelling a business unit, a customer, or a team that owns infrastructure
+
+**Not for:**
+- Grouping without isolation — a cost centre, a project, a label. That is a plain Grouping, where a member may belong to many and enforcement is advisory
+- Deciding who may act — external RBAC owns that (ADR-008); this decides what belongs to whom
+- Permitting one tenant to use another's resources — that is Grouping.Authorization
+
+**Works with:**
+- Grouping.Authorization — the recorded exception that lets a relationship cross this border
+- Every estate record — tenant_uuid resolves here (TEN-001/003, [D3])
+- The governance matrix — isolation obligations are enforced over the derived member set
+
 ## Hardware
 
 ### Hardware.BMC (0.6.0)
@@ -363,7 +407,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## Identity
 
-### Identity.Group (0.4.0)
+### Identity.Group (0.4.1)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -381,7 +425,7 @@ A named set of person and service-account identities, keyed by its required `han
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.6.0)
+### Identity.Person (0.6.1)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -401,7 +445,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.6.0)
+### Identity.ServiceAccount (0.6.1)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -1055,4 +1099,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*51 types; 51 with context, 0 pending.*
+*53 types; 53 with context, 0 pending.*

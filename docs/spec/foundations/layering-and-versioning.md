@@ -654,7 +654,7 @@ for the catalog item `provider_extension_layer_handles` declaration. A `tenant` 
 
 ### 4.2 Layer Groups — grouping with record kind: layer_grouping
 
-Just as Policy Groups organize policies into cohesive concern-based collections, **Layer Groups** organize layers. A Layer Group is a `grouping` with an `Access.Grouping` — a versioned, audited, GitOps-managed collection of related layers.
+Just as Policy Groups organize policies into cohesive concern-based collections, **Layer Groups** organize layers. A Layer Group is a `grouping` with an `Grouping` — a versioned, audited, GitOps-managed collection of related layers.
 
 Layer Groups enable:
 - **Discovery** — "show me all layers related to PCI compliance"

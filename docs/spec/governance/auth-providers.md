@@ -28,7 +28,7 @@ Every authentication mode UDLM admits — static API key, local users, GitHub OA
 Authentication and credential issuance are **capabilities** (yields) a provider declares — **not** separate provider kinds; there are no provider types, only capabilities (ADR-PROV-002). The verb vocabulary, capability categories, and registration floor are [provider-contract](../contracts/provider-contract.md) §§2, 8–9. Auth is declared via `auth_capability`; credential issuance via `Credential.*` + `credential_capability` ([Credentials](credentials.md) §1, the broker model). There is no `auth_provider`, `credential_provider`, or `notification_service` *kind* — those are capabilities any provider declares.
 
 > **Identity-model authority (UDLM vs an implementation's auth architecture).** This document and the
-> `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, the RBAC bridge (`Access.Grouping` subject_bindings + the function-capability matrix))
+> `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix))
 > are the **authoritative data contract** for actors/identities and the actor-type vocabulary (incl. the
 > `provider` actor). An implementation's authentication *implementation* — e.g. DCM's IDM/IAM Authentication
 > Layer (`dcm-project/enhancements/.../authentication/authentication.md`: Keycloak/IdP, middleware,
@@ -106,7 +106,7 @@ auth_provider_registration:
     concurrent_sessions: 3
 
   # Role mapping — external groups → implementation roles. `role` values are governed access-role
-  # TaxonomyTerms (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix) — the ONE role
+  # TaxonomyTerms (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix) — the ONE role
   # vocabulary, not free strings. An external-group→role map is one way to ASSIGN a role; the
   # authoritative record is a role_assignment (function-capability-matrix.schema.json).
   role_mapping:
@@ -142,7 +142,7 @@ The substrate defines a closed taxonomy of authentication modes. Any conformant 
 
 Substrate-required default. Always registered. Cannot be deregistered — only deprioritized.
 
-This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a grouping with `record kind: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
+This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a grouping with `record kind: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
 
 ```yaml
 built_in_auth_provider:
@@ -422,7 +422,7 @@ Every rung is authenticated. The ladder is about setup effort — not whether au
 | `AUTH-009` | Webhook and message bus inbound surfaces always require authentication regardless of active profile. Anonymous actors are never permitted on these surfaces. |
 | `AUTH-010` | Rate limiting is enforced per authenticated actor. Limits are declared on the Auth Provider or webhook actor registration. |
 | `AUTH-011` | Git PR actor identity resolution must use the registered Auth Provider. The implementation trusts the Git server's verified identity assertion — not user-declared Git configuration. The resolved actor carries the same role, group, and tenant scope as any other user authenticated via the same Auth Provider. |
-| `AUTH-012` | SCIM 2.0 is supported as an optional Auth Provider capability. SCIM provisions and deprovisions actors and group memberships. Roles are not SCIM-provisioned — they require explicit policy authorization: a role is a governed **access-role** TaxonomyTerm (the RBAC bridge — `Access.Grouping` subject_bindings plus the function-capability matrix), assigned by an admin-gated `role_assignment` (`function-capability-matrix.schema.json`; function `access.role.assign`, append-only audited) — never a free string and never SCIM-set. SCIM deprovisioning suspends actors by default; in-flight requests complete before suspension. |
+| `AUTH-012` | SCIM 2.0 is supported as an optional Auth Provider capability. SCIM provisions and deprovisions actors and group memberships. Roles are not SCIM-provisioned — they require explicit policy authorization: a role is a governed **access-role** TaxonomyTerm (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix), assigned by an admin-gated `role_assignment` (`function-capability-matrix.schema.json`; function `access.role.assign`, append-only audited) — never a free string and never SCIM-set. SCIM deprovisioning suspends actors by default; in-flight requests complete before suspension. |
 | `AUTH-013` | In-flight requests authenticated before Auth Provider failure continue using cached session tokens. New requests follow the declared failover chain. Sessions remain valid for their declared TTL during outages. All providers unavailable → new authentication rejected. |
 | `AUTH-014` | MFA enforcement is two-tier: per-session MFA (captured in `mfa_verified` field) and step-up MFA (additional challenge at sensitive operations). Policy declares which operations require step-up regardless of session MFA status. Step-up tokens are short-lived. Profile governs default requirements. |
 | `AUTH-015` | The built-in Auth Provider uses a pluggable storage backend. FSI and sovereign profiles require encryption at rest. The local user store should only contain bootstrap users, service accounts, and API key holders. |

@@ -98,7 +98,7 @@ Four rules are proposed. Their **definitions** must be authored in the `CTX` pre
 1. **Three cited-but-absent fields.** `publicly_stakeable` / `publicly_allocatable` appear in one document and
    **zero schemas**; `ownership_model` appears in `ownership-sharing-allocation.md` examples and **zero
    schemas**; a `dcm-group.schema.json` under registry/ was cited three times and **did not exist**
-   (superseded by `Access.Grouping`; the citations are corrected under PR A). The rules are
+   (superseded by `Grouping`; the citations are corrected under PR A). The rules are
    written as though these landed. Which are real intent and which are stale?
 2. **Does the grant set surface at catalog render, or only at request validation?** Rendering it on the offering
    ("ordering this requires 2 authorizations you do not hold") is strictly better UX and strictly more

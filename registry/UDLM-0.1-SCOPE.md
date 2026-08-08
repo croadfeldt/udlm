@@ -85,7 +85,7 @@ by the merged spec (ADR-010 / §8.1a / realized-entity) or are DCM-runtime by th
 | P4 | Fault domains / SharedFaultDomain | ✅ ADR-010 |
 | P5 | Blast-radius / redundancy / UnmetDependency | ✅ ADR-010 + `policy.schema` graph.* |
 | P6 | Policy override (validatable surface) | ✅ `override` policy_type + allOf (this release) |
-| P7 | Tenant quota (consumption) | ✅ quota settings on the tenancy `Access.Grouping` + `quota.*` match sources (this release) |
+| P7 | Tenant quota (consumption) | ✅ quota settings on the tenancy `Grouping` + `quota.*` match sources (this release) |
 
 ## 5. Exit criteria to tag `udlm/1.0`
 

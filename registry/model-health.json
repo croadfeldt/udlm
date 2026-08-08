@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 51,
+    "types": 53,
     "by_family": {
-      "Access": 5,
+      "Access": 7,
       "Knowledge": 5,
       "Process": 2,
       "Resource": 39
     }
   },
   "discrimination": {
-    "mutations_attempted": 4268,
-    "mutations_rejected": 4268,
+    "mutations_attempted": 4446,
+    "mutations_rejected": 4446,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -58,6 +58,14 @@
       "Facility.PowerFeed": {
         "attempted": 52,
         "rejected": 52
+      },
+      "Grouping.Authorization": {
+        "attempted": 112,
+        "rejected": 112
+      },
+      "Grouping.Tenant": {
+        "attempted": 66,
+        "rejected": 66
       },
       "Hardware.BMC": {
         "attempted": 36,
@@ -222,8 +230,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 51,
-    "total": 51
+    "strict_specs": 53,
+    "total": 53
   },
   "outputs": {
     "per_type": {
@@ -238,6 +246,8 @@
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
+      "Grouping.Authorization": 0,
+      "Grouping.Tenant": 0,
       "Hardware.BMC": 1,
       "Hardware.BiosProfile": 1,
       "Hardware.GraphicsProcessor": 0,
@@ -281,6 +291,8 @@
     },
     "zero_output_types": [
       "Access.Grouping",
+      "Grouping.Authorization",
+      "Grouping.Tenant",
       "Hardware.GraphicsProcessor",
       "Hardware.Processor",
       "SoftwareImage",
@@ -315,17 +327,19 @@
     ]
   },
   "context": {
-    "with_context": 51,
-    "total": 51,
+    "with_context": 53,
+    "total": 53,
     "missing": []
   },
   "relationships": {
     "with_relationships": 44,
-    "total": 51,
+    "total": 53,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
       "Facility.PowerFeed",
+      "Grouping.Authorization",
+      "Grouping.Tenant",
       "Observability.LogShipper",
       "Storage.Layout",
       "Topology",
@@ -375,6 +389,8 @@
       "Access.Grouping",
       "Facility.Location",
       "Facility.PowerFeed",
+      "Grouping.Authorization",
+      "Grouping.Tenant",
       "Hardware.BMC",
       "Hardware.BiosProfile",
       "Hardware.GraphicsProcessor",
@@ -423,6 +439,8 @@
       "Compute.BareMetalHost",
       "Facility.Location",
       "Facility.PowerFeed",
+      "Grouping.Authorization",
+      "Grouping.Tenant",
       "Hardware.BMC",
       "Hardware.BiosProfile",
       "Hardware.GraphicsProcessor",
@@ -463,7 +481,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 51
+    "consumed_by_at_least_one": 53
   },
   "expressibility_coverage": {
     "value": null,

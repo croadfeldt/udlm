@@ -174,7 +174,7 @@ The second is **mistyping**: reporting the crossing as a schema error, an unreso
 reference, or a bare authorization failure. All three are true in a sense and none routes the
 submitter anywhere. The refusal is emitted as `authz.cross_tenant_unauthorized` and names the
 mechanism that would make the reference legal — a `cross_tenant_authorization` grant from the
-owning tenant, recorded as a grouping of that class (`registry/profile.schema.json` / `Access.Grouping`).
+owning tenant, recorded as a grouping of that class (`registry/profile.schema.json` / `Grouping`).
 
 The third is **over-explaining**. A refusal that helpfully describes what the submitter tried
 to reach — its type, its name, its state — has disclosed another tenant's inventory to prove

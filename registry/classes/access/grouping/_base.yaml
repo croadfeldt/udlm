@@ -1,43 +1,27 @@
-# Access.Grouping — the native grouping anchor. Membership is DERIVED from the criterion
+# Grouping — the native grouping anchor. Membership is DERIVED from the criterion
 # (a stored URF filter) — never a stored member list.
+#
+# A BASE class, parallel to Identity in the same family (Identity / Identity.Person / Identity.Group).
+# Kinds of grouping that add something are type classes below this one; kinds that add nothing are
+# this class, instantiated.
+#
+# Rejected: a `group_class` discriminator element listing every kind. `resource_type` already answers
+# "which kind is this", so a second answer would be stored derivable data (DRV-001) and could disagree
+# with the first. Also rejected: a kind per provider-tier class — that tier means provider-authored and
+# provider-bound (ADR-038 §3, scope IS portability), and a tenant is not a provider's projection of a
+# grouping.
 uuid: 2c8b6270-2eae-4ac4-8faa-3375dde3da3e
 record_type: class
-resource_type: Access.Grouping
-class: type
-parent: Access
+resource_type: Grouping
+class: base
 family: Access
 entity_type: Grouping
-version: 0.1.0
+version: 0.2.0
 conforms_to: udlm/0.1
 status: active
-context:
-  purpose: 'The native grouping anchor: the one identity a subject-expression binds to, the referent tenant_uuid
-    / ownership / policy targets / unit operations resolve against, and the carrier of unit-level obligations.
-    It contains nothing — the member set is DERIVED by evaluating the criterion (a URF filter, identifier-scheme
-    9); point-in-time membership is answered by replaying record states.'
-  plain_description: A named handle for 'a suite of things treated as a unit' — a tenant, a team's resources,
-    an exemption set. External RBAC decides WHO may act (its group binds to this record); the criterion
-    — a filter URL — decides WHAT is in the set, computed fresh each time, so membership can never drift
-    from reality. Obligations like physical isolation attach here and the engine enforces them over the
-    derived set.
-  use_when:
-  - Something references the set by identity — tenant_uuid, owned_by, a policy target, a unit operation
-    ('evacuate team X')
-  - The set carries external subject bindings (the RBAC bridge) or unit-level obligations (isolation)
-  - 'Otherwise: use an inline URF filter — a once-consulted set earns no record'
-  not_for:
-  - Access DETERMINATION — external RBAC/IdP owns who-may; the live answer is authoritative at enforcement
-    (ADR-008)
-  - Storing member lists — membership is DERIVED from the criterion (DRV-001)
-  - Conditional/attribute grants (policies) or per-field release (the ADR-041 firewall)
-  works_with:
-  - Security.DirectoryService and auth-capability providers — subject_bindings evaluate there
-  - Every estate record — criteria filter their declared fields (identifier-scheme 9)
-  - The governance matrix — obligations enforcement and binding-edit meta-governance
-  - Access.IdentityEscrow — the Access-family sibling
 elements:
 - element: subject_bindings
-  scope: Access.Grouping
+  scope: Grouping
   optional: true
   schema:
     type: array
@@ -64,7 +48,7 @@ elements:
     '
   state: canonical
 - element: membership_criterion
-  scope: Access.Grouping
+  scope: Grouping
   schema:
     type: string
     format: udlm-filter-url
@@ -76,7 +60,7 @@ elements:
     '
   state: canonical
 - element: obligations
-  scope: Access.Grouping
+  scope: Grouping
   optional: true
   schema:
     type: object
@@ -94,16 +78,9 @@ elements:
 
     '
   state: canonical
-spec_examples:
-- subject_bindings:
-  - provider_ref: estate/providers/directory
-    expression: cn=payments,cn=groups,dc=cexample,dc=example
-  membership_criterion: estate?tenant_uuid=={self}
-  obligations:
-    isolation: physical
 metadata:
   display_name: Grouping
   description: 'The native grouping anchor: RBAC bridge + derived-membership criterion + unit obligations.'
   maintainer: UDLM project
   origination_timestamp: '2026-08-05T00:00:00Z'
-$id: https://udlm.dev/registry/udlm/0.1/class/Access.Grouping/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Grouping/0.2.0

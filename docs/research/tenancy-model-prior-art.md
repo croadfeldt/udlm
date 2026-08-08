@@ -2,7 +2,7 @@
 
 **Type:** research note (decision support — not normative)
 **Date:** 2026-07-14 · **Method:** assessed the UDLM/DCM tenancy surface against the deployed industry canon (SaaS isolation, Kubernetes multi-tenancy, data-isolation patterns, ReBAC, GDPR).
-**Feeds:** `registry/profile.schema.json` / `Access.Grouping` (the `tenant_boundary` model), DCM ADR-014 (RLS isolation), `docs/spec/foundations/data-model-core.md` §6 (the [D1] isolation ladder), `docs/spec/foundations/resource-grouping.md` (tenant lifecycle + cross-tenant), `docs/spec/contracts/data-store-contracts.md` (tenant-context contract), `docs/spec/foundations/ownership-sharing-allocation.md`.
+**Feeds:** `registry/profile.schema.json` / `Grouping` (the `tenant_boundary` model), DCM ADR-014 (RLS isolation), `docs/spec/foundations/data-model-core.md` §6 (the [D1] isolation ladder), `docs/spec/foundations/resource-grouping.md` (tenant lifecycle + cross-tenant), `docs/spec/contracts/data-store-contracts.md` (tenant-context contract), `docs/spec/foundations/ownership-sharing-allocation.md`.
 
 ## What this settles
 
@@ -10,7 +10,7 @@ Before 1.0 locks the tenancy model, this checks it against how the industry actu
 
 ## The model, in one line
 
-A **Tenant is a grouping** with `resource_type: Access.Grouping` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
+A **Tenant is a grouping** with `resource_type: Grouping` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
 
 ## Model ↔ standards
 
