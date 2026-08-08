@@ -114,17 +114,38 @@ dcm_group:
 
 ### 2.2 Group Classes
 
-| record kind | Replaces | member_types_permitted | exclusivity.per_member | enforcement_model |
-|-------------|---------|----------------------|----------------------|------------------|
-| `tenant_boundary` | Tenant | resource_entity, group | one (structural lock) | profile-governed |
-| `resource_grouping` | Resource Group, Custom Resource Group | resource_entity | many | advisory |
-| `policy_collection` | Policy Group | policy | many | enforced |
-| `policy_profile` | Policy Profile | group (policy_collection only) | many | enforced |
-| `layer_grouping` | Layer Domain grouping | layer | many | enforced |
-| `provider_grouping` | Provider collections | provider | many | advisory |
-| `composite` | (new) | all types | many | configurable |
-| `federation` | (new) | group (tenant_boundary) | many | advisory |
-| `cross_tenant_authorization` | Cross-Tenant Authorization | resource_entity | many | enforced |
+**What kind a grouping is, is its `resource_type`.** Kinds that add something are type classes under
+the `Grouping` base; kinds that add nothing are that base, instantiated. No separate discriminator is
+stored, because the type name already answers the question (DRV-001).
+
+| Kind | Is | member_types_permitted | exclusivity.per_member | enforcement_model |
+|---|---|---|---|---|
+| tenant | **`Grouping.Tenant`** | resource_entity, group | one (structural lock) | profile-governed |
+| cross-tenant authorization | **`Grouping.Authorization`** | resource_entity | many | enforced |
+| resource grouping | plain `Grouping` | resource_entity | many | advisory |
+| policy collection | plain `Grouping` | policy | many | enforced |
+| policy profile | plain `Grouping` | group (policy collections only) | many | enforced |
+| layer grouping | plain `Grouping` | layer | many | enforced |
+| provider grouping | plain `Grouping` | provider | many | advisory |
+| federation | **parked** — see §3.6 | group (tenants) | many | advisory |
+| composite | **retired** — it is a Template, see §3.5 | — | — | — |
+
+A kind earns a type class only if it **adds** something. Tenant adds nesting and a required isolation
+obligation; Authorization adds who granted, who received, what may be done, and until when. The five
+plain groupings differ from each other in nothing but the three settings above, which is why they are
+one class and not five.
+
+> **Open — the three settings have no home in the model.** `member_types_permitted`,
+> `exclusivity.per_member`, and `enforcement_model` are declared in this table and nowhere a machine
+> can read them. Two candidates, neither obviously right: type-spec-level fields (the
+> `ownership_model` precedent), or elements each type class narrows to a constant — which would put
+> fully derivable data on every instance. Tracked; not settled in passing.
+
+**Reading the rest of this document.** `tenant_boundary` is used throughout — including in the
+structural invariants below — as the descriptive name for the kind now carried by `Grouping.Tenant`.
+It names a kind; it is no longer how an instance declares itself. The `dcm_group:` wrapper in the
+illustrative YAML likewise names a shape rather than a schema.
+
 
 The `cross_tenant_authorization` class is the formal grant by which one Tenant authorizes
 another to reference, allocate from, or stake its resources (§13; lifecycle also detailed in
@@ -149,9 +170,8 @@ Regardless of `enforcement_model`, grouping kind, or active profile, the followi
 
 ## 3. Group Class Reference
 
-### 3.1 tenant_boundary
+### 3.1 tenant — `Grouping.Tenant`
 
-**Replaces:** Tenant entity  
 **Purpose:** Ownership boundary, isolation enforcement, cost attribution, audit scope, sovereignty boundary
 
 ```yaml
@@ -180,9 +200,8 @@ dcm_group:
 - `dev` profile → `enforcement_model: enforced` (tenancy recommended)
 - `standard` and above → `enforcement_model: mandatory` (tenancy required)
 
-### 3.2 resource_grouping
+### 3.2 resource grouping — a plain `Grouping`
 
-**Replaces:** DCM Default Resource Group, Custom Resource Group  
 **Purpose:** Flexible composable grouping of resource entities — structured tagging
 
 ```yaml
@@ -195,9 +214,8 @@ dcm_group:
   enforcement_model: advisory
 ```
 
-### 3.3 policy_collection
+### 3.3 policy collection — a plain `Grouping`
 
-**Replaces:** Policy Group  
 **Purpose:** Cohesive collection of policies addressing a single concern
 
 ```yaml
@@ -213,9 +231,8 @@ dcm_group:
     on_provider_update: <proposed|active>
 ```
 
-### 3.4 policy_profile
+### 3.4 policy profile — a plain `Grouping`
 
-**Replaces:** Policy Profile  
 **Purpose:** Complete DCM configuration for a use case, composed of policy_collection groups
 
 ```yaml
@@ -226,43 +243,35 @@ dcm_group:
   enforcement_model: enforced
 ```
 
-### 3.5 composite
+### 3.5 composite — retired
 
-**New concept:** A group whose members span multiple member types — the organizational unit for a complete concern.
+**A composite group is a Template.** A set of parts, each with a declared role, ordered as one unit
+and meant to be reused — that is what a Template is, and it is modelled as one. Building it here as
+well would model one concept twice in two documents.
 
-```yaml
-dcm_group:
-  record kind: composite
-  name: "Payments Platform"
-  concern_tags: [payments, pci-scope]
-  member_types_permitted: [resource_entity, policy, layer, group, provider]
-  enforcement_model: advisory   # composite groups are organizational — advisory default
+The tell was structural rather than a matter of taste: a composite group specifies a **stored member
+list with a role per member** (`member_role: compute`). A grouping does not have a member list — its
+membership is worked out from a rule every time it is asked, so that it can never drift from reality.
+There is nowhere to hang a per-member role, and adding one would undo the property derived membership
+exists for. A Template *declares* its parts; a grouping *derives* its members. Only one of those was
+ever going to fit.
 
-  members:
-    - member_uuid: <payments-vm-uuid>
-      member_type: resource_entity
-      member_role: compute
-    - member_uuid: <pci-dss-group-uuid>
-      member_type: group
-      member_role: compliance_governance
-    - member_uuid: <payments-resource-group-uuid>
-      member_type: group
-      member_role: resource_inventory
-    - member_uuid: <payments-service-layer-uuid>
-      member_type: layer
-      member_role: configuration
-```
+Note this does not touch the derived `has_constituents` **shape** — a different use of the word
+"composite", and unaffected.
 
-**Policy targeting composite groups:**
-```yaml
-policy:
-  target_groups:
-    - group_uuid: <payments-platform-uuid>
-      member_type_filter: [resource_entity]   # narrow to resources only
-      # Omit member_type_filter to apply to ALL member types (default)
-```
+### 3.6 federation — parked
 
-### 3.6 federation
+> **Not buildable as specified.** Like the retired composite above, a federation declares a **stored
+> member list with a role per member** (`member_role: shared_governance`), and a grouping derives its
+> members from a rule instead. Unlike composite, a federation is *not* obviously a Template — a set of
+> independent tenants sharing governance is a real and different idea — so this needs a decision
+> rather than a deletion.
+>
+> Three ways out: the role is derived from the member's own data; the roles are dropped and a
+> federation is a plain grouping of tenants; or it keeps a member list and is something other than a
+> grouping. Until one is chosen, the description below records the intent and not a buildable shape.
+> §5 (Federated Tenants) rests on this section and is parked with it.
+
 
 **New concept:** A group of tenant_boundary groups that share governance, visibility, and resources while maintaining complete independence.
 
@@ -347,6 +356,10 @@ nested_tenant_config:
 ---
 
 ## 5. Federated Tenants
+
+> **Parked with §3.6.** Everything below describes the intent of a federation, not a shape the model
+> can currently carry — a federation's per-member roles need a member list, and a grouping derives its
+> members from a rule.
 
 ### 5.1 Concept
 
