@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.4.1
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.4.0
+version: 1.4.1
 family: Resource
 status: active
 metadata:
@@ -71,7 +71,7 @@ elements:
       whose entries describe the VM's disks (per-disk shape, boot designation, storage tier). Common-elements
       Reference (handle string or {uuid, handle} object), following the location_ref/network_ref precedent.
       Also carried as a references->Storage.Layout relationship (storage_layout).
-    $ref: ../../common-elements.schema.json#/$defs/Reference
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: networks
   scope: Compute.VM
   optional: true
@@ -95,14 +95,14 @@ elements:
         network_ref:
           description: The Network.VirtualNetwork this interface attaches to — common-elements Reference
             (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.
-          $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
         mac:
           type: string
           description: Optional requested MAC address.
         ip_address_ref:
           description: A pre-allocated Network.IPAddress to bind to this interface (optional — omitted
             means the address service allocates at realization). Common-elements Reference shape.
-          $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: placement
   scope: Compute.VM
   optional: true
@@ -198,7 +198,7 @@ elements:
           type: string
           description: Inline OS version (e.g. 9.4).
     - allOf:
-      - $ref: ../../data-reference.schema.json#/$defs/data_reference
+      - $ref: ../../../data-reference.schema.json#/$defs/data_reference
       - required:
         - reference_data_type
         properties:

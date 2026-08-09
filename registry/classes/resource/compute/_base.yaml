@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.2.1
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Compute
-version: 1.2.0
+version: 1.2.1
 family: Resource
 status: active
 metadata:
@@ -158,7 +158,7 @@ elements:
           type: string
           description: Inline OS version (e.g. 9.4).
     - allOf:
-      - $ref: ../../data-reference.schema.json#/$defs/data_reference
+      - $ref: ../../../data-reference.schema.json#/$defs/data_reference
       - required:
         - reference_data_type
         properties:

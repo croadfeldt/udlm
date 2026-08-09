@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd",
   "resource_type": "Software.Service",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Software.Service",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "905fef1c-3384-4a49-9c44-71420d07eedd"
         }
       ]

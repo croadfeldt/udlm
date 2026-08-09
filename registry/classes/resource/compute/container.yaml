@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.2
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: type
 resource_type: Compute.Container
 parent: Compute
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 metadata:
@@ -44,7 +44,7 @@ elements:
           pattern: ^sha256:[a-f0-9]{64}$
           description: OCI content-addressable digest, pinned at Realized/Discovered for provenance.
     - allOf:
-      - $ref: ../../data-reference.schema.json#/$defs/data_reference
+      - $ref: ../../../data-reference.schema.json#/$defs/data_reference
       - required:
         - reference_data_type
         properties:

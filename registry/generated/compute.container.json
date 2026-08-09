@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.2",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Compute.Container",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Compute.Container",
-          "version": "0.7.1",
+          "version": "0.7.2",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]

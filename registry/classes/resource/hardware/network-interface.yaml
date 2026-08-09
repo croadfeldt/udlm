@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.NetworkInterface/0.13.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.NetworkInterface/0.13.2
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: type
 resource_type: Hardware.NetworkInterface
 parent: Hardware
-version: 0.13.1
+version: 0.13.2
 family: Resource
 status: active
 metadata:
@@ -202,7 +202,7 @@ elements:
           description: Reference to Network.VLAN — the VLAN this membership tags. Common-elements Reference
             shape (handle string or {uuid, handle} object); resolvable and policy-walkable, never an opaque
             string.
-          $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
         mode:
           type: string
           enum:

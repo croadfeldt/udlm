@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.2
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 metadata:
@@ -60,7 +60,7 @@ elements:
           description: Reference to Compute.Container — the container realizing this constituent. Common-elements
             Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable,
             never an opaque string.
-          $ref: ../../common-elements.schema.json#/$defs/Reference
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
         host:
           type: string
           description: handle of the host/VM the systemd units run on (form=systemd).

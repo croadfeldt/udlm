@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {

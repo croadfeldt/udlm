@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.1
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.0
+version: 1.2.1
 family: Process
 status: active
 metadata:
@@ -71,7 +71,7 @@ elements:
   schema:
     type: array
     items:
-      $ref: ../../common-elements.schema.json#/$defs/Reference
+      $ref: ../../../common-elements.schema.json#/$defs/Reference
     description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme
       §9), never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored;
       DCM resolves it to the uuid form at reserve). Part of the portable automation intent: the target

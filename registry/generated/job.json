@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242",
   "resource_type": "Job",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -18,7 +18,7 @@
       "sources": [
         {
           "class": "Job",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242"
         }
       ]

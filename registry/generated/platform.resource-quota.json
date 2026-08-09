@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.2",
   "conforms_to": "udlm/0.1",
   "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a",
   "resource_type": "Platform.ResourceQuota",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Platform.ResourceQuota",
-          "version": "0.5.1",
+          "version": "0.5.2",
           "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a"
         }
       ]
