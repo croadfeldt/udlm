@@ -9,7 +9,7 @@
   "properties": {
     "record_type": { "const": "accreditation", "description": "Dispatch discriminator (data-model-core §2)." },
     "uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "RFC 9562 v4 identity of this accreditation." },
-    "handle": { "type": "string", "description": "Advisory human identity, e.g. accreditations/providers/eu-west-prod-1/fedramp-high. uuid is authoritative." },
+    "handle": { "type": "string", "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$", "description": "Advisory human identity, e.g. accreditations/providers/eu-west-prod-1/fedramp-high. uuid is authoritative." },
     "conforms_to": { "type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$" },
     "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
     "subject_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The subject this attests — the PROVIDER uuid for a service_provider (axis 1 of the sovereignty 1-1 match, §3.3.1)." },

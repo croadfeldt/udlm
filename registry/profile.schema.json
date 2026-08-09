@@ -25,6 +25,7 @@
     },
     "handle": {
       "type": "string",
+      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
       "description": "Human-readable stable name, e.g. udlm/profile/dev. Organization-authored profiles take their own namespace (acme/profile/regulated-eu) — never udlm/."
     },
     "conforms_to": {

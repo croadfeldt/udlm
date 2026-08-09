@@ -526,6 +526,7 @@
     },
     "handle": {
       "type": "string",
+      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
       "description": "ADVISORY human-readable identity (docs/spec/contracts/identifier-scheme.md §3). The uuid is the authoritative identity; the handle aids review and drift detection (a resolved-uuid whose current handle disagrees with a reference's recorded handle is drift, not failure). Never resolve by handle alone."
     },
     "metadata": {
