@@ -1,0 +1,22 @@
+must_reject:
+  rule: CMP-010
+  gate: check_catalog_item
+  because: >-
+    A constituent depending on a component that was never declared. Ordering is derived from these
+    edges, so an edge pointing at nothing leaves a constituent that can never become dispatchable —
+    and it surfaces at expansion, long after the catalog accepted it, as a request that simply
+    stops making progress.
+record:
+  record_type: catalog_item
+  uuid: b3e17d92-5a04-4c68-91f3-2d80c7e46a15
+  handle: acme/catalog/dangling-edge
+  conforms_to: udlm/0.1
+  name: ApplicationStack.Dangling
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  constituents:
+    - component_id: app
+      resource_type: Compute.Container
+      provided_by: self
+      failure_effect: required
+      depends_on: [database]

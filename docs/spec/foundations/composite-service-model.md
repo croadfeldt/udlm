@@ -431,14 +431,25 @@ registration:
     standards_compliance: [...]
 ```
 
-A registration is rejected if:
-- The dependency graph contains a cycle
-- A `depends_on` references an undeclared component_id
-- A constituent references a resource type not in the Resource Type Registry
-- `max_nesting_depth` exceeds 3
-- Total constituent count exceeds the system limit (see profile policy)
-- `selective_visible` references undeclared component_ids
-- A binding names an `output` that the producing constituent's resource type does not declare
+A registration is rejected if any of the following holds. Two are defined here because they are
+required nowhere else; the rest are consequences of rules that already exist and are cited, not
+restated — one requirement, one definition.
+
+| Rule | A registration is rejected if |
+|---|---|
+| `CMP-010` | A `depends_on` references an undeclared component_id. Ordering is derived from these edges (CMP-002), so an edge pointing at nothing leaves a constituent that can never become dispatchable — and it fails at expansion, long after the catalog accepted it. |
+| `CMP-011` | A constituent references a resource type that resolves to neither a registered Class nor a flat resource type. Expansion has to compile the constituent against its type; a name resolving to nothing is a request that cannot be assembled, and the catalog is the last place it can be refused cheaply. |
+
+Also rejected, by rules defined elsewhere:
+
+- the dependency graph contains a cycle — ordering derives from `depends_on` (`CMP-002`), and a cycle has no first step
+- `max_nesting_depth` exceeds 3 (`CMP-008`)
+- a binding names an `output` the producing constituent's resource type does not declare (`CMP-009`)
+
+Two further conditions are stated but **not currently enforced**, and are named here rather than
+left to look like coverage: total constituent count exceeding the profile's limit (profile-governed,
+so there is no single value to check against), and `selective_visible` referencing undeclared
+component_ids.
 
 Registration is otherwise validated like any other catalog item.
 
