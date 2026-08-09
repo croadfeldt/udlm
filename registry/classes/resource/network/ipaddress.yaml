@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.2
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: type
 resource_type: Network.IPAddress
 parent: Network
-version: 0.10.1
+version: 0.10.2
 family: Resource
 status: active
 # OWN-007 — the ownership model is a type-level invariant, declared here and not settable per entity.
@@ -28,7 +28,7 @@ elements:
   description: The address with prefix as CIDR (RFC 8344/NMstate), e.g. 192.0.2.10/24. Intent for a static
     reservation; populated at Realized for a dhcp/auto address.
   schema:
-    $ref: ../../common-elements.schema.json#/$defs/cidr
+    $ref: ../../../common-elements.schema.json#/$defs/cidr
     description: The address with prefix as CIDR (RFC 8344/NMstate), e.g. 192.0.2.10/24. Intent for a
       static reservation; populated at Realized for a dhcp/auto address.
 - element: ip_family
@@ -37,7 +37,7 @@ elements:
   state: canonical
   description: Address family (canonical `ip_family` — renamed from `family`, common-elements §2.4).
   schema:
-    $ref: ../../common-elements.schema.json#/$defs/ip_family
+    $ref: ../../../common-elements.schema.json#/$defs/ip_family
     description: Address family (canonical `ip_family` — renamed from `family`, common-elements §2.4).
 - element: allocation
   scope: Network.IPAddress

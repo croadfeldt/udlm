@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Namespace/0.5.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Namespace/0.5.2
 conforms_to: udlm/0.1
 uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
 record_type: class
 class: type
 resource_type: Platform.Namespace
 parent: Platform
-version: 0.5.1
+version: 0.5.2
 family: Resource
 status: active
 metadata:
@@ -39,7 +39,7 @@ elements:
   schema:
     description: Resource reference to a Compute.Cluster (common-elements §2.5, ADR-025). Authored by
       handle; deferred resolution supported (claim-before-define).
-    $ref: ../../common-elements.schema.json#/$defs/Reference
+    $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: tenant_uuid
   scope: Platform.Namespace
   optional: true

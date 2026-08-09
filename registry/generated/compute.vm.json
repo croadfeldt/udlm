@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.4.1",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Compute.VM",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -20,12 +20,12 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Compute.VM",
-          "version": "1.4.0",
+          "version": "1.4.1",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]

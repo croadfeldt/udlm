@@ -28,12 +28,14 @@ Two forms are NOT checked, each for a reason:
   - **a bare basename in prose** (`entity.schema.json` in a Proposed ADR). Every ADR here is
     Proposed, and naming the schema a decision *would* create is legitimate authorship, not a
     dangling pointer. Failing those would train the reader to ignore this gate.
-  - **relative `$ref`s inside authored class YAML.** These are written `../../x.schema.json` against
-    a two-deep convention that ADR-061's hierarchy made three-deep, so ~20 of them do not resolve
-    from where the file actually sits. Nothing is broken today because the generator rebases them by
-    fixed string transform and the GENERATED output resolves correctly — which is the artifact that
-    has to. That mismatch is real but it is the generator's rebase contract, not a citation defect,
-    and it is tracked separately rather than conflated here.
+  - **a bare basename in a YAML comment** — prose, judged the same way as prose in markdown.
+
+Authored class `$ref`s ARE checked. They were excluded while ~20 of them pointed one directory
+level too high — written against a two-deep convention that ADR-061's hierarchy made three-deep.
+Nothing broke, because the generator rebases any depth to one level and the GENERATED artifact
+resolved correctly, which is what a consumer reads. The authored file did not, which is what an
+editor, an IDE, or anything resolving a class directly reads. Corrected, so the exclusion is gone
+and a `$ref` that stops resolving now fails here.
 
 Canonical `https://udlm.dev/...` URLs are identity, not paths, and are skipped.
 
@@ -91,12 +93,14 @@ def citations_in(path):
             for m in CITATION.findall(s):
                 out.append((m, rel))
         return out
-    # prose and YAML: only the unambiguous, path-qualified form
+    # YAML: $ref targets resolve relative to the citing file, like any other reference
     for line in open(path, encoding="utf-8", errors="replace"):
         if "https://" in line and ".schema.json" in line:
             line = re.sub(r"https://\S+", " ", line)
+        stripped = line.lstrip()
+        is_ref = stripped.startswith("$ref:") or stripped.startswith("- $ref:")
         for m in CITATION.findall(line):
-            if m.startswith(TOPLEVEL):
+            if m.startswith(TOPLEVEL) or (is_ref and not stripped.startswith("#")):
                 out.append((m, rel))
     return out
 

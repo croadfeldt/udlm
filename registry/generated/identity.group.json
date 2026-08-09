@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.3",
   "conforms_to": "udlm/0.1",
   "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
   "resource_type": "Identity.Group",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Identity.Group",
-          "version": "0.4.2",
+          "version": "0.4.3",
           "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd"
         }
       ]

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Storage.Volume",
-          "version": "0.11.1",
+          "version": "0.11.2",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]

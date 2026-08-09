@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.13.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.13.2",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Hardware.NetworkInterface",
-          "version": "0.13.1",
+          "version": "0.13.2",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
