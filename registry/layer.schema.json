@@ -26,7 +26,8 @@
       "description": "RFC 9562 v4 identity. This uuid is the field-provenance source recorded for every field this layer sets (layering-and-versioning §provenance)."
     },
     "handle": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
     },
     "conforms_to": {
       "type": "string",
