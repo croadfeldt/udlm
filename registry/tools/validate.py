@@ -154,8 +154,8 @@ def check_class_constituents(doc):
     for c in doc.get("constituents", []):
         rt = c.get("resource_type")
         if rt and rt not in known:
-            errors.append(f"constituent '{c.get('component_id','?')}': resource_type {rt!r} resolves to "
-                          f"neither a registered Class nor a flat resource type")
+            errors.append(f"CMP-011 constituent '{c.get('component_id','?')}': resource_type {rt!r} "
+                          f"resolves to neither a registered Class nor a flat resource type")
     return errors
 
 
@@ -301,7 +301,8 @@ def check_catalog_item(doc):
         deps = c.get("depends_on", [])
         for dep in deps:
             if dep not in id_set:
-                errors.append(f"constituent '{cid}': depends_on '{dep}' does not resolve to a sibling component_id")
+                errors.append(f"CMP-010 constituent '{cid}': depends_on '{dep}' does not resolve to a "
+                             f"sibling component_id")
         for b in c.get("bindings", []):
             src = b.get("from_component")
             if src not in id_set:

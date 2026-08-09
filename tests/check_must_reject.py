@@ -94,6 +94,14 @@ def _schema(record):
     return [f"WIR schema: {e.json_path} — {e.message[:110]}" for e in v.iter_errors(record)]
 
 
+def _class_constituents(record):
+    """CMP-010/011 — the composite cross-field rules PLUS namespace resolution (a constituent's
+    resource_type must resolve to a registered Class or a flat type). Superset of
+    check_catalog_item, which is why a resolution case names this one."""
+    m = _load("registry/tools/validate.py", "_val3")
+    return m.check_class_constituents(record)
+
+
 def _ownership(record):
     """OWN-002/007/008 — evaluates one type declaration on its own."""
     m = _load("registry/tools/validate.py", "_val")
@@ -106,6 +114,7 @@ GATES = {
     "check_group_invariants": _group_invariants,
     "check_catalog_item": _catalog_item,
     "schema": _schema,
+    "check_class_constituents": _class_constituents,
 }
 
 

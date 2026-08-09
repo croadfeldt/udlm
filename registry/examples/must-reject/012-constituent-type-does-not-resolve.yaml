@@ -1,0 +1,21 @@
+must_reject:
+  rule: CMP-011
+  gate: check_class_constituents
+  because: >-
+    A constituent naming a type that does not exist. Expansion has to compile each constituent
+    against its type, so a name resolving to nothing is a request that can never be assembled. The
+    catalog is the last place it can be refused cheaply — after admission it becomes a half-built
+    composite and a compensation path.
+record:
+  record_type: catalog_item
+  uuid: 7f4a2c19-6e83-4d05-b72f-3c918ae5d604
+  handle: acme/catalog/ghost-constituent
+  conforms_to: udlm/0.1
+  name: ApplicationStack.Ghost
+  version: 1.0.0
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  constituents:
+    - component_id: phantom
+      resource_type: Compute.NoSuchThing
+      provided_by: self
+      failure_effect: required
