@@ -1,7 +1,7 @@
 # ADR-034: The orderable-composite tier is one thing — Composite Service becomes Template
 
 **Status:** Proposed (2026-07-20) — a **discussion card for engineering review**; binds nothing until ratified.
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-033 (Templates — the tier this unifies into); ADR-027 (the shape — now **derived** `has_constituents`, ADR-027 addendum); `docs/spec/foundations/composite-service-model.md` + `registry/catalog-item.schema.json` (the Composite Service model this absorbs); ADR-028 / DCM ADR-024 (the rule-ID registry the `CMP-*`→`TPL-*` rename rides).
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-033 (Templates — the tier this unifies into); ADR-027 (the shape — now **derived** `has_constituents`, ADR-027 addendum); `docs/spec/foundations/template-composition-model.md` + `registry/catalog-item.schema.json` (the Composite Service model this absorbs); ADR-028 / DCM ADR-024 (the rule-ID registry the `CMP-*`→`TPL-*` rename rides).
 
 ## The problem — two terms for one objective
 

@@ -68,7 +68,7 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Relationships
 18. Relationships are **first-class and typed** (`depends_on`/`binds_to`/`references`/`contained_by`),
     target **resource types** (never provider-specific refs), and form **acyclic** composite DAGs
-    (`docs/spec/foundations/service-dependencies.md`, `docs/spec/foundations/composite-service-model.md`). **[enforced: shape]**
+    (`docs/spec/foundations/service-dependencies.md`, `docs/spec/foundations/template-composition-model.md`). **[enforced: shape]**
 18a. **One authoritative direction — no stored inverse.** A relationship is declared **once**, on the
     **dependent/subordinate side** (the resource that `depends_on` / is `contained_by` / `binds_to` /
     `references` another). Only **direct** (one-generation) edges are recorded; ancestry/descendants are a

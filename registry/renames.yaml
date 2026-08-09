@@ -138,3 +138,7 @@ retired:
   # classes below it and `resource_type` is the discriminator. Rationale + rejected alternatives:
   # the class header. The uuid is unchanged — a rename never mints a new identity (ADR-051).
   registry/classes/access/grouping.yaml: registry/classes/access/grouping/_base.yaml
+
+  # 2026-08-09 — the orderable composite tier is a Template; the document naming it Composite
+  # Service described a concept that does not exist beside it. Rule IDs are unchanged (CMP-*).
+  docs/spec/foundations/composite-service-model.md: docs/spec/foundations/template-composition-model.md

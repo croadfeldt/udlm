@@ -1,6 +1,6 @@
 # UDLM — Consumer Request Dependency Graph
 
-**Related Documents:** [Service Dependencies](../foundations/service-dependencies.md) | [Scheduled Requests](scheduled-requests.md) | [Composite Service Model](../foundations/composite-service-model.md) | [Operational Models](operational-models.md)
+**Related Documents:** [Service Dependencies](../foundations/service-dependencies.md) | [Scheduled Requests](scheduled-requests.md) | [Composite Service Model](../foundations/template-composition-model.md) | [Operational Models](operational-models.md)
 
 > **Events:** Dependency resolution events (`request.dependencies_resolved`, `dependency.state_changed`) are defined in the [Event Catalog](../contracts/event-catalog.md).
 

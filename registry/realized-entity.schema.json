@@ -19,7 +19,7 @@
       "type": "string",
       "format": "uuid",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-      "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (docs/spec/foundations/composite-service-model.md)."
+      "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (docs/spec/foundations/template-composition-model.md)."
     },
     "tenant_uuid": {
       "type": "string",
@@ -226,7 +226,7 @@
     },
     "constituents": {
       "type": "array",
-      "description": "For a Composite Entity: the constituents and their per-component realized state (docs/spec/foundations/composite-service-model.md).",
+      "description": "For a Composite Entity: the constituents and their per-component realized state (docs/spec/foundations/template-composition-model.md).",
       "items": {
         "type": "object",
         "additionalProperties": false,

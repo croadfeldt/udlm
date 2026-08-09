@@ -398,7 +398,7 @@ by the test, default to the cheaper axis.
 The Class hierarchy is **inheritance (*is-a*)** — vertical specialization of *one* resource's definition
 (`Compute.VM extends Compute`). A **multi-resource is composition (*has-a*)** — horizontal orchestration of
 *several* constituents through one request. They are **orthogonal**, both needed, and the model already carries
-composition as the **Composite Service** (`docs/spec/foundations/composite-service-model.md`, the `catalog-item`): multiple
+composition as the **Composite Service** (`docs/spec/foundations/template-composition-model.md`, the `catalog-item`): multiple
 constituent types + declared dependencies + T4 bindings + failure rollup, delivered through a **single request**
 that produces a **Composite Entity — one UUID** across all four states, fulfilled by ordinary Service Providers
 (no meta-provider). `entity_type` marks the axis: **`single`** = one constituent, **`multi`** = a composite.

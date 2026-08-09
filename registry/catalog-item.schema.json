@@ -2,7 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/catalog-item.schema.json",
   "title": "UDLM Composite Service Catalog Item",
-  "description": "The catalog-level Composite Service definition (docs/spec/foundations/composite-service-model.md): constituent resource types, their dependency edges, their declared data-movement bindings, and their failure classification — everything DCM needs to expand a catalog request into a Composite Entity. This is item (2) of the [D8] machine-validatable-surface program (data-model-core §2) and the schema evidence for the application model: an 'application' IS a Composite catalog item. Cross-file constraints (depends_on/bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic; a binding's from_component must appear in that constituent's depends_on) are not expressible in pure JSON Schema — registry/tools/validate.py enforces them as semantic checks.",
+  "$comment": "The canonical name for this tier is Template (naming-charter, Canonical glossary). 'Composite Service' names the same thing: composite describes the structure, while this tier IS a definition authored once and ordered many times, and only Template carries that. Composite Service was considered and rejected as a second name for one function \u2014 two names cost every reader the mapping. Alignment: croadfeldt/udlm#405.",
+  "description": "The catalog-level Composite Service definition (docs/spec/foundations/template-composition-model.md): constituent resource types, their dependency edges, their declared data-movement bindings, and their failure classification — everything DCM needs to expand a catalog request into a Composite Entity. This is item (2) of the [D8] machine-validatable-surface program (data-model-core §2) and the schema evidence for the application model: an 'application' IS a Composite catalog item. Cross-file constraints (depends_on/bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic; a binding's from_component must appear in that constituent's depends_on) are not expressible in pure JSON Schema — registry/tools/validate.py enforces them as semantic checks.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -97,7 +98,7 @@
         "transparent",
         "selective"
       ],
-      "description": "How constituents surface as DCM entities (composite-service-model.md §5): opaque = composite uuid only; transparent = every constituent is a first-class entity with a deterministic uuid (CMP-007); selective = only selective_visible constituents surface."
+      "description": "How constituents surface as DCM entities (template-composition-model.md §5): opaque = composite uuid only; transparent = every constituent is a first-class entity with a deterministic uuid (CMP-007); selective = only selective_visible constituents surface."
     },
     "selective_visible": {
       "type": "array",
@@ -105,12 +106,12 @@
         "type": "string",
         "pattern": "^[a-z][a-z0-9_]*$"
       },
-      "description": "Only when composition_visibility = selective: the component_ids surfaced as DCM entities (composite-service-model.md §5). Must reference declared component_ids (registration-time check; not enforced by validate.py yet)."
+      "description": "Only when composition_visibility = selective: the component_ids surfaced as DCM entities (template-composition-model.md §5). Must reference declared component_ids (registration-time check; not enforced by validate.py yet)."
     },
     "constituents": {
       "type": "array",
       "minItems": 1,
-      "description": "The composite payload declaration (composite-service-model.md §2.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). component_ids must be unique within the item; depends_on and bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/§2.3) — registry/tools/validate.py enforces all three.",
+      "description": "The composite payload declaration (template-composition-model.md §2.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). component_ids must be unique within the item; depends_on and bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/§2.3) — registry/tools/validate.py enforces all three.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -141,7 +142,7 @@
               "self",
               "external"
             ],
-            "description": "self = the registering provider fulfills this constituent directly via its standard Services API; external = DCM's Placement Engine selects a provider at request time (composite-service-model.md §2.2, CMP-006)."
+            "description": "self = the registering provider fulfills this constituent directly via its standard Services API; external = DCM's Placement Engine selects a provider at request time (template-composition-model.md §2.2, CMP-006)."
           },
           "fulfillment": {
             "enum": ["platform", "provider", "consumer"],
@@ -154,7 +155,7 @@
               "type": "string",
               "pattern": "^[a-z][a-z0-9_]*$"
             },
-            "description": "Sibling component_ids whose realized state must exist before this constituent can be dispatched — the ordering edges within the item (composite-service-model.md §2.3). The graph must be acyclic; forward topological order = dispatch, reverse = compensation/decommission. Sibling resolution and cycle rejection are validate.py-enforced."
+            "description": "Sibling component_ids whose realized state must exist before this constituent can be dispatched — the ordering edges within the item (template-composition-model.md §2.3). The graph must be acyclic; forward topological order = dispatch, reverse = compensation/decommission. Sibling resolution and cycle rejection are validate.py-enforced."
           },
           "bindings": {
             "type": "array",
@@ -190,18 +191,18 @@
               "partial",
               "optional"
             ],
-            "description": "How this constituent's failure affects the composite outcome — the §2.4 required_for_delivery classification (composite-service-model.md): required = halt + compensate (composite FAILED); partial = record, continue (composite DEGRADED); optional = note, ignore. Evaluated by DCM, never by the registering provider (CMP-004)."
+            "description": "How this constituent's failure affects the composite outcome — the §2.4 required_for_delivery classification (template-composition-model.md): required = halt + compensate (composite FAILED); partial = record, continue (composite DEGRADED); optional = note, ignore. Evaluated by DCM, never by the registering provider (CMP-004)."
           },
           "spec_defaults": {
             "type": "object",
-            "description": "Free-form layer-assembled defaults for this constituent's spec — injected during the standard layer assembly phase (composite-service-model.md §7 step 3). Field values are typed by the constituent's Resource Type Spec, not re-validated here."
+            "description": "Free-form layer-assembled defaults for this constituent's spec — injected during the standard layer assembly phase (template-composition-model.md §7 step 3). Field values are typed by the constituent's Resource Type Spec, not re-validated here."
           }
         }
       }
     },
     "consumer_fields": {
       "type": "array",
-      "description": "The consumer-facing parameter surface: what a consumer supplies in the Intent record (composite-service-model.md §3.1) alongside the catalog_ref. Expansion maps these into constituent specs via layer assembly.",
+      "description": "The consumer-facing parameter surface: what a consumer supplies in the Intent record (template-composition-model.md §3.1) alongside the catalog_ref. Expansion maps these into constituent specs via layer assembly.",
       "items": {
         "type": "object",
         "additionalProperties": false,
