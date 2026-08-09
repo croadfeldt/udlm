@@ -2,7 +2,7 @@
 # proves: constituents, acyclic depends_on, and bindings resolved against declared outputs
 # Worked-example Composite Service catalog item (registry/catalog-item.schema.json).
 # A three-tier application — database / app / web — as a Composite catalog item:
-# constituents + dependency edges + declared bindings (entities/composite-service-model.md).
+# constituents + dependency edges + declared bindings (entities/template-composition-model.md).
 # This is the [D8] item-(2) evidence that an "application" is a Composite catalog item,
 # not a flat resource type (data-model-core §2/§4).
 record_type: catalog_item

@@ -197,7 +197,7 @@ this is the index, not a second definition.
 | Unauthorized cross-tenant reference | intent validation | `authz.cross_tenant_unauthorized` | `XTA-006`, `XTA-007` (`docs/spec/foundations/entity-relationships.md`) |
 | Sovereignty egress across a declared boundary | pre-crossing, before dispatch or serialization | `policy.sovereignty_egress_denied` | `GMX-011` (`docs/spec/governance/governance-matrix.md`) |
 | Inline credential material where a reference is required | intent intake, before any persistence | `validation.inline_credential_material` | `CPX-013`, `CPX-014` (`docs/spec/governance/credentials.md`) |
-| Binding to an undeclared producer output | request validation, before any constituent realizes | `validation.binding_undeclared_output` | `CMP-009` (`docs/spec/foundations/composite-service-model.md`) |
+| Binding to an undeclared producer output | request validation, before any constituent realizes | `validation.binding_undeclared_output` | `CMP-009` (`docs/spec/foundations/template-composition-model.md`) |
 | Dispatch to a provider that never declared the capability | pre-dispatch eligibility | `placement.capability_mismatch` | `PRV-011` (`docs/spec/contracts/provider-contract.md`) |
 | Write through a policy-reduced projection | modification validation | `policy.field_scope_violation` | `GMX-012`, `GMX-013` (`docs/spec/governance/governance-matrix.md`) |
 | Version bump insufficient for the classification | registry validation | `validation.version_bump_insufficient` | `REG-011` (`docs/spec/governance/registry-governance.md`) |

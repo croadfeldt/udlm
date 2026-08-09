@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.6"
+version: "1.0.7"
 
 prefixes:
   - prefix: ACC
@@ -41,7 +41,7 @@ prefixes:
     status: active
   - prefix: CMP
     name: Composite service composition
-    home: docs/spec/foundations/composite-service-model.md
+    home: docs/spec/foundations/template-composition-model.md
     domain: Composite Service registration and constituent composition rules
     status: active
   - prefix: CPX

@@ -674,7 +674,7 @@ Multiple recovery policies for the same trigger at the same domain level
 
 The declaration shape — `required_for_delivery: required|partial|optional`, `compensation_on_failure`,
 `compensation_order`, `partial_delivery_policy` — has one home:
-[composite-service-model](../foundations/composite-service-model.md) §2.4/§2.4a. This section owns only the
+[template-composition-model](../foundations/template-composition-model.md) §2.4/§2.4a. This section owns only the
 **runtime**: execution order (§6.2) and compensation failure (§6.3). In the worked example below, `vm` was
 declared `required` with `compensation_order: 3` and `ip` `required` with `compensation_order: 1`; `dns` and
 `loadbalancer` are `partial` (`compensation_on_failure: skip`).

@@ -573,7 +573,7 @@ composite_service_registration:
 Compensation is declared per constituent as part of the composite definition — not discovered at runtime.
 The declaration shape (`required_for_delivery: required|partial|optional`, `compensation_on_failure`,
 `compensation_order`, `partial_delivery_policy`) and its semantics have **one home**:
-[composite-service-model](composite-service-model.md) §2.4/§2.4a — compensation runs in reverse dependency
+[template-composition-model](template-composition-model.md) §2.4/§2.4a — compensation runs in reverse dependency
 order, highest `compensation_order` first, governed by Recovery Policy (CMP-005). Runtime execution and
 compensation-failure handling: [operational-models](../lifecycle/operational-models.md) §6.
 

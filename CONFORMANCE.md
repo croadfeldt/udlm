@@ -239,7 +239,7 @@ them disqualifies the implementation from any conformance level.
 - `docs/spec/foundations/resource-type-hierarchy.md` — required (not excludable)
 - `docs/spec/foundations/entity-relationships.md` — required (not excludable)
 - `docs/spec/lifecycle/operational-models.md` — required (not excludable)
-- `docs/spec/foundations/composite-service-model.md` — **excludable (must declare)**
+- `docs/spec/foundations/template-composition-model.md` — **excludable (must declare)**
 - `docs/spec/lifecycle/scheduled-requests.md` — **excludable (must declare)**
 - `docs/spec/lifecycle/request-dependency-graph.md` — **excludable (must declare)**
 - `docs/spec/lifecycle/subscription-lifecycle.md` — **excludable (must declare)**

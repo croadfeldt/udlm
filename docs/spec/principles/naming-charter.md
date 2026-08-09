@@ -93,7 +93,12 @@ sense. If `family` is retired as an entity axis, keep it only in the rule-ID sen
 
 These land together, then the freeze applies:
 
-- **Composite Service → Template**, Composite Entity → System, `CMP-*` → `TPL-*` — ADR-034 (gated on eng ruling).
+- **Composite Service → Template**, Composite Entity → System, `CMP-*` → `TPL-*` — ADR-034.
+  Template because *composite* describes the structure while the tier IS a definition authored once
+  and ordered many times, and reusability is what distinguishes it from a one-off request; the word
+  also already means this in ARM, CloudFormation, Heat and TOSCA Service Template. Composite Service
+  was considered and rejected as a second name for one function. Aligns with
+  [#405](https://github.com/croadfeldt/udlm/issues/405), which settles what `catalog_item` becomes.
 - **`family` → `nature` reconciliation** — this charter (gated on the work-product decision above).
 - *(already landed: Blueprint → Template · edge `kind` → `edge_type` · **the Atomic/Composite shape → derived `has_constituents`** (ADR-027 addendum; the `single`/`multi` rename was superseded and its branch deleted).)*
 

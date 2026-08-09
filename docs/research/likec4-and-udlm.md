@@ -7,7 +7,7 @@ coupled to any other integration or partner.
 A LikeC4 model and a UDLM Composite Service are **two serializations of the same composite graph** — LikeC4
 is the human/visual one (design-time); the Composite Service is the operational/data one (runtime), and only
 it carries the graph through implementation, governance, and audit. So **a LikeC4 system *is* a Composite
-Service** (`docs/spec/foundations/composite-service-model.md`): design in LikeC4 → it maps to a UDLM Composite Service →
+Service** (`docs/spec/foundations/template-composition-model.md`): design in LikeC4 → it maps to a UDLM Composite Service →
 DCM realizes each component via a separate provider → the live diagram re-projects from Realized state.
 Sections: the worked example (§1–4), translation gaps (§5), and what UDLM does / doesn't represent (§6).
 
@@ -48,7 +48,7 @@ external actor (`customer`) isn't provisioned — it informs public-facing confi
 | `web -> api`, `api -> db` | dependency edges | — | drive the DAG |
 
 ```yaml
-# A Composite Service — docs/spec/foundations/composite-service-model.md
+# A Composite Service — docs/spec/foundations/template-composition-model.md
 compositeService:
   name: online-shop
   constituents:                       # derived 1:1 from LikeC4 elements

@@ -1,6 +1,22 @@
-# UDLM — Composite Service Composition Model
+# UDLM — Template Composition Model
 
 **Audience:** Architects, Service Provider implementers, Policy authors
+
+> **A composited service offering is a Template.** This document is the composition mechanism of that
+> one tier — what its constituents are, how they order, how data moves between them, how a failure is
+> classified, and what a registration must satisfy. There is no separate "composite service" concept
+> to hold alongside it.
+>
+> Template rather than Composite Service because *composite* describes the structure — a thing with
+> parts — while the tier IS **a definition authored once and ordered many times**. Reusability is
+> what distinguishes it from a one-off request, and only one of the two words carries it; "deploy a
+> template" is also the settled reading in ARM, CloudFormation, Heat and TOSCA Service Template.
+> Composite Service was considered and rejected as a second name for one function, because two names
+> cost every reader the mapping between them.
+>
+> The prose below still says "Composite Service" in places, and the rule family is still `CMP-*`.
+> Those are identifiers and wording, aligned under
+> [#405](https://github.com/croadfeldt/udlm/issues/405); the tier they name is the one above.
 
 > **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs (wave-3.2 deferral closed, wave 3.3). Machine-validatable schema:** Composite Service catalog items validate against
 > [`registry/catalog-item.schema.json`](../../../registry/catalog-item.schema.json)
