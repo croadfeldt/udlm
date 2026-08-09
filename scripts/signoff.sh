@@ -13,35 +13,24 @@ run() { # run "name" hard|soft cmd...
   else printf '  \033[31m✗ %s\033[0m\n' "$name"; echo "$out" | tail -6 | sed 's/^/      /'; fail=$((fail+1)); fi
 }
 echo "== Automated gates =="
-run "registry valid-by-construction"    hard python3 registry/tools/validate.py
-run "registry meta-schema"              hard python3 tests/validate_registry.py
-run "estate-token scrub"                hard python3 tests/check_estate_tokens.py
-run "single-source (rule IDs)"          hard python3 tests/check_single_source.py
-run "single-source (definitions)"       hard python3 tests/check_definition_single_source.py
-run "model vocabulary"                  hard python3 tests/check_model_vocabulary.py
-run "session narration"                 hard python3 tests/check_session_narration.py
-run "profile tables"                    hard python3 tests/check_profile_tables.py
-run "Offer collapse (selection inside the offer)" hard python3 tests/check_offer_collapse.py
-run "No UDLM-shipped defaults (NDF-001)" hard python3 tests/check_no_shipped_defaults.py
-run "Cited schema files exist (CSF-001)" hard python3 tests/check_cited_schema_files.py
-run "Required-grant set derives (GRD-001)" hard python3 tests/check_grant_derivation.py
-run "Structural invariants hold (GRP-INV-001/002/005/006)" hard python3 tests/check_group_invariants.py
-run "Negative corpus is refused (MRJ-001)" hard python3 tests/check_must_reject.py
-run "Examples say what they prove (ECV-001)" hard python3 tests/check_example_coverage.py
-run "Schemas declare Draft 2020-12 (SCD-001)" hard python3 tests/check_schema_dialect.py
-run "UC traceability (flow -> corpus)" hard python3 tests/check_uc_traceability.py
-run "Policy-fact vocabulary (policy-contract 2.1)" hard python3 tests/check_policy_facts.py
-run "Policy-engine boundary (ADR-065)" hard python3 tests/check_policy_boundary.py
-run "URF grammar (identifier-scheme 9)" hard python3 tests/check_urf.py
-run "URF conformance (dereference + portability)" hard python3 tests/check_urf_conformance.py
-run "URF grammar fuzz (combinatorial)" hard python3 registry/tools/fuzz_urf.py
-run "type base standard (rule 36)"      hard python3 tests/check_type_standard.py
-run "identity integrity (ADR-051)"      hard python3 tests/check_identity_integrity.py
-run "uc dimension vocabulary"        hard python3 tests/check_uc_dimensions.py
-run "pin manifest (current+append-only)" hard python3 registry/tools/generate_pin_manifest.py --check
-run "compat-check compiles"             hard python3 -c "compile(open('registry/tools/compat-check.py').read(),'x','exec')"
-run "version / compat gate vs $base"    hard python3 tests/ci_compat_gate.py "$base"
-run "standards registered"              soft python3 tests/check_standards_registered.py
+# The gate list is DERIVED from .github/workflows/validate.yml, never restated here. A restated
+# list drifts: 20 of CI's steps were missing from this script, and twice in one week a PR passed
+# signoff and failed CI. Adding a step to CI is now the only edit needed — see scripts/ci-steps.py.
+steps=$(python3 scripts/ci-steps.py) || { echo "  could not read the CI step list"; exit 2; }
+# Fail closed on a short list. An empty or truncated read would run nothing and report PASS, which
+# is the failure this script exists to prevent — a green signoff that checked nothing.
+n_steps=$(printf '%s\n' "$steps" | grep -c .)
+if [ "$n_steps" -lt 20 ]; then
+  printf '\033[31m  refusing to run: derived only %s step(s) from validate.yml.\033[0m\n' "$n_steps"
+  echo "  A short list means the workflow moved or the parser broke. Passing here would be vacuous."
+  exit 2
+fi
+while IFS=$'\t' read -r name kind cmd; do
+  [ -z "$cmd" ] && continue
+  cmd=${cmd//origin\/main/$base}          # honour a non-default base ref
+  run "$name" "$kind" bash -c "$cmd"
+done <<< "$steps"
+
 echo ""
 echo "== Judgment checklist (self-check — not automatable) =="
 cat <<'EOF'
