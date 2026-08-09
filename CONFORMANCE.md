@@ -280,64 +280,80 @@ MUST satisfy every item.
 
 ### Identifiers ([`identifier-scheme.md`](docs/spec/contracts/identifier-scheme.md))
 
-- [ ] UUIDs use RFC 9562 canonical form (lowercase hyphenated)
-- [ ] UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked)
-- [ ] Handles match `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` with namespace pattern
-- [ ] References include `ref_type` and `uuid`; `uuid` is authoritative, `handle` advisory — resolution never by name alone
-- [ ] Identifier reassignment is rejected; uuids are never reused after decommission
-- [ ] Handle changes are audited
+| Rule | Requirement |
+|---|---|
+| `WIR-001` | UUIDs use RFC 9562 canonical form (lowercase hyphenated) |
+| `WIR-002` | UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked) |
+| `WIR-003` | Handles match `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` with namespace pattern |
+| `WIR-004` | References include `ref_type` and `uuid`; `uuid` is authoritative, `handle` advisory — resolution never by name alone |
+| `WIR-005` | Identifier reassignment is rejected; uuids are never reused after decommission |
+| `WIR-006` | Handle changes are audited |
 
 ### Time ([`time-and-clock.md`](docs/spec/contracts/time-and-clock.md))
 
-- [ ] All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix
-- [ ] Skew ≤±5 seconds from peers
-- [ ] Future timestamps >5s ahead are rejected
-- [ ] Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8
-- [ ] Total ordering via `(timestamp, sequence_uuid)` available
+| Rule | Requirement |
+|---|---|
+| `WIR-007` | All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix |
+| `WIR-008` | Skew ≤±5 seconds from peers |
+| `WIR-009` | Future timestamps >5s ahead are rejected |
+| `WIR-010` | Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 |
+| `WIR-011` | Total ordering via `(timestamp, sequence_uuid)` available |
 
 ### Errors ([`error-model.md`](docs/spec/contracts/error-model.md))
 
-- [ ] Error envelope schema matches §2 exactly
-- [ ] Error codes drawn from closed vocabulary or declared extensions
-- [ ] `retryable` flag set correctly per code definitions
-- [ ] `request_id` and `audit_uuid` present in every error
-- [ ] HTTP status mapping per §3.2 for HTTP transports
+| Rule | Requirement |
+|---|---|
+| `WIR-012` | Error envelope schema matches §2 exactly |
+| `WIR-013` | Error codes drawn from closed vocabulary or declared extensions |
+| `WIR-014` | `retryable` flag set correctly per code definitions |
+| `WIR-015` | `request_id` and `audit_uuid` present in every error |
+| `WIR-016` | HTTP status mapping per §3.2 for HTTP transports |
 
 ### Events ([`event-catalog.md`](docs/spec/contracts/event-catalog.md))
 
-- [ ] Event envelope schema matches the catalog
-- [ ] Event timestamps set by commit log, not emitter
-- [ ] `event_uuid` enables idempotent processing
+| Rule | Requirement |
+|---|---|
+| `WIR-017` | Event envelope schema matches the catalog |
+| `WIR-018` | Event timestamps set by commit log, not emitter |
+| `WIR-019` | `event_uuid` enables idempotent processing |
 
 ### Retries ([`retry-semantics.md`](docs/spec/contracts/retry-semantics.md))
 
-- [ ] `retryable: false` is never retried
-- [ ] `retry_after_seconds` honored
-- [ ] Idempotency-Key preserved across attempts
-- [ ] Exponential backoff with jitter within prescribed bounds
-- [ ] Per-operation budget enforced (5 attempts / 6 total)
+| Rule | Requirement |
+|---|---|
+| `WIR-020` | `retryable: false` is never retried |
+| `WIR-021` | `retry_after_seconds` honored |
+| `WIR-022` | Idempotency-Key preserved across attempts |
+| `WIR-023` | Exponential backoff with jitter within prescribed bounds |
+| `WIR-024` | Per-operation budget enforced (5 attempts / 6 total) |
 
 ### Rate limits ([`rate-limit-and-backpressure.md`](docs/spec/contracts/rate-limit-and-backpressure.md))
 
-- [ ] Rate-limit declarations published via capability discovery
-- [ ] `rate_limit.exceeded` with `retry_after_seconds` on overflow
-- [ ] `Retry-After` HTTP header on HTTP transports
-- [ ] Per-scope fairness enforced
+| Rule | Requirement |
+|---|---|
+| `WIR-025` | Rate-limit declarations published via capability discovery |
+| `WIR-026` | `rate_limit.exceeded` with `retry_after_seconds` on overflow |
+| `WIR-027` | `Retry-After` HTTP header on HTTP transports |
+| `WIR-028` | Per-scope fairness enforced |
 
 ### Schema sharing ([`schema-sharing.md`](docs/spec/contracts/schema-sharing.md))
 
-- [ ] Schema bundle published at `/.well-known/udlm/schema-bundle`
-- [ ] JSON Schema Draft 2020-12 for all schemas
-- [ ] Per-schema URLs immutable for `(id, version)` tuples
-- [ ] Version negotiation honors semver
-- [ ] Unknown-type data triggers schema fetch or graceful degradation
+| Rule | Requirement |
+|---|---|
+| `WIR-029` | Schema bundle published at `/.well-known/udlm/schema-bundle` |
+| `WIR-030` | JSON Schema Draft 2020-12 for all schemas |
+| `WIR-031` | Per-schema URLs immutable for `(id, version)` tuples |
+| `WIR-032` | Version negotiation honors semver |
+| `WIR-033` | Unknown-type data triggers schema fetch or graceful degradation |
 
 ### Conformance declaration (this doc)
 
-- [ ] Declaration published at `/.well-known/udlm/conformance`
-- [ ] Declaration matches §4 schema exactly
-- [ ] Exclusions enumerated for partial conformance
-- [ ] Excluded features respond with `conformance.feature_not_implemented`
+| Rule | Requirement |
+|---|---|
+| `WIR-034` | Declaration published at `/.well-known/udlm/conformance` |
+| `WIR-035` | Declaration matches §4 schema exactly |
+| `WIR-036` | Exclusions enumerated for partial conformance |
+| `WIR-037` | Excluded features respond with `conformance.feature_not_implemented` |
 
 ---
 
@@ -355,7 +371,6 @@ The `conformance.*` codes are **defined here and registered into** the closed
 error vocabulary in [`error-model.md`](docs/spec/contracts/error-model.md).
 
 ---
-
 ## 8. Test suite
 
 Conformance is verified by the udlm conformance test suite. The suite:

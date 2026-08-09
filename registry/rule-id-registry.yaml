@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.5"
+version: "1.0.6"
 
 prefixes:
   - prefix: ACC
@@ -237,6 +237,11 @@ prefixes:
     name: Terminology discipline
     home: CONTRIBUTING.md
     domain: Retired terms do not reappear in living text — history-marked lines and per-file/per-rule exemptions excepted (enforced by tests/check_terminology.py)
+    status: active
+  - prefix: WIR
+    name: Wire compatibility
+    home: CONFORMANCE.md
+    domain: The wire-compatibility checklist every conformant implementation must satisfy (identifiers, time, errors, events, retries, rate limits, schema sharing, the conformance declaration)
     status: active
   - prefix: XTA
     name: Cross-tenant authorization
