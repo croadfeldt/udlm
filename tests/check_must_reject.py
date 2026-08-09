@@ -59,6 +59,13 @@ def _group_invariants(record):
     return m.evaluate(record, m.load_index())
 
 
+def _catalog_item(record):
+    """CMP-002 and the other composite cross-field rules — already per-record, already citing its
+    rule. Bindable with no change to the gate."""
+    m = _load("registry/tools/validate.py", "_val2")
+    return m.check_catalog_item(record)
+
+
 def _ownership(record):
     """OWN-002/007/008 — evaluates one type declaration on its own."""
     m = _load("registry/tools/validate.py", "_val")
@@ -69,6 +76,7 @@ GATES = {
     "check_grant_derivation": _grant_derivation,
     "check_ownership_declaration": _ownership,
     "check_group_invariants": _group_invariants,
+    "check_catalog_item": _catalog_item,
 }
 
 
