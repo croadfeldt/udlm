@@ -360,11 +360,32 @@ error vocabulary in [`error-model.md`](docs/spec/contracts/error-model.md).
 
 Conformance is verified by the udlm conformance test suite. The suite:
 
-- Is specified in [`tests/test-framework-specification.md`](tests/test-framework-specification.md).
 - Is executable: it issues operations against an implementation's interop surfaces
   and validates responses against the contracts.
 - Is versioned with the udlm spec — test suite version maps to udlm version.
 - Covers every checklist item in §6.
+
+> **Status — the suite is under construction, and this section states a commitment rather than
+> a shipped artifact.** Read it as what an implementation will be asked to run, not as something
+> it can run today.
+>
+> **What exists.** A corpus in `registry/examples/`, executed by CI on every change, in three
+> parts: worked records that state the rule each demonstrates (`check_example_coverage.py`);
+> a negative corpus of records that MUST be refused, which fails both when the model stops
+> refusing one and when a case stops provoking the rule it names (`check_must_reject.py`); and
+> per-rule gates the cases bind to. It validates **this repository's own records** — UDLM as its
+> own first implementation.
+>
+> **What does not exist.** Anything a third party can run against their own implementation.
+> Every gate here scans this tree. So the §6 checklist below is the assertion list a conformance
+> suite must cover, and nothing yet executes it against an external implementation — which means
+> `conformance_test_suite_version` in §4.1 cannot be populated honestly yet.
+>
+> This section previously cited `tests/test-framework-specification.md` as the suite's
+> specification. That document specifies a different thing — an architecture fuzzer generating
+> scenarios against DCM's pipeline, naming DCM's own tables — and mentions none of the seven wire
+> contracts §6 draws from. The citation is removed rather than repointed: pointing a reader at an
+> artifact that answers a different question is worse than pointing at nothing. Tracked at #417.
 
 Implementations MUST run the test suite as part of self-certification. The test
 suite version is recorded in the conformance declaration

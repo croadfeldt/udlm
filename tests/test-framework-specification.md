@@ -1,5 +1,21 @@
 # UDLM — Test Framework Specification
 
+> **This is not the UDLM conformance suite, and it is not UDLM's document.**
+>
+> It specifies an architecture fuzzer for **DCM** — generating scenarios against DCM's pipeline,
+> naming DCM's own tables (`actors`, `intent_records`, `pipeline_events`) and its required
+> infrastructure. It mentions none of the seven wire contracts `CONFORMANCE.md` §6 draws its
+> checklist from.
+>
+> `CONFORMANCE.md` §8 used to cite this file as the conformance suite's specification, which
+> misdirected anyone trying to find out how to self-certify. That citation is removed; §8 now
+> states plainly what exists and what does not.
+>
+> Per `AGENTS.md`'s isolation table, control-plane content belongs in the `dcm` repository. The
+> document is useful and is kept here only until it is moved there — it is retained rather than
+> deleted so nothing is lost in the meantime. Tracked at #417.
+
+
 **Document Status:** ✅ Complete
 **Document Type:** Architecture Specification — Automated test framework contract for data model and architecture validation
 **Related Documents:** [Foundations](../docs/spec/foundations/foundations.md) | [Entity Types](../docs/spec/foundations/entity-types.md) | [Four States](../docs/spec/foundations/four-states.md) | [Policy Contract](../docs/spec/contracts/policy-contract.md) | [Provider Contract](../docs/spec/contracts/provider-contract.md) | [Data Contracts](../docs/spec/principles/data-contracts.md)
