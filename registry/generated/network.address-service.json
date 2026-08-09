@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc",
   "resource_type": "Network.AddressService",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "The network address-assignment and name-resolution SERVICE for a site — DHCP and/or DNS as one operated capability (two projections of the same allocation: a lease and its A/PTR records). Vendor mechanisms (a DHCP/DNS server implementation, an integrated identity suite, a cloud service) are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations from the estate's Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces. Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-05T02:58:43Z",
-    "converted_from": "flat spec Network.AddressService@0.5.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.AddressService",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc"
         }
       ]

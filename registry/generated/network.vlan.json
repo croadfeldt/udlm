@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VLAN/0.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426",
   "resource_type": "Network.VLAN",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A foundational network segment identifier — a VLAN (IEEE 802.1Q) or an overlay VNI (VXLAN/Geneve) — owned and advertised by a network/fabric provider and/or defined in a platform data layer, and SELECTED by reference from the resources that ride it (a Network.VirtualNetwork, a Hardware.NetworkInterface). A root resource (docs/guides/foundational-resources.md): dependents reference an existing VLAN, they do not invent one. The concrete encapsulation is provider data; a provider may offer a variant (e.g. Network.Port) that the org ratifies.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
-    "converted_from": "flat spec Network.VLAN@0.3.2 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.VLAN",
-          "version": "0.5.0",
+          "version": "0.5.1",
           "uuid": "009c7bcb-53ae-4a3b-96fd-12ee35b3b426"
         }
       ]

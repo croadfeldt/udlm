@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.3.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.3.1",
   "conforms_to": "udlm/0.1",
   "uuid": "1d8e581f-71a1-4023-aaba-2d581a02da0e",
   "resource_type": "Capability",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -11,14 +11,13 @@
     "description": "A discrete platform capability — the unit of architectural capability tracked, normalized, and gap-analysed by DAV. A Knowledge-family entity: its lifecycle is curation (proposed -> under-review -> canonical -> deprecated), not provisioning, and it is never realized by a provider. The family tag disambiguates the collision-prone bare word 'Capability' from any Resource type.",
     "maintainer": "dav",
     "origination_timestamp": "2026-06-18T00:58:56Z",
-    "converted_from": "flat spec Capability@0.2.1 (bulk mechanical conversion 2026-08-04; single-segment childless instantiable base — the Topology precedent dissolved the naming hold)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "Capability",
-          "version": "0.3.0",
+          "version": "0.3.1",
           "uuid": "1d8e581f-71a1-4023-aaba-2d581a02da0e"
         }
       ]

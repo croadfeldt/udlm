@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.FileShare/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.FileShare/0.6.1
 conforms_to: udlm/0.1
 uuid: 83f66b92-ad66-4415-aa94-01327dec4f27
 record_type: class
 class: type
 resource_type: Storage.FileShare
 parent: Storage
-version: 0.6.0
+version: 0.6.1
 family: Resource
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     stored.
   maintainer: udlm-registry
   origination_timestamp: '2026-07-11T00:00:00Z'
-  converted_from: flat spec Storage.FileShare@0.3.4 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: protocol
   scope: Storage.FileShare

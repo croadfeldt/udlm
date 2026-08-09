@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Observability.LogShipper/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922",
   "resource_type": "Observability.LogShipper",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "An OUTCOME: a target host's logs are shipped to a central log sink, tagged with the host's identity. The consumer declares 'I need a LogShipper on host X' — nothing about HOW. A provider realizes it; the automation method (a configuration-management role today, an automation platform's job template tomorrow, a container, a script) is the provider's encapsulated internal mechanism and never appears in this type. Swapping the method is an internal provider change with zero impact on this contract or the consumer — that invisibility is the point. Worked realization: a provider's configuration-management role shipping the host journal to the central log store. See DCM architecture/integrations/automation-outcome-providers.md.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-18T13:14:58Z",
-    "converted_from": "flat spec Observability.LogShipper@0.4.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Observability.LogShipper",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "1f2eadd3-1144-4962-9342-dfb7fbb1f922"
         }
       ]

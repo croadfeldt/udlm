@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8",
   "resource_type": "Platform.Namespace",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A platform namespace — the isolation and scheduling boundary within a cluster that workloads (VMs, containers, pods) are placed into. Models the construct that Kubernetes calls a Namespace and other platforms express as a tenant-scoped partition of cluster resources (some distributions overlay it as a project). Provider-specific because namespace semantics vary across platforms, but the role — tenant-scoped resource boundary within a cluster — is universal. A provider declares required_inputs that reference this type so placement and enrichment policies can select the right namespace for a request.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z",
-    "converted_from": "flat spec Platform.Namespace@0.3.5 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Platform.Namespace",
-          "version": "0.5.0",
+          "version": "0.5.1",
           "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8"
         }
       ]

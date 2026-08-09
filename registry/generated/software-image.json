@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.2.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/SoftwareImage/0.2.1",
   "conforms_to": "udlm/0.1",
   "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16",
   "resource_type": "SoftwareImage",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -11,14 +11,13 @@
     "description": "A container image as a Knowledge-family fact about the estate — the digest-identified artifact a Compute.Container runs, and the anchor for its bill-of-materials. Knowledge, not a Resource: it is discovered (a scanner sweep), never provider-realized; its lifecycle is curation/discovered. ADOPT (not absorb) the OCI image-spec by reference (T5): identity join (digest) + a version-pinned pointer, the standard's schema is not restated. Referenced by Compute.Container via runs_image; contains SoftwarePackage (the SBOM).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-22T00:00:00Z",
-    "converted_from": "flat spec SoftwareImage@0.1.1 (bulk mechanical conversion 2026-08-04; single-segment childless instantiable base — the Topology precedent dissolved the naming hold)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
           "class": "SoftwareImage",
-          "version": "0.2.0",
+          "version": "0.2.1",
           "uuid": "d9635416-81f7-431f-b3b7-dca3919a1f16"
         }
       ]

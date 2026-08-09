@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.6.1
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: type
 resource_type: Network.IPAddressPool
 parent: Network
-version: 0.6.0
+version: 0.6.1
 family: Resource
 status: active
 # OWN-007 — the pool entity itself is owned outright by the platform Tenant; what it PRODUCES is an
@@ -24,8 +24,6 @@ metadata:
     inventory the addresses are allocated FROM.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-16T06:00:00Z'
-  converted_from: flat spec Network.IPAddressPool@0.3.5 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: prefix
   scope: Network.IPAddressPool

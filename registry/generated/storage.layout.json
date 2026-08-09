@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
   "resource_type": "Storage.Layout",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation: per-disk shape left Compute.VM — one hand-authored source per concept). An ordered set of named entries — each a disk-shaped unit with a size, an optional storage tier, an optional role, and an optional boot position. The entry `name` is the stable identity consumers join on; consumption is declared consumer-side (a consumer names its layout and the records realizing its entries declare the realization), never here. A layout record belongs to ONE consumer — reuse of a shape across consumers is the Template tier (ADR-033), so the per-entry realization map stays unambiguous.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-29T00:00:00Z",
-    "converted_from": "flat spec Storage.Layout@0.4.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Storage.Layout",
-          "version": "0.5.0",
+          "version": "0.5.1",
           "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89"
         }
       ]

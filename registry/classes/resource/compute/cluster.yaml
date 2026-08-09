@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.1
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: type
 resource_type: Compute.Cluster
 parent: Compute
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -17,8 +17,6 @@ metadata:
     semantics).
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T19:57:00Z'
-  converted_from: flat spec Compute.Cluster@0.4.4 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: release
   scope: Compute.Cluster

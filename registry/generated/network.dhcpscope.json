@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.8.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.8.1",
   "conforms_to": "udlm/0.1",
   "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42",
   "resource_type": "Network.DHCPScope",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A DHCP address scope — a subnet's dynamic pool(s), options, and reservations. Grounded in the DHCP protocol concepts (RFC 2131 / RFC 8415). The concrete pool/option/lease model is provider config (any DHCP provider — Kea, dnsmasq, ISC DHCP, a cloud DHCP), projected not dictated; UDLM carries the neutral subnet + the graph edges. UDLM does not prescribe DHCP as the way to serve addresses — an address's origin is a field on Network.IPAddress (static/dhcp/link-layer/random).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
-    "converted_from": "flat spec Network.DHCPScope@0.6.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.DHCPScope",
-          "version": "0.8.0",
+          "version": "0.8.1",
           "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42"
         }
       ]

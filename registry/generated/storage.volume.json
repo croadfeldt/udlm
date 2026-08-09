@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.1",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A CONSUMABLE persistent storage volume — the block or file volume a workload attaches, as distinct from the Storage.Cluster that PROVISIONS it (the platform) and the physical device that backs it. Vendor-neutral Tier-1: provisioners (Ceph RBD/CephFS, cloud CSI drivers, NFS) are the provider, never the type. Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish Volume.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-07T14:35:00Z",
-    "converted_from": "flat spec Storage.Volume@0.8.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Storage.Volume",
-          "version": "0.11.0",
+          "version": "0.11.1",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]

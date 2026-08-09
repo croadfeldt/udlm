@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.ConnectionProfile/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.ConnectionProfile/0.4.1
 conforms_to: udlm/0.1
 uuid: 7c322a52-3d41-4067-b9e2-967280517aa8
 record_type: class
 class: type
 resource_type: Network.ConnectionProfile
 parent: Network
-version: 0.4.0
+version: 0.4.1
 family: Resource
 status: active
 metadata:
@@ -18,8 +18,6 @@ metadata:
     Supersedes bespoke per-tool host-network variables.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-15T00:00:00Z'
-  converted_from: flat spec Network.ConnectionProfile@0.3.3 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: nmstate_schema_version
   scope: Network.ConnectionProfile

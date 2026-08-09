@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.Gateway/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.Gateway/0.6.1
 conforms_to: udlm/0.1
 uuid: ceb29900-486a-4c51-ac66-d686d8030711
 record_type: class
 class: type
 resource_type: Network.Gateway
 parent: Network
-version: 0.6.0
+version: 0.6.1
 family: Resource
 status: active
 metadata:
@@ -16,8 +16,6 @@ metadata:
     focus. Vendor specifics (a firewall distribution or a vendor firewall appliance) are the provider/extension.
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:38:59Z'
-  converted_from: flat spec Network.Gateway@0.4.4 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: functions
   scope: Network.Gateway

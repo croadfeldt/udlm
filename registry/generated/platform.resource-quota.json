@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a",
   "resource_type": "Platform.ResourceQuota",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A resource quota scoped to a namespace — hard limits on aggregate resource consumption (CPU, memory, pods, storage, object counts) within a single namespace. Models the Kubernetes ResourceQuota construct. Placement and enrichment policies query quotas to determine whether a namespace has capacity for a new workload before dispatching. Discovered-state reporting surfaces actual usage against the hard limits for capacity planning and drift detection.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z",
-    "converted_from": "flat spec Platform.ResourceQuota@0.3.2 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Platform.ResourceQuota",
-          "version": "0.5.0",
+          "version": "0.5.1",
           "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a"
         }
       ]

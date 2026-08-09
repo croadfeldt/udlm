@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Dataset/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Dataset/0.5.1
 conforms_to: udlm/0.1
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Storage.Dataset
 parent: Storage
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -17,8 +17,6 @@ metadata:
     Grounded in OpenZFS (dataset).
   maintainer: udlm-registry
   origination_timestamp: '2026-07-13T00:00:00Z'
-  converted_from: flat spec Storage.Dataset@0.3.2 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: dataset_kind
   scope: Storage.Dataset

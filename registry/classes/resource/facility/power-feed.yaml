@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Facility.PowerFeed/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Facility.PowerFeed/0.5.1
 conforms_to: udlm/0.1
 uuid: e1cdf697-ec3d-4208-8e62-ef1c88ba7a31
 record_type: class
 class: type
 resource_type: Facility.PowerFeed
 parent: Facility
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -17,8 +17,6 @@ metadata:
     name only).'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:38:59Z'
-  converted_from: flat spec Facility.PowerFeed@0.3.2 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: feed_type
   scope: Facility.PowerFeed

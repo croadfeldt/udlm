@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.StorageClass/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.StorageClass/0.7.1
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: type
 resource_type: Platform.StorageClass
 parent: Platform
-version: 0.7.0
+version: 0.7.1
 family: Resource
 status: active
 metadata:
@@ -18,8 +18,6 @@ metadata:
     and parameters vary across provisioners.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-17T00:00:00Z'
-  converted_from: flat spec Platform.StorageClass@0.5.0 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: name
   scope: Platform.StorageClass

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Observability.LogShipper/0.6.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Observability.LogShipper/0.6.1
 conforms_to: udlm/0.1
 uuid: 1f2eadd3-1144-4962-9342-dfb7fbb1f922
 record_type: class
 class: type
 resource_type: Observability.LogShipper
 parent: Observability
-version: 0.6.0
+version: 0.6.1
 family: Resource
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     configuration-management role shipping the host journal to the central log store. See DCM architecture/integrations/automation-outcome-providers.md.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-18T13:14:58Z'
-  converted_from: flat spec Observability.LogShipper@0.4.0 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: target
   scope: Observability.LogShipper

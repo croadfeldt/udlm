@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.BiosProfile/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "9e8dbb91-cf60-420f-9ab0-fc9df20d6ff4",
   "resource_type": "Hardware.BiosProfile",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A reusable desired firmware/BIOS configuration a fleet of hosts converge to (\"synced across systems\"). ADOPTS DMTF Redfish (Bios Attributes + BiosAttributeRegistry) by reference: UDLM carries identity, the version-pinned registry pointer (binding), and the apply method; the attribute schema, value types, and apply-time semantics are Redfish's and are never restated here. Desired settings are an opaque passthrough interpreted via `attribute_registry`. Applied out-of-band (Redfish SetBiosAttributes, or a board vendor's own settings utility where a board's Redfish Bios.Attributes is empty).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-12T00:00:00Z",
-    "converted_from": "flat spec Hardware.BiosProfile@0.4.1 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Hardware.BiosProfile",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "9e8dbb91-cf60-420f-9ab0-fc9df20d6ff4"
         }
       ]

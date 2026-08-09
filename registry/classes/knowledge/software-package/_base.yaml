@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/SoftwarePackage/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/SoftwarePackage/0.2.1
 conforms_to: udlm/0.1
 uuid: df4b2ff1-c6d4-4075-a355-ee85db5bc366
 record_type: class
 class: base
 resource_type: SoftwarePackage
-version: 0.2.0
+version: 0.2.1
 family: Knowledge
 status: active
 metadata:
@@ -16,8 +16,6 @@ metadata:
     not restated. Contained by SoftwareImage (contains); references Vulnerability (affected_by).'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-22T00:00:00Z'
-  converted_from: flat spec SoftwarePackage@0.1.0 (bulk mechanical conversion 2026-08-04; single-segment
-    childless instantiable base — the Topology precedent dissolved the naming hold)
 entity_type: SoftwarePackage
 elements:
 - element: purl

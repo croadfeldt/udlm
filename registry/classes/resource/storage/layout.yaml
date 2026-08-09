@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Layout/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Layout/0.5.1
 conforms_to: udlm/0.1
 uuid: d8a30490-9b8f-410c-9894-c43eeee43b89
 record_type: class
 class: type
 resource_type: Storage.Layout
 parent: Storage
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     tier (ADR-033), so the per-entry realization map stays unambiguous.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-29T00:00:00Z'
-  converted_from: flat spec Storage.Layout@0.4.0 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: entries
   scope: Storage.Layout

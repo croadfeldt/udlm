@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.3.1
 conforms_to: udlm/0.1
 uuid: e22decb9-0931-43ee-897e-6548459fd35a
 record_type: class
 class: type
 resource_type: Platform.Hub
 parent: Platform
-version: 0.3.0
+version: 0.3.1
 family: Resource
 status: active
 metadata:
@@ -16,8 +16,6 @@ metadata:
     meaning; self-managed hubs hold no ordering edge into their host chain).
   maintainer: udlm-registry
   origination_timestamp: '2026-07-24T20:00:00Z'
-  converted_from: flat spec Platform.Hub@0.1.2 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: api_endpoint
   scope: Platform.Hub
