@@ -56,30 +56,7 @@ A Service Provider that registers a Composite Service operates as a standard Ser
 - Run compensation — DCM's Recovery Policy executes compensation using the dependency graph in reverse
 - Make routing decisions — these are DCM policy decisions
 
-### 1.2 Why This Model Is Correct
-
-Every DCM design principle is preserved:
-- **Governance stays with DCM** — constituent provider selection goes through the placement, including sovereignty filtering, accreditation checking, and trust scoring
-- **Policy stays with DCM** — Validation and Transformation policies fire on the composite payload; the same policies govern each constituent sub-request
-- **Audit stays with DCM** — each constituent request is a standard DCM request with its own audit trail; the composite audit is assembled from constituent audit records
-- **Recovery stays with DCM** — the Recovery Policy handles constituent failures using the dependency graph; the Composite Service definition does not make recovery decisions
-
-### 1.3 The Practical Meaning
-
-A Composite Service registration tells DCM: "Here is a Composite Service called `ApplicationStack.WebApp`. To fulfill it, you will need a `Compute.VM`, a `Network.IPAddress`, a `DNS.Record` (which depends on both), and a `Network.LoadBalancer` (which also depends on both). I can provide the DNS and LoadBalancer; you should place the VM and IP with appropriate compute and network providers."
-
-DCM then:
-- Creates a Composite Entity with one entity UUID
-- Runs the composite layer assembly to produce the full payload
-- Applies policies to the composite payload
-- Dispatches constituent sub-requests to the appropriate providers (compute provider for VM, network provider for IP, the registering provider for DNS and LoadBalancer)
-- Sequences those sub-requests based on the declared dependency graph
-- Handles any constituent failures using Recovery Policy
-- Assembles the aggregate Realized State from all constituent realized states
-
-The registering provider's execution responsibility is limited to: naturalizing and realizing the constituent resource types it owns, then denaturalizing and returning the realized state — exactly as a standard Service Provider does.
-
-### 1.4 Applications Are Composite Catalog Items
+### 1.2 Applications Are Composite Catalog Items
 
 An "application" is modeled as a Composite catalog item — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml) is a three-tier application expressed this way.
 
@@ -201,17 +178,12 @@ partial_delivery_policy:
 orphan detection (runtime detail: operational-models §6.3); `required_for_delivery: partial` constituents are
 not compensation-triggering — their failure yields a `DEGRADED` composite (§2.4, CMP-004).
 
-### 2.5 Interop Note — DCM Control-Plane Catalog Model
+### 2.5 Interop — the control plane's catalog model
 
-The DCM control-plane's merged catalog model (catalog-item-schema / declarative-api, dcm-project enhancements) expresses the same composition concepts in a name-referenced, inferred form. The mapping:
-
-| UDLM catalog item | DCM control-plane catalog | Note |
-|---|---|---|
-| `component_id` | blueprint resource `name` | Their names are unique per item; ours pattern-locked and uuid-anchored at the item level |
-| `depends_on` | `requires_resources` | Their single untyped "must-come-before" edge; ours is the same edge, typed |
-| `bindings` (`from_component`/`output`/`to_field`) | CEL `${component.output}` wiring | Ours is the DECLARED/typed form; theirs the INFERRED form (edges implied by CEL references) |
-
-Projection is lossless downward (data-model-core §4): a UDLM catalog item compiles onto their execution DAG without loss — `depends_on` becomes `requires_resources`, each binding becomes a `${from_component.output}` reference. The reverse is lossy (their model cannot express typed outputs' declared consumption, edge strength, or containment), which is why the typed form is the data model and their DAG is treated as a compiled artifact at the boundary.
+The field-by-field cross-walk to the DCM control plane's own catalog model lives with that control
+plane: `dcm/docs/specifications/dcm-composite-orchestration.md`. Projection is lossless downward
+(data-model-core §4) — a UDLM catalog item compiles onto their execution DAG; the reverse is lossy,
+which is why the typed form is the data model and their DAG is a compiled artifact at the boundary.
 
 ---
 
@@ -281,27 +253,15 @@ Discovered State for a Composite Entity is derived: there is no provider-side "d
 
 ---
 
-## 4. What DCM Does vs What the Registering Provider Does
+## 4. What DCM does with a composite
 
-| Concern | DCM | Registering Provider |
-|---------|-----|----------------------|
-| Catalog publication | Stores Composite Service registrations; publishes as catalog items | Provides registration: composition definition + constituent declarations |
-| Placement of `external` constituents | Selects providers via placement | — |
-| Policy evaluation (composite payload) | Runs all policies on assembled payload | — |
-| Dependency graph construction | Built from `depends_on` declarations | — |
-| Constituent dispatch sequencing | Derived from dependency graph | — |
-| Constituent dispatch (`self`) | Sends standard constituent payload to provider | Receives constituent payload via standard Services API; returns standard realized state |
-| Constituent dispatch (`external`) | Sends standard constituent payload to placed provider | — |
-| Composite status determination | Computed from constituent outcomes + `required_for_delivery` classifications | — |
-| Failure handling | Recovery Policy decides response | Provides standard decommission handling for `self` constituents |
-| Compensation | Executes dependency-reverse decommission | Receives standard decommission calls for `self` constituents |
-| Audit | Aggregates per-constituent audit records into composite audit trail | — |
+Expansion, placement of `external` constituents, dispatch sequencing, status computation,
+compensation and audit aggregation are the control plane's, and are specified there:
+`dcm/docs/specifications/dcm-composite-orchestration.md`. The registering provider's scope is
+narrow by construction — it receives standard per-constituent calls and never sequences them.
 
-### 4.1 The Composite Orchestration Scope Is Narrow
-
-The registering provider's responsibility for a Composite Service is structurally identical to a standard Service Provider's responsibility for a single resource type. It receives constituent payloads one at a time (one per dispatched constituent it owns), it returns realized states one at a time, and it implements standard decommission handling. There is no "composite dispatch" API, no "constituent orchestration loop" inside the provider, and no provider-side aggregation.
-
-Aggregation is DCM's responsibility. Sequencing is DCM's responsibility. Failure handling is DCM's responsibility.
+This document defines what a composite IS. What a control plane does with one is that control
+plane's (ADR-008).
 
 ---
 
@@ -367,41 +327,22 @@ For `self` constituents, the registering provider is dispatched to as it current
 
 ---
 
-## 7. Composite Request Pipeline
+## 7. Expansion — what a composite adds to the request pipeline
 
-A Composite Service request flows through DCM's standard request pipeline with one additional phase (composite expansion):
+A composite request runs the standard pipeline ([request-realization](../../flows/request-realization.md))
+with **one additional phase**, and that phase is the only part of it that is a data-model event:
 
-```
-1. Intent       Consumer submits catalog request (catalog_ref + parameters)
-2. Expansion    DCM looks up the Composite Service definition; produces the
-                constituent block. At this point the Requested state contains
-                fully enumerated constituents but NO dependency-resolved
-                runtime values.
-3. Layer        Standard layer assembly applies to each constituent's payload
-   assembly     (defaults, standards, organization layers, etc.).
-4. Placement    For each `external` constituent, the placement selects
-                a provider. `self` constituents bind to the registering
-                provider.
-5. Policy       All standard policies fire against the composite payload:
-                Validation, Transformation, Authorization. A
-                policy decision rejecting any constituent rejects the
-                composite.
-6. Dispatch     DCM walks the dependency graph in dependency-forward order.
-                Constituents with no unresolved dependencies dispatch
-                concurrently. Each dispatch is a standard request to the
-                resolved provider with that constituent's payload (plus any
-                runtime values bound from previously realized constituents
-                via binding fields).
-7. Aggregation  As constituent realized states return, DCM records them
-                against component_ids and updates the Composite Entity's
-                lifecycle_state.
-8. Resolution   When all constituents have terminated (succeeded or failed),
-                the composite reaches a terminal state (OPERATIONAL,
-                DEGRADED, FAILED, or one of the compensation terminal
-                states).
-```
+**Expansion** — the definition is looked up and produces the constituent block. At this point the
+**Requested state carries fully enumerated constituents and no dependency-resolved runtime values**.
+That ordering is the model's, not an implementation's: a constituent's payload cannot carry a value
+bound from a sibling that has not been realized, so those fields are filled at dispatch and not at
+assembly. Everything downstream — layer assembly per constituent, placement of `external`
+constituents, policy on the composite payload, dependency-forward dispatch, aggregation against
+`component_id`, terminal resolution — is the standard pipeline applied constituent by constituent,
+and is specified with it.
 
-Failure at any stage routes through Recovery Policy, which decides between retry, partial acceptance, or compensation.
+One consequence worth stating because it is a data rule rather than a sequencing choice: a policy
+decision rejecting any constituent rejects the composite. There is no partial admission.
 
 ---
 
