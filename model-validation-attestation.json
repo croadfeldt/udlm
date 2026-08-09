@@ -1,6 +1,6 @@
 {
   "attestation_subject": "model-validation",
-  "registry_ref": "bace98b385ef88b3d631e1ac6b012ccd805371c0",
+  "registry_ref": "265bf90ee5422a3d7a63ddd1e62189397a239948",
   "scoreboard": {
     "scoreboard": "udlm-model-health/1",
     "totals": {
