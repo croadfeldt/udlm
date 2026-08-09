@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.7"
+version: "1.0.8"
 
 prefixes:
   - prefix: ACC
@@ -190,7 +190,7 @@ prefixes:
     domain: Entity-relationship model rules (edge_type, relation, nature-derivation)
     status: active
     # SANCTIONED co-ownership: common-elements §9 "Relation vocabulary (normative)" owns the
-    # relation-naming rules REL-001..004; this doc owns the graph/lifecycle rules REL-010..024.
+    # relation-naming rules REL-001..004; this doc owns the graph/lifecycle rules from REL-005 up.
     # One coordinated, disjoint number space; no duplicate ID (enforced).
     additional_homes: [registry/common-elements.md]
   - prefix: RHY
