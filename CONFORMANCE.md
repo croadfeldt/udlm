@@ -278,82 +278,98 @@ them disqualifies the implementation from any conformance level.
 Consolidated MUSTs from all wire-compat contract docs. A conformant implementation
 MUST satisfy every item.
 
+**Who can test each item.** Every row says what kind of thing has to be exercised to check it, because
+the answer decides where the test can live at all:
+
+- **artifact** — checkable against something in this repository. 8 of 37. These are the only ones the
+  corpus in `registry/examples/` can ever cover, and `WIR-001`/`WIR-002` already have cases there.
+- **wire** — checkable against a message an implementation emits: an error envelope, an event, a
+  rate-limit response. Needs a peer to talk to, not a live estate.
+- **runtime** — checkable only against a running implementation over time: clock skew, retry budgets,
+  backoff, endpoints answering at a well-known path.
+
+**The consequence is worth stating plainly: 29 of 37 requirements cannot be tested from inside this
+repository.** No amount of corpus work reaches them. They are what §8's suite exists for, and why
+that suite has to be an artifact a third party runs against their own implementation rather than more
+gates here.
+
+
 ### Identifiers ([`identifier-scheme.md`](docs/spec/contracts/identifier-scheme.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-001` | UUIDs use RFC 9562 canonical form (lowercase hyphenated) |
-| `WIR-002` | UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked) |
-| `WIR-003` | Handles match `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` with namespace pattern |
-| `WIR-004` | References include `ref_type` and `uuid`; `uuid` is authoritative, `handle` advisory — resolution never by name alone |
-| `WIR-005` | Identifier reassignment is rejected; uuids are never reused after decommission |
-| `WIR-006` | Handle changes are audited |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-001` | artifact | UUIDs use RFC 9562 canonical form (lowercase hyphenated) |
+| `WIR-002` | artifact | UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked) |
+| `WIR-003` | artifact | Handles match `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` with namespace pattern |
+| `WIR-004` | artifact | References include `ref_type` and `uuid`; `uuid` is authoritative, `handle` advisory — resolution never by name alone |
+| `WIR-005` | artifact | Identifier reassignment is rejected; uuids are never reused after decommission |
+| `WIR-006` | runtime | Handle changes are audited |
 
 ### Time ([`time-and-clock.md`](docs/spec/contracts/time-and-clock.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-007` | All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix |
-| `WIR-008` | Skew ≤±5 seconds from peers |
-| `WIR-009` | Future timestamps >5s ahead are rejected |
-| `WIR-010` | Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 |
-| `WIR-011` | Total ordering via `(timestamp, sequence_uuid)` available |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-007` | artifact | All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix |
+| `WIR-008` | runtime | Skew ≤±5 seconds from peers |
+| `WIR-009` | runtime | Future timestamps >5s ahead are rejected |
+| `WIR-010` | runtime | Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 |
+| `WIR-011` | runtime | Total ordering via `(timestamp, sequence_uuid)` available |
 
 ### Errors ([`error-model.md`](docs/spec/contracts/error-model.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-012` | Error envelope schema matches §2 exactly |
-| `WIR-013` | Error codes drawn from closed vocabulary or declared extensions |
-| `WIR-014` | `retryable` flag set correctly per code definitions |
-| `WIR-015` | `request_id` and `audit_uuid` present in every error |
-| `WIR-016` | HTTP status mapping per §3.2 for HTTP transports |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-012` | wire | Error envelope schema matches §2 exactly |
+| `WIR-013` | wire | Error codes drawn from closed vocabulary or declared extensions |
+| `WIR-014` | wire | `retryable` flag set correctly per code definitions |
+| `WIR-015` | wire | `request_id` and `audit_uuid` present in every error |
+| `WIR-016` | wire | HTTP status mapping per §3.2 for HTTP transports |
 
 ### Events ([`event-catalog.md`](docs/spec/contracts/event-catalog.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-017` | Event envelope schema matches the catalog |
-| `WIR-018` | Event timestamps set by commit log, not emitter |
-| `WIR-019` | `event_uuid` enables idempotent processing |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-017` | wire | Event envelope schema matches the catalog |
+| `WIR-018` | runtime | Event timestamps set by commit log, not emitter |
+| `WIR-019` | wire | `event_uuid` enables idempotent processing |
 
 ### Retries ([`retry-semantics.md`](docs/spec/contracts/retry-semantics.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-020` | `retryable: false` is never retried |
-| `WIR-021` | `retry_after_seconds` honored |
-| `WIR-022` | Idempotency-Key preserved across attempts |
-| `WIR-023` | Exponential backoff with jitter within prescribed bounds |
-| `WIR-024` | Per-operation budget enforced (5 attempts / 6 total) |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-020` | runtime | `retryable: false` is never retried |
+| `WIR-021` | runtime | `retry_after_seconds` honored |
+| `WIR-022` | runtime | Idempotency-Key preserved across attempts |
+| `WIR-023` | runtime | Exponential backoff with jitter within prescribed bounds |
+| `WIR-024` | runtime | Per-operation budget enforced (5 attempts / 6 total) |
 
 ### Rate limits ([`rate-limit-and-backpressure.md`](docs/spec/contracts/rate-limit-and-backpressure.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-025` | Rate-limit declarations published via capability discovery |
-| `WIR-026` | `rate_limit.exceeded` with `retry_after_seconds` on overflow |
-| `WIR-027` | `Retry-After` HTTP header on HTTP transports |
-| `WIR-028` | Per-scope fairness enforced |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-025` | runtime | Rate-limit declarations published via capability discovery |
+| `WIR-026` | wire | `rate_limit.exceeded` with `retry_after_seconds` on overflow |
+| `WIR-027` | wire | `Retry-After` HTTP header on HTTP transports |
+| `WIR-028` | runtime | Per-scope fairness enforced |
 
 ### Schema sharing ([`schema-sharing.md`](docs/spec/contracts/schema-sharing.md))
 
-| Rule | Requirement |
-|---|---|
-| `WIR-029` | Schema bundle published at `/.well-known/udlm/schema-bundle` |
-| `WIR-030` | JSON Schema Draft 2020-12 for all schemas |
-| `WIR-031` | Per-schema URLs immutable for `(id, version)` tuples |
-| `WIR-032` | Version negotiation honors semver |
-| `WIR-033` | Unknown-type data triggers schema fetch or graceful degradation |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-029` | runtime | Schema bundle published at `/.well-known/udlm/schema-bundle` |
+| `WIR-030` | artifact | JSON Schema Draft 2020-12 for all schemas |
+| `WIR-031` | runtime | Per-schema URLs immutable for `(id, version)` tuples |
+| `WIR-032` | runtime | Version negotiation honors semver |
+| `WIR-033` | runtime | Unknown-type data triggers schema fetch or graceful degradation |
 
 ### Conformance declaration (this doc)
 
-| Rule | Requirement |
-|---|---|
-| `WIR-034` | Declaration published at `/.well-known/udlm/conformance` |
-| `WIR-035` | Declaration matches §4 schema exactly |
-| `WIR-036` | Exclusions enumerated for partial conformance |
-| `WIR-037` | Excluded features respond with `conformance.feature_not_implemented` |
+| Rule | Tested by | Requirement |
+|---|---|---|
+| `WIR-034` | runtime | Declaration published at `/.well-known/udlm/conformance` |
+| `WIR-035` | artifact | Declaration matches §4 schema exactly |
+| `WIR-036` | wire | Exclusions enumerated for partial conformance |
+| `WIR-037` | runtime | Excluded features respond with `conformance.feature_not_implemented` |
 
 ---
 
