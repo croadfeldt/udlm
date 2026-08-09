@@ -1,0 +1,22 @@
+must_reject:
+  rule: WIR-001
+  gate: schema
+  expect_path: $.uuid
+  because: >-
+    An uppercase UUID. RFC 9562 canonical form is lowercase hyphenated, and two peers writing the
+    same identity in different cases would compare unequal — so identity itself stops working across
+    the boundary the form exists to make safe. Cheap to accept, expensive to detect later.
+record:
+  __schema__: realized-entity.schema.json
+  uuid: 4C8E1B95-7D02-4A63-9F18-3B5E6C7A2D40
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Compute.VM
+  type_version: 0.12.0
+  lifecycle_state: Realized
+  states:
+    realized:
+      fields: {}
+      outputs: {}
+      at: '2026-08-08T00:00:00Z'
+      time_source: authored case — no clock claim

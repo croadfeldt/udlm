@@ -24,6 +24,7 @@ Exit 0 = every case is refused for the reason it claims; 1 = at least one is not
 """
 import glob
 import importlib.util
+import json
 import os
 import sys
 
@@ -66,6 +67,33 @@ def _catalog_item(record):
     return m.check_catalog_item(record)
 
 
+def _schema(record):
+    """Schema validation as a bindable gate. Many requirements — uuid canonical form, the v4 version
+    nibble and variant bits — are enforced by a `pattern` rather than by any semantic check, so a
+    case against one has nothing to call unless schema validation is itself bindable.
+
+    The case names the schema, because a bare record cannot always say which one governs it."""
+    import jsonschema
+    name = record.pop("__schema__", None)
+    if not name:
+        return ["case must name the governing schema in `record.__schema__`"]
+    path = os.path.join(ROOT, "registry", name)
+    if not os.path.exists(path):
+        return [f"case names schema {name!r}, which does not exist"]
+    from referencing import Registry, Resource
+    reg = Registry()
+    for p in glob.glob(os.path.join(ROOT, "registry", "*.schema.json")):
+        d = json.load(open(p, encoding="utf-8"))
+        r = Resource.from_contents(d, default_specification=jsonschema.Draft202012Validator.ID_OF
+                                   and __import__("referencing.jsonschema", fromlist=["DRAFT202012"]).DRAFT202012)
+        reg = reg.with_resource(os.path.basename(p), r)
+        if d.get("$id"):
+            reg = reg.with_resource(d["$id"], r)
+    schema = json.load(open(path, encoding="utf-8"))
+    v = jsonschema.Draft202012Validator(schema, registry=reg)
+    return [f"WIR schema: {e.json_path} — {e.message[:110]}" for e in v.iter_errors(record)]
+
+
 def _ownership(record):
     """OWN-002/007/008 — evaluates one type declaration on its own."""
     m = _load("registry/tools/validate.py", "_val")
@@ -77,6 +105,7 @@ GATES = {
     "check_ownership_declaration": _ownership,
     "check_group_invariants": _group_invariants,
     "check_catalog_item": _catalog_item,
+    "schema": _schema,
 }
 
 
@@ -101,7 +130,20 @@ def main():
             fails.append(f"MRJ-001 {rel}: {gate} ACCEPTED it. The case claims {rule} refuses this; "
                          f"either the model stopped refusing it, or the case no longer provokes it.")
             continue
-        if not any(rule in e for e in errors):
+        if gate == "schema":
+            # Schema validation reports a failing JSON path, never a rule ID — it cannot know which
+            # requirement a pattern encodes. So a schema-gated case names the path that must fail and
+            # is checked against that. Same standard, different evidence: it still has to be refused
+            # for the stated reason rather than for any reason at all.
+            want = spec.get("expect_path")
+            if not want:
+                fails.append(f"MRJ-002 {rel}: a schema-gated case must name `expect_path` — the path "
+                             f"that has to fail. Without it the case proves only that SOMETHING was "
+                             f"refused, which is how a case passes for the wrong reason.")
+            elif not any(want in e for e in errors):
+                fails.append(f"MRJ-002 {rel}: refused, but not at {want} — got {errors[0][:90]!r}. "
+                             f"The case is passing for the wrong reason, which is not passing.")
+        elif not any(rule in e for e in errors):
             fails.append(f"MRJ-002 {rel}: refused, but not by {rule} — got {errors[0][:90]!r}. "
                          f"The case is passing for the wrong reason, which is not passing.")
 

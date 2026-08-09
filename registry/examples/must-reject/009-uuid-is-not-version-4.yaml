@@ -1,0 +1,23 @@
+must_reject:
+  rule: WIR-002
+  gate: schema
+  expect_path: $.uuid
+  because: >-
+    A v1 UUID where identity is required — the version nibble reads 1, not 4. v1 encodes the MAC
+    address and the time it was minted, so an identity leaks where and when it was created, and
+    becomes guessable from a neighbouring one. UUIDv7 is permitted only on fields declared
+    time-ordered; identity is not one of them.
+record:
+  __schema__: realized-entity.schema.json
+  uuid: 2c8b6270-2eae-1ac4-8faa-3375dde3da3e
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  conforms_to: udlm/0.1
+  resource_type: Compute.VM
+  type_version: 0.12.0
+  lifecycle_state: Realized
+  states:
+    realized:
+      fields: {}
+      outputs: {}
+      at: '2026-08-08T00:00:00Z'
+      time_source: authored case — no clock claim
