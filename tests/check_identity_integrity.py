@@ -24,6 +24,11 @@ groups — are mutable). Rule matrix, each rule with an in-memory negative in `-
        accreditations bind to; the provider definition's version must bump instead)
   R6   renamed files are diffed against their base-ref path via registry/renames.yaml (kept
        from the old gate: a rename is never a delete+add, never a gate exemption)
+  R7   a document's `$id` encodes a version that disagrees with its `version` field -> FAIL.
+       Unlike R1a/R1b this needs no base ref: the document contradicts itself, so it is wrong
+       standing still. Two of these sat on main passing every gate — a `$id` says 0.3.0 while
+       `version` says 0.3.1 — and a consumer pinning by `$id` resolves a version the record
+       does not claim to be.
 
 Scope: every registry/**/*.{json,yaml} document. Multi-document YAML streams are handled
 per-document (load_all — the old gate's single-doc load was a latent bug). New files are
@@ -240,6 +245,27 @@ def check_file(rel, old_docs, new_docs, fails, warns):
                          f"published records never vanish; supersede instead (ADR-051)")
 
 
+def check_id_version_agreement(doc, rel, fails):
+    """R7 — a record must not contradict itself about which version it is.
+
+    `$id` ends in the version (…/class/Compute.VM/0.12.0) and `version` states it too. Nothing
+    compared them, so a bump that missed the `$id` produced a record claiming two versions at once,
+    with every gate green. A consumer pinning by `$id` — which is what `$id` is for — then resolves
+    a version the record does not claim to be.
+
+    Base-ref-free by design: this is an internal contradiction, so it is a defect standing still
+    rather than only across a change."""
+    sid, ver = doc.get("$id"), doc.get("version")
+    if not isinstance(sid, str) or not isinstance(ver, str):
+        return
+    tail = sid.rsplit("/", 1)[-1]
+    if not _semver(tail):
+        return                      # a $id that does not end in a version encodes nothing to disagree
+    if tail != ver:
+        fails.append(f"{rel}: R7 $id ends /{tail} but version is {ver} — the record contradicts "
+                     f"itself, and a consumer pinning by $id resolves a version it does not claim")
+
+
 def _identity_uuids(doc, rel):
     """The uuids a document DECLARES as identity (not references): its own, its provider's,
     and its capabilities' (the nested-uuid hole the old gate missed)."""
@@ -291,6 +317,7 @@ def main():
         docs = _parse(open(p, encoding="utf-8").read(), p)
         current_files[rel] = docs
         for d in docs:
+            check_id_version_agreement(d, rel, fails)      # R7 — needs no base ref
             for u, where in _identity_uuids(d, rel):
                 if u in seen:
                     fails.append(f"{where}: R3 uuid {u[:13]}… duplicates {seen[u]} — an "
@@ -347,6 +374,23 @@ def self_test():
         report(name, not fails, f" — unexpected: {fails!r}")
 
     U1, U2 = "11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222"
+
+    # R7 — a record contradicting itself about its own version. Needs no base ref, so it is
+    # checked here on a bare document rather than a pair.
+    _f = []
+    check_id_version_agreement(
+        {"$id": "https://udlm.dev/registry/udlm/0.1/class/Probe.Type/0.3.0", "version": "0.3.1"},
+        "probe", _f)
+    case("R7 $id version disagrees with the version field", _f, "R7")
+    _f = []
+    check_id_version_agreement(
+        {"$id": "https://udlm.dev/registry/udlm/0.1/class/Probe.Type/0.3.1", "version": "0.3.1"},
+        "probe", _f)
+    clean("R7 agreeing $id and version pass", _f)
+    _f = []
+    check_id_version_agreement({"$id": "https://udlm.dev/registry/udlm/0.1/no-version-tail",
+                                "version": "0.3.1"}, "probe", _f)
+    clean("R7 a $id with no version tail encodes nothing to disagree", _f)
     U3 = "33333333-3333-4333-8333-333333333333"
 
     # R1a — mutable changed + uuid moved
