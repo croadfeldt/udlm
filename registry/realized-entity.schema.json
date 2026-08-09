@@ -18,6 +18,7 @@
     "uuid": {
       "type": "string",
       "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
       "description": "Stable RFC 9562 identity of this entity. A Composite Entity has exactly one UUID across all four states (docs/spec/foundations/composite-service-model.md)."
     },
     "tenant_uuid": {
