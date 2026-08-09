@@ -122,7 +122,7 @@ combinations are not representable. The recurring patterns:
 **Behavioral rules:**
 
 - Any `constituent` or `operational` relationship **must** declare a lifecycle policy (ERL-004, REL-008)
-- Constituent edges are the strongest coupling — cross-tenant is prohibited (REL-010)
+- Constituent edges are the strongest coupling — cross-tenant is prohibited (`GRP-INV-002`)
 - `depends_on` with derived `operational` nature is the **allocated resource cell** — where cross-tenant allocations are modeled (§7)
 - `references` with derived `informational` nature is the **business context cell** — Business Unit, Cost Center, Person relationships live here
 
@@ -136,7 +136,7 @@ The relationship **nature** determines whether a cross-tenant relationship is pe
 
 | Nature | Cross-Tenant Permitted? | Governing Rule |
 |--------|------------------------|---------------|
-| `constituent` | ❌ Never | REL-010 — DCM System Policy |
+| `constituent` | ❌ Never | `GRP-INV-002` — a non-overridable structural invariant |
 | `operational` | ✅ With explicit dual authorization | REL-011 — both Tenants must authorize |
 | `informational` | ✅ Unless denied by hard tenancy | REL-012 — blocked only by `deny_all` |
 
@@ -191,7 +191,7 @@ tenants, so the refusal record names both — today's denial records carry a sin
 ### 6.3 DCM System Policies for Cross-Tenant Relationships
 
 Three relationship rules govern this surface and are **defined in §13.1**, not restated here:
-`REL-010` (a constituent relationship may not cross a Tenant boundary), `REL-011` (a cross-tenant
+`GRP-INV-002` (a constituent relationship may not cross a tenant boundary), `REL-011` (a cross-tenant
 operational relationship needs authorization from the owning *and* the consuming Tenant), and
 `REL-012` (a Tenant set to `deny_all` participates in no cross-tenant relationship in either
 direction). The cross-tenant authorization rules below are defined here.
@@ -743,7 +743,6 @@ The relationship graph exists across all four states:
 | `REL-007` | Consumer-declared binding types must be permitted by the Resource Type Specification |
 | `REL-008` | A constituent relationship lifecycle policy may not be set to `ignore` for `on_related_destroy` |
 | `REL-009` | Lifecycle policy conflicts between policies are resolved by the standard Policy Engine authority hierarchy — no special case |
-| `REL-010` | Constituent relationships may not cross Tenant boundaries |
 | `REL-011` | Cross-tenant operational relationships require explicit authorization from both the owning Tenant and the consuming Tenant |
 | `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
 | `REL-013` | Retired 2026-07-23 — nature is derived from `edge_type` (data-model-core §4), so invalid type × nature combinations are not representable; the retired stored fields are guarded by `tests/check_model_vocabulary.py` |
