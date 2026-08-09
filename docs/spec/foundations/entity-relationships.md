@@ -190,11 +190,14 @@ tenants, so the refusal record names both — today's denial records carry a sin
 
 ### 6.3 DCM System Policies for Cross-Tenant Relationships
 
+Three relationship rules govern this surface and are **defined in §13.1**, not restated here:
+`REL-010` (a constituent relationship may not cross a Tenant boundary), `REL-011` (a cross-tenant
+operational relationship needs authorization from the owning *and* the consuming Tenant), and
+`REL-012` (a Tenant set to `deny_all` participates in no cross-tenant relationship in either
+direction). The cross-tenant authorization rules below are defined here.
+
 | Policy | Rule |
 |--------|------|
-| `REL-010` | Constituent relationships may not cross Tenant boundaries |
-| `REL-011` | Cross-tenant operational relationships require explicit authorization from both the owning Tenant and the consuming Tenant |
-| `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
 | `XTA-001` | Cross-tenant information sharing is closed by default — explicit authorization required for all cross-tenant relationships of any nature (see Policy Organization document Section 6) |
 | `XTA-002` | Cross-tenant authorizations must specify who, what, when, and where |
 | `XTA-003` | More specific authorizations take precedence: field_specific > resource_specific > tenant_global |

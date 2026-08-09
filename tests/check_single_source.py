@@ -13,6 +13,9 @@ docs/internal/ excluded), FAILS on:
   - OUT-OF-HOME   — a prefix is defined in a file other than its registered `home`
                     (unless that file is grandfathered in the prefix's `baseline_spread`).
   - ID-COLLISION  — the same full ID is defined in >1 file (the sharpest out-of-home case).
+  - ID-REPEATED   — the same full ID is defined twice in ONE file. Found 2026-08-09 by making the
+                    mistake: a duplicated row passed cleanly, because the collision map keys on the
+                    set of files and a set collapses two rows in one file to a single entry.
   - REGISTRY      — the registry itself is malformed (schema-invalid, duplicate prefix,
                     or a `home` path that does not exist).
 
@@ -103,6 +106,7 @@ def main():
 
     # full_id -> set(files); prefix -> file -> set(numbers)
     defined = {}
+    in_file = {}   # (id, file) -> occurrences, for the same-file repeat
     prefix_files = {}
     for path in spec_md_files():
         rel = os.path.relpath(path, REPO)
@@ -117,6 +121,11 @@ def main():
             full = m.group(1)
             pfx = LEAD_RE.match(full).group(0)
             defined.setdefault(full, set()).add(rel)
+            # `defined` maps id -> set of FILES, so two rows for one id in ONE file collapse to a
+            # single entry and the collision is invisible. Counted separately: a rule defined twice
+            # in its own home can carry two different texts, and the later one silently wins for a
+            # reader who scrolls.
+            in_file[(full, rel)] = in_file.get((full, rel), 0) + 1
             prefix_files.setdefault(pfx, set()).add(rel)
 
     unregistered = sorted(p for p in prefix_files if p not in home)
@@ -181,6 +190,13 @@ def main():
         print("\nID-COLLISIONS (same ID defined in >1 file, not grandfathered):")
         for i, fs in sorted(new_collisions.items()):
             print(f"  ✗ {i} defined in: {', '.join(fs)}")
+        fail = True
+    repeated = sorted((k, n) for k, n in in_file.items() if n > 1)
+    if repeated:
+        print("\nID-REPEATED (same ID defined twice in ONE file):")
+        for (i, f), n in repeated:
+            print(f"  ✗ {i} defined {n}× in {f} — two rows for one id can carry two different "
+                  f"requirements, and the later one silently wins")
         fail = True
 
     if fail:
