@@ -355,8 +355,10 @@ gates here.
 | `WIR-020` | runtime | `retryable: false` is never retried |
 | `WIR-021` | runtime | `retry_after_seconds` honored |
 | `WIR-022` | runtime | Idempotency-Key preserved across attempts |
+| `WIR-022.1` | wire | Reuse of an Idempotency-Key with a **different payload** is rejected with `validation.idempotency_key_mismatch`. Preserving the key is half of idempotency; without this, a retry that silently changed its body is indistinguishable from the original and the guarantee is gone |
 | `WIR-023` | runtime | Exponential backoff with jitter within prescribed bounds |
 | `WIR-024` | runtime | Per-operation budget enforced (5 attempts / 6 total) |
+| `WIR-039` | runtime | Every retry attempt is audited. A retried operation that leaves one record is indistinguishable in audit from one that succeeded first time, so a retry storm reads as normal traffic |
 
 ### Rate limits ([`rate-limit-and-backpressure.md`](docs/spec/contracts/rate-limit-and-backpressure.md))
 
@@ -364,6 +366,8 @@ gates here.
 |---|---|---|
 | `WIR-025` | runtime | Rate-limit declarations published via capability discovery |
 | `WIR-026` | wire | `rate_limit.exceeded` with `retry_after_seconds` on overflow |
+| `WIR-026.1` | runtime | `rate_limit.exceeded` received from a peer is recognised and backed off on — the reciprocal of emitting it. A peer that signals correctly and ignores the same signal from others is half-conformant, and it is the half that causes the outage |
+| `WIR-026.2` | wire | Soft-threshold signalling is provided where declared. A limit that is only announced at the moment it is breached gives a well-behaved client nothing to slow down with |
 | `WIR-027` | wire | `Retry-After` HTTP header on HTTP transports |
 | `WIR-028` | runtime | Per-scope fairness enforced |
 
