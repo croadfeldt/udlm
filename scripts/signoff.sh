@@ -28,6 +28,7 @@ run "Required-grant set derives (GRD-001)" hard python3 tests/check_grant_deriva
 run "Structural invariants hold (GRP-INV-001/002/005/006)" hard python3 tests/check_group_invariants.py
 run "Negative corpus is refused (MRJ-001)" hard python3 tests/check_must_reject.py
 run "Examples say what they prove (ECV-001)" hard python3 tests/check_example_coverage.py
+run "Schemas declare Draft 2020-12 (SCD-001)" hard python3 tests/check_schema_dialect.py
 run "UC traceability (flow -> corpus)" hard python3 tests/check_uc_traceability.py
 run "Policy-fact vocabulary (policy-contract 2.1)" hard python3 tests/check_policy_facts.py
 run "Policy-engine boundary (ADR-065)" hard python3 tests/check_policy_boundary.py
