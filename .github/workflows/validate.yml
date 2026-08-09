@@ -84,6 +84,7 @@ jobs:
       - run: python3 tests/check_no_shipped_defaults.py
       - run: python3 tests/check_cited_schema_files.py
       - run: python3 tests/check_grant_derivation.py
+      - run: python3 tests/check_group_invariants.py
       - run: python3 tests/check_must_reject.py
       - run: python3 tests/check_example_coverage.py
       - run: python3 tests/check_class_paths.py

@@ -1,0 +1,15 @@
+must_reject:
+  rule: GRP-INV-001
+  gate: check_group_invariants
+  because: >-
+    tenant_uuid points at a cost-centre grouping rather than a tenant. Before Grouping.Tenant
+    existed the two were indistinguishable in the data and this could not be caught at all — a
+    record could claim membership of a label and read as correctly owned. Ownership, cost
+    attribution, audit scope, and drift accountability all resolve through this field, so pointing
+    it at something that isn't an owner gives four subsystems the same wrong answer.
+record:
+  uuid: 8b6f1042-3ac5-47de-9218-0f4e5d7a3c96
+  handle: payments/mis-tenanted-01
+  conforms_to: udlm/0.1
+  resource_type: Compute.VM
+  tenant_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1   # example-resource-group: a plain Grouping

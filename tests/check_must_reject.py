@@ -52,6 +52,13 @@ def _grant_derivation(record):
     return fails
 
 
+def _group_invariants(record):
+    """GRP-INV-001/002/005/006 — judged against the shipped estate, so a case supplies only the
+    offending record. This is the bindable shape #434 asks for: evaluate(record, index)."""
+    m = _load("tests/check_group_invariants.py", "_grp")
+    return m.evaluate(record, m.load_index())
+
+
 def _ownership(record):
     """OWN-002/007/008 — evaluates one type declaration on its own."""
     m = _load("registry/tools/validate.py", "_val")
@@ -61,6 +68,7 @@ def _ownership(record):
 GATES = {
     "check_grant_derivation": _grant_derivation,
     "check_ownership_declaration": _ownership,
+    "check_group_invariants": _group_invariants,
 }
 
 

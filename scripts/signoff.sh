@@ -25,6 +25,7 @@ run "Offer collapse (selection inside the offer)" hard python3 tests/check_offer
 run "No UDLM-shipped defaults (NDF-001)" hard python3 tests/check_no_shipped_defaults.py
 run "Cited schema files exist (CSF-001)" hard python3 tests/check_cited_schema_files.py
 run "Required-grant set derives (GRD-001)" hard python3 tests/check_grant_derivation.py
+run "Structural invariants hold (GRP-INV-001/002/005/006)" hard python3 tests/check_group_invariants.py
 run "Negative corpus is refused (MRJ-001)" hard python3 tests/check_must_reject.py
 run "Examples say what they prove (ECV-001)" hard python3 tests/check_example_coverage.py
 run "UC traceability (flow -> corpus)" hard python3 tests/check_uc_traceability.py

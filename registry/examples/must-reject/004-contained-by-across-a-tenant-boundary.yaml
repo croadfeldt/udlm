@@ -1,0 +1,18 @@
+must_reject:
+  rule: GRP-INV-002
+  gate: check_group_invariants
+  because: >-
+    The VM claims the platform tenant's VLAN as a PART of itself rather than taking a stake in it.
+    GRP-INV-002 is non-overridable: the parts of one thing may not span two owners. Modelled this
+    way an app team quietly acquires a VLAN that four other teams are also using, and every
+    ownership question — who pays, who may decommission, whose audit scope — gets the wrong answer.
+    A cross-tenant relationship is binds_to or references, behind an authorization.
+record:
+  uuid: c7d2e8a1-4f36-4b90-a5c8-19e07b4d6f23
+  handle: payments/greedy-01
+  conforms_to: udlm/0.1
+  resource_type: Compute.VM
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  dependencies:
+    - edge_type: contained_by          # the defect — this is a stake, not a part
+      target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
