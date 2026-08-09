@@ -745,7 +745,6 @@ The relationship graph exists across all four states:
 | `REL-009` | Lifecycle policy conflicts between policies are resolved by the standard Policy Engine authority hierarchy — no special case |
 | `REL-011` | Cross-tenant operational relationships require explicit authorization from both the owning Tenant and the consuming Tenant |
 | `REL-012` | A Tenant with `hard_tenancy.cross_tenant_relationships: deny_all` may not participate in any cross-tenant relationship in any direction |
-| `REL-013` | Retired 2026-07-23 — nature is derived from `edge_type` (data-model-core §4), so invalid type × nature combinations are not representable; the retired stored fields are guarded by `tests/check_model_vocabulary.py` |
 | `REL-014` | An allocated resource claim requires a matching `available` allocation record on the parent entity |
 | `REL-015` | A destructive lifecycle action on a shared resource entity (`ownership_model: shareable` — [Ownership, Sharing, and Allocation](ownership-sharing-allocation.md)) is deferred until the derived active-edge count reaches the declared `minimum_relationship_count` |
 | `REL-016` | Informational edges never contribute to the derived active-edge count on shared resource entities |
