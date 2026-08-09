@@ -36,12 +36,12 @@ use-cases/        the CI-consumed coverage corpus · tests/ the gates · scripts
   `Co-Authored-By: <the Claude model in use> <noreply@anthropic.com>`. This repo is on **GitHub**
   (`croadfeldt/udlm`) — use `gh`, not `glab`.
 - **PRs are subject-scoped** — one logical thing per PR, ≤2–3k lines.
-- **Run `bash scripts/signoff.sh` before every PR** — its gate list is DERIVED from
-  `.github/workflows/validate.yml` (via `scripts/ci-steps.py`), so it cannot drift from CI; it
-  refuses to run rather than pass if it reads a short list — all hard gates (registry, meta-schema,
-  estate tokens, single-source, vocabulary, profile tables, compat vs origin/main) + the judgment
-  checklist. The cleanliness bar and sweep process live in the dav repo:
-  `docs/repo-cleanliness-review.md` (the twelve questions) + `docs/runbook-overnight-sweep.md`.
+- **Run `bash scripts/signoff.sh` before every PR.** It runs every gate CI runs, then prints the
+  judgment checklist. The list is **derived** from `.github/workflows/validate.yml` (via
+  `scripts/ci-steps.py`) rather than restated, so it cannot drift from CI, and it refuses to run
+  rather than report a vacuous pass if it reads a short list. The cleanliness bar and sweep process
+  live in the dav repo: `docs/repo-cleanliness-review.md` (the twelve questions) +
+  `docs/runbook-overnight-sweep.md`.
 - **Audience: human engineers. Voice: software and data-model architect** — declarative,
   model-grounded, references carry their gist, no editorializing.
 - **The definition rules are law.** Every new resource type or common element MUST satisfy
