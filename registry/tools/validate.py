@@ -320,7 +320,7 @@ def check_catalog_item(doc):
         for dep in graph.get(node, []):
             if color[dep] == GRAY:
                 cycle = path[path.index(dep):] + [dep] if dep in path else [node, dep]
-                errors.append("constituents: depends_on cycle " + " -> ".join(cycle))
+                errors.append("CMP-002 constituents: depends_on cycle " + " -> ".join(cycle))
                 return True
             if color[dep] == WHITE and dfs(dep, path + [dep]):
                 return True
