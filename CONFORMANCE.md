@@ -301,7 +301,7 @@ gates here.
 | `WIR-001` | artifact | UUIDs use RFC 9562 canonical form (lowercase hyphenated) |
 | `WIR-002` | artifact | UUIDv4 for identity; UUIDv7 ONLY for declared time-ordered fields; v1/v3/v5/v6/v8 REJECTED at ingest (version nibble + variant bits checked) |
 | `WIR-003` | artifact | Handles match `[a-z0-9][a-z0-9-]{0,61}[a-z0-9]` with namespace pattern |
-| `WIR-004` | artifact | References include `ref_type` and `uuid`; `uuid` is authoritative, `handle` advisory — resolution never by name alone |
+| `WIR-004` | artifact | A reference is a URF (`[//authority/]path[@pin]`) resolving to exactly one target; authored by handle, resolved to the uuid form — never resolved by name alone, and more than one match is refused as `ambiguous` rather than silently narrowed |
 | `WIR-005` | artifact | Identifier reassignment is rejected; uuids are never reused after decommission |
 | `WIR-006` | runtime | Handle changes are audited |
 
@@ -309,7 +309,7 @@ gates here.
 
 | Rule | Tested by | Requirement |
 |---|---|---|
-| `WIR-007` | artifact | All wire timestamps are UTC, ISO 8601, millisecond precision, `Z` suffix |
+| `WIR-007` | artifact | All wire timestamps are RFC 3339 instants normalized to UTC with a `Z` suffix, seconds precision minimum; sub-second precision is permitted, and the producing clock is attributed via the nearest `time_source` |
 | `WIR-008` | runtime | Skew ≤±5 seconds from peers |
 | `WIR-009` | runtime | Future timestamps >5s ahead are rejected |
 | `WIR-010` | runtime | Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 |
