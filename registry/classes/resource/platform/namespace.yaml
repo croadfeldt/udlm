@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Namespace/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Namespace/0.5.1
 conforms_to: udlm/0.1
 uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
 record_type: class
 class: type
 resource_type: Platform.Namespace
 parent: Platform
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     request.
   maintainer: udlm-registry
   origination_timestamp: '2026-07-17T00:00:00Z'
-  converted_from: flat spec Platform.Namespace@0.3.5 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: name
   scope: Platform.Namespace

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.6.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.6.1",
   "conforms_to": "udlm/0.1",
   "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A first-class allocatable range of IP addresses that Network.IPAddress records are carved from — the DHCP subnet pool (RFC 2131 subnet4 pools/ranges) as its own record, so allocation OWNERSHIP is expressible: which addresses are in play, which tenant/resource holds each, and whether the pool is exhausted. Same allocatable-pool pattern as Storage.Pool→Storage.Dataset (a pool is the source; the carved record depends_on it). Distinct from Network.DHCPScope (the SERVICE-side subnet config a DHCP provider realizes) and Network.IPAddress (a single CONSUMED address): the Pool is the intent-side inventory the addresses are allocated FROM.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-16T06:00:00Z",
-    "converted_from": "flat spec Network.IPAddressPool@0.3.5 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.IPAddressPool",
-          "version": "0.6.0",
+          "version": "0.6.1",
           "uuid": "00257168-ae65-475c-bf34-f14f2e39f855"
         }
       ]

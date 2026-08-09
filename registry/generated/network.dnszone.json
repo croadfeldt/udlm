@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "Network.DNSZone",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "An authoritative DNS zone. Grounded in RFC 1034/1035 (the DNS zone + resource-record model); external-dns DNSEndpoint is the Kubernetes-native cross-walk. The serving software is the provider.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:38:59Z",
-    "converted_from": "flat spec Network.DNSZone@0.3.3 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.DNSZone",
-          "version": "0.5.0",
+          "version": "0.5.1",
           "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5"
         }
       ]

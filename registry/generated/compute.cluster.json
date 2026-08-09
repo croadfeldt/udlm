@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "Compute.Cluster",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A managed Kubernetes cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via a fleet-manager hub + hosted control planes) realizes. Target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T19:57:00Z",
-    "converted_from": "flat spec Compute.Cluster@0.4.4 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Compute.Cluster",
-          "version": "0.5.0",
+          "version": "0.5.1",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]

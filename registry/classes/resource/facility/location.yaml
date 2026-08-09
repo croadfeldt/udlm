@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Facility.Location/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Facility.Location/0.4.2
 conforms_to: udlm/0.1
 uuid: 545ae44a-fa98-4e7c-a0d6-1cbabaa4903b
 record_type: class
 class: type
 resource_type: Facility.Location
 parent: Facility
-version: 0.4.1
+version: 0.4.2
 family: Resource
 status: active
 metadata:
@@ -17,8 +17,6 @@ metadata:
     edge(s) (ADR-013), which may differ even within one rack.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-13T00:00:00Z'
-  converted_from: flat spec Facility.Location@0.3.1 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: kind
   scope: Facility.Location

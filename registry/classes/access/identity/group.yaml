@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Group/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Group/0.4.2
 conforms_to: udlm/0.1
 uuid: 679b1fad-95f4-4910-99ae-72147eef4dbd
 record_type: class
 class: type
 resource_type: Identity.Group
 parent: Identity
-version: 0.4.1
+version: 0.4.2
 family: Access
 status: active
 metadata:
@@ -20,8 +20,6 @@ metadata:
     not custodied.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-11T00:00:00Z'
-  converted_from: flat spec Identity.Group@0.2.2 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: handle
   scope: Identity.Group

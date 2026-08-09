@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.Processor/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.Processor/0.5.1
 conforms_to: udlm/0.1
 uuid: 418c9acb-3cd8-4e73-817d-8be2bdf13442
 record_type: class
 class: type
 resource_type: Hardware.Processor
 parent: Hardware
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -17,8 +17,6 @@ metadata:
     36(b) documented exclusion).'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
-  converted_from: flat spec Hardware.Processor@0.3.0 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: device_class
   scope: Hardware.Processor

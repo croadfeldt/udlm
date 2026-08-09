@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.3.2
 conforms_to: udlm/0.1
 uuid: 0874c1b7-94c4-4682-a7a9-a29270c1ba17
 record_type: class
 class: base
 resource_type: TaxonomyTerm
-version: 0.3.1
+version: 0.3.2
 family: Knowledge
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     chain up to a root is what keeps those vocabularies disjoint under one type.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-11T00:00:00Z'
-  converted_from: flat spec TaxonomyTerm@0.2.1 (bulk mechanical conversion 2026-08-04; single-segment
-    childless instantiable base — the Topology precedent dissolved the naming hold)
 entity_type: TaxonomyTerm
 elements:
 - element: term

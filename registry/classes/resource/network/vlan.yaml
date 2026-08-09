@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.1
 conforms_to: udlm/0.1
 uuid: 009c7bcb-53ae-4a3b-96fd-12ee35b3b426
 record_type: class
 class: type
 resource_type: Network.VLAN
 parent: Network
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 # OWN-007 — the canonical `shareable` case (ownership-sharing-allocation §2.3): one VLAN entity exists,
@@ -22,8 +22,6 @@ metadata:
     that the org ratifies.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-13T00:00:00Z'
-  converted_from: flat spec Network.VLAN@0.3.2 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: encapsulation
   scope: Network.VLAN

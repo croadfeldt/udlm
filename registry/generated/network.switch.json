@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.Switch/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac",
   "resource_type": "Network.Switch",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A physical L2/L3 network switch as a managed ASSET — the network-fabric peer of Compute.BareMetalHost. Its ports are Hardware.NetworkInterface components contained_by it (the same type serves host NICs and switch ports; §27 Identity distinguishes instances), with the §26 rollup on `ports`. Host NIC ↔ switch port physical links are the NetworkInterface `connects_to` adjacency (renamed from connected_to, common-elements §9; LLDP-discovered), which is what makes the estate graph traversable host → NIC → port → switch → power. Can exist unallocated (lifecycle_state: available, §28) and enter as Discovered via LLDP (brownfield ingest-then-adopt). Vendor specifics are the provider/extension, never the type.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-04T20:12:42Z",
-    "converted_from": "flat spec Network.Switch@0.4.4 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.Switch",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "beda9f11-d152-4fb3-87c6-0da2e7c185ac"
         }
       ]

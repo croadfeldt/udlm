@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.VirtualNetwork/0.8.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.VirtualNetwork/0.8.2
 conforms_to: udlm/0.1
 uuid: fddc45aa-8643-4a8d-8a6b-72ecf9315c1e
 record_type: class
 class: type
 resource_type: Network.VirtualNetwork
 parent: Network
-version: 0.8.1
+version: 0.8.2
 family: Resource
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     before the guest starts; guests stop before it tears down.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-05T02:10:32Z'
-  converted_from: flat spec Network.VirtualNetwork@0.7.0 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: forward_mode
   scope: Network.VirtualNetwork

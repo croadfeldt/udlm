@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Compute.Container",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A container workload — image, resources, environment, mounts, and exposed ports — realized and managed by a *resource* provider (a Kubernetes cluster, podman) under the four-state lifecycle (DCM ADR-023). Models the service/workload layer of the estate: MCP servers, the media stack, mail, etc. Secret material is never inline — env/mounts reference a Security.CredentialRef.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z",
-    "converted_from": "flat spec Compute.Container@0.5.3 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Compute.Container",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]

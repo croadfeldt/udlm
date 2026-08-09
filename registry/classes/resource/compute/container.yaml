@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.1
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: type
 resource_type: Compute.Container
 parent: Compute
-version: 0.7.0
+version: 0.7.1
 family: Resource
 status: active
 metadata:
@@ -16,8 +16,6 @@ metadata:
     etc. Secret material is never inline — env/mounts reference a Security.CredentialRef.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T18:31:11Z'
-  converted_from: flat spec Compute.Container@0.5.3 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: image
   scope: Compute.Container

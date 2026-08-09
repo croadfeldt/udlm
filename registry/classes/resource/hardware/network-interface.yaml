@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.NetworkInterface/0.13.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.NetworkInterface/0.13.1
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: type
 resource_type: Hardware.NetworkInterface
 parent: Hardware
-version: 0.13.0
+version: 0.13.1
 family: Resource
 status: active
 metadata:
@@ -25,8 +25,6 @@ metadata:
     + RFC 8345 links + IEEE 802.1AB LLDP.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:11:51Z'
-  converted_from: flat spec Hardware.NetworkInterface@0.10.0 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: device_class
   scope: Hardware.NetworkInterface

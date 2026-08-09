@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.1
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: type
 resource_type: Data.Database
 parent: Data
-version: 0.7.0
+version: 0.7.1
 family: Resource
 status: active
 metadata:
@@ -16,8 +16,6 @@ metadata:
     and placement are first-class edges.'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T18:31:11Z'
-  converted_from: flat spec Data.Database@0.5.0 (bulk mechanical conversion 2026-08-04; factoring later
-    via scope promotion)
 elements:
 - element: engine
   scope: Data.Database

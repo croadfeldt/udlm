@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.BareMetalHost/0.10.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.BareMetalHost/0.10.1
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
 class: type
 resource_type: Compute.BareMetalHost
 parent: Compute
-version: 0.10.0
+version: 0.10.1
 family: Resource
 status: active
 metadata:
@@ -19,8 +19,6 @@ metadata:
     ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-27T00:31:44Z'
-  converted_from: flat spec Compute.BareMetalHost@0.8.0 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: lifecycle_state
   scope: Compute.BareMetalHost

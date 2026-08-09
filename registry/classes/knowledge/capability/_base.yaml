@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Capability/0.3.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Capability/0.3.1
 conforms_to: udlm/0.1
 uuid: 1d8e581f-71a1-4023-aaba-2d581a02da0e
 record_type: class
 class: base
 resource_type: Capability
-version: 0.3.0
+version: 0.3.1
 family: Knowledge
 status: active
 metadata:
@@ -15,8 +15,6 @@ metadata:
     tag disambiguates the collision-prone bare word ''Capability'' from any Resource type.'
   maintainer: dav
   origination_timestamp: '2026-06-18T00:58:56Z'
-  converted_from: flat spec Capability@0.2.1 (bulk mechanical conversion 2026-08-04; single-segment childless
-    instantiable base — the Topology precedent dissolved the naming hold)
 entity_type: Capability
 elements:
 - element: name

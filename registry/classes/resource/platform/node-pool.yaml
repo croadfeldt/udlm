@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.NodePool/0.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.NodePool/0.5.1
 conforms_to: udlm/0.1
 uuid: ff7f0b01-d451-4aed-89da-83117923820f
 record_type: class
 class: type
 resource_type: Platform.NodePool
 parent: Platform
-version: 0.5.0
+version: 0.5.1
 family: Resource
 status: active
 metadata:
@@ -16,8 +16,6 @@ metadata:
     Placement policies query node pool capabilities to match workload requirements to available capacity.
   maintainer: udlm-registry
   origination_timestamp: '2026-07-17T00:00:00Z'
-  converted_from: flat spec Platform.NodePool@0.3.4 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: name
   scope: Platform.NodePool

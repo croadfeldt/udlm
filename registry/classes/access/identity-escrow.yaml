@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Access.IdentityEscrow/0.4.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Access.IdentityEscrow/0.4.1
 conforms_to: udlm/0.1
 uuid: ead1ea4f-d7db-4b90-887a-2bc67edf4b9b
 record_type: class
 class: type
 resource_type: Access.IdentityEscrow
 parent: Access
-version: 0.4.0
+version: 0.4.1
 family: Access
 status: active
 metadata:
@@ -20,8 +20,6 @@ metadata:
     keep their remote-access and application identities.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-25T00:00:00Z'
-  converted_from: flat spec Access.IdentityEscrow@0.1.1 (bulk mechanical conversion 2026-08-04; factoring
-    later via scope promotion)
 elements:
 - element: escrowed_items
   scope: Access.IdentityEscrow

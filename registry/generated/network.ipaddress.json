@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.10.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddress/0.10.1",
   "conforms_to": "udlm/0.1",
   "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a",
   "resource_type": "Network.IPAddress",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -11,7 +11,6 @@
     "description": "A single IP address as its own record (RFC 8344 / NMstate form) — `address` + `allocation` origin — bound to the interface it is configured on. A static DHCP reservation is just `allocation: static` on this record (ADR-023).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T18:31:11Z",
-    "converted_from": "flat spec Network.IPAddress@0.7.0 (bulk mechanical conversion 2026-08-04; factoring later via scope promotion)",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
@@ -23,7 +22,7 @@
         },
         {
           "class": "Network.IPAddress",
-          "version": "0.10.0",
+          "version": "0.10.1",
           "uuid": "6b7a4336-da9c-4b42-883d-44c96940f45a"
         }
       ]
