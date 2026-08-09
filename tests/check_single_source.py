@@ -33,8 +33,12 @@ SCHEMA = os.path.join(REPO, "registry", "rule-id-registry.schema.json")
 # Directories that are not the normative spec surface.
 SKIP_DIRS = {".git", "node_modules", "docs/internal", "tests", ".github"}
 
-# Definition = first non-empty cell of a table row is a rule ID (optionally hyphen-segmented).
-ROW_RE = re.compile(r"^\|\s*`?([A-Z][A-Z0-9]{1,7}(?:-[A-Z]{1,5})*-\d{2,3})`?\s*\|")
+# Definition = first non-empty cell of a table row is a rule ID (optionally hyphen-segmented,
+# optionally sub-numbered). A sub-number (WIR-012.1) is a requirement that ELABORATES its parent
+# rather than standing alone — the maintainer's preference for fewer top-level ids with detail
+# grouped under them. It is a distinct definition for single-source purposes: WIR-012.1 may be
+# defined once, exactly like WIR-012, and the two do not collide with each other.
+ROW_RE = re.compile(r"^\|\s*`?([A-Z][A-Z0-9]{1,7}(?:-[A-Z]{1,5})*-\d{2,3}(?:\.\d{1,2})?)`?\s*\|")
 # The leading prefix of a full ID (REG-DP-002 -> REG; ENT-006 -> ENT).
 LEAD_RE = re.compile(r"^[A-Z][A-Z0-9]{1,5}")
 

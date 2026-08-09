@@ -278,6 +278,16 @@ them disqualifies the implementation from any conformance level.
 Consolidated MUSTs from all wire-compat contract docs. A conformant implementation
 MUST satisfy every item.
 
+**Sub-numbers.** A `WIR-012.1`-style id is a requirement that ELABORATES its parent rather than
+standing alone — the reciprocal of an obligation, or the precise form of a general one. It is a
+requirement in its own right and is cited like any other; grouping it under its parent keeps the
+count of top-level ids near the count of *concerns*, rather than inflating it with detail.
+
+**Where these come from.** This section consolidates the MUSTs of the contract documents it links.
+Where a source document carries its own conformance list, that list is authoritative and this one
+must not be shorter than it — `error-model.md` §9 is the worked case: it states nine conformance
+checks and this section carried four of them until they were reconciled.
+
 **Who can test each item.** Every row says what kind of thing has to be exercised to check it, because
 the answer decides where the test can live at all:
 
@@ -320,10 +330,15 @@ gates here.
 | Rule | Tested by | Requirement |
 |---|---|---|
 | `WIR-012` | wire | Error envelope schema matches §2 exactly |
+| `WIR-012.1` | wire | Malformed problem objects received from a peer are rejected with `validation.error_envelope_malformed` — the reciprocal duty. Emitting correctly is half of an envelope contract; accepting a malformed one silently is how a peer's defect becomes yours |
 | `WIR-013` | wire | Error codes drawn from closed vocabulary or declared extensions |
+| `WIR-013.1` | wire | The code emitted names the **violation class** for the surface (error-model §3.4) — not a neighbouring code that happens to carry a plausible status. A valid code that misnames the failure sends the consumer to the wrong remedy |
+| `WIR-013.2` | wire | Neither `type`, `status`, `detail`, nor response timing varies on the existence of a target **outside** the actor's authorization scope (error-model §3.3). The standard 403-over-404 posture: an authorization refusal that differs for a real target turns every refusal into an existence oracle |
 | `WIR-014` | wire | `retryable` flag set correctly per code definitions |
 | `WIR-015` | wire | `request_id` and `audit_uuid` present in every error |
+| `WIR-015.1` | runtime | Every refusal writes a `REFUSE` audit record, linked by `instance`, naming the refusing authority. The other end of the audit link: without the record, `instance` points at nothing, and a probing pattern is invisible rather than legible |
 | `WIR-016` | wire | HTTP status mapping per §3.2 for HTTP transports |
+| `WIR-038` | wire | A refusal carries the remediation mechanism in `detail` or a named extension member, and carries **neither a protected value nor the protected structure** — naming the one field that failed is itself disclosure. Actionable without leaking is the whole difficulty of a refusal, and it is one requirement, not two |
 
 ### Events ([`event-catalog.md`](docs/spec/contracts/event-catalog.md))
 
