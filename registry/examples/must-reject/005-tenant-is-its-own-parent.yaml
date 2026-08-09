@@ -1,0 +1,21 @@
+must_reject:
+  rule: GRP-INV-006
+  gate: check_group_invariants
+  because: >-
+    A tenant nested inside itself. The rule exists separately from the general acyclicity rule
+    because this is the case a typo produces — pasting a record's own uuid into its parent — and
+    because a self-parent makes every nesting question unanswerable rather than merely wrong.
+record:
+  uuid: 5a3c9e17-8d42-4f6b-b013-7c25ea948f60
+  handle: org/tenant/ouroboros
+  conforms_to: udlm/0.1
+  resource_type: Grouping.Tenant
+  tenant_uuid: 5a3c9e17-8d42-4f6b-b013-7c25ea948f60
+  states:
+    realized:
+      fields:
+        membership_criterion: estate?tenant_uuid=={self}
+        obligations: {isolation: logical}
+        parent_group_uuid: 5a3c9e17-8d42-4f6b-b013-7c25ea948f60
+      at: '2026-08-08T00:00:00Z'
+      time_source: authored case — no clock claim
