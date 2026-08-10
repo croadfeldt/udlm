@@ -33,7 +33,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.schema.json").read_text()))
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
 PROFILE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "profile.schema.json").read_text()))
-CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
+_CATALOG_SCHEMA = json.loads((ROOT / "catalog-item.schema.json").read_text())
+CATALOG_VALIDATOR = None   # bound below, once _ref_store() is defined
 CONFORMANCE_DECL_VALIDATOR = Draft202012Validator(json.loads((ROOT / "conformance-declaration.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
 EVAL_CONTEXT_VALIDATOR = Draft202012Validator(json.loads((ROOT / "evaluation-context.schema.json").read_text()))
@@ -51,17 +52,28 @@ def _ref_store():
     referring schema's $id base, so the $id key is the one that actually hits — same pattern as
     the spec-examples/fuzz gates)."""
     store = {}
-    for name in ("resource-type-spec.schema.json", "catalog-item.schema.json"):
+    for name in ("resource-type-spec.schema.json", "catalog-item.schema.json",
+                 "composition.schema.json"):
         doc = json.loads((ROOT / name).read_text())
         store[(ROOT / name).as_uri()] = doc
         if isinstance(doc.get("$id"), str):
             store[doc["$id"]] = doc
         store[f"https://udlm.dev/registry/{name}"] = doc
+        # catalog-item.schema.json's own $id carries a /udlm/0.1/ segment the sibling schemas do not,
+        # so a relative $ref FROM it resolves into that directory. Registering the versioned form too
+        # keeps resolution offline without editing a published $id.
+        store[f"https://udlm.dev/registry/udlm/0.1/{name}"] = doc
     return store
 
 _CLASS_RESOLVER = RefResolver(base_uri=(ROOT / "class.schema.json").as_uri(), referrer=_CLASS_SCHEMA,
                               store=_ref_store())
 CLASS_VALIDATOR = Draft202012Validator(_CLASS_SCHEMA, resolver=_CLASS_RESOLVER)
+# catalog-item $refs the shared composition shape (composition.schema.json), so it resolves the
+# same way a class does rather than as a self-contained document.
+CATALOG_VALIDATOR = Draft202012Validator(
+    _CATALOG_SCHEMA,
+    resolver=RefResolver(base_uri=(ROOT / "catalog-item.schema.json").as_uri(),
+                         referrer=_CATALOG_SCHEMA, store=_ref_store()))
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
 
