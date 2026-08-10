@@ -62,6 +62,13 @@ states:
     time_source: provider-callback
     provider: cexample-cloud
 
+# Placement decided the jurisdiction, so the record states it — and states it in a form that can be
+# checked. `eu-west` is not a coined label here: it resolves to a declared SovereigntyZone (DE, NL,
+# under EU), which is the vocabulary an accreditation's scope.geographic_scope already speaks.
+sovereignty:
+  zone: eu-west
+  classification: restricted
+
 metadata:
   display_name: web01 on CExample Cloud
   notes:

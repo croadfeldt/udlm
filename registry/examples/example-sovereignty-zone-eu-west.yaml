@@ -1,0 +1,27 @@
+# asserts: SOV-006
+# proves: a coined zone name declares what it means jurisdictionally, so an accreditation scoped DE can be matched against it
+#
+# The zone an entity's `sovereignty.zone: eu-west` resolves to. Without this record the label is a
+# string two peers can each read differently; with it, "is this placement covered by that
+# accreditation?" is arithmetic over ISO 3166 codes.
+uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
+handle: eu-west
+conforms_to: udlm/0.1
+resource_type: SovereigntyZone
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+lifecycle_state: Realized
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+metadata:
+  display_name: EU West
+states:
+  realized:
+    fields:
+      jurisdictions: [DE, NL]
+      regimes: [EU]
+      description: >-
+        Western European zone. Two jurisdictions, so an accreditation covering only DE does not
+        cover the zone — an entity placed here could be sitting in NL.
+    outputs: {}
+    at: '2026-08-09T00:00:00Z'
+    time_source: authored example — no clock claim

@@ -1,0 +1,25 @@
+# asserts: SOV-006
+# proves: a single-jurisdiction zone at 3166-2 subdivision granularity, where residency subsumes down but a state regime does not
+#
+# The subsumption case §3.8 turns on: an accreditation scoped `US` covers RESIDENCY here, because
+# US-MN is inside US. It does not cover a distinct Minnesota state REGIME, which matches exactly.
+uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
+handle: us-mn-sovereign
+conforms_to: udlm/0.1
+resource_type: SovereigntyZone
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+lifecycle_state: Realized
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+metadata:
+  display_name: Minnesota (state-sovereign)
+states:
+  realized:
+    fields:
+      jurisdictions: [US-MN]
+      description: >-
+        A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring
+        one here would claim an exact-match scope that does not exist.
+    outputs: {}
+    at: '2026-08-09T00:00:00Z'
+    time_source: authored example — no clock claim

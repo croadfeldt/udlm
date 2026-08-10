@@ -207,6 +207,21 @@ definitions, exactly this member.
   requires or asserts); a Template (ADR-033) realizes a Pattern at the Requested tier.
 - **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
 
+### 4.8 SovereigntyZone
+What a coined zone name means jurisdictionally. The accreditation side speaks ISO 3166
+(`scope.geographic_scope`); the entity side carries `sovereignty.zone`, a coined label such as
+`eu-west`. Nothing connected them, so the §3.8 residency-subsumption rule had nothing to evaluate.
+A zone declares the jurisdictions it spans in the accreditation's own vocabulary, which turns that
+match from an assumption into a computation. Knowledge rather than Resource because a zone is
+declared, curated and never realized by a provider — the Vulnerability shape: a structured record
+whose truth is held by the party that declares it.
+- **Fields:** jurisdictions (ISO 3166-1/3166-2, required and non-empty), regimes (supranational,
+  e.g. EU), description. **Physical location is deliberately absent** — that is `Facility.Location`,
+  and it does not cross a peer boundary.
+- **Relationships:** cited by a realized entity's `sovereignty.zone`; matched against an
+  accreditation's `scope.geographic_scope`.
+- **States:** `PROPOSED` → `CANONICAL`; established at setup and governed thereafter.
+
 ## 5. Relationship graph (summary)
 
 ```

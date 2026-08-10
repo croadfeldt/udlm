@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 53,
+    "types": 54,
     "by_family": {
       "Access": 7,
-      "Knowledge": 5,
+      "Knowledge": 6,
       "Process": 2,
       "Resource": 39
     }
   },
   "discrimination": {
-    "mutations_attempted": 4446,
-    "mutations_rejected": 4446,
+    "mutations_attempted": 4492,
+    "mutations_rejected": 4492,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -191,6 +191,10 @@
         "attempted": 39,
         "rejected": 39
       },
+      "SovereigntyZone": {
+        "attempted": 46,
+        "rejected": 46
+      },
       "Storage.Cluster": {
         "attempted": 72,
         "rejected": 72
@@ -230,8 +234,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 53,
-    "total": 53
+    "strict_specs": 54,
+    "total": 54
   },
   "outputs": {
     "per_type": {
@@ -279,6 +283,7 @@
       "Software.Service": 1,
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
+      "SovereigntyZone": 0,
       "Storage.Cluster": 3,
       "Storage.Dataset": 1,
       "Storage.FileShare": 1,
@@ -297,6 +302,7 @@
       "Hardware.Processor",
       "SoftwareImage",
       "SoftwarePackage",
+      "SovereigntyZone",
       "Vulnerability"
     ],
     "one_output_types": [
@@ -327,13 +333,13 @@
     ]
   },
   "context": {
-    "with_context": 53,
-    "total": 53,
+    "with_context": 54,
+    "total": 54,
     "missing": []
   },
   "relationships": {
     "with_relationships": 44,
-    "total": 53,
+    "total": 54,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -341,6 +347,7 @@
       "Grouping.Authorization",
       "Grouping.Tenant",
       "Observability.LogShipper",
+      "SovereigntyZone",
       "Storage.Layout",
       "Topology",
       "Vulnerability"
@@ -402,6 +409,7 @@
       "Identity.ServiceAccount",
       "Network.Switch",
       "Network.VLAN",
+      "SovereigntyZone",
       "Storage.Cluster",
       "Storage.Layout"
     ]
@@ -472,6 +480,7 @@
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
+      "SovereigntyZone",
       "Storage.Cluster",
       "Storage.Dataset",
       "Storage.FileShare",
@@ -481,7 +490,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 53
+    "consumed_by_at_least_one": 54
   },
   "expressibility_coverage": {
     "value": null,

@@ -261,6 +261,7 @@ registration obligations, not storage behavior). How an implementation *executes
 | `SOV-003` | When a provider sovereignty change violates a Tenant's sovereignty requirements, affected resources are re-evaluated and the declared action applied: `notify_only`, `pause`, `migrate`, or `emergency_migrate`. |
 | `SOV-004` | Auto-migration triggered by SOV-003 uses provider-portable rehydration; the non-compliant provider is excluded from the placement candidate set, and the migration is a first-class, fully-audited operation. |
 | `SOV-005` | Certification validity periods are tracked; a certification expiring within P30D warns the provider and affected Tenants, and an expired certification triggers SOV-003 re-evaluation. |
+| `SOV-006` | A sovereignty zone cited by an entity (`sovereignty.zone`) resolves to a declared `SovereigntyZone` record stating the ISO 3166 jurisdictions it spans, and any supranational regimes. A coined label with no declaration cannot be matched against an accreditation's `scope.geographic_scope`, so §3.8's residency-subsumption rule has nothing to evaluate and the placement is unverifiable rather than merely undocumented. The zone declares jurisdiction only — physical location is `Facility.Location` and does not cross a peer boundary. |
 
 ---
 
