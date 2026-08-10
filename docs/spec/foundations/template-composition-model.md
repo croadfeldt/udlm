@@ -68,6 +68,21 @@ A Composite Service registration declares a composite payload structure: which c
 
 ### 2.1 Constituent Declaration
 
+**Owned or borrowed — `edge_type`.** A composite's constituent list holds two different things, and
+until they are distinguished a reader cannot tell them apart:
+
+- `contained_by` (the default) — the composite **creates and owns** this part. At realization it
+  becomes an entry in the System's `constituents[]`, and `GRP-INV-002` makes it co-tenant with the
+  composite, non-overridably.
+- `binds_to` — the composite **uses** something that already exists and belongs to someone else: a
+  stake in a shared VLAN, a platform namespace, an activity bound to the stack. At realization it
+  becomes a `dependencies[]` edge carrying this edge_type, and it is how a relationship legitimately
+  crosses a tenant boundary — behind a cross-tenant authorization (`CTX-001`).
+
+The two fan out to different places on the realized record, which is why the declaration cannot be
+left implicit: without it, a catalog item cannot state what the System is required to record.
+
+
 Each constituent in the composition definition declares:
 
 ```yaml
@@ -396,6 +411,7 @@ restated — one requirement, one definition.
 |---|---|
 | `CMP-010` | A `depends_on` references an undeclared component_id. Ordering is derived from these edges (CMP-002), so an edge pointing at nothing leaves a constituent that can never become dispatchable — and it fails at expansion, long after the catalog accepted it. |
 | `CMP-011` | A constituent references a resource type that resolves to neither a registered Class nor a flat resource type. Expansion has to compile the constituent against its type; a name resolving to nothing is a request that cannot be assembled, and the catalog is the last place it can be refused cheaply. |
+| `CMP-012` | A constituent declares whether the composite OWNS it (`edge_type: contained_by`, the default) or merely USES it (`binds_to`). A constituent with `fulfillment: consumer` — the consumer supplying an existing resource — cannot be `contained_by`: a thing you were handed a reference to is not a thing you created. The distinction is structural rather than stylistic, because GRP-INV-002 is non-overridable — the parts of one thing may not span two owners — so a borrowed resource modelled as a part is either refused at realization or, worse, silently transfers ownership of something other tenants also use. |
 
 Also rejected, by rules defined elsewhere:
 
