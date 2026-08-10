@@ -1,6 +1,6 @@
 # ADR-033: Templates — the orderable assembly, and the Pattern → Template → System lifecycle
 
-**Status:** Proposed (2026-07-19) — a post-1.0 direction (ADR-031/032) unless a September use case pulls it in; introduces **no schema change** here.
+**Status:** Proposed (2026-07-19) — **amended 2026-08-10 (#418)**: the Pattern/Template/System → Intent/Requested/Realized state mapping is **withdrawn**; the tiers are two definitions and one instance. Amendment blocks are marked inline. The assembly mechanics this ADR decides are unchanged, and are now implemented (the `Template` classes, #405; the `composition` record, ADR-067).
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `docs/spec/lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-004 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
 
 ## Context
@@ -9,31 +9,57 @@ A recurring need: order and manage **a set of resources together with the proces
 
 Two facts decided it:
 1. **The process↔resource link is operational *binding*, not containment.** A backup isn't a *part* of the stack the way a VM is — it *operates on* it. Widening `Composite` (structural, same-family, `contained_by`) to "own" processes would relabel a binding as containment, re-blurring the line ADR-026's edge model just sharpened. → **a term above Composite; the `Composite` entity_type is untouched.**
-2. **The tiers we kept reaching for already exist in the model — as lifecycle states.** "Reusable design → orderable definition → running instance" is not a new taxonomy; it is **Intent → Requested → Realized** (ADR-030) at assembly scale. So the decision is to *name* that projection, not invent a parallel one.
+2. **The tiers we kept reaching for already exist in the model — as the definition/instance split.** "Reusable design → orderable definition → running instance" is not a new taxonomy; it is `resource_type → realized entity` at assembly scale, with one extra definition tier because a design can be refined before it is cut. So the decision is to *name* that projection, not invent a parallel one. *(Amended 2026-08-10, #418: originally read "as lifecycle states … it is Intent → Requested → Realized".)*
 
 ## Decision
 
-**The orderable assembly is a `Template`, and `Pattern` / `Template` / `System` is the ADR-030 lifecycle (Intent → Requested → Realized) at assembly scale.** No new states, no new primitive — the three tiers are the entity lifecycle viewed at a different scope.
+**The orderable assembly is a `Template`, and `Pattern` / `Template` / `System` is a refinement chain at assembly scale: two definitions and one instance.** No new states and no new primitive — a definition is a class when someone offers it and a `composition` record when nobody does (ADR-067), and the instance is an ordinary realized entity.
 
-### The three tiers are three states
+> **AMENDED 2026-08-10 (#418).** This sentence originally read *"is the ADR-030 lifecycle (Intent → Requested → Realized) at assembly scale"*. Withdrawn — see the amendment notes below. The correction is confined to the lifecycle mapping; the assembly mechanics this ADR decides are unchanged.
 
-| Tier | ADR-030 state | What it is | Home |
+### The three tiers are three RECORDS ~~states~~
+
+> **AMENDED 2026-08-10 (#418).** This section originally read *"the three tiers are three states"* and mapped Pattern/Template/System onto Intent/Requested/Realized. **That mapping is withdrawn.** It fails on this ADR's own cardinality, two paragraphs below: *"one Pattern → many Templates"* and *"one Template → many Systems"*. **States are 1:1 within a record** — one record has exactly one intent and exactly one realized — so a many-from-one relationship cannot be a state transition. The mechanics of this ADR are untouched; only the lifecycle mapping fails. The corrected table is below; the withdrawn one is preserved in *Amendment — what the fractal analogy actually says* so the reading is not re-proposed.
+
+| Tier | What it is | What it is, in the model | Home |
 |---|---|---|---|
-| **Pattern** | **Intent** — at the *type / design-time* level | the reusable, provider-neutral design ("how a 3-tier app is built"); names shape and rules, not parts — **not orderable** | Knowledge — the twin of `Antipattern` |
-| **Template** | **Requested** | that intent *resolved* — profile applied, providers placed, sizes enriched, sovereignty validated — a concrete, **orderable** definition | Catalog (DCM) |
-| **System** | **Realized** | the Template converged: real instances + the provider's specific output (IDs/addresses) | Realized entity |
+| **Pattern** | the reusable, provider-neutral design ("how a 3-tier app is built"); names shape and rules, not parts — **not orderable** | a **definition**: a composition whose parts name capabilities rather than realizable classes, so the shape is still open | a `composition` record, or a class if someone offers it (ADR-067) |
+| **Template** | that design cut down to fixed parts — a concrete, **orderable** definition | a **definition**: a composition every part of which names something a provider can realize | a `Template.<Category>.<Author>` class when someone stands behind it as an offer; a `composition` record when nobody does |
+| **System** | the Template realized: real instances + the provider's specific output (IDs/addresses) | an **instance** — and the ONLY one of the three that carries `states` | a realized entity |
 
-ADR-030's capstone already blesses this: "nature declared at the type level *is* design-time intent." That is exactly what keeps a **Pattern** reusable — it is intent *before any instance exists*, so it stays provider- and size-neutral. A **Template** is that intent once it has been resolved into the Requested state; a **System** is the Requested state Realized.
+**Which one a composition is stays derived, never declared.** A composition is a Template when every constituent names something a provider can realize; one naming a `Capability` leaves the shape open and it is still a Pattern. `lifecycle_archetype` already separates `provisioning` from `curation`, so this is computable today — no stored `is_pattern` flag, and the boundary is allowed to be fuzzy (a composition may have cut some parts and not others). Same discipline as `has_constituents` and `portability`: derived, never stored (DRV-001).
 
-### The two arrows are the request-realization flow
+### The two arrows
 
-The transitions between the tiers are not new mechanics — they are the model's own pipeline, at assembly scope:
+> **AMENDED 2026-08-10 (#418).** The two arrows were originally labelled *"Pattern → Template = Intent → Requested"* and *"Template → System = Requested → Realized"*. Both labels are withdrawn — they are the state mapping this amendment removes, and **each bullet's own closing clause is what withdraws it**: "the Pattern persists, so one Pattern → many Templates" and "the Template persists, so one Template → many Systems". A thing that *persists* while yielding many others is not a state that was transitioned out of. The arrows themselves, and the work each does, are unchanged.
 
-- **Pattern → Template = Intent → Requested.** Policy/profile *resolution*: enrich, validate, place. This is where "FSI profile, OpenShift, HA Postgres, sovereign placement" gets pinned. Authoring/codification — the **Pattern persists**, so **one Pattern → many Templates** (a homelab/dev Template and an FSI/prod Template of the same design), exactly as one `resource_type` → many requests.
-- **Template → System = Requested → Realized.** `Converge` (ADR-030). The **Template persists**, so **one Template → many Systems** (one per customer/environment), exactly as one request → many realized instances.
-- **Fourth state — Discovered.** A System observed with *no* Template behind it is brownfield; it is greened by **adopting** it back to a Template/Pattern via convergence-in-dry-run (ADR-030's adoption flow). Same machinery, no new path.
+The two arrows are different in kind, and the amendment makes that visible where the state mapping had flattened it:
+
+- **Pattern → Template is REFINEMENT** — a `refines` reference between two definitions. Policy/profile resolution is what happens along it: enrich, validate, place, and pin "FSI profile, OpenShift, HA Postgres, sovereign placement". The **Pattern persists**, so **one Pattern → many Templates** (a homelab/dev Template and an FSI/prod Template of the same design), exactly as one `resource_type` → many records written against it. The chain is walked, never flattened (DRV-001), and it may be arbitrarily deep: a broad Pattern refining into a narrower Pattern into a Template is an ordinary thing to want, and states could not have nested.
+- **Template → System is REALIZATION** — `Converge` (ADR-030), the existing machinery, unchanged. The **Template persists**, so **one Template → many Systems** (one per customer/environment), exactly as one definition → many realized instances. This is the arrow that *does* cross into the four states, because the System is where they live.
+- **Brownfield.** A System observed with *no* Template behind it is greened by **ingesting it as a `composition` record and promoting it** (ADR-067) — the same adoption act one scope up, now with a named artifact instead of an implied one. Same machinery, no new path.
 
 The whole thing is fractal: `resource_type → request → realized` for a single entity is `Pattern → Template → System` for an assembly.
+
+### Amendment — what the fractal analogy actually says (2026-08-10, #418)
+
+**The analogy above is right, and it is what refutes the withdrawn state mapping.** Follow it literally.
+
+For a single entity: a `resource_type` is a **class** — a record in the registry, portable vocabulary, no tenant. A realized entity is a **different record**, and the four states live *inside it*. Nobody has ever suggested that `Compute.VM` is the "Intent state" of a particular VM; it is a definition, and the VM's intent is a block on the VM's own record.
+
+Run the same reading one scope up and the answer falls out: **Pattern and Template are definitions; System is the instance.** Two definitions and one instance — not three states of one thing.
+
+Three further reasons, each independent of the cardinality argument:
+
+- **Different lifecycles.** A Template is published, versioned and immutable under the publish law; a System is mutable and drifts. One record forces one lifecycle onto both.
+- **Different owners, and different tenancy.** A System belongs to exactly one tenant (`GRP-INV-001`, non-overridable). A Template offered to several teams belongs to none. Collapsing them makes portable vocabulary tenant-owned.
+- **Different kinds of truth.** A definition is **declarative** — true because someone wrote it, and it stays true until someone writes something else. A System is **observational** — true *as of an instant*, with `expected_observation` declaring how fast that truth decays (ADR-048). One record means one freshness contract, so you would either re-validate a drawing on a cadence or accept a stale System because the Template it came from has not changed. Neither is fixable inside a single record.
+
+**The refinement chain is therefore references, not transitions.** Pattern → Template is `refines`, a pointer between definitions, walked and never flattened (DRV-001). Template → System is realization, which already has its own machinery.
+
+**The withdrawn mapping, recorded so it is not re-proposed:** Pattern = Intent, Template = Requested, System = Realized. It is a reasonable-looking answer — three tiers, three states, and they line up in order — and it survives right up until someone orders the same Template twice.
+
+**What survives intact:** everything else. Constituents, `depends_on` acyclicity, binding ⊆ `depends_on`, `failure_effect`, `composition_visibility`, the containment-vs-binding distinction, and the Day-0/1/2 packaging that motivated this ADR. The brownfield paragraph above also survives, with its mechanism now named: a System observed with no Template behind it is greened by **ingesting it as a composition record and promoting it** (ADR-067) — the same adoption act, one scope up.
 
 ### Why `Template`, not `Blueprint`
 
@@ -72,12 +98,12 @@ A Template is essentially a **TOSCA Service Template** — a topology of nodes (
 Per ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change**, nothing existing is touched. It is implemented only when a use case needs it (the combine-Day-0/1/2 case) — reusing catalog items, the subscription binding, and consumables, and adding only the Template packaging.
 
 ## Data · Policy · Provider
-- **Data** — a Template is a catalog definition (Requested); a System is a realized composite + bound-activity records (Realized); a Pattern is Knowledge (type-level intent).
+- **Data** — a Template and a Pattern are **definitions** (a class when offered, a `composition` record when not); a System is a realized composite + bound-activity records, and the only one of the three carrying `states`. *(Amended 2026-08-10, #418.)*
 - **Policy** — placement/validation apply per constituent as today; resolving a Pattern into a Template *is* policy (Intent → Requested); the `lifecycle_policy` on each binding governs the coupling (suspend/cancel propagation).
 - **Provider** — constituents are fulfilled by their ordinary providers; bound processes are executed by process/automation providers (AAP/AWX naturalization); *composable-infrastructure* providers assemble constituents from pools. No new provider role — a capability declaration (ADR-004).
 
 ## Consequences
-- The combined Day-0/1/2 unit is expressible with **no new states, no change to `Composite`, and no new entity shape** — a packaging + binding over the existing lifecycle. The tiers *are* Intent/Requested/Realized (T7: reduce to what exists).
+- The combined Day-0/1/2 unit is expressible with **no new states and no change to `Composite`** — a packaging + binding over the existing lifecycle. *(Amended 2026-08-10, #418: the claim that the tiers ARE Intent/Requested/Realized is withdrawn, and the composition record kind is the one new artifact — ADR-067. T7 still holds: it reuses the shared composition shape rather than coining a second one.)*
 - `Antipattern` gains its positive twin (`Pattern`); the architecture-pattern concept gets a real home in Knowledge/DAV, and it reads as type-level intent rather than a fourth thing.
 - Templates are the concrete application of ADR-030's consumable model and the flow doc's trigger/day-N picture — they read cleanly only on top of those.
 - **On-ramp to standardized architecture formats (post-1.0).** A Template is an orderable topology, and LikeC4 / C4 / TOSCA / ArchiMate / OAM are topology-description languages — so the mapping is near-mechanical (components → consumables, relationships → edges, workflows → bound processes). Three directions, all post-1.0:
