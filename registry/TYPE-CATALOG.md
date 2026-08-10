@@ -907,6 +907,28 @@ One package at one version — identified by its purl (Package URL), the portabl
 - SoftwareImage — the images that contain this package.
 - Vulnerability — the advisories affecting this package version.
 
+## SovereigntyZone
+
+### SovereigntyZone (0.1.0)
+
+**Purpose:** Give a coined zone name a declared meaning, so that "is this entity's placement covered by that accreditation?" is a question the model can answer.
+
+What a zone name actually means. `eu-west` is Germany and the Netherlands, under EU law. Written down once by whoever knows, so every peer reads the same answer and an auditor gets exactly one.
+
+**Use when:**
+- An entity's `sovereignty.zone` needs to be checked against an accreditation's geographic scope
+- A peer must understand your zone names without a private mapping table
+- A zone spans more than one jurisdiction, or sits under a supranational regime
+
+**Not for:**
+- Physical location — a site, a rack, a datacenter. That is `Facility.Location`, and it does not cross a peer boundary
+- Naming an authority or a peer — that is the URF `//authority/` axis, which is naming rather than location
+- Recording where a workload happens to run right now. This declares what a zone MEANS, not what is in it; membership derives from the entities that cite it
+
+**Works with:**
+- accreditation records — `scope.geographic_scope` speaks the same ISO 3166 vocabulary
+- a realized entity's `sovereignty.zone`, which cites a zone by handle
+
 ## Storage
 
 ### Storage.Cluster (0.6.1)
@@ -1099,4 +1121,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*53 types; 53 with context, 0 pending.*
+*54 types; 54 with context, 0 pending.*

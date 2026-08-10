@@ -582,7 +582,8 @@
               "UseCase",
               "SoftwareImage",
               "SoftwarePackage",
-              "Vulnerability"
+              "Vulnerability",
+              "SovereigntyZone"
             ]
           }
         },

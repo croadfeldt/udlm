@@ -924,6 +924,13 @@
    "0.2.1": "sha256:df21ae324306a74a7cc927d69f8a348cbb23698179f14f5126a3cf0161d9eb52"
   }
  },
+ "type:SovereigntyZone": {
+  "current": "0.1.0",
+  "path": "registry/classes/knowledge/sovereignty-zone/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:e1bcbaf9b3d5ff7dc01d5ccd6ccece2c44153b0f45264a062939007935d6c6d7"
+  }
+ },
  "type:Storage": {
   "current": "1.0.0",
   "path": "registry/classes/resource/storage/_base.yaml",
