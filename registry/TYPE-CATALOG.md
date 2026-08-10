@@ -137,7 +137,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.7.2)
+### Compute.Container (0.7.3)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -158,7 +158,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.4.1)
+### Compute.VM (1.4.2)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -346,7 +346,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 - Compute.VM — the guest a passthrough or partition is presented to.
 - Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.
 
-### Hardware.NetworkInterface (0.13.2)
+### Hardware.NetworkInterface (0.13.3)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -544,7 +544,7 @@ One subnet's DHCP setup: the required `subnet` CIDR, the dynamic ranges leased f
 - Network.AddressService — the operated service serving this scope.
 - Compute.BareMetalHost / Compute.VM — the servers the scope is served from.
 
-### Network.DNSZone (0.5.1)
+### Network.DNSZone (0.5.2)
 
 **Purpose:** Declares an authoritative DNS zone — its name, role, and records — independent of the software serving it.
 
@@ -662,7 +662,7 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 - Network.Switch — the fabric carrying the segment.
 - Network.Gateway — edge segments each ride a referenced VLAN.
 
-### Network.VirtualNetwork (0.8.2)
+### Network.VirtualNetwork (0.8.3)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 

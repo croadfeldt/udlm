@@ -1,13 +1,16 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.3
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: type
 resource_type: Compute.Container
 parent: Compute
-version: 0.7.2
+version: 0.7.3
 family: Resource
 status: active
+# OWN-007 — a type-level invariant, not settable per entity.
+# ownership-sharing-allocation §2.1 names Container.
+ownership_model: whole_allocation
 metadata:
   display_name: Container
   description: 'A container workload — image, resources, environment, mounts, and exposed ports — realized
