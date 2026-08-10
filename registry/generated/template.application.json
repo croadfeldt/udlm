@@ -1,0 +1,110 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Template.Application/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "d1769eb5-e8ce-4012-ba5e-18dcc9820d87",
+  "resource_type": "Template.Application",
+  "version": "0.1.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Application Template",
+    "maintainer": "UDLM project",
+    "origination_timestamp": "2026-08-10T00:00:00Z",
+    "description": "The application category of orderable composition: a service a consumer uses, assembled from compute, data and network parts that are provisioned and maintained together. Yields a maintained thing — it keeps running and reconciles — which is what separates this category from a terminal-yield one whose outcome is a run that completes.",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Template",
+          "version": "0.1.0",
+          "uuid": "39584b58-b513-4b3f-9780-b427865c58b7"
+        },
+        {
+          "class": "Template.Application",
+          "version": "0.1.0",
+          "uuid": "d1769eb5-e8ce-4012-ba5e-18dcc9820d87"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "sovereignty_floor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "zone": {
+            "type": "string",
+            "format": "udlm-ref-url",
+            "description": "The SovereigntyZone this composition must be placed within — a reference to a `Knowledge/SovereigntyZone` record, which declares what the coined zone name means in ISO 3166 terms so the residency-subsumption match is computable rather than assumed. Never a bare coined string: a name without a declared meaning gives an auditor no answer."
+          },
+          "classification": {
+            "type": "string",
+            "description": "The data-classification floor the placement must satisfy. The vocabulary is a free string today and should be a governed one — the same hole `zone` had before its class existed, tracked at #472 — so a peer reading `restricted` learns only the word."
+          },
+          "cohesion": {
+            "type": "string",
+            "enum": [
+              "same_zone",
+              "per_constituent"
+            ],
+            "description": "same_zone = every constituent must land in ONE zone satisfying the floor, a JOINT constraint over the placement set. per_constituent = each satisfies the floor independently. No default: which one applies is the composition author's decision and UDLM ships no defaults (NDF-001)."
+          }
+        },
+        "description": "The sovereignty requirement this composition must hold, carried as immutable data and communicated to whoever decides admission (ADR-057 — UDLM codifies, does not vet). Realized onto each constituent's `sovereignty` block at placement. A joint constraint is evaluable only once every placement is known, which is why placement sits inside the convergence loop rather than after it: a cohesion failure must RE-PLACE, and that is another iteration, not a post-placement correction."
+      },
+      "groupings": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "udlm-ref-url"
+        },
+        "description": "Additional NON-isolating groupings the realized constituents join — cost center, project, business unit. References Grouping records under advisory enforcement, where a member may belong to many. Deliberately NOT the System's own grouping, which derives from the composite's uuid and is never stored (DRV-001), and deliberately NOT a tenant: a tenant boundary is an isolation border carried on the realized entity's `tenant_uuid`, never chosen by a Template."
+      },
+      "high_availability": {
+        "type": "boolean",
+        "description": "Whether this application is composed to survive the loss of a single fault domain — a property of the WHOLE, not of any one part, which is exactly why it had no home before. A constituent may be individually redundant while the application still fails as a unit, so this is a statement about the composition rather than a rollup of its parts. It constrains placement and the shape of the constituents a provider projection may offer; it never asserts that the requirement was met, which is realized state."
+      }
+    },
+    "examples": [
+      {
+        "high_availability": true,
+        "sovereignty_floor": {
+          "zone": "udlm://knowledge/sovereignty-zone/eu-west",
+          "classification": "restricted",
+          "cohesion": "same_zone"
+        },
+        "groupings": [
+          "udlm://access/grouping/cost-center-retail"
+        ]
+      }
+    ]
+  },
+  "outputs": {
+    "endpoint": {
+      "type": "string",
+      "description": "Where the realized application is reached — the address a consumer or a downstream binding uses. Published by the composition rather than by any constituent: which part terminates traffic is an internal arrangement the consumer must not have to know, and it may change between provider projections of the same application without the endpoint changing."
+    }
+  },
+  "context": {
+    "purpose": "Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.",
+    "plain_description": "A ready-made application shape. Somebody who knows how the pieces fit wrote it down once; you order it, choose the few things that are yours to choose, and get a running application.",
+    "use_when": [
+      "An application is ordered repeatedly and its shape should not be re-derived per order",
+      "The parts must be placed, reconciled and decommissioned as a unit rather than individually",
+      "A sovereignty or grouping requirement applies to the WHOLE rather than to each part"
+    ],
+    "not_for": [
+      "A single resource with no parts — order the resource class directly",
+      "Work whose outcome is a run that completes rather than a thing that keeps running; that is a terminal-yield category, which must declare a bounded execution time and this one cannot",
+      "Recording a composition nobody is offering — an ingested diagram or a consumer's own bundle is a composition record, which never mints a class into the shared vocabulary"
+    ],
+    "works_with": [
+      "the provider tier beneath this class, which carries the actual constituents and the `supports` ranges a consumer picks from",
+      "a realized System, whose `tenant_uuid`, sovereignty and edges are written at placement"
+    ]
+  }
+}

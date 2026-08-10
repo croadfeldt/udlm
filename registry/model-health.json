@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 54,
+    "types": 55,
     "by_family": {
       "Access": 7,
       "Knowledge": 6,
       "Process": 2,
-      "Resource": 39
+      "Resource": 40
     }
   },
   "discrimination": {
-    "mutations_attempted": 4492,
-    "mutations_rejected": 4492,
+    "mutations_attempted": 4540,
+    "mutations_rejected": 4540,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -223,6 +223,10 @@
         "attempted": 56,
         "rejected": 56
       },
+      "Template.Application": {
+        "attempted": 48,
+        "rejected": 48
+      },
       "Topology": {
         "attempted": 171,
         "rejected": 171
@@ -234,8 +238,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 54,
-    "total": 54
+    "strict_specs": 55,
+    "total": 55
   },
   "outputs": {
     "per_type": {
@@ -291,6 +295,7 @@
       "Storage.Pool": 5,
       "Storage.Volume": 2,
       "TaxonomyTerm": 1,
+      "Template.Application": 1,
       "Topology": 1,
       "Vulnerability": 0
     },
@@ -329,17 +334,18 @@
       "Storage.FileShare",
       "Storage.Layout",
       "TaxonomyTerm",
+      "Template.Application",
       "Topology"
     ]
   },
   "context": {
-    "with_context": 54,
-    "total": 54,
+    "with_context": 55,
+    "total": 55,
     "missing": []
   },
   "relationships": {
     "with_relationships": 44,
-    "total": 54,
+    "total": 55,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -349,6 +355,7 @@
       "Observability.LogShipper",
       "SovereigntyZone",
       "Storage.Layout",
+      "Template.Application",
       "Topology",
       "Vulnerability"
     ]
@@ -411,7 +418,8 @@
       "Network.VLAN",
       "SovereigntyZone",
       "Storage.Cluster",
-      "Storage.Layout"
+      "Storage.Layout",
+      "Template.Application"
     ]
   },
   "consumer_coverage": {
@@ -487,10 +495,11 @@
       "Storage.Layout",
       "Storage.Pool",
       "TaxonomyTerm",
+      "Template.Application",
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 54
+    "consumed_by_at_least_one": 55
   },
   "expressibility_coverage": {
     "value": null,

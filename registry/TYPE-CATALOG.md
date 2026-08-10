@@ -1078,6 +1078,28 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 - Capability — capabilities normalize onto terms (normalized_to).
 - TaxonomyTerm — the parent term; chains stay inside one vocabulary root.
 
+## Template
+
+### Template.Application (0.1.0)
+
+**Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
+
+A ready-made application shape. Somebody who knows how the pieces fit wrote it down once; you order it, choose the few things that are yours to choose, and get a running application.
+
+**Use when:**
+- An application is ordered repeatedly and its shape should not be re-derived per order
+- The parts must be placed, reconciled and decommissioned as a unit rather than individually
+- A sovereignty or grouping requirement applies to the WHOLE rather than to each part
+
+**Not for:**
+- A single resource with no parts — order the resource class directly
+- Work whose outcome is a run that completes rather than a thing that keeps running; that is a terminal-yield category, which must declare a bounded execution time and this one cannot
+- Recording a composition nobody is offering — an ingested diagram or a consumer's own bundle is a composition record, which never mints a class into the shared vocabulary
+
+**Works with:**
+- the provider tier beneath this class, which carries the actual constituents and the `supports` ranges a consumer picks from
+- a realized System, whose `tenant_uuid`, sovereignty and edges are written at placement
+
 ## Topology
 
 ### Topology (0.5.1)
@@ -1121,4 +1143,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*54 types; 54 with context, 0 pending.*
+*55 types; 55 with context, 0 pending.*

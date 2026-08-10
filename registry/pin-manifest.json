@@ -1017,6 +1017,27 @@
    "0.3.2": "sha256:74e566d73111c02fc9cd4a2e3b766b33ae42568b41adaf3cadaf4edf1d6b5760"
   }
  },
+ "type:Template": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/template/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:e4444c14feffc0c177d17e1f1a655613b9447e6a94b573193cfde22197f2ad5d"
+  }
+ },
+ "type:Template.Application": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/template/application/_base.yaml",
+  "versions": {
+   "0.1.0": "sha256:75d346dd9580ae0bcb93f68cd3d55e31bf7cd54784fb8dd184f6d8c733392f98"
+  }
+ },
+ "type:Template.Application.AcmeThreeTier": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/template/application/acme-three-tier.yaml",
+  "versions": {
+   "0.1.0": "sha256:c507c6e918f8be5ef56beac75729253737e63a9b116772685a384c7e62289e42"
+  }
+ },
  "type:Topology": {
   "current": "0.5.1",
   "path": "registry/classes/resource/topology/_base.yaml",

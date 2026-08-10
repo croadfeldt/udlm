@@ -1,0 +1,121 @@
+# Template — the orderable composition.
+#
+# THE PROBLEM THIS CLOSES (#405): you can order a VM. You cannot order a three-tier application.
+# Every piece exists — containers, databases, the edges between them. What had no home is the
+# SHAPE: this application is those parts, wired that way, ordered as one unit, and orderable
+# again next month by a different team.
+#
+# THE SEWING DEFINITION (maintainer, 2026-08-08), because it is sharper than abstract/concrete:
+# a PATTERN is a drawing of a shape; a TEMPLATE is the hard cut you trace around; a SYSTEM is the
+# garment. A template's job is removing decisions about the SHAPE, not removing every decision —
+# choosing 4 vCPU or 8 is not a hole in the template, it is what the template is for. Those open
+# choices are `supports` ranges on the provider tier, collapsed to values when the thing is ordered.
+#
+# THE BASE CARRIES THE MECHANISM AND NOTHING ELSE. No `constituents` here: class.schema.json
+# permits them on the type and provider tiers, NEVER base (maintainer ruling 2026-08-03). A Base
+# Class states what a composition IS; it never declares one. No values anywhere — every element
+# declares a shape (NDF-001).
+#
+# WHY family: Resource. A Template yields a maintained thing that keeps running, and it is
+# CONSUMED — consumability is the axis. Not Knowledge: the argument "order it twice, get one
+# template and two apps" is true of any class and proves nothing (#405).
+#
+# WHAT IS DELIBERATELY NOT HERE — the refinement chain. An earlier draft carried a `refines`
+# element so a template could point at the pattern it was cut from. It is gone: a class already
+# names its parent, and an UNGOVERNED composition (ingested from LikeC4, converted from CALM,
+# authored by a consumer) is a composition RECORD rather than a class — those never mint classes
+# into the shared vocabulary. The chain belongs to that record kind, not to this one.
+$id: https://udlm.dev/registry/udlm/0.1/class/Template/0.1.0
+conforms_to: udlm/0.1
+uuid: 39584b58-b513-4b3f-9780-b427865c58b7
+record_type: class
+class: base
+resource_type: Template
+version: 0.1.0
+family: Resource
+status: active
+
+metadata:
+  display_name: Template — the orderable composition
+  maintainer: UDLM project
+  origination_timestamp: '2026-08-10T00:00:00Z'
+  description: >-
+    A consumable composition: an orderable unit assembled from other classes and references, declared
+    once and realized many times. The Base Class carries only the composition MECHANISM — the
+    sovereignty floor the whole must hold, and the non-isolating groupings its realized parts join.
+    It declares no constituents, because a Base Class states what a composition is rather than what
+    any particular composition contains.
+
+elements:
+
+  # SOVEREIGNTY — data carrying an operational constraint. UDLM codifies and communicates; it never
+  # vets and never enforces (ADR-057). The base declares the SHAPE of the floor; no zone, no
+  # classification, no value of any kind lives here.
+  #
+  # `cohesion` is the part no single-resource constraint has, and it is why a composite is not just
+  # a bag of parts: it says whether every constituent must satisfy the floor in the SAME zone or
+  # each independently. A three-tier app whose database lands in one sovereign zone and whose web
+  # tier lands in another is valid at every constituent and wrong as a whole.
+  - element: sovereignty_floor
+    scope: Template
+    optional: true
+    state: proposed
+    description: >-
+      The sovereignty requirement this composition must hold, carried as immutable data and
+      communicated to whoever decides admission (ADR-057 — UDLM codifies, does not vet). Realized
+      onto each constituent's `sovereignty` block at placement. A joint constraint is evaluable only
+      once every placement is known, which is why placement sits inside the convergence loop rather
+      than after it: a cohesion failure must RE-PLACE, and that is another iteration, not a
+      post-placement correction.
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        zone:
+          type: string
+          format: udlm-ref-url
+          description: >-
+            The SovereigntyZone this composition must be placed within — a reference to a
+            `Knowledge/SovereigntyZone` record, which declares what the coined zone name means in
+            ISO 3166 terms so the residency-subsumption match is computable rather than assumed.
+            Never a bare coined string: a name without a declared meaning gives an auditor no answer.
+        classification:
+          type: string
+          description: >-
+            The data-classification floor the placement must satisfy. The vocabulary is a free
+            string today and should be a governed one — the same hole `zone` had before its class
+            existed, tracked at #472 — so a peer reading `restricted` learns only the word.
+        cohesion:
+          type: string
+          enum: [same_zone, per_constituent]
+          description: >-
+            same_zone = every constituent must land in ONE zone satisfying the floor, a JOINT
+            constraint over the placement set. per_constituent = each satisfies the floor
+            independently. No default: which one applies is the composition author's decision and
+            UDLM ships no defaults (NDF-001).
+
+  # NAMESPACE — grouping without isolation. Tenancy is a border; a namespace is a grouping. Same
+  # primitive (Grouping), different enforcement: a tenant boundary is a structural lock with
+  # exclusivity `one`, a resource grouping is advisory with exclusivity `many`.
+  - element: groupings
+    scope: Template
+    optional: true
+    state: proposed
+    description: >-
+      Additional NON-isolating groupings the realized constituents join — cost center, project,
+      business unit. References Grouping records under advisory enforcement, where a member may
+      belong to many. Deliberately NOT the System's own grouping, which derives from the composite's
+      uuid and is never stored (DRV-001), and deliberately NOT a tenant: a tenant boundary is an
+      isolation border carried on the realized entity's `tenant_uuid`, never chosen by a Template.
+    schema:
+      type: array
+      items:
+        type: string
+        format: udlm-ref-url
+
+coverage:
+  use_cases:
+  - software/composite-app-service-with-database
+  - architecture/solution-architecture-decomposition
+  flows:
+  - docs/flows/application-tier-provisioning.md
