@@ -63,6 +63,25 @@ The working record is:
 record" question): *the working record carries what operations need to act now without any other
 system; the ledger carries what audit needs to explain the past.*
 
+**Why "without any other system" is the load-bearing clause** (maintainer, 2026-08-09). Records are
+unbounded in lifetime; stores are not. A realized entity can run for a decade and a cross-tenant
+authorization defaults to `expires_at: null` — perpetual until revoked. Audit is retained *for years*
+and observability *for weeks* (`audit-provenance-observability.md`), both finite. So an operation
+that reaches into the ledger to decide something works until the day it silently does not, and the
+failure surfaces long after the change that caused it.
+
+That reframes the test from a taxonomy question into an operational one. Asked as *"is this state or
+is this history?"* the rubric is fragile — anything that looks historical drifts toward the ledger.
+Asked as **"does any operation need it?"** it is decidable, and it cuts the other way when it has to:
+a datum an operation needs goes on the record *however historical it looks*, because the ledger may
+not be there.
+
+Worked both directions on `Grouping.Authorization`. WHO created a grant is absent — no operation
+consults it, and the audit record already requires `actor`, `subject` and `action` on every act.
+`platform_managed` IS present — revocation acts on it, notifying the platform administrator as well
+as both groupings, and deriving that at revocation time would mean walking a chain that may have
+aged out.
+
 **Considered and rejected** (each fails the test, or DRV-001, or both): a `composition` block —
 the definitions stack is derivable from the leaf pin, and a port never needs the source's layer
 list (the target re-runs its own layers and policies; which source layers supplied a value is
