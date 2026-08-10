@@ -683,7 +683,7 @@ information_provider_capabilities:
 
 **What it does:** Delivers a composite payload — multiple constituent resource types with declared dependencies and delivery requirements — as a single catalog item. The registering Service Provider declares a Composite Service definition (constituent resource types, dependencies, and delivery requirements) so DCM can place, sequence, and govern the constituents. For its own resource types (`provided_by: self`), the registering provider executes as a standard Service Provider — one constituent payload in, one realized state out. All orchestration, placement, sequencing, failure handling, and compensation are performed by DCM using the declared dependency graph.
 
-> **Full specification:** See [Composite Service Composition Model](../foundations/template-composition-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (CMP-001–CMP-008).
+> **Full specification:** See [Composite Service Composition Model](../foundations/template-composition-model.md) for the complete contract, four-state model, failure propagation, compensation, and system policies (`CMP-*`).
 
 **Authored home (maintainer ruling 2026-08-03):** a Composite Service definition is a **class-system
 artifact** — a type- or provider-tier Class carrying `constituents[]` (registry/class.schema.json;

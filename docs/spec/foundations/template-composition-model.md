@@ -379,7 +379,7 @@ decision rejecting any constituent rejects the composite. There is no partial ad
 
 ## 8. Nested Composite Services
 
-A Composite Service can declare another Composite Service as a constituent, producing nested composites. Maximum nesting depth is 3 (enforced at registration time; see §11, CMP-008).
+A Composite Service can declare another Composite Service as a constituent, producing nested composites. **UDLM sets no nesting limit** — a ceiling is a governance choice, and an implementation declares one as policy if it wants one (rule 42). A three-tier application inside a platform stack inside an environment is three levels before anything unusual happens, which is why a model-side constant was the wrong home for it. Cycles are still refused: a composite that contains itself has no first step.
 
 Nested composites are expanded recursively: the outer composite's expansion phase produces an inner Composite Entity, which itself goes through expansion, layer assembly, placement, and policy. The dependency graph is constructed across the full expansion — inner constituents can declare dependencies on outer constituents through the parent_composite hierarchy if visibility permits.
 
@@ -412,7 +412,6 @@ registration:
         depends_on: []
         required_for_delivery: required
       - ...
-    max_nesting_depth: 3              # cap on this composite's nesting (≤3)
   metadata:
     description: "..."
     version: "2.0.0"
@@ -432,7 +431,6 @@ restated — one requirement, one definition.
 Also rejected, by rules defined elsewhere:
 
 - the dependency graph contains a cycle — ordering derives from `depends_on` (`CMP-002`), and a cycle has no first step
-- `max_nesting_depth` exceeds 3 (`CMP-008`)
 - a binding names an `output` the producing constituent's resource type does not declare (`CMP-009`)
 
 Two further conditions are stated but **not currently enforced**, and are named here rather than
@@ -490,7 +488,6 @@ producer re-versions — would make the catalog's contents depend on when they w
 | `CMP-005` | Recovery Policy governs all constituent failure handling and compensation. The Composite Service definition does not make recovery decisions. The registering provider implements standard decommission handling for `self` constituents when a decommission payload arrives. |
 | `CMP-006` | `provided_by: external` constituents are placed by the placement using standard placement rules. The Composite Service definition does not influence external constituent provider selection. |
 | `CMP-007` | In transparent composition visibility mode, constituent entity UUIDs are `deterministic_uuid(parent_composite_uuid + component_id)` — stable across rehydration. |
-| `CMP-008` | Maximum Composite Service nesting depth is 3, enforced by DCM at registration time and at placement time by checking the composite definition chain depth. |
 | `CMP-009` | Constituent bindings are re-resolved against the producing type's **current** declared output surface at request validation, not only at catalog admission — so a producer re-versioned after admission, or a composition the catalog never checked together, still refuses. The check runs after expansion and before policy and dispatch (§7), so no constituent is provisioned and no compensation is needed. The refusal is emitted as `validation.binding_undeclared_output` and names the producer type, the requested output, and the outputs that type declares; the declared output surface is cited as the authority. A producer type absent from the registry is a refusal, not a skip — an unresolvable producer cannot be shown to declare anything. The refusal's audit record names the catalog item, the failing constituent, and the undeclared output as subjects (`AUD-024`) — stated here so an implementer working from this rule alone carries all three, not only the producer surface. |
 | `CMP-013` | A consumer MUST be able to learn, **before ordering**, that a composition contains parts they would not be able to read once realized. The model carries the fact — `composition.unreadable_constituents`, the component_ids unreadable to THIS actor over THIS placement — and the decision is policy's: a catalog may withhold the item, mark it unorderable, or offer it anyway. UDLM picks none of those (rule 42). Where a policy refuses, the refusal NAMES the unreadable parts: "denied" alone tells a consumer nothing they can act on, whereas naming the database tells them exactly which access to request. Evaluated at catalog render and again at request validation — the CMP-009 placement, before dispatch, so nothing is provisioned and no compensation is needed. **`composition_visibility` does not cover this**: it declares ADDRESSABILITY — whether a part has an identity you could refer to — and a part can be fully addressable and still unreadable to you, because access is decided by the grouping it lands in. Real visibility is addressability AND access. *Conformance target: `runtime`* — it binds a live catalog and a live evaluation pass, so no in-repo artifact can test it; the artifact half is the fact's existence in the governed vocabulary (PFACT-001).
 
