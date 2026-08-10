@@ -7,13 +7,16 @@ must_reject:
     first, and a ring has no first. Caught at admission it is a rejected catalog item; caught at
     expansion it is a deadlock the operator has to diagnose from a stalled request.
 record:
-  record_type: catalog_item
+  record_type: class
   uuid: 2ad4f168-9b73-4c05-8e21-6f37b9a0d4c5
-  handle: acme/catalog/ouroboros-stack
+  handle: acme/ouroboros-stack
   conforms_to: udlm/0.1
-  name: ApplicationStack.Circular
+  resource_type: Template.Application.AcmeOuroboros
+  class: provider
+  parent: Template.Application
   version: 1.0.0
-  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  family: Resource
+  status: active
   constituents:
     - component_id: database
       resource_type: Data.Database

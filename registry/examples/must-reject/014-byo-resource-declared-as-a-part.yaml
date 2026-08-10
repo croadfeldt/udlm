@@ -8,13 +8,16 @@ must_reject:
     the parts of one thing may not span two owners. At realization that is a refusal at best and a
     silent ownership transfer at worst.
 record:
-  record_type: catalog_item
+  record_type: class
   uuid: 1c3d5e7f-2a48-4b60-9d82-4f16ba90c357
-  handle: acme/catalog/byo-as-part
+  handle: acme/byo-as-part
   conforms_to: udlm/0.1
-  name: ApplicationStack.ByoConfusion
+  resource_type: Template.Application.AcmeByoConfusion
+  class: provider
+  parent: Template.Application
   version: 1.0.0
-  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  family: Resource
+  status: active
   constituents:
     - component_id: app
       resource_type: Compute.Container

@@ -7,13 +7,16 @@ must_reject:
     and it surfaces at expansion, long after the catalog accepted it, as a request that simply
     stops making progress.
 record:
-  record_type: catalog_item
+  record_type: class
   uuid: b3e17d92-5a04-4c68-91f3-2d80c7e46a15
-  handle: acme/catalog/dangling-edge
+  handle: acme/dangling-edge
   conforms_to: udlm/0.1
-  name: ApplicationStack.Dangling
+  resource_type: Template.Application.AcmeDangling
+  class: provider
+  parent: Template.Application
   version: 1.0.0
-  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  family: Resource
+  status: active
   constituents:
     - component_id: app
       resource_type: Compute.Container
