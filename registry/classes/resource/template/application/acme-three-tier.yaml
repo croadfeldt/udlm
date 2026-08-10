@@ -1,0 +1,137 @@
+# Template.Application.AcmeThreeTier — the concrete composition. This is the thing you order.
+#
+# "PROVIDER" HERE MEANS AUTHORING AUTHORITY — a platform team that composed this and stands behind
+# it — NOT an infrastructure provider. The word reads as OCPVirt or AWS and does not mean that here.
+# Worth stating every time it appears, because the reading is wrong by default.
+#
+# TWO INDEPENDENT RULES FORCE THE CONCRETE COMPOSITION TO THIS TIER, and it is worth noticing that
+# they agree:
+#   - class.schema.json: constituents are permitted on type and provider tiers, never base.
+#   - NDF-001 / rule 41: a concrete template carries OPINIONS — postgresql, a specific port, a fixed
+#     wiring — and an opinion is legal at exactly one tier, because a provider IS an opinionated
+#     implementation. UDLM itself ships none.
+#
+# WHAT MAKES THIS AN OFFER RATHER THAN A DOCUMENT. `supports` — the sizes a consumer may pick from —
+# and the Liskov check against Template.Application. An ingested LikeC4 diagram or a consumer's own
+# bundle has neither, and is a composition RECORD: realizable by its author, never offered to
+# others, and promotable to a class only through a governed process. The test for which form
+# something takes is one question: is someone standing behind this as an offer, or did someone write
+# it down?
+#
+# TENANCY DECIDES THE EDGE, NOT TASTE. GRP-INV-002 is non-overridable: a constituent relationship
+# may not cross a tenant boundary. So every `contained_by` part below MUST be co-tenant with the
+# realized System. Anything cross-tenant — a shared platform namespace, someone else's VLAN — is a
+# `binds_to` stake behind an authorization, never a part.
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.1.0
+conforms_to: udlm/0.1
+uuid: f2cdec7e-b363-43be-b020-aefc9f3d8e10
+record_type: class
+class: provider
+resource_type: Template.Application.AcmeThreeTier
+parent: Template.Application
+version: 0.1.0
+family: Resource
+status: active
+
+metadata:
+  display_name: Acme three-tier web application
+  maintainer: cexample platform engineering
+  origination_timestamp: '2026-08-10T00:00:00Z'
+  description: >-
+    A web tier, an application tier and a database, provisioned and reconciled as one unit. The shape
+    is fixed — three parts, wired this way — and the sizing is the consumer's to choose. This is the
+    worked answer to "you cannot order a three-tier application".
+
+# Every constituent surfaces as a first-class entity once realized, so an operator can address the
+# database directly rather than only the composite. This is addressability, not UI rendering: it
+# governs what a consumer can reference, operate on and be billed for.
+composition_visibility: transparent
+
+constituents:
+
+  - component_id: db
+    resource_type: Data.Database
+    provided_by: external          # placement selects the provider at request time
+    failure_effect: required       # no database, no application — halt and compensate
+    edge_type: contained_by        # an owned part; GRP-INV-002 makes it co-tenant, structurally
+    spec_defaults:
+      engine: postgresql           # an opinion, legal only at this tier
+
+  - component_id: app
+    resource_type: Compute.Container
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+    depends_on: [db]               # ordering: forward = dispatch, reverse = decommission
+    bindings:
+      # DECLARED data movement, not transformation (T4): the database's realized connection string
+      # is pulled into the application's config at dispatch. from_component must also appear in
+      # depends_on — you cannot consume the output of something you did not wait for.
+      - from_component: db
+        output: connection_string
+        to_field: env.DATABASE_URL
+
+  - component_id: web
+    resource_type: Compute.Container
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+    depends_on: [app]
+
+elements:
+
+  # THE OFFER. `tier_size` is what a consumer actually chooses, and the same declaration is read two
+  # ways: as an offer it says what this platform team can satisfy; as a menu it says what a consumer
+  # may select. The catalog READS this rather than restating it — which is why the hand-maintained
+  # consumer field list is not needed and would only be a second, weaker copy of it.
+  #
+  # Note what is NOT open: which three parts, how they are wired, which engine. Those are the shape,
+  # and removing decisions about the shape is the template's whole job. Choosing the size is not a
+  # hole in the template — it is what the template is for.
+  - element: tier_size
+    scope: Template.Application.AcmeThreeTier
+    optional: false
+    state: proposed
+    description: >-
+      The sizing applied to the application and web tiers. Offered as three named shapes rather than
+      a free numeric range: the platform team has capacity plans behind each one, and a continuum
+      would offer combinations it has not validated.
+    schema:
+      type: string
+      enum: [small, medium, large]
+    supports:
+      - values: [small, medium, large]
+
+  # A grouped clause set — the shape a real support matrix has. `large` unlocks a bigger database
+  # than the smaller tiers do, so which range applies DEPENDS on another selection. Declaring the
+  # matrix as data rather than as JSON Schema if/then is what keeps the parent-containment check
+  # decidable: a conditional schema would validate fine and be ungated for narrowing, letting a
+  # provider class quietly stop being a subtype of its parent.
+  - element: database_capacity
+    scope: Template.Application.AcmeThreeTier
+    optional: false
+    state: proposed
+    description: >-
+      Storage offered to the database tier. The offer is grouped by `tier_size` because the capacity
+      a size can carry is a property of the capacity plan behind it — a value can be individually
+      supported and still be an invalid combination.
+    schema:
+      type: string
+      pattern: ^[0-9]+(Gi|Ti)$
+    supports:
+      - values: [10Gi, 50Gi]
+        when:
+          tier_size: small
+      - values: [50Gi, 100Gi, 500Gi]
+        when:
+          tier_size: medium
+      - values: [500Gi, 1Ti, 4Ti]
+        when:
+          tier_size: large
+
+coverage:
+  use_cases:
+  - software/composite-app-service-with-database
+  - architecture/solution-architecture-decomposition
+  flows:
+  - docs/flows/application-tier-provisioning.md

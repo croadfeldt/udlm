@@ -380,6 +380,14 @@
       "$ref": "composition.schema.json#/$defs/constituents",
       "description": "COMPOSITE DEFINITION (the combining artifact, maintainer ruling 2026-08-03): a class MAY compose other classes — items ARE the shared composition shape (composition.schema.json — one shape, one semantic checker: component_id uniqueness, sibling resolution, acyclic depends_on, binding⊆depends_on). Constituent resource_type references resolve in the one dotted namespace (a class or a flat type during migration). Permitted on type and provider tiers (a provider-registered composite is §8.3's case), never base. Constituents do NOT enter the compiled flat spec — a composite EXPANDS at request time; the catalog item is a projection rendered implementation-side (DCM, per-org curation + tenancy), never authored beside the class (one declaration, two projections: registration presents it, the catalog offers it)."
     },
+    "composition_visibility": {
+      "$ref": "composition.schema.json#/$defs/composition_visibility",
+      "description": "How this composition's constituents surface as first-class entities once realized — ADDRESSABILITY, not UI rendering: it governs what a consumer can reference, operate on and be billed for. One shape shared with the catalog projection (composition.schema.json). Permitted exactly where `constituents` is — type and provider tiers, never base: a Base Class declares no composition, so it has no visibility to state."
+    },
+    "selective_visible": {
+      "$ref": "composition.schema.json#/$defs/selective_visible",
+      "description": "Only when composition_visibility = selective: the component_ids that surface. Each MUST name a declared sibling constituent."
+    },
     "spec_examples": {
       "type": "array",
       "description": "Worked example payload(s) for the compiled spec (rule-36 / ADR-055: every type ships one, in-spec). Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per ADR-055/051."
@@ -478,10 +486,25 @@
       },
       "then": {
         "not": {
-          "required": [
-            "constituents"
+          "anyOf": [
+            {
+              "required": [
+                "constituents"
+              ]
+            },
+            {
+              "required": [
+                "composition_visibility"
+              ]
+            },
+            {
+              "required": [
+                "selective_visible"
+              ]
+            }
           ]
-        }
+        },
+        "description": "A Base Class declares no composition: no constituents, and therefore no visibility over them."
       }
     },
     {

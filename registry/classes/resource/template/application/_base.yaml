@@ -1,0 +1,107 @@
+# Template.Application — the category of service, and the first one.
+#
+# THE TYPE TIER IS A CATEGORY OF SERVICE (maintainer ruling 2026-08-08), which is also the GUI's
+# top-level navigation: `context` is permitted ONLY at this tier and the type catalog renders from
+# it, so the audience-facing surface already lives here rather than being bolted on.
+#
+# A CATEGORY EARNS A CLASS ONLY IF IT ADDS ELEMENTS — the rule the Job ruling set (one class, no
+# per-domain subtypes; domain filtering is a derived facet). Application earns it on
+# `high_availability`, which is a property of the composed WHOLE and of no constituent: today it is
+# written as a spec_default onto a field `Data.Database` does not have, which is one of the four
+# orphans #405 names.
+#
+# A CATEGORY DECLARES NO CONSTITUENTS. The schema permits them here, and a PATTERN would use
+# exactly that — abstract slots naming capabilities rather than classes. A category is not a
+# pattern: `Application` is what KIND of service this is, not which parts it has. The concrete
+# composition sits at the provider tier, where opinions are legal.
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.1.0
+conforms_to: udlm/0.1
+uuid: d1769eb5-e8ce-4012-ba5e-18dcc9820d87
+record_type: class
+class: type
+resource_type: Template.Application
+parent: Template
+version: 0.1.0
+family: Resource
+status: active
+
+metadata:
+  display_name: Application Template
+  maintainer: UDLM project
+  origination_timestamp: '2026-08-10T00:00:00Z'
+  description: >-
+    The application category of orderable composition: a service a consumer uses, assembled from
+    compute, data and network parts that are provisioned and maintained together. Yields a
+    maintained thing — it keeps running and reconciles — which is what separates this category from
+    a terminal-yield one whose outcome is a run that completes.
+
+context:
+  purpose: >-
+    Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled
+    together — instead of ordering the parts and re-deriving how they connect every time.
+  plain_description: >-
+    A ready-made application shape. Somebody who knows how the pieces fit wrote it down once; you
+    order it, choose the few things that are yours to choose, and get a running application.
+  use_when:
+    - An application is ordered repeatedly and its shape should not be re-derived per order
+    - The parts must be placed, reconciled and decommissioned as a unit rather than individually
+    - A sovereignty or grouping requirement applies to the WHOLE rather than to each part
+  not_for:
+    - A single resource with no parts — order the resource class directly
+    - Work whose outcome is a run that completes rather than a thing that keeps running; that is a
+      terminal-yield category, which must declare a bounded execution time and this one cannot
+    - Recording a composition nobody is offering — an ingested diagram or a consumer's own bundle
+      is a composition record, which never mints a class into the shared vocabulary
+  works_with:
+    - the provider tier beneath this class, which carries the actual constituents and the `supports`
+      ranges a consumer picks from
+    - a realized System, whose `tenant_uuid`, sovereignty and edges are written at placement
+
+elements:
+
+  # One of the four #405 orphans, landing where it belongs. `high_availability` is currently written
+  # as a spec_default onto `Data.Database`, which HAS NO SUCH FIELD — it was reaching for a property
+  # of the composition and there was nowhere to put it. Declared here as a shape only: whether a
+  # given application template offers it as a choice, fixes it, or ignores it is a provider-tier
+  # decision, because that is the only tier where an opinion is legal (NDF-001).
+  - element: high_availability
+    scope: Template.Application
+    optional: true
+    state: proposed
+    description: >-
+      Whether this application is composed to survive the loss of a single fault domain — a property
+      of the WHOLE, not of any one part, which is exactly why it had no home before. A constituent
+      may be individually redundant while the application still fails as a unit, so this is a
+      statement about the composition rather than a rollup of its parts. It constrains placement and
+      the shape of the constituents a provider projection may offer; it never asserts that the
+      requirement was met, which is realized state.
+    schema:
+      type: boolean
+
+# The worked example every spec ships (ADR-055), and it is deliberately a JOINT sovereignty case:
+# the whole application must land inside one declared zone, which is the constraint no
+# single-resource intent can express and the reason a composite is not merely a bag of parts.
+spec_examples:
+- high_availability: true
+  sovereignty_floor:
+    zone: udlm://knowledge/sovereignty-zone/eu-west
+    classification: restricted
+    cohesion: same_zone
+  groupings:
+  - udlm://access/grouping/cost-center-retail
+
+outputs:
+  endpoint:
+    type: string
+    description: >-
+      Where the realized application is reached — the address a consumer or a downstream binding
+      uses. Published by the composition rather than by any constituent: which part terminates
+      traffic is an internal arrangement the consumer must not have to know, and it may change
+      between provider projections of the same application without the endpoint changing.
+
+coverage:
+  use_cases:
+  - software/composite-app-service-with-database
+  - architecture/solution-architecture-decomposition
+  flows:
+  - docs/flows/application-tier-provisioning.md
