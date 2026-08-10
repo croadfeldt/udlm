@@ -1,0 +1,63 @@
+# A composition somebody INGESTED. Nobody is offering it.
+#
+# This is the worked case for the kind: an architecture diagram was imported, and the model now
+# holds the shape it described. Read what is NOT here — there is no `supports` block, because
+# `supports` is an OFFER and nobody has made one. That absence is structural (the schema sets
+# additionalProperties: false), not a convention someone remembers.
+#
+# WHAT THIS RECORD MAY DO: be realized by the team that owns it. They imported their own diagram;
+# they can stand up what it describes.
+# WHAT IT MAY NOT DO: be presented to anyone else (ING-016). Offering something to others is a
+# claim, and a claim needs a version, a narrowing check against a parent, and a named owner — which
+# is what a class carries and this does not.
+#
+# `origin: discovered-derived` is doing real work. The mapping from LikeC4 was clean, but a human
+# did not write these constituents — the importer did. Inferred content is never silently presented
+# as human-declared, which is the same rule brownfield ingestion already applies to entities.
+record_type: composition
+uuid: 7ee81a0e-67f8-41ea-8fb3-61c8b8fb9114
+conforms_to: udlm/0.1
+handle: cexample/compositions/retail-storefront
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+
+# PROPOSED = it exists, exactly as a freshly written ADR is Proposed. Nobody has nominated it as a
+# class, so nobody is reviewing it. Nomination is a separate, recordable act — that is what makes
+# the promotion process auditable instead of a thing that happened once and left no trace.
+state: PROPOSED
+
+provenance:
+  arrival: ingested_likec4
+  origin: discovered-derived
+  # What a re-ingest next quarter matches on, so the second import updates THIS record rather than
+  # creating a second copy of the same architecture.
+  source_ref: architecture/storefront.c4
+
+metadata:
+  display_name: Retail storefront (ingested)
+  description: >-
+    Imported from the storefront architecture diagram. The shape is real and the team can build it;
+    it is not on anyone's menu.
+  author: cexample retail platform
+  origination_timestamp: '2026-08-10T00:00:00Z'
+
+# THE SAME SHAPE A CLASS COMPOSES WITH — one shape, so promotion is not a translation. A
+# translation is where meaning is quietly lost and where two semantic checkers start to disagree,
+# so the same checks that govern a class's constituents govern these: unique component_ids, sibling
+# resolution, an acyclic depends_on graph.
+constituents:
+  - component_id: db
+    resource_type: Data.Database
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+
+  - component_id: web
+    resource_type: Compute.Container
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+    depends_on: [db]
+    bindings:
+      - from_component: db
+        output: connection_string
+        to_field: env.DATABASE_URL

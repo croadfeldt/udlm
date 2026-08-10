@@ -102,6 +102,13 @@ def _class_constituents(record):
     return m.check_class_constituents(record)
 
 
+def _composition_promotion(record):
+    """ING-017/018/019 — promotion as a round trip. Bindable because the gate exposes
+    evaluate(record, index) over the resolved estate, the same convention the invariant gate set."""
+    m = _load("tests/check_composition_promotion.py", "_promo")
+    return m.evaluate(record, m.load_index())
+
+
 def _ownership(record):
     """OWN-002/007/008 — evaluates one type declaration on its own."""
     m = _load("registry/tools/validate.py", "_val")
@@ -115,6 +122,7 @@ GATES = {
     "check_catalog_item": _catalog_item,
     "schema": _schema,
     "check_class_constituents": _class_constituents,
+    "check_composition_promotion": _composition_promotion,
 }
 
 

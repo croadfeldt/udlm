@@ -1,0 +1,23 @@
+must_reject:
+  rule: ING-019
+  gate: check_composition_promotion
+  because: >-
+    An importer is not a human. A composition synthesized from a LikeC4 diagram is
+    `discovered-derived` however clean the mapping was; marking it `declared` claims a person wrote
+    these constituents and reviewed them. The distinction is not bookkeeping — a reviewer deciding
+    whether to promote this into shared vocabulary weights inferred content differently from
+    authored content, and the marker is the only thing that tells them which they are reading. Same
+    rule brownfield entity ingestion already applies.
+record:
+  record_type: composition
+  uuid: 6c1a8f34-2b57-4d90-8e6a-1f3b5c7d9e02
+  handle: cexample/compositions/laundered-import
+  conforms_to: udlm/0.1
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  state: PROPOSED
+  provenance: {arrival: ingested_likec4, origin: declared}
+  metadata:
+    display_name: Laundered import
+    origination_timestamp: '2026-08-10T00:00:00Z'
+  constituents:
+  - {component_id: web, resource_type: Compute.Container, provided_by: external, failure_effect: required}

@@ -388,6 +388,11 @@
       "$ref": "composition.schema.json#/$defs/selective_visible",
       "description": "Only when composition_visibility = selective: the component_ids that surface. Each MUST name a declared sibling constituent."
     },
+    "promoted_from": {
+      "type": "string",
+      "format": "udlm-ref-url",
+      "description": "OPTIONAL — the composition record this class was promoted from (ING-017). Present when the class did not start life as a class: it was ingested from a diagram, converted, or authored by a consumer, and someone then took ownership of it. The composition SURVIVES promotion and this is the pointer back to it, which is what lets a re-ingest of the same source diff against what already exists instead of appearing as a brand-new composition (ING-018). Absent means the class was authored deliberately as an offer, which is the ordinary case."
+    },
     "spec_examples": {
       "type": "array",
       "description": "Worked example payload(s) for the compiled spec (rule-36 / ADR-055: every type ships one, in-spec). Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per ADR-055/051."

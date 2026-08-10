@@ -1032,10 +1032,11 @@
   }
  },
  "type:Template.Application.AcmeThreeTier": {
-  "current": "0.1.0",
+  "current": "0.1.1",
   "path": "registry/classes/resource/template/application/acme-three-tier.yaml",
   "versions": {
-   "0.1.0": "sha256:c507c6e918f8be5ef56beac75729253737e63a9b116772685a384c7e62289e42"
+   "0.1.0": "sha256:c507c6e918f8be5ef56beac75729253737e63a9b116772685a384c7e62289e42",
+   "0.1.1": "sha256:37984708482271743cee240038da5368a2e29277584118ca0698a014d2358162"
   }
  },
  "type:Topology": {

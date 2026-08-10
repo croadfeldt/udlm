@@ -1,0 +1,69 @@
+# The other end of the story: a composition that WAS promoted.
+#
+# The retail team's storefront diagram (example-composition-record.yaml) is still PROPOSED — nobody
+# nominated it. This one went the whole way: ingested, nominated, reviewed, accepted. The class it
+# became is `Template.Application.AcmeThreeTier`, and that class points back here.
+#
+# THE ROUND TRIP IS THE POINT (ING-017). Both halves, or neither counts: a one-way pointer is how a
+# promotion that never happened still looks like one from whichever side you happen to read first.
+# check_composition_promotion.py walks both directions.
+#
+# THE RECORD SURVIVES (ING-018). Promotion did not consume it. When the platform team re-exports the
+# same architecture next quarter, the importer matches `provenance.source_ref` and updates THIS
+# record — instead of filing a second composition that looks brand new and starts the whole review
+# over.
+#
+# WHAT THE REVIEW ACTUALLY DECIDED, because it is the part nothing can compute (ING-020): this
+# record states fixed values — one database, one app tier, one web tier. The class states what may
+# VARY: `tier_size` and `database_capacity`, offered as `supports` ranges. Somebody had to decide
+# that the sizing was a consumer's choice and the wiring was not. That judgement IS the promotion,
+# and it is why this is a governed process rather than a conversion.
+record_type: composition
+uuid: 289f2e41-9b64-4a66-b507-7c0b8f1e2a50
+conforms_to: udlm/0.1
+handle: cexample/compositions/three-tier-web-app
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+
+# CANONICAL means a class exists — and the schema refuses this state without `promoted_to`,
+# because a record claiming acceptance while naming nothing records an outcome nobody can verify.
+state: CANONICAL
+promoted_to: udlm://class/Template.Application.AcmeThreeTier
+
+provenance:
+  arrival: ingested_likec4
+  origin: discovered-derived
+  source_ref: architecture/three-tier-web-app.c4
+
+metadata:
+  display_name: Three-tier web application (ingested, promoted)
+  description: >-
+    Imported from the platform team's own architecture diagram, then promoted into the offer other
+    teams order from. The shape is unchanged; what promotion added was an owner, a version, and a
+    statement of which values a consumer gets to choose.
+  author: cexample platform engineering
+  origination_timestamp: '2026-08-09T00:00:00Z'
+
+constituents:
+  - component_id: db
+    resource_type: Data.Database
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+
+  - component_id: app
+    resource_type: Compute.Container
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+    depends_on: [db]
+    bindings:
+      - from_component: db
+        output: connection_string
+        to_field: env.DATABASE_URL
+
+  - component_id: web
+    resource_type: Compute.Container
+    provided_by: external
+    failure_effect: required
+    edge_type: contained_by
+    depends_on: [app]

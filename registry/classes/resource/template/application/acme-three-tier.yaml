@@ -22,14 +22,14 @@
 # may not cross a tenant boundary. So every `contained_by` part below MUST be co-tenant with the
 # realized System. Anything cross-tenant — a shared platform namespace, someone else's VLAN — is a
 # `binds_to` stake behind an authorization, never a part.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.1.1
 conforms_to: udlm/0.1
 uuid: f2cdec7e-b363-43be-b020-aefc9f3d8e10
 record_type: class
 class: provider
 resource_type: Template.Application.AcmeThreeTier
 parent: Template.Application
-version: 0.1.0
+version: 0.1.1
 family: Resource
 status: active
 
@@ -46,6 +46,16 @@ metadata:
 # database directly rather than only the composite. This is addressability, not UI rendering: it
 # governs what a consumer can reference, operate on and be billed for.
 composition_visibility: transparent
+
+# WHERE THIS CAME FROM (ING-017). This offer did not start life as a class: the platform team
+# ingested their own architecture diagram, nominated it, reviewed it and took ownership. The
+# composition record SURVIVES that promotion and this is the pointer back to it — which is what
+# lets next quarter's re-export update the existing record instead of filing a brand-new one.
+#
+# What the review added is visible right below: the record states fixed values, this class states
+# what may VARY. Deciding the sizing was a consumer's choice and the wiring was not is the judgement
+# nothing can derive, and it is the whole reason promotion is governed rather than automatic.
+promoted_from: udlm://composition/cexample/compositions/three-tier-web-app
 
 constituents:
 
