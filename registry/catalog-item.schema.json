@@ -137,6 +137,12 @@
             "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
             "description": "Optional pin to a specific Resource Type Specification version. Omitted = the registry's current version at expansion time."
           },
+          "edge_type": {
+            "enum": ["contained_by", "binds_to"],
+            "default": "contained_by",
+            "description": "Whether the composite OWNS this part or merely uses it. This is the one thing a catalog item could not previously say, and realization needs it: a composite's single constituents[] list fans out into two places on the realized record — an owned part becomes an entry in the System's `constituents[]`, a borrowed one becomes a `dependencies[]` edge carrying this same edge_type. contained_by = the composite creates and owns it; it is a part, and GRP-INV-002 makes it non-overridably co-tenant with the composite. binds_to = the composite uses something that exists and belongs to someone else — a stake in a shared resource, or an activity bound to the stack — which is how a relationship legitimately crosses a tenant boundary, behind a cross-tenant authorization (CTX-001). Defaults to contained_by, which is what every constituent meant before this field existed. `depends_on` and `references` are deliberately not offered: sibling ordering is already the `depends_on` FIELD below, and a pure pointer with no lifecycle coupling is a field value rather than a constituent.",
+            "$comment": "CMP-012 checks the coherence with fulfillment: a BYO resource cannot be owned."
+          },
           "provided_by": {
             "enum": [
               "self",

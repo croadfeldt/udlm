@@ -149,13 +149,40 @@ def check_class_constituents(doc):
     the one dotted namespace)."""
     if not doc.get("constituents"):
         return []
-    errors = check_catalog_item(doc)
+    errors = check_catalog_item(doc) + check_constituent_edges(doc)
     known = _known_type_names()
     for c in doc.get("constituents", []):
         rt = c.get("resource_type")
         if rt and rt not in known:
             errors.append(f"CMP-011 constituent '{c.get('component_id','?')}': resource_type {rt!r} "
                           f"resolves to neither a registered Class nor a flat resource type")
+    return errors
+
+
+def check_constituent_edges(doc):
+    """CMP-012 — a constituent the composite does not create cannot be one it owns.
+
+    `edge_type` says whether the composite OWNS a part (`contained_by`) or merely uses one
+    (`binds_to`). `fulfillment: consumer` says the consumer supplies an EXISTING resource — BYO. A
+    thing you were handed a reference to is not a thing you created, so it cannot be a part; it is a
+    stake in someone else's resource.
+
+    The distinction is not stylistic. GRP-INV-002 is non-overridable: the parts of one thing may not
+    span two owners. Modelled as `contained_by`, a BYO resource makes the composite claim ownership
+    of something another tenant holds — and at realization that is either a refusal or, worse, a
+    silent ownership transfer of a resource other tenants are also using.
+
+    What cannot be checked here: whether a `contained_by` constituent's target is actually co-tenant.
+    At catalog time a constituent names a TYPE, not an instance, so there is no owner to compare —
+    that check belongs at realization, where check_group_invariants already makes it.
+    """
+    errors = []
+    for c in doc.get("constituents") or []:
+        if c.get("edge_type", "contained_by") == "contained_by" and c.get("fulfillment") == "consumer":
+            errors.append(f"CMP-012 constituent '{c.get('component_id','?')}': fulfillment 'consumer' "
+                          f"means the consumer supplies an EXISTING resource, which the composite "
+                          f"cannot also own — declare edge_type 'binds_to' (a stake), not "
+                          f"'contained_by' (a part)")
     return errors
 
 
@@ -730,7 +757,7 @@ def pick_instance(doc):
     if isinstance(doc, dict) and doc.get("record_type") == "catalog_item":
         return (CATALOG_VALIDATOR,
                 lambda d: f"catalog item {d['name']} v{d['version']} {d['uuid'][:8]} ({len(d['constituents'])} constituents)",
-                check_catalog_item)
+                lambda d: check_catalog_item(d) + check_constituent_edges(d))
     # A class record validates as a CLASS wherever it lives. Worked-example classes mirror the
     # class hierarchy under examples/classes/, and an example that is not checked the same way as
     # the real thing is an illustration rather than a demonstration.
