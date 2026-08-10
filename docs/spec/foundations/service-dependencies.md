@@ -482,29 +482,18 @@ The full dependency chain is always traceable from the Requested State record �
 
 ---
 
-## 11c. Dependency Graph Depth (Q33)
+## 11c. Dependency Graph Depth
 
-Dependency graph depth is limited to a profile-governed maximum. Circular dependency detection is always enforced regardless of depth configuration.
+**There is no maximum dependency-graph depth in UDLM.** A depth ceiling is a governance choice —
+how much composition an estate is willing to operate — and the data model does not make governance
+choices (rule 42; ADR-060: policies dictate, the substrate enables). An implementation that wants a
+ceiling declares one as policy, over the depth the graph already exposes; UDLM's obligation is to
+make the depth **computable**, which it is, from the declared edges.
 
-```yaml
-dependency_depth_policy:
-  max_depth: 10                  # configurable via Policy Group
-  on_max_exceeded: reject        # reject with clear error identifying depth + chain
-  cycle_detection: always        # non-configurable — always enforced
-```
-
-**Profile-governed defaults:**
-
-| Profile | Default Max Depth | Rationale |
-|---------|-----------------|-----------|
-| `homelab` | 20 | Home lab — free composition |
-| `dev` | 15 | Development — generous |
-| `standard` | 10 | Production baseline |
-| `prod` | 10 | Production |
-| `fsi` | 7 | Tight — complex dependencies harder to audit |
-| `sovereign` | 7 | Maximum control |
-
-In practice, well-designed service compositions rarely exceed 5-6 levels. Depth 10 provides headroom without allowing pathological compositions.
+**Cycle detection is different and stays.** A cycle is not deep, it is *unorderable* — ordering
+derives from `depends_on`, and a cycle has no first step. That is a structural impossibility rather
+than a threshold somebody picked, which is exactly the line between what the model refuses and what
+policy decides.
 
 ---
 
@@ -542,7 +531,7 @@ composite_service_registration:
 | 1 | How are dependency graphs versioned — does a new version of a catalog item invalidate existing dependency graphs? | Versioning model | ✅ Resolved — versioned as part of catalog item; semver semantics; captured in assembly provenance (DEP-013) |
 | 2 | Should the dependency graph be stored as a separate entity or embedded in the request payload? | Data model structure | ✅ Resolved — embedded in assembly provenance; declared in Resource Type Spec; resolved in placement.yaml (DEP-014) |
 | 3 | How are cross-tenant dependencies handled? | Multi-tenancy | ✅ Resolved — governed by GRP-INV-002 + REL-011/012 and ERL-D01/D02/D03; see Entity Relationships doc |
-| 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — profile-governed max (10 standard/prod, 7 fsi/sovereign); circular detection always enforced (DEP-015) |
+| 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — **no**, not in UDLM. A depth ceiling is a governance choice and belongs to policy (§11c); the model makes depth computable and refuses only cycles, which are unorderable rather than merely deep. |
 | 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as DCM entities (DEP-016) |
 
 ---
@@ -553,7 +542,6 @@ composite_service_registration:
 |--------|------|
 | `DEP-013` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in an implementation is captured in assembly provenance. |
 | `DEP-014` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
-| `DEP-015` | Dependency graph depth is limited to a profile-governed maximum (default: 10 for standard/prod; 7 for fsi/sovereign). Requests exceeding the maximum depth are rejected with a clear error. Circular dependency detection is always enforced regardless of depth configuration. |
 | `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as DCM entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
 | `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type` — `blocked-transient` (waiting on something expected to clear; converges when it can, gated by the convergence window), `blocked-permanent` (cannot be satisfied; refused immediately, window-independent), `refused` (the root: this member itself cannot be satisfied), `dependency-cancelled` (a dependency was cancelled out from under it). Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency-cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
 

@@ -18,13 +18,11 @@
 | `authority.auto_approve_threshold` / approval tier | `docs/spec/governance/authority-tier-model.md` (vocabulary) + `docs/spec/principles/design-priorities.md` | how strict auto-approve is; which tier a decision needs |
 | `contribution.shadow_mode` / auto-approve | `docs/spec/governance/federated-contribution-model.md` | shadow-mode duration before promotion; hub-contribution auto-approve |
 | `zero_trust.posture` | `docs/spec/governance/accreditation-and-authorization-matrix.md` §5 | required zero-trust posture (`none`/…) + IP-binding |
-| `dependency.max_depth` | `docs/spec/foundations/service-dependencies.md` (`DEP-015`) | max dependency-graph depth (e.g. 10 standard/prod, 7 fsi/sovereign) |
 | `observation.ttl` | `docs/spec/foundations/service-dependencies.md` (`OBS-005`) | observed-dependency staleness TTL |
 | `time.sync_tolerance` | `docs/spec/contracts/time-and-clock.md` (per ADR-005) | clock-sync tolerance floor |
 | `storage.failure_policy` | `docs/spec/contracts/storage-providers.md` §7 (`STO-002`) | store-failure behaviour (queue / abort / degrade) tightening for fsi/sovereign |
 | `policy.min_lifecycle_scope` | `docs/spec/contracts/policy-contract.md` (profile minimums) | minimum lifecycle scope a compliance-class policy must cover (fsi/sovereign = `all`, cannot skip) |
 | `policy.block_timeout` / override / escalation | `docs/spec/contracts/policy-contract.md` (timeout-behavior block) | block auto-cancel, override, and override-escalation timeouts (e.g. homelab PT48H … sovereign PT4H) |
-| `relationship.max_depth` | `docs/spec/foundations/entity-relationships.md` (`REL-021`) | max relationship-graph traversal depth — **distinct from `dependency.max_depth`** (e.g. 25 homelab … 10 sovereign) |
 | `provenance.default_level` | `docs/spec/foundations/layering-and-versioning.md` (profile defaults) | default provenance / implementation-posture detail (`full` … `hidden`) |
 | `auth.available_modes` | `docs/spec/governance/auth-providers.md` §7–§8 | which authentication modes are available per profile + per-feature availability |
 | `audit.granularity` / verification / overflow | `docs/spec/contracts/universal-audit.md` (`AUD-014/015/021`) | audit granularity (`stage`/`field`), inter-stage verification mode, commit-log overflow policy |

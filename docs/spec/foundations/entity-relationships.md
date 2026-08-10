@@ -751,7 +751,6 @@ The relationship graph exists across all four states:
 | `REL-017` | A Resource Type Specification with `shareability.allowed: false` must reject any attempt to create more than one active constituent or operational relationship to an instance of that type |
 | `REL-018` | When a lifecycle event produces multiple action recommendations on a shared resource, the most conservative action wins per the hierarchy: `retain > notify > suspend > detach > cascade > destroy` (save_overrides_destroy) |
 | `REL-019` | When lifecycle action recommendations conflict, a `lifecycle_conflict_record` is created. Conflicts at `warning` or `critical` severity trigger notifications to the entity owner and affected policy owners |
-| `REL-021` | Relationship graph depth is limited to a profile-governed maximum (default: 15 for standard/prod; 10 for fsi/sovereign). Circular relationship detection is always enforced regardless of depth configuration. Depth is measured as the maximum traversal distance between any two entities in the relationship graph (§15) |
 
 ### 13.2 Lifecycle Policy Conflict Resolution
 
@@ -847,7 +846,7 @@ The minimum stake-strength threshold per event type is platform-domain policy co
 
 ### 14.3 Notification Traversal and Graph Depth
 
-What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared by platform-domain policy (REL-022, default 1) and the graph-operation depth ceiling (REL-021: 15 standard/prod, 10 fsi/sovereign); security events (sovereignty violation, audit-chain break) are fixed at depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
+What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared by platform-domain policy (REL-022, default 1); security events (sovereignty violation, audit-chain break) are fixed at depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
 
 ### 14.4 Notification Traversal Policies
 
@@ -859,31 +858,14 @@ What the data model fixes is the **declared depth**: notification traversal resp
 
 ---
 
-## 15. Maximum Relationship Graph Depth (`REL-021`)
+## 15. Relationship Graph Depth
 
-Relationship graph depth is limited to a profile-governed maximum. Circular relationship detection is always enforced regardless of depth configuration.
+**There is no maximum relationship-graph depth in UDLM.** A traversal ceiling is a governance
+choice, and the data model does not make governance choices (rule 42; ADR-060). An implementation
+declares one as policy if it wants one. Cycle detection stays: a cycle makes traversal
+non-terminating, which is a structural fact rather than a threshold.
 
-```yaml
-relationship_depth_policy:
-  max_depth: 15                  # configurable via Policy Group
-  on_max_exceeded: reject        # reject with clear error
-  cycle_detection: always        # non-configurable — always enforced
-  # Depth = maximum traversal distance between any two entities
-  # NOT the count of relationships on one entity
-```
-
-**Profile-governed defaults:**
-
-| Profile | Max Depth | Rationale |
-|---------|----------|-----------|
-| `homelab` | 25 | Home lab — free composition |
-| `dev` | 20 | Development — generous |
-| `standard` | 15 | Production baseline |
-| `prod` | 15 | Production |
-| `fsi` | 10 | Tighter — complex graphs harder to audit |
-| `sovereign` | 10 | Maximum control |
-
-**Note:** Relationship depth differs from dependency depth (DEP-015). Dependency depth counts the provisioning chain. Relationship depth counts the graph traversal distance between any two entities. A VM with 50 IP address relationships has depth 1, not 50.
+**Note:** Relationship depth differs from dependency depth (service-dependencies §11c). Dependency depth counts the provisioning chain. Relationship depth counts the graph traversal distance between any two entities. A VM with 50 IP address relationships has depth 1, not 50. Neither is capped by the model; the distinction matters because a policy declaring a ceiling must say which one it means.
 
 ---
 
