@@ -25,8 +25,11 @@ There is one shape. Don't invent parallel vocabulary for it.
 | **Realized** | **System** | the running instance |
 | **Discovered** | — | observed reality with no intent (joined by adoption) |
 
-`Intent → Requested → Realized` (ADR-030) *is* `Pattern → Template → System` (ADR-033) one scale up. The
-transitions are the same act — **Converge**.
+`Pattern → Template → System` (ADR-033) is **two definitions and one instance**, related by reference:
+a Pattern `refines` into a Template, and a Template is **realized** into a System. Only the second arrow
+is `Intent → Requested → Realized` (ADR-030), because a System is the only one of the three carrying
+`states`. The first is not a lifecycle transition — one Pattern yields many Templates, and states are 1:1
+within a record.
 
 ## The classification axes (proposed — collapse the overlap)
 
@@ -68,16 +71,16 @@ archetype — an identity is maintained, not one-shot.)*
 
 - **Data · Policy · Provider** — the invariant decomposition. UDLM = Data (substrate); DCM = Policy
   (implementation); Provider = mechanism (wraps tools, T8). Every decision decomposes across all three.
-- **Pattern → Template → System** — roles, not new things (above). **Composite Service = Template**
-  (ADR-034); **Blueprint** — do not use; the term is **Template**.
+- **Pattern → Template → System** — two definitions and one instance (above). **Composite Service =
+  Template** (ADR-034); **Blueprint** — do not use; the term is **Template**.
 
 ## Canonical glossary (proposed) + retired aliases
 
 | Canonical | Means | Retired / folded names |
 |---|---|---|
-| **Template** | the orderable, resolved composite definition (Requested tier) | Blueprint · Composite Service (catalog item) |
+| **Template** | the orderable composite definition — every part names something a provider can realize | Blueprint · Composite Service (catalog item) |
 | **System** | the realized instance of a Template | Composite Entity |
-| **Pattern** | the reusable, design-time design (Intent, type level) | — |
+| **Pattern** | the reusable design — a composition whose parts are still open (they name capabilities, not realizable classes) | — |
 | **nature** | the lifecycle-kind axis (maintained-state/work-product/curated) | *family* (folds in as a view) |
 | **archetype** | friendly preset over nature | — |
 | **has_constituents** (derived) | constituent shape (is it a composite?) | the stored `entity_type` shape · Atomic/Composite · single/multi — all retired (derived, ADR-027 addendum) |
