@@ -7,13 +7,16 @@ must_reject:
     catalog is the last place it can be refused cheaply — after admission it becomes a half-built
     composite and a compensation path.
 record:
-  record_type: catalog_item
+  record_type: class
   uuid: 7f4a2c19-6e83-4d05-b72f-3c918ae5d604
-  handle: acme/catalog/ghost-constituent
+  handle: acme/ghost-constituent
   conforms_to: udlm/0.1
-  name: ApplicationStack.Ghost
+  resource_type: Template.Application.AcmeGhost
+  class: provider
+  parent: Template.Application
   version: 1.0.0
-  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  family: Resource
+  status: active
   constituents:
     - component_id: phantom
       resource_type: Compute.NoSuchThing
