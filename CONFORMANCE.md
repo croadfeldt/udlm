@@ -380,10 +380,13 @@ gates here.
 | Rule | Tested by | Requirement |
 |---|---|---|
 | `WIR-029` | runtime | Schema bundle published at `/.well-known/udlm/schema-bundle` |
+| `WIR-029.1` | runtime | Individual schemas are published at the URLs the bundle manifest declares. A manifest whose entries do not resolve is a directory to nothing — the bundle exists to be followed, not read |
 | `WIR-030` | artifact | JSON Schema Draft 2020-12 for all schemas |
 | `WIR-031` | runtime | Per-schema URLs immutable for `(id, version)` tuples |
 | `WIR-032` | runtime | Version negotiation honors semver |
+| `WIR-032.1` | wire | An incompatible-version interaction is refused with `schema.version_incompatible`, and unknown-type data where a REQUIRED field is affected is refused with `schema.unknown_type` — degrading gracefully is correct only where the unknown field is optional. A typed refusal is what lets a peer distinguish "I cannot read this" from "I read it and it was invalid" |
 | `WIR-033` | runtime | Unknown-type data triggers schema fetch or graceful degradation |
+| `WIR-033.1` | runtime | Remote bundles are cached correctly and **revalidated on update notification**. A cache that never revalidates turns a published schema change into a silent divergence between two peers that both believe they are current |
 
 ### Conformance declaration (this doc)
 

@@ -39,6 +39,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # area heading in §6 -> the contract document whose conformance list it consolidates.
 # Only documents carrying an explicit conformance section appear; the others have no floor to meet.
+# "Conformance declaration" is deliberately absent: its source is §4 of THIS document, so there is no
+# second list to be shorter than. Its own gap is that §4.1 is a JSON example rather than a schema, so
+# WIR-035 requires matching something that does not exist — tracked separately, not a floor problem.
 AREAS = {
     "Identifiers": "docs/spec/contracts/identifier-scheme.md",
     "Time": "docs/spec/contracts/time-and-clock.md",
@@ -46,6 +49,7 @@ AREAS = {
     "Retries": "docs/spec/contracts/retry-semantics.md",
     "Rate limits": "docs/spec/contracts/rate-limit-and-backpressure.md",
     "Events": "docs/spec/contracts/event-catalog.md",
+    "Schema sharing": "docs/spec/contracts/schema-sharing.md",
 }
 # A requirement stated in TWO source documents is numbered ONCE — a second row would be a second
 # definition of one requirement, which is the drift the rule registry exists to prevent. Where that
