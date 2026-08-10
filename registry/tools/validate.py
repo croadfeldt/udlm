@@ -46,6 +46,8 @@ DECISION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "decision-record.sc
 REGENERATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "regeneration-manifest.schema.json").read_text()))
 FINDING_ROUTING_VALIDATOR = Draft202012Validator(json.loads((ROOT / "finding-routing-record.schema.json").read_text()))
 ACCREDITATION_VALIDATOR = Draft202012Validator(json.loads((ROOT / "accreditation.schema.json").read_text()))
+_COMPOSITION_RECORD_SCHEMA = json.loads((ROOT / "composition-record.schema.json").read_text())
+COMPOSITION_RECORD_VALIDATOR = None   # bound below, once _ref_store() is defined
 _CLASS_SCHEMA = json.loads((ROOT / "class.schema.json").read_text())
 def _ref_store():
     """Cross-file $ref targets under BOTH their file URI and their $id (refs resolve against the
@@ -53,7 +55,7 @@ def _ref_store():
     the spec-examples/fuzz gates)."""
     store = {}
     for name in ("resource-type-spec.schema.json", "catalog-item.schema.json",
-                 "composition.schema.json"):
+                 "composition.schema.json", "composition-record.schema.json"):
         doc = json.loads((ROOT / name).read_text())
         store[(ROOT / name).as_uri()] = doc
         if isinstance(doc.get("$id"), str):
@@ -74,6 +76,12 @@ CATALOG_VALIDATOR = Draft202012Validator(
     _CATALOG_SCHEMA,
     resolver=RefResolver(base_uri=(ROOT / "catalog-item.schema.json").as_uri(),
                          referrer=_CATALOG_SCHEMA, store=_ref_store()))
+# A composition record $refs the same shared composition shape a class does — one shape, so
+# promotion is not a translation. Resolved the same way for the same reason.
+COMPOSITION_RECORD_VALIDATOR = Draft202012Validator(
+    _COMPOSITION_RECORD_SCHEMA,
+    resolver=RefResolver(base_uri=(ROOT / "composition-record.schema.json").as_uri(),
+                         referrer=_COMPOSITION_RECORD_SCHEMA, store=_ref_store()))
 TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["terms"], "properties": {"terms": {"type": "array"}}})
 
 
@@ -784,6 +792,9 @@ def pick_instance(doc):
                 lambda d: f"conformance declaration {d['implementation']['name']} "
                           f"v{d['implementation']['version']} — udlm {d['udlm_version']}, "
                           f"level {d['level']}")
+    if isinstance(doc, dict) and doc.get("record_type") == "composition":
+        return (COMPOSITION_RECORD_VALIDATOR,
+                lambda d: f"composition {d.get('handle', d['uuid'][:8])} [{d.get('state')}]")
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
     # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —

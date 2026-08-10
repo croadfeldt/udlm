@@ -1,0 +1,14 @@
+must_reject:
+  rule: ING-018
+  gate: check_composition_promotion
+  because: >-
+    A class citing a composition that is no longer there. The record must SURVIVE its promotion:
+    it is the provenance answering "where did this come from, and is it authoritative", and it is
+    what a re-ingest of the same artifact matches against. Consume it and next quarter's re-export
+    of an unchanged diagram files a brand-new composition and starts the review over — which is
+    exactly the drift the pointer exists to prevent.
+record:
+  record_type: class
+  resource_type: Template.Application.Orphaned
+  class: provider
+  promoted_from: udlm://composition/cexample/compositions/deleted-source

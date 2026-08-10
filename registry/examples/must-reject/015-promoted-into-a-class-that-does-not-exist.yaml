@@ -1,0 +1,23 @@
+must_reject:
+  rule: ING-017
+  gate: check_composition_promotion
+  because: >-
+    A composition claiming it was accepted, naming a class nobody minted. This is the failure the
+    round trip exists to catch: from the record's side the promotion looks complete, and there is
+    nothing on the other end to disagree. A promotion into something that does not exist is an
+    outcome nobody can verify — which makes it indistinguishable from a promotion that was
+    discussed and never done.
+record:
+  record_type: composition
+  uuid: 4b7d2c19-5e83-4a6f-9c10-2d8f4e6a7b31
+  handle: cexample/compositions/phantom-promotion
+  conforms_to: udlm/0.1
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  state: CANONICAL
+  promoted_to: udlm://class/Template.Application.NeverMinted
+  provenance: {arrival: ingested_likec4, origin: discovered-derived}
+  metadata:
+    display_name: Phantom promotion
+    origination_timestamp: '2026-08-10T00:00:00Z'
+  constituents:
+  - {component_id: db, resource_type: Data.Database, provided_by: external, failure_effect: required}

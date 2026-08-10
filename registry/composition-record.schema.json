@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/composition-record.schema.json",
+  "title": "UDLM Composition Record — a composition nobody is offering (yet)",
+  "description": "A composition that EXISTS but that nobody is standing behind: ingested from a LikeC4 diagram, converted from CALM, or authored by a consumer for themselves. It carries the same composition shape a class does (composition.schema.json — one shape, so promotion is not a translation) and deliberately none of the class machinery. WHY THIS KIND EXISTS: ordering something must never mint an entry in the shared vocabulary. If a composition were always a class, importing a diagram would add to the portable, curated, governed type registry, and so would a consumer saving a favourite — a document someone wrote is not a claim about shared vocabulary. WHAT SEPARATES IT FROM A CLASS IS GOVERNANCE, NOT STRUCTURE: the test is one question — is someone standing behind this as an offer, or did someone write it down? An offer carries `supports` (the ranges a consumer picks from) and is checked against its parent; this kind carries neither, by construction, and `additionalProperties: false` is what makes 'not an offer' structural rather than a convention. It may be realized by its author; it may never be presented to anyone else (ING-016). A composition reaches CANONICAL by being PROMOTED into a class through the governed process (ING-017), and it survives that promotion as the provenance the class points back to (ING-018) — so re-ingesting the same source next quarter diffs against it instead of looking like a brand-new composition. Ingestion of a composition is the ingestion contract one level up: the same act as bringing a brownfield entity into governance, which is why these rules are ING and not a new family (T7).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uuid",
+    "conforms_to",
+    "record_type",
+    "handle",
+    "tenant_uuid",
+    "state",
+    "provenance",
+    "metadata",
+    "constituents"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "composition",
+      "description": "Dispatch discriminator (data-model-core §2). The kind is `composition` — what the thing IS. Where it sits in the governed process is `state`, which is a different question: a lifecycle state is not a definition of what something is."
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "RFC 9562 v4, minted once at creation and immutable — including across promotion. The class minted from this record is a NEW artifact with its own identity; this uuid is what the class points back to."
+    },
+    "conforms_to": {
+      "type": "string",
+      "description": "The UDLM spec version this record conforms to (`udlm/0.1`)."
+    },
+    "handle": {
+      "type": "string",
+      "description": "Advisory human identity. Deliberately NOT required to be unique across the estate the way a class name is: a class name enters the shared vocabulary and is expensive to get wrong, while two teams may each have written down their own `three-tier-app` and neither is making a claim about anyone else's."
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "The tenant this composition belongs to — REQUIRED, and it is the field that makes 'not offered to others' meaningful. A class has no tenant because it is portable vocabulary; a composition record is a document owned by somebody, and that ownership is the boundary. Promotion is precisely the act of a composition leaving one tenant's ownership and becoming shared vocabulary."
+    },
+    "state": {
+      "enum": [
+        "PROPOSED",
+        "UNDER_REVIEW",
+        "CANONICAL",
+        "DEPRECATED"
+      ],
+      "description": "Where this composition sits in the governed promotion process — the SAME ladder decision records use, deliberately not a second one (DR-UDLM-002 §6: the advancement ladder is ours and must not be re-imported). PROPOSED = authored or ingested, exactly as a freshly written ADR is Proposed. UNDER_REVIEW = nominated as a class; nomination is a distinct, recordable act, which is what makes the process auditable rather than a decision that happened once and left no trace. CANONICAL = accepted, and a class exists (`promoted_to`). DEPRECATED = superseded or withdrawn."
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "arrival",
+        "origin"
+      ],
+      "description": "Where this composition came from, and how much of it a reader should trust. 'Where did this come from, and is it authoritative?' is a first-class question for this kind precisely because it arrives six different ways (#405).",
+      "properties": {
+        "arrival": {
+          "enum": [
+            "ingested_likec4",
+            "converted_calm",
+            "native_provider",
+            "native_external",
+            "native_consumer",
+            "saved_template"
+          ],
+          "x-extensible-enum": true,
+          "description": "How it got here. LikeC4 and CALM are mapped in docs/research/architecture-as-code-ingestion.md (nodes → entities, relationships → relationships, controls → policy seed data). Extensible: a source nobody has met yet is a new arrival path, not a defect."
+        },
+        "origin": {
+          "enum": [
+            "declared",
+            "discovered-derived"
+          ],
+          "description": "Whether a human wrote this composition or it was synthesized from an external artifact — the SAME vocabulary the realized-entity states carry, and for the same reason: inferred content is never silently presented as human-declared. An ingested diagram is `discovered-derived` however clean the mapping was."
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "The external artifact this came from — a repository path, a document URL, an export identifier. What a re-ingest next quarter matches against to find this record rather than creating a second one."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "display_name",
+        "origination_timestamp"
+      ],
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string",
+          "description": "Who wrote or ingested this. Distinct from the owner a promoted class acquires: authorship is a fact about the past, ownership is a standing commitment."
+        },
+        "origination_timestamp": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      }
+    },
+    "constituents": {
+      "$ref": "composition.schema.json#/$defs/constituents",
+      "description": "The parts and how they wire — THE SAME SHAPE a class composes with. One shape is the point: promotion must not be a translation, because a translation is where meaning is quietly lost and where two semantic checkers start to disagree."
+    },
+    "composition_visibility": {
+      "$ref": "composition.schema.json#/$defs/composition_visibility",
+      "description": "How constituents surface as first-class entities once realized. Optional here, unlike on a class: whoever ingested a diagram may simply not have expressed it, and inventing an answer would present a guess as a declaration."
+    },
+    "selective_visible": {
+      "$ref": "composition.schema.json#/$defs/selective_visible"
+    },
+    "refines": {
+      "type": "string",
+      "format": "udlm-ref-url",
+      "description": "The composition this one refines — a reference to another composition record. This is where the pattern → template chain lives: one drawing yields many cuts, so the chain is REFERENCES between records rather than states of one record, because states are 1:1 and that cardinality is not. Absent means this is the top of its chain. Never a copy of what it refines: the chain is walked, not flattened (DRV-001)."
+    },
+    "promoted_to": {
+      "type": "string",
+      "format": "udlm-ref-url",
+      "description": "The class minted from this composition — present exactly when `state` is CANONICAL (ING-017). The pointer is what makes promotion a round trip rather than a one-way copy: the class names the composition it came from, and the composition names the class it became."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "CANONICAL"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "required": [
+          "promoted_to"
+        ],
+        "description": "CANONICAL means a class exists. A composition claiming acceptance without naming what it became records an outcome nobody can verify."
+      },
+      "else": {
+        "not": {
+          "required": [
+            "promoted_to"
+          ]
+        },
+        "description": "And the converse: naming a class you were promoted into, while not being CANONICAL, is the same claim made twice as loudly and once falsely."
+      }
+    }
+  ],
+  "examples": [
+    {
+      "record_type": "composition",
+      "uuid": "3a0f1b6e-6c1f-4a2b-9d4e-7c8a5b2e1f30",
+      "conforms_to": "udlm/0.1",
+      "handle": "cexample/compositions/retail-storefront",
+      "tenant_uuid": "8f14e45f-ce9a-4a1b-b9c2-3d5e6f7a8b90",
+      "state": "PROPOSED",
+      "provenance": {
+        "arrival": "ingested_likec4",
+        "origin": "discovered-derived",
+        "source_ref": "architecture/storefront.c4"
+      },
+      "metadata": {
+        "display_name": "Retail storefront (ingested)",
+        "description": "Imported from the storefront architecture diagram; nobody is offering this.",
+        "origination_timestamp": "2026-08-10T00:00:00Z"
+      },
+      "constituents": [
+        {
+          "component_id": "db",
+          "resource_type": "Data.Database",
+          "provided_by": "external",
+          "failure_effect": "required"
+        },
+        {
+          "component_id": "web",
+          "resource_type": "Compute.Container",
+          "provided_by": "external",
+          "failure_effect": "required",
+          "depends_on": [
+            "db"
+          ]
+        }
+      ]
+    }
+  ]
+}
