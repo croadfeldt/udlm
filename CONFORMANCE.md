@@ -121,6 +121,10 @@ GET /.well-known/udlm/conformance
 
 ### 4.1 Declaration schema
 
+**The schema is [`registry/conformance-declaration.schema.json`](registry/conformance-declaration.schema.json)** — that is what `WIR-035` requires a declaration to match, and what an implementation validates against. The example below is the worked illustration of it, not the definition.
+
+Three things the schema deliberately leaves open, because this section states nothing about them and a schema that guesses becomes the requirement: the **set of interop-surface names** (`consumer_api`, `provider_callbacks`, `federation`, `audit_export` appear only as keys in the example and are defined as a set nowhere), the **`profile` value** (organizations author their own), and **`leap_second_strategy`** (`time-and-clock.md` §8 holds that set open on purpose).
+
 The declaration body (the JSON response served at the endpoint above) has the
 following shape:
 
@@ -393,7 +397,7 @@ gates here.
 | Rule | Tested by | Requirement |
 |---|---|---|
 | `WIR-034` | runtime | Declaration published at `/.well-known/udlm/conformance` |
-| `WIR-035` | artifact | Declaration matches §4 schema exactly |
+| `WIR-035` | artifact | Declaration validates against [`registry/conformance-declaration.schema.json`](registry/conformance-declaration.schema.json) (§4.1) |
 | `WIR-036` | wire | Exclusions enumerated for partial conformance |
 | `WIR-037` | runtime | Excluded features respond with `conformance.feature_not_implemented` |
 

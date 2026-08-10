@@ -34,6 +34,7 @@ TYPE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "resource-type-spec.sch
 INSTANCE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "realized-entity.schema.json").read_text()))
 PROFILE_VALIDATOR = Draft202012Validator(json.loads((ROOT / "profile.schema.json").read_text()))
 CATALOG_VALIDATOR = Draft202012Validator(json.loads((ROOT / "catalog-item.schema.json").read_text()))
+CONFORMANCE_DECL_VALIDATOR = Draft202012Validator(json.loads((ROOT / "conformance-declaration.schema.json").read_text()))
 POLICY_VALIDATOR = Draft202012Validator(json.loads((ROOT / "policy.schema.json").read_text()))
 EVAL_CONTEXT_VALIDATOR = Draft202012Validator(json.loads((ROOT / "evaluation-context.schema.json").read_text()))
 LAYER_VALIDATOR = Draft202012Validator(json.loads((ROOT / "layer.schema.json").read_text()))
@@ -766,6 +767,11 @@ def pick_instance(doc):
                 lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — "
                           f"{len(d.get('elements') or [])} element(s)",
                 check_class_record)
+    if isinstance(doc, dict) and doc.get("record_type") == "conformance_declaration":
+        return (CONFORMANCE_DECL_VALIDATOR,
+                lambda d: f"conformance declaration {d['implementation']['name']} "
+                          f"v{d['implementation']['version']} — udlm {d['udlm_version']}, "
+                          f"level {d['level']}")
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
         return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
     # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —

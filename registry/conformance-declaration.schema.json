@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/conformance-declaration.schema.json",
+  "title": "UDLM Conformance Declaration",
+  "description": "The declaration an implementation publishes at /.well-known/udlm/conformance (CONFORMANCE.md \u00a74). WIR-035 requires a declaration to match this schema; before it existed the requirement named \u00a74.1, which is a worked JSON example rather than a schema, so an implementation was asked to match something it could not validate against. Transcribed from \u00a74.1's example and \u00a74.2's field-semantics table, which agree on all thirteen top-level fields. Where the two documents state nothing \u2014 the shape of the nested objects, and which interop surfaces exist \u2014 this schema deliberately does NOT invent a constraint; those are recorded as open in the issue that produced it, because a schema that guesses becomes the requirement.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "implementation",
+    "udlm_version",
+    "profile",
+    "level",
+    "extensions_published",
+    "schema_bundle_url",
+    "interop_surfaces",
+    "leap_second_strategy",
+    "auth_mechanism_for_schema_endpoints",
+    "conformance_test_suite_version",
+    "self_certified_at"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "conformance_declaration",
+      "description": "Top-level dispatch discriminator (data-model-core \u00a72). Not part of the published declaration body \u00a74.1 shows \u2014 it is how a record in this registry is routed to this schema, the same way every other record kind is."
+    },
+    "implementation": {
+      "type": "object",
+      "required": [
+        "name",
+        "vendor",
+        "version"
+      ],
+      "description": "Self-identification. The three members are those \u00a74.1 shows; \u00a74.2 describes the field only as a whole, so they are required on the example's authority and nothing further is asserted about them.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "vendor": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "udlm_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The udlm semver this implementation conforms to."
+    },
+    "profile": {
+      "type": "string",
+      "description": "The active base profile. NOT a closed enum: the six shipped profiles (homelab, dev, standard, prod, fsi, sovereign) are UDLM's, and an organization authors its own in its own namespace (profile.schema.json \u2014 'acme/profile/regulated-eu, never udlm/'). Constraining this would refuse a conformant implementation running a profile UDLM never shipped."
+    },
+    "level": {
+      "enum": [
+        "full",
+        "partial"
+      ],
+      "description": "\u00a74.2 states these two values exactly."
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Contract names not implemented. Required when level is partial (see allOf); a full declaration may still carry it empty, which \u00a74.1's example does."
+    },
+    "extensions_published": {
+      "type": "boolean",
+      "description": "Whether schema extensions are published."
+    },
+    "schema_bundle_url": {
+      "type": "string",
+      "description": "Where to fetch the schema bundle. Not typed as a URI: \u00a74.1 shows a root-relative path (/.well-known/udlm/schema-bundle), which format:uri-reference admits and format:uri does not."
+    },
+    "interop_surfaces": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Which surfaces are available and how to reach them. The surface NAMES are deliberately not enumerated: consumer_api, provider_callbacks, federation and audit_export appear only as keys in \u00a74.1's example and are defined as a set nowhere in the spec, so an enum here would invent the vocabulary rather than record it. Each entry's shape is constrained because \u00a74.1 is consistent about it.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "transport": {
+            "type": "string"
+          },
+          "base_url": {
+            "type": "string"
+          },
+          "auth": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "leap_second_strategy": {
+      "type": "string",
+      "description": "The peer's declared leap-handling strategy. Deliberately unconstrained \u2014 time-and-clock.md \u00a78 states an implementation MAY use ANY strategy preserving audit traceability, naming smearing and leap-aware representation as examples rather than as a vocabulary, and \u00a74.2 calls it a 'named, open set'. An enum here would close a set the contract holds open on purpose."
+    },
+    "auth_mechanism_for_schema_endpoints": {
+      "type": "string",
+      "description": "How peers authenticate to fetch schemas."
+    },
+    "conformance_test_suite_version": {
+      "type": "string",
+      "description": "Which version of the conformance test suite was run (\u00a78). Note that the suite does not yet exist \u2014 #417 \u2014 so this field cannot be populated honestly today; it is required here because \u00a74.2 requires it, and softening that would hide the gap rather than close it."
+    },
+    "self_certified_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "RFC 3339 UTC instant when self-certification was performed."
+    },
+    "independent_verification": {
+      "type": "object",
+      "description": "Present only if independently verified (\u00a78). Members are those \u00a74.1 shows; \u00a74.2 describes the field only as a whole, so none is asserted required.",
+      "properties": {
+        "verifier": {
+          "type": "string"
+        },
+        "verifier_version": {
+          "type": "string"
+        },
+        "verification_uuid": {
+          "type": "string"
+        },
+        "verified_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "report_url": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "level": {
+            "const": "partial"
+          }
+        },
+        "required": [
+          "level"
+        ]
+      },
+      "then": {
+        "required": [
+          "exclusions"
+        ],
+        "description": "\u00a74.2: exclusions is required when level is partial. A partial claim that does not say what is excluded is not a partial claim \u2014 it is a full claim with the difficult part left out."
+      }
+    }
+  ],
+  "examples": [
+    {
+      "record_type": "conformance_declaration",
+      "implementation": {
+        "name": "example-implementation",
+        "vendor": "example-org",
+        "version": "1.4.2"
+      },
+      "udlm_version": "0.1.0",
+      "profile": "standard",
+      "level": "full",
+      "exclusions": [],
+      "extensions_published": true,
+      "schema_bundle_url": "/.well-known/udlm/schema-bundle",
+      "interop_surfaces": {
+        "consumer_api": {
+          "available": true,
+          "transport": "http",
+          "base_url": "https://example-implementation/api/v1"
+        },
+        "provider_callbacks": {
+          "available": true,
+          "transport": "http",
+          "auth": "mtls+credential"
+        },
+        "federation": {
+          "available": true,
+          "transport": "http",
+          "auth": "mtls+credential"
+        },
+        "audit_export": {
+          "available": true,
+          "transport": "http"
+        }
+      },
+      "leap_second_strategy": "smear",
+      "auth_mechanism_for_schema_endpoints": "credential",
+      "conformance_test_suite_version": "1.0.0",
+      "self_certified_at": "2026-05-26T14:32:18.456Z"
+    }
+  ]
+}
