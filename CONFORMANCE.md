@@ -345,8 +345,12 @@ gates here.
 | Rule | Tested by | Requirement |
 |---|---|---|
 | `WIR-017` | wire | Event envelope schema matches the catalog |
+| `WIR-017.1` | wire | An event type not in the catalog is non-standard and carries a **reverse-DNS prefix** (`com.acme.custom_event`). The catalog is the authoritative name list, so an unprefixed unknown name is indistinguishable from a standard event a peer has not learned yet — and a peer would be right to treat it as one |
 | `WIR-018` | runtime | Event timestamps set by commit log, not emitter |
 | `WIR-019` | wire | `event_uuid` enables idempotent processing |
+| `WIR-019.1` | wire | `event_schema_version` increments on any breaking payload change — a removed field, a changed type, or changed semantics. Adding an optional field is not breaking. Without the increment a consumer parses a payload against the wrong contract and reads a field that no longer means what it did |
+| `WIR-040` | runtime | An event with `urgency: critical` is delivered on the push channel where the notification service supports it, **regardless of subscription preference**. Delivery a consumer can opt out of is not a guarantee |
+| `WIR-040.1` | runtime | `audit.*` events at `urgency: critical` are additionally **non-suppressable** — not filterable by consumer preference at all. Stronger than WIR-040 and separate from it: without this, the subject of an audit record could turn off its emission |
 
 ### Retries ([`retry-semantics.md`](docs/spec/contracts/retry-semantics.md))
 

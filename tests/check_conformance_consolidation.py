@@ -45,6 +45,7 @@ AREAS = {
     "Errors": "docs/spec/contracts/error-model.md",
     "Retries": "docs/spec/contracts/retry-semantics.md",
     "Rate limits": "docs/spec/contracts/rate-limit-and-backpressure.md",
+    "Events": "docs/spec/contracts/event-catalog.md",
 }
 # A requirement stated in TWO source documents is numbered ONCE — a second row would be a second
 # definition of one requirement, which is the drift the rule registry exists to prevent. Where that
@@ -54,7 +55,10 @@ CROSS_REFERENCED = {
     ("Rate limits", "WIR-021"): "rate-limit-and-backpressure.md restates 'Honor retry_after_seconds', "
                                 "which retry-semantics.md owns and WIR-021 numbers.",
 }
-_SECTION = re.compile(r"^#+\s*[\d.]*\s*(Validation rules \(conformance checks\))", re.M)
+# Two documents name their own conformance list differently: most use "Validation rules
+# (conformance checks)", event-catalog.md uses "System Policies". Matching only the first left
+# Events unchecked, and §6 was carrying 3 of that document's 7 rules when nothing was watching.
+_SECTION = re.compile(r"^#+\s*[\d.]*\s*(Validation rules \(conformance checks\)|System Policies)\s*$", re.M)
 _ROW = re.compile(r"^\| `(WIR-[\d.]+)` \|")
 
 
@@ -84,8 +88,11 @@ def source_requirements(rel):
         return None
     nxt = t.find("\n## ", m.end())
     body = t[m.end():nxt if nxt > 0 else len(t)]
-    return [l for l in body.split("\n")
-            if l.strip().startswith("- ") and not l.strip().startswith("- [")]
+    bullets = [l for l in body.split("\n")
+               if l.strip().startswith("- ") and not l.strip().startswith("- [")]
+    # a document may state its conformance list as a rule TABLE rather than bullets
+    rows = [l for l in body.split("\n") if re.match(r"^\| `[A-Z][A-Z0-9-]+-\d{3}` \|", l.strip())]
+    return bullets or rows
 
 
 def main():
