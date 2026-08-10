@@ -846,13 +846,27 @@ The minimum stake-strength threshold per event type is platform-domain policy co
 
 ### 14.3 Notification Traversal and Graph Depth
 
-What the data model fixes is the **declared depth**: notification traversal respects the per-event depth declared by platform-domain policy (REL-022, default 1); security events (sovereignty violation, audit-chain break) are fixed at depth 0 (system audiences only). Walking the graph from a changed entity and dispatching the notifications — the traversal itself — is implementation concern (foundations §5 lists notification routing as implementation machinery); it consumes these declarations.
+**UDLM declares no traversal depth and no audience.** How far a notification travels, and who is
+told about a security event, are governance choices — an estate may legitimately want the affected
+tenant informed of a sovereignty violation immediately, or may want it contained to a security
+function, and both are conformant. Depth per event type is declared by platform-domain policy
+(`REL-022`); UDLM ships no default for it, because a default here has no provenance — it would apply
+in every estate that ever used the model, with no record of who chose it (NDF-001).
+
+**What UDLM does fix is the CONTENT, not the reach** (`REL-023`): a cross-tenant notification carries
+only what the receiving tenant is authorized to see. That is an invariant rather than a threshold —
+it does not vary with posture, and no estate may relax it. The line is the same one that governs
+depth: the model bounds what may be *disclosed*; policy decides *how far* and *to whom*.
+
+Walking the graph from a changed entity and dispatching the notifications — the traversal itself —
+is implementation concern (foundations §5 lists notification routing as implementation machinery);
+it consumes these declarations.
 
 ### 14.4 Notification Traversal Policies
 
 | Policy | Rule |
 |--------|------|
-| `REL-022` | Notification traversal follows relationship edges from the changed entity. Traversal depth per event type is declared by platform-domain policy; the default is 1. Stake strength is derived from the edge declaration (§14.1), never stored. |
+| `REL-022` | Notification traversal follows relationship edges from the changed entity. Traversal depth per event type is declared by platform-domain policy — **UDLM declares no default and fixes no depth for any event type**, including security events; how far a notice travels is a posture choice, and a shipped default would apply in every estate with no record of who chose it (NDF-001). Stake strength is derived from the edge declaration (§14.1), never stored. |
 | `REL-023` | Notification traversal respects sovereignty boundaries. Cross-tenant notifications carry only content authorized for the receiving Tenant. |
 | `REL-024` | The same actor reached via multiple relationship paths receives a single notification with all applicable audience_roles listed. |
 
