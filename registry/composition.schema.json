@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/composition.schema.json",
   "title": "UDLM Composition Shape",
-  "description": "The shape of a composition \u2014 its constituents and how much of itself it exposes \u2014 held once, where anything that composes can reference it. A catalog item is a PROVIDER CLASS (maintainer ruling 2026-08-09: 'a catalog_item is a consumable class defined by the providers or some 3rd party entity ... it could be a template, it could be a single resource class'), so this shape belongs to the class layer rather than to a record kind. It previously lived on catalog-item.schema.json and class.schema.json $ref'd it there, which pointed the dependency at the artifact being retired. Definitions only: no identity, no tenancy, no lifecycle \u2014 those belong to whatever carries the composition.",
+  "description": "The shape of a composition — its constituents and how much of itself it exposes — held once, where anything that composes can reference it. A catalog item is a PROVIDER CLASS (maintainer ruling 2026-08-09: 'a catalog_item is a consumable class defined by the providers or some 3rd party entity ... it could be a template, it could be a single resource class'), so this shape belongs to the class layer rather than to a record kind. It previously lived on catalog-item.schema.json and class.schema.json $ref'd it there, which pointed the dependency at the artifact being retired. Definitions only: no identity, no tenancy, no lifecycle — those belong to whatever carries the composition.",
   "$defs": {
     "constituents": {
       "type": "array",
       "minItems": 1,
-      "description": "The composite payload declaration (template-composition-model.md \u00a72.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). component_ids must be unique within the item; depends_on and bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/\u00a72.3) \u2014 registry/tools/validate.py enforces all three.",
+      "description": "The composite payload declaration (template-composition-model.md §2.1): which constituent resource types make up the service, how they order (depends_on), how data moves between them (bindings), who fulfills each one (provided_by), and how each one's failure affects the composite (failure_effect). component_ids must be unique within the item; depends_on and bindings.from_component must reference sibling component_ids; the depends_on graph must be acyclic (CMP-002/§2.3) — registry/tools/validate.py enforces all three.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -21,12 +21,12 @@
           "component_id": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$",
-            "description": "Stable local identifier for the constituent within this composite \u2014 unique within the item (validate.py-enforced). Used in depends_on references, runtime constituent_status, and transparent-mode uuid derivation (CMP-007)."
+            "description": "Stable local identifier for the constituent within this composite — unique within the item (validate.py-enforced). Used in depends_on references, runtime constituent_status, and transparent-mode uuid derivation (CMP-007)."
           },
           "resource_type": {
             "type": "string",
             "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$",
-            "description": "Tier-1 vendor-neutral Category.Type name from the Resource Type Registry; single-segment permitted for cross-cutting types \u2014 exactly the same name grammar as the realized-entity schema (data-model-core \u00a72)."
+            "description": "Tier-1 vendor-neutral Category.Type name from the Resource Type Registry; single-segment permitted for cross-cutting types — exactly the same name grammar as the realized-entity schema (data-model-core §2)."
           },
           "type_version": {
             "type": "string",
@@ -39,7 +39,7 @@
               "binds_to"
             ],
             "default": "contained_by",
-            "description": "Whether the composite OWNS this part or merely uses it. This is the one thing a catalog item could not previously say, and realization needs it: a composite's single constituents[] list fans out into two places on the realized record \u2014 an owned part becomes an entry in the System's `constituents[]`, a borrowed one becomes a `dependencies[]` edge carrying this same edge_type. contained_by = the composite creates and owns it; it is a part, and GRP-INV-002 makes it non-overridably co-tenant with the composite. binds_to = the composite uses something that exists and belongs to someone else \u2014 a stake in a shared resource, or an activity bound to the stack \u2014 which is how a relationship legitimately crosses a tenant boundary, behind a cross-tenant authorization (CTX-001). Defaults to contained_by, which is what every constituent meant before this field existed. `depends_on` and `references` are deliberately not offered: sibling ordering is already the `depends_on` FIELD below, and a pure pointer with no lifecycle coupling is a field value rather than a constituent.",
+            "description": "Whether the composite OWNS this part or merely uses it. This is the one thing a catalog item could not previously say, and realization needs it: a composite's single constituents[] list fans out into two places on the realized record — an owned part becomes an entry in the System's `constituents[]`, a borrowed one becomes a `dependencies[]` edge carrying this same edge_type. contained_by = the composite creates and owns it; it is a part, and GRP-INV-002 makes it non-overridably co-tenant with the composite. binds_to = the composite uses something that exists and belongs to someone else — a stake in a shared resource, or an activity bound to the stack — which is how a relationship legitimately crosses a tenant boundary, behind a cross-tenant authorization (CTX-001). Defaults to contained_by, which is what every constituent meant before this field existed. `depends_on` and `references` are deliberately not offered: sibling ordering is already the `depends_on` FIELD below, and a pure pointer with no lifecycle coupling is a field value rather than a constituent.",
             "$comment": "CMP-012 checks the coherence with fulfillment: a BYO resource cannot be owned."
           },
           "provided_by": {
@@ -47,7 +47,7 @@
               "self",
               "external"
             ],
-            "description": "self = the registering provider fulfills this constituent directly via its standard Services API; external = DCM's Placement Engine selects a provider at request time (template-composition-model.md \u00a72.2, CMP-006)."
+            "description": "self = the registering provider fulfills this constituent directly via its standard Services API; external = DCM's Placement Engine selects a provider at request time (template-composition-model.md §2.2, CMP-006)."
           },
           "fulfillment": {
             "enum": [
@@ -56,7 +56,7 @@
               "consumer"
             ],
             "default": "platform",
-            "description": "Who procures this constituent's request content, and when (UDLM ADR-009). platform = DCM's loop assembles it from consumer_fields at assembly-time (default); provider = the realizing provider brokers a sub-intent THROUGH DCM at realize-time, contributing realization-time specifics via a binding; consumer = the consumer supplies an existing resource reference (BYO). Orthogonal to provided_by (the realizer axis) \u2014 fulfillment is the procurement axis. DCM always orchestrates and applies policy + cycle detection regardless of mode."
+            "description": "Who procures this constituent's request content, and when (UDLM ADR-009). platform = DCM's loop assembles it from consumer_fields at assembly-time (default); provider = the realizing provider brokers a sub-intent THROUGH DCM at realize-time, contributing realization-time specifics via a binding; consumer = the consumer supplies an existing resource reference (BYO). Orthogonal to provided_by (the realizer axis) — fulfillment is the procurement axis. DCM always orchestrates and applies policy + cycle detection regardless of mode."
           },
           "depends_on": {
             "type": "array",
@@ -64,11 +64,11 @@
               "type": "string",
               "pattern": "^[a-z][a-z0-9_]*$"
             },
-            "description": "Sibling component_ids whose realized state must exist before this constituent can be dispatched \u2014 the ordering edges within the item (template-composition-model.md \u00a72.3). The graph must be acyclic; forward topological order = dispatch, reverse = compensation/decommission. Sibling resolution and cycle rejection are validate.py-enforced."
+            "description": "Sibling component_ids whose realized state must exist before this constituent can be dispatched — the ordering edges within the item (template-composition-model.md §2.3). The graph must be acyclic; forward topological order = dispatch, reverse = compensation/decommission. Sibling resolution and cycle rejection are validate.py-enforced."
           },
           "bindings": {
             "type": "array",
-            "description": "DECLARED data movement (data-model-core \u00a74): values pulled from a producer constituent's typed realized outputs into this constituent's spec at dispatch time. This is the typed, declared equivalent of the DCM control-plane's CEL ${component.output} wiring \u2014 data movement, not transformation (T4). A binding's from_component MUST also appear in this constituent's depends_on: data movement implies ordering (validate.py-enforced).",
+            "description": "DECLARED data movement (data-model-core §4): values pulled from a producer constituent's typed realized outputs into this constituent's spec at dispatch time. This is the typed, declared equivalent of the DCM control-plane's CEL ${component.output} wiring — data movement, not transformation (T4). A binding's from_component MUST also appear in this constituent's depends_on: data movement implies ordering (validate.py-enforced).",
             "items": {
               "type": "object",
               "additionalProperties": false,
@@ -85,7 +85,7 @@
                 },
                 "output": {
                   "type": "string",
-                  "description": "The producer's declared output name \u2014 a key of its Resource Type Spec's typed outputs (E2)."
+                  "description": "The producer's declared output name — a key of its Resource Type Spec's typed outputs (E2)."
                 },
                 "to_field": {
                   "type": "string",
@@ -100,11 +100,11 @@
               "partial",
               "optional"
             ],
-            "description": "How this constituent's failure affects the composite outcome \u2014 the \u00a72.4 required_for_delivery classification (template-composition-model.md): required = halt + compensate (composite FAILED); partial = record, continue (composite DEGRADED); optional = note, ignore. Evaluated by DCM, never by the registering provider (CMP-004)."
+            "description": "How this constituent's failure affects the composite outcome — the §2.4 required_for_delivery classification (template-composition-model.md): required = halt + compensate (composite FAILED); partial = record, continue (composite DEGRADED); optional = note, ignore. Evaluated by DCM, never by the registering provider (CMP-004)."
           },
           "spec_defaults": {
             "type": "object",
-            "description": "Free-form layer-assembled defaults for this constituent's spec \u2014 injected during the standard layer assembly phase (template-composition-model.md \u00a77 step 3). Field values are typed by the constituent's Resource Type Spec, not re-validated here."
+            "description": "Free-form layer-assembled defaults for this constituent's spec — injected during the standard layer assembly phase (template-composition-model.md §7 step 3). Field values are typed by the constituent's Resource Type Spec, not re-validated here."
           }
         }
       }
@@ -115,7 +115,7 @@
         "transparent",
         "selective"
       ],
-      "description": "How constituents surface as DCM entities (template-composition-model.md \u00a75): opaque = composite uuid only; transparent = every constituent is a first-class entity with a deterministic uuid (CMP-007); selective = only selective_visible constituents surface."
+      "description": "How constituents surface as DCM entities (template-composition-model.md §5): opaque = composite uuid only; transparent = every constituent is a first-class entity with a deterministic uuid (CMP-007); selective = only selective_visible constituents surface. ADDRESSABILITY, NOT ACCESS: this says whether a part HAS an identity you could refer to, never whether a given actor may READ it — a part can be fully addressable and still invisible to the person who ordered it, because access is decided by the grouping it lands in. Real visibility is addressability AND access; the second half is policy's, reading `composition.unreadable_constituents` (CMP-013)."
     },
     "selective_visible": {
       "type": "array",
@@ -123,7 +123,7 @@
         "type": "string",
         "pattern": "^[a-z][a-z0-9_]*$"
       },
-      "description": "Only when composition_visibility = selective: the component_ids surfaced as DCM entities (template-composition-model.md \u00a75). Must reference declared component_ids (registration-time check; not enforced by validate.py yet)."
+      "description": "Only when composition_visibility = selective: the component_ids surfaced as DCM entities (template-composition-model.md §5). Must reference declared component_ids (registration-time check; not enforced by validate.py yet)."
     }
   }
 }
