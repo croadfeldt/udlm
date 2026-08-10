@@ -1,0 +1,38 @@
+# asserts: WIR-035
+# proves: a conformance declaration has something to be checked against — the schema WIR-035 names
+#
+# What an implementation publishes at /.well-known/udlm/conformance. This is UDLM's own worked
+# example, not a claim about any implementation: `conformance_test_suite_version` is stated because
+# §4.2 requires it, and the suite it names does not exist yet (#417). That honesty is the point —
+# the field is required, so a declaration cannot quietly omit the fact that nothing was run.
+record_type: conformance_declaration
+implementation:
+  name: example-implementation
+  vendor: example-org
+  version: 1.4.2
+udlm_version: 0.1.0
+profile: standard
+level: full
+exclusions: []
+extensions_published: true
+schema_bundle_url: /.well-known/udlm/schema-bundle
+interop_surfaces:
+  consumer_api:
+    available: true
+    transport: http
+    base_url: https://example-implementation/api/v1
+  provider_callbacks:
+    available: true
+    transport: http
+    auth: mtls+credential
+  federation:
+    available: true
+    transport: http
+    auth: mtls+credential
+  audit_export:
+    available: true
+    transport: http
+leap_second_strategy: smear
+auth_mechanism_for_schema_endpoints: credential
+conformance_test_suite_version: 1.0.0
+self_certified_at: '2026-05-26T14:32:18.456Z'
