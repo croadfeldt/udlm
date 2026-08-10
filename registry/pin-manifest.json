@@ -159,6 +159,13 @@
    "2.0.0": "sha256:742bedc43158bc871e522a3d1179a50bc331b97208c669da825a8449c52d11f8"
   }
  },
+ "policy:unreadable-constituent-gate": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-unreadable-constituent.yaml",
+  "versions": {
+   "1.0.0": "sha256:c205deed6c2be1a3cb41d34f052bcf968602b43b64101a8abab4c486c5855ca4"
+  }
+ },
  "policy_profile:udlm/profile/dev": {
   "current": "1.0.0",
   "path": "registry/instances/profile-dev.yaml",

@@ -1,0 +1,73 @@
+# "You ordered it, and you cannot see part of what you got."
+#
+# THE FAILURE THIS REFUSES. You order a three-tier application. The template says `transparent` —
+# every part gets its own identity. You look at what you got and the database is not there: it
+# landed in a grouping your access rules do not cover. No error, no warning, nothing marked wrong,
+# because by the model's own lights nothing IS wrong — `composition_visibility` declares
+# ADDRESSABILITY, and the part is perfectly addressable. It is just not readable BY YOU.
+#
+# THE RULING (2026-08-10): you need to know in advance. A catalog should not offer you something
+# you will not be able to see, or should flag it unorderable — and that is a POLICY decision, not a
+# model behaviour. So UDLM's whole job here is to carry the fact
+# (`composition.unreadable_constituents`) that lets a policy decide. This record is what reading it
+# looks like.
+#
+# THE ORG ESCAPE HATCH, and note it needs NOTHING new from UDLM. An organization that wants blind
+# consumption to be legal tags those items and configures a policy to allow them. The tag is an
+# org-scoped SharedDataElement on the class (ADR-038 — the carrier for org-specific data), and the
+# policy reads it as a `request-payload` dot-path, which is already an OPEN subtree in the fact
+# vocabulary. Rule 42: UDLM facilitates the posture, it does not pick one. That is why this record
+# ships as an EXAMPLE and not as a shipped default (NDF-001) — the deny below is one organization's
+# choice, and a peer that ships the opposite is equally conformant.
+record_type: policy
+uuid: d9557af3-b2ef-4d21-b26d-fd2f14c68d6f
+handle: unreadable-constituent-gate
+conforms_to: udlm/0.1
+name: Refuse an order whose parts the consumer could not see
+description: >-
+  Validation policy — a composition with any constituent the requesting actor could not read is
+  refused before it is ordered, and the refusal names the parts. Worked example (cexample content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+policy_type: validation
+policy_class: structural
+concern_type: data_authorization_boundary
+domain: tenant
+match:
+  # WHAT this policy reads. HOW it compares is the engine's, in the engine's language
+  # (policy-contract §7.2a). `composition.unreadable_constituents` is computed for THIS actor over
+  # THIS placement — which is why it is a fact of the pass rather than a field on any record.
+  facts: [composition.unreadable_constituents]
+  rule:
+    engine: rego
+    body: |
+      package udlm.composition_readability
+      # Refuse if any part of what was ordered would be invisible to whoever ordered it.
+      # The emptiness test lives HERE, in the engine, deliberately: UDLM supplies the list and
+      # ADR-065 leaves the predicate with the engine.
+      deny if {
+        count(input.composition.unreadable_constituents) > 0
+      }
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+output:
+  decision: deny
+  # The refusal NAMES the parts (CMP-013). "Denied" alone tells a consumer nothing they can act on;
+  # "you cannot see the database" tells them exactly what access to go and ask for.
+  reason: >-
+    this order contains parts you would not be able to see once realized — the refusal names them,
+    so the missing access can be requested rather than guessed at
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: medium
+metadata:
+  display_name: Unreadable-constituent gate
+  notes:
+  - at: '2026-08-10T00:00:00Z'
+    author: UDLM project
+    text: >-
+      Worked example for the composition-readability ruling. Ships as an example rather than a
+      default: an organization permitting blind consumption writes the opposite policy and is
+      equally conformant (rule 42).

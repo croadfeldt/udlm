@@ -49,17 +49,36 @@ def load_vocab():
     return terms
 
 
+def governed_prefixes(terms):
+    """The dotted heads the vocabulary itself governs — `graph`, `quota`, `operation`,
+    `composition`. DERIVED from the canonical terms rather than listed, so a new governed family
+    is covered the moment its first term lands."""
+    return {t.split(".")[0] for t in terms if "." in t}
+
+
 def resolves(fact, terms):
-    """A fact resolves if it is a canonical term, or sits under an OPEN subtree by dot-path."""
+    """A fact resolves if it is a canonical term, or sits under an OPEN subtree by dot-path.
+
+    **The governed-prefix arm exists because the open subtree used to swallow everything.**
+    `request-payload` admits ANY spec dot-path — a consumer field, a custom tag — so the old last
+    line returned True for every dotted name whose head was not itself a term. Since a canonical
+    term is the FULL dotted string (`graph.has_cycle`), the head never is one, and so
+    `graph.has_cyle` — or `composition.unreadable_constituent`, singular — resolved as "some
+    request-payload path" and the gate reported clean. A typo in a governed fact is precisely the
+    case PFACT-001 exists to catch, and it was the one case it could not see.
+
+    So: if the head names a governed family, the full fact MUST be canonical. Only a head the
+    vocabulary does not govern falls through to the open surface."""
     if fact in terms:
         return True
     head = fact.split(".")[0]
     if head in OPEN_SUBTREES and head in terms:
         return True
-    # a bare dot-path with no known head is request-payload's open surface (any spec dot-path)
-    if "." not in fact and fact not in terms:
-        return False
-    return head not in terms and "request-payload" in terms
+    if "." not in fact:
+        return False                      # a bare unknown name is not a spec dot-path
+    if head in governed_prefixes(terms):
+        return False                      # governed family, unknown member -> a typo, not a payload
+    return "request-payload" in terms
 
 
 def main():

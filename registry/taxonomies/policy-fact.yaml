@@ -184,6 +184,23 @@ terms:
     curation_state: canonical
     definition: What a failure of this entity would reach — the impact axis (ADR-010).
 
+  - term: composition.unreadable_constituents
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      The component_ids of a composition the requesting actor would not be able to READ once
+      realized — computed for this actor, over this composition's expanded placement. Empty means
+      every part is readable. This is the fact that makes "you ordered a thing and cannot see part
+      of it" a decidable question BEFORE the order rather than a discovery afterwards (CMP-013).
+      `composition_visibility` does not answer it: that declares ADDRESSABILITY — whether a part has
+      its own identity you could refer to — and a part can be perfectly addressable and still
+      unreadable to you, because access is decided by the grouping it lands in. A fact of the pass
+      and never a stored field: the answer changes with the actor and with the placement, so storing
+      it would record one actor's answer as everyone's. Deliberately NOT paired with a
+      `has_unreadable_constituent` boolean, though graph.has_cycle / graph.cycle_members set that
+      precedent — "is this list empty" is a predicate, and ADR-065 leaves predicates with the engine.
+
   - term: graph.unmet_dependency
     root: policy-fact
     parent: evaluation-context
