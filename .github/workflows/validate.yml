@@ -86,6 +86,7 @@ jobs:
       - run: python3 tests/check_grant_derivation.py
       - run: python3 tests/check_group_invariants.py
       - run: python3 tests/check_composition_promotion.py
+      - run: python3 tests/check_fulfillment_conditions.py
       - run: python3 tests/check_sovereignty_zones.py
       - run: python3 tests/check_must_reject.py
       - run: python3 tests/check_example_coverage.py

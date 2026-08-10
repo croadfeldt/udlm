@@ -429,7 +429,8 @@
             ],
             "properties": {
               "type": {
-                "type": "string"
+                "type": "string",
+                "description": "The condition being reported. Open by design (K8s convention) — health, recovery and provider-specific conditions all live here. ONE FAMILY IS CLOSED: the fulfillment conditions `blocked-transient` | `blocked-permanent` | `refused` | `dependency-cancelled` (service-dependencies DEP-017), which say why a member has not reached Realized yet. That family is closed because its members carry PROPAGATION semantics — a dependent inherits transitively, and transient waits where permanent refuses — so a fifth spelling is not a new condition, it is a member of this family nobody can act on."
               },
               "status": {
                 "enum": [
@@ -441,6 +442,11 @@
               "reason": {
                 "type": "string"
               },
+              "blocked_on": {
+                "type": "string",
+                "format": "udlm-ref-url",
+                "description": "WHAT this member is waiting on — a reference to the blocking record. REQUIRED on a fulfillment condition (DEP-017): 'blocked' without a blocker is not actionable, and the root-naming obligation is the whole point of the family — a blocked-permanent app three hops from the refused volume is only useful if the volume is reachable from it. On an inherited condition this names the IMMEDIATE blocker, not the root; the root is found by walking, never by copying it down the chain (DRV-001)."
+              },
               "message": {
                 "type": "string"
               },
@@ -450,7 +456,31 @@
                 "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
                 "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "enum": [
+                        "blocked-transient",
+                        "blocked-permanent",
+                        "dependency-cancelled"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "blocked_on"
+                  ],
+                  "description": "A member blocked BY something names what. `refused` is exempt: it is the root of a chain rather than a link in one, so its cause is its own `reason` — there is nothing upstream to point at."
+                }
+              }
+            ]
           }
         }
       }
