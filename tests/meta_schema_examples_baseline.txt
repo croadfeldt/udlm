@@ -7,7 +7,6 @@ audit-leaf.schema.json
 audit-record.schema.json
 catalog-item.schema.json
 commit-log-entry.schema.json
-common-elements.schema.json
 data-reference.schema.json
 decision-record.schema.json
 finding-routing-record.schema.json

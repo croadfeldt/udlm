@@ -85,7 +85,16 @@ def meta_schemas():
     its ROOT `examples` array — validated against the schema itself, same EXG rules."""
     out = []
     for p in sorted(glob.glob(os.path.join(ROOT, "registry", "*.schema.json"))):
-        out.append((os.path.basename(p), json.loads(open(p, encoding="utf-8").read()), p))
+        doc = json.loads(open(p, encoding="utf-8").read())
+        # A definitions-only schema has no whole artifact to exemplify: it declares $defs that other
+        # schemas $ref and validates no document of its own. Requiring an example would mean
+        # inventing an artifact the file deliberately does not describe. Distinguished structurally
+        # rather than by name — no `properties`, no `type: object` at the root, only `$defs` — so a
+        # schema that later grows a document shape is checked again automatically. NOT baselined:
+        # a baseline is burn-down debt, and this is a permanent property of the file.
+        if "$defs" in doc and "properties" not in doc and "type" not in doc:
+            continue
+        out.append((os.path.basename(p), doc, p))
     return out
 
 
