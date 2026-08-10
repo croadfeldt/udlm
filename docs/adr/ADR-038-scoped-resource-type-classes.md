@@ -348,7 +348,7 @@ paradigm exists to provide.
 
 | Org wants | Mechanism | Not |
 |---|---|---|
-| **Template** (reusable pre-filled intent — "our standard VM") | ADR-033 **Template** (Requested tier, instance-level over `Compute.VM`) | a class |
+| **Template** (reusable pre-filled intent — "our standard VM") | ADR-033 **Template** — a definition written over `Compute.VM`, not a redefinition of it | an org fork of the class |
 | **Defaults** ("VMs default to RHEL9, gold storage, cost-center tag") | **policy-fill** (ADR-024) via the org **Profile** (ADR-007) | a class |
 | **Standards / constraints** ("MUST be encrypted, approved OS images only, size ≤ X") | **constraint profile** (E1) — *narrows* class fields (required / tighter enum / bounds), never widens or redefines | a class |
 | **Genuinely-new org data** (`cost_center`, `compliance_id`) | an org-scoped `SharedDataElement` — additive, portability-degrading, must-ignore-unknown; usually **cross-category** (a tenancy overlay), not Compute-specific | a Compute class |

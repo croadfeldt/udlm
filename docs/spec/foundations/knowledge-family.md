@@ -195,16 +195,18 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 
 ### 4.7 Pattern
 A pattern to follow — the reusable "what a thing of this kind IS" at type level: Antipattern's
-twin, positive polarity. ADR-033 places Pattern in Knowledge as **type-level intent** (the
-Pattern → Template → System tier ladder: Pattern is the Intent tier at assembly scale) and
-deliberately deferred the schema implementation "unless a use case pulls it in" — the pull
+twin, positive polarity. ADR-033 places Pattern in Knowledge as a **definition** — the first of the
+Pattern → Template → System chain's two definition tiers, where a Pattern leaves parts open and a
+Template has cut them — and deliberately deferred the schema implementation "unless a use case
+pulls it in" — the pull
 arrived: an external field-device fleet adopter models "what a field device of role X is"
 (the capabilities a role requires, the shape a season build asserts) as reusable role
 definitions, exactly this member.
 - **Fields:** name (handle), description, why (the outcome the pattern serves), pillar,
   domain — Antipattern's field shape at positive polarity.
 - **Relationships:** `related_to` → TaxonomyTerm / Capability (the capabilities the pattern
-  requires or asserts); a Template (ADR-033) realizes a Pattern at the Requested tier.
+  requires or asserts); a Template (ADR-033) `refines` a Pattern — a reference between two
+  definitions, so one Pattern yields many Templates.
 - **States:** `PROPOSED` → `CANONICAL`; `DEPRECATED` when superseded.
 
 ### 4.8 SovereigntyZone
