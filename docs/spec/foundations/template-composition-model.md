@@ -325,20 +325,36 @@ For each constituent in dependency-forward order:
 
 1. Resolve the constituent's provider:
    - `self` constituents: dispatched to the registering provider as it stands at rehydration time
-   - `external` constituents: re-resolved via placement using the rehydration policy (faithful, provider-portable, historical-exact, or historical-portable; see [four-states.md](four-states.md))
+   - `external` constituents: re-resolved via placement using the rehydration policy — `faithful`, `provider_portable`, `historical_exact` or `historical_portable` (§6.2)
 2. Send the standard rehydration payload to the resolved provider
 3. Record the resulting realized state
 
 ### 6.2 Rehydration Provider Selection
 
-For `external` constituents, the rehydration policy determines which provider receives the rehydration call:
+Which provider a rehydration call is sent to is **a policy decision, not a model default**. UDLM's
+job is to make each choice expressible and to carry the answer; it ships no built-in decision, the
+same line the drift ruling draws (ADR-060: policies dictate what happens, the substrate enables it).
+A profile MAY bind a default, and an implementation MAY offer one — neither is stated here, because
+a default in the spec would be one organisation's opinion shipped to every consumer.
 
-- **`faithful`** — The same provider instance. If unavailable, rehydration fails.
-- **`provider_portable`** — Any provider of the same provider type. Allows rehydration after the original provider has been retired.
-- **`historical_exact`** — The provider type that was selected at original placement time, reading the historical placement record.
-- **`historical_portable`** — Any provider of that type, with historical placement as a hint but not a hard requirement.
+The expressible set:
 
-For `self` constituents, the registering provider is dispatched to as it currently exists; if the registering provider has changed (different version, different tenant, etc.) the rehydration may fail or succeed depending on whether the registration is still compatible with the recorded request.
+| Value | Which provider receives the call |
+|---|---|
+| `faithful` | the **same provider instance**. Unavailable means the rehydration fails rather than landing elsewhere |
+| `provider_portable` | any provider of the **same provider type** — the original has been retired |
+| `historical_exact` | the provider type recorded at **original placement**, read from the placement history rather than re-decided |
+| `historical_portable` | any provider of that historical type, as a **hint** rather than a requirement |
+
+Two things share the word "faithful" and are independent: `faithful` the *policy* (the same
+instance) and the *Faithful mode* ([four-states](four-states.md) §5 — restore in place, UUID
+preserved). A Provider-Portable rebuild can still select `historical_exact`.
+
+**The composite-specific part** is that the choice is per constituent: one composite can hold its
+database to the exact instance it had while letting stateless tiers land anywhere of the right type.
+For `self` constituents the registering provider is dispatched to as it currently exists; if it has
+changed, the constituent rehydrates against the current definition and any divergence surfaces as
+ordinary drift.
 
 ---
 
