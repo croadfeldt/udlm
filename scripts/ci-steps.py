@@ -37,6 +37,7 @@ NAMES = {
     "python3 tests/check_grant_derivation.py": "Required-grant set derives (GRD-001)",
     "python3 tests/check_group_invariants.py": "Structural invariants (GRP-INV-001/002/005/006)",
     "python3 tests/check_composition_promotion.py": "Promotion is a round trip (ING-017/018/019)",
+    "python3 tests/check_fulfillment_conditions.py": "Blocked members are actionable (FUL-001/002/003)",
     "python3 tests/check_must_reject.py": "Negative corpus is refused (MRJ-001)",
     "python3 tests/check_example_coverage.py": "Examples say what they prove (ECV-001)",
     "python3 tests/check_schema_dialect.py": "Schemas declare Draft 2020-12 (SCD-001)",

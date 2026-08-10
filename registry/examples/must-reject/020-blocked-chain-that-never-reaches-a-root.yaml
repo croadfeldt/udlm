@@ -1,0 +1,22 @@
+must_reject:
+  rule: FUL-003
+  gate: check_fulfillment_conditions
+  because: >-
+    A blocked member pointing at a record that does not exist. The chain cannot be walked, so it
+    can never name its root — which is the one thing the family exists to make possible. This is
+    worse than saying nothing: it looks actionable, and following it dead-ends. A dangling blocker
+    also hides the real one, because whoever reads it stops looking.
+record:
+  uuid: 2a9c5e08-6b71-4f3d-8c94-1e7b0d2f5a63
+  handle: cexample/app/dangling
+  conforms_to: udlm/0.1
+  resource_type: Compute.Container
+  lifecycle_state: Requested
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  status:
+    state: pending
+    conditions:
+      - type: blocked-permanent
+        status: 'True'
+        reason: blocked on something that was deleted
+        blocked_on: udlm://estate/cexample/storage/deleted-volume

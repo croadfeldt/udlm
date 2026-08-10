@@ -1,0 +1,21 @@
+must_reject:
+  rule: FUL-002
+  gate: check_fulfillment_conditions
+  because: >-
+    A member that says it is blocked and does not say by what. This is the case the whole family
+    exists to prevent: an operator reading it learns that something is wrong and nothing about what
+    to do, and the root-naming obligation is unsatisfiable because there is no first hop to walk.
+    "Blocked" alone is indistinguishable from "we have not looked".
+record:
+  uuid: 5c2e7a91-4d38-4b6f-9e02-8a1f3c6d5b70
+  handle: cexample/app/mystery
+  conforms_to: udlm/0.1
+  resource_type: Compute.Container
+  lifecycle_state: Requested
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  status:
+    state: pending
+    conditions:
+      - type: blocked-transient
+        status: 'True'
+        reason: waiting

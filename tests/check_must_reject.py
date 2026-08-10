@@ -109,6 +109,12 @@ def _composition_promotion(record):
     return m.evaluate(record, m.load_index())
 
 
+def _fulfillment_conditions(record):
+    """FUL-001/002/003 — a blocked member must be actionable. Bindable via evaluate(record, index)."""
+    m = _load("tests/check_fulfillment_conditions.py", "_ful")
+    return m.evaluate(record, m.load_index())
+
+
 def _ownership(record):
     """OWN-002/007/008 — evaluates one type declaration on its own."""
     m = _load("registry/tools/validate.py", "_val")
@@ -123,6 +129,7 @@ GATES = {
     "schema": _schema,
     "check_class_constituents": _class_constituents,
     "check_composition_promotion": _composition_promotion,
+    "check_fulfillment_conditions": _fulfillment_conditions,
 }
 
 

@@ -1,0 +1,121 @@
+# asserts: DEP-017, FUL-001, FUL-002, FUL-003
+# proves: a member that has not realized says WHY and what it waits on, and the chain reaches a root
+#
+# THREE RECORDS, ONE STORY — the case the use-case corpus already designed and the model could not
+# record. A volume has no capacity. A container needs it. An app needs the container.
+#
+#   app  --blocked-permanent-->  container  --blocked-permanent-->  volume  (refused: the root)
+#
+# The refusal at the root is PERMANENT, so each link inherits blocked-permanent rather than
+# blocked-transient. That is the whole distinction: transient waits and converges when it can,
+# permanent is refused window-independently. Had the volume merely been short of capacity today,
+# the same three records would read blocked-transient and nobody would need to act.
+#
+# WHY THIS IS NOT A REFUSAL. Nothing here is wrong; it is EARLY. The container is blocked on a value
+# that arrives one step later, and refusing the request would fail something that was always going
+# to succeed. So the model holds the intent and records what is being waited on. Whether the wait
+# ever becomes permanent is the execution pipeline's call over the convergence window — the model's
+# job is to make that call rest on evidence rather than on a stopwatch.
+#
+# WHY EACH LINK NAMES ONLY ITS IMMEDIATE BLOCKER. The app does not carry a copy of "the volume".
+# The root is found by WALKING (app -> container -> volume), never by copying it down the chain —
+# a copied root is a second source that goes stale the moment the middle of the chain changes
+# (DRV-001). What each record owes is one honest hop.
+#
+# LIFECYCLE_STATE IS UNTOUCHED. All three are `Requested`. Blocking is an overlay on a lifecycle
+# that never leaves its five values, exactly as recovery and health are — there is no BLOCKED
+# lifecycle state and adding one would put the same fact on two axes.
+---
+uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
+handle: cexample/storage/orders-data
+conforms_to: udlm/0.1
+resource_type: Storage.Volume
+type_version: 0.11.2
+type_ref: https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2
+lifecycle_state: Requested
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+metadata:
+  display_name: Orders data volume
+states:
+  requested:
+    fields:
+      capacity: 500Gi
+      access_mode: read_write_once
+    at: '2026-08-10T09:00:00Z'
+    time_source: authored example — no clock claim
+status:
+  state: pending
+  conditions:
+    # THE ROOT. `refused` carries no `blocked_on` and the schema conditional exempts it: it IS the
+    # root of the chain, so there is nothing upstream to point at. Its cause is its own reason.
+    - type: refused
+      status: 'True'
+      reason: no pool in this zone can satisfy 500Gi, and none is planned
+      last_transition_time: '2026-08-10T09:00:05Z'
+---
+uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
+handle: cexample/app/orders-api
+conforms_to: udlm/0.1
+resource_type: Compute.Container
+type_version: 0.7.3
+type_ref: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.3
+lifecycle_state: Requested
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+metadata:
+  display_name: Orders API container
+states:
+  requested:
+    fields:
+      image: registry.cexample/orders-api:1.4.2
+    at: '2026-08-10T09:00:00Z'
+    time_source: authored example — no clock claim
+dependencies:
+  - edge_type: depends_on
+    strength: hard
+    target_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
+    target_handle: cexample/storage/orders-data
+    relation: mounts
+status:
+  state: pending
+  conditions:
+    # INHERITED, one hop. The volume's refusal is permanent, so this inherits blocked-permanent
+    # rather than blocked-transient — transient waits, permanent refuses, and the distinction is
+    # what decides whether anyone should be woken up.
+    - type: blocked-permanent
+      status: 'True'
+      reason: the volume this container mounts was permanently refused
+      blocked_on: udlm://estate/cexample/storage/orders-data
+      last_transition_time: '2026-08-10T09:00:06Z'
+---
+uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
+handle: cexample/app/orders
+conforms_to: udlm/0.1
+resource_type: Software.Service
+type_version: 0.7.2
+type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.2
+lifecycle_state: Requested
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+metadata:
+  display_name: Orders service
+states:
+  requested:
+    fields: {}
+    at: '2026-08-10T09:00:00Z'
+    time_source: authored example — no clock claim
+dependencies:
+  - edge_type: depends_on
+    strength: hard
+    target_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
+    target_handle: cexample/app/orders-api
+    relation: runs_on
+status:
+  state: pending
+  conditions:
+    # TWO HOPS from the root, and it still names only ONE hop. Walk it and you reach the volume;
+    # that walk is the root-naming obligation, and it is why blocked_on is required rather than
+    # advisory. An app that says "blocked" and nothing else tells an operator nothing to act on.
+    - type: blocked-permanent
+      status: 'True'
+      reason: the container this service runs on is blocked
+      blocked_on: udlm://estate/cexample/app/orders-api
+      last_transition_time: '2026-08-10T09:00:07Z'

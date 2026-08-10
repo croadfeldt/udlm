@@ -1,0 +1,24 @@
+must_reject:
+  rule: FUL-001
+  gate: check_fulfillment_conditions
+  because: >-
+    A near-miss spelling of a governed fulfillment condition. The family is closed because its
+    members carry PROPAGATION semantics — a dependent inherits its dependency's status, and
+    transient waits where permanent refuses — so an unrecognised member is not a new condition, it
+    is a state nothing downstream knows how to inherit. The condition vocabulary at large stays
+    open: health, recovery and provider conditions are unaffected, and only something claiming to
+    be a fulfillment condition is held to the closed set.
+record:
+  uuid: 7f4b1d63-9a25-4c80-b3e7-2d5a8f0e6c14
+  handle: cexample/app/misspelled
+  conforms_to: udlm/0.1
+  resource_type: Compute.Container
+  lifecycle_state: Requested
+  tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+  status:
+    state: pending
+    conditions:
+      - type: blocked_transient
+        status: 'True'
+        reason: waiting on storage
+        blocked_on: udlm://estate/cexample/storage/orders-data
