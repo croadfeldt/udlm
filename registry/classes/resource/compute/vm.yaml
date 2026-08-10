@@ -1,13 +1,16 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.4.2
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.4.1
+version: 1.4.2
 family: Resource
 status: active
+# OWN-007 — a type-level invariant, not settable per entity.
+# ownership-sharing-allocation §2.1 names VM: each request yields an entity the requesting Tenant owns outright.
+ownership_model: whole_allocation
 metadata:
   authority: canonical
   display_name: Compute.VM Type Class

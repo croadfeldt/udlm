@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.3",
   "conforms_to": "udlm/0.1",
   "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.VirtualNetwork",
-          "version": "0.8.2",
+          "version": "0.8.3",
           "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e"
         }
       ]
@@ -160,5 +160,6 @@
       "Hardware.NetworkInterface — the supporting bridge or uplink on the host.",
       "Network.IPAddressPool — the address pool scoped to this segment."
     ]
-  }
+  },
+  "ownership_model": "shareable"
 }

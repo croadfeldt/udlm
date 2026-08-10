@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.3",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Compute.Container",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Compute.Container",
-          "version": "0.7.2",
+          "version": "0.7.3",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -488,5 +488,6 @@
       "SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.",
       "Data.Database — connection outputs the container binds to."
     ]
-  }
+  },
+  "ownership_model": "whole_allocation"
 }

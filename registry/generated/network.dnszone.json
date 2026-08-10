@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DNSZone/0.5.2",
   "conforms_to": "udlm/0.1",
   "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5",
   "resource_type": "Network.DNSZone",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.DNSZone",
-          "version": "0.5.1",
+          "version": "0.5.2",
           "uuid": "8661d9e8-4688-486b-8bd7-be7465c3e4a5"
         }
       ]
@@ -164,5 +164,6 @@
       "Security.DirectoryService — when a directory service serves the zone.",
       "Network.AddressService — the operated DNS capability answering for the zone."
     ]
-  }
+  },
+  "ownership_model": "shareable"
 }
