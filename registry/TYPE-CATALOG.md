@@ -663,7 +663,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.5.2)
+### Network.VLAN (0.5.3)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 

@@ -726,7 +726,7 @@
   "current": "0.1.0",
   "path": "registry/classes/resource/network/subnet.yaml",
   "versions": {
-   "0.1.0": "sha256:5ff9d4e68c92ea3e021a0c38454e7edbec05b919d78cc85b9c439e085367fc3d"
+   "0.1.0": "sha256:2510d836a1e9fda340a6e441ccf597ba2038a76037351c0b035066eedd9db58e"
   }
  },
  "type:Network.Switch": {
@@ -742,7 +742,7 @@
   }
  },
  "type:Network.VLAN": {
-  "current": "0.5.2",
+  "current": "0.5.3",
   "path": "registry/classes/resource/network/vlan.yaml",
   "versions": {
    "0.3.2": "sha256:99d73486c573b649ec37ef3164cc170ce02625438df1d1beac0abeb601c80b2e",
@@ -750,7 +750,7 @@
    "0.4.1": "sha256:d6b6dfc81273fb2df53a7f075c882f29c43156bfac3d235f668cc0626a46aec9",
    "0.5.0": "sha256:398c55438222c2d1ff98eee4f2f394072951353080cf15f84f742c4941c164f4",
    "0.5.1": "sha256:47bdf0a27a5057de1edb2acdf55dff020e491f168f928a110b4104b2ae28e100",
-   "0.5.2": "sha256:5c37f85cf315ebf94cbac93544d3f103bc525814f9d846c1028fc44ff3169cc8"
+   "0.5.3": "sha256:a2a22325b21da73458d49182000c6eaa0f81a4f22d2f0ae7068b99c5adf9575b"
   }
  },
  "type:Network.VirtualNetwork": {
