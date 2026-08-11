@@ -43,7 +43,7 @@ Mandatory Tenant membership is a **non-overridable the control plane System Poli
 
 ### 2.3 What Tenant Provides
 
-The Tenant boundary enables the following the control plane capabilities for all resources it owns:
+The Tenant boundary enables the following control-plane capabilities for all resources it owns:
 
 | Capability | Description |
 |------------|-------------|
@@ -126,13 +126,13 @@ The control plane defines two subclasses of Resource Group, both implementing th
 Built into the control plane. The standard mechanism for grouping resources. No implementor customization required to use it.
 
 **Subclass 2 — Custom Resource Group (`group_subclass: custom`)**
-Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with the control plane Default Resource Groups in terms of the control plane capabilities.
+Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with the control plane Default Resource Groups in terms of control-plane capabilities.
 
 Both subclasses implement the same interface. The control plane Default Resource Group is simply the control plane's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
 
 ### 3.3 The Resource Group Interface
 
-Every Resource Group — both the control plane default and custom — must implement this interface:
+Every Resource Group — both control-plane default and custom — must implement this interface:
 
 ```yaml
 resource_group:
@@ -233,7 +233,7 @@ Tenant: Payments Platform
 
 ## 5. Grouping and the control plane Capabilities
 
-Resource Groups enable the following the control plane capabilities at the group scope:
+Resource Groups enable the following control-plane capabilities at the group scope:
 
 | Capability | Tenant | Resource Group |
 |------------|--------|---------------|
@@ -261,7 +261,7 @@ Processes follow the same grouping rules as Resources:
 
 ## 7. Custom Resource Group Registration
 
-Implementors register custom Resource Group types as part of their the control plane implementation. Custom group types must declare their full interface implementation:
+Implementors register custom Resource Group types as part of their control-plane implementation. Custom group types must declare their full interface implementation:
 
 ```yaml
 custom_group_type_registration:

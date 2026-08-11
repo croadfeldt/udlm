@@ -20,7 +20,7 @@ events narrate.
 
 ## 1. Base Envelope
 
-Every the control plane event shares a common envelope. Event-specific fields are in the `payload` object.
+Every control-plane event shares a common envelope. Event-specific fields are in the `payload` object.
 
 ```yaml
 # UDLM Event Envelope — all events
@@ -29,8 +29,8 @@ event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
 timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1);
                                     # inherits the Commit Log's microsecond-precision instant (universal-audit §7.2)
-dcm_version: <semver>               # the control plane instance version that generated the event
-dcm_instance_uuid: <uuid>           # identifies the control plane instance (federation context)
+dcm_version: <semver>               # control-plane instance version that generated the event
+dcm_instance_uuid: <uuid>           # identifies the control-plane instance (federation context)
 
 subject:
   entity_uuid: <uuid | null>        # primary entity this event concerns
@@ -669,7 +669,7 @@ payload:
 |-----------|---------|---------|
 | `ingestion.transitional_created` | info | Brownfield entity created as Transitional entity |
 | `ingestion.enriched` | info | Transitional entity enriched with additional data |
-| `ingestion.promotion_approved` | medium | Transitional entity approved for promotion to full the control plane entity |
+| `ingestion.promotion_approved` | medium | Transitional entity approved for promotion to full control-plane entity |
 
 ### 15.1 Payload Schema
 
@@ -900,7 +900,7 @@ of a registered accreditation produces a result or requires attention.
 | Event Type | Urgency | Description |
 |-----------|---------|-------------|
 | `accreditation.verified` | low | Periodic external confirmation — accreditation still active in external registry |
-| `accreditation.status_changed` | high or critical | External registry reports a different status than the control plane records — requires platform admin review |
+| `accreditation.status_changed` | high or critical | External registry reports a different status than control-plane records — requires platform admin review |
 | `accreditation.registry_mismatch` | high | External registry cannot find the accreditation by its `external_registry_id` — ID may need correction |
 | `accreditation.verification_stale` | varies | `last_checked_at` exceeds `stale_after` threshold — stale_action applied per configuration |
 | `accreditation.document_expired` | high | Evidence document (SOC 2 report, AoC) is older than `max_age` threshold — new document required |

@@ -20,7 +20,7 @@ chains the transitions, observability compares Discovered against Requested, the
 orders implementation, and sovereignty governs where each state may live. (`docs/spec/foundations/four-states.md`)
 
 ## P1 — Auditability by construction
-**the control plane requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
+**control-plane requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
 success; a write failure aborts — no silent unaudited change), `AUD-002` (append-only, immutable
 while retention is live), a tamper-evident **Merkle tree** (RFC 9162 / CT v2.0), and audit
 records that **survive at least as long as any referenced resource**.
@@ -37,7 +37,7 @@ records that **survive at least as long as any referenced resource**.
   a new entity in the chain rather than an in-place mutation.
 
 ## P2 — Observability as a base obligation
-**the control plane requirement:** provider-contract **§7** — observability (metrics, logs, telemetry) is a *base*
+**control-plane requirement:** provider-contract **§7** — observability (metrics, logs, telemetry) is a *base*
 provider obligation; the control plane MAY be the authoritative telemetry arbiter; observed dependencies are
 **provider-introspected, post-implementation**.
 
@@ -47,7 +47,7 @@ provider obligation; the control plane MAY be the authoritative telemetry arbite
 - **Offline-capable.** Output/telemetry schemas resolve offline (bundling, P4) for disconnected sites.
 
 ## P3 — Explicit, typed dependency graph
-**the control plane requirement:** `RDG-001` — the implementation MUST validate the dependency graph is a **DAG**
+**control-plane requirement:** `RDG-001` — the implementation MUST validate the dependency graph is a **DAG**
 before acknowledging; circular dependencies are rejected (422); rehydration runs in dependency
 order, compensation in reverse.
 
@@ -62,7 +62,7 @@ order, compensation in reverse.
 - **Acyclic, validated at submission** — not discovered at realization time.
 
 ## P4 — Sovereignty is structural, not advisory
-**the control plane requirement:** the **Governance Matrix** unifies authorization, sovereignty, and data-boundary
+**control-plane requirement:** the **Governance Matrix** unifies authorization, sovereignty, and data-boundary
 control into one substrate; *"scoring cannot be used to route around data sovereignty or regulatory
 boundaries"*; sovereignty zones + data classifications (sovereign / classified / PHI) are **hard**
 boundaries.

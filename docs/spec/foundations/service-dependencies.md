@@ -19,7 +19,7 @@ This document defines how service dependencies are declared, resolved, and manag
 
 ## 2. Why Dependencies Must Be Declared in Advance
 
-Dependencies must be declared in the data model — not discovered at runtime by providers. This is a hard requirement driven by four core the control plane goals:
+Dependencies must be declared in the data model — not discovered at runtime by providers. This is a hard requirement driven by four core control-plane goals:
 
 **Auditability** — the complete dependency graph must be known before execution. Every resource that will be created as part of fulfilling a request must be visible in the request's provenance chain from the start.
 
@@ -423,8 +423,8 @@ catalog_item:
 | `DEP-004` | Dependency payloads must be passed to dependent providers in the control plane unified format | Enforced at dependency satisfaction |
 | `DEP-005` | Every node in a dependency graph must have a UUID | Enforced at graph construction |
 | `DEP-006` | **Dangling-reference semantics (degrade, don't break):** a reference whose target cannot be resolved renders the *referencing* entity nonoperational in the OPERATIONAL projection while remaining intact in the INTENDED projection, until the target appears or the reference is repointed (adopts RFC 8345 leafref semantics). Never hard-fail at runtime; never silently tolerate. | The control plane runtime, at operational-state derivation. Authoring stores (git estates) instead validate-at-write and REJECT dangling references — the authoring gate is hard-fail by design. |
-| `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition `lifecycle_state: retired` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `retired` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + the control plane decommission workflow. |
-| `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (common-elements §9) only between `device_class: physical` Hardware.NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + the control plane graph construction. |
+| `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. Transition `lifecycle_state: retired` first (its UUID remains resolvable and is never reused — identifier-scheme §5); referencing entities then repoint or retire; hard removal only once no inbound edges remain. Edges to a `retired` entity are valid-but-flagged (the tombstone window). | Authoring validation (retire-first suggestion on removal) + control-plane decommission workflow. |
+| `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are machine-reported with typed codes, never silently accepted (Kubernetes cross-namespace-ownerReference analog). Initial normative set: `connects_to` (common-elements §9) only between `device_class: physical` Hardware.NetworkInterface instances; `lower_layer` and `parent_device` only between interfaces of the SAME containing device. Types may declare further constraints in `relationships[]`. | Authoring validation + control-plane graph construction. |
 
 > **Division of responsibility (DEP-006..008):** the model defines the states and edges;
 > *acting* on them — reconciliation, identity correlation, finalizer-style deletion gating,
@@ -499,7 +499,7 @@ policy decides.
 
 ## 11d. Composite Service Composition Visibility (Q34)
 
-A Composite Service registration declares how its internal composition is exposed to the control plane. This determines whether sub-resources are the control plane entities subject to standard lifecycle management, or opaque to the control plane.
+A Composite Service registration declares how its internal composition is exposed to the control plane. This determines whether sub-resources are control-plane entities subject to standard lifecycle management, or opaque to the control plane.
 
 ```yaml
 composite_service_registration:
@@ -507,7 +507,7 @@ composite_service_registration:
     mode: <opaque|transparent|selective>
     # opaque:      Consumer sees only top-level service entity
     #              Sub-resources not visible in the control plane
-    # transparent: All sub-resources registered as the control plane entities
+    # transparent: All sub-resources registered as control-plane entities
     #              Full dependency graph visible; drift detection on all
     # selective:   Provider declares which sub-resources are control-plane-visible
     dcm_visible_sub_resources:    # if selective
@@ -519,7 +519,7 @@ composite_service_registration:
 
 **Drift detection interaction:**
 - `opaque` — drift detection only on what the composite service definition reports via realized payload; sub-resources are provider's responsibility
-- `transparent` — drift detection on all sub-resources as full the control plane entities
+- `transparent` — drift detection on all sub-resources as full control-plane entities
 - `selective` — drift detection on declared control-plane-visible sub-resources only
 
 ---
@@ -532,7 +532,7 @@ composite_service_registration:
 | 2 | Should the dependency graph be stored as a separate entity or embedded in the request payload? | Data model structure | ✅ Resolved — embedded in assembly provenance; declared in Resource Type Spec; resolved in placement.yaml (DEP-014) |
 | 3 | How are cross-tenant dependencies handled? | Multi-tenancy | ✅ Resolved — governed by GRP-INV-002 + REL-011/012 and ERL-D01/D02/D03; see Entity Relationships doc |
 | 4 | Should there be a maximum dependency graph depth? | Operational complexity | ✅ Resolved — **no**, not in UDLM. A depth ceiling is a governance choice and belongs to policy (§11c); the model makes depth computable and refuses only cycles, which are unorderable rather than merely deep. |
-| 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as the control plane entities (DEP-016) |
+| 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅ Resolved — composition_visibility (opaque/transparent/selective); transparent/selective registers sub-resources as control-plane entities (DEP-016) |
 
 ---
 
@@ -542,7 +542,7 @@ composite_service_registration:
 |--------|------|
 | `DEP-013` | Dependency graphs are versioned as properties of their parent catalog item. New required dependency or removed dependency is a major (breaking) version bump. The dependency graph version used in an implementation is captured in assembly provenance. |
 | `DEP-014` | The declared dependency graph is embedded in the Resource Type Specification. The resolved dependency graph is embedded in the Requested State assembly provenance (placement.yaml). No separate dependency graph entity is required. |
-| `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as the control plane entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
+| `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selective. Transparent and selective modes register sub-resources as control-plane entities subject to standard lifecycle management and drift detection. Opaque mode delegates sub-resource management entirely to the provider. |
 | `DEP-017` | **A member that has not realized says WHY, and what it is waiting on.** The fulfillment conditions are a **closed** family on `status.conditions[].type` — `blocked-transient` (waiting on something expected to clear; converges when it can, gated by the convergence window), `blocked-permanent` (cannot be satisfied; refused immediately, window-independent), `refused` (the root: this member itself cannot be satisfied), `dependency-cancelled` (a dependency was cancelled out from under it). Closed because these carry PROPAGATION semantics — a dependent inherits its dependency's status transitively (transient → waits, permanent → refused, cancelled → dependency-cancelled) — so a fifth spelling is not a new condition but an unactionable member of this one. **`blocked_on` is required on every inherited condition** and names the IMMEDIATE blocker; the root is found by walking the chain, never by copying it down (DRV-001). `refused` is exempt — it IS the root, so there is nothing upstream to point at. **Not a lifecycle state:** these are overlays on a `lifecycle_state` that never leaves its five values, exactly as recovery and health are (data-model-core §3). **Not a refusal by the model:** a member blocked on a value that arrives one step later is EARLY, not wrong — refusing it would fail a request that was always going to succeed. Whether and when a transient block becomes permanent is the execution pipeline's call, over the convergence window; what the model owes is somewhere to record what is being waited on, so that call rests on evidence rather than a stopwatch. |
 
 ---

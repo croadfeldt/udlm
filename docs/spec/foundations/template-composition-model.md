@@ -26,7 +26,7 @@
 > binding⊆depends_on ordering). Worked example:
 > [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml).
 
-> A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary the control plane policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is the control plane's standard machinery.
+> A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary control-plane policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is the control plane's standard machinery.
 
 ---
 
@@ -54,7 +54,7 @@ A Service Provider that registers a Composite Service operates as a standard Ser
 - Sequence execution rounds — the dependency graph informs the control plane's Orchestration Flow Policy
 - Manage parallel execution — parallelism is derived from the dependency graph (resources with no unresolved dependencies execute simultaneously)
 - Run compensation — the control plane's Recovery Policy executes compensation using the dependency graph in reverse
-- Make routing decisions — these are the control plane policy decisions
+- Make routing decisions — these are control-plane policy decisions
 
 ### 1.2 Applications Are Composite Catalog Items
 
@@ -195,7 +195,7 @@ not compensation-triggering — their failure yields a `DEGRADED` composite (§2
 
 ### 2.5 Interop — the control plane's catalog model
 
-The field-by-field cross-walk to the control plane control plane's own catalog model lives with that control
+The field-by-field cross-walk to control-plane control plane's own catalog model lives with that control
 plane: `dcm/docs/specifications/dcm-composite-orchestration.md`. Projection is lossless downward
 (data-model-core §4) — a UDLM catalog item compiles onto their execution DAG; the reverse is lossy,
 which is why the typed form is the data model and their DAG is a compiled artifact at the boundary.
@@ -204,7 +204,7 @@ which is why the typed form is the data model and their DAG is a compiled artifa
 
 ## 3. Composite Entity — Four-State Representation
 
-A Composite Service request produces a Composite Entity that exists across all four the control plane states (Intent, Requested, Realized, Discovered) as a single entity with one UUID.
+A Composite Service request produces a Composite Entity that exists across all four lifecycle states (Intent, Requested, Realized, Discovered) as a single entity with one UUID.
 
 ### 3.1 Intent State
 
@@ -287,8 +287,8 @@ A Composite Service registration declares its `composition_visibility`:
 | Mode | Meaning |
 |------|---------|
 | `opaque` | Only the Composite Entity UUID is exposed to consumers. Constituent UUIDs exist internally for the control plane bookkeeping but are not surfaced. Status reporting reports composite-level state only. |
-| `transparent` | All constituents are first-class the control plane entities with their own UUIDs, queryable individually. Constituent state is surfaced in status reporting. |
-| `selective` | A declared subset of constituents are surfaced as the control plane entities; the remainder are opaque. Useful when some constituents are implementation detail and others are operationally relevant. |
+| `transparent` | All constituents are first-class control-plane entities with their own UUIDs, queryable individually. Constituent state is surfaced in status reporting. |
+| `selective` | A declared subset of constituents are surfaced as control-plane entities; the remainder are opaque. Useful when some constituents are implementation detail and others are operationally relevant. |
 
 Visibility affects:
 - Status reporting: per-constituent state is surfaced for transparent and (selectively) for selective; not for opaque
@@ -389,7 +389,7 @@ Compensation in nested composites runs bottom-up: the innermost composite compen
 
 ## 9. Scoring Model Integration
 
-The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see the control plane architecture documentation).
+The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see control-plane architecture documentation).
 
 ---
 

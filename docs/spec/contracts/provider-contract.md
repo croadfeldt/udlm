@@ -208,7 +208,7 @@ provider_base_registration:
         port: 443
         protocol: https
     ingress:                             # callbacks the provider makes back to the control plane
-      - endpoint: lifecycle              # maps to the control plane lifecycle endpoint (§6)
+      - endpoint: lifecycle              # maps to the control-plane lifecycle endpoint (§6)
       - endpoint: telemetry              # telemetry delivery (§7)
     provisioned_by: platform             # platform provisions policy from this declaration
 ```
@@ -258,7 +258,7 @@ ACTIVE → SUSPENDED | DEREGISTERING → DEREGISTERED | FORCED_DEREGISTERED
 The rules the `sovereignty_declaration` (§2) puts on every provider — all providers, all
 capabilities (A4 landed 2026-07-23: these moved here from storage-providers.md because they are
 registration obligations, not storage behavior). How an implementation *executes* the responses
-(pause, migrate, quarantine) is control-plane, owned by the control plane architecture docs.
+(pause, migrate, quarantine) is control-plane, owned by control-plane architecture docs.
 
 | ID | Policy |
 |----|--------|
@@ -325,7 +325,7 @@ Response 200:
 }
 ```
 
-**the control plane response to health states:**
+**Control-plane response to health states:**
 - `healthy` → normal operations; next poll scheduled
 - `degraded` → reduced routing preference; platform admin notified (medium urgency)
 - `unhealthy` / no response → after `failure_threshold`: status → DEGRADED; new requests not routed
@@ -595,7 +595,7 @@ service_provider_capabilities:
     currency: USD
 ```
 
-**Data direction:** the control plane sends assembled Requested State → Provider naturalizes → executes → denaturalizes → returns Realized State. Separately, on demand, the control plane sends `{entity_uuid}` to `{dependency_introspection_endpoint}` → Provider returns observed dependency edges → the control plane records them in the Entity Relationship Graph under `edge_nature: observed`.
+**Data direction:** the control plane sends assembled Requested State → Provider naturalizes → executes → denaturalizes → returns Realized State. Separately, on demand, the control plane sends `{entity_uuid}` to `{dependency_introspection_endpoint}` → Provider returns observed dependency edges → control-plane records them in the Entity Relationship Graph under `edge_nature: observed`.
 
 ---
 
@@ -681,7 +681,7 @@ information_provider_capabilities:
   write_back_supported: false
 ```
 
-**Data direction:** the control plane sends lookup query → Provider returns data in the control plane format → the control plane enriches entity fields.
+**Data direction:** the control plane sends lookup query → Provider returns data in control-plane format → the control plane enriches entity fields.
 
 ---
 
@@ -766,7 +766,7 @@ auth_capability:                 # declared on any provider; not a provider_type
 
 ### 8.5 `federate` — Peer the control plane (Federation)
 
-**What it does:** Another the control plane instance participating in federation. Treated as a typed Provider with a federation tunnel as the communication channel.
+**What it does:** Another control-plane instance participating in federation. Treated as a typed Provider with a federation tunnel as the communication channel.
 
 **Capability declaration extension:**
 ```yaml
@@ -1038,12 +1038,12 @@ The substrate requires the following invariants on capability discovery interact
 | `PRV-001` | All providers implement the base contract. No provider is exempt from registration, health check, sovereignty declaration, governance matrix enforcement, or zero trust authentication. |
 | `PRV-002` | Governance Matrix evaluation occurs before every provider interaction. It is not configurable per provider and cannot be bypassed. |
 | `PRV-003` | Provider capability declarations are verified at registration. Capabilities not declared at registration cannot be invoked after activation. |
-| `PRV-004` | Peer the control plane instances are treated as typed providers. Federation is the Provider abstraction applied across the control plane instances — not a separate abstraction. |
-| `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability extension. No changes to the control plane core are required. |
+| `PRV-004` | Peer control-plane instances are treated as typed providers. Federation is the Provider abstraction applied across the control plane instances — not a separate abstraction. |
+| `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability extension. No changes to the control-plane core are required. |
 | `PRV-006` | Service Providers that declare `dependency_introspection.supported: true` MUST respond to the dependency-introspection endpoint for any entity they host. Returned edges are recorded as observed (not declared) per [Service Dependencies](../foundations/service-dependencies.md) §3a and policies OBS-001..OBS-005. Providers that do not declare the capability are exempt; the substrate records `dependency_introspection_unavailable` for affected entities. |
 | `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, logs, events) at registration using standard exposition formats. the control plane MUST be able to manage collection — discover, configure delivery, verify activity, and audit-record — for all appropriate resources; it is not required to arbiter the telemetry data itself, but MAY serve as the authoritative telemetry/monitoring platform (dcm-observability) where none exists or a canned solution is desired. Integration mechanism TBD (leading candidate: UDLM-modeled export). |
 | `PRV-008` | Only `role: execution` data crosses the dispatch boundary by default (ADR-PROV-001; [data-roles.md](data-roles.md)). The payload a provider receives is the INTERSECTION of its declared `accepts_roles` and what the Governance Matrix permits at the control plane→Provider boundary. Sovereignty/profile policy may strip a role a provider requested; it can never widen beyond `accepts_roles`. `role: assembly` (and other control-plane roles) MUST NOT be naturalized to a provider that has not opted in, and MUST NOT be copied into `states.realized`. |
-| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration the control plane records each declared capability/category in the control-plane-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: the control plane registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). the control plane enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in §2's `dcm_registration_verdict` (`effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`; mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
+| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capability/category grants no authority and is UNUSABLE until admitted — `effective_capabilities` starts empty. At registration control-plane records each declared capability/category in the control-plane-assigned verdict (`capability_admissions`) as `pending` — the platform-admin worklist. A platform admin dispositions each at **platform level** (`approved \| provisional \| denied` — coarse, platform-wide) via the Admin API (mechanism: the control plane registration spec §7.4a; RBAC `platform_admin`; approver stringency is **profile-governed** per PROF-010 — "default safe": the security default derives from the platform profile(s) in use, and no profile weakens default-deny). **Granular / conditional approval** (per tenant/zone/resource/context) is **policy** — Governance-Matrix rules — not an admin-disposition field; domain granularity is inherent (a category IS verb×domain). the control plane enforces only the **computed intersecting ceiling** `effective_capabilities` — the default-deny formula is defined once in §2's `dcm_registration_verdict` (`effective_capabilities = declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted`; mirrors `PRV-008`/`accepts_roles`); a provider can never invoke outside it. The disposition is admin-set (never self-declared); every admission change is an explicit forward `CAPABILITY_ADMIT` audit event (actor + reason), immutable, reconstructed LIFO. `provisional` = admitted but restricted/shadowed. |
 | `PRV-011` | **The `effective_capabilities` ceiling (`PRV-009`) is enforced at the dispatch boundary.** Every dispatch — placed, routed, pinned, or operator-overridden — re-checks that the target provider's `effective_capabilities` covers the required capability at the required grain (resource type at the required `spec_version`, §8.1) before any work is handed over. No routing mechanism, pin, or override exempts a dispatch from this check; a pin selects among eligible providers, it does not confer eligibility (§2b). A mismatch refuses **pre-dispatch** with `placement.capability_mismatch` — an eligibility outcome, distinct from `provider.unavailable`, which reports a provider that broke — carrying the required-versus-declared comparison so a mis-routed request is distinguishable from an unsatisfiable one. Eligibility is decided from the provider's registration declarations, never by attempting the operation and observing failure. |
 
 ---
