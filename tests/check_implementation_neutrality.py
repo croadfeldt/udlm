@@ -38,7 +38,12 @@ import sys
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SPEC = os.path.join(ROOT, "docs", "spec")
+# The normative tier is docs/spec/ AND docs/adr/. The ADRs were outside the scan when this gate
+# landed, which was a 205-reference blind spot in exactly the tier the dcm-project review read most —
+# ADR-038 alone carried 30. An ADR is where a decision is argued, so an unmarked implementation
+# reference there does more damage than one in a schema description: it reads as the decision itself
+# depending on one implementation.
+SCAN_DIRS = [os.path.join(ROOT, "docs", "spec"), os.path.join(ROOT, "docs", "adr")]
 BASELINE = os.path.join(ROOT, "tests", "implementation-neutrality-baseline.yaml")
 
 # The named implementations (GLOSSARY.md). DAV is included for the same reason DCM is: the case
@@ -57,7 +62,10 @@ EXEMPT = re.compile(
 
 def violations():
     out = []
-    for path in sorted(glob.glob(os.path.join(SPEC, "**", "*.md"), recursive=True)):
+    paths = []
+    for d in SCAN_DIRS:
+        paths += glob.glob(os.path.join(d, "**", "*.md"), recursive=True)
+    for path in sorted(paths):
         rel = os.path.relpath(path, ROOT)
         for i, line in enumerate(open(path, encoding="utf-8"), 1):
             if IMPLS.search(line) and not EXEMPT.search(line):
