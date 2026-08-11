@@ -80,7 +80,7 @@ priority order, first. (The full definition is §2.)
 ### Policies Are Logic
 
 A policy answers **"given this data, is it valid? what should change? should this proceed?"**
-— executable logic (OPA Rego, DCM native rules, external calls) that reads the assembled
+— executable logic (OPA Rego, the control plane native rules, external calls) that reads the assembled
 result, validates, transforms, injects derived values, and gates. Policies come after layers.
 
 **What belongs in a policy:**
@@ -156,7 +156,7 @@ The Request Layer is the only layer type that does not require a PR review — i
 > **Machine-validatable schema:** `registry/layer.schema.json` (data-model-core §2 [D8.4]); `registry/tools/validate.py` dispatches `record_type: layer`.
 ## 3. Layer Types
 
-DCM defines six layer types. Each has a distinct purpose, scope, ownership model, and position in the assembly precedence chain.
+The control plane defines six layer types. Each has a distinct purpose, scope, ownership model, and position in the assembly precedence chain.
 
 ### 3.1 Base Layer
 
@@ -164,7 +164,7 @@ DCM defines six layer types. Each has a distinct purpose, scope, ownership model
 
 **Scope:** Can be type-agnostic (a universal base) or type-scoped (a base specific to a Resource Type). A Base Layer that is type-scoped must declare its Resource Type.
 
-**Ownership:** DCM platform or platform implementor.
+**Ownership:** the control plane platform or platform implementor.
 
 **Characteristics:**
 - Every layer chain must begin with a Base Layer
@@ -185,7 +185,7 @@ DCM defines six layer types. Each has a distinct purpose, scope, ownership model
 
 **Scope:** Type-agnostic by default. Core Layers apply to all resource types unless explicitly scoped. This is the primary distinction from Service Layers.
 
-**Ownership:** DCM platform, infrastructure teams, or platform implementors.
+**Ownership:** the control plane platform, infrastructure teams, or platform implementors.
 
 **Characteristics:**
 - Applied to every request regardless of resource type
@@ -248,7 +248,7 @@ type_scope:
   # descendants: applies to the declared Resource Type and all child types via inheritance
 ```
 
-**Ownership:** Service Providers or service domain teams. Stored in Service Layer SCM (source control management). Registered with DCM as part of Service Provider registration.
+**Ownership:** Service Providers or service domain teams. Stored in Service Layer SCM (source control management). Registered with the control plane as part of Service Provider registration.
 
 **Characteristics:**
 - Only applied when the request resource type matches the layer's declared type scope
@@ -314,7 +314,7 @@ type_scope:
 
 ### 3.7 Reference Data Layers
 
-**All of DCM's data — including Resource Type Specifications — is built on the same
+**All of the control plane's data — including Resource Type Specifications — is built on the same
 layer model.** A Resource Type Specification is itself a data layer artifact: versioned,
 owned by a declared Resource Type Authority, stored in GitOps, subject to the standard
 lifecycle, and subject to the same domain-based access control as all other layers. The
@@ -451,7 +451,7 @@ layer:
 ### 3.8 Two-sided scoping — which layers reach which requests (ADR-054)
 
 Gathering a layer into a request is a **two-sided** decision — a *publish ⋈ subscribe* match, not a
-one-way pull. Each side declares its half as **data** on the layer record; DCM's assembly engine
+one-way pull. Each side declares its half as **data** on the layer record; the control plane's assembly engine
 computes the match (the acting side).
 
 - **Target (the layer publishes):** `covers` — ONE URF filter (identifier-scheme §9;
@@ -490,7 +490,7 @@ Authoritative: [ADR-054](../../adr/ADR-054-references-context-and-field-projecti
 
 ### 3a.1 The Three Provenance Models
 
-Field-level provenance tracks which layer set each field, which policy modified it, and the full change history. DCM supports three configurable models — organizations choose based on their scale, compliance requirements, and operational preferences. The active Profile provides a recommended default via its activated Policy Group.
+Field-level provenance tracks which layer set each field, which policy modified it, and the full change history. The control plane supports three configurable models — organizations choose based on their scale, compliance requirements, and operational preferences. The active Profile provides a recommended default via its activated Policy Group.
 
 **Model A — Full Inline**
 All provenance stored explicitly on every entity record. Every field carries its complete provenance inline: source layer, modifying policies, previous values, timestamps, actor chain.
@@ -542,7 +542,7 @@ Hot/warm/cold storage tiers with decreasing detail. Recent provenance at full de
 
 ### 3a.2 Configurable Provenance Model
 
-The provenance model is declared in the DCM deployment configuration and activated via a Policy Group:
+The provenance model is declared in the control plane deployment configuration and activated via a Policy Group:
 
 ```yaml
 provenance_config:
@@ -578,7 +578,7 @@ provenance_config:
 
 ### 3a.3 Profile-Appropriate Provenance Policy Groups
 
-DCM ships four provenance Policy Groups. The active Profile activates the appropriate group by default. Organizations override by swapping the active group.
+The control plane ships four provenance Policy Groups. The active Profile activates the appropriate group by default. Organizations override by swapping the active group.
 
 | Group Handle | Model | Profile Default | Concern Type |
 |-------------|-------|----------------|-------------|
@@ -625,7 +625,7 @@ For Model A: entity record alone is sufficient
 
 ## 4. Layer Identity — Domain, Handle, and Priority
 
-Every layer has a formal identity model with three components that together make it uniquely identifiable, locatable, and orderable within DCM.
+Every layer has a formal identity model with three components that together make it uniquely identifiable, locatable, and orderable within the control plane.
 
 ### 4.1 Layer Domain
 
@@ -633,7 +633,7 @@ The **Layer Domain** mirrors the Policy domain model exactly. It declares owners
 
 | Domain | Meaning | Authorization | Can Override |
 |--------|---------|--------------|-------------|
-| `system` | DCM built-in layers — ship with DCM | DCM maintainers only | Nothing above system |
+| `system` | The control plane built-in layers — ship with the control plane | The control plane maintainers only | Nothing above system |
 | `platform` | Platform team layers — apply across all Tenants | Platform team | tenant, service, provider |
 | `tenant` | Tenant-specific layers — scoped to one Tenant | Tenant Admin | service, provider within Tenant |
 | `service` | Service Provider contributed layers | Service Provider owner | provider |
@@ -767,7 +767,7 @@ layer:
 
 ### 4.4 Layer Handle
 
-The **Layer Handle** is the human-readable, stable identifier for a layer within DCM.
+The **Layer Handle** is the human-readable, stable identifier for a layer within the control plane.
 
 **Format:** `{domain}/{concern_or_type}/{name}`
 
@@ -805,7 +805,7 @@ The **Priority Schema** is the deterministic ordering mechanism for resolving co
 900.10.10 beats    900.10.5  (10 > 5 at segment 3)
 ```
 
-**Reference Priority Taxonomy (advisory — not enforced by DCM):**
+**Reference Priority Taxonomy (advisory — not enforced by the control plane):**
 
 | Suggested Range | Category | Rationale |
 |-----------------|----------|-----------|
@@ -819,13 +819,13 @@ The **Priority Schema** is the deterministic ordering mechanism for resolving co
 | `200.*` | Site | Location-specific overrides |
 | `100.*` | Custom | Implementor-defined — lowest standard category |
 
-Higher number = higher priority. Organizations adopt, adapt, or ignore this taxonomy — DCM resolves conflicts purely by numeric comparison.
+Higher number = higher priority. Organizations adopt, adapt, or ignore this taxonomy — the control plane resolves conflicts purely by numeric comparison.
 
 ---
 
 ## 4b. Artifact Metadata Standard
 
-Every DCM artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a standard **Artifact Metadata** block. This is a structural requirement, not optional.
+Every the control plane artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a standard **Artifact Metadata** block. This is a structural requirement, not optional.
 
 The artifact metadata block answers: **who created this, when, who owns it, what changed, and how do we contact them?**
 
@@ -835,7 +835,7 @@ The artifact metadata block answers: **who created this, when, who owns it, what
 artifact_metadata:
 
   # Identity
-  uuid: <uuid — assigned by DCM at creation, immutable>
+  uuid: <uuid — assigned by the control plane at creation, immutable>
   handle: <domain/type/name — human-readable stable identifier>
 
   # Versioning
@@ -884,7 +884,7 @@ artifact_metadata:
   # pr:        submitted via GitOps PR workflow — full review history available
   # api:       submitted via direct API
   # migration: imported from external system — provenance depth may be limited
-  # system:    created by DCM itself (entity stubs, system artifacts)
+  # system:    created by the control plane itself (entity stubs, system artifacts)
 
   # Ownership — may differ from creator
   owned_by:
@@ -942,26 +942,26 @@ When a policy artifact is in `proposed` status, it runs in **shadow mode** again
 - Shadow output feeds the Validation Dashboard for reviewer analysis
 - Policy authors can see aggregate impact before activation
 
-Per real request evaluated, DCM captures durably: the shadow policy identity (uuid + version),
+Per real request evaluated, the control plane captures durably: the shadow policy identity (uuid + version),
 the request and tenant, whether the policy would have applied, and the full would-have output
 (rejection + reason, patches, warnings) — never applied to the request, feeding the Validation
-Dashboard. The capture's shape is DCM's implementation; this content is the contract.
+Dashboard. The capture's shape is the control plane's implementation; this content is the contract.
 
 ### 4b.4 Contact Info — Two Modes
 
 Contact information supports both IdP-backed and standalone deployments:
 
 **Mode 1 — Identity Provider backed:**
-The `uuid` field contains the DCM external entity reference UUID linking to an Identity.Person or Identity.Team in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. DCM can resolve the full identity record via the Information Provider on demand.
+The `uuid` field contains the control plane external entity reference UUID linking to an Identity.Person or Identity.Team in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. The control plane can resolve the full identity record via the Information Provider on demand.
 
 **Mode 2 — Standalone (no Identity Provider):**
-The `uuid` field is absent. `display_name`, `email`, and `notification_endpoint` are the primary identity fields. DCM accepts and records these directly without external verification. This mode supports bootstrapping, air-gapped deployments, and organizations that have not yet registered an Identity Information Provider.
+The `uuid` field is absent. `display_name`, `email`, and `notification_endpoint` are the primary identity fields. The control plane accepts and records these directly without external verification. This mode supports bootstrapping, air-gapped deployments, and organizations that have not yet registered an Identity Information Provider.
 
 Both modes are fully supported. An organization can start in standalone mode and migrate to IdP-backed mode by adding `uuid` fields to existing artifact metadata — no other changes required.
 
 ### 4b.5 Notifications from Artifact Metadata
 
-The `owned_by.notification_endpoint` is the target for all proactive DCM notifications about an artifact:
+The `owned_by.notification_endpoint` is the target for all proactive the control plane notifications about an artifact:
 
 | Event | Who Is Notified |
 |-------|----------------|
@@ -977,7 +977,7 @@ The `owned_by.notification_endpoint` is the target for all proactive DCM notific
 
 ## 4c. Conflict Detection at Ingestion
 
-Conflict detection runs at layer ingestion time — not at request assembly time. This ensures all layers in DCM are conflict-free before they are ever used.
+Conflict detection runs at layer ingestion time — not at request assembly time. This ensures all layers in the control plane are conflict-free before they are ever used.
 
 ### 4c.1 Ingestion CI Pipeline
 
@@ -988,7 +988,7 @@ flowchart TD
     G["Layer committed to Git branch"]
     CI["CI Pipeline fires automatically"]
     S1["1. Schema validation<br/>Is the layer well-formed per the layer schema?<br/>Does it carry required artifact metadata?<br/>Is the version correctly incremented?"]
-    S2["2. Handle validation<br/>Is the handle unique in DCM?<br/>Does the handle match the Git path?<br/>Does the domain match the submitting actor's authorization?"]
+    S2["2. Handle validation<br/>Is the handle unique in the control plane?<br/>Does the handle match the Git path?<br/>Does the domain match the submitting actor's authorization?"]
     S3["3. Scope validation<br/>If type-scoped: do declared resource types exist in the registry?<br/>Is the layer type consistent with the domain?"]
     S4["4. Priority validation<br/>Is the priority value in valid dotted-notation format?<br/>Does the priority category match the domain advisory range?<br/>(Warning only if category/domain mismatch — not a block)"]
     S5["5. Conflict detection<br/>For each field in this layer:<br/>Find all active layers of the same type and overlapping scope<br/>Check if any declare the same field"]
@@ -1020,7 +1020,7 @@ flowchart TD
 
 ### 4c.3 Pre-Validation of All Layers
 
-Because conflict detection runs at ingestion, all layers resident in DCM are pre-validated:
+Because conflict detection runs at ingestion, all layers resident in the control plane are pre-validated:
 
 - No two active layers of the same type and scope conflict without explicit priority resolution
 - The assembly process never encounters an ambiguous merge — all conflicts are resolved at definition time
@@ -1082,7 +1082,7 @@ When two layers at the same precedence level declare conflicting values for the 
 
 ## 5a. Field Override Control
 
-Field override control is the mechanism by which DCM governs **who can change what, under what conditions**, across the layer precedence chain — a graduated model that is **simple by default and powerful when needed**.
+Field override control is the mechanism by which the control plane governs **who can change what, under what conditions**, across the layer precedence chain — a graduated model that is **simple by default and powerful when needed**.
 
 **Design Principle:** A field with no override declaration is fully overridable by anyone. Restrictions are always opt-in. The model has three levels — you use only the level you need. Levels 1 and 2 cover the vast majority of real-world cases. Level 3 exists for fields that genuinely require nuanced, actor-specific governance.
 
@@ -1092,7 +1092,7 @@ Field override control is the mechanism by which DCM governs **who can change wh
 
 **Category 1 — Structural Rules (Request Payload Processor — non-overridable)**
 
-Enforced by the Request Payload Processor as DCM System behavior. Not configurable. Always applied:
+Enforced by the Request Payload Processor as the control plane System behavior. Not configurable. Always applied:
 
 - A layer entity is immutable once versioned — no override can modify a published version
 - A child layer cannot remove a field declared in a parent layer — it can only override the value
@@ -1247,7 +1247,7 @@ billing_tag:
 
 ### 5a.6 Actor Registry
 
-The actor list is extensible. DCM ships with built-in actors. Organizations register custom actors following the same model. Custom actors default to `deny` until explicitly granted permissions.
+The actor list is extensible. The control plane ships with built-in actors. Organizations register custom actors following the same model. Custom actors default to `deny` until explicitly granted permissions.
 
 **Built-in actors:**
 
@@ -1260,7 +1260,7 @@ The actor list is extensible. DCM ships with built-in actors. Organizations regi
 | `process_resource` | Automation execution | ❌ by default | Requires trusted grant |
 | `provider` | Service Provider | ❌ | Can only restrict |
 | `sre_override` | SRE team | ❌ | Operational authority, cannot grant |
-| `admin_override` | DCM Admin | ✅ | Within their scope level |
+| `admin_override` | The control plane Admin | ✅ | Within their scope level |
 
 **Custom actor registration:**
 
@@ -1444,7 +1444,7 @@ Pre-placement policies produce **placement constraints** — declarative require
 
 ### Step 6 — Placement
 
-Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is implementation concern (see the DCM operational model and the provider contract). What the data model retains from this step is two records:
+Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is implementation concern (see the control plane operational model and the provider contract). What the data model retains from this step is two records:
 
 - **Policy-gap record** — when a field is absent and *no* policy declares `required_context` for it, an `implicit_approval` record is written (field, `provider_uuid`, reason, `recorded_at`, `resolution_expected: realized_payload`). This is the same road-not-taken provenance discipline UDLM applies elsewhere: the fact that a field went un-evaluated is recorded, not silently dropped.
 - **Metadata completeness** — metadata a provider cannot supply at placement is completed later via the **realized payload** (primary) or **discovery** (fallback); the realized entity carries `enrichment_status: pending | partial | complete`. Same pattern as the ingestion model.
@@ -1518,7 +1518,7 @@ The type scoping rules for Service Layers are the primary mechanism for preventi
 
 ## 9. Layer Versioning
 
-All layers follow the universal DCM versioning scheme: **Major.Minor.Revision**
+All layers follow the universal the control plane versioning scheme: **Major.Minor.Revision**
 
 | Component | Trigger |
 |-----------|---------|
@@ -1534,7 +1534,7 @@ All layers follow the universal DCM versioning scheme: **Major.Minor.Revision**
 
 ## 10. Artifact Lifecycle — The Five Statuses
 
-All DCM artifacts — layers, policies, resource types, catalog items, and all other defined objects — follow a five-status lifecycle. The statuses are defined in Section 4b.2. For layers specifically:
+All the control plane artifacts — layers, policies, resource types, catalog items, and all other defined objects — follow a five-status lifecycle. The statuses are defined in Section 4b.2. For layers specifically:
 
 | Status | Layer Behavior |
 |--------|---------------|

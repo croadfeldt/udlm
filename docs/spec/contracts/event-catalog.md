@@ -20,7 +20,7 @@ events narrate.
 
 ## 1. Base Envelope
 
-Every DCM event shares a common envelope. Event-specific fields are in the `payload` object.
+Every the control plane event shares a common envelope. Event-specific fields are in the `payload` object.
 
 ```yaml
 # UDLM Event Envelope — all events
@@ -29,8 +29,8 @@ event_type: <string>                # fully qualified: domain.event_name
 event_schema_version: "1.0"         # increments on breaking payload changes
 timestamp: <RFC 3339 UTC 'Z'>       # from Commit Log — authoritative source of truth (common-elements §8.1);
                                     # inherits the Commit Log's microsecond-precision instant (universal-audit §7.2)
-dcm_version: <semver>               # DCM instance version that generated the event
-dcm_instance_uuid: <uuid>           # identifies the DCM instance (federation context)
+dcm_version: <semver>               # the control plane instance version that generated the event
+dcm_instance_uuid: <uuid>           # identifies the control plane instance (federation context)
 
 subject:
   entity_uuid: <uuid | null>        # primary entity this event concerns
@@ -44,8 +44,8 @@ urgency: critical | high | medium | low | info   # governs notification routing
 payload: {}                         # event-specific fields — see Section 3+
 
 links:
-  self: <url>                       # DCM API URL for the subject entity or record
-  audit_record: <url>               # DCM API URL for the audit record for this event
+  self: <url>                       # the control plane API URL for the subject entity or record
+  audit_record: <url>               # the control plane API URL for the audit record for this event
 ```
 
 ### 1.1 Urgency Levels
@@ -188,8 +188,8 @@ payload:
 | `entity.ttl_warning` | medium | TTL expires within declared warning window |
 | `entity.ttl_expired` | high | TTL reached; expiry action triggered |
 | `reservation.ttl_changed` | medium | A reservation hold's granted TTL changed — provider-initiated extend/shorten (provider-contract §6a two-phase realization) |
-| `reservation.expired` | high | A reservation hold's TTL lapsed without commit; the hold is **implicitly released** (auto-dropped). DCM audits and updates the request (re-reserve / re-plan) |
-| `reservation.expiry_unconfirmed` | critical | **DCM-authored backstop:** the hold's TTL lapsed and the provider did **not** emit `reservation.expired` within `reservation_reconcile_grace`. DCM emits this, force-resolves via `RELEASE_AND_NOTIFY_AFFECTED`, and flags provider non-conformance |
+| `reservation.expired` | high | A reservation hold's TTL lapsed without commit; the hold is **implicitly released** (auto-dropped). The control plane audits and updates the request (re-reserve / re-plan) |
+| `reservation.expiry_unconfirmed` | critical | **control-plane-authored backstop:** the hold's TTL lapsed and the provider did **not** emit `reservation.expired` within `reservation_reconcile_grace`. The control plane emits this, force-resolves via `RELEASE_AND_NOTIFY_AFFECTED`, and flags provider non-conformance |
 | `entity.suspended` | high | Entity entered SUSPENDED state |
 | `entity.resumed` | medium | Entity exited SUSPENDED state |
 | `entity.decommissioning` | medium | Decommission pipeline initiated |
@@ -243,16 +243,16 @@ payload:
 
 #### `reservation.expiry_unconfirmed`
 ```yaml
-# DCM-authored backstop when a provider misses its required reservation.expired (provider-contract §6a).
+# control-plane-authored backstop when a provider misses its required reservation.expired (provider-contract §6a).
 payload:
   reservation_hold_uuid: <uuid>
   entity_uuid: <uuid>
   provider_uuid: <uuid>                 # the non-conformant provider
   expires_at: <RFC 3339 UTC 'Z'>        # the hold's original expiry
-  grace_elapsed: <ISO 8601 duration>    # reservation_reconcile_grace waited before DCM acted
+  grace_elapsed: <ISO 8601 duration>    # reservation_reconcile_grace waited before the control plane acted
   recovery_action: RELEASE_AND_NOTIFY_AFFECTED
   affected_holds: [<reservation_hold_uuid>, ...]  # dependent holds explicitly released
-  authored_by: dcm                      # provenance — DCM, not the provider
+  authored_by: dcm                      # provenance — the control plane, not the provider
 ```
 
 #### `entity.decommissioning` / `entity.decommissioned`
@@ -669,7 +669,7 @@ payload:
 |-----------|---------|---------|
 | `ingestion.transitional_created` | info | Brownfield entity created as Transitional entity |
 | `ingestion.enriched` | info | Transitional entity enriched with additional data |
-| `ingestion.promotion_approved` | medium | Transitional entity approved for promotion to full DCM entity |
+| `ingestion.promotion_approved` | medium | Transitional entity approved for promotion to full the control plane entity |
 
 ### 15.1 Payload Schema
 
@@ -731,7 +731,7 @@ policy that drives these events, and
 ```yaml
 payload:
   implementation:
-    name: <string>             # e.g., "DCM"
+    name: <string>             # e.g., "the control plane"
     vendor: <string>
     version: <semver>
   deprecated_udlm_version: <semver>   # the major version being deprecated
@@ -793,7 +793,7 @@ payload:
 | `security.unsanctioned_provider_write` | critical | Provider wrote to an entity without a corresponding Requested State record |
 | `sovereignty.violation` | critical | Data or operation crossed a declared sovereignty boundary |
 | `sovereignty.migration_required` | high | Entity must migrate to comply with sovereignty constraints |
-| `federation.tunnel_degraded` | high | Federation tunnel to peer DCM degraded or unavailable |
+| `federation.tunnel_degraded` | high | Federation tunnel to peer control plane degraded or unavailable |
 | `auth.provider_failover` | high | Auth Provider failed; failover to secondary |
 
 ### 17.1 Payload Schemas
@@ -847,7 +847,7 @@ payload:
 | Policy | Rule |
 |--------|------|
 | `EVT-001` | Every event must include the base envelope fields (`event_uuid`, `event_type`, `event_schema_version`, `timestamp`, `dcm_version`, `dcm_instance_uuid`, `urgency`). Events omitting required envelope fields are invalid and must not be published. |
-| `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as already-processed. DCM may re-deliver events on failure; this is not a bug. |
+| `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as already-processed. The control plane may re-deliver events on failure; this is not a bug. |
 | `EVT-003` | `timestamp` is sourced from the Commit Log Stage 1 write and **inherits the Commit Log's RFC 3339 UTC 'Z' microsecond-precision instant** (universal-audit §7.2) — one cross-store precision, no re-stamping. It represents when the event was authoritatively recorded, not when it was delivered. |
 | `EVT-004` | `event_schema_version` must increment on any breaking change to a payload schema. Adding optional fields is not a breaking change. Removing fields, changing field types, or changing field semantics are breaking changes. |
 | `EVT-005` | Events with `urgency: critical` must be delivered via the push channel if the notification service supports it, regardless of consumer subscription preferences. |
@@ -900,7 +900,7 @@ of a registered accreditation produces a result or requires attention.
 | Event Type | Urgency | Description |
 |-----------|---------|-------------|
 | `accreditation.verified` | low | Periodic external confirmation — accreditation still active in external registry |
-| `accreditation.status_changed` | high or critical | External registry reports a different status than DCM records — requires platform admin review |
+| `accreditation.status_changed` | high or critical | External registry reports a different status than the control plane records — requires platform admin review |
 | `accreditation.registry_mismatch` | high | External registry cannot find the accreditation by its `external_registry_id` — ID may need correction |
 | `accreditation.verification_stale` | varies | `last_checked_at` exceeds `stale_after` threshold — stale_action applied per configuration |
 | `accreditation.document_expired` | high | Evidence document (SOC 2 report, AoC) is older than `max_age` threshold — new document required |
@@ -1029,7 +1029,7 @@ authorization.granted
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
 
 ### Additional Event Types
 

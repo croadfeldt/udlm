@@ -15,35 +15,35 @@
 
 ## 1. Purpose
 
-This document defines how Resource/Service Entities are organized into groups within DCM. Grouping provides the ownership, organizational context, cost attribution, policy scope, and rehydration targeting that makes DCM operationally meaningful at scale.
+This document defines how Resource/Service Entities are organized into groups within the control plane. Grouping provides the ownership, organizational context, cost attribution, policy scope, and rehydration targeting that makes the control plane operationally meaningful at scale.
 
 Two concepts are defined here:
-1. **DCM Tenant** — the mandatory, first-class ownership boundary for all Resource/Service Entities
+1. **the control plane Tenant** — the mandatory, first-class ownership boundary for all Resource/Service Entities
 2. **Resource Groups** — flexible, composable grouping entities that provide additional organizational context
 
 ---
 
-## 2. DCM Tenant
+## 2. The control plane Tenant
 
 ### 2.1 Definition
 
-A **DCM Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in DCM. Every Resource/Service Entity — including Processes — must belong to exactly one DCM Tenant at any point in time.
+A **the control plane Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in the control plane. Every Resource/Service Entity — including Processes — must belong to exactly one the control plane Tenant at any point in time.
 
 Tenant membership is the answer to the question: **who owns this resource?**
 
-### 2.2 Tenant as a DCM System Policy
+### 2.2 Tenant as a control plane System Policy
 
-Mandatory Tenant membership is a **non-overridable DCM System Policy**:
+Mandatory Tenant membership is a **non-overridable the control plane System Policy**:
 
 | Policy | Rule | Enforcement |
 |--------|------|-------------|
-| `TEN-001` | Every Resource/Service Entity must belong to exactly one DCM Tenant | Enforced at Entity creation — no Tenant = request rejected |
+| `TEN-001` | Every Resource/Service Entity must belong to exactly one the control plane Tenant | Enforced at Entity creation — no Tenant = request rejected |
 | `TEN-002` | Tenant membership cannot be empty — a Tenant must exist before resources can be created in it | Enforced at request processing |
 | `TEN-003` | A Resource/Service Entity cannot exist without a Tenant | Enforced at all lifecycle states |
 
 ### 2.3 What Tenant Provides
 
-The Tenant boundary enables the following DCM capabilities for all resources it owns:
+The Tenant boundary enables the following the control plane capabilities for all resources it owns:
 
 | Capability | Description |
 |------------|-------------|
@@ -89,7 +89,7 @@ dcm_tenant:
 
 ### 2.5 Tenant and Resource Consumption
 
-A resource belongs to exactly one Tenant — its **owner**. However, a resource can be **consumed** by multiple Tenants via the DCM Service Catalog. Ownership and consumption are distinct:
+A resource belongs to exactly one Tenant — its **owner**. However, a resource can be **consumed** by multiple Tenants via control plane Service Catalog. Ownership and consumption are distinct:
 
 - **Ownership** (Tenant membership) — who is responsible for the lifecycle, cost, and compliance of this resource
 - **Consumption** — who uses or depends on this resource as a service
@@ -120,19 +120,19 @@ Each group membership is a different dimension of context — not a hierarchy wi
 > `resource_type: Grouping` from that model. The `dcm_default | custom` distinction
 > defined here is a **`group_subclass`** — the open, advisory axis — not a record kind.
 
-DCM defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:
+The control plane defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:
 
-**Subclass 1 — DCM Default Resource Group (`group_subclass: dcm_default`)**
-Built into DCM. The standard mechanism for grouping resources. No implementor customization required to use it.
+**Subclass 1 — the control plane Default Resource Group (`group_subclass: dcm_default`)**
+Built into the control plane. The standard mechanism for grouping resources. No implementor customization required to use it.
 
 **Subclass 2 — Custom Resource Group (`group_subclass: custom`)**
-Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with DCM Default Resource Groups in terms of DCM capabilities.
+Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with the control plane Default Resource Groups in terms of the control plane capabilities.
 
-Both subclasses implement the same interface. The DCM Default Resource Group is simply DCM's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
+Both subclasses implement the same interface. The control plane Default Resource Group is simply the control plane's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
 
 ### 3.3 The Resource Group Interface
 
-Every Resource Group — both DCM default and custom — must implement this interface:
+Every Resource Group — both the control plane default and custom — must implement this interface:
 
 ```yaml
 resource_group:
@@ -219,11 +219,11 @@ Tenant: Payments Platform
 
 ---
 
-## 4. DCM System Policies for Resource Grouping
+## 4. The control plane System Policies for Resource Grouping
 
 | Policy | Rule | Enforcement |
 |--------|------|-------------|
-| `GRP-001` | Every Resource/Service Entity must belong to exactly one DCM Tenant | Enforced at Entity creation |
+| `GRP-001` | Every Resource/Service Entity must belong to exactly one the control plane Tenant | Enforced at Entity creation |
 | `GRP-002` | A Resource/Service Entity cannot be removed from its Tenant without being transferred to another Tenant | Enforced at all lifecycle states |
 | `GRP-003` | *(pointer — not a separate rule)* Circular nesting is governed by `GRP-INV-005` ([Universal Group Model](universal-groups.md) §2.3), the single definition of the circular-membership invariant | Enforced at group membership modification (per GRP-INV-005) |
 | `GRP-004` | Custom Resource Groups must implement the full Resource Group Interface | Enforced at group registration |
@@ -231,9 +231,9 @@ Tenant: Payments Platform
 
 ---
 
-## 5. Grouping and DCM Capabilities
+## 5. Grouping and the control plane Capabilities
 
-Resource Groups enable the following DCM capabilities at the group scope:
+Resource Groups enable the following the control plane capabilities at the group scope:
 
 | Capability | Tenant | Resource Group |
 |------------|--------|---------------|
@@ -251,7 +251,7 @@ Resource Groups enable the following DCM capabilities at the group scope:
 
 Processes follow the same grouping rules as Resources:
 
-- Must belong to exactly one DCM Tenant — non-overridable
+- Must belong to exactly one the control plane Tenant — non-overridable
 - Can optionally belong to Resource Groups
 - Typically grouped under the same Deployment or Service group as the resources they operate on
 - Tenant membership ensures cost attribution for execution resources
@@ -261,7 +261,7 @@ Processes follow the same grouping rules as Resources:
 
 ## 7. Custom Resource Group Registration
 
-Implementors register custom Resource Group types as part of their DCM implementation. Custom group types must declare their full interface implementation:
+Implementors register custom Resource Group types as part of their the control plane implementation. Custom group types must declare their full interface implementation:
 
 ```yaml
 custom_group_type_registration:
@@ -286,7 +286,7 @@ custom_group_type_registration:
 
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
-| 1 | Should there be a DCM-maintained registry of well-known custom group types to encourage standardization? | Interoperability | ✅ Resolved — group_subclass open and advisory; community subclass catalog as non-authoritative reference; no validation or enforcement; see [universal-groups](universal-groups.md) (GRP-011) |
+| 1 | Should there be a control plane-maintained registry of well-known custom group types to encourage standardization? | Interoperability | ✅ Resolved — group_subclass open and advisory; community subclass catalog as non-authoritative reference; no validation or enforcement; see [universal-groups](universal-groups.md) (GRP-011) |
 | 2 | How does group membership interact with sovereignty — can a group span sovereignty boundaries? | Sovereignty model | ✅ Resolved — class-specific: tenant_boundary never cross-sovereignty (structural); resource_grouping permitted+policy restriction; policy_collection always permitted; composite governed by most restrictive member; see [universal-groups](universal-groups.md) (GRP-012) |
 | 3 | When a Tenant is decommissioned, what happens to its resources and group memberships? | Lifecycle management | ✅ Resolved — four-phase staged decommission: pre-validation → resource decommission → membership cleanup → audit archival; child groups must be resolved first; audit records never destroyed. Tenant **payload** data is erased by **crypto-shredding** (destroying the per-tenant key material — the top-rung `store_per_tenant_zone` / BYOK companion) or **exported on request** (GDPR Art. 17 erasure / Art. 20 portability), squaring data-subject rights with the immutable audit ledger; see [universal-groups](universal-groups.md) (GRP-013) and `docs/research/tenancy-model-prior-art.md` |
 | 4 | Should Resource Groups support time-bounded membership — a resource belongs to a group for a defined period? | Operational flexibility | ✅ Resolved — valid_from/expires_at already in Universal Group Model; on_expiry (remove/notify/suspend_member); Lifecycle Constraint Enforcer handles; MEMBERSHIP_EXPIRE audit record (MEMBER_REMOVE only on actual removal); see [universal-groups](universal-groups.md) (GRP-014) |
@@ -296,7 +296,7 @@ custom_group_type_registration:
 
 ## 9. Related Concepts
 
-- **DCM Tenant** — primary ownership boundary, mandatory for all entities
+- **the control plane Tenant** — primary ownership boundary, mandatory for all entities
 - **Resource/Service Entity** — the thing being grouped
 - **Policy Engine** — enforces grouping system policies and evaluates group-level organizational policies
 - **Cost Analysis** — rolls up costs through group hierarchies

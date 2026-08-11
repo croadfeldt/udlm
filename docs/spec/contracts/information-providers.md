@@ -14,7 +14,7 @@
 
 ## 1. Purpose
 
-An **Information Provider** is a registered DCM provider that serves as the authoritative source for a specific category of data that DCM needs to reference but does not own. It exposes external data to DCM through a standard interface, enabling DCM to look up, verify, and relate external records without caching or owning them.
+An **Information Provider** is a registered the control plane provider that serves as the authoritative source for a specific category of data that the control plane needs to reference but does not own. It exposes external data to the control plane through a standard interface, enabling the control plane to look up, verify, and relate external records without caching or owning them.
 
 In the unified provider model ([provider-contract.md](provider-contract.md) §8), an "Information Provider" is a provider that declares the **`serve_data`** capability — fixed provider *types* are superseded by capability declarations, and `serve_data` is the convenience label for the serve-authoritative-external-data capability profile. A provider MAY declare `serve_data` alongside others (e.g. an IPAM that both serves data and realizes resources). This document details the `serve_data` capability; it follows the same registration, health check, trust, and contract model as any provider — adapted where applicable to the lookup-only nature of information retrieval.
 
@@ -22,13 +22,13 @@ In the unified provider model ([provider-contract.md](provider-contract.md) §8)
 
 ## 2. Why Information Providers Exist
 
-DCM manages the lifecycle of resources it provisions. But resources exist in a broader organizational context — they are owned by business units, attributed to cost centers, associated with product owners, governed by regulatory scopes. This contextual data lives in authoritative external systems (HR systems, finance systems, CMDBs, ITSM tools) that DCM does not and should not own.
+The control plane manages the lifecycle of resources it provisions. But resources exist in a broader organizational context — they are owned by business units, attributed to cost centers, associated with product owners, governed by regulatory scopes. This contextual data lives in authoritative external systems (HR systems, finance systems, CMDBs, ITSM tools) that the control plane does not and should not own.
 
 Without a formal model for referencing external data, organizations face two bad choices:
-- **Copy the data into DCM** — creating duplication, staleness, and an ownership conflict with the authoritative system
+- **Copy the data into the control plane** — creating duplication, staleness, and an ownership conflict with the authoritative system
 - **Ignore the data** — losing business context, cost attribution, and compliance traceability
 
-Information Providers solve this by giving DCM a standard, stable, governed interface to external data without requiring ownership transfer.
+Information Providers solve this by giving the control plane a standard, stable, governed interface to external data without requiring ownership transfer.
 
 ---
 
@@ -49,13 +49,13 @@ All providers implement one unified base contract and declare **capabilities** r
 Information Providers follow the same provider contract model as Service Providers where applicable. The contract dimensions are:
 
 ### 4.1 Registration Contract
-Same model as Service Providers. Information Providers register with DCM declaring their endpoint, the information types they implement, their lookup capabilities, and their extended schema.
+Same model as Service Providers. Information Providers register with the control plane declaring their endpoint, the information types they implement, their lookup capabilities, and their extended schema.
 
 ### 4.2 Health Check Contract
-Same model as Service Providers. Information Providers expose a `/health` endpoint. DCM polls it on the same configurable interval. `Ready`/`NotReady` state machine applies. An `NotReady` Information Provider is excluded from lookups — relationships referencing it are flagged for on-demand verification fallback.
+Same model as Service Providers. Information Providers expose a `/health` endpoint. The control plane polls it on the same configurable interval. `Ready`/`NotReady` state machine applies. An `NotReady` Information Provider is excluded from lookups — relationships referencing it are flagged for on-demand verification fallback.
 
 ### 4.3 Trust Contract
-Same model as Service Providers. Information Providers must be registered, validated, and certified before DCM will accept their data. The chain of trust applies to data returned by Information Providers — provenance records the provider UUID for every field sourced from an Information Provider.
+Same model as Service Providers. Information Providers must be registered, validated, and certified before the control plane will accept their data. The chain of trust applies to data returned by Information Providers — provenance records the provider UUID for every field sourced from an Information Provider.
 
 ### 4.4 Capacity Contract
 Adapted for lookup capacity rather than resource provisioning capacity. Information Providers declare and report their query capacity — requests per second, rate limits, availability windows.
@@ -72,40 +72,40 @@ capacity_registration:
 ```
 
 ### 4.5 Lifecycle Event Contract
-Same model as Service Providers. Information Providers have a contractual obligation to notify DCM when records they have provided references for change status. DCM receives the notification and updates the external entity reference record accordingly.
+Same model as Service Providers. Information Providers have a contractual obligation to notify the control plane when records they have provided references for change status. The control plane receives the notification and updates the external entity reference record accordingly.
 
 **Reportable event types for Information Providers:**
 
-| Event Type | Description | DCM Response |
+| Event Type | Description | Control-plane response |
 |------------|-------------|--------------|
 | `RECORD_DEACTIVATED` | A referenced record has been deactivated | Update reference status, Policy Engine evaluation |
 | `RECORD_MERGED` | Two records merged — UUID may change | Update external_uuid in reference record |
 | `RECORD_SPLIT` | One record split into multiple | Policy Engine evaluation — which new record applies? |
 | `UUID_CHANGED` | Record UUID changed in external system | Update external_uuid, re-verify all references |
 | `DATA_UPDATED` | Standard field values changed | Update last_verified, notify relationships |
-| `PROVIDER_DEGRADED` | Provider is degraded but operational | DCM flags affected references for on-demand verification |
+| `PROVIDER_DEGRADED` | Provider is degraded but operational | The control plane flags affected references for on-demand verification |
 
 ### 4.6 Naturalization/Denaturalization Contract
-Information Providers translate their native data format (HR system JSON, finance system XML, LDAP records, REST APIs) into the DCM unified data model format. The translation is the provider's responsibility — DCM always receives data in DCM format.
+Information Providers translate their native data format (HR system JSON, finance system XML, LDAP records, REST APIs) into the control plane unified data model format. The translation is the provider's responsibility — the control plane always receives data in the control plane format.
 
 ---
 
 ## 5. Standard vs Extended Data
 
-### 5.1 Standard Data (DCM-defined)
+### 5.1 Standard Data (control-plane-defined)
 
-Fields that are part of the DCM-specified schema for an information type. DCM core uses these fields for lookups, relationship matching, policy evaluation, and display. They are portable across all implementations of that information type.
+Fields that are part of the control-plane-specified schema for an information type. The control plane core uses these fields for lookups, relationship matching, policy evaluation, and display. They are portable across all implementations of that information type.
 
-DCM only relies on standard data for operational decisions. Extended data is carried in the payload but is not used for DCM core operations.
+The control plane only relies on standard data for operational decisions. Extended data is carried in the payload but is not used for control-plane core operations.
 
 ### 5.2 Extended Data (organization-defined)
 
-Additional fields organizations add to enrich the standard schema for their specific needs. Declared in the provider's extended schema registration. DCM carries extended data in the payload for downstream consumers — policy engines, cost analysis tools, reporting — that know how to use them.
+Additional fields organizations add to enrich the standard schema for their specific needs. Declared in the provider's extended schema registration. The control plane carries extended data in the payload for downstream consumers — policy engines, cost analysis tools, reporting — that know how to use them.
 
 ```yaml
 # Standard + Extended data example — Business.BusinessUnit
 business_unit_record:
-  # Standard fields — DCM defined, used for lookups
+  # Standard fields — the control plane defined, used for lookups
   uuid: "bu-uuid-001"
   name: "Payments Platform"
   code: "BU-PAY"
@@ -126,20 +126,20 @@ business_unit_record:
 
 ## 6. Lookup Key Model
 
-DCM looks up external records using a stable primary key — always the external UUID where available — with a fallback chain for systems that don't support UUID-based lookup.
+The control plane looks up external records using a stable primary key — always the external UUID where available — with a fallback chain for systems that don't support UUID-based lookup.
 
 ### 6.1 External Entity Reference Structure
 
 ```yaml
 external_entity_reference:
   uuid: <dcm-generated uuid — stable internal anchor>
-  # DCM UUID is what gets stored in relationship declarations
+  # the control plane UUID is what gets stored in relationship declarations
   # If the external system changes its UUID, only this record changes
   # All relationships pointing to dcm-uuid remain valid
 
   external_uuid: <stable uuid from the external system>
   information_provider_uuid: <uuid of registered Information Provider>
-  information_type_uuid: <uuid of information type in DCM registry>
+  information_type_uuid: <uuid of information type in the control plane registry>
   information_type_name: Business.BusinessUnit
 
   lookup_method:
@@ -169,31 +169,31 @@ external_entity_reference:
     <standard provenance metadata>
 ```
 
-### 6.2 Why DCM UUID Wraps External UUID
+### 6.2 Why the control plane UUID Wraps External UUID
 
-The DCM-generated UUID is the stable internal anchor. This means:
-- All relationship declarations inside DCM reference the DCM UUID
+The control-plane-generated UUID is the stable internal anchor. This means:
+- All relationship declarations inside the control plane reference the control plane UUID
 - If the external system changes its UUID (migration, system upgrade), only the `external_entity_reference` record needs updating
-- All relationships pointing to the DCM UUID remain valid without modification
+- All relationships pointing to the control plane UUID remain valid without modification
 - The provenance chain tracks the change via the `UUID_CHANGED` lifecycle event
 
 ---
 
 ## 7. Three-Mode Verification Model
 
-DCM uses a trust-but-verify approach to external entity references. The external system is trusted as authoritative for the data — DCM does not validate content. But DCM verifies that references remain valid — the UUID still exists and the record is still active.
+The control plane uses a trust-but-verify approach to external entity references. The external system is trusted as authoritative for the data — the control plane does not validate content. But the control plane verifies that references remain valid — the UUID still exists and the record is still active.
 
-### 7.1 Mode 1 — Scheduled Verification (DCM-initiated)
+### 7.1 Mode 1 — Scheduled Verification (control-plane-initiated)
 
-DCM calls the Information Provider's `/verify/{uuid}` endpoint on a configurable schedule for all registered external entity references. Default frequency: configurable — suggested minimum twice daily. Updates `last_verified` and `verification_status`.
+The control plane calls the Information Provider's `/verify/{uuid}` endpoint on a configurable schedule for all registered external entity references. Default frequency: configurable — suggested minimum twice daily. Updates `last_verified` and `verification_status`.
 
 ### 7.2 Mode 2 — Provider Push (Information Provider obligation)
 
-The Information Provider notifies DCM when a referenced record changes status. This is a contractual obligation — same model as Service Provider lifecycle events. DCM receives the notification, updates the external entity reference, and the Policy Engine evaluates the appropriate response.
+The Information Provider notifies the control plane when a referenced record changes status. This is a contractual obligation — same model as Service Provider lifecycle events. The control plane receives the notification, updates the external entity reference, and the Policy Engine evaluates the appropriate response.
 
 ### 7.3 Mode 3 — On-Demand Verification (fallback)
 
-When a relationship involving an external entity reference is accessed during request processing, policy evaluation, or drift detection, DCM can verify the reference in real time before relying on it. Used when:
+When a relationship involving an external entity reference is accessed during request processing, policy evaluation, or drift detection, the control plane can verify the reference in real time before relying on it. Used when:
 - `last_verified` is beyond the acceptable staleness window
 - The operation requires high confidence
 - Scheduled verification returned `stale` or `unverifiable`
@@ -224,7 +224,7 @@ Policy Engine evaluates:
 
 ## 8. Information Type Registry
 
-Information types live in the same DCM Resource Type Registry as Resource Types, distinguished by category prefix. Same versioning, same deprecation model, same governance.
+Information types live in the same the control plane Resource Type Registry as Resource Types, distinguished by category prefix. Same versioning, same deprecation model, same governance.
 
 ### 8.1 Standard Information Type Categories
 
@@ -235,7 +235,7 @@ Information types live in the same DCM Resource Type Registry as Resource Types,
 | `Compliance.*` | Regulatory and compliance data | RegulatoryScope, AuditFramework |
 | `Operations.*` | Operational reference data | Runbook, SLA, SupportContract |
 
-### 8.2 DCM Default Information Types
+### 8.2 the control plane Default Information Types
 
 ```yaml
 # Business.BusinessUnit
@@ -360,7 +360,7 @@ information_provider_registration:
 
   attestation:
     # attestation EVIDENCE — same model as provider-contract.md §2. Trust is NOT self-declared:
-    # trust_posture is DCM-assigned in the registration verdict, not stated here (DCM ADR-022).
+    # trust_posture is control-plane-assigned in the registration verdict, not stated here (DCM ADR-022).
     <same evidence model as Service Providers>
 
   health_check:
@@ -391,13 +391,13 @@ All Information Providers must implement these endpoints as part of their provid
 | `GET` | `/lookup/{uuid}` | Returns standard + extended data for a record by external UUID |
 | `GET` | `/verify/{uuid}` | Lightweight — confirms UUID exists and is active |
 | `POST` | `/search` | Finds records matching standard field criteria (fallback lookup) |
-| `POST` | `/notify` | DCM calls this to acknowledge receipt of provider push events |
+| `POST` | `/notify` | The control plane calls this to acknowledge receipt of provider push events |
 
 ---
 
 ## 11. Internally Owned Business Data
 
-When an organization decides to manage business context data in DCM rather than reference an external system, they define it as a DCM Resource Type in the `Business.*` or custom category. Internally owned business data follows the **standard resource entity model** exactly:
+When an organization decides to manage business context data in the control plane rather than reference an external system, they define it as a control plane Resource Type in the `Business.*` or custom category. Internally owned business data follows the **standard resource entity model** exactly:
 
 - Has a UUID
 - Has a Resource Type (`Business.BusinessUnit`, `Business.CostCenter`, etc.)
@@ -418,22 +418,22 @@ This means an organization can start with an external Information Provider refer
 | # | Question | Impact | Status |
 |---|----------|--------|--------|
 | 1 | How are conflicting provider push events handled — two Information Providers claim authority for the same record? | Data integrity | ✅ Resolved — authority_level (primary/secondary/advisory) + authority_scope; conflict_resolution strategies; ingestion-time conflict detection; conflict records; see doc 21 (INF-001) |
-| 2 | Should Information Providers support write-back — DCM updating external records via the provider? | Scope expansion | ✅ Resolved — optional declared capability; policy-triggered write-back; audit records produced; credentials via credential management service; see doc 21 (INF-002) |
+| 2 | Should Information Providers support write-back — the control plane updating external records via the provider? | Scope expansion | ✅ Resolved — optional declared capability; policy-triggered write-back; audit records produced; credentials via credential management service; see doc 21 (INF-002) |
 | 3 | How is the extended schema versioned — if a provider adds or removes extended fields, how are existing references affected? | Versioning | ✅ Resolved — semver semantics on extended schema; field removal/type change = major; new optional field = minor; migration plan required for major bumps; see doc 21 (INF-003) |
-| 4 | Should DCM maintain a registry of well-known Information Providers (HR systems, finance systems) to simplify onboarding? | Adoption | ✅ Resolved — three-tier Information Provider Registry (Core/Community/Organization); same governance model as Resource Type Registry; separate registries; see doc 21 (INF-004) |
+| 4 | Should the control plane maintain a registry of well-known Information Providers (HR systems, finance systems) to simplify onboarding? | Adoption | ✅ Resolved — three-tier Information Provider Registry (Core/Community/Organization); same governance model as Resource Type Registry; separate registries; see doc 21 (INF-004) |
 | 5 | How does the verification model interact with air-gapped environments where Information Providers may be unreachable? | Sovereignty | ✅ Resolved — three air-gap modes: pre-verified signed bundle, internal mTLS, periodic online re-verification with cached tokens; profile-governed cache expiry (prod/fsi/sovereign=suspend on expiry); see doc 21 (INF-005) |
 
 ---
 
 ## 13. Related Concepts
 
-- **External Entity Reference** — the stable pointer record DCM uses to reference external data
+- **External Entity Reference** — the stable pointer record the control plane uses to reference external data
 - **Entity Relationships** — the universal relationship model that uses Information Provider references
 - **Service Provider** — counterpart provider type for resource provisioning
 - **Resource Type Registry** — the unified registry containing both Resource Types and Information Types
 - **Trust Contract** — the provider trust model shared across all provider types
-- **Naturalization/Denaturalization** — translation between external native format and DCM unified format
+- **Naturalization/Denaturalization** — translation between external native format and the control plane unified format
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*

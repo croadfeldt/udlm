@@ -26,7 +26,7 @@
 > binding⊆depends_on ordering). Worked example:
 > [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml).
 
-> A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary DCM policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is DCM's standard machinery.
+> A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary the control plane policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is the control plane's standard machinery.
 
 ---
 
@@ -41,20 +41,20 @@ A Composite Service is a **catalog-level definition** that declares:
 3. Their delivery requirements (required, partial, optional)
 4. Which provider fulfills each one
 
-DCM uses that declaration to:
+The control plane uses that declaration to:
 
 1. **Select appropriate constituent providers** via the standard placement
 2. **Determine execution order** from the dependency graph
 3. **Govern rehydration sequence** using the same dependency information
 
-A Service Provider that registers a Composite Service operates as a standard Service Provider for each constituent resource type it owns (those flagged `provided_by: self`). DCM's standard machinery handles everything else: placement, sequencing, failure handling, compensation, and audit.
+A Service Provider that registers a Composite Service operates as a standard Service Provider for each constituent resource type it owns (those flagged `provided_by: self`). The control plane's standard machinery handles everything else: placement, sequencing, failure handling, compensation, and audit.
 
 **A Composite Service is not an orchestrator.** Its definition does not:
 - Select constituent providers — the placement does this
-- Sequence execution rounds — the dependency graph informs DCM's Orchestration Flow Policy
+- Sequence execution rounds — the dependency graph informs the control plane's Orchestration Flow Policy
 - Manage parallel execution — parallelism is derived from the dependency graph (resources with no unresolved dependencies execute simultaneously)
-- Run compensation — DCM's Recovery Policy executes compensation using the dependency graph in reverse
-- Make routing decisions — these are DCM policy decisions
+- Run compensation — the control plane's Recovery Policy executes compensation using the dependency graph in reverse
+- Make routing decisions — these are the control plane policy decisions
 
 ### 1.2 Applications Are Composite Catalog Items
 
@@ -124,14 +124,14 @@ Field semantics:
 
 Two values:
 
-- **`self`** — The registering provider fulfills this constituent directly. At dispatch time, DCM sends a standard constituent payload to this provider's standard Services API endpoint. The provider returns a standard realized state. There is no special "composite dispatch" protocol — the provider receives one constituent's payload, just as it would for any standalone request for that resource type.
+- **`self`** — The registering provider fulfills this constituent directly. At dispatch time, the control plane sends a standard constituent payload to this provider's standard Services API endpoint. The provider returns a standard realized state. There is no special "composite dispatch" protocol — the provider receives one constituent's payload, just as it would for any standalone request for that resource type.
 - **`external`** — placement selects an eligible provider for this constituent at request time. Sovereignty filtering, accreditation checking, and trust scoring all apply normally. The Composite Service definition has no influence on this selection.
 
 A single Composite Service can mix `self` and `external` constituents freely.
 
 ### 2.3 Dependency Graph
 
-DCM constructs a directed acyclic graph from the `depends_on` declarations. Constituents with no unresolved dependencies execute concurrently within DCM's standard pipeline. Each dependency edge encodes that the source constituent's realized state must exist before the target constituent can be dispatched.
+The control plane constructs a directed acyclic graph from the `depends_on` declarations. Constituents with no unresolved dependencies execute concurrently within the control plane's standard pipeline. Each dependency edge encodes that the source constituent's realized state must exist before the target constituent can be dispatched.
 
 The dependency graph drives:
 - **Forward execution** — constituent dispatch order during request fulfillment
@@ -139,7 +139,7 @@ The dependency graph drives:
 - **Rehydration order** — dependency-forward during rehydration
 - **Decommission cascade** — dependency-reverse during decommission
 
-DCM detects cycles at registration time and rejects the composition definition.
+The control plane detects cycles at registration time and rejects the composition definition.
 
 ### 2.4 required_for_delivery Classification
 
@@ -149,7 +149,7 @@ Each constituent declares how its failure affects the composite outcome:
 - **`partial`** — Failure is recorded but does not halt the composite. Composite status becomes `DEGRADED`. Whether DEGRADED is acceptable as a final state is a profile-level decision.
 - **`optional`** — Failure is noted but ignored. Composite status reflects only required and partial constituents.
 
-These classifications are evaluated by DCM, not by the registering provider, when computing composite status from constituent outcomes.
+These classifications are evaluated by the control plane, not by the registering provider, when computing composite status from constituent outcomes.
 
 ### 2.4a Compensation Declaration (the one home)
 
@@ -195,7 +195,7 @@ not compensation-triggering — their failure yields a `DEGRADED` composite (§2
 
 ### 2.5 Interop — the control plane's catalog model
 
-The field-by-field cross-walk to the DCM control plane's own catalog model lives with that control
+The field-by-field cross-walk to the control plane control plane's own catalog model lives with that control
 plane: `dcm/docs/specifications/dcm-composite-orchestration.md`. Projection is lossless downward
 (data-model-core §4) — a UDLM catalog item compiles onto their execution DAG; the reverse is lossy,
 which is why the typed form is the data model and their DAG is a compiled artifact at the boundary.
@@ -204,7 +204,7 @@ which is why the typed form is the data model and their DAG is a compiled artifa
 
 ## 3. Composite Entity — Four-State Representation
 
-A Composite Service request produces a Composite Entity that exists across all four DCM states (Intent, Requested, Realized, Discovered) as a single entity with one UUID.
+A Composite Service request produces a Composite Entity that exists across all four the control plane states (Intent, Requested, Realized, Discovered) as a single entity with one UUID.
 
 ### 3.1 Intent State
 
@@ -221,7 +221,7 @@ parameters:
 
 ### 3.2 Requested State
 
-Requested expands the intent: DCM applies the Composite Service definition, runs the layer assembly to inject defaults and standards, applies all policies, resolves `external` placements, and produces the full constituent block.
+Requested expands the intent: the control plane applies the Composite Service definition, runs the layer assembly to inject defaults and standards, applies all policies, resolves `external` placements, and produces the full constituent block.
 
 ```yaml
 # shape: Composite — derived (has_constituents, from constituents[] below)
@@ -268,7 +268,7 @@ Discovered State for a Composite Entity is derived: there is no provider-side "d
 
 ---
 
-## 4. What DCM does with a composite
+## 4. What the control plane does with a composite
 
 Expansion, placement of `external` constituents, dispatch sequencing, status computation,
 compensation and audit aggregation are the control plane's, and are specified there:
@@ -286,9 +286,9 @@ A Composite Service registration declares its `composition_visibility`:
 
 | Mode | Meaning |
 |------|---------|
-| `opaque` | Only the Composite Entity UUID is exposed to consumers. Constituent UUIDs exist internally for DCM bookkeeping but are not surfaced. Status reporting reports composite-level state only. |
-| `transparent` | All constituents are first-class DCM entities with their own UUIDs, queryable individually. Constituent state is surfaced in status reporting. |
-| `selective` | A declared subset of constituents are surfaced as DCM entities; the remainder are opaque. Useful when some constituents are implementation detail and others are operationally relevant. |
+| `opaque` | Only the Composite Entity UUID is exposed to consumers. Constituent UUIDs exist internally for the control plane bookkeeping but are not surfaced. Status reporting reports composite-level state only. |
+| `transparent` | All constituents are first-class the control plane entities with their own UUIDs, queryable individually. Constituent state is surfaced in status reporting. |
+| `selective` | A declared subset of constituents are surfaced as the control plane entities; the remainder are opaque. Useful when some constituents are implementation detail and others are operationally relevant. |
 
 Visibility affects:
 - Status reporting: per-constituent state is surfaced for transparent and (selectively) for selective; not for opaque
@@ -309,7 +309,7 @@ In opaque and selective modes, internal-only constituent UUIDs follow the same r
 
 ### 5.2 Decommission Cascade
 
-A composite decommission triggers per-constituent decommission in dependency-reverse order. DCM dispatches standard decommission calls to each constituent's provider (the registering provider for `self` constituents, the placed provider for `external` constituents). Decommission failures invoke standard Recovery Policy.
+A composite decommission triggers per-constituent decommission in dependency-reverse order. The control plane dispatches standard decommission calls to each constituent's provider (the registering provider for `self` constituents, the placed provider for `external` constituents). Decommission failures invoke standard Recovery Policy.
 
 In transparent or selective mode, a constituent can be decommissioned independently of the composite, but only if the constituent's `required_for_delivery` is `optional`. Decommissioning a `required` constituent independently is rejected; the composite must be decommissioned as a whole.
 
@@ -389,7 +389,7 @@ Compensation in nested composites runs bottom-up: the innermost composite compen
 
 ## 9. Scoring Model Integration
 
-The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see the DCM architecture documentation).
+The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate scores as its *weakest* constituent, so a composite with one strong and one weak constituent is not preferred over a single-resource provider that scores well on the actually-needed resource. How scores are computed — the placement scoring function, and the fact that an `external` constituent's contribution reflects current placement state — is implementation concern (see the control plane architecture documentation).
 
 ---
 
@@ -482,9 +482,9 @@ producer re-versions — would make the catalog's contents depend on when they w
 | Policy | Rule |
 |--------|------|
 | `CMP-001` | A Composite Service's `self` constituents are dispatched using the standard Services API. The registering provider receives a standard constituent payload and returns a standard realized state. No special dispatch protocol exists for composite constituents. |
-| `CMP-002` | Constituent execution ordering is derived from the `depends_on` declaration by DCM. The registering provider does not sequence constituent dispatch. |
-| `CMP-003` | Parallelism in constituent execution is derived from the dependency graph. Constituents with no unresolved dependencies execute concurrently within DCM's standard pipeline. The registering provider does not manage this. |
-| `CMP-004` | Composite status determination (`OPERATIONAL` / `DEGRADED` / `FAILED`) is performed by DCM based on constituent outcomes and `required_for_delivery` classifications. |
+| `CMP-002` | Constituent execution ordering is derived from the `depends_on` declaration by the control plane. The registering provider does not sequence constituent dispatch. |
+| `CMP-003` | Parallelism in constituent execution is derived from the dependency graph. Constituents with no unresolved dependencies execute concurrently within the control plane's standard pipeline. The registering provider does not manage this. |
+| `CMP-004` | Composite status determination (`OPERATIONAL` / `DEGRADED` / `FAILED`) is performed by the control plane based on constituent outcomes and `required_for_delivery` classifications. |
 | `CMP-005` | Recovery Policy governs all constituent failure handling and compensation. The Composite Service definition does not make recovery decisions. The registering provider implements standard decommission handling for `self` constituents when a decommission payload arrives. |
 | `CMP-006` | `provided_by: external` constituents are placed by the placement using standard placement rules. The Composite Service definition does not influence external constituent provider selection. |
 | `CMP-007` | In transparent composition visibility mode, constituent entity UUIDs are `deterministic_uuid(parent_composite_uuid + component_id)` — stable across rehydration. |
