@@ -4,7 +4,7 @@
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-P1..P5`, to which this adds `PROJ-P6`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
-dual anchor); ADR-025 (DCM implementation); ADR-008 (the UDLM/DCM peer test); ADR-011 (sovereignty & residency);
+dual anchor); ADR-025 (the control plane implementation); ADR-008 (the the substrate and its control plane peer test); ADR-011 (sovereignty & residency);
 `docs/spec/contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
 
@@ -86,7 +86,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
    - **Re-convergence (the outer loop).** Policy is a *settled state over inputs*; when an input changes it must
      re-establish. **Provenance the policy's inputs** (not only spec values): recording each `policy → datum`
      dependency makes that dependency set a **subscription**. A change fires the **same `impact_report` graph** —
-     extended to find affected **policies**, not only affected specs — which re-evaluate. Push or pull is a DCM
+     extended to find affected **policies**, not only affected specs — which re-evaluate. Push or pull is a control plane
      implementation choice; the contract only requires the policy→data edges be recorded.
    - **Re-entrant convergence (the inner loop).** Policy application is a **fixpoint, not a single pass**:
      policies **enrich** (looked-up/projected data), **inject** (layer data, defaults), and **mutate** (modify
@@ -139,8 +139,8 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
 - **Provider** — the endpoints a flow crosses to/from; implementation honors the disposition (released / redacted /
   denied) the guard emits.
 
-## UDLM vs DCM — what lands where (the peer test, ADR-008)
-| Piece | **UDLM** — model / grammar / data (a peer MUST honor) | **DCM** — engine / decision (a peer MAY differ) |
+## UDLM vs the control plane — what lands where (the peer test, ADR-008)
+| Piece | **UDLM** — model / grammar / data (a peer MUST honor) | **the control plane** — engine / decision (a peer MAY differ) |
 |---|---|---|
 | **The firewall contract** | flow as the unit; the structural + value match surfaces; the reference/edge graph as a match source | the enforcement engine at each crossing |
 | **Directional mediation** | the egress/ingress **structure**, owners, and required-both rule | which gate fires, the actual release/admit decision |
@@ -150,7 +150,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
 | **Invariants** | `PROJ-P1..P6` (what must hold) | enforcing them at realization |
 
 **One line:** UDLM owns the **firewall contract** — the surfaces, the directional structure, the invariants, the
-guard grammar; DCM owns the **engine** — the resolver, the reactive re-convergence, and enforcement at each
+guard grammar; the control plane owns the **engine** — the resolver, the reactive re-convergence, and enforcement at each
 crossing.
 
 ## Options considered

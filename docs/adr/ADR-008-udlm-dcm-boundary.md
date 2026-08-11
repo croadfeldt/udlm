@@ -6,6 +6,16 @@
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** the UDLM/DCM split (this ADR is its decision-of-record home); `CONFORMANCE.md`; ADR-002 (adopt-by-reference); `docs/spec/principles/core-tenets.md` (T5); ADR-005 §5 (cross-peer federation)
 ## Context
 
+**This ADR names DCM throughout, and that is not the defect IMP-001 exists to catch.** It is the
+decision record of a specific historical act: one repository, holding two things that changed at
+different rates, was split. DCM is the party that did the splitting, and the *peer test* below needs
+a concrete implementation to be applied against — a boundary drawn against "some implementation" is
+not a boundary, it is a preference. Generalizing this document would erase what it decides.
+
+What the ADR produces is neutral even though the record is not: the test yields a substrate every
+peer must honor and an implementation layer any peer may differ on. Read every "DCM" below as *the
+implementation that occasioned this split* — the conclusions bind any implementation equally.
+
 DCM has kept two things that change for different reasons, and at different rates, in one repository:
 
 - a universal **substrate** — the entity types, the four-state lifecycle, the provider/policy/event/data-store contracts, provenance, identity, conformance; and

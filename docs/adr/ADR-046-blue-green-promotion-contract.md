@@ -25,14 +25,14 @@ mechanically comparable on them.
 ## Decision
 
 **The boundary first (ADR-008 peer test, ruled 2026-07-25): the information lives in UDLM;
-the decision, approach, and mechanisms belong in DCM.** What this ADR binds is the **evidence
+the decision, approach, and mechanisms belong in the control plane.** What this ADR binds is the **evidence
 contract** — the model surfaces below (comparable declared outputs, the promotion-evidence
 record, the finding-routing record, the same-corpus-ref rule, volatile-output declaration) and
 the invariant that promotion happens on evidence, never on version claims. **Blue/green is the
 reference approach**, worked through here because it exercises every surface — it is not the
 required mechanism. Canary, shadow, staged, or an organization's own approach complies
 identically so long as it produces and consumes these evidence surfaces; choosing among them
-is a DCM-side decision under the estate's policies, exactly as the operational response
+is a control plane-side decision under the estate's policies, exactly as the operational response
 matrix's open taxonomy treats every other response.
 
 **Re-pins promote on evidence, not version claims.** The contract, in its reference form:

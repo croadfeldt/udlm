@@ -14,7 +14,7 @@ vocabulary (capability-discovery.md §2 — a provider declares capabilities, no
 InfoBlox IPAM both serves data AND provisions, so a single system with two capabilities must
 not register twice). Two gaps remain. FIRST, the legacy type names
 (Storage/Service/Information/Auth Provider) still appear as first-class TYPES in places —
-storage-providers.md calls a Storage Provider 'the fourth formal DCM provider type … one of
+storage-providers.md calls a Storage Provider 'the fourth formal the control plane provider type … one of
 eleven'; provider-contract.md keeps a 'Provider Type Registry' and a provider_type_id; and the
 Governance Matrix still matches on target.type (policy-evaluation.md:43). The migration is
 half-done, so the mutually-exclusive-type bug the unified model rejected still lives in the

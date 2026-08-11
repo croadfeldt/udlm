@@ -13,7 +13,7 @@ window, and the complete permutation matrix). The corpus that measures it:
 exemplar of. ADR-011 (validate-and-reserve) — the reservation law the request nature stands on.
 `docs/spec/foundations/service-dependencies.md`, ADR-027 (`dependencies[].strength`) — the edge the new attribute
 rides. ADR-048 (staleness verdicts derived, never stored) — the pattern the status classification
-copies. ADR-008 — the UDLM/DCM boundary.
+copies. ADR-008 — the the substrate and its control plane boundary.
 
 ## Context
 
@@ -59,13 +59,13 @@ transitively and the block cascades the chain. The seven are confirmed and compl
 (the request gave up) stays distinct from `dependency-cancelled` (cancelled because a dependency
 was) — different provenance, and the surfacing contract (§4) must name the root.
 
-**3. The default window is defer (converge); the give-up bound is DCM policy.** The window `w` is an
+**3. The default window is defer (converge); the give-up bound is control-plane policy.** The window `w` is an
 intent field: `w=0` fail-fast, `w=N` converge-then-give-up, `w=∞` defer. Unstated, the default is
 **defer** — converge-by-default removes toil, and it is safe here because surfacing is mandatory (§4)
 so a deferring member is never silent (it reports `converging`/`blocked-transient` naming its root
 the whole time). Fail-fast stays available explicitly; a profile may set a different default. UDLM
 does *not* pick a wall-clock bound — a time value would violate T3 and is per-provider runtime — so
-the `N` bound and what give-up executes are DCM policy.
+the `N` bound and what give-up executes are control-plane policy.
 
 **4. The surfacing contract — name the root, always.** An unsatisfiable intent MUST be surfaced, not
 left as a silent field. A transient block surfaces as a *warning*; a permanent refusal as a
@@ -80,9 +80,9 @@ intent-layer atomicity (hold-all/cancel-all from one binding); `operational` = r
 functional coupling (directional cascade, independents proceed). Ratified as stated. No `atomic` flag
 and no `best_effort`/`all_or_nothing` axis exists anywhere in either project.
 
-## The UDLM / DCM boundary (ADR-008)
+## The UDLM / the control plane boundary (ADR-008)
 
-| UDLM — data + contracts | DCM — operationalize, via policies |
+| UDLM — data + contracts | The control plane — operationalize, via policies |
 |---|---|
 | the `nature` on the edge (`request`\|`operational`) — the one new field; `strength` (exists) | the reconciler walking the graph in convergence order (`reserve → recompute-dependents`, exists) |
 | the derived convergence-status vocabulary (§2) and its computation | the cancellation / rollback / cascade execution; the window `N` value and cascade-vs-hold choice |
@@ -102,7 +102,7 @@ overrule the DAV precision fixture independently caught the analyzer making.
 
 ## What this does not decide
 
-DCM's policy defaults (the `N` value, cascade-vs-hold per domain) are DCM's by the boundary; the
+The control plane's policy defaults (the `N` value, cascade-vs-hold per domain) are the control plane's by the boundary; the
 JSON-Schema shape of `nature` and the window field follows as an implementing PR against
 `docs/spec/foundations/service-dependencies.md` once ratified.
 

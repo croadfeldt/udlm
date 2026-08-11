@@ -15,7 +15,7 @@ trade-off is the same **portability-by-scope** it has in the data-element domain
 ([ADR-038](ADR-038-scoped-resource-type-classes.md)). Putting the *stance* in a profile rather than the data
 applies the established **strictness-is-Policy** pattern ([ADR-025 §6](README.md),
 [`DPO-001`](../spec/principles/design-priorities.md)); *deriving* the property rather than storing it follows
-[ADR-027](ADR-027-entity-family-model.md)'s addendum discipline. The **DCM implementation** belongs on the
+[ADR-027](ADR-027-entity-family-model.md)'s addendum discipline. The **the control plane implementation** belongs on the
 control-plane side — **DCM ADR-021** (adopting external standards) + `adopted-standards-dcm.md`. Throughout,
 [core-tenets **T5**](../spec/principles/core-tenets.md) (adopt outward) and the standing directive: UDLM is an
 **enablement** substrate, not an arbiter.
@@ -89,7 +89,7 @@ Applied to the case that prompted this:
   advice**; the pattern is *how* a strict estate would later opt into enforcing it **on itself** — once a UC
   exists.
 - **When a consumer appears**, nothing new is invented: `neutrality` derives from the register's existing `Body:`
-  (no new store); the stance is a profile setting; the DCM implementation is control-plane (**DCM ADR-021**, Related)
+  (no new store); the stance is a profile setting; the control plane implementation is control-plane (**DCM ADR-021**, Related)
   — evaluate at the contribution pipeline. **No new rule family, no new primitive, no new store** (defines no
   `PREFIX-NNN` rules).
 - **If no consumer ever appears**, the ADR still earns its keep: it prevents the recurring wrong-turn (an

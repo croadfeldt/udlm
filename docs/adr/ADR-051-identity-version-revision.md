@@ -119,7 +119,7 @@ change, so the canonical reference shape moves a single MINOR instead of two.
 - **Data (UDLM):** the three fields and their meanings — frozen uuid, published version,
   recorded digest — plus the pin grammar, the family rule, and the manifest/provenance
   carriers. All of it is portable record shape.
-- **Policy (DCM):** what to do about distance — pin resolution, debt enumeration, promotion
+- **Policy (the control plane):** what to do about distance — pin resolution, debt enumeration, promotion
   on evidence (ADR-046), and whether a profile demands digest pins. The registry records;
   the estate decides.
 - **Provider:** providers and capabilities keep frozen identities their accreditations can
@@ -140,4 +140,4 @@ change, so the canonical reference shape moves a single MINOR instead of two.
 - Two families mean two evolution idioms to know, not one — the cost of no longer pretending
   a ledger entry and a type spec change the same way.
 - Follow-ups explicitly out of scope: handle renames as identity events (the manifest keeps
-  stranded entries until a declaration mechanism exists), and the DCM-repo alignment wave.
+  stranded entries until a declaration mechanism exists), and control-plane-repo alignment wave.

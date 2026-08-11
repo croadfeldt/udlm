@@ -2,13 +2,13 @@
 
 **Status:** Proposed (2026-07-15)
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (UDLM/DCM boundary — "could a peer differ? yes → DCM"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `docs/spec/foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (the substrate and its control plane boundary — "could a peer differ? yes → the control plane"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `docs/spec/foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).
 
 ## Context
 
 Settings — profile-governed values, thresholds, toggles — were scattered across docs and **restated wherever a doc branched on them**, and they drifted (A5: the interaction-credential lifetime was defined two different ways). The single-source guard catches a duplicate **rule-ID**, but a duplicate **value table** has no ID, so this class kept recurring.
 
-The deeper issue: a "setting" is not just a value. From the **data model** it is a *parameter + allowed values + rule*. But **operating** it pulls in configuration, usability, enforcement, and enablement — implementation concerns. And in practice settings want to be **grouped and composed** (base defaults, per-module settings, profile overlays, org/tenant overrides), not managed one scattered value at a time. UDLM needs one model for *defining* settings and one for *managing* them, on the right side of the UDLM/DCM boundary.
+The deeper issue: a "setting" is not just a value. From the **data model** it is a *parameter + allowed values + rule*. But **operating** it pulls in configuration, usability, enforcement, and enablement — implementation concerns. And in practice settings want to be **grouped and composed** (base defaults, per-module settings, profile overlays, org/tenant overrides), not managed one scattered value at a time. UDLM needs one model for *defining* settings and one for *managing* them, on the right side of the the substrate and its control plane boundary.
 
 ## Decision
 
@@ -82,21 +82,21 @@ Step 2 orders *tiers*; ordering **within** one tier is ADR-047 — same-tier com
 
 That is what makes precedence *effective* rather than merely ordered: the setting says how far down it may be pushed and in which direction; each overlay says which slice of the estate it is; the resolver matches, orders, and composes.
 
-**Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `scope` (the filter's coordinates) and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given scope — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `docs/spec/contracts/policy-contract.md`), enforced by DCM at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.
+**Authorization is Policy / RBAC's, not the settings data model's.** The declarations above make an override *addressable and bounded* — a change targets a `scope` (the filter's coordinates) and is bounded by the setting's ceiling + direction. **Who is permitted to write an overlay at a given scope — who may set a tenant value, who may tighten a domain floor, who may touch the platform base — is a Policy / RBAC decision** (`RBAC-001`, `docs/spec/contracts/policy-contract.md`), enforced by the control plane at set time, not encoded in the setting or the bundle. This is the ADR-008 boundary: a peer MAY authorize the *who* differently and stay conformant; what it may not differ on is the coordinates and the composition contract. The data model bounds *what and where*; RBAC governs *who*.
 
-### 3. UDLM defines; DCM manages — the four faces of a setting
+### 3. UDLM defines; the control plane manages — the four faces of a setting
 
-UDLM's job ends at the setting's **definition** + the **bundle structure** + the **composition rule**. Operating a setting is **DCM's**, across four faces:
+UDLM's job ends at the setting's **definition** + the **bundle structure** + the **composition rule**. Operating a setting is **the control plane's**, across four faces:
 
 | Face | Whose | What it is |
 |------|-------|-----------|
 | **Definition** | **UDLM (Data)** | the parameter, values, rule, conformity, profile-governance, defaults |
-| **Configuration** | **DCM** | how a value is set + the override precedence that resolves the *effective* value from the bundles |
-| **Usability** | **DCM** | how the setting is projected to a user — the config interface (`provider-contract.md §1a.3` config-projection) |
-| **Enforcement** | **DCM** | where/how the effective value is applied — the boundary/gate that reads it |
-| **Enablement** | **DCM** | whether the setting is active/admitted — default-deny-style availability, feature gating |
+| **Configuration** | **the control plane** | how a value is set + the override precedence that resolves the *effective* value from the bundles |
+| **Usability** | **the control plane** | how the setting is projected to a user — the config interface (`provider-contract.md §1a.3` config-projection) |
+| **Enforcement** | **the control plane** | where/how the effective value is applied — the boundary/gate that reads it |
+| **Enablement** | **the control plane** | whether the setting is active/admitted — default-deny-style availability, feature gating |
 
-UDLM supplies the **data primitives** DCM's four faces rest on — a setting declares its `scope`, precedence-eligibility, an enforcement-point reference, and an enablement gate — but a peer MAY implement configuration, usability, enforcement, and enablement **differently and still be conformant** (ADR-008: could a peer differ? yes → DCM). What a peer may **not** differ on is the definition + the composition contract (or the effective value diverges and portability breaks).
+UDLM supplies the **data primitives** the control plane's four faces rest on — a setting declares its `scope`, precedence-eligibility, an enforcement-point reference, and an enablement gate — but a peer MAY implement configuration, usability, enforcement, and enablement **differently and still be conformant** (ADR-008: could a peer differ? yes → the control plane). What a peer may **not** differ on is the definition + the composition contract (or the effective value diverges and portability breaks).
 
 ### 4. Single-source — and now enforced for value tables too
 
@@ -107,21 +107,21 @@ Each setting is **defined once**, in its owning bundle/module doc; the effective
 
 ## Rule of thumb
 
-> **Define the setting once (UDLM); compose it in a bundle; let DCM configure, surface, enforce, and enable it.** A per-profile value table lives in exactly one bundle — everywhere else references it.
+> **Define the setting once (UDLM); compose it in a bundle; let the control plane configure, surface, enforce, and enable it.** A per-profile value table lives in exactly one bundle — everywhere else references it.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the setting definition, the bundle structure, the composition/precedence rule.
-- **Policy (DCM/org):** which optional settings are *required* in a context; the org/tenant overlay bundles; and **RBAC governs *who* may write an overlay at a given scope** (`RBAC-001`) — the data model bounds *what/where* (the scoping filter), policy authorizes *who* (§2a).
+- **Policy (the control plane/org):** which optional settings are *required* in a context; the org/tenant overlay bundles; and **RBAC governs *who* may write an overlay at a given scope** (`RBAC-001`) — the data model bounds *what/where* (the scoping filter), policy authorizes *who* (§2a).
 - **Provider:** declares which settings it honors and their supported values (like `adopted_standard_support`).
 
 ## Options considered
 - **Status quo — settings per doc, restated** — rejected: it is the drift this fixes (A5).
 - **A flat global settings registry** — rejected: settings are naturally grouped (module, profile) and composed; a flat list loses the bundle structure and the precedence semantics teams actually manage by.
-- **Config bundles over the existing layer model + UDLM/DCM four-face split** — **chosen.** Reuses layering, formalizes profiles as one bundle kind, and puts each concern on the right side of the boundary.
+- **Config bundles over the existing layer model + the substrate and its control plane four-face split** — **chosen.** Reuses layering, formalizes profiles as one bundle kind, and puts each concern on the right side of the boundary.
 
 ## Consequences
 - Settings stop drifting: one definition, composed bundles, a guard that now sees value tables.
 - Profiles are formally **one bundle kind** — aligns and reuses ADR-007 (composed sets).
 - No new composition machinery — it is the layer/assembly model.
-- DCM gets a clear **four-face** contract for settings management resting on UDLM primitives.
+- the control plane gets a clear **four-face** contract for settings management resting on UDLM primitives.
 - **Migration:** existing scattered profile tables collapse to their owning bundle + a reference. The dedup PRs already began this; **A5 is the worked case** (the accreditation-matrix table now references `credentials.md §12.1`).

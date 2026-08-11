@@ -14,7 +14,7 @@ derived capability categories. But a declaration is only a CLAIM of ability — 
 not, merely by declaring a capability, be permitted to USE it. Platform admins need to
 disposition each declared capability/category, per provider: pending → approved | provisional
 | denied, with optional SCOPE (admit a verb only over some domains/tenants/zones). Three
-parallel research sweeps (UDLM machinery, DCM RBAC/workflows, external prior art), citations
+parallel research sweeps (UDLM machinery, the control plane RBAC/workflows, external prior art), citations
 verified, found the substrate already holds almost every part: the 'effective = declared ∩
 permitted' intersection (effective_accepts_roles; data-roles.md 'delivered = accepts_roles ∩
 Governance-Matrix-permitted … never widen beyond'; federation provisional 'cannot exceed
@@ -77,7 +77,7 @@ an independent grant list; a provider can never exceed either its declaration or
 admission. ADOPT BY REFERENCE the IAM permission-boundary / OAuth-scope intersection semantics
 (SPEC-DESIGN adopt-by-ref) and OAuth RAR (RFC 9396) as the structured verb × domain shape. (d)
 SYSTEM OF RECORD (DECIDED 2026-07-11, Maintainer): bind the disposition to the provider via
-the DCM-assigned registration verdict — it is already DCM-owned, already feeds the Governance-
+the control-plane-assigned registration verdict — it is already control-plane-owned, already feeds the Governance-
 Matrix target axis, and keeps the intersection where effective_accepts_roles already lives.
 The verdict gains `capability_admissions[]` (per capability/category: platform-level
 disposition; granular scoping is policy, not stored here) and a computed
@@ -137,9 +137,9 @@ provisional → AUDIT_ONLY shadow until promoted. Default-deny: absent an admiss
 permitted. Every admin action + every matrix evaluation is audited.
 - **Provider** — The provider DECLARES its capabilities once (ADR-PROV-002) and holds NO
 authority from declaring — default-deny: every declared capability is unusable until admitted.
-The provider learns its effective (admitted) set back from DCM (the OAuth 'server echoes the
+The provider learns its effective (admitted) set back from the control plane (the OAuth 'server echoes the
 granted scope' pattern) and can never invoke beyond it. A provider-initiated capability
-amendment re-enters pending; the provider cannot self-admit or self-provision (mirrors DCM
+amendment re-enters pending; the provider cannot self-admit or self-provision (mirrors the control plane
 ADR-022 / trust: never self-declared).
 
 ## Alternatives considered

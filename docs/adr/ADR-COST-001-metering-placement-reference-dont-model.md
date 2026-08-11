@@ -13,12 +13,12 @@ This settles where cost lives relative to UDLM.
 Cost/metering/billing has its OWN lifecycle, independent of a resource's: prices differ per
 customer, contracts have their own lifecycles, and there is no external cost STANDARD to
 adopt-by-reference. Therefore UDLM does not model, calculate, or own cost. Its proper name is
-'metering & billing', and a realization (DCM or otherwise) works fully WITHOUT it — a homelab
+'metering & billing', and a realization (the control plane or otherwise) works fully WITHOUT it — a homelab
 estate is modeled in UDLM with no cost at all. This record is the first worked instance of the
-UDLM/DCM boundary (DR-UDLM-DCM-001): calculation is realization/provider concern; UDLM
+the substrate/implementation boundary (DR-UDLM-DCM-001): calculation is realization/provider concern; UDLM
 carries only the DATA that bridges to an external metering model and the POLICY that selects
 it. Crucially, the substrate the meeting called for ALREADY EXISTS in UDLM 1.0: the external-
-data bridge is contracts/information-providers.md (External Entity Reference — a DCM-UUID
+data bridge is contracts/information-providers.md (External Entity Reference — a control plane-UUID
 wrapping an external-UUID, lookup/verify, never owned); metadata/tag injection onto resources
 is information-providers §5.2 extended data (org-defined fields carried in payload explicitly
 for 'cost analysis tools'); a metering provider declaring partial scope ('I implement 21 of 31
@@ -35,7 +35,7 @@ model applies to a resource, plus quotas and budgets, are admin-defined POLICY
 (policy.schema.json), evaluated by the realization's Policy Engine — quotas/budgets may
 originate in a third system (e.g. ServiceNow) and synchronize in. The costing/metering engine
 is a PROVIDER (serve_data cost domains + needs_from_realization), which MAY declare partial
-phase coverage. DCM consumes the engine's output and feeds it usage/quota/budget data; DCM
+phase coverage. The control plane consumes the engine's output and feeds it usage/quota/budget data; the control plane
 never performs the calculation. A metering & billing extension vocabulary is deferred to the
 metering-extension owners, authored against this substrate — not part of UDLM 1.0 core.
 
@@ -53,7 +53,7 @@ policy records. Quotas/budgets may be authored in a third system and synchronize
 Provider — capability serve_data over cost domains, with needs_from_realization for entity-
 lifecycle + placement + cost-attribution streams (capability-discovery.md already models
 exactly this, incl. the 'Acme FinOps Platform' example). A provider MAY cover only part of the
-31-phase metering flow. DCM consumes its output; DCM never calculates.
+31-phase metering flow. The control plane consumes its output; the control plane never calculates.
 
 ## Alternatives considered
 

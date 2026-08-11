@@ -33,12 +33,12 @@ The first draft of this ADR proposed a *new* `Codelist` entity + `vocabulary` ed
 - **A new `Codelist` entity + `vocabulary` edge** (this ADR's first draft) — **rejected**: reinvents `SharedDataElement`, the exact "one shape for base field / shared vocabulary / provider extension" construct ADR-038 built; adds a parallel construct ADR-054's through-line forbids.
 - **Keep `reference_data` as a non-layer record kind for vocabularies** — **rejected**: leaves vocabularies *outside* the scope-portability + intake-ladder enforcement (the very gap this ADR closes) and keeps a bespoke store next to the element that already owns the vocabulary.
 
-## Data · Policy · Provider · UDLM/DCM boundary
+## Data · Policy · Provider · the substrate and its control plane boundary
 
 - **Data (UDLM):** the `SharedDataElement` (name · scope · schema · `values.reference_data_type` · `proposed|canonical`), the canonical terms at scope, the dual anchor. Portable record shape.
-- **Policy (DCM):** the intake ladder (match/mint, strictness by profile), membership + scope-portability validation, promotion.
+- **Policy (the control plane):** the intake ladder (match/mint, strictness by profile), membership + scope-portability validation, promotion.
 - **Provider:** naturalizes its native terms into/out of the element at its Provider scope; owns its extension set's source of truth.
-- **Peer test (ADR-008):** UDLM defines the element shape, `scope`-as-portability, and the `proposed|canonical` contract (a peer MUST honor); DCM runs the ladder and enforces strictness (a peer MAY differ).
+- **Peer test (ADR-008):** UDLM defines the element shape, `scope`-as-portability, and the `proposed|canonical` contract (a peer MUST honor); the control plane runs the ladder and enforces strictness (a peer MAY differ).
 
 ## Open questions for engineering (what this ADR tees up)
 

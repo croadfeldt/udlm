@@ -80,7 +80,7 @@ speaking the one `§10` selector language:
   `R.operation ∈ L.applies_on` **and** `L ∈ R.from_layers` **and not** `L ∈ R.skip`. `covers` says
   *who may*; `from_layers` says *who does* — both required, neither alone the boundary. Because
   injection lands data into the spec it is an **ingress crossing**: `PROJ-P6` admission applies
-  (ADR-041). `covers`/`skip` are Data (the declaration); the match is Policy (DCM's assembly engine).
+  (ADR-041). `covers`/`skip` are Data (the declaration); the match is Policy (the control plane's assembly engine).
 
 ## The three relationship axes (all existing mechanisms)
 
@@ -139,17 +139,17 @@ Convergence signal (ADR-023's argument): independent standards agreeing is the r
 shape, not invent. The synthesis — sovereignty-gated dereference over a portability-scoped graph — is
 UDLM's own.
 
-## Data · Policy · Provider · UDLM/DCM boundary
+## Data · Policy · Provider · the substrate and its control plane boundary
 
 - **Data (UDLM):** the classified edge, the navigational coordinate, the `covers`/`applies_on`/
   `from_layers`/`skip` declarations, the dual anchor. Portable record shape.
-- **Policy (DCM):** the assembly-engine match (injection intersection), the dereference, the
+- **Policy (the control plane):** the assembly-engine match (injection intersection), the dereference, the
   `PROJ-P1..P6` enforcement, the skip authorization.
 - **Provider:** none dispatched by a projection; the target's provider owns the projected field's
   source of truth.
 
 Per the peer test (ADR-008): UDLM defines the edge, the coordinate grammar, `covers`/`skip`/
-`from_layers`, and the projection invariants (a peer MUST honor); DCM's assembly engine computes the
+`from_layers`, and the projection invariants (a peer MUST honor); the control plane's assembly engine computes the
 match, resolves projections, and enforces the invariants (a peer MAY differ).
 
 ## Consequences

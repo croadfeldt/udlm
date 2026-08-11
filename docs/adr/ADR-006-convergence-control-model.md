@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §1 (the Data·Policy·Provider runtime loop this specifies); ADR-005 (causal audit — the triggers are the causal edges); `docs/spec/contracts/event-catalog.md`; `docs/spec/contracts/policy-contract.md`; `docs/spec/contracts/provider-contract.md` (provider callback); the DCM convergence engine (loop runner); UCs `idempotent-reconvergence`, `drift-detection-remediation`, dependency-failure-surfaced, `vm-provision-with-provider-failure`
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §1 (the Data·Policy·Provider runtime loop this specifies); ADR-005 (causal audit — the triggers are the causal edges); `docs/spec/contracts/event-catalog.md`; `docs/spec/contracts/policy-contract.md`; `docs/spec/contracts/provider-contract.md` (provider callback); the control plane convergence engine (loop runner); UCs `idempotent-reconvergence`, `drift-detection-remediation`, dependency-failure-surfaced, `vm-provision-with-provider-failure`
 **Tracking:** review of udlm #16 — "Data·Policy·Provider: peers or a sequence?" and "does policy re-run when a provider changes or denies a request?"
 
 ## Context
@@ -23,7 +23,7 @@ A provider **acting, changing, or denying** a request — and drift, and any oth
 - **Idempotent re-entry** — re-triggered policy evaluation and re-entrant convergence MUST be idempotent; re-evaluating against unchanged state MUST NOT double-apply.
 - **Causal audit of triggers** — every `trigger → stage → signal` transition is an audit event carrying *why* it fired. The triggers are the causal edges of the audit DAG (ADR-005); the loop's history is fully reconstructible.
 
-**4. Homes in the existing model.** This is the substrate framing; it names what is already implied: the **four-state lifecycle** is the state machine (the stages), the **convergence engine** (DCM) is the loop runner, **events** are the triggers, and the **provider callback** is the provider→policy feedback edge.
+**4. Homes in the existing model.** This is the substrate framing; it names what is already implied: the **four-state lifecycle** is the state machine (the stages), the **convergence engine** (the control plane) is the loop runner, **events** are the triggers, and the **provider callback** is the provider→policy feedback edge.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 

@@ -36,7 +36,7 @@ Per **T6**: how continuously the mobility outcome must be proven.
   "cadence": "<duration>",              // default derived from data_mobility.criticality
   "freshness_sla": "<duration>",        // claim is `stale` past this
   "synthetic_data": { "from": "schema", "classification": "non-sensitive" },
-  "gate_on_stale": true                 // request DCM refuse to depend on an unproven path (enforced as Policy)
+  "gate_on_stale": true                 // request the control plane refuse to depend on an unproven path (enforced as Policy)
 }
 ```
 **Modes:** `simulated` runs the process with synthetic, schema-conformant, non-sensitive data — the *process* is proven with **no regulated data moved**, enabling sovereignty-safe cross-jurisdiction DR rehearsal (the high-value FSI/sovereign case); `rehearsal` runs real data to a reversible/scratch target to prove the *real* path. Cadence is criticality-derived and stale claims gate dependence — both enforced as Policy (DCM ADR-020) — so a resilience claim is a living, freshness-tracked property, not a one-time cert.
@@ -73,9 +73,9 @@ Both **rehearsals and real incidents** write this — a real DR event *is* a val
 - New common-elements `data_mobility` + `process_validation` (declarable at resource/composite/policy layers); a provider `mobility` capability block; an observed `mobility_validation` overlay. No new top-level type.
 - Makes ADR-001's "change topology → rebuild" **provable**: the rebuild path is rehearsed + freshness-tracked; the db tier's "not instant" caveat becomes a *matched, validated, policy-gated* contract.
 - Ties to the rehydration demo (#213): a rehearsed rehydration is a validated one.
-- DCM side (DCM ADR-020): migration **policy** (sovereignty/windows/approval/serialization) + **gate-on-stale** enforcement + rehearsal **scheduling**.
+- control-plane side (DCM ADR-020): migration **policy** (sovereignty/windows/approval/serialization) + **gate-on-stale** enforcement + rehearsal **scheduling**.
 
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** `data_mobility` + `process_validation` requirements + `mobility_validation` evidence.
-- **Policy (DCM):** migration permission/sequence + freshness gating + rehearsal scheduling (DCM ADR-020).
+- **Policy (the control plane):** migration permission/sequence + freshness gating + rehearsal scheduling (DCM ADR-020).
 - **Provider:** declares `mobility` + `operational_capability` (ADR-004); **executes** the migration mechanism and the rehearsals (unmodeled "how").

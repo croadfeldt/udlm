@@ -21,7 +21,7 @@ outside, then inject*; and **greening a brownfield estate is simply mass-first-u
 same pipeline. For any of that to be safe, the substrate must supply the **Data** underneath: a place to stage
 dirty input, a way to clean it that is auditable, a way to tell cleaned-outside from discovered from first-use,
 and the machine-readable statement of *which* vocabularies a type even needs. This ADR settles that Data leg.
-The DCM methods (schema-derived injection surface, add-on-use, bulk import / clean / promote) and the
+The control plane methods (schema-derived injection surface, add-on-use, bulk import / clean / promote) and the
 profile-gated governance build on top of it and are **out of scope here** (their own ADR / profiles).
 
 ## Decision
@@ -42,9 +42,9 @@ The capability needs **no new types or primitives** — it assembles mechanisms 
    and the runbook treat the two operational paths differently.
 
 4. **The reference graph is the requirement source.** A resource type's PVD-001 reference markers are the
-   machine-readable declaration of which vocabularies it depends on — the input DCM reflects to build the
+   machine-readable declaration of which vocabularies it depends on — the input the control plane reflects to build the
    injection surface and to know what a given type needs populated. UDLM's job is only to *carry* that graph
-   declaratively; walking it is DCM.
+   declaratively; walking it is the control plane.
 
 5. **Add-on-first-use mints `proposed`, never `canonical`.** A referenced value not yet in the vocabulary is
    offered to it as `proposed`; promotion to `canonical` is a separate, governed (profile) act. Mass-import and
@@ -55,7 +55,7 @@ The capability needs **no new types or primitives** — it assembles mechanisms 
 ## Data · Policy · Provider (SPEC-DESIGN §29)
 - **Data** — the vocabulary records, their curation states (the staging/promote gate), provenance, and lineage
   (the cleaning trail). All declarative; this ADR is entirely within the Data domain.
-- **Policy** — DCM promotes `proposed → canonical` under profile governance; the gate itself is Policy, not Data.
+- **Policy** — the control plane promotes `proposed → canonical` under profile governance; the gate itself is Policy, not Data.
 - **Provider** — optional discovery adapters feed the same `proposed` front door; they are not privileged over
   UI/CSV/API import.
 
@@ -69,7 +69,7 @@ The capability needs **no new types or primitives** — it assembles mechanisms 
   promotion, driven by the PVD-001 reference graph.
 
 ## Consequences
-- DCM builds the injection surface (UI/CSV/API), add-on-use hook, and bulk import/clean/promote **on this model**
+- the control plane builds the injection surface (UI/CSV/API), add-on-use hook, and bulk import/clean/promote **on this model**
   — nothing in those methods needs new substrate.
 - Profiles gate promotion (`dev` auto-promote → `sovereign` dual-approval); expand-from-declaration is likewise
   profile-gated — both consume, don't extend, this Data.
