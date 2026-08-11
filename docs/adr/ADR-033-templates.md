@@ -1,7 +1,7 @@
 # ADR-033: Templates — the orderable assembly, and the Pattern → Template → System chain
 
 **Status:** Proposed (2026-07-19) — **requires engineering ratification**. Implemented: the `Template` classes (#405) and the `composition` record (ADR-067).
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `docs/spec/lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-004 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `docs/spec/lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-PROV-002 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
 
 ## Context
 
@@ -79,7 +79,7 @@ A Template is essentially a **TOSCA Service Template** — a topology of nodes (
 
 ### Composable infrastructure is a Provider capability, not a tier
 
-"Composable infrastructure" (HPE Synergy, Dell MX, Liqid / GigaIO, CXL memory pooling) means *disaggregated physical resources assembled on demand via API*. That is a **Provider capability** (ADR-004) — a provider declares it can compose a logical machine from pooled resources — **not** an assembly tier and **not** the `Composite` shape. It is named here only to keep "compose / composable / Composite / Template" from blurring: they are four distinct things.
+"Composable infrastructure" (HPE Synergy, Dell MX, Liqid / GigaIO, CXL memory pooling) means *disaggregated physical resources assembled on demand via API*. That is a **Provider capability** (ADR-PROV-002) — a provider declares it can compose a logical machine from pooled resources — **not** an assembly tier and **not** the `Composite` shape. It is named here only to keep "compose / composable / Composite / Template" from blurring: they are four distinct things.
 
 ### Scope
 
@@ -88,7 +88,7 @@ Per ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change**, 
 ## Data · Policy · Provider
 - **Data** — a Template and a Pattern are **definitions** (a class when offered, a `composition` record when not); a System is a realized composite + bound-activity records, and the only one of the three carrying `states`.
 - **Policy** — placement/validation apply per constituent as today; resolving a Pattern into a Template *is* policy — enrich, validate, place; the `lifecycle_policy` on each binding governs the coupling (suspend/cancel propagation).
-- **Provider** — constituents are fulfilled by their ordinary providers; bound processes are executed by process/automation providers (AAP/AWX naturalization); *composable-infrastructure* providers assemble constituents from pools. No new provider role — a capability declaration (ADR-004).
+- **Provider** — constituents are fulfilled by their ordinary providers; bound processes are executed by process/automation providers (AAP/AWX naturalization); *composable-infrastructure* providers assemble constituents from pools. No new provider role — a capability declaration (ADR-PROV-002).
 
 ## Consequences
 - The combined Day-0/1/2 unit is expressible with **no new states and no change to `Composite`** — a packaging + binding over the existing lifecycle. The one new artifact is the `composition` record (ADR-067), and it reuses the shared composition shape rather than coining a second one (T7).

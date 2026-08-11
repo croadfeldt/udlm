@@ -2,7 +2,7 @@
 
 **Type:** research note (decision support — not normative)
 **Date:** 2026-07-14 · **Method:** three-stream prior-art review (identity/attestation; sovereign-cloud/federation; authorization/admission), each claim checked against primary sources.
-**Feeds:** `docs/spec/governance/accreditation-and-authorization-matrix.md` §3.7–§3.10, `registry/accreditation.schema.json`, `registry/provider-adopted-standards.schema.json` (`conformance_claims` + `enforcement_plane`), ADR-004 §4/§4a, `registry/standards-adoption-register.md` (Attestation section).
+**Feeds:** `docs/spec/governance/accreditation-and-authorization-matrix.md` §3.7–§3.10, `registry/accreditation.schema.json`, `registry/provider-adopted-standards.schema.json` (`conformance_claims` + `enforcement_plane`), accreditation-and-authorization-matrix.md §3.3.1/§4a, `registry/standards-adoption-register.md` (Attestation section).
 
 ## What this settles
 
@@ -30,7 +30,7 @@ I built the accreditation model — providers **declare** a sovereignty stance (
 
 5. **Delegation — no way to say "someone I trust already verified this."** SLSA VSA and OSCAL leveraged-authorization both formalize a verifier emitting a summary others rely on. Closed with a **verification summary / attestation result** (RATS Passport model) carried forward, plus a delegation dial that profiles set — off for sovereign/fsi, permitted for lower tiers. (matrix §3.9.)
 
-**Bonus — conformance register.** Gaia-X self-descriptions and OSCAL SSPs are both "provider declares which standards it adheres to, self-asserted until assessed." I generalized the sovereignty claim→attestation escalation into `conformance_claims[]` (framework + optional level/statement) on the provider declaration: a declared framework is self-asserted until an accreditation attests it — the same two-tier shape, one axis wider. (matrix §3.7; ADR-004 §4a.)
+**Bonus — conformance register.** Gaia-X self-descriptions and OSCAL SSPs are both "provider declares which standards it adheres to, self-asserted until assessed." I generalized the sovereignty claim→attestation escalation into `conformance_claims[]` (framework + optional level/statement) on the provider declaration: a declared framework is self-asserted until an accreditation attests it — the same two-tier shape, one axis wider. (matrix §3.7; accreditation-and-authorization-matrix.md §3.3.1.)
 
 ## Why the spine was already right
 

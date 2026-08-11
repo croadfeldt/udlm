@@ -29,7 +29,7 @@ is the mechanism abstraction (T8: wrap tools, don't reimplement) ·
 
 The **base level** is the minimum a provider must implement for **a control plane to own the lifecycle** of its target resources — basic lifecycle + the required-data functions that enable that ownership. Everything below is MUST; anything richer is a **capability extension** (§8), i.e. a deeper *scale of integration* (DCM ADR-023 §6), opt-in. A provider at the base level MUST **declare** and **provide**:
 
-1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). the control plane places/matches against this.
+1. **Target resource types + capability scope** — which resource types it manages (ADR-PROV-002 — the capability model). the control plane places/matches against this.
 2. **Required data** — the input schema it needs to realize/manage each target resource, so the control plane can collect intent and own the lifecycle.
 3. **Config-projection detail** — the provider supplies enough config schema/detail for a control plane to project a configuration interface at the provider's supported scale (basic text passthrough → typed; DCM ADR-023 §6). **If the provider exposes its OWN editor** (rather than being edited through the control plane's projected interface), the contract binds it to keep the audit loop closed — a provider editor is **not** an audit bypass. It MUST: **(a)** report the resulting **realized-state updates** back to the control plane (denaturalized, per-resource, §1a.5 read-back) so the config **state** is recorded (UDLM is the state system-of-record — ADR-016 §3); **(b)** submit every edit to the control plane's **actor authorization**, so the applied change is attributed to a control plane-validated actor (item 8); and **(c)** carry its `data_classification` and `tenant_uuid` and stay **within tenant and sovereignty bounds** — an edit is governed exactly as any other boundary crossing (§4). The invariant the contract guarantees: **no config change reaches Realized without an authorized in-tenant actor, a governance-cleared edit, a read-back, and an audit leaf.** *How* control-plane projects the interface, sequences before/after actor validation, and evaluates the Governance Matrix on an edit is the control plane's to implement (a peer may differ — ADR-008); how one implementation does it is written up in its own repository (non-normative: DCM's
 config-projection spec).
@@ -127,7 +127,7 @@ provider_base_registration:
   # For sovereign/restricted zones the control plane honors it for placement only when backed by a resolved
   # sovereign_authorization / adequacy accreditation; an unattested declaration is treated at
   # self_asserted tier (see storage-providers.md §6). Drift detection is the backstop, not the gate.
-  # SCOPE (UDLM ADR-004 §4): this is the provider-level DEFAULT stance. A capability MAY override it per
+  # SCOPE (accreditation-and-authorization-matrix.md §3.3.1): this is the provider-level DEFAULT stance. A capability MAY override it per
   # (verb × domain) category — finest-granularity-wins — because residency differs by what is realized
   # (e.g. Compute EU-only, Storage global). Trust requires a 1-1 match between each sovereignty claim and
   # an accreditation attesting EXACTLY its scope; a claim at either scope with no matching accreditation
@@ -155,7 +155,7 @@ provider_base_registration:
 
   # Self-declared standards adherence (Gaia-X self-description / OSCAL SSP lineage). Each framework is a
   # CLAIM — self_asserted until an accreditation attests it (same claim→attestation escalation as sovereignty,
-  # accreditation-matrix §3.7). Declarable per capability/category too (UDLM ADR-004 §4a).
+  # accreditation-matrix §3.7). Declarable per capability/category too (accreditation-and-authorization-matrix.md §3.3.1).
   conformance_claims:
     - framework: <framework>             # e.g. iso_27001, soc2_type2, gdpr
       # level / statement optional

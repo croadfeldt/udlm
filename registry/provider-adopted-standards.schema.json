@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
   "title": "UDLM Provider — Capability Declaration (adopted standards + docs/spec/foundations/mobility/operational/sovereignty)",
-  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, the control plane ADS-001; UDLM ADR-004). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-004 §2 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (the control plane).",
+  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, the control plane ADS-001; ADR-PROV-002). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-PROV-002 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (the control plane).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -53,7 +53,7 @@
     "provider_defaults": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Provider-level DEFAULT blocks (UDLM ADR-004 §0/§4). Any per-category block on a capability OVERRIDES these for that category (finest-granularity-wins). Optional — a provider whose whole offering shares one stance sets it here; a multi-category provider overrides per category.",
+      "description": "Provider-level DEFAULT blocks (ADR-PROV-002 §0/§4). Any per-category block on a capability OVERRIDES these for that category (finest-granularity-wins). Optional — a provider whose whole offering shares one stance sets it here; a multi-category provider overrides per category.",
       "properties": {
         "sovereignty": {
           "$ref": "#/$defs/sovereignty"
@@ -75,7 +75,7 @@
     },
     "capabilities": {
       "type": "array",
-      "description": "The provider's declared, versioned, accreditable capabilities (UDLM ADR-004). Each is the accreditation/version unit and realizes one or more `(verb × domain)` categories.",
+      "description": "The provider's declared, versioned, accreditable capabilities (ADR-PROV-002). Each is the accreditation/version unit and realizes one or more `(verb × domain)` categories.",
       "items": {
         "$ref": "#/$defs/capability"
       }
@@ -162,7 +162,7 @@
       "required": [
         "category"
       ],
-      "description": "What a capability offers for one `(verb × domain)` category — the grain at which docs/spec/foundations/sovereignty vary (ADR-004 §2). Blocks omitted here inherit `provider_defaults`.",
+      "description": "What a capability offers for one `(verb × domain)` category — the grain at which docs/spec/foundations/sovereignty vary (ADR-PROV-002). Blocks omitted here inherit `provider_defaults`.",
       "properties": {
         "category": {
           "type": "string",
@@ -268,7 +268,7 @@
         "resource_type",
         "methods"
       ],
-      "description": "Data portability/migration capability for a resource type (ADR-003 §3 / ADR-004 §2).",
+      "description": "Data portability/migration capability for a resource type (ADR-003 §3 / ADR-PROV-002).",
       "properties": {
         "resource_type": {
           "type": "string",
@@ -332,7 +332,7 @@
     "sovereignty": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The residency/sovereignty STANCE for this category (ADR-004 §4). Overrides the provider default (finest wins). This is a CLAIM: trust requires a 1-1 match with an accreditation attesting exactly this scope (accreditation §3.3.1) — declaring it here does not by itself make it trusted, and it obligates the provider to guarantee it down the whole realization pipeline for the category.",
+      "description": "The residency/sovereignty STANCE for this category (accreditation-and-authorization-matrix.md §3.3.1). Overrides the provider default (finest wins). This is a CLAIM: trust requires a 1-1 match with an accreditation attesting exactly this scope (accreditation §3.3.1) — declaring it here does not by itself make it trusted, and it obligates the provider to guarantee it down the whole realization pipeline for the category.",
       "properties": {
         "operating_jurisdictions": {
           "type": "array",
@@ -362,7 +362,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Third parties with data access — themselves bound by the propagated sovereignty constraint (ADR-004 §4)."
+          "description": "Third parties with data access — themselves bound by the propagated sovereignty constraint (accreditation-and-authorization-matrix.md §3.3.1)."
         }
       }
     },

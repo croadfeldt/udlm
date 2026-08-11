@@ -23,7 +23,7 @@ payload below is what crosses the wire, validating against
 ## 1. The provider declares itself and its capabilities
 
 A **capability** is the versioned, accreditable unit (`capability_uuid` + `version`); it **contains** the
-`(verb × domain)` **categories** it realizes, where topology and sovereignty actually vary (ADR-004 §2).
+`(verb × domain)` **categories** it realizes, where topology and sovereignty actually vary (ADR-PROV-002).
 `full-stack-sp` declares three capabilities:
 
 | Capability (`capability_uuid`, v1.0.0) | Realizes these categories (constituent capabilities) |

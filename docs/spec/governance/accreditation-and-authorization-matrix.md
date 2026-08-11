@@ -132,10 +132,10 @@ accreditation:
   last_verified_at: <ISO 8601>            # when the implementation last confirmed still active
 
   # What the accreditation covers — EXPLICITLY keyed to provider + capability so the sovereignty
-  # 1-1 match (UDLM ADR-004 §4) is machine-checkable. `subject_uuid` above names the PROVIDER; the
+  # 1-1 match (accreditation-and-authorization-matrix.md §3.3.1) is machine-checkable. `subject_uuid` above names the PROVIDER; the
   # fields here name WHICH of that provider's capabilities and WHICH residency scope it attests.
   scope:
-    # BINDING GRAIN is org/platform-admin policy (profile-governed — UDLM ADR-004 §4). UDLM carries all
+    # BINDING GRAIN is org/platform-admin policy (profile-governed — accreditation-and-authorization-matrix.md §3.3.1). UDLM carries all
     # three grains; the platform picks the required strictness and whether a capability change EXPIRES it:
     capability_scope:
       - capability_uuid: <uuid>                 # binds a specific capability (matches capabilities[].capability_uuid).
@@ -182,11 +182,11 @@ For the appraisal, an **active, verified accreditation** must match the claim **
 - **data classification** — `scope.data_classifications` covers the claim (a `sovereign`-data claim is not vouched for by an `internal`-scoped accreditation);
 - **plane** — `scope.plane` covers the claim's `enforcement_plane` (§3.8): data-plane residency and control-plane operator-access are attested separately.
 
-No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, DCM ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes ADR-004 §4's **pipeline propagation** enforceable: each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
+No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, DCM ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes accreditation-and-authorization-matrix.md §3.3.1's **pipeline propagation** enforceable: each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
 
 **This generalizes beyond sovereignty (§3.7).** The same claim→attestation link governs every `conformance_claim` a subject declares: a declared adherence (ISO 27001, SOC 2, FedRAMP-Moderate, SecNumCloud, …) is `self_asserted` until an accreditation whose `framework` matches attests it for the scope.
 
-**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (UDLM ADR-004 §4): **grain 1** provider-wide, **grain 2** a capability across its versions (`capability_uuid`, no `version`), or **grain 3** an exact `(capability_uuid, version)` — any grain optionally narrowed to a single `category` within the capability. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation; whether that change **expires** a binding is decided by the grain the platform requires — so the same event supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
+**Binding grain + expiry are configurable (platform-admin policy, profile-governed).** How deterministic the capability axis must be is the org's choice, not a fixed rule (accreditation-and-authorization-matrix.md §3.3.1): **grain 1** provider-wide, **grain 2** a capability across its versions (`capability_uuid`, no `version`), or **grain 3** an exact `(capability_uuid, version)` — any grain optionally narrowed to a single `category` within the capability. At grain 3, when a provider changes a capability (a new `version`), the accreditation bound to the prior version **no longer matches** and the claim reverts to `self_asserted` until re-attested — the deterministic, drift-proof posture (e.g. sovereign/fsi profiles). Grains 1–2 are looser (e.g. dev/eval). The **`provider.capability_changed`** lifecycle event (`provider-contract.md` §6) fires accreditation re-evaluation; whether that change **expires** a binding is decided by the grain the platform requires — so the same event supports both the strict "expire on any change" and the loose "provider-wide, survives changes" postures.
 
 ### 3.4 Accreditation Lifecycle
 
@@ -296,7 +296,7 @@ This model is a specialization of the industry attestation vocabulary, not a coi
 | `status` / `expires_at` | `credentialStatus` / `validUntil` | freshness (nonce / epoch) | ConMon / POA&M currency | Expired / Deprecated / Revoked |
 | override (policy-contract §18) | — | — | POA&M risk acceptance | — |
 | verification summary (§3.9) | — | Attestation Result ("Passport") | leveraged-authorization | — |
-| pipeline propagation (ADR-004 §4) | — | layered attestation | — | (in-toto layout + MATCH) |
+| pipeline propagation (accreditation-and-authorization-matrix.md §3.3.1) | — | layered attestation | — | (in-toto layout + MATCH) |
 
 Field names retained where they are themselves standard compliance terms (accreditation, accreditor, subject); `proof` / `verification_method` / `proof_purpose` / `trust_anchor` are taken directly from the VC vocabulary; `validFrom`/`validUntil` are carried as `issued_at`/`expires_at` with the VC meaning.
 

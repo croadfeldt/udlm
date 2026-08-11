@@ -4,16 +4,12 @@ _comment: Burn-down baseline for tests/check_adr_citations.py (ADR-CITE-001). Ba
 known:
 - file: registry/classes/process/job/_base.yaml
   adr: '025'
-- file: registry/classes/resource/compute/_base.yaml
-  adr: '004'
 - file: registry/classes/resource/compute/container.yaml
   adr: '012'
 - file: registry/classes/resource/compute/vm.yaml
   adr: 009
 - file: registry/classes/resource/compute/vm.yaml
   adr: '025'
-- file: registry/classes/resource/compute/vm.yaml
-  adr: '004'
 - file: registry/classes/resource/platform/namespace.yaml
   adr: '025'
 - file: registry/classes/resource/platform/node-pool.yaml
@@ -42,8 +38,6 @@ known:
   adr: '012'
 - file: registry/rule-id-registry.yaml
   adr: 028
-- file: registry/accreditation.schema.json
-  adr: '004'
 - file: registry/class.schema.json
   adr: '055'
 - file: registry/common-elements.schema.json
@@ -54,16 +48,8 @@ known:
   adr: '012'
 - file: registry/decision-record.schema.json
   adr: '017'
-- file: registry/generated/compute.bare-metal-host.json
-  adr: '004'
-- file: registry/generated/compute.cluster.json
-  adr: '004'
-- file: registry/generated/compute.container.json
-  adr: '004'
 - file: registry/generated/compute.container.json
   adr: '012'
-- file: registry/generated/compute.vm.json
-  adr: '004'
 - file: registry/generated/compute.vm.json
   adr: 009
 - file: registry/generated/compute.vm.json
@@ -110,24 +96,14 @@ known:
   adr: 028
 - file: registry/standards-adoption-register.md
   adr: '012'
-- file: registry/standards-adoption-register.md
-  adr: '004'
-- file: docs/spec/contracts/provider-contract.md
-  adr: '004'
 - file: docs/spec/contracts/provider-contract.md
   adr: 009
-- file: docs/spec/contracts/time-and-clock.md
-  adr: '004'
 - file: docs/spec/foundations/four-states.md
   adr: 009
 - file: docs/spec/foundations/knowledge-family.md
   adr: '017'
-- file: docs/spec/governance/accreditation-and-authorization-matrix.md
-  adr: '004'
 - file: docs/spec/lifecycle/subscription-lifecycle.md
   adr: '026'
-- file: docs/spec/principles/core-tenets.md
-  adr: '004'
 - file: docs/spec/principles/core-tenets.md
   adr: 029
 - file: docs/spec/principles/naming-charter.md
@@ -154,5 +130,3 @@ known:
   adr: '055'
 - file: docs/flows/storage-provisioning-lifecycle.md
   adr: '055'
-- file: docs/flows/template-assembly.md
-  adr: '004'

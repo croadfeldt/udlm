@@ -126,7 +126,7 @@ internals, dependencies, and implementation may change without any versioning ob
 toward consumers, because nothing a consumer can bind to has changed. The seam is precise:
 an internal change that alters a populated output's observable shape *is* a surface change and
 versions accordingly. Individual capabilities remain their own accreditation/version units
-(ADR-004), nested within the definition's version; the engine binding version an implementation
+(ADR-PROV-002), nested within the definition's version; the engine binding version an implementation
 actually used is recorded in implementation provenance (§7). Pins, debt, and blue/green promotion
 apply to provider definitions unchanged — an estate pins a provider definition revision the
 same way it pins a class revision, and an engine upgrade verifies by output diff (the
@@ -178,7 +178,7 @@ consumers** — a capability revision with instances realized under it cannot re
 published deprecation window, making retirement the one legitimate, calendared forcing
 function; and **drift compares against provenance, never against current** — reconciliation
 that measured a 1.2.0-realized instance against the 1.3.0 contract would manufacture phantom
-drift fleet-wide and "fix" it into exactly the mass redeploy this rule forbids. Accreditation stays at the capability (ADR-004),
+drift fleet-wide and "fix" it into exactly the mass redeploy this rule forbids. Accreditation stays at the capability (ADR-PROV-002),
 untouched by the envelope. Corpus: class-versioning 013–020.
 
 ## Consequences

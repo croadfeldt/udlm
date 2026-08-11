@@ -6,7 +6,7 @@
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
 once with what it settles. `docs/spec/contracts/provider-contract.md` — **PRV-009** (default-deny:
 `effective_capabilities` is the intersecting ceiling, never invoked outside) + **PRV-011** (the
-dispatch-boundary check this ADR shapes). ADR-004 — capability declaration (declare-and-select; an
+dispatch-boundary check this ADR shapes). ADR-PROV-002 — capability declaration (declare-and-select; an
 undeclared capability found only at runtime is rejected). `docs/spec/contracts/error-model.md` §3.2 —
 `placement.capability_mismatch` (already in the closed vocabulary, distinct from `provider.*`; the
 type exists, the enforcement point does not). `docs/spec/contracts/policy-contract.md` §18 — the override
