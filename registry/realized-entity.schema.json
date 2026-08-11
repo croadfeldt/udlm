@@ -395,7 +395,7 @@
         "locality": {
           "type": "object",
           "additionalProperties": false,
-          "description": "R2 evidence binding — the concrete fault-domain / physical locality this entity was placed in (the per-resource anchor the placement grammar keys on — ADR-019 placement, ADR-010 SharedFaultDomain). Written by the provider/the control plane at realization; the basis for anti-affinity, blast-radius, and per-resource jurisdiction checks.",
+          "description": "R2 evidence binding — the concrete fault-domain / physical locality this entity was placed in (the per-resource anchor the placement grammar keys on — DCM ADR-019 placement, ADR-010 SharedFaultDomain). Written by the provider/the control plane at realization; the basis for anti-affinity, blast-radius, and per-resource jurisdiction checks.",
           "properties": {
             "topology_ref": {
               "type": "string",

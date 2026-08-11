@@ -1,5 +1,5 @@
 # v2.0.0 of the DMZ network zone — a NEW immutable record (new uuid + new version), NOT an edit of v1.
-# Lineage is EXPLICIT and the single mechanism (ADR-012): `supersedes` names the v1 uuid this version
+# Lineage is EXPLICIT and the single mechanism (DCM ADR-012): `supersedes` names the v1 uuid this version
 # replaces. That uuid-based link is what validate.py walks to flag any reference still pinned to v1 as a
 # change-impact candidate. `handle` is advisory display only — it is NOT consulted for lineage.
 record_type: layer

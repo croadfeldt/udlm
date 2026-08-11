@@ -63,7 +63,7 @@ of *this* contract:
 ### 3.1 Registration (base + storage extension)
 Registration follows the base Provider model ([provider-contract.md](provider-contract.md) §2) — endpoint,
 capabilities, sovereignty, and **attestation evidence** (trust is *not* self-declared: `trust_posture` is
-assigned in the registration verdict, not stated by the provider; ADR-022). The storage extension adds
+assigned in the registration verdict, not stated by the provider; DCM ADR-022). The storage extension adds
 `store_type` (`gitops | write_once_snapshot | event_stream | search_index | audit | observability`) and the
 consistency declaration (§3.3).
 

@@ -136,7 +136,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 ## 7. The 0.1 surface (inventory)
 
-the resource types in the registry (see `registry/MODEL-HEALTH.md`) (post-2026-07-15: ADR-013 removes the 5 hardware-*component* types —
+the resource types in the registry (see `registry/MODEL-HEALTH.md`) (post-2026-07-15: DCM ADR-013 removes the 5 hardware-*component* types —
 memory-module / processor / storage-device / graphics-processor / power-supply, #88 — keeping
 BMC / BiosProfile / NetworkInterface; `Security.CredentialRef` added, #99) · 12 record schemas ·
 17 contracts (11 complete/stable, 6 draft — see §5/§6) · the prose ADRs in `docs/adr/` (see `docs/adr/README.md`) + JSON

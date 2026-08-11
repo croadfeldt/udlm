@@ -1,5 +1,5 @@
 # Built-in profile: DEVELOPMENT / EVALUATION — the September implementation target.
-# A profile record (registry/profile.schema.json; DCM ADR-007 — a profile is a composed
+# A profile record (registry/profile.schema.json; ADR-007 — a profile is a composed
 # SET with a floor, NOT a level). Relaxed floor for co-engineering/evaluation; the architecture and
 # wire contracts are identical to the production profiles — only the required floor differs.
 record_type: profile
@@ -11,7 +11,7 @@ description: Baseline profile for development, evaluation, and co-engineering �
   target. Minimal required floor so the 21 release use cases can be exercised end to end without production-grade
   governance ceremony. Same architecture, types, and wire contracts as prod/fsi/sovereign; fewer required
   mechanics.
-version: 1.1.0
+version: 1.1.1
 status:
   state: active
 contains:

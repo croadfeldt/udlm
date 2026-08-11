@@ -8,7 +8,7 @@
 
 ## What this adds over request-realization
 
-- **The unmet edge is named.** Not "reserve failed" but "VM `nic0` depends_on bridge `br0` — absent". The [ADR-024 clear-reason gate](request-realization.md#where-the-value-comes-from) applied to a dependency, not a field.
+- **The unmet edge is named.** Not "reserve failed" but "VM `nic0` depends_on bridge `br0` — absent". The [DCM ADR-024 clear-reason gate](request-realization.md#where-the-value-comes-from) applied to a dependency, not a field.
 - **Blocking, not silent.** Convergence of the dependent VM halts until the bridge exists — the failure surfaces before the blackhole, not after.
 - **Impact is derivable.** Blast-radius of the missing dependency comes from the UC-07 graph — what else waits on this bridge, what's at risk.
 

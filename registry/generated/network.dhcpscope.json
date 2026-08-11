@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.8.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.DHCPScope/0.8.2",
   "conforms_to": "udlm/0.1",
   "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42",
   "resource_type": "Network.DHCPScope",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.DHCPScope",
-          "version": "0.8.1",
+          "version": "0.8.2",
           "uuid": "c71a7ad9-23ea-40fe-a07d-ee088a20cf42"
         }
       ]
@@ -156,7 +156,7 @@
   "outputs": {
     "reservations": {
       "type": "array",
-      "description": "DERIVED — not authored here. A projection of every Network.IPAddress(allocation: static) bound to a Hardware.NetworkInterface (its MAC) contained by a host (its hostname), within this scope. The reservation truth lives on the IPAddress records (ADR-023); a DHCP provider renders its reservations/leases from this set."
+      "description": "DERIVED — not authored here. A projection of every Network.IPAddress(allocation: static) bound to a Hardware.NetworkInterface (its MAC) contained by a host (its hostname), within this scope. The reservation truth lives on the IPAddress records (DCM ADR-023); a DHCP provider renders its reservations/leases from this set."
     }
   },
   "relationships": [

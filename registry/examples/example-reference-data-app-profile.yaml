@@ -1,6 +1,6 @@
 # A reference_data layer that ITSELF references another reference_data layer (network_zone v1), forming a
 # multi-hop chain. Because it references the SUPERSEDED v1, it is DIRECTLY impacted; any record that
-# references THIS layer is TRANSITIVELY impacted (ADR-012 #2 — impact cascades up the reference graph).
+# references THIS layer is TRANSITIVELY impacted (DCM ADR-012 #2 — impact cascades up the reference graph).
 record_type: layer
 uuid: 035e8844-4fa2-40f7-8dd3-fa6dfb0c2e33
 handle: platform/app-profiles/web-tier

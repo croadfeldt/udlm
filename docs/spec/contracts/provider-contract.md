@@ -141,7 +141,7 @@ provider_base_registration:
                                                  #   the requirement + execution-slice to the enforcing provider and verifies ITS attestation.
     sub_processors: []                           # third parties with data access (name, jurisdiction, data_handled)
     # --- OPTIONAL detail — carried on EVERY provider for conformity; REQUIRED only where a profile/policy
-    #     demands it (ADR-014 optionality-with-conformity: the field is present for a comparable vocabulary;
+    #     demands it (DCM ADR-014 optionality-with-conformity: the field is present for a comparable vocabulary;
     #     a `sovereign`/`fsi` profile marks which are mandatory, a homelab leaves them null). Available so
     #     teams can test or use them on genuine need, without forcing them on everyone.
     data_residency_guarantee: <true|false>       # data never leaves the declared jurisdictions
@@ -624,7 +624,7 @@ Rules:
 - **Refreshed, not static.** Capacity changes are pushed via the `resource.capacity_changed` lifecycle event (§6), so placement reads current free capacity, not registration-time values.
 - **Eligibility is policy, not provider fiat.** The provider *declares* constraints; the **org's policy + Governance-Matrix** resolve which advertised resources a given consumer/zone/tenant may actually select (the "org ratifies" rule). A provider cannot grant itself selection authority by advertising.
 
-**Size-class resolution — `instance_size_catalog` (the abstract↔precise bridge).** When a resource type ships sized-by-class (`instance_size` — ADR-014, `common-elements §2.2`), the class is a *comparable but abstract* vocabulary. To let placement compare an abstract size against a **raw** requirement (or resolve one provider's class against another's), the provider **declares its class → raw mapping** here — the provider is the authority on what *its* `medium` is (ADR-014: the provider owns the concrete mapping):
+**Size-class resolution — `instance_size_catalog` (the abstract↔precise bridge).** When a resource type ships sized-by-class (`instance_size` — DCM ADR-014, `common-elements §2.2`), the class is a *comparable but abstract* vocabulary. To let placement compare an abstract size against a **raw** requirement (or resolve one provider's class against another's), the provider **declares its class → raw mapping** here — the provider is the authority on what *its* `medium` is (DCM ADR-014: the provider owns the concrete mapping):
 
 ```yaml
 instance_size_catalog:                  # per capability/category; the provider's authoritative size classes
@@ -633,9 +633,9 @@ instance_size_catalog:                  # per capability/category; the provider'
   - class: large    resources: { vcpu: { count: 8 }, memory: { size: 32GB } }
 ```
 
-The control plane resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is the control plane (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
+The control plane resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a raw request (a raw requirement selects the smallest class whose resolved resources satisfy it). Split, per DCM ADR-014: the **class vocabulary + ordering** is UDLM (portable/comparable), the **class→raw mapping** is the provider's (this catalog), the **resolution/comparison** is the control plane (placement). It is **declared, not live-queried** — placement scores many providers at once, so a per-request round-trip per provider is prohibitive; a provider with *parametric* classes MAY additionally expose a `resolve(size)` callback, but the declared catalog is the default.
 
-**Abstract-value channels & the realized audit record (the same bridge, generalized).** `instance_size` is one instance of a broader pattern: intent may carry an **abstract value the provider resolves** — a size class, or an engine **`version` channel** like `latest`/`lts` (`Data.Database`, ADR-014). The same three obligations apply to *any* such abstract value:
+**Abstract-value channels & the realized audit record (the same bridge, generalized).** `instance_size` is one instance of a broader pattern: intent may carry an **abstract value the provider resolves** — a size class, or an engine **`version` channel** like `latest`/`lts` (`Data.Database`, DCM ADR-014). The same three obligations apply to *any* such abstract value:
 
 1. **Declare the resolution.** The provider **declares** how it resolves the abstract value to concrete — for versions, its channel → concrete-version map per engine — so placement can **compare, conform, and validate** an abstract request against a raw/pinned requirement (and against an adjacent provider's channel) *before* it commits. **Declared, not live-queried** — same reason as the size catalog.
 

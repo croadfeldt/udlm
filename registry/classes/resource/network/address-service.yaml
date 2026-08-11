@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.AddressService/0.6.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.AddressService/0.6.2
 conforms_to: udlm/0.1
 uuid: 2d2100a1-3813-4f01-8b55-12389cec51cc
 record_type: class
 class: type
 resource_type: Network.AddressService
 parent: Network
-version: 0.6.1
+version: 0.6.2
 family: Resource
 status: active
 metadata:
@@ -14,7 +14,7 @@ metadata:
     as one operated capability (two projections of the same allocation: a lease and its A/PTR records).
     Vendor mechanisms (a DHCP/DNS server implementation, an integrated identity suite, a cloud service)
     are providers, never the type. It is the service surface a DHCP/DNS provider realizes, rendering leases/reservations
-    from the estate''s Network.IPAddress records (ADR-023); dhcp-scope/dns-zone are its config surfaces.
+    from the estate''s Network.IPAddress records (DCM ADR-023); dhcp-scope/dns-zone are its config surfaces.
     Referenced by the dependency graph so shutdown/startup ordering accounts for hosts that need leases/resolution.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-05T02:58:43Z'
@@ -24,7 +24,7 @@ elements:
   optional: true
   state: canonical
   description: Which address capabilities this service provides. (IPAM-as-a-distinct-service dropped —
-    addressing is modeled as Network.IPAddress records per ADR-023; there is no adopted IPAM vocabulary
+    addressing is modeled as Network.IPAddress records per DCM ADR-023; there is no adopted IPAM vocabulary
     and its substance is covered by dhcp-scope + the IPAddress records.)
   schema:
     type: array
@@ -35,7 +35,7 @@ elements:
       - dns
       x-extensible-enum: true
     description: Which address capabilities this service provides. (IPAM-as-a-distinct-service dropped
-      — addressing is modeled as Network.IPAddress records per ADR-023; there is no adopted IPAM vocabulary
+      — addressing is modeled as Network.IPAddress records per DCM ADR-023; there is no adopted IPAM vocabulary
       and its substance is covered by dhcp-scope + the IPAddress records.)
 - element: ha
   scope: Network.AddressService

@@ -93,7 +93,7 @@ A single named thing a platform can do — e.g. workload placement, or secret ro
 
 ## Compute
 
-### Compute.BareMetalHost (0.10.1)
+### Compute.BareMetalHost (0.10.2)
 
 **Purpose:** Models a physical machine as a managed asset — the box itself, whether or not anything is running on it yet.
 
@@ -116,7 +116,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Compute.VM — the guests the host runs.
 
-### Compute.Cluster (0.5.1)
+### Compute.Cluster (0.5.2)
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -137,7 +137,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.7.4)
+### Compute.Container (0.7.5)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -158,7 +158,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.5.0)
+### Compute.VM (1.5.1)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -184,7 +184,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## Data
 
-### Data.Database (0.7.2)
+### Data.Database (0.7.3)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -205,7 +205,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## Facility
 
-### Facility.Location (0.4.3)
+### Facility.Location (0.4.4)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -466,7 +466,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Job
 
-### Job (1.2.2)
+### Job (1.2.3)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -487,7 +487,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## Network
 
-### Network.AddressService (0.6.1)
+### Network.AddressService (0.6.2)
 
 **Purpose:** Represents a site's DHCP/DNS service as one operated capability the dependency graph can order around.
 
@@ -507,7 +507,7 @@ The thing that hands out addresses and answers name lookups, as a single, thin s
 - Network.DHCPScope — the per-subnet config this service serves.
 - Network.DNSZone — the zones it answers for.
 
-### Network.ConnectionProfile (0.4.1)
+### Network.ConnectionProfile (0.4.2)
 
 **Purpose:** Captures a host interface's desired network configuration — addressing, routes, DNS, bond/bridge/VLAN membership — as declarative state a provider applies.
 
@@ -525,7 +525,7 @@ What a host interface's network configuration should be, in NMstate's own schema
 - Hardware.NetworkInterface — the adapter or port the profile applies to.
 - Network.VLAN — the segments the configured VLANs and sub-interfaces ride.
 
-### Network.DHCPScope (0.8.1)
+### Network.DHCPScope (0.8.2)
 
 **Purpose:** Declares a subnet's DHCP configuration — dynamic pools, options, lease time — as the neutral surface any DHCP provider serves.
 
@@ -582,7 +582,7 @@ The router/firewall at the edge of a network: which functions it provides (routi
 - Network.DHCPScope — scopes serving the segments the gateway routes.
 - Network.Switch — the fabric behind the edge.
 
-### Network.IPAddress (0.10.2)
+### Network.IPAddress (0.10.3)
 
 **Purpose:** Makes a single IP address its own record — origin, interface binding, and allocation — so each address fact lives in exactly one place.
 
@@ -602,7 +602,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Compute.VM — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.7.0)
+### Network.IPAddressPool (0.7.1)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
