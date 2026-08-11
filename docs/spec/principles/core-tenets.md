@@ -179,7 +179,7 @@ See `cross-cutting-requirements.md` for the pillar requirements these tenets ser
 
 UDLM data crosses the provider boundary in UDLM form; **naturalization into a provider's
 native format happens at the provider edge, never in the substrate** (the control plane implementation
-records this as ADR-023). The substrate carries conformant data in and conformant data out —
+records this as DCM ADR-023). The substrate carries conformant data in and conformant data out —
 it has no per-provider translation layer, so providers stay interchangeable and the data
 model stays free of any provider's vocabulary. The narrative *why* is
 [`docs/spec/foundations/context-and-purpose.md`](../foundations/context-and-purpose.md) §7.1.

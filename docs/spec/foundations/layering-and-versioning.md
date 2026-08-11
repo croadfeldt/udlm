@@ -369,7 +369,7 @@ for a field constraint.
 Reference Data Layer instance of the appropriate type. No changes to the Resource Type
 Specification, the catalog item, or any policy. Catalog items reference the layer type by **named head**, so the new value becomes available to every
 referencing catalog item when its named-head resolution next runs — the same dual-anchor model (pin or named
-head) the class documents use (ADR-012 dual anchor / ADR-054 references-context).
+head) the class documents use (DCM ADR-012 dual anchor / ADR-054 references-context).
 
 **Retiring an allowed value** means retiring the Reference Data Layer instance.
 Existing resources that used that value are unaffected. Future requests cannot

@@ -706,7 +706,7 @@ Provider                          System                           Consumer
 - The request's perspective on the same flow: [request-realization](request-realization.md)
 - Provider base contract (what you MUST implement): `docs/spec/contracts/provider-contract.md` §1a
 - Capability advertisement shape: `docs/spec/contracts/provider-contract.md` §2 (registration) + §10 (discovery protocol)
-- How required inputs get filled: `docs/adr/ADR-024-filling-provider-required-inputs.md`
+- How required inputs get filled: `docs/adr/DCM ADR-024-filling-provider-required-inputs.md`
 - Policy contract (enrichment policies): `docs/spec/contracts/policy-contract.md` §12
 - Catalog item schema: `registry/catalog-item.schema.json`
 - Provider-specific data model: UDLM ADR-038 (Provider-Class `SharedDataElement`s); portability: `registry/realized-entity.schema.json` `portability` block

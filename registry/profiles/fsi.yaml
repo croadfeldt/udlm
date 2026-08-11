@@ -1,5 +1,5 @@
 # Built-in profile: FSI — financial-services / regulated posture.
-# policy_profile grouping (DCM ADR-007). Superset of prod: tamper-evident (merkle) audit,
+# policy_profile grouping (ADR-007). Superset of prod: tamper-evident (merkle) audit,
 # attestation-gated providers, regulatory retention, governance-matrix on ALL lifecycle operations,
 # and the override-approval workflow. Full production architecture — implemented against dev in Sept.
 record_type: profile
@@ -12,7 +12,7 @@ description: Regulated financial-services profile — the prod floor plus tamper
   matrix; DCM ADR-022), regulatory retention, governance-matrix evaluated on every lifecycle operation
   (no scope-out), and the time-bounded override-approval workflow (policy-contract §18). Architecture
   is production-grade; September implements it against the dev floor for co-engineering.
-version: 1.1.0
+version: 1.1.1
 status:
   state: active
 contains:

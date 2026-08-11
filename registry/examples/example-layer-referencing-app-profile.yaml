@@ -1,5 +1,5 @@
 # Consumer that references the web-tier app_profile. It does NOT reference the superseded network_zone
-# directly — but the app_profile it references does, so this record is TRANSITIVELY impacted (ADR-012 #2).
+# directly — but the app_profile it references does, so this record is TRANSITIVELY impacted (DCM ADR-012 #2).
 # validate.py impact_report() prints this as a "↳ transitively impacted" line under the app_profile.
 record_type: layer
 uuid: 0984944a-9267-4a08-815a-aa7f79772eab

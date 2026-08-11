@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.5.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.5.1
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.5.0
+version: 1.5.1
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -250,13 +250,13 @@ elements:
   state: canonical
   description: 'The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4
     — the flat VM''s guest_os won over the earlier {family, version} draft): portable form is a data_reference
-    to an os_image reference-data vocabulary (ADR-012) the target provider advertises via capability discovery
+    to an os_image reference-data vocabulary (DCM ADR-012) the target provider advertises via capability discovery
     (ADR-004); inline {type, version} is the portability_breaking escape. Proposed pending the OS-standardization
     catalog work (task #30). Redeclared at VM scope (identical refinement) so the VM tier may freeze guest_os.type
     — tighten at your scope, never above.'
   schema:
     description: 'Guest operating system. Portable form is a reference to an os_image reference-data vocabulary
-      (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy
+      (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy
       validates membership at request. Inline is the portability_breaking escape. Optional at the data
       layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require
       it.'
@@ -295,7 +295,7 @@ elements:
         type: integer
         minimum: 1
         description: Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt
-          domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (ADR-023).
+          domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023).
       sockets:
         type: integer
         minimum: 1

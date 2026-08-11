@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.1",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Compute.VM",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -20,12 +20,12 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.1",
+          "version": "1.2.2",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Compute.VM",
-          "version": "1.5.0",
+          "version": "1.5.1",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -37,7 +37,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, DCM ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
       },
       "cpu": {
         "type": "object",
@@ -48,7 +48,7 @@
           "count": {
             "type": "integer",
             "minimum": 1,
-            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (ADR-023)."
+            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023)."
           },
           "sockets": {
             "type": "integer",
@@ -116,7 +116,7 @@
         "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
         "oneOf": [
           {
             "type": "object",

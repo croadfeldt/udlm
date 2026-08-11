@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.ConnectionProfile/0.4.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.ConnectionProfile/0.4.2
 conforms_to: udlm/0.1
 uuid: 7c322a52-3d41-4067-b9e2-967280517aa8
 record_type: class
 class: type
 resource_type: Network.ConnectionProfile
 parent: Network
-version: 0.4.1
+version: 0.4.2
 family: Resource
 status: active
 metadata:
   display_name: Connection Profile (host network config)
   description: 'The declarative NetworkManager desired-state for a host interface — addressing method,
-    routes, DNS, and bond/bridge/VLAN membership — as a first-class estate record (ADR-023). The body
+    routes, DNS, and bond/bridge/VLAN membership — as a first-class estate record (DCM ADR-023). The body
     conforms to the NMstate interface schema by reference (Tier-2 adopt): UDLM owns identity + the version-pinned
     conformance pointer, NMstate owns the config body. Realized onto the host by a NetworkManager-family
     provider (a configuration-management engine, Kubernetes-NMState); maps 1:1 to Kubernetes-NMState NodeNetworkConfigurationPolicy.spec.desiredState.

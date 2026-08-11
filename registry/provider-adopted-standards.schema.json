@@ -38,7 +38,7 @@
         "version": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-          "description": "The provider definition's version — the declared surface (capabilities, adopted standards, defaults, populated outputs) is the versioned contract under the standard rules (ADR-045 §8): internal changes past the naturalization boundary (dcm ADR-023) are free; surface changes classify and bump under the publish law (ADR-051 — the uuid stays frozen; (identity, version) is immutable once published)."
+          "description": "The provider definition's version — the declared surface (capabilities, adopted standards, defaults, populated outputs) is the versioned contract under the standard rules (ADR-045 §8): internal changes past the naturalization boundary (dcm DCM ADR-023) are free; surface changes classify and bump under the publish law (ADR-051 — the uuid stays frozen; (identity, version) is immutable once published)."
         }
       }
     },
@@ -200,7 +200,7 @@
         },
         "instance_size_catalog": {
           "type": "array",
-          "description": "The provider's size-class → raw-resources mapping for this category (ADR-014; provider-contract.md §8.1a — the abstract↔precise bridge). The class VOCABULARY + ordering is UDLM (comparable/portable across providers); this MAPPING is the provider's (it owns what its 'medium' resolves to); the control plane resolves instance_size → raw here for placement + comparison against raw requirements. Declared, not live-queried.",
+          "description": "The provider's size-class → raw-resources mapping for this category (DCM ADR-014; provider-contract.md §8.1a — the abstract↔precise bridge). The class VOCABULARY + ordering is UDLM (comparable/portable across providers); this MAPPING is the provider's (it owns what its 'medium' resolves to); the control plane resolves instance_size → raw here for placement + comparison against raw requirements. Declared, not live-queried.",
           "items": {
             "type": "object",
             "additionalProperties": false,

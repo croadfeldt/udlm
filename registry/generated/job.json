@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Job/1.2.3",
   "conforms_to": "udlm/0.1",
   "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242",
   "resource_type": "Job",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -18,7 +18,7 @@
       "sources": [
         {
           "class": "Job",
-          "version": "1.2.2",
+          "version": "1.2.3",
           "uuid": "343f2efd-0fb5-4679-a02f-ade22378e242"
         }
       ]
@@ -29,7 +29,7 @@
     "additionalProperties": false,
     "properties": {
       "definition_ref": {
-        "description": "The versioned definition artifact this job executes — the playbook, workflow, pipeline, or script the engine runs. Always a typed reference, never an inline body or a provider-native id: either a resource Reference (common-elements §2.5) to the entity carrying the definition, or a data_reference (ADR-012) pinning an immutable automation_definition reference-data layer version — the pin that lets each promotion stage run exactly the definition version it verified, and lets rehydration replay the intent together with its payload. Optional: a job discovered on a brownfield engine may not yet cite its definition. Either form of URF reference is legal: a resource reference (estate/<handle>) to the entity carrying the definition, or a data reference (uuid/<v4>?reference_data_type==<kind>) pinning an immutable reference-data revision — the URL says which, and check_data_references enforces the kind on the data-reference form.",
+        "description": "The versioned definition artifact this job executes — the playbook, workflow, pipeline, or script the engine runs. Always a typed reference, never an inline body or a provider-native id: either a resource Reference (common-elements §2.5) to the entity carrying the definition, or a data_reference (DCM ADR-012) pinning an immutable automation_definition reference-data layer version — the pin that lets each promotion stage run exactly the definition version it verified, and lets rehydration replay the intent together with its payload. Optional: a job discovered on a brownfield engine may not yet cite its definition. Either form of URF reference is legal: a resource reference (estate/<handle>) to the entity carrying the definition, or a data reference (uuid/<v4>?reference_data_type==<kind>) pinning an immutable reference-data revision — the URL says which, and check_data_references enforces the kind on the data-reference form.",
         "type": "string",
         "format": "udlm-ref-url"
       },

@@ -85,7 +85,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Compute/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — ADR-013; the host carries their rollup.)
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Compute/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL
@@ -102,7 +102,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ### OpenZFS — CANONICAL
 **Covers:** `OpenZFS` · **Body:** OpenZFS project · **Since:** 2026-07-13 · **Where:** Storage.Pool (zpool/vdev topology, redundancy), Storage.Dataset (dataset/zvol, mountpoint, hierarchy, properties).
-**Why:** the host-local pool/dataset layer between physical drives (Redfish Drive, on the discovery/DCIM side per ADR-013) and cluster-provisioned volumes (Storage.Volume/Swordfish) had no vocabulary; OpenZFS is the one the producers actually speak (`zpool`/`zfs` on the fleet's storage hosts) and the de-facto standard for the pool→vdev→dataset shape. *Alternatives:* model a pool as Storage.Cluster (wrong — "cluster" is multi-node/distributed; a zpool is single-host) and a dataset as Storage.Volume (wrong — a Volume is a cluster-provisioned PVC/CSI claim, not a host-local hierarchy-bearing filesystem); both rejected as semantic overloads. Swordfish StoragePool aligns the capacity/redundancy fields (§storage family). **License:** CDDL-1.0 — compatible-reference (vocabulary referenced, no code).
+**Why:** the host-local pool/dataset layer between physical drives (Redfish Drive, on the discovery/DCIM side per DCM ADR-013) and cluster-provisioned volumes (Storage.Volume/Swordfish) had no vocabulary; OpenZFS is the one the producers actually speak (`zpool`/`zfs` on the fleet's storage hosts) and the de-facto standard for the pool→vdev→dataset shape. *Alternatives:* model a pool as Storage.Cluster (wrong — "cluster" is multi-node/distributed; a zpool is single-host) and a dataset as Storage.Volume (wrong — a Volume is a cluster-provisioned PVC/CSI claim, not a host-local hierarchy-bearing filesystem); both rejected as semantic overloads. Swordfish StoragePool aligns the capacity/redundancy fields (§storage family). **License:** CDDL-1.0 — compatible-reference (vocabulary referenced, no code).
 
 ## Kubernetes / CNCF ecosystem
 
@@ -145,7 +145,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** directory services are these protocols; FreeIPA/AD are providers. **License:** IETF Trust — compatible-reference.
 
 ### NMstate + IETF ietf-ip (RFC 8344) — host addressing & network config — CANONICAL
-**Covers:** `NMstate` `RFC-8344` · **Body:** nmstate.io (Red Hat) / IETF · **Since:** 2026-07-15 · **Where:** Network.IPAddress (`address` + `allocation`-as-`origin`, RFC 8344 `origin` = NMstate `ipv4/ipv6.address`), Network.ConnectionProfile (the NMstate interface schema by reference — state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver). Grounds the host-networking-as-data model (ADR-023).
+**Covers:** `NMstate` `RFC-8344` · **Body:** nmstate.io (Red Hat) / IETF · **Since:** 2026-07-15 · **Where:** Network.IPAddress (`address` + `allocation`-as-`origin`, RFC 8344 `origin` = NMstate `ipv4/ipv6.address`), Network.ConnectionProfile (the NMstate interface schema by reference — state/ipv4/ipv6/vlan/link-aggregation/bridge/mac-vlan/routes/dns-resolver). Grounds the host-networking-as-data model (DCM ADR-023).
 **Why:** the open standards converge on `{address, prefix, origin}` + parent-by-reference (RFC 8343/8344, NMstate, NetBox, Redfish) — the strongest adopt signal. NMstate is NetworkManager's **declarative** desired-state API — **Apache-2.0, a Red Hat project** (RHEL `network`-role backend, OpenShift Kubernetes-NMState operator) — and maps 1:1 to `NodeNetworkConfigurationPolicy.spec.desiredState`. Tier-2 adopt-by-reference: UDLM owns identity + the conformance pointer, NMstate owns the config body. **License:** NMstate Apache-2.0 — compatible-reference; RFC 8344 IETF Trust — compatible-reference.
 
 ### OAuth 2.0 Rich Authorization Requests — RFC 9396 — PATTERN

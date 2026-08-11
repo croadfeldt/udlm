@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.Location/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.Location/0.4.4",
   "conforms_to": "udlm/0.1",
   "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b",
   "resource_type": "Facility.Location",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Location",
-    "description": "A physical place resources are located in — a site, room, rack, or bench — nesting into a containment hierarchy. Resources declare where they sit; the control plane uses it for physical organization and for location-scoped ambient dependencies (cooling, uplink) via the profile/scope mechanisms. Power is intentionally out of scope here: it is carried by each host's own `depends_on Facility.PowerFeed` edge(s) (ADR-013), which may differ even within one rack.",
+    "description": "A physical place resources are located in — a site, room, rack, or bench — nesting into a containment hierarchy. Resources declare where they sit; the control plane uses it for physical organization and for location-scoped ambient dependencies (cooling, uplink) via the profile/scope mechanisms. Power is intentionally out of scope here: it is carried by each host's own `depends_on Facility.PowerFeed` edge(s) (DCM ADR-013), which may differ even within one rack.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-13T00:00:00Z",
     "generated": true,
@@ -22,7 +22,7 @@
         },
         {
           "class": "Facility.Location",
-          "version": "0.4.3",
+          "version": "0.4.4",
           "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b"
         }
       ]

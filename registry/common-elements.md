@@ -85,7 +85,7 @@ resolved_ref:  uuid/4c1f8e2a-9b3d-4a67-8c2e-d51f097b3a44@sha256:…   # after re
 
 The former six-field object (`target_handle`/`target_uuid`/`resource_type`/`target_version`/
 `target_digest`/`target_authority`) is **removed** — every field became an axis of the one URL.
-Distinct from a `data_reference` (ADR-012), which points at immutable reference-data.
+Distinct from a `data_reference` (DCM ADR-012), which points at immutable reference-data.
 
 ### 2.6 `Condition` (status)  *(adopt OSAC/K8s vocabulary)*
 ```json
@@ -135,24 +135,24 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   "64GB"`, `cpu.count: 16`) and MAY carry a structured inline inventory (`memory.modules[]`, `disks[]`).
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
-- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — the control plane is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
+- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (DCM ADR-013 — the control plane is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
   by **`composition_visibility`** (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
 
 **The relationship (the keystone):** where a component *is* a kept entity, it is `contained_by` the
-parent and reconciles against the parent's rollup. Post-ADR-013 the only such component is
+parent and reconciles against the parent's rollup. Post-DCM ADR-013 the only such component is
 `Hardware.NetworkInterface` (the control plane configures it — bond/bridge); a host's `nics[]` rollup and its
 `Hardware.NetworkInterface` entities describe the same interfaces, and a mismatch is **drift** —
 surfaced with provenance, never silently reconciled away. This is the same `transparent` composition
 that registers sub-resources as control-plane entities (service-dependencies §11d), applied below the device
 boundary. For memory/CPU/disk/GPU there is **no component entity** to reconcile against: capacity is a
 rollup *attribute* of the Compute host (`memory.size: "64GB"`, `cpu.count: 16`), full stop — the sum is
-never re-derived from parts because the parts are out of scope (ADR-013).
+never re-derived from parts because the parts are out of scope (DCM ADR-013).
 
 **Why the rollup is always present** — it lets a homelab and an enterprise alike declare a host with
 just its aggregate capacity, which is all placement needs. If UDLM ever needs to asset-track every
-DIMM/GPU as a lifecycle entity, that is the **deferred discovery-archetype** path (ADR-013 — a
+DIMM/GPU as a lifecycle entity, that is the **deferred discovery-archetype** path (DCM ADR-013 — a
 discovered-only asset outside the request catalog, or an external DCIM information-provider), *not* a
 `provisioning` component type. The rollup still matches the adopted standards: Redfish exposes
 `ComputerSystem.MemorySummary.TotalSystemMemoryGiB` and Metal3 `status.hardware.ramMebibytes`; the
@@ -230,7 +230,7 @@ partition_mechanism: sr-iov     # OPTIONAL; only when device_class=partition: sr
 | `aggregate` | a **composite of many** interfaces (N→1) | **bond / LACP LAG** (802.1AX) | `lower_layer` → the member NICs |
 | `bridge` | a **software L2 bridge over many** ports (N→1) | **Linux bridge / OVS bridge** (802.1Q) | `lower_layer` → the bridged ports |
 
-The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, ADR-013): an **SR-IOV VF / vETH** =
+The device-partition mechanism applies to interfaces (GPU partitioning is deferred — GPU is a host capability, DCM ADR-013): an **SR-IOV VF / vETH** =
 `Hardware.NetworkInterface` `device_class: partition`, `partition_mechanism: sr-iov` (or `vlan`/`macvlan`),
 `parent_device` → the physical NIC. A **bond** = `Hardware.NetworkInterface` `device_class: aggregate`,
 `aggregation.mode: 802.3ad`, `lower_layer` → its member NICs; a **bridge** =

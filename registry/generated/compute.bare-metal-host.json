@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.10.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.10.2",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
   "resource_type": "Compute.BareMetalHost",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Bare Metal Host",
-    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, §28), carries aggregate hardware capacity (cpu/memory/storage/gpu) as host attributes (§26; ADR-013 — components are not separate records), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (docs/spec/foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
+    "description": "A physical machine as a managed ASSET (the box itself) — the raw-resource form of compute. It can exist unallocated in inventory (lifecycle_state: available, §28), carries aggregate hardware capacity (cpu/memory/storage/gpu) as host attributes (§26; DCM ADR-013 — components are not separate records), and is the thing that hosts workloads (VMs, containers, OSDs). An ALLOCATION of a host to a consumer is NOT a separate type — it is the Ownership/Allocation model (docs/spec/foundations/ownership-sharing-allocation.md §2.1 whole-allocation); a running 'instance' is a realized entity of this type. Grounded in Redfish ComputerSystem (inventory/system) + Metal3 BareMetalHost (provisioning lifecycle).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-27T00:31:44Z",
     "generated": true,
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.1",
+          "version": "1.2.2",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Compute.BareMetalHost",
-          "version": "0.10.1",
+          "version": "0.10.2",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -34,7 +34,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, DCM ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
       },
       "cpu": {
         "type": "object",
@@ -84,7 +84,7 @@
         "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-004); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
         "oneOf": [
           {
             "type": "object",
@@ -138,7 +138,7 @@
           "transparent",
           "selective"
         ],
-        "description": "Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate host attributes, not component records (ADR-013). opaque = rollup only."
+        "description": "Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate host attributes, not component records (DCM ADR-013). opaque = rollup only."
       },
       "identity": {
         "type": "object",

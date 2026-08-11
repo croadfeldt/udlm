@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.7.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.7.1
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: type
 resource_type: Network.IPAddressPool
 parent: Network
-version: 0.7.0
+version: 0.7.1
 family: Resource
 status: active
 # OWN-007 — the pool entity itself is owned outright by the platform Tenant; what it PRODUCES is an
@@ -148,7 +148,7 @@ adopts:
 - standard: RFC-8344
   version: RFC-8344
   standard_name: ietf-ip (address family / prefix)
-  role: prefix + ip_family shape reused from Network.IPAddress (same family, ADR-023)
+  role: prefix + ip_family shape reused from Network.IPAddress (same family, DCM ADR-023)
   source: https://www.rfc-editor.org/rfc/rfc8344.html
   license: IETF-Trust
   license_compatibility: compatible-reference

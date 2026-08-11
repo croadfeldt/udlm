@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.7.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.IPAddressPool/0.7.1",
   "conforms_to": "udlm/0.1",
   "uuid": "00257168-ae65-475c-bf34-f14f2e39f855",
   "resource_type": "Network.IPAddressPool",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.IPAddressPool",
-          "version": "0.7.0",
+          "version": "0.7.1",
           "uuid": "00257168-ae65-475c-bf34-f14f2e39f855"
         }
       ]
@@ -187,7 +187,7 @@
       "standard": "RFC-8344",
       "version": "RFC-8344",
       "standard_name": "ietf-ip (address family / prefix)",
-      "role": "prefix + ip_family shape reused from Network.IPAddress (same family, ADR-023)",
+      "role": "prefix + ip_family shape reused from Network.IPAddress (same family, DCM ADR-023)",
       "source": "https://www.rfc-editor.org/rfc/rfc8344.html",
       "license": "IETF-Trust",
       "license_compatibility": "compatible-reference",

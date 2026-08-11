@@ -304,7 +304,7 @@ Step 4 fills a field the request didn't *already* carry — `namespace`. (If the
 time, it's already set — flagged non-portable — so this step leaves it alone.)
 
 The value lives in **data**, and a **policy selects it** — the model's original split at work: *layers set
-the stage for data; policies refine and validate it* ([ADR-024](../adr/README.md)).
+the stage for data; policies refine and validate it* ([DCM ADR-024](../adr/README.md)).
 A governed layer holds the values — the tenant's namespace, or a small table of provider → value — and a
 post-placement enrichment policy looks up the right one for the chosen provider and injects it. The value
 stays data; the only logic is the lookup.

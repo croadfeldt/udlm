@@ -1,5 +1,5 @@
 # Built-in profile: SOVEREIGN — data-sovereignty posture (strictest built-in floor).
-# policy_profile grouping (DCM ADR-007). Superset of FSI: in-boundary key material, sovereign-only
+# policy_profile grouping (ADR-007). Superset of FSI: in-boundary key material, sovereign-only
 # placement, and sub-processor restriction. Full production architecture — implemented against dev in Sept.
 record_type: profile
 uuid: 6ed686f0-0ade-4d0b-b204-5cf1bb747dd0
@@ -9,9 +9,9 @@ name: Sovereign
 description: Data-sovereignty profile — the FSI floor plus in-boundary signing/key material (audit STH
   keys never leave the sovereignty boundary, universal-audit AUD-012), sovereign-only placement (realization
   confined to authorized jurisdictions/zones, sovereignty declaration attested not self-asserted, the control plane
-  ADR-022), and sub-processor restriction. Every mechanic is production-grade; September implements it
+  DCM ADR-022), and sub-processor restriction. Every mechanic is production-grade; September implements it
   against the dev floor for evaluation.
-version: 1.1.1
+version: 1.1.2
 status:
   state: active
 contains:

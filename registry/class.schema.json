@@ -28,7 +28,7 @@
           "scope": "Compute.VM.OCPVirt",
           "optional": true,
           "state": "proposed",
-          "description": "Target OpenShift namespace for the VirtualMachine object. The request-realization enrichment step fills this from a governed layer via post-placement policy (ADR-024); a consumer never names it in portable intent.",
+          "description": "Target OpenShift namespace for the VirtualMachine object. The request-realization enrichment step fills this from a governed layer via post-placement policy (DCM ADR-024); a consumer never names it in portable intent.",
           "schema": {
             "type": "string",
             "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
@@ -598,7 +598,7 @@
   "$defs": {
     "shared_data_element": {
       "title": "SharedDataElement",
-      "description": "The composable unit of the Class hierarchy (ADR-038 §2): a data element + its value vocabulary, held at a Class scope. 'Base field', 'shared vocabulary', and 'provider extension' collapse into one shape distinguished only by `scope`. The element `schema` is a declarative JSON-Schema fragment (T1 — data, never executable behavior); `values` are reference-data (ADR-012), the element curated `proposed → canonical`.",
+      "description": "The composable unit of the Class hierarchy (ADR-038 §2): a data element + its value vocabulary, held at a Class scope. 'Base field', 'shared vocabulary', and 'provider extension' collapse into one shape distinguished only by `scope`. The element `schema` is a declarative JSON-Schema fragment (T1 — data, never executable behavior); `values` are reference-data (DCM ADR-012), the element curated `proposed → canonical`.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -628,7 +628,7 @@
           "required": [
             "reference_data_type"
           ],
-          "description": "Optional — declares that this element's values are a GOVERNED vocabulary (ADR-012 reference-data of the named kind), not an inline enum. The element names the vocabulary KIND; the canonical terms are reference-data records of that kind (curated proposed → canonical). Whether an instance MAY supply a bare literal or MUST resolve to a canonical term (a `data_reference`, ADR-012) is a PROFILE floor (ADR-007) enforced by the vocabulary-intake ladder (ADR-039 — match/mint, strict-profile-unknown-refused) — NOT a field here: homelab may write a bare string, sovereign must reference a canonical term.",
+          "description": "Optional — declares that this element's values are a GOVERNED vocabulary (DCM ADR-012 reference-data of the named kind), not an inline enum. The element names the vocabulary KIND; the canonical terms are reference-data records of that kind (curated proposed → canonical). Whether an instance MAY supply a bare literal or MUST resolve to a canonical term (a `data_reference`, DCM ADR-012) is a PROFILE floor (ADR-007) enforced by the vocabulary-intake ladder (ADR-039 — match/mint, strict-profile-unknown-refused) — NOT a field here: homelab may write a bare string, sovereign must reference a canonical term.",
           "properties": {
             "reference_data_type": {
               "type": "string",
@@ -647,7 +647,7 @@
         "optional": {
           "type": "boolean",
           "default": false,
-          "description": "Whether the element is optional at its scope (ADR-014 optionality-with-conformity)."
+          "description": "Whether the element is optional at its scope (DCM ADR-014 optionality-with-conformity)."
         },
         "description": {
           "type": "string",

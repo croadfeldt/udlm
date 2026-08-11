@@ -1,5 +1,5 @@
 # Built-in profile: STANDARD — baseline production posture.
-# policy_profile grouping (DCM ADR-007). Floor is a superset of dev's by set-containment
+# policy_profile grouping (ADR-007). Floor is a superset of dev's by set-containment
 # (profile-resolution.md): adds governance-matrix enforcement, recovery, and drift reconciliation.
 record_type: profile
 uuid: 7ce1ac91-4a8b-4dbb-82c2-f468e9eb0499
@@ -8,7 +8,7 @@ conforms_to: udlm/0.1
 name: Standard
 description: Baseline production profile — the dev/evaluation floor plus governance-matrix enforcement,
   recovery policy, and steady-state drift reconciliation. The default posture for non-regulated workloads.
-version: 1.1.0
+version: 1.1.1
 status:
   state: active
 contains:
