@@ -8,7 +8,7 @@
 
 Settings — profile-governed values, thresholds, toggles — were scattered across docs and **restated wherever a doc branched on them**, and they drifted (A5: the interaction-credential lifetime was defined two different ways). The single-source guard catches a duplicate **rule-ID**, but a duplicate **value table** has no ID, so this class kept recurring.
 
-The deeper issue: a "setting" is not just a value. From the **data model** it is a *parameter + allowed values + rule*. But **operating** it pulls in configuration, usability, enforcement, and enablement — implementation concerns. And in practice settings want to be **grouped and composed** (base defaults, per-module settings, profile overlays, org/tenant overrides), not managed one scattered value at a time. UDLM needs one model for *defining* settings and one for *managing* them, on the right side of the the substrate and its control plane boundary.
+The deeper issue: a "setting" is not just a value. From the **data model** it is a *parameter + allowed values + rule*. But **operating** it pulls in configuration, usability, enforcement, and enablement — implementation concerns. And in practice settings want to be **grouped and composed** (base defaults, per-module settings, profile overlays, org/tenant overrides), not managed one scattered value at a time. UDLM needs one model for *defining* settings and one for *managing* them, on the right side of the substrate/implementation boundary.
 
 ## Decision
 

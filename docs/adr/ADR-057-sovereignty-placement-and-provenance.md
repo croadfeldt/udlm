@@ -21,7 +21,7 @@ For **both**, UDLM's role is identical and bounded (ADR-008): **codify the requi
 
 The provenance-admission need is real and already partly built — but **scattered and not unified as sovereignty**:
 - **Attestation R2** proves an entity's sovereignty is *backed* by evidence, but doesn't say *which sources are approved* for a boundary.
-- **Accreditation** vets *subjects* (a provider, a peer), and **capability admission** (ADR-PROV-003) gates a provider's *capabilities* default-deny — both are admission gates, but neither is expressed as "this boundary admits only docs/spec/foundations/sources on its approved list."
+- **Accreditation** vets *subjects* (a provider, a peer), and **capability admission** (ADR-PROV-003) gates a provider's *capabilities* default-deny — both are admission gates, but neither is expressed as "this boundary admits only sources on its approved list."
 - P4 covers *where a thing may live*, never *whether its origin is admitted here*.
 
 So the operator question "is this server/image/firewall from an approved source, on the approved list for my sovereignty zone?" has enforcement pieces but **no codified requirement in the data model to point them at**. This ADR unifies them under sovereignty's second dimension — **without new enforcement machinery**.

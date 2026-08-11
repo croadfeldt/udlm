@@ -949,7 +949,7 @@
         "cost"
       ],
       "x-extensible-enum": true,
-      "description": "Data ROLE — the purpose axis (ADR-PROV-001; docs/spec/contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); docs/spec/governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
+      "description": "Data ROLE — the purpose axis (ADR-PROV-001; docs/spec/contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
     }
   }
 }

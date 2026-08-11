@@ -4,7 +4,7 @@
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-P1..P5`, to which this adds `PROJ-P6`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
-dual anchor); ADR-025 (the control plane implementation); ADR-008 (the the substrate and its control plane peer test); ADR-011 (sovereignty & residency);
+dual anchor); ADR-025 (the control plane implementation); ADR-008 (the substrate and its control plane peer test); ADR-011 (sovereignty & residency);
 `docs/spec/contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
 

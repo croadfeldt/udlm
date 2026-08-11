@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.3",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Compute.VM",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -25,7 +25,7 @@
         },
         {
           "class": "Compute.VM",
-          "version": "1.5.2",
+          "version": "1.5.3",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]

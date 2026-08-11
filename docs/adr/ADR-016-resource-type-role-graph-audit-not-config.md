@@ -6,7 +6,7 @@
 
 ## Context
 
-A resource-type spec is tempting to grow into a full model of everything a resource can be configured with — every container env var and security-context field, every VM device knob. That instinct is wrong, and it breaks the the substrate and its control plane boundary: a peer that realizes the same intent with a *different* provider cannot read a spec bloated with one provider's config surface, and the model swells into a copy of every runtime's API. The recurring question — *"how granular should a resource type be?"* — needs one settled answer. And its corollary: **when a provider genuinely can expose more, how does that get configured — without polluting the portable type?**
+A resource-type spec is tempting to grow into a full model of everything a resource can be configured with — every container env var and security-context field, every VM device knob. That instinct is wrong, and it breaks the substrate/implementation boundary: a peer that realizes the same intent with a *different* provider cannot read a spec bloated with one provider's config surface, and the model swells into a copy of every runtime's API. The recurring question — *"how granular should a resource type be?"* — needs one settled answer. And its corollary: **when a provider genuinely can expose more, how does that get configured — without polluting the portable type?**
 
 ## Decision
 
@@ -50,7 +50,7 @@ Provider-specific config values are stored as provider-namespaced state (formerl
 - **Provider:** owns the concrete config schema, declares its config-projection depth, and naturalizes it (ADR-023).
 
 ## Options considered
-- **(A) Model the full config surface in the type** — rejected: breaks the the substrate and its control plane boundary, swells the model into a copy of every runtime's API, and the moment two providers differ the spec can no longer be shared.
+- **(A) Model the full config surface in the type** — rejected: breaks the substrate/implementation boundary, swells the model into a copy of every runtime's API, and the moment two providers differ the spec can no longer be shared.
 - **(B) Model nothing; everything is provider config** — rejected: then there is no dependency graph, no audit trail, no drift baseline — UDLM's whole reason to exist.
 - **(C) [chosen]** Model the graph + audit + observability subset as the portable base; project the rest through the control plane (config-projection), captured as portability-flagged provider extensions.
 

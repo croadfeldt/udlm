@@ -5,7 +5,7 @@
 > **Scope.** This document defines the three abstractions the **data model** is built from and their
 > universal properties. How an implementation *connects* them at runtime — the event loop, the policy
 > evaluator, the control-plane components — is implementation architecture, not the data model; it is owned by
-> control-plane architecture docs, and this document points to it rather than specifying it (the the substrate and its control plane boundary,
+> control-plane architecture docs, and this document points to it rather than specifying it (the substrate/implementation boundary,
 > [ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md): if a peer could realize it differently and still be
 > valid, it is the control plane, not UDLM).
 
