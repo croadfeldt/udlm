@@ -253,7 +253,7 @@ often and with pre-negotiated terms. The contract: a provider pushes an update t
 is `auto_apply` within its declared bounds (§5.2), the update is applied without consumer intervention,
 otherwise it requires consumer approval; either way it is policy-evaluated and audited
 (`source_type: subscription_update`) and emits the subscription update events (§7). The concrete routing —
-the callback endpoint and the evaluation/dispatch steps — is implementation runtime (DCM).
+the callback endpoint and the evaluation/dispatch steps — is implementation runtime (the control plane).
 
 ### 5.2 Pre-Authorization via Subscription Terms
 
@@ -304,7 +304,7 @@ standard request channel. An implementation then assembles layers (profile → t
 if needed, writes the subscription artifact, and dispatches the provider to create the initial managed
 entities — each linked back by the `subscription_binding` relationship (§2.2). That **pipeline is
 implementation architecture**: the intent-store layout, the assembly/evaluation/placement/dispatch steps, and
-the request API are specified in the DCM architecture docs, not here.
+the request API are specified in control-plane architecture docs, not here.
 
 ---
 
@@ -372,7 +372,7 @@ Subscriptions are governed by the same policy contract as all other operations. 
 
 Subscription management (create, list, get, change tier, cancel, renew, suspend, resume, list managed
 entities, approve/reject updates) and the admin extensions (list-all, expiring, force-cancel) are exposed
-through an implementation's Consumer/Admin API. That API surface is control-plane, specified in the DCM
+through an implementation's Consumer/Admin API. That API surface is control-plane, specified in the control plane
 architecture docs — the data it operates over (the subscription artifact, its states, its updates) is
 defined in §2–§4 and §7.
 
@@ -385,7 +385,7 @@ persisted like any other artifact under the store-by-contract rule
 ([data-store-contracts.md](../contracts/data-store-contracts.md)). The **data shapes** are defined in §2
 (artifact), §2.2 (`subscription_binding`), §4 (states), and §5.2 (update channels); the concrete
 operational-store schema (tables, indexes, row-level tenant isolation) is implementation architecture,
-specified in the DCM architecture docs.
+specified in control-plane architecture docs.
 
 ---
 

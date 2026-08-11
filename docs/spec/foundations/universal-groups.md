@@ -76,7 +76,7 @@ dcm_group:
 
   # BEHAVIOR
   enforcement_model: <advisory|enforced|mandatory>
-  # advisory:   group is a tag — no system behavior enforced by DCM
+  # advisory:   group is a tag — no system behavior enforced by the control plane
   # enforced:   group drives policy scoping and system behavior
   # mandatory:  group membership is non-optional (structural requirement)
   # NOTE: For tenant_boundary groups, enforcement_model is profile-governed
@@ -104,7 +104,7 @@ dcm_group:
 
   # NESTING (for tenant_boundary groups)
   parent_group_uuid: <uuid — if this group is nested within a parent group>
-  child_groups: [<uuid>, ...]  # populated by DCM — do not set manually
+  child_groups: [<uuid>, ...]  # populated by the control plane — do not set manually
 
   # POLICY TARGETING
   # Any policy can target this group by UUID or handle — no special declaration
@@ -233,7 +233,7 @@ dcm_group:
 
 ### 3.4 policy profile — a plain `Grouping`
 
-**Purpose:** Complete DCM configuration for a use case, composed of policy_collection groups
+**Purpose:** Complete control-plane configuration for a use case, composed of policy_collection groups
 
 ```yaml
 dcm_group:
@@ -406,7 +406,7 @@ Existing API references continue to work unchanged. New API consumers can use th
 
 ---
 
-## 8. DCM System Policies
+## 8. System Policies
 
 The structural invariants `GRP-INV-001`..`GRP-INV-006` are **defined once in §2.3** (every
 GRP-* id has exactly one definition — this includes [Resource Grouping](resource-grouping.md),
@@ -437,7 +437,7 @@ policies below add behavior on top of those invariants:
 
 ### 9a.1 Community Subclass Catalog (Q35)
 
-The grouping vocabulary is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
+The grouping vocabulary is closed — system behavior is tied to declared classes only. `group_subclass` is open and advisory. The control plane maintains a community subclass catalog as a non-authoritative reference shipped with the well-known Information Provider Registry:
 
 ```yaml
 # Community subclass catalog (advisory — not enforced, not validated)
@@ -473,7 +473,7 @@ Sovereignty interaction is record kind-specific:
 | `policy_collection` | Always permitted | Policies have no sovereignty — governance artifacts |
 | `layer_grouping` | Always permitted | Layers have no sovereignty |
 | `composite` | Governed by most restrictive member | If contains cross-sovereignty resources, resource rules apply |
-| `federation` | Permitted with DCM federation rules | DCM-003 governs data flows |
+| `federation` | Permitted with the control plane federation rules | control-plane-003 governs data flows |
 
 ```yaml
 # Policy restricting cross-sovereignty resource group membership
@@ -489,7 +489,7 @@ policy:
 
 ### 9a.3 Tenant Decommission Lifecycle (Q37)
 
-Tenant decommission is the highest-stakes lifecycle operation in DCM. It requires mandatory pre-decommission validation and follows a staged sequence.
+Tenant decommission is the highest-stakes lifecycle operation in the control plane. It requires mandatory pre-decommission validation and follows a staged sequence.
 
 **Phase 1 — Pre-decommission validation (blocking):**
 - All resources in decommissionable state (not PROVISIONING or active incidents)
@@ -569,7 +569,7 @@ dcm_group:
 
 | Policy | Rule |
 |--------|------|
-| `GRP-011` | The record kind set is closed — system behavior is tied to declared classes only. group_subclass is open and advisory. DCM maintains a community subclass catalog as a non-authoritative reference. No validation or enforcement on subclass values. |
+| `GRP-011` | The record kind set is closed — system behavior is tied to declared classes only. group_subclass is open and advisory. The control plane maintains a community subclass catalog as a non-authoritative reference. No validation or enforcement on subclass values. |
 | `GRP-012` | Sovereignty interaction is record kind-specific. tenant_boundary groups never span sovereignty boundaries (structural). resource_grouping groups may span sovereignty boundaries by default — policy may restrict for classified resources. policy_collection and layer_grouping groups always permitted cross-sovereignty. composite groups are governed by the sovereignty rules of their most restrictive member type. |
 | `GRP-013` | Tenant decommission requires pre-decommission validation (resource state, cross-tenant relationships, compliance holds, child group resolution). Resources follow declared lifecycle policy. Child tenant_boundary groups must be resolved before parent decommission. Audit records enter post-lifecycle retention — never destroyed as part of Tenant decommission. |
 | `GRP-014` | Group memberships support time-bounded validity via valid_from and expires_at. Membership expiry is enforced by the Lifecycle Constraint Enforcer. Expiry produces a MEMBERSHIP_EXPIRE audit record (event group.membership_expired); MEMBER_REMOVE is additionally produced only by the `remove` on_expiry action, when the member is actually removed. on_expiry action (remove, notify, suspend_member) declared per membership. Default: notify. |
@@ -689,4 +689,4 @@ families are backfilled separately rather than retrofitted here.
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*

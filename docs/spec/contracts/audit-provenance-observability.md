@@ -101,7 +101,7 @@ What is provenance-specific and stays here: audit *queries provenance* to answer
 questions, and any store holding state has the **provenance-emission obligation** (§2.3) — it emits an event
 to the audit store on every write. How an implementation implements the audit store, the audit query API, and
 the synchronous-commit / async-enrich write path is implementation architecture (see
-[universal-audit.md](universal-audit.md) §7 and the DCM architecture docs).
+[universal-audit.md](universal-audit.md) §7 and control-plane architecture docs).
 
 ---
 
@@ -111,7 +111,7 @@ Observability answers "is the system healthy and performing?" — forward-lookin
 operates on **event streams and metrics**, not on provenance or the audit trail.
 
 Observability is almost entirely **implementation architecture**: the metrics surface (metric names, labels),
-the collection pipeline, the dashboards, and the telemetry backends are owned by the DCM architecture docs,
+the collection pipeline, the dashboards, and the telemetry backends are owned by control-plane architecture docs,
 not by the data model. The one durable data-model point is the **audit-vs-observability distinction**,
 stated canonically in [universal-audit.md](universal-audit.md) §11 — audit is the tamper-evident record of
 *what changed and who authorized it* (retained for years, compliance-grade, authoritative); observability is
@@ -124,7 +124,7 @@ separation exists to prevent.
 ## 5. System policies (audit / observability)
 
 These are UDLM data (profile-governed where noted); the mechanism an implementation uses to satisfy them lives
-in the DCM architecture docs.
+in control-plane architecture docs.
 
 | ID | Policy |
 |----|--------|
@@ -142,5 +142,5 @@ in the DCM architecture docs.
   [universal-audit.md](universal-audit.md).
 - The **audit store architecture, the audit query API / API gateway, the two-stage write pipeline,
   cross-site audit replication, and the observability metrics surface + collection pipeline + dashboards**
-  → the DCM architecture docs (implementation architecture; a peer implements them differently and still
+  → control-plane architecture docs (implementation architecture; a peer implements them differently and still
   conforms).

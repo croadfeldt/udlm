@@ -7,7 +7,7 @@
 > domain. Stores are defined by CONTRACT, not technology ([data-model-core](../foundations/data-model-core.md)
 > §6, ruling D1) — a conforming implementation binds these contracts to concrete stores per profile
 > and sovereignty/tenancy policy. The concrete enforcement mechanism (the reference PostgreSQL
-> implementation, its SQL schema, RLS, and operators) is implementation architecture — see the DCM
+> implementation, its SQL schema, RLS, and operators) is implementation architecture — see the control plane
 > architecture documentation.
 
 ---
@@ -77,7 +77,7 @@ Audit records have the strictest contract — they are the compliance evidence t
 - **Retention** — minimum P365D across all deployment profiles; `fsi`/`sovereign` profiles may require P2555D (7 years).
 - **Separated privilege** — the roles that write audit records may INSERT and SELECT only; no role may UPDATE or DELETE.
 
-*The tamper-evident property means a store restored to a point before the latest audit record produces a detectable chain break; how an implementation detects and records that break is operational (see the DCM architecture documentation).*
+*The tamper-evident property means a store restored to a point before the latest audit record produces a detectable chain break; how an implementation detects and records that break is operational (see control-plane architecture documentation).*
 
 ---
 
@@ -101,4 +101,4 @@ Store bindings satisfy this per profile ([D1]): a single instance at `homelab`/`
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*

@@ -24,7 +24,7 @@ This document specifies the **substrate contract** by which Service Providers au
 
 The substrate contract is deliberately **mechanism-neutral**. UDLM defines *what* must be authenticated and *what* properties the authentication must guarantee; specific cryptographic mechanisms (mTLS, signed JWTs, hardware-bound assertions, HSM-attested tokens, etc.) are implementation choices that MUST be declared via the [schema-sharing protocol](schema-sharing.md) so that federation peers can interoperate.
 
-This means: a UDLM peer implementation MAY choose mTLS + interaction-credential (the DCM implementation's choice), or it MAY choose signed JWTs with replay protection, or any other two-factor mechanism that satisfies the contract below. Conformance is at the contract level, not the mechanism level.
+This means: a UDLM peer implementation MAY choose mTLS + interaction-credential (the control plane implementation's choice), or it MAY choose signed JWTs with replay protection, or any other two-factor mechanism that satisfies the contract below. Conformance is at the contract level, not the mechanism level.
 
 The outbound model (the implementation authenticating to providers) is specified in [credentials.md](../governance/credentials.md) and [accreditation-and-authorization-matrix.md](../governance/accreditation-and-authorization-matrix.md). This document specifies the **inbound** model.
 
@@ -363,4 +363,4 @@ The revocation cache MUST ensure revocation propagates within the profile-govern
 
 ---
 
-*UDLM substrate document. The DCM implementation implements Layer 1 via mTLS and Layer 2 via a scoped interaction credential; those specific mechanism details and operational mechanics live in the DCM implementation's documentation.*
+*UDLM substrate document. The control plane implementation implements Layer 1 via mTLS and Layer 2 via a scoped interaction credential; those specific mechanism details and operational mechanics live in the control plane implementation's documentation.*

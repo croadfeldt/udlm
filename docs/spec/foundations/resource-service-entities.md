@@ -374,7 +374,7 @@ Providers must report lifecycle events within the timeframe declared in their pr
 
 ### 7.3 Provider Capacity — declaration vs rating
 
-What UDLM carries is the provider's **capacity declaration** — reported at registration and refreshed on the provider's declared schedule (part of the provider contract). What an implementation does with it — maintaining an **internal capacity rating** per provider/type/location, its freshness/confidence bookkeeping, and the placement logic that consumes it — is a runtime optimization (a non-authoritative placement cache), not part of the data model. See the DCM architecture documentation for the rating structure and refresh mechanics.
+What UDLM carries is the provider's **capacity declaration** — reported at registration and refreshed on the provider's declared schedule (part of the provider contract). What an implementation does with it — maintaining an **internal capacity rating** per provider/type/location, its freshness/confidence bookkeeping, and the placement logic that consumes it — is a runtime optimization (a non-authoritative placement cache), not part of the data model. See control-plane architecture documentation for the rating structure and refresh mechanics.
 
 ---
 
@@ -499,7 +499,7 @@ Every Service Provider must declare its accreditation status during registration
 provider_registration:
   # ... existing fields ...
   accreditations:
-    # Reference ONLY. status/expires_at are NOT restated here — DCM resolves currency from the
+    # Reference ONLY. status/expires_at are NOT restated here — the control plane resolves currency from the
     # registered accreditation record at evaluation time (a provider cannot assert a revoked
     # accreditation is still active). framework/accreditation_type are readability hints.
     - accreditation_uuid: <uuid>       # reference to registered accreditation record
@@ -515,11 +515,11 @@ provider_registration:
     last_self_review: "2026-01-15"
     evidence_ref: <url>
 
-  # Maximum data classification this provider is permitted to handle — DCM-COMPUTED from active
+  # Maximum data classification this provider is permitted to handle — control-plane-COMPUTED from active
   # accreditations only; NOT self-declared. A provider without accreditations is capped at the hard
   # floor below (public/internal), so there is no self-declared fallback that could raise the ceiling
   # above what policy permits. A value supplied by the provider is ignored.
-  # (computed field, DCM-owned — resolved in the dcm registration verdict, not the submission)
+  # (computed field, control-plane-owned — resolved in the dcm registration verdict, not the submission)
 ```
 
 Providers without any accreditation records are treated as `self_declared` level and are subject to the most restrictive authorization matrix rules. They may only receive data classified as `public` or `internal`.

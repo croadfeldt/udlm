@@ -854,7 +854,7 @@ A provider registers with a **capability set** (each `verb × domain`), verified
 
 How the two sides of the contract learn each other's surface: the implementation advertises its own
 capabilities to providers and external consumers (§10.1), and a provider declares what it needs from
-the control plane at registration and gets a matched-capabilities answer (§10.2). This contract is
+the control plane at registration and receives a matched-capabilities answer (§10.2). This contract is
 the owner; the capability *model* itself (verbs, categories, admission) lives in §§2, 8–9.
 
 ### 10.1 The Implementation's Capability Advertisement (Wire Contract)

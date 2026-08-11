@@ -36,7 +36,7 @@ tells you exactly what to build and what to skip:
 | Tier | What it standardizes | Examples | Implement | Do **not** build |
 |---|---|---|---|---|
 | **Tier 1 — value / codelist** | the allowed *values of a single field* | ISO 4217 (currency), ISO 8601 / RFC 3339 (time), RFC 9562 (UUID), ISO 3166 (country), IANA tz | a **referenced field constraint** ("conforms to ISO 4217") — reference it, never copy/enumerate it | no support matrix, no version negotiation, no translation, no effective-version provenance |
-| **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | the **full apparatus**: an `adopts[]` reference + identity join, a provider `adopted_standard_support` matrix, DCM negotiation/translation (ADS-001…010), effective-version provenance | — |
+| **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | the **full apparatus**: an `adopts[]` reference + identity join, a provider `adopted_standard_support` matrix, the control plane negotiation/translation (ADS-001…010), effective-version provenance | — |
 
 **Rule of thumb:** *does the standard version in a way that changes its shape?* **No → Tier 1** (a near-constant
 vocabulary — pin nothing, negotiate nothing). **Yes → Tier 2** (the whole reason the ADS machinery exists).
@@ -92,7 +92,7 @@ but not the same → don't force. Defined as a Knowledge entity type in `../foun
 | **Provider support matrix** — which standard versions a provider can emit/consume | **UDLM (Data)** — a provider capability record |
 | **Consumer/type requirement** — which version a consumer needs | **UDLM (Data)** |
 | The standard's **schema / columns / semantics** | the **external standard** (referenced, never copied) |
-| **Version negotiation** (required ∩ supported), **enforcement** (reject on no overlap), **translation** between versions | **Policy (DCM)** |
+| **Version negotiation** (required ∩ supported), **enforcement** (reject on no overlap), **translation** between versions | **Policy (the control plane)** |
 | The **effective negotiated version** + any translation performed | **UDLM (Data)** — recorded as provenance (E4) |
 
 The pattern restates the data/policy boundary: **the data declares which standard versions are in
@@ -152,7 +152,7 @@ report that needs FOCUS allocation columns requires `FOCUS >=1.3`. Also pure dat
 ## 4. Version negotiation, enforcement, translation (Policy)
 
 Given a **requirement** (range) and a provider's **support matrix** (range), Policy resolves the
-intersection and acts — this is the only "logic" in the model, and it lives in DCM:
+intersection and acts — this is the only "logic" in the model, and it lives in the control plane:
 
 1. **Accept** — requirement ∩ supported is non-empty → bind at the highest common version (or
    `preferred` if inside the overlap). Record the effective version.
@@ -222,7 +222,7 @@ gates the register step. This is the end-to-end process the pieces above assume.
 
 **B. Bump the version of an adopted standard.**
 1. Update the requirement/support ranges (§3.3, §3.2) — the data only declares versions.
-2. **Negotiation is Policy** (§4): DCM resolves requirement ∩ support and Accepts / Translates / Rejects at bind time; the effective version is recorded as provenance. No spec change is needed for a peer to run a different in-range version.
+2. **Negotiation is Policy** (§4): the control plane resolves requirement ∩ support and Accepts / Translates / Rejects at bind time; the effective version is recorded as provenance. No spec change is needed for a peer to run a different in-range version.
 3. If the *adopted range itself* changes (drop an old major, add a new one), amend the register entry — **append, don't rewrite** (statuses reuse DecisionRecord curation states).
 
 **C. Replace or retire a standard** (e.g. the bespoke error envelope → RFC 9457).

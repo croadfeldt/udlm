@@ -83,7 +83,7 @@ resource_type_spec:
   ownership_model: whole_allocation    # the pool entity is owned outright by the platform Tenant
   is_pool: true
   allocation_produces_type: Network.IPAddress
-  capacity_tracking: true              # DCM tracks used/available capacity
+  capacity_tracking: true              # the control plane tracks used/available capacity
 
 # The allocation resource type
 resource_type_spec:
@@ -117,7 +117,7 @@ relationship:
       pool_capacity_after: 65533
 ```
 
-**Decommission behavior:** When the consumer decommissions their allocation entity, DCM dispatches a decommission payload to the provider. The provider releases the specific allocated resource back to the pool. The pool's available capacity increases. The AllocationRecord relationship is terminated. The allocation entity enters DECOMMISSIONED state. The pool entity is unaffected.
+**Decommission behavior:** When the consumer decommissions their allocation entity, the control plane dispatches a decommission payload to the provider. The provider releases the specific allocated resource back to the pool. The pool's available capacity increases. The AllocationRecord relationship is terminated. The allocation entity enters DECOMMISSIONED state. The pool entity is unaffected.
 
 **Cross-tenant visibility:** The allocation entity is in the consumer's Tenant. The consumer cannot see the pool entity unless an explicit cross-tenant relationship or Information Provider is configured. The pool owner can see allocation counts and capacity via the provider's capacity reporting API — they cannot see the consumer's entity data.
 
@@ -175,7 +175,7 @@ relationship:
     # optional: informational stake only
 ```
 
-**Decommission behavior:** VLAN-100 cannot be decommissioned while any `stake_strength: required` stakes exist. The decommission attempt is deferred — not rejected — and a `DECOMMISSION_DEFERRED` event is generated. DCM notifies the resource owner of all active required stakes. The owner can request that stakeholders release their stakes (by decommissioning their VMs or migrating to a different VLAN) before decommission proceeds.
+**Decommission behavior:** VLAN-100 cannot be decommissioned while any `stake_strength: required` stakes exist. The decommission attempt is deferred — not rejected — and a `DECOMMISSION_DEFERRED` event is generated. The control plane notifies the resource owner of all active required stakes. The owner can request that stakeholders release their stakes (by decommissioning their VMs or migrating to a different VLAN) before decommission proceeds.
 
 **Cross-tenant visibility:** The consumer's VM can reference VLAN-100 (read access for attachment purposes). The consumer cannot modify VLAN-100 or see its owner's configuration details unless an explicit cross-tenant authorization grants that. The resource owner (NetworkOps) can see all active stakes on their resource — this is how they know which consumers are affected by a planned decommission.
 
@@ -214,7 +214,7 @@ The consumer-facing 203.0.113.128/26 is an allocation — AppTeam owns it. The p
 
 ## 5. How Placement Differs by Ownership Model
 
-Each ownership model implies a different placement shape. Placement itself is admin-policy-driven and runtime (see the DCM architecture documentation and [policy-contract.md](../contracts/policy-contract.md) `placement`); what the data model fixes is *what placement is selecting for* in each case:
+Each ownership model implies a different placement shape. Placement itself is admin-policy-driven and runtime (see control-plane architecture documentation and [policy-contract.md](../contracts/policy-contract.md) `placement`); what the data model fixes is *what placement is selecting for* in each case:
 
 - **Whole Allocation:** placement selects a provider with available capacity; the provider provisions the resource and returns it owned by the requesting Tenant.
 - **Allocation:** placement selects an eligible **pool** resource with sufficient available capacity; the pool provider carves an allocation, and a new allocation entity is created in the requesting Tenant with an `allocated_from` AllocationRecord to the pool.
@@ -234,7 +234,7 @@ The three patterns have different decommission safety behaviors:
 
 **Allocation decommission:**
 - Consumer Tenant initiates decommission of their allocation entity
-- DCM dispatches decommission to pool provider
+- the control plane dispatches decommission to pool provider
 - Pool provider releases the resource back to pool
 - AllocationRecord relationship terminated
 - Pool availability (derived from its active allocations) increases
@@ -243,7 +243,7 @@ The three patterns have different decommission safety behaviors:
 
 **Shareable decommission:**
 - Resource owner Tenant initiates decommission of the shared resource
-- DCM counts active `required` stakes (derived from the graph — never a stored counter)
+- the control plane counts active `required` stakes (derived from the graph — never a stored counter)
 - If required stakes > 0 → `DECOMMISSION_DEFERRED`
   - Notifications to all required stakeholders
   - Owner retries decommission after stakeholders release

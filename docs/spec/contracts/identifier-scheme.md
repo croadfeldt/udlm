@@ -43,7 +43,7 @@ A conformant implementation MUST distinguish three identifier types:
 
 ### 2.1 UUID — THE identifier standard (normative)
 
-UDLM/DCM standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes its
+the substrate and its control plane standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes its
 2005 predecessor; all earlier-era formats remain valid under 9562, which additionally defines
 v6/v7/v8). Every UUID citation in this spec is RFC 9562.
 
@@ -195,7 +195,7 @@ mechanism:
 
 1. **Dereference** — every well-formed URF resolves to its target data via the resolution
    contract (§9.6). UDLM owns the denotation; serving it is implementation (ADR-008 — the
-   UDLM/DCM boundary test).
+   the substrate and its control plane boundary test).
 2. **Portability** — a filter moves **verbatim** between a live query, a stored criterion,
    layer targeting, and a tool argument, meaning the same set everywhere. Re-expressing a
    filter to move it between surfaces is nonconformant.
