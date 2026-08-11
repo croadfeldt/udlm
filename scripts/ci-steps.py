@@ -28,6 +28,7 @@ NAMES = {
     "python3 tests/check_estate_tokens.py": "estate-token scrub",
     "python3 tests/check_single_source.py": "single-source (rule IDs)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
+    "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_model_vocabulary.py": "model vocabulary",
     "python3 tests/check_session_narration.py": "session narration",
     "python3 tests/check_profile_tables.py": "profile tables",

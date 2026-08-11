@@ -1,0 +1,968 @@
+_comment: 'Burn-down baseline for tests/check_implementation_neutrality.py (IMP-001). Entries are the implementation references present in the normative tier when the gate landed 2026-08-10, reported as
+  WARN. Any reference NOT listed fails CI. Keyed on (file, text) rather than line, so a reference that merely moves is still the same debt. Shrink with every sweep; never add an entry to silence a new one
+  without a ruling. The review that prompted this: dcm-project/udlm PRs 55/56/57, six comments making the same objection.'
+known:
+- file: docs/spec/contracts/audit-provenance-observability.md
+  text: the collection pipeline, the dashboards, and the telemetry backends are owned by the DCM architecture docs,
+- file: docs/spec/contracts/audit-provenance-observability.md
+  text: in the DCM architecture docs.
+- file: docs/spec/contracts/audit-provenance-observability.md
+  text: → the DCM architecture docs (implementation architecture; a peer implements them differently and still
+- file: docs/spec/contracts/cost-metering-linkage.md
+  text: (DCM)         resource ref + priced_by +          applies its cost model
+- file: docs/spec/contracts/cost-metering-linkage.md
+  text: '- **Outbound (UDLM/DCM → engine):** for a resource, the implementation hands the engine (a) the `priced_by` co'
+- file: docs/spec/contracts/cost-metering-linkage.md
+  text: '- **Inbound (engine → UDLM/DCM):** the engine returns cost (`cost.attributed`, provider-contract §10), which t'
+- file: docs/spec/contracts/cost-metering-linkage.md
+  text: '`priced_by → onprem-baremetal-2026-q3` in the cost engine. DCM resolves the capex dimensions from fields + the'
+- file: docs/spec/contracts/cost-metering-linkage.md
+  text: '## 4. DCM side — enabling the hooks'
+- file: docs/spec/contracts/data-roles.md
+  text: Role-based dispatch is **not new policy machinery** — the Governance Matrix already fires on every `DCM → Prov
+- file: docs/spec/contracts/data-roles.md
+  text: '- **Default rule:** `STRIP_FIELD` every non-`execution` role at the DCM→Provider boundary.'
+- file: docs/spec/contracts/data-store-contracts.md
+  text: '> implementation, its SQL schema, RLS, and operators) is implementation architecture — see the DCM'
+- file: docs/spec/contracts/data-store-contracts.md
+  text: '*The tamper-evident property means a store restored to a point before the latest audit record produces a detec'
+- file: docs/spec/contracts/event-catalog.md
+  text: Every DCM event shares a common envelope. Event-specific fields are in the `payload` object.
+- file: docs/spec/contracts/event-catalog.md
+  text: 'dcm_version: <semver>               # DCM instance version that generated the event'
+- file: docs/spec/contracts/event-catalog.md
+  text: 'dcm_instance_uuid: <uuid>           # identifies the DCM instance (federation context)'
+- file: docs/spec/contracts/event-catalog.md
+  text: 'self: <url>                       # DCM API URL for the subject entity or record'
+- file: docs/spec/contracts/event-catalog.md
+  text: 'audit_record: <url>               # DCM API URL for the audit record for this event'
+- file: docs/spec/contracts/event-catalog.md
+  text: '| `reservation.expired` | high | A reservation hold''s TTL lapsed without commit; the hold is **implicitly rele'
+- file: docs/spec/contracts/event-catalog.md
+  text: '| `reservation.expiry_unconfirmed` | critical | **DCM-authored backstop:** the hold''s TTL lapsed and the provi'
+- file: docs/spec/contracts/event-catalog.md
+  text: '# DCM-authored backstop when a provider misses its required reservation.expired (provider-contract §6a).'
+- file: docs/spec/contracts/event-catalog.md
+  text: 'grace_elapsed: <ISO 8601 duration>    # reservation_reconcile_grace waited before DCM acted'
+- file: docs/spec/contracts/event-catalog.md
+  text: 'authored_by: dcm                      # provenance — DCM, not the provider'
+- file: docs/spec/contracts/event-catalog.md
+  text: '| `ingestion.promotion_approved` | medium | Transitional entity approved for promotion to full DCM entity |'
+- file: docs/spec/contracts/event-catalog.md
+  text: '| `federation.tunnel_degraded` | high | Federation tunnel to peer DCM degraded or unavailable |'
+- file: docs/spec/contracts/event-catalog.md
+  text: '| `EVT-002` | `event_uuid` is the idempotency key. Consumers must treat duplicate `event_uuid` values as alrea'
+- file: docs/spec/contracts/event-catalog.md
+  text: '| `accreditation.status_changed` | high or critical | External registry reports a different status than DCM re'
+- file: docs/spec/contracts/identifier-scheme.md
+  text: UDLM/DCM standardize on **RFC 9562** (Universally Unique IDentifiers, May 2024 — obsoletes its
+- file: docs/spec/contracts/identifier-scheme.md
+  text: UDLM/DCM boundary test).
+- file: docs/spec/contracts/information-providers.md
+  text: An **Information Provider** is a registered DCM provider that serves as the authoritative source for a specifi
+- file: docs/spec/contracts/information-providers.md
+  text: 'DCM manages the lifecycle of resources it provisions. But resources exist in a broader organizational context '
+- file: docs/spec/contracts/information-providers.md
+  text: '- **Copy the data into DCM** — creating duplication, staleness, and an ownership conflict with the authoritati'
+- file: docs/spec/contracts/information-providers.md
+  text: Information Providers solve this by giving DCM a standard, stable, governed interface to external data without
+- file: docs/spec/contracts/information-providers.md
+  text: Same model as Service Providers. Information Providers register with DCM declaring their endpoint, the informa
+- file: docs/spec/contracts/information-providers.md
+  text: Same model as Service Providers. Information Providers expose a `/health` endpoint. DCM polls it on the same c
+- file: docs/spec/contracts/information-providers.md
+  text: Same model as Service Providers. Information Providers must be registered, validated, and certified before DCM
+- file: docs/spec/contracts/information-providers.md
+  text: Same model as Service Providers. Information Providers have a contractual obligation to notify DCM when record
+- file: docs/spec/contracts/information-providers.md
+  text: '| Event Type | Description | DCM Response |'
+- file: docs/spec/contracts/information-providers.md
+  text: '| `PROVIDER_DEGRADED` | Provider is degraded but operational | DCM flags affected references for on-demand ver'
+- file: docs/spec/contracts/information-providers.md
+  text: Information Providers translate their native data format (HR system JSON, finance system XML, LDAP records, RE
+- file: docs/spec/contracts/information-providers.md
+  text: '### 5.1 Standard Data (DCM-defined)'
+- file: docs/spec/contracts/information-providers.md
+  text: Fields that are part of the DCM-specified schema for an information type. DCM core uses these fields for looku
+- file: docs/spec/contracts/information-providers.md
+  text: DCM only relies on standard data for operational decisions. Extended data is carried in the payload but is not
+- file: docs/spec/contracts/information-providers.md
+  text: Additional fields organizations add to enrich the standard schema for their specific needs. Declared in the pr
+- file: docs/spec/contracts/information-providers.md
+  text: '# Standard fields — DCM defined, used for lookups'
+- file: docs/spec/contracts/information-providers.md
+  text: DCM looks up external records using a stable primary key — always the external UUID where available — with a f
+- file: docs/spec/contracts/information-providers.md
+  text: '# DCM UUID is what gets stored in relationship declarations'
+- file: docs/spec/contracts/information-providers.md
+  text: 'information_type_uuid: <uuid of information type in DCM registry>'
+- file: docs/spec/contracts/information-providers.md
+  text: '### 6.2 Why DCM UUID Wraps External UUID'
+- file: docs/spec/contracts/information-providers.md
+  text: 'The DCM-generated UUID is the stable internal anchor. This means:'
+- file: docs/spec/contracts/information-providers.md
+  text: '- All relationship declarations inside DCM reference the DCM UUID'
+- file: docs/spec/contracts/information-providers.md
+  text: '- All relationships pointing to the DCM UUID remain valid without modification'
+- file: docs/spec/contracts/information-providers.md
+  text: DCM uses a trust-but-verify approach to external entity references. The external system is trusted as authorit
+- file: docs/spec/contracts/information-providers.md
+  text: '### 7.1 Mode 1 — Scheduled Verification (DCM-initiated)'
+- file: docs/spec/contracts/information-providers.md
+  text: DCM calls the Information Provider's `/verify/{uuid}` endpoint on a configurable schedule for all registered e
+- file: docs/spec/contracts/information-providers.md
+  text: The Information Provider notifies DCM when a referenced record changes status. This is a contractual obligatio
+- file: docs/spec/contracts/information-providers.md
+  text: When a relationship involving an external entity reference is accessed during request processing, policy evalu
+- file: docs/spec/contracts/information-providers.md
+  text: Information types live in the same DCM Resource Type Registry as Resource Types, distinguished by category pre
+- file: docs/spec/contracts/information-providers.md
+  text: '### 8.2 DCM Default Information Types'
+- file: docs/spec/contracts/information-providers.md
+  text: '# trust_posture is DCM-assigned in the registration verdict, not stated here (DCM ADR-022).'
+- file: docs/spec/contracts/information-providers.md
+  text: '| `POST` | `/notify` | DCM calls this to acknowledge receipt of provider push events |'
+- file: docs/spec/contracts/information-providers.md
+  text: 'When an organization decides to manage business context data in DCM rather than reference an external system, '
+- file: docs/spec/contracts/information-providers.md
+  text: '| 2 | Should Information Providers support write-back — DCM updating external records via the provider? | Scop'
+- file: docs/spec/contracts/information-providers.md
+  text: '| 4 | Should DCM maintain a registry of well-known Information Providers (HR systems, finance systems) to simp'
+- file: docs/spec/contracts/information-providers.md
+  text: '- **External Entity Reference** — the stable pointer record DCM uses to reference external data'
+- file: docs/spec/contracts/information-providers.md
+  text: '- **Naturalization/Denaturalization** — translation between external native format and DCM unified format'
+- file: docs/spec/contracts/policy-contract.md
+  text: Every request into DCM carries an `operation.type` that identifies what lifecycle operation is being performed
+- file: docs/spec/contracts/policy-contract.md
+  text: system (most trusted — DCM built-in)
+- file: docs/spec/contracts/policy-contract.md
+  text: 'All policies are first-class DCM Data artifacts. They share the standard artifact metadata and lifecycle:'
+- file: docs/spec/contracts/policy-contract.md
+  text: '# Standard DCM artifact metadata (all artifacts carry this)'
+- file: docs/spec/contracts/policy-contract.md
+  text: '**implementation concern**, specified in the DCM architecture docs, not fixed here (§7.2a: built-in or'
+- file: docs/spec/contracts/policy-contract.md
+  text: '- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first'
+- file: docs/spec/contracts/policy-contract.md
+  text: 'tier: core                              # core (DCM built-in) | organization (custom)'
+- file: docs/spec/contracts/policy-contract.md
+  text: names/types are caught at bundle-compile time rather than at runtime — is an implementation concern. The DCM
+- file: docs/spec/contracts/policy-contract.md
+  text: implementation ships such a library for its engine; that library and its packaging live in the DCM
+- file: docs/spec/contracts/policy-contract.md
+  text: Both named workflow steps and dynamic policies evaluate against the same payload-type events, through the same
+- file: docs/spec/contracts/policy-contract.md
+  text: '**Fires on:** Any cross-boundary interaction (DCM → Provider, DCM → Peer DCM, Provider → DCM).'
+- file: docs/spec/contracts/policy-contract.md
+  text: The ITSM Action policy type triggers actions in connected ITSM systems as a side-effect of DCM pipeline events
+- file: docs/spec/contracts/policy-contract.md
+  text: '> **ITSM Integration** (implementation-specific; see DCM repo) covers full ITSM integration registration, capa'
+- file: docs/spec/contracts/policy-contract.md
+  text: When a policy blocks a request and no automatic resolution exists, DCM does not silently enter an override que
+- file: docs/spec/contracts/policy-contract.md
+  text: it exposes — is control-plane, specified in the DCM architecture docs, not fixed by this contract.
+- file: docs/spec/contracts/policy-contract.md
+  text: lifecycle events are the implementation's control-plane surface — specified in the DCM architecture docs and t
+- file: docs/spec/contracts/policy-contract.md
+  text: '**Control-plane surface (implementation / DCM).** The approver Admin API'
+- file: docs/spec/contracts/policy-contract.md
+  text: are implementation control-plane — specified in the DCM architecture docs, not fixed by this contract.
+- file: docs/spec/contracts/policy-contract.md
+  text: '| `POL-001` | All DCM policy types implement the unified base contract. The output schema is the only thing th'
+- file: docs/spec/contracts/provider-callback-auth.md
+  text: 'This means: a UDLM peer implementation MAY choose mTLS + interaction-credential (the DCM implementation''s choi'
+- file: docs/spec/contracts/provider-callback-auth.md
+  text: '*UDLM substrate document. The DCM implementation implements Layer 1 via mTLS and Layer 2 via a scoped interact'
+- file: docs/spec/contracts/provider-contract.md
+  text: peer DCM instance is a typed provider (PRV-004).
+- file: docs/spec/contracts/provider-contract.md
+  text: '**The boundary.** Throughout this document "the boundary" is the **trust boundary between DCM and an external '
+- file: docs/spec/contracts/provider-contract.md
+  text: The **base level** is the minimum a provider must implement for **DCM/UDLM to own the lifecycle** of its targe
+- file: docs/spec/contracts/provider-contract.md
+  text: 1. **Target resource types + capability scope** — which resource types it manages (ADR-004; §2). DCM places/ma
+- file: docs/spec/contracts/provider-contract.md
+  text: 2. **Required data** — the input schema it needs to realize/manage each target resource, so DCM can collect in
+- file: docs/spec/contracts/provider-contract.md
+  text: 3. **Config-projection detail** — the provider supplies enough config schema/detail for a DCM to project a con
+- file: docs/spec/contracts/provider-contract.md
+  text: 4. **Lifecycle functions** — the **two-phase realize** pair `reserve` / `commit`, plus `converge` / `decommiss
+- file: docs/spec/contracts/provider-contract.md
+  text: 5. **Discovered-state reporting** — report realized/discovered state **back, per resource** (denaturalization,
+- file: docs/spec/contracts/provider-contract.md
+  text: 8. **Security, governance, tenancy, RBAC** — each target resource carries its **tenant** and **governance cont
+- file: docs/spec/contracts/provider-contract.md
+  text: The floor is what makes DCM the lifecycle owner and single pane of glass for the resource at all; the scale of
+- file: docs/spec/contracts/provider-contract.md
+  text: 2. **Realized relationships — DCM-authored from the provider's report.** When a provider realizes an intent it
+- file: docs/spec/contracts/provider-contract.md
+  text: '### 1b.2 Who writes the relationship — DCM by default, provider only when required'
+- file: docs/spec/contracts/provider-contract.md
+  text: A relationship *is* data, and DCM — which orchestrated the request and already holds both the parent and child
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **minimum-necessary** — identity + relationship kind only; the provider is a PIP that *records* the edge, no'
+- file: docs/spec/contracts/provider-contract.md
+  text: So relationship-writing defaults to DCM (parent data stays inside the control plane), and provider-held relati
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **Requested — DCM generates the record.** DCM writes the relationship records into the Requested payload fro'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **Realized — DCM generates the record.** DCM writes the relationship records into the Realized payload, corr'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **Discovered — provider OR DCM generates the record.** A relationship *observed in reality* has its Discover'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Provenance is captured for every relationship** (the field-level provenance model, §1a / `data-model-core.md'
+- file: docs/spec/contracts/provider-contract.md
+  text: All providers register through the same pipeline (registration specification is implementation-specific; see D
+- file: docs/spec/contracts/provider-contract.md
+  text: '# All providers declare these. NOTE (DCM ADR-022): the sovereignty_declaration is a CLAIM, not proof.'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# For sovereign/restricted zones DCM honors it for placement only when backed by a resolved'
+- file: docs/spec/contracts/provider-contract.md
+  text: '#   requirement is only satisfied by a data|both attestation; for it DCM conveys'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# Reference ONLY. status/expiry are NOT restated here — DCM resolves currency from the registered'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# still active). The record is a VERIFIABLE CREDENTIAL: DCM VERIFIES its proof + trust_anchor and'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# Governance Matrix permits at the DCM→Provider boundary — sovereignty policy can strip a'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'ca_chain: <ca-chain>                 # issuing chain DCM pins for this provider'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'rotation_interval: P90D              # max age before DCM expects a rotated cert;'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# NOTE: trust_posture is NOT submitted here. Trust is never self-declared (DCM ADR-022) — the provider'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# submits attestation EVIDENCE (its certificate, accreditation references) and DCM COMPUTES the'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# manual firewall edit. DCM provisions the egress/ingress policy from this block; an'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'egress:                              # destinations DCM must be allowed to reach'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'ingress:                             # callbacks the provider makes back to DCM'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- endpoint: lifecycle              # maps to the DCM lifecycle endpoint (§6)'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**DCM-assigned registration verdict.** Produced by DCM *after* attestation verification; **not part of the pro'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'dcm_registration_verdict:                # DCM-OWNED — references the submission above'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'trust_posture: verified | vouched | provisional   # COMPUTED by DCM from attestation:'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# the Governance Matrix permits — DCM-computed, authoritative'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'Field notes: `rotation_interval` is the maximum certificate age DCM tolerates before flagging; `trust_posture`'
+- file: docs/spec/contracts/provider-contract.md
+  text: (pause, migrate, quarantine) is control-plane, owned by the DCM architecture docs.
+- file: docs/spec/contracts/provider-contract.md
+  text: Every provider implements a health endpoint. DCM calls it on the declared interval.
+- file: docs/spec/contracts/provider-contract.md
+  text: '"details": { }    # provider-specific; DCM treats as opaque'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**DCM response to health states:**'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'Outbound interaction (DCM → Provider):'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'Inbound interaction (Provider → DCM):'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `dispatch` | DCM → provider | `{dispatch_endpoint}` — realize/execute an assembled payload |'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `discover` | DCM → provider | `{discover_endpoint}` — enumerate or query existing state |'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `query` | DCM → provider | `{query_endpoint}`, `{capabilities_endpoint}` — read provider data/options |'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `introspect` | DCM → provider | `{dependency_introspection_endpoint}` — observed dependency edges |'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `lifecycle` | provider → DCM | `{dcm_lifecycle_endpoint}` — report a state change (§6) |'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `telemetry` | provider → DCM | telemetry delivery (§7) |'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| **`commit`** | execute | Realize the **held** reservation; write Realized State. Issued by DCM only after th'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **The reserve request carries a `requested_ttl`.** The provider **grants** a TTL within the **`min_hold_ttl`'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **TTL expiration IS release — but never silent.** No explicit `release` call is required on expiry: once `ex'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **DCM does not trust the provider event for correctness — it has its own backstop.** DCM independently track'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **TTL is changeable in both directions.** DCM **renews** a hold by re-issuing `reserve` for the existing `re'
+- file: docs/spec/contracts/provider-contract.md
+  text: // RESERVE — validate + hold, no side effects; DCM requests a TTL, provider grants within min/max
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Division of responsibility:** DCM does **not need to be the arbiter of the'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'metric/log content. DCM''s obligation is to **manage the collection**: for'
+- file: docs/spec/contracts/provider-contract.md
+  text: the data flows to the deployment's observability platform; DCM governs that
+- file: docs/spec/contracts/provider-contract.md
+  text: '**DCM MAY be the arbiter.** Where no external observability platform exists —'
+- file: docs/spec/contracts/provider-contract.md
+  text: or a packaged ("canned") solution is desired — DCM CAN serve as the
+- file: docs/spec/contracts/provider-contract.md
+  text: their telemetry surface at registration alongside other capabilities. **DCM
+- file: docs/spec/contracts/provider-contract.md
+  text: 'which signals exist, in what format, and where DCM configures delivery:'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'endpoint: <log_sink_config_endpoint>     # where DCM configures delivery'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'per_tenant_scoping: true                   # signals carry tenant scope (X-DCM-Tenant /'
+- file: docs/spec/contracts/provider-contract.md
+  text: (DCM repo) and the Universal Audit Model for the audit-record component of
+- file: docs/spec/contracts/provider-contract.md
+  text: '- The former **kinds** are capability **verbs**: Service/Resource = `realize_resources`, Information = `serve_'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'max_hold_ttl: PT30M                 # longest TTL this provider will grant; DCM''s requested_ttl is clamped to '
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Data direction:** DCM sends assembled Requested State → Provider naturalizes → executes → denaturalizes → re'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'eligibility:                           # provider-declared constraints; DCM POLICY resolves the final eligible'
+- file: docs/spec/contracts/provider-contract.md
+  text: '- **Availability is provider-authoritative; cost is not.** Unlike `cost_metadata` (an unverified hint — a prov'
+- file: docs/spec/contracts/provider-contract.md
+  text: DCM resolves `instance_size` → raw via this catalog, then applies the **same** `capacity-sufficient` test as a
+- file: docs/spec/contracts/provider-contract.md
+  text: 2. **Resolve at naturalization.** When intent is abstract (or omitted → the provider's default channel), the p
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Boundary (ADR-008):** the advertisement *shape* (inventory/capacity/eligibility) is UDLM — a peer must read '
+- file: docs/spec/contracts/provider-contract.md
+  text: '**What it does:** Serves authoritative external data to enrich DCM''s understanding of resources and business c'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'POST {query_endpoint}            # receive query; return data in DCM unified format'
+- file: docs/spec/contracts/provider-contract.md
+  text: 'POST {write_back_endpoint}       # optional; receive DCM updates to push to source system'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# authority_level is NOT self-declared — DCM assigns it; a value supplied here is ignored.'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Data direction:** DCM sends lookup query → Provider returns data in DCM format → DCM enriches entity fields.'
+- file: docs/spec/contracts/provider-contract.md
+  text: '> DCM treats composite payloads (multiple constituent resource types delivered as one catalog item) as Composi'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**What it does:** Delivers a composite payload — multiple constituent resource types with declared dependencie'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Data direction:** DCM expands the catalog request, applies policies to the assembled composite payload, disp'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Data direction:** Consumer sends credentials → the auth-capable provider validates → returns token + claims '
+- file: docs/spec/contracts/provider-contract.md
+  text: '### 8.5 `federate` — Peer DCM (Federation)'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**What it does:** Another DCM instance participating in federation. Treated as a typed Provider with a federat'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# trust_posture is NOT declared here (DCM ADR-022). A federating peer submits attestation EVIDENCE'
+- file: docs/spec/contracts/provider-contract.md
+  text: '# (deployment_accreditations above + its federation certificate); DCM COMPUTES the peer''s'
+- file: docs/spec/contracts/provider-contract.md
+  text: '**Data direction:** DCM sends job payload → Process Provider executes → reports progress via status polling or'
+- file: docs/spec/contracts/provider-contract.md
+  text: The Capability & Category Registry is the authoritative, governed list of the **capabilities and capability ca
+- file: docs/spec/contracts/provider-contract.md
+  text: Profile-governed approval methods override the registry defaults. The complete approval method resolution mode
+- file: docs/spec/contracts/provider-contract.md
+  text: An implementation's actual capability inventory lives with the implementation — for DCM it is the
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `PRV-004` | Peer DCM instances are treated as typed providers. Federation is the Provider abstraction applie'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `PRV-005` | Adding a new provider type requires implementing the base contract and defining a capability ext'
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `PRV-007` | Observability is part of the base contract: providers declare their telemetry surface (metrics, '
+- file: docs/spec/contracts/provider-contract.md
+  text: '| `PRV-009` | **Default-deny (ADR-PROV-003).** By default no use of a provider is allowed: a declared capabili'
+- file: docs/spec/contracts/schema-sharing.md
+  text: '"name": "DCM",'
+- file: docs/spec/contracts/storage-providers.md
+  text: '> owned by the DCM architecture docs. A peer that persists the same data under the same invariants, by any'
+- file: docs/spec/contracts/storage-providers.md
+  text: store are implementation architecture — specified in the DCM architecture docs, not here.
+- file: docs/spec/contracts/storage-providers.md
+  text: components cache what are implementation concerns (see the DCM architecture docs) — they require no
+- file: docs/spec/contracts/storage-providers.md
+  text: migrate, quarantine) is control-plane, owned by the DCM architecture docs.
+- file: docs/spec/contracts/storage-providers.md
+  text: implementation enforces them is DCM.
+- file: docs/spec/contracts/storage-providers.md
+  text: '| `STO-002` | Storage Provider failure behavior is declared per store sub-profile and governed by the active p'
+- file: docs/spec/contracts/storage-providers.md
+  text: auto-migration flow → the **DCM architecture docs** (implementation architecture; a peer implements them
+- file: docs/spec/contracts/universal-audit.md
+  text: The Universal Audit Model defines the **unconditional obligation** for every DCM component to record every cha
+- file: docs/spec/contracts/universal-audit.md
+  text: '**Universal — no exceptions.** Every mutation to every DCM artifact produces an audit record. Resources, polic'
+- file: docs/spec/contracts/universal-audit.md
+  text: 'dcm_version: <DCM version that produced this record>'
+- file: docs/spec/contracts/universal-audit.md
+  text: '# system_policy:      DCM System Policy — no individual human'
+- file: docs/spec/contracts/universal-audit.md
+  text: 'last_known_state: <state — updated by DCM lifecycle events>'
+- file: docs/spec/contracts/universal-audit.md
+  text: '| `CONFIG_CHANGE` | Platform | DCM configuration changed (profile activated, etc.) |'
+- file: docs/spec/contracts/universal-audit.md
+  text: 'display_name: "DCM System Policy LTC-003"'
+- file: docs/spec/contracts/universal-audit.md
+  text: │  DCM updates last_known_state on each referenced_entity
+- file: docs/spec/contracts/universal-audit.md
+  text: handling, and the latency budget — is implementation architecture, specified in the DCM architecture docs.
+- file: docs/spec/contracts/universal-audit.md
+  text: 'DCM unifies audit trail integrity and payload chain-of-custody verification into a single mechanism: a **Merkl'
+- file: docs/spec/contracts/universal-audit.md
+  text: 'signature: <Ed25519>                      # signed by DCM''s audit signing key'
+- file: docs/spec/contracts/universal-audit.md
+  text: '| `AUD-001` | Every modification to any DCM artifact must produce a Commit Log entry synchronously before the '
+- file: docs/spec/contracts/universal-audit.md
+  text: block identifying the DCM component and trigger, and the `authorized_by` chain naming the
+- file: docs/spec/contracts/universal-audit.md
+  text: 'authorization_method: policy_activation   # or system_policy for DCM System Policies'
+- file: docs/spec/contracts/universal-audit.md
+  text: 'In distributed DCM deployments (Hub + Regional + Sovereign DCMs), each instance maintains its own independent '
+- file: docs/spec/contracts/universal-audit.md
+  text: 'model: per_instance               # each DCM instance has its own Merkle tree'
+- file: docs/spec/contracts/universal-audit.md
+  text: '# Hub DCM collects the Merkle roots from all Regional DCMs'
+- file: docs/spec/contracts/universal-audit.md
+  text: '**Cross-instance queries:** Records from different trees are presented as parallel trees with cross-references'
+- file: docs/spec/contracts/universal-audit.md
+  text: '| `AUD-016` | Audit records for system-initiated changes use the nested actor shape (AUD-005): actor.immediate'
+- file: docs/spec/contracts/universal-audit.md
+  text: '| `AUD-017` | In distributed DCM deployments, each instance maintains its own independent Merkle tree scoped t'
+- file: docs/spec/contracts/universal-audit.md
+  text: '| 4 | How does integrity verification interact with distributed DCM deployments where audit records may be wri'
+- file: docs/spec/foundations/context-and-purpose.md
+  text: '*How a specific implementation''s components consume the data model — the component roster and each one''s read/'
+- file: docs/spec/foundations/context-and-purpose.md
+  text: '*Which specific implementation components carry this obligation, and exactly what each records, is implementat'
+- file: docs/spec/foundations/context-and-purpose.md
+  text: 'All DCM artifacts follow a five-status lifecycle:'
+- file: docs/spec/foundations/context-and-purpose.md
+  text: '**created_via:** Declares the ingestion path — `pr` (full GitOps review history), `api` (direct submission), `'
+- file: docs/spec/foundations/context-and-purpose.md
+  text: (naturalize in, denaturalize out — DCM ADR-023); the native form never enters the substrate. Two reasons,
+- file: docs/spec/foundations/context-and-purpose.md
+  text: '- **CMDB Replacement** — DCM''s four-state model is intended to replace the fragmented multi-CMDB problem by be'
+- file: docs/spec/foundations/data-model-core.md
+  text: execution — each with a **derived** Atomic/Composite shape (`has_constituents`, the coarse shape from DCM's
+- file: docs/spec/foundations/data-model-core.md
+  text: application IS a Composite catalog item — and the DCM ADR-016 evidence;
+- file: docs/spec/foundations/data-model-core.md
+  text: 'paths populate the same record: greenfield (forward: consumer declares Intent; DCM assembles'
+- file: docs/spec/foundations/data-model-core.md
+  text: '- **Projection to the DCM execution DAG** (per the 2026-07-06 dcm-project comparison — their'
+- file: docs/spec/foundations/data-model-core.md
+  text: '*Governs:* `docs/spec/foundations/resource-grouping.md`, `docs/spec/foundations/universal-groups.md`, DCM ADR-'
+- file: docs/spec/foundations/data-model-core.md
+  text: last three added so DCM ADR-013 overrides and discovery/rehydration writes are recordable).
+- file: docs/spec/foundations/entity-relationships.md
+  text: '**Why relationships exist at all.** Relationships are not bookkeeping — they are what lets DCM act on a system'
+- file: docs/spec/foundations/entity-relationships.md
+  text: '**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A catalog ite'
+- file: docs/spec/foundations/entity-relationships.md
+  text: '### 6.3 DCM System Policies for Cross-Tenant Relationships'
+- file: docs/spec/foundations/entity-relationships.md
+  text: '| `XTA-004` | All cross-tenant authorization decisions are policy-driven and DCM-enforced |'
+- file: docs/spec/foundations/entity-relationships.md
+  text: When a consuming Tenant claims an available allocation, DCM creates a first-class entity in the consuming Tena
+- file: docs/spec/foundations/entity-relationships.md
+  text: When the parent resource changes state, DCM iterates all active allocations and propagates according to each a
+- file: docs/spec/foundations/entity-relationships.md
+  text: DCM iterates active_allocations
+- file: docs/spec/foundations/entity-relationships.md
+  text: 'DCM creates:'
+- file: docs/spec/foundations/entity-relationships.md
+  text: When a shared resource has multiple active relationships and a lifecycle event triggers, each relationship may
+- file: docs/spec/foundations/entity-relationships.md
+  text: '**The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), DCM records'
+- file: docs/spec/foundations/entity-relationships.md
+  text: The record's shape is DCM's implementation; the content above is the contract.
+- file: docs/spec/foundations/entity-relationships.md
+  text: DCM System Policy (non-overridable — sovereignty and compliance mandates)
+- file: docs/spec/foundations/entity-relationships.md
+  text: '**Example:** A DCM System Policy might declare that all storage entities in a PCI-DSS scope must `retain` when'
+- file: docs/spec/foundations/entity-relationships.md
+  text: DCM collects action recommendations from all active relationships on shared resource
+- file: docs/spec/foundations/entity-relationships.md
+  text: 'When a destruction is deferred because active edges remain (REL-015), DCM records durably: the'
+- file: docs/spec/foundations/entity-relationships.md
+  text: deferral, closing the loop. The record shapes are DCM's implementation; this content is the
+- file: docs/spec/foundations/entity-relationships.md
+  text: '# DCM manages this automatically — consumer cannot override'
+- file: docs/spec/foundations/entity-relationships.md
+  text: │       → DCM System Policy override
+- file: docs/spec/foundations/entity-relationships.md
+  text: │  Lifecycle policy is not overridden by a DCM System Policy
+- file: docs/spec/foundations/entity-relationships.md
+  text: │  Returns realized payloads for all entities in DCM unified format
+- file: docs/spec/foundations/entity-relationships.md
+  text: 'DCM updates:'
+- file: docs/spec/foundations/entity-relationships.md
+  text: All relationships across all entities form a traversable **Entity Relationship Graph** — the complete map of h
+- file: docs/spec/foundations/entity-relationships.md
+  text: '### 13.1 DCM System Policies for Relationships'
+- file: docs/spec/foundations/entity-relationships.md
+  text: Lifecycle policy fields on relationships are fields. They carry the same `override` metadata, the same provena
+- file: docs/spec/foundations/entity-relationships.md
+  text: → DCM System Policies REL-008, REL-009 (non-overridable)
+- file: docs/spec/foundations/entity-type-families.md
+  text: '> implementation; the **Knowledge** family, first exercised by the DAV implementation). A family'
+- file: docs/spec/foundations/entity-type-families.md
+  text: A `Capability` definition that emerged in the context of DAV is equally available to DCM,
+- file: docs/spec/foundations/entity-type-families.md
+  text: lives in the **DCM** family (recorded on that term's row). No row carries two families;
+- file: docs/spec/foundations/entity-type-families.md
+  text: Modeling a non-infrastructure system (DAV) on UDLM showed the universality lives in the
+- file: docs/spec/foundations/entity-type-families.md
+  text: (Resource, Knowledge) or by its anchoring implementation ("the DCM family", "the DAV family")
+- file: docs/spec/foundations/entity-type-families.md
+  text: '| **pillar** | Which implementation pillar (DAV)? | platform / people-process / enablement |'
+- file: docs/spec/foundations/entity-types.md
+  text: 'Duration is *not* the discriminator: a Resource that lives one hour and one that lives a year are the same kin'
+- file: docs/spec/foundations/entity-types.md
+  text: Within the **Resource** and **Process** families the **shape** — **Atomic** (owns no constituents) or **Compos
+- file: docs/spec/foundations/entity-types.md
+  text: Like a Resource, a Process's **shape is derived** (`has_constituents`, not stored) — and the line is drawn fro
+- file: docs/spec/foundations/foundations.md
+  text: '> the DCM architecture docs, and this document points to it rather than specifying it (the UDLM/DCM boundary,'
+- file: docs/spec/foundations/foundations.md
+  text: '> valid, it is DCM, not UDLM).'
+- file: docs/spec/foundations/foundations.md
+  text: '**Connecting them at runtime is DCM''s concern.** At runtime these operate as a trigger-driven,'
+- file: docs/spec/foundations/foundations.md
+  text: it is specified in the DCM architecture docs, with its soundness rules (bounded convergence, idempotent
+- file: docs/spec/foundations/foundations.md
+  text: sequences them (the policy evaluator, the event bus) is DCM runtime; the two levels compose naturally
+- file: docs/spec/foundations/foundations.md
+  text: '## 5. Connecting the three at runtime — DCM''s concern'
+- file: docs/spec/foundations/foundations.md
+  text: same Data, Provider, and Policy contracts. So it is **specified in the DCM architecture docs, not here.**
+- file: docs/spec/foundations/foundations.md
+  text: you cannot express it within these three abstractions, it is either a runtime implementation detail (DCM's,
+- file: docs/spec/foundations/four-states.md
+  text: request is validated and reserved. *How* an implementation gets there is DCM runtime (below).
+- file: docs/spec/foundations/four-states.md
+  text: '**The mechanism (implementation / DCM).** *How* an implementation reaches a consistent set of holds — the'
+- file: docs/spec/foundations/four-states.md
+  text: The complete recovery-condition machine and Recovery Policy model — how an implementation drives these conditi
+- file: docs/spec/foundations/four-states.md
+  text: '| **Requested** | the Intent, **assembled**: org-default image + tags layered in, policy results recorded (sov'
+- file: docs/spec/foundations/four-states.md
+  text: All four states are distinct data domains, each with specific immutability rules and access patterns. These im
+- file: docs/spec/foundations/four-states.md
+  text: '**Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — r'
+- file: docs/spec/foundations/four-states.md
+  text: '*The rest is implementation/policy, not data model, and lives in the DCM operational model: the placement × po'
+- file: docs/spec/foundations/four-states.md
+  text: Drift is the difference between what the model believes exists (Realized State) and what actually exists (Disc
+- file: docs/spec/foundations/four-states.md
+  text: '- **Rehydration** — using a prior state record as the starting point for a new request (data-model aspects her'
+- file: docs/spec/foundations/identity-escrow.md
+  text: '- **The ADR-008 peer test** (computed/negotiated/executed → DCM): *which* provider performs'
+- file: docs/spec/foundations/knowledge-family.md
+  text: '**Family:** Knowledge (architecture / capability knowledge) — first exercised by the **DAV**'
+- file: docs/spec/foundations/knowledge-family.md
+  text: '> **free to use by any implementation, regardless of family** — DCM or any peer may use a'
+- file: docs/spec/foundations/knowledge-family.md
+  text: '> `Capability` exactly as DAV does. Constraints apply to *instances* (ownership,'
+- file: docs/spec/foundations/knowledge-family.md
+  text: to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analysis.
+- file: docs/spec/foundations/knowledge-family.md
+  text: sourced from the DCM taxonomy vs an `evidence` field sourced from a specific assessment
+- file: docs/spec/foundations/knowledge-family.md
+  text: global / shared / domain / project tiers (DAV's tier+tags model maps onto this). The
+- file: docs/spec/foundations/knowledge-family.md
+  text: '> Record** — the cluster API and its **gitops repos** (once DCM-at-home lands, query OCP/gitops'
+- file: docs/spec/foundations/knowledge-family.md
+  text: '`Gap`, `Assessment`, `Finding`, **`Resolution`** extend this family as DAV''s UDLM-conformance'
+- file: docs/spec/foundations/layering-and-versioning-annex.md
+  text: '| 11 | What is the minimum validation review period for a proposed policy before it can be activated? | Policy'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: — executable logic (OPA Rego, DCM native rules, external calls) that reads the assembled
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: DCM defines six layer types. Each has a distinct purpose, scope, ownership model, and position in the assembly
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '**Ownership:** DCM platform or platform implementor.'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '**Ownership:** DCM platform, infrastructure teams, or platform implementors.'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '**Ownership:** Service Providers or service domain teams. Stored in Service Layer SCM (source control manageme'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '**All of DCM''s data — including Resource Type Specifications — is built on the same'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: one-way pull. Each side declares its half as **data** on the layer record; DCM's assembly engine
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Field-level provenance tracks which layer set each field, which policy modified it, and the full change histor
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'The provenance model is declared in the DCM deployment configuration and activated via a Policy Group:'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: DCM ships four provenance Policy Groups. The active Profile activates the appropriate group by default. Organi
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Every layer has a formal identity model with three components that together make it uniquely identifiable, loc
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '| `system` | DCM built-in layers — ship with DCM | DCM maintainers only | Nothing above system |'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: The **Layer Handle** is the human-readable, stable identifier for a layer within DCM.
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '**Reference Priority Taxonomy (advisory — not enforced by DCM):**'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'Higher number = higher priority. Organizations adopt, adapt, or ignore this taxonomy — DCM resolves conflicts '
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Every DCM artifact — layers, policies, resource types, catalog items, provider registrations, entity definitio
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'uuid: <uuid — assigned by DCM at creation, immutable>'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '# system:    created by DCM itself (entity stubs, system artifacts)'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'Per real request evaluated, DCM captures durably: the shadow policy identity (uuid + version),'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Dashboard. The capture's shape is DCM's implementation; this content is the contract.
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: The `uuid` field contains the DCM external entity reference UUID linking to an Identity.Person or Identity.Tea
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: The `uuid` field is absent. `display_name`, `email`, and `notification_endpoint` are the primary identity fiel
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'The `owned_by.notification_endpoint` is the target for all proactive DCM notifications about an artifact:'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Conflict detection runs at layer ingestion time — not at request assembly time. This ensures all layers in DCM
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: S2["2. Handle validation<br/>Is the handle unique in DCM?<br/>Does the handle match the Git path?<br/>Does the
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'Because conflict detection runs at ingestion, all layers resident in DCM are pre-validated:'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Field override control is the mechanism by which DCM governs **who can change what, under what conditions**, a
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'Enforced by the Request Payload Processor as DCM System behavior. Not configurable. Always applied:'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: The actor list is extensible. DCM ships with built-in actors. Organizations register custom actors following t
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: '| `admin_override` | DCM Admin | ✅ | Within their scope level |'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provi
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'All layers follow the universal DCM versioning scheme: **Major.Minor.Revision**'
+- file: docs/spec/foundations/layering-and-versioning.md
+  text: 'All DCM artifacts — layers, policies, resource types, catalog items, and all other defined objects — follow a '
+- file: docs/spec/foundations/ownership-sharing-allocation.md
+  text: 'capacity_tracking: true              # DCM tracks used/available capacity'
+- file: docs/spec/foundations/ownership-sharing-allocation.md
+  text: '**Decommission behavior:** When the consumer decommissions their allocation entity, DCM dispatches a decommiss'
+- file: docs/spec/foundations/ownership-sharing-allocation.md
+  text: '**Decommission behavior:** VLAN-100 cannot be decommissioned while any `stake_strength: required` stakes exist'
+- file: docs/spec/foundations/ownership-sharing-allocation.md
+  text: '- DCM dispatches decommission to pool provider'
+- file: docs/spec/foundations/ownership-sharing-allocation.md
+  text: '- DCM counts active `required` stakes (derived from the graph — never a stored counter)'
+- file: docs/spec/foundations/resource-grouping.md
+  text: This document defines how Resource/Service Entities are organized into groups within DCM. Grouping provides th
+- file: docs/spec/foundations/resource-grouping.md
+  text: 1. **DCM Tenant** — the mandatory, first-class ownership boundary for all Resource/Service Entities
+- file: docs/spec/foundations/resource-grouping.md
+  text: '## 2. DCM Tenant'
+- file: docs/spec/foundations/resource-grouping.md
+  text: A **DCM Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in DCM. Every R
+- file: docs/spec/foundations/resource-grouping.md
+  text: '### 2.2 Tenant as a DCM System Policy'
+- file: docs/spec/foundations/resource-grouping.md
+  text: 'Mandatory Tenant membership is a **non-overridable DCM System Policy**:'
+- file: docs/spec/foundations/resource-grouping.md
+  text: '| `TEN-001` | Every Resource/Service Entity must belong to exactly one DCM Tenant | Enforced at Entity creatio'
+- file: docs/spec/foundations/resource-grouping.md
+  text: 'The Tenant boundary enables the following DCM capabilities for all resources it owns:'
+- file: docs/spec/foundations/resource-grouping.md
+  text: 'A resource belongs to exactly one Tenant — its **owner**. However, a resource can be **consumed** by multiple '
+- file: docs/spec/foundations/resource-grouping.md
+  text: 'DCM defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:'
+- file: docs/spec/foundations/resource-grouping.md
+  text: '**Subclass 1 — DCM Default Resource Group (`group_subclass: dcm_default`)**'
+- file: docs/spec/foundations/resource-grouping.md
+  text: Built into DCM. The standard mechanism for grouping resources. No implementor customization required to use it
+- file: docs/spec/foundations/resource-grouping.md
+  text: Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, r
+- file: docs/spec/foundations/resource-grouping.md
+  text: Both subclasses implement the same interface. The DCM Default Resource Group is simply DCM's own implementatio
+- file: docs/spec/foundations/resource-grouping.md
+  text: 'Every Resource Group — both DCM default and custom — must implement this interface:'
+- file: docs/spec/foundations/resource-grouping.md
+  text: '## 4. DCM System Policies for Resource Grouping'
+- file: docs/spec/foundations/resource-grouping.md
+  text: '| `GRP-001` | Every Resource/Service Entity must belong to exactly one DCM Tenant | Enforced at Entity creatio'
+- file: docs/spec/foundations/resource-grouping.md
+  text: '## 5. Grouping and DCM Capabilities'
+- file: docs/spec/foundations/resource-grouping.md
+  text: 'Resource Groups enable the following DCM capabilities at the group scope:'
+- file: docs/spec/foundations/resource-grouping.md
+  text: '- Must belong to exactly one DCM Tenant — non-overridable'
+- file: docs/spec/foundations/resource-grouping.md
+  text: Implementors register custom Resource Group types as part of their DCM implementation. Custom group types must
+- file: docs/spec/foundations/resource-grouping.md
+  text: '- **DCM Tenant** — primary ownership boundary, mandatory for all entities'
+- file: docs/spec/foundations/resource-service-entities.md
+  text: What UDLM carries is the provider's **capacity declaration** — reported at registration and refreshed on the p
+- file: docs/spec/foundations/resource-service-entities.md
+  text: '# Reference ONLY. status/expires_at are NOT restated here — DCM resolves currency from the'
+- file: docs/spec/foundations/resource-service-entities.md
+  text: '# Maximum data classification this provider is permitted to handle — DCM-COMPUTED from active'
+- file: docs/spec/foundations/resource-service-entities.md
+  text: '# (computed field, DCM-owned — resolved in the dcm registration verdict, not the submission)'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: The DCM Resource Type Hierarchy is the structural model that defines how services and resources are categorize
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: 2. **Standardization** — a common vocabulary and data contract for all resource types encourages interoperabil
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '**The key relationship:** Consumers request by Resource Type (or Resource Type Specification version). DCM res'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '## 2. The DCM Resource Type Registry'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: DCM maintains an official **Resource Type Registry** — the authoritative source of standard resource type defi
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '- Registry definitions are **vendor-neutral by hard requirement** — no vendor-specific data is permitted in a '
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '- The registry itself is subject to the same **deprecation model** as all other DCM definitions'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: DCM ships with a default set of Resource Type Categories. Implementors may define additional categories follow
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: 'owner: <DCM|community|implementor|provider>'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '- DCM ships with default categories (see Section 2.2)'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: DCM resolves the active layer instances of that type and returns them as the
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: The consumer submits the layer UUID as the field value. DCM resolves it to the full
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: Defines an abstract resource within a category. A Resource Type represents a class of resource that multiple p
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '- DCM maintains default Resource Types in the registry'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: GitOps governance, and domain model as all other DCM layers. The Resource Type
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: storage classes, and approved size profiles are all layer-referenced by default in DCM.
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '| `universal` | Part of the DCM standard spec. All providers implementing this type must support it. | Fully p'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: 'The following are non-negotiable requirements for any DCM-specified Resource Type:'
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: 5. Any Resource Type in the DCM registry that contains provider-specific fields as universal fields is invalid
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: machine-readable declaration DCM consumes at admission (capabilities as (verb × Category),
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: Provider selection in DCM is never explicit. The consumer declares intent using Resource Types and field value
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: 'The enforcement mode is itself a versioned, auditable policy — subject to the same provenance tracking as all '
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: When consumers reference a resource type — in API calls, policy conditions, or query filters — DCM accepts two
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: DCM resolves either form to the canonical `(resource_type_uuid, resource_type_name)` pair during request assem
+- file: docs/spec/foundations/resource-type-hierarchy.md
+  text: '**Internal representation:** All internal DCM data — entity records, dispatch payloads, audit records — always'
+- file: docs/spec/foundations/service-dependencies.md
+  text: This document defines how service dependencies are declared, resolved, and managed within DCM. Dependencies ar
+- file: docs/spec/foundations/service-dependencies.md
+  text: Dependencies must be declared in the data model — not discovered at runtime by providers. This is a hard requi
+- file: docs/spec/foundations/service-dependencies.md
+  text: 'DCM uses a hybrid model for dependency declaration that operates at two levels:'
+- file: docs/spec/foundations/service-dependencies.md
+  text: DCM resolves transitive dependencies — the full chain of dependencies, not just direct ones.
+- file: docs/spec/foundations/service-dependencies.md
+  text: '## 11. DCM System Policies for Dependencies'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '| `DEP-004` | Dependency payloads must be passed to dependent providers in DCM unified format | Enforced at de'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '| `DEP-006` | **Dangling-reference semantics (degrade, don''t break):** a reference whose target cannot be reso'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '| `DEP-007` | **Two-phase decommission (tombstone):** an entity with inbound edges MUST NOT be hard-deleted. T'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '| `DEP-008` | **Constrained reference topology:** edge types carry structural constraints and violations are m'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '> garbage collection — is DCM-runtime responsibility (the Kubernetes lesson: integrity is a'
+- file: docs/spec/foundations/service-dependencies.md
+  text: A Composite Service registration declares how its internal composition is exposed to DCM. This determines whet
+- file: docs/spec/foundations/service-dependencies.md
+  text: '#              Sub-resources not visible in DCM'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '# transparent: All sub-resources registered as DCM entities'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '# selective:   Provider declares which sub-resources are DCM-visible'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '- `transparent` — drift detection on all sub-resources as full DCM entities'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '- `selective` — drift detection on declared DCM-visible sub-resources only'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '| 5 | How does the dependency graph interact with the composite service definition model? | Provider model | ✅'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '## 13. DCM System Policies — Dependency Gaps'
+- file: docs/spec/foundations/service-dependencies.md
+  text: '| `DEP-016` | composite service definitions declare composition_visibility as opaque, transparent, or selectiv'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '> A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource type'
+- file: docs/spec/foundations/template-composition-model.md
+  text: 'DCM uses that declaration to:'
+- file: docs/spec/foundations/template-composition-model.md
+  text: A Service Provider that registers a Composite Service operates as a standard Service Provider for each constit
+- file: docs/spec/foundations/template-composition-model.md
+  text: '- Sequence execution rounds — the dependency graph informs DCM''s Orchestration Flow Policy'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '- Run compensation — DCM''s Recovery Policy executes compensation using the dependency graph in reverse'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '- Make routing decisions — these are DCM policy decisions'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '- **`self`** — The registering provider fulfills this constituent directly. At dispatch time, DCM sends a stan'
+- file: docs/spec/foundations/template-composition-model.md
+  text: DCM constructs a directed acyclic graph from the `depends_on` declarations. Constituents with no unresolved de
+- file: docs/spec/foundations/template-composition-model.md
+  text: DCM detects cycles at registration time and rejects the composition definition.
+- file: docs/spec/foundations/template-composition-model.md
+  text: These classifications are evaluated by DCM, not by the registering provider, when computing composite status f
+- file: docs/spec/foundations/template-composition-model.md
+  text: The field-by-field cross-walk to the DCM control plane's own catalog model lives with that control
+- file: docs/spec/foundations/template-composition-model.md
+  text: A Composite Service request produces a Composite Entity that exists across all four DCM states (Intent, Reques
+- file: docs/spec/foundations/template-composition-model.md
+  text: 'Requested expands the intent: DCM applies the Composite Service definition, runs the layer assembly to inject '
+- file: docs/spec/foundations/template-composition-model.md
+  text: '## 4. What DCM does with a composite'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '| `opaque` | Only the Composite Entity UUID is exposed to consumers. Constituent UUIDs exist internally for DC'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '| `transparent` | All constituents are first-class DCM entities with their own UUIDs, queryable individually. '
+- file: docs/spec/foundations/template-composition-model.md
+  text: '| `selective` | A declared subset of constituents are surfaced as DCM entities; the remainder are opaque. Usef'
+- file: docs/spec/foundations/template-composition-model.md
+  text: A composite decommission triggers per-constituent decommission in dependency-reverse order. DCM dispatches sta
+- file: docs/spec/foundations/template-composition-model.md
+  text: 'The only data-model-relevant rule for scoring a composite is the **bottleneck rule**: a composite candidate sc'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '| `CMP-002` | Constituent execution ordering is derived from the `depends_on` declaration by DCM. The register'
+- file: docs/spec/foundations/template-composition-model.md
+  text: '| `CMP-003` | Parallelism in constituent execution is derived from the dependency graph. Constituents with no '
+- file: docs/spec/foundations/template-composition-model.md
+  text: '| `CMP-004` | Composite status determination (`OPERATIONAL` / `DEGRADED` / `FAILED`) is performed by DCM based'
+- file: docs/spec/foundations/universal-groups.md
+  text: '# advisory:   group is a tag — no system behavior enforced by DCM'
+- file: docs/spec/foundations/universal-groups.md
+  text: 'child_groups: [<uuid>, ...]  # populated by DCM — do not set manually'
+- file: docs/spec/foundations/universal-groups.md
+  text: '**Purpose:** Complete DCM configuration for a use case, composed of policy_collection groups'
+- file: docs/spec/foundations/universal-groups.md
+  text: '## 8. DCM System Policies'
+- file: docs/spec/foundations/universal-groups.md
+  text: The grouping vocabulary is closed — system behavior is tied to declared classes only. `group_subclass` is open
+- file: docs/spec/foundations/universal-groups.md
+  text: '| `federation` | Permitted with DCM federation rules | DCM-003 governs data flows |'
+- file: docs/spec/foundations/universal-groups.md
+  text: Tenant decommission is the highest-stakes lifecycle operation in DCM. It requires mandatory pre-decommission v
+- file: docs/spec/foundations/universal-groups.md
+  text: '| `GRP-011` | The record kind set is closed — system behavior is tied to declared classes only. group_subclass'
+- file: docs/spec/governance/accreditation-and-authorization-matrix.md
+  text: '- **UDLM declares + verifies; the provider enforces at the byte level; DCM conveys.** UDLM/DCM is a *declarati'
+- file: docs/spec/governance/accreditation-and-authorization-matrix.md
+  text: 'Re-verifying every accreditation''s proof + chain on every placement is expensive at scale. DCM MAY record its '
+- file: docs/spec/governance/auth-providers.md
+  text: Every authentication mode UDLM admits — static API key, local users, GitHub OAuth, LDAP, FreeIPA, Active Direc
+- file: docs/spec/governance/auth-providers.md
+  text: '**UDLM defines the contract authentication resolves against — the capability, the mode vocabulary, the registr'
+- file: docs/spec/governance/auth-providers.md
+  text: '# Trust level — closed substrate vocabulary. PLATFORM-ADMIN-ASSIGNED, not self-declared (DCM ADR-022):'
+- file: docs/spec/governance/auth-providers.md
+  text: 'This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (the RBAC bridge — `Grouping` '
+- file: docs/spec/governance/credentials.md
+  text: authorized consumer (CPX-001) — DCM never sees, stores, or relays one. Its role is to
+- file: docs/spec/governance/credentials.md
+  text: '> authorized consumer (CPX-001) — the implementation (DCM) never sees, stores, or relays a value. The implemen'
+- file: docs/spec/governance/credentials.md
+  text: '> trust floor. This is the credential expression of the DCM Trust Model (DCM `DCM ADR-022`): DCM is a trust **'
+- file: docs/spec/governance/credentials.md
+  text: '> not a credential authority. See the DCM trust documents for the cross-plane model; this document specifies t'
+- file: docs/spec/governance/credentials.md
+  text: The implementation **selects** among providers declaring the needed `Credential.*` type by matching `credentia
+- file: docs/spec/governance/credentials.md
+  text: '> sequencing, the revocation registry, cache propagation — are implementation runtime (DCM). The ASCII'
+- file: docs/spec/governance/credentials.md
+  text: After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap ancho
+- file: docs/spec/governance/credentials.md
+  text: 'Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; th'
+- file: docs/spec/governance/registry-governance.md
+  text: when they are built, in the same way the rest of this repository specifies behavior that DCM
+- file: docs/spec/lifecycle/operational-models.md
+  text: 'description: "DCM-side watchdog after a reservation hold''s expires_at. A provider MUST emit'
+- file: docs/spec/lifecycle/operational-models.md
+  text: reservation.expired at expiry (provider-contract §6a); DCM does not trust that for correctness.
+- file: docs/spec/lifecycle/operational-models.md
+  text: DCM independently tracks expires_at (known from the reserve grant) and arms this grace timer.
+- file: docs/spec/lifecycle/operational-models.md
+  text: If no reservation.expired arrives within the grace, DCM emits its OWN reservation.expiry_unconfirmed
+- file: docs/spec/lifecycle/operational-models.md
+  text: 'on_timeout: emit reservation.expiry_unconfirmed (DCM-authored); trigger RESERVATION_EXPIRY_UNCONFIRMED'
+- file: docs/spec/lifecycle/operational-models.md
+  text: '| `RESERVATION_EXPIRY_UNCONFIRMED` | A reservation hold''s TTL lapsed and the provider did **not** emit `reserv'
+- file: docs/spec/lifecycle/operational-models.md
+  text: '| `RELEASE_AND_NOTIFY_AFFECTED` | Force-resolve an unconfirmed-expiry hold: issue an **explicit `release`** to'
+- file: docs/spec/lifecycle/operational-models.md
+  text: '> **Data-model note (data-model-core §3 [D7]):** the recovery states below are `status.conditions` OVERLAYS on'
+- file: docs/spec/lifecycle/subscription-lifecycle.md
+  text: the callback endpoint and the evaluation/dispatch steps — is implementation runtime (DCM).
+- file: docs/spec/lifecycle/subscription-lifecycle.md
+  text: the request API are specified in the DCM architecture docs, not here.
+- file: docs/spec/lifecycle/subscription-lifecycle.md
+  text: through an implementation's Consumer/Admin API. That API surface is control-plane, specified in the DCM
+- file: docs/spec/lifecycle/subscription-lifecycle.md
+  text: specified in the DCM architecture docs.
+- file: docs/spec/principles/adopted-standards.md
+  text: '| **Tier 2 — record / schema** | the *shape + semantics of a whole dataset* | FOCUS, OpenCost, OSCAL, SCIM | t'
+- file: docs/spec/principles/adopted-standards.md
+  text: two homegrown forms an implementation built twice — DAV's self-improvement `improvement_proposals` and its arc
+- file: docs/spec/principles/adopted-standards.md
+  text: '| **Version negotiation** (required ∩ supported), **enforcement** (reject on no overlap), **translation** betw'
+- file: docs/spec/principles/adopted-standards.md
+  text: 'intersection and acts — this is the only "logic" in the model, and it lives in DCM:'
+- file: docs/spec/principles/adopted-standards.md
+  text: '2. **Negotiation is Policy** (§4): DCM resolves requirement ∩ support and Accepts / Translates / Rejects at bi'
+- file: docs/spec/principles/core-tenets.md
+  text: '| **Policy** | DCM (the implementation) | Transformation, enrichment, derivation, decision, governance. *Compu'
+- file: docs/spec/principles/core-tenets.md
+  text: UDLM *defines* the contracts (Data, Provider, **and** Policy); **DCM is where Policy is applied** — it
+- file: docs/spec/principles/core-tenets.md
+  text: '| **T2** transformation is Policy | any enrich / convert / compute is Policy (DCM), not data | if a field must'
+- file: docs/spec/principles/core-tenets.md
+  text: translation's ramifications (`docs/spec/foundations/context-and-purpose.md` §7.1; DCM ADR-023).
+- file: docs/spec/principles/core-tenets.md
+  text: responsibility — evaluated and audited by the implementation (DCM), never embedded in the portable data.
+- file: docs/spec/principles/core-tenets.md
+  text: an unproven path) is **Policy** (DCM). The requirements, criticality, and evidence are **data**; the
+- file: docs/spec/principles/core-tenets.md
+  text: CI/CD — the implementation (DCM) **wraps it as a Provider** and **never reimplements it**. This is the
+- file: docs/spec/principles/core-tenets.md
+  text: a best-of-breed tool already provides. The **naturalization boundary** (DCM ADR-023) is the wrap point — a
+- file: docs/spec/principles/core-tenets.md
+  text: behavior. Everything dynamic is a **Policy** evaluated by DCM and written to the audit log.
+- file: docs/spec/principles/core-tenets.md
+  text: native format happens at the provider edge, never in the substrate** (the DCM implementation
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: 'DCM — the canonical operationalizer — holds as **hard** requirements: **auditability, observability,'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: '**DCM requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: that set it — the *same* per-field provenance DCM's audit chain consumes (see G3).
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: '**DCM requirement:** provider-contract **§7** — observability (metrics, logs, telemetry) is a *base*'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: provider obligation; DCM MAY be the authoritative telemetry arbiter; observed dependencies are
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: '- **Declared vs observed.** Relationships and outputs are declared in the spec so DCM can reconcile'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: '**DCM requirement:** `RDG-001` — the implementation MUST validate the dependency graph is a **DAG**'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: '**DCM requirement:** the **Governance Matrix** unifies authorization, sovereignty, and data-boundary'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: vet or enforce; DCM's Governance Matrix decides and enables enforcement. Pending ratification (ADR-057).
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: '`createOnly`), and **transformation/enrichment is Policy, applied by DCM** and recorded in the audit log.'
+- file: docs/spec/principles/cross-cutting-requirements.md
+  text: dependencies, and policy inputs; **DCM operationalizes it** (the Merkle audit log, the DAG engine,
+- file: docs/spec/principles/data-contracts.md
+  text: '*UDLM substrate document. Specific storage technology (PostgreSQL, CockroachDB, event-sourced stores, etc.), s'
+- file: docs/spec/principles/naming-charter.md
+  text: '# UDLM/DCM Naming Charter (Proposed)'
+- file: docs/spec/principles/naming-charter.md
+  text: '- **Data · Policy · Provider** — the invariant decomposition. UDLM = Data (substrate); DCM = Policy'
+- file: docs/spec/principles/naming-charter.md
+  text: '| **implementation** | a system that implements UDLM''s interfaces (UDLM is *implementation-neutral*); DCM/DAV '
+- file: docs/spec/principles/naming-charter.md
+  text: '| **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (ADR-017; re'
+- file: docs/spec/principles/naming-charter.md
+  text: '`edge_type`), and since DCM naturalizes **to** Kubernetes, reusing `kind` for our own top classification'
+- file: docs/spec/principles/naming-charter.md
+  text: in the IP contract, `consumer_profile` in DAV). **Open question for eng:** disambiguate into distinct terms —
