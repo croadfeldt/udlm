@@ -283,12 +283,7 @@
       "description": "Semver on the CONTENT axis (VERSIONING.md + the ADR-051 publish law). Narrowing an element's scope is breaking even with no shape change (ADR-045/UC-009)."
     },
     "family": {
-      "enum": [
-        "Resource",
-        "Process",
-        "Knowledge",
-        "Access"
-      ],
+      "$ref": "common-elements.schema.json#/$defs/family",
       "description": "The entity family this Class belongs to (entities/*.md). Vocabulary mirrors resource-type-spec.schema.json's family enum (one vocabulary)."
     },
     "status": {

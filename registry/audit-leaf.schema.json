@@ -117,7 +117,8 @@
         "STORE",
         "WRITE"
       ],
-      "description": "Generated from registry/taxonomies/action.yaml — the SAME list the audit record and the governance matrix use. This schema previously carried its own copy, which is a fourth declaration of one vocabulary and the way the first three forked."
+      "description": "Generated from registry/taxonomies/action.yaml — the SAME list the audit record and the governance matrix use. This schema previously carried its own copy, which is a fourth declaration of one vocabulary and the way the first three forked.",
+      "x-generated-from": "registry/taxonomies/action.yaml"
     },
     "decision": {
       "type": "string"

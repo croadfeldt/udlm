@@ -90,7 +90,8 @@
         "STORE",
         "WRITE"
       ],
-      "description": "Generated from registry/taxonomies/action.yaml — one declaration for every surface that names an action."
+      "description": "Generated from registry/taxonomies/action.yaml — one declaration for every surface that names an action.",
+      "x-generated-from": "registry/taxonomies/action.yaml"
     },
     "actor_uuid": {
       "type": "string",

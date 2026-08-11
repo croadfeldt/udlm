@@ -152,6 +152,55 @@
       "type": "string",
       "format": "date-time",
       "description": "RFC 3339 / ISO 8601 UTC timestamp. Standard realized fields: create_time, update_time, last_transition_time."
+    },
+    "policy_domain": {
+      "title": "Precedence scope",
+      "description": "The precedence ladder a policy, layer or constraint is scoped to — resource_type overrides tenant overrides platform overrides system, with entity the narrowest. Declared ONCE here because policy.schema.json, layer.schema.json and evaluation-context.schema.json each held a literal copy: three files, one ladder, and nothing checking they agreed. A precedence order that differs between the policy and the layer that carries it is not a disagreement anyone would notice until a decision came out wrong.",
+      "type": "string",
+      "enum": [
+        "system",
+        "platform",
+        "tenant",
+        "resource_type",
+        "entity"
+      ]
+    },
+    "edge_type": {
+      "title": "Relationship edge type",
+      "description": "The four edges of the model's graph. `depends_on` needs it to work, `contained_by` is part of it, `binds_to` borrows it across a boundary, `references` merely points at it. Nature is DERIVED from this plus `strength` — never stored (ADR-027 addendum). Declared once here; `kind`/`dependency_type`/`relationship_type` are rejected vocabulary (tests/check_model_vocabulary.py). Its home is registry/edge-types.yaml, which carries each edge's DERIVED inverse as well as its name; this enum is a projection of that file's `edge_type` column and the single-source gate proves the two still agree (VOC-002). Previously the registry header said the enum \"MUST stay in sync\" with it — two homes and a sync obligation, which is the arrangement the rule exists to replace.",
+      "type": "string",
+      "enum": [
+        "depends_on",
+        "contained_by",
+        "binds_to",
+        "references"
+      ],
+      "x-generated-from": "registry/edge-types.yaml#/edge_types/*/edge_type"
+    },
+    "family": {
+      "title": "Entity family",
+      "description": "The four families every entity belongs to: Resource (a thing that is realized), Process (something that runs), Knowledge (curated, never provisioned), Access (who may do what). The authored class surface and the generated flat-spec meta-schema each carried a copy, which is one vocabulary with two homes and no gate between them. Capitalized deliberately — the family is a proper noun in the prose tier (`docs/spec/foundations/`), and the two copies this replaces both used that casing.",
+      "type": "string",
+      "enum": [
+        "Resource",
+        "Process",
+        "Knowledge",
+        "Access"
+      ]
+    },
+    "artifact_kind": {
+      "title": "Registry artifact kind",
+      "description": "What kind of registry artifact a revision names. Shared by the regeneration manifest and the finding-routing record — the two halves of the same loop (what was regenerated, and what a finding was routed to), so a term added to one and not the other silently breaks the join between them.",
+      "type": "string",
+      "enum": [
+        "base_class",
+        "type_class",
+        "provider_class",
+        "shared_data_element",
+        "capability",
+        "provider_definition",
+        "generated_type_spec"
+      ]
     }
   }
 }

@@ -179,12 +179,7 @@
         ],
         "properties": {
           "edge_type": {
-            "enum": [
-              "depends_on",
-              "references",
-              "contained_by",
-              "binds_to"
-            ]
+            "$ref": "common-elements.schema.json#/$defs/edge_type"
           },
           "target_uuid": {
             "type": "string",

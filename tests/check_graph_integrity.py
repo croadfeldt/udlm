@@ -4,8 +4,10 @@ An edge is declared once on its natural owner; the reverse is not stored, it is 
 the edge (registry/edge-types.yaml). For that to be sound, three things must hold — this gate enforces
 them so a one-sided declaration is never a one-sided *graph*:
 
-  GRAPH-001  the edge-type registry matches the `edge_type` enum in resource-type-spec.schema.json
-             (single source — the inverse map can't drift from the allowed edge types).
+  GRAPH-001  every edge type in the vocabulary has an entry in the inverse map, and vice versa —
+             so the inverse map can't drift from the allowed edge types. The vocabulary is read
+             from its single home (common-elements.schema.json#/$defs/edge_type), itself a proven
+             projection of this registry; the schemas that use it $ref that entry.
   GRAPH-002  every relationship edge's `target` resolves to a real node (a resource type or Class).
              A dangling target means the derived inverse would land on nothing — the graph tears.
   GRAPH-003  every declared edge has a defined inverse, so B→A is derivable for every A→B. Reported as
@@ -18,6 +20,10 @@ import glob
 import json
 import os
 import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "registry", "tools"))
+import refstore  # the vocabulary's single home
+
 
 import yaml
 
@@ -60,8 +66,10 @@ def resolves(target, nodes):
 def main():
     reg = load(os.path.join(ROOT, "registry", "edge-types.yaml"))
     inv = {e["edge_type"]: e["inverse"] for e in reg.get("edge_types", [])}
-    meta = load(os.path.join(ROOT, "registry", "resource-type-spec.schema.json"))
-    schema_enum = set(meta["properties"]["relationships"]["items"]["properties"]["edge_type"]["enum"])
+    # The vocabulary's single home (common-elements.schema.json#/$defs/edge_type), not the schema
+    # that happens to use it — resource-type-spec.schema.json now $refs that entry, so reaching in
+    # by literal path would read a $ref node and find no enum at all.
+    schema_enum = set(refstore.vocabulary("edge_type"))
     nodes, edges = nodes_and_edges()
     fails = []
 

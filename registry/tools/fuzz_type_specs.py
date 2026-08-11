@@ -86,18 +86,14 @@ def load(path: pathlib.Path):
     return json.loads(text)
 
 
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import refstore
+
+
 def _build_store():
-    """Local $ref resolution store: every registry/*.schema.json under BOTH its file URI (what a
-    relative ../x.schema.json ref resolves to) and its declared $id (what the absolute
-    https://udlm.dev/... form resolves to). Refs resolve offline and deterministically — the
-    deep walk must never depend on the network."""
-    store = {}
-    for p in sorted(ROOT.glob("*.schema.json")):
-        doc = json.loads(p.read_text())
-        store[p.as_uri()] = doc
-        if isinstance(doc.get("$id"), str):
-            store[doc["$id"]] = doc
-    return store
+    """The shared offline store (registry/tools/refstore.py) — this was one of three copies."""
+    return refstore.build_store()
 
 
 STORE = _build_store()

@@ -51,13 +51,7 @@
             "description": "The policy that emitted it — the WHO of provenance. Required: an unattributable constraint cannot be resolved against a conflicting one."
           },
           "source_domain": {
-            "enum": [
-              "system",
-              "platform",
-              "tenant",
-              "resource_type",
-              "entity"
-            ],
+            "$ref": "common-elements.schema.json#/$defs/policy_domain",
             "description": "The domain the emitting policy belongs to — the precedence axis (§4). Required for the same reason: precedence cannot be applied to a constraint whose domain is unknown."
           },
           "constraint_type": {

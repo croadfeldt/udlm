@@ -53,7 +53,11 @@
     "contradicted_claim": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifact", "declared_classification", "registry_ref"],
+      "required": [
+        "artifact",
+        "declared_classification",
+        "registry_ref"
+      ],
       "description": "The upstream claim this finding disputes. Not the estate's problem statement — the registry's own published assertion, quoted back with the coordinates needed to re-examine it.",
       "properties": {
         "artifact": {
@@ -65,7 +69,11 @@
           "description": "The revision the estate was pinned to and compiled against as the baseline. Absent only where the estate had no prior pin."
         },
         "declared_classification": {
-          "enum": ["additive", "breaking", "revision"],
+          "enum": [
+            "additive",
+            "breaking",
+            "revision"
+          ],
           "description": "How the registry classified the change from previous to artifact. A finding against an 'additive' or 'revision' classification disputes the verdict itself; a finding against a 'breaking' classification disputes its scope — the break reached further than the classification said."
         },
         "classified_by": {
@@ -75,12 +83,21 @@
         "registry_ref": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["commit"],
+          "required": [
+            "commit"
+          ],
           "description": "The registry revision the claim was published at — the coordinate the registry needs to reproduce its own classification.",
           "properties": {
-            "commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
-            "branch": {"type": "string"},
-            "released_as": {"type": "string"}
+            "commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{7,40}$"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "released_as": {
+              "type": "string"
+            }
           }
         },
         "regeneration_manifest_uuid": {
@@ -93,13 +110,18 @@
     "evidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["diff_summary", "diff_artifact_ref"],
+      "required": [
+        "diff_summary",
+        "diff_artifact_ref"
+      ],
       "description": "What the estate actually observed. The typed-output diff is the whole promotion gate (ADR-046 Decision 2), so it is also the whole evidence here: two dry-run realizations of the same intent, compared on declared outputs only — never provider internals — with outputs the model declares volatile excluded by declaration rather than ad hoc.",
       "properties": {
         "diff_summary": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["changed_outputs"],
+          "required": [
+            "changed_outputs"
+          ],
           "description": "The diff reduced to what can cross a boundary safely: which declared outputs differed and in what way. Names and change kinds, never the realized values behind them — a maintainer can act on 'the shape of this output changed' without ever seeing an estate's data.",
           "properties": {
             "changed_outputs": {
@@ -109,7 +131,11 @@
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["handle", "output", "change"],
+                "required": [
+                  "handle",
+                  "output",
+                  "change"
+                ],
                 "properties": {
                   "handle": {
                     "type": "string",
@@ -120,7 +146,13 @@
                     "description": "The declared output name, as it appears in the type's `outputs` block."
                   },
                   "change": {
-                    "enum": ["added", "removed", "type_changed", "value_changed", "cardinality_changed"],
+                    "enum": [
+                      "added",
+                      "removed",
+                      "type_changed",
+                      "value_changed",
+                      "cardinality_changed"
+                    ],
                     "description": "How it differed. removed and type_changed break any consumer bound to the output; value_changed on a non-volatile output is the subtler case — the shape held but the realized fact moved, which is exactly what a compatibility claim promised would not happen."
                   },
                   "bound_consumer_count": {
@@ -142,7 +174,9 @@
             },
             "volatile_outputs_excluded": {
               "type": "array",
-              "items": {"type": "string"},
+              "items": {
+                "type": "string"
+              },
               "description": "OPTIONAL — outputs excluded from the comparison because the model declares them volatile (timestamps, generated identifiers). Recorded so the exclusion is auditable and cannot quietly hide a real difference."
             }
           }
@@ -150,7 +184,11 @@
         "diff_artifact_ref": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["locator", "digest", "release"],
+          "required": [
+            "locator",
+            "digest",
+            "release"
+          ],
           "description": "The full diff, by reference. The complete artifact stays with the estate that produced it and is released — whole, redacted, or not at all — under that estate's own egress policy (ADR-041: release is the data owner's decision, made before the crossing). The digest is what makes the reference worth anything: whatever the estate later releases can be checked against the finding it was filed with.",
           "properties": {
             "locator": {
@@ -160,11 +198,19 @@
             "digest": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["algorithm", "value"],
+              "required": [
+                "algorithm",
+                "value"
+              ],
               "description": "Content digest of the full diff artifact, binding the reference to exact bytes.",
               "properties": {
-                "algorithm": {"const": "sha-256"},
-                "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+                "algorithm": {
+                  "const": "sha-256"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
               }
             },
             "media_type": {
@@ -172,7 +218,11 @@
               "description": "OPTIONAL — the artifact's media type, so a receiver knows what it would be getting."
             },
             "release": {
-              "enum": ["released", "available_on_request", "withheld"],
+              "enum": [
+                "released",
+                "available_on_request",
+                "withheld"
+              ],
               "description": "The estate's egress disposition for the full artifact. released = attached or fetchable now; available_on_request = the estate will consider a request under its own policy; withheld = the summary is all that crosses. All three are legitimate filings — a withheld artifact with a digest and a structural summary is still actionable evidence."
             }
           }
@@ -184,12 +234,16 @@
           "properties": {
             "baseline_revisions": {
               "type": "array",
-              "items": {"$ref": "#/$defs/artifact_revision"},
+              "items": {
+                "$ref": "#/$defs/artifact_revision"
+              },
               "description": "The revisions the estate was pinned to — the side that was known good."
             },
             "candidate_revisions": {
               "type": "array",
-              "items": {"$ref": "#/$defs/artifact_revision"},
+              "items": {
+                "$ref": "#/$defs/artifact_revision"
+              },
               "description": "The revisions under test — the side the compatibility claim was made about."
             },
             "dry_run": {
@@ -211,7 +265,10 @@
     "corpus_ref": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ref", "verified_unmoved"],
+      "required": [
+        "ref",
+        "verified_unmoved"
+      ],
       "description": "The intent corpus both compilations ran against, at one recorded ref. A corpus that moved between the two runs voids the comparison entirely (ADR-046 Decision 1), so the ref is not bookkeeping — it is the precondition that makes the diff mean anything.",
       "properties": {
         "ref": {
@@ -231,7 +288,9 @@
     "reporting_estate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["estate_ref"],
+      "required": [
+        "estate_ref"
+      ],
       "description": "Who is reporting, at the resolution they chose to disclose. Every field beyond the opaque reference is the estate's own egress decision (ADR-041: sovereignty and tenancy are enforced on the way out, by the data owner, before the crossing), so this block is built to be useful when it holds nothing but a pseudonym. What must NOT appear here, in this or any other block: instance or tenant uuids, hostnames, network addresses, site or region names, or any part of the intent corpus. The registry needs to correlate reports and weigh evidence; it does not need to know whose estate it is looking at.",
       "properties": {
         "estate_ref": {
@@ -251,7 +310,11 @@
           "description": "OPTIONAL — the constraint profile the estate operates under (docs/guides/profiles.md). Useful context for judging severity; it discloses posture, not identity."
         },
         "egress_disposition": {
-          "enum": ["released", "redacted", "field_masked"],
+          "enum": [
+            "released",
+            "redacted",
+            "field_masked"
+          ],
           "description": "OPTIONAL — what the estate's egress guard did to this record on the way out. redacted and field_masked tell a maintainer that omissions here are deliberate policy, not a malformed filing (ADR-041: egress is field-granular, not binary)."
         }
       }
@@ -261,9 +324,15 @@
       "additionalProperties": false,
       "description": "OPTIONAL — the local outcome that produced this finding. Recorded so a maintainer knows the estate acted on its own evidence rather than merely observing something: the promotion was refused, and nothing partially advanced.",
       "properties": {
-        "attempted_at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
+        "attempted_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
         "outcome": {
-          "enum": ["refused", "approved_with_differences"],
+          "enum": [
+            "refused",
+            "approved_with_differences"
+          ],
           "description": "refused = the diff was dirty and the estate stayed on its pinned revisions. approved_with_differences = the estate reviewed and accepted the differences locally but still disputes the upstream classification — a weaker but entirely legitimate reason to file."
         },
         "evidence_ref": {
@@ -291,9 +360,16 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["at", "status", "by"],
+        "required": [
+          "at",
+          "status",
+          "by"
+        ],
         "properties": {
-          "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
+          "at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+          },
           "status": {
             "enum": [
               "submitted",
@@ -306,15 +382,23 @@
               "duplicate"
             ]
           },
-          "by": {"type": "string", "description": "Who moved it — the maintainer, triage rotation, or the reporter."},
-          "note": {"type": "string"}
+          "by": {
+            "type": "string",
+            "description": "Who moved it — the maintainer, triage rotation, or the reporter."
+          },
+          "note": {
+            "type": "string"
+          }
         }
       }
     },
     "resolution": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["outcome", "at"],
+      "required": [
+        "outcome",
+        "at"
+      ],
       "description": "How the finding ended, and what it changed. REQUIRED once the status is terminal (see allOf) — a finding that closes without saying what happened to it teaches the registry nothing, which is the one failure this whole loop exists to prevent.",
       "properties": {
         "outcome": {
@@ -328,7 +412,10 @@
           ],
           "description": "reclassified = the change was re-declared at its true classification; classifier_defect_fixed = the rule that mis-classified it was corrected, which fixes every future change of that shape; artifact_corrected = the upstream artifact itself was changed; claim_upheld = the registry examined it and stands by the classification; insufficient_evidence = the record did not carry enough to reproduce; superseded_by_finding = another filing carries it forward, named below."
         },
-        "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
+        "at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
         "decision_record_uuid": {
           "type": "string",
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
@@ -344,7 +431,9 @@
           "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
           "description": "OPTIONAL — the finding this one duplicates or supersedes, required in spirit whenever the outcome is superseded_by_finding or the status is duplicate."
         },
-        "note": {"type": "string"}
+        "note": {
+          "type": "string"
+        }
       }
     },
     "reported_at": {
@@ -356,17 +445,30 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "display_name": {"type": "string"},
+        "display_name": {
+          "type": "string"
+        },
         "notes": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["at", "author", "text"],
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
             "properties": {
-              "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
-              "author": {"type": "string"},
-              "text": {"type": "string"}
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              },
+              "author": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
             }
           }
         }
@@ -377,33 +479,50 @@
     {
       "comment": "A terminal status must say how it ended. Closing a finding silently is the failure mode the loop exists to prevent, so the resolution block is required the moment the status stops being open.",
       "if": {
-        "properties": {"status": {"enum": ["resolved", "declined", "not_reproducible", "duplicate"]}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "enum": [
+              "resolved",
+              "declined",
+              "not_reproducible",
+              "duplicate"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
-      "then": {"required": ["resolution"]}
+      "then": {
+        "required": [
+          "resolution"
+        ]
+      }
     }
   ],
   "$defs": {
     "artifact_revision": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifact_kind", "handle", "version", "digest"],
+      "required": [
+        "artifact_kind",
+        "handle",
+        "version",
+        "digest"
+      ],
       "description": "One upstream artifact at one exact revision. A published (identity, version) is immutable and its content digest names the exact bytes (ADR-051; VERSIONING.md § \"Identity, version, digest\") — so a claim recorded this way can always be re-examined against the exact bytes it was made about.",
       "properties": {
         "artifact_kind": {
-          "enum": [
-            "base_class",
-            "type_class",
-            "provider_class",
-            "shared_data_element",
-            "generated_type_spec",
-            "provider_definition",
-            "capability"
-          ],
+          "$ref": "common-elements.schema.json#/$defs/artifact_kind",
           "description": "Which layer of the model the artifact belongs to. The three class scopes are Base/Type/Provider (ADR-038); generated_type_spec is the flat spec compiled from them; provider_definition and capability are the provider-edge units that version under the same rules (ADR-045 §8)."
         },
-        "handle": {"type": "string"},
-        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "handle": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
         "digest": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$",
