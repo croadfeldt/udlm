@@ -18,26 +18,26 @@
 This document defines how Resource/Service Entities are organized into groups within the control plane. Grouping provides the ownership, organizational context, cost attribution, policy scope, and rehydration targeting that makes the control plane operationally meaningful at scale.
 
 Two concepts are defined here:
-1. **the control plane Tenant** — the mandatory, first-class ownership boundary for all Resource/Service Entities
+1. **Tenant** — the mandatory, first-class ownership boundary for all Resource/Service Entities
 2. **Resource Groups** — flexible, composable grouping entities that provide additional organizational context
 
 ---
 
-## 2. The control plane Tenant
+## 2. Tenant
 
 ### 2.1 Definition
 
-A **the control plane Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in the control plane. Every Resource/Service Entity — including Processes — must belong to exactly one the control plane Tenant at any point in time.
+A **Tenant** is the primary ownership and isolation boundary for Resource/Service Entities in the control plane. Every Resource/Service Entity — including Processes — must belong to exactly one Tenant at any point in time.
 
 Tenant membership is the answer to the question: **who owns this resource?**
 
-### 2.2 Tenant as a control plane System Policy
+### 2.2 Tenant as a System Policy
 
-Mandatory Tenant membership is a **non-overridable the control plane System Policy**:
+Mandatory Tenant membership is a **non-overridable System Policy**:
 
 | Policy | Rule | Enforcement |
 |--------|------|-------------|
-| `TEN-001` | Every Resource/Service Entity must belong to exactly one the control plane Tenant | Enforced at Entity creation — no Tenant = request rejected |
+| `TEN-001` | Every Resource/Service Entity must belong to exactly one Tenant | Enforced at Entity creation — no Tenant = request rejected |
 | `TEN-002` | Tenant membership cannot be empty — a Tenant must exist before resources can be created in it | Enforced at request processing |
 | `TEN-003` | A Resource/Service Entity cannot exist without a Tenant | Enforced at all lifecycle states |
 
@@ -122,13 +122,13 @@ Each group membership is a different dimension of context — not a hierarchy wi
 
 The control plane defines two subclasses of Resource Group, both implementing the same **Resource Group Interface**:
 
-**Subclass 1 — the control plane Default Resource Group (`group_subclass: dcm_default`)**
+**Subclass 1 — Default Resource Group (`group_subclass: dcm_default`)**
 Built into the control plane. The standard mechanism for grouping resources. No implementor customization required to use it.
 
 **Subclass 2 — Custom Resource Group (`group_subclass: custom`)**
-Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with the control plane Default Resource Groups in terms of control-plane capabilities.
+Implementor-defined grouping entities. Tied to internal business structures — business units, product lines, regulatory scopes, cost centers, etc. Full parity with Default Resource Groups in terms of control-plane capabilities.
 
-Both subclasses implement the same interface. The control plane Default Resource Group is simply the control plane's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
+Both subclasses implement the same interface. The Default Resource Group is simply the control plane's own implementation of the Resource Group Interface. Custom groups are implementor-defined implementations of the same interface.
 
 ### 3.3 The Resource Group Interface
 
@@ -219,11 +219,11 @@ Tenant: Payments Platform
 
 ---
 
-## 4. The control plane System Policies for Resource Grouping
+## 4. System Policies for Resource Grouping
 
 | Policy | Rule | Enforcement |
 |--------|------|-------------|
-| `GRP-001` | Every Resource/Service Entity must belong to exactly one the control plane Tenant | Enforced at Entity creation |
+| `GRP-001` | Every Resource/Service Entity must belong to exactly one Tenant | Enforced at Entity creation |
 | `GRP-002` | A Resource/Service Entity cannot be removed from its Tenant without being transferred to another Tenant | Enforced at all lifecycle states |
 | `GRP-003` | *(pointer — not a separate rule)* Circular nesting is governed by `GRP-INV-005` ([Universal Group Model](universal-groups.md) §2.3), the single definition of the circular-membership invariant | Enforced at group membership modification (per GRP-INV-005) |
 | `GRP-004` | Custom Resource Groups must implement the full Resource Group Interface | Enforced at group registration |
@@ -231,7 +231,7 @@ Tenant: Payments Platform
 
 ---
 
-## 5. Grouping and the control plane Capabilities
+## 5. Grouping and Control-Plane Capabilities
 
 Resource Groups enable the following control-plane capabilities at the group scope:
 
@@ -251,7 +251,7 @@ Resource Groups enable the following control-plane capabilities at the group sco
 
 Processes follow the same grouping rules as Resources:
 
-- Must belong to exactly one the control plane Tenant — non-overridable
+- Must belong to exactly one Tenant — non-overridable
 - Can optionally belong to Resource Groups
 - Typically grouped under the same Deployment or Service group as the resources they operate on
 - Tenant membership ensures cost attribution for execution resources
@@ -296,7 +296,7 @@ custom_group_type_registration:
 
 ## 9. Related Concepts
 
-- **the control plane Tenant** — primary ownership boundary, mandatory for all entities
+- **Tenant** — primary ownership boundary, mandatory for all entities
 - **Resource/Service Entity** — the thing being grouped
 - **Policy Engine** — enforces grouping system policies and evaluates group-level organizational policies
 - **Cost Analysis** — rolls up costs through group hierarchies

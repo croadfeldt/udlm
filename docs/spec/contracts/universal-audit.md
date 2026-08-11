@@ -69,7 +69,7 @@ audit_record:
       # direct_action:      human directly performed this
       # request_submission: human submitted the request that triggered this
       # policy_activation:  human activated the policy that triggered this
-      # system_policy:      the control plane System Policy — no individual human
+      # system_policy:      System Policy — no individual human
       # scheduled:          scheduled job — authorized by job owner
 
     # Links to originating context
@@ -254,7 +254,7 @@ actor:
     display_name: "Lifecycle Constraint Enforcer"
   authorized_by:
     uuid: null   # no specific human — system policy
-    display_name: "the control plane System Policy LTC-003"
+    display_name: "System Policy LTC-003"
     authorization_method: system_policy
   policy_uuid: <uuid of LTC-003>
   policy_version: "1.0.0"
@@ -582,7 +582,7 @@ audit_record:
     authorized_by:
       uuid: null                      # no specific human — traceable to the policy
       display_name: "Policy <policy-handle>"
-      authorization_method: policy_activation   # or system_policy for the control plane System Policies
+      authorization_method: policy_activation   # or system_policy for System Policies
     policy_uuid: <policy-that-triggered>
 ```
 
