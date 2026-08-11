@@ -6,7 +6,7 @@
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.
 - **`policy-contract.md` §7.2a** (built-in vs delegated engine): already states that an external engine "is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage." This ADR promotes that from a footnote to the organizing principle and makes the model hold to it.
-- **ADR-008** (the the substrate and its control plane boundary): access **determination** is external; UDLM carries the data and the contract, never the decision procedure.
+- **ADR-008** (the substrate/implementation boundary): access **determination** is external; UDLM carries the data and the contract, never the decision procedure.
 - **The drift ruling** (2026-07): neither UDLM nor the control plane has a built-in action for a drift finding — policies dictate what happens. Same shape: the model carries the facts, the decision lives elsewhere.
 - **T9** (core tenet): the substrate never translates into a provider's native spec. A provider's internal implementation is opaque to UDLM; so is an engine's.
 

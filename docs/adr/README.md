@@ -35,7 +35,7 @@ or a tutorial (the model); it **points to** those, never reproduces them. The di
    (active, one decision-area), Consequences (only the non-obvious easier/harder). Cut anything that
    doesn't move a decision; don't restate what the reader — or the ADR's own other sections —
    already said.
-3. **Scope edges explicit.** A "what this does not decide" / boundary section (the the substrate and its control plane split,
+3. **Scope edges explicit.** A "what this does not decide" / boundary section (the substrate and its control plane split,
    ADR-008) where it applies.
 4. **Immutable once Accepted.** Supersede, don't edit (the ADR-051 record discipline).
 

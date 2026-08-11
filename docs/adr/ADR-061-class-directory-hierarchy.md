@@ -44,7 +44,7 @@ registry/classes/
 │   │   ├── vm.yaml                   Compute.VM         (type, leaf)
 │   │   └── bare-metal-host.yaml      Compute.BareMetalHost
 │   ├── hardware/_base.yaml …         (every category: a directory owning its _base.yaml + types)
-│   └── docs/spec/foundations/_base.yaml           Topology           (childless instantiable base — uniform:
+│   └── topology/_base.yaml                     Topology           (childless instantiable base — uniform:
 │                                                          still a directory, per the ruling)
 ├── process/
 │   ├── automation/

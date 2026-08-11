@@ -415,7 +415,7 @@
   }
  },
  "type:Compute.VM": {
-  "current": "1.5.2",
+  "current": "1.5.3",
   "path": "registry/classes/resource/compute/vm.yaml",
   "versions": {
    "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7",
@@ -427,7 +427,8 @@
    "1.4.2": "sha256:6d4c330adab9250af9cfc0f13233b411d177487a9912f2154212e2239416f378",
    "1.5.0": "sha256:31787dcfd5711ba1f1ef146f67ec920fc31fb8cd4f816a11730555630caab510",
    "1.5.1": "sha256:b357fa537c93c4f6bf2e23a8865cd685df309a6524121d86276fb57bedb12450",
-   "1.5.2": "sha256:b0121aba91119d47a6d09870c89d5ba7c887e16fd6c20b2d20da042d9fa325de"
+   "1.5.2": "sha256:b0121aba91119d47a6d09870c89d5ba7c887e16fd6c20b2d20da042d9fa325de",
+   "1.5.3": "sha256:f87a1ba8988013bdb087a56381d4219cc7ae32e02a24d76c5aed217f49a7e8a5"
   }
  },
  "type:Compute.VM.CExampleCloud": {

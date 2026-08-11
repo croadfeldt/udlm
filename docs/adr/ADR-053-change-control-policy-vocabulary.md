@@ -13,7 +13,7 @@ sits on. ADR-046 (blue/green typed-output diff) — the evidence this must never
 (staleness as a declared expectation) — the freshness machinery §7 reuses. ADR-051 (publish law +
 digest referrers) — how the meta-policy and approvals bind. ADR-052/048 (verdicts derived, never
 stored) — the debt-state pattern. ADR-003/T6 (RTO/RPO — a provider-backed validated time bound) —
-what §8 generalizes. ADR-008 — the the substrate and its control plane boundary.
+what §8 generalizes. ADR-008 — the substrate/implementation boundary.
 
 ## Context
 

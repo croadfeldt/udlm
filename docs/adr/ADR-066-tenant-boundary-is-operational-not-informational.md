@@ -9,7 +9,7 @@
 - **`CTX-001`** (universal-groups §13.5): cross-tenant relationships require an active cross-tenant authorization **or** a resource type declared `publicly_stakeable` / `publicly_allocatable`. The standing-declaration escape hatch already exists in the rule.
 - **`CMP-009`** (template-composition-model §10.1): bindings re-resolve at **request validation**, not only at catalog admission, *"so no constituent is provisioned and no compensation is needed… a binding caught here costs a rejected request, whereas the same binding caught at dispatch costs a partially realized composite and a compensation path."* The precedent for where a cross-tenant refusal belongs.
 - **`GRP-INV-002`** (universal-groups §2.3): constituent relationships may not cross tenant_boundary boundaries — non-overridable. The reason a composite's cross-tenant parts are *edges*, and therefore the reason the required-grant set is computable from the edge graph.
-- **ADR-008** (the the substrate and its control plane boundary): access **determination** is external. UDLM carries the data and the contract, never the decision procedure. Unchanged here.
+- **ADR-008** (the substrate/implementation boundary): access **determination** is external. UDLM carries the data and the contract, never the decision procedure. Unchanged here.
 
 ---
 

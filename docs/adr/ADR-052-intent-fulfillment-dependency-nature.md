@@ -13,7 +13,7 @@ window, and the complete permutation matrix). The corpus that measures it:
 exemplar of. ADR-011 (validate-and-reserve) — the reservation law the request nature stands on.
 `docs/spec/foundations/service-dependencies.md`, ADR-027 (`dependencies[].strength`) — the edge the new attribute
 rides. ADR-048 (staleness verdicts derived, never stored) — the pattern the status classification
-copies. ADR-008 — the the substrate and its control plane boundary.
+copies. ADR-008 — the substrate/implementation boundary.
 
 ## Context
 
