@@ -64,6 +64,16 @@ EXEMPT = re.compile(
     r"|GLOSSARY|see \[|\]\(",
     re.I)
 
+# A QUALIFIED POINTER is not prose about an implementation — it is a citation OF one, and the
+# qualification is what makes it unambiguous. `DCM ADR-022` names a control-plane decision record;
+# `DCM repo` names a repository. Both are the correct way to reference something that lives
+# elsewhere, and the ADR-citation gate already requires exactly this form (ADR-CITE-001) — so
+# flagging them here would have IMP-001 and ADR-CITE-001 pulling in opposite directions.
+#
+# Stripped BEFORE the implementation match, so `see DCM ADR-023 §6` does not count while
+# `DCM evaluates the policy` still does.
+POINTER = re.compile(r"\b(DCM|DAV)\s+(ADR-\d{3}|repo\b|repository\b)", re.I)
+
 
 def violations():
     out = []
@@ -74,7 +84,8 @@ def violations():
     for path in sorted(p for p in set(paths) if not any(sk in p for sk in SKIP)):
         rel = os.path.relpath(path, ROOT)
         for i, line in enumerate(open(path, encoding="utf-8"), 1):
-            if IMPLS.search(line) and not EXEMPT.search(line):
+            probe = POINTER.sub("", line)
+            if IMPLS.search(probe) and not EXEMPT.search(line):
                 out.append((rel, i, line.strip()[:110]))
     return out
 
@@ -120,11 +131,20 @@ def main():
     # self-test: both arms must behave, or this proves only that the walk ran.
     probe_hit = IMPLS.search("DCM evaluates the policy") and not EXEMPT.search("DCM evaluates the policy")
     probe_ok = EXEMPT.search("DCM realizes this (non-normative example)")
+    probe_ptr = not IMPLS.search(POINTER.sub("", "trust is never self-declared (DCM ADR-022)"))
+    probe_still = IMPLS.search(POINTER.sub("", "DCM evaluates the policy, see DCM ADR-022"))
     if not probe_hit:
         print("FAIL [IMP-SELF] a bare normative reference did not trip the check")
         new.append(("self-test", 0, ""))
     if not probe_ok:
         print("FAIL [IMP-SELF] a marked non-normative reference was not exempted")
+        new.append(("self-test", 0, ""))
+    if not probe_ptr:
+        print("FAIL [IMP-SELF] a qualified pointer (`DCM ADR-022`) was treated as prose")
+        new.append(("self-test", 0, ""))
+    if not probe_still:
+        print("FAIL [IMP-SELF] a line with BOTH prose and a pointer stopped being caught — the "
+              "pointer strip is masking real references")
         new.append(("self-test", 0, ""))
 
     if new:
