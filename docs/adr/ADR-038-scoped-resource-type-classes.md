@@ -77,7 +77,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    `Compute.VM.OCPVirt`) is a "cast" at the *intent* level; implementation is a separate, bounded effort:
    - **Enablement over execution.** UDLM supplies the *data framework* that makes a re-port **expressible and
      analysable** — the requirements, the dependency set (networking / storage / compute), and the eligible
-     target providers. It does **not** perform the migration. Execution is DCM + the provider + **third-party
+     target providers. It does **not** perform the migration. Execution is the implementation + the provider + **third-party
      automation**: moving data requires a mover (e.g. **MTV** for VMware→OCPVirt); DCM does not migrate a disk.
    - **A re-port is a rebuild, not a lift-and-shift.** Moving to a different provider **rebuilds** the resource
      from its requirements + dependencies on the target's *native* services — equivalent to redeploying to a new
@@ -91,7 +91,8 @@ this settles the meta-model: **resource types are layered Classes composed of sc
      (a) evaluate vendor-lock-in vs flexibility and (b) drive the **downstream automation** for the complex cases
      (the NSX→OVN class). Scoping an element higher extends portability wherever a target can honour it.
    - **`how` is the implementation's concern.** The migration/rebuild mechanics, per-source/target limitations, and
-     automation live in **DCM ADR-025** (engine), migration **ADR-003**, and naturalization **ADR-023**. This
+     automation live in the control plane's own decision records (e.g. DCM ADR-025 engine, ADR-003 migration,
+ADR-023 naturalization) — non-normative here. This
      section defines what re-porting *means*; the implementation docs carry the concrete process and its limits.
 
 5. **Policy-fill completes the blanks (ADR-024).** Type/provider-specific elements left blank at instantiation
@@ -172,7 +173,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
     - **Updating a named reference is governed, audited, and blast-radius-computable *in advance*.** Repointing a
       named head (the mutable binding now points elsewhere) is a **governed write** — **policy** decides who may
       repoint and with what approval — and an **audited event** (AUD-*, tamper-evident per AUD-002): old target →
-      new target, actor, timestamp, justification. **UDLM records it, DCM enforces it — no silent repoint.** Its
+      new target, actor, timestamp, justification. **The substrate records it; an implementation enforces it — no silent repoint.** Its
       **blast radius is pre-calculable *before* committing**, from the **reverse-reference index + `impact_report()`**
       (ADR-012): the affected set is exactly the **named-head followers**, cascading transitively —
       **immutable-pin references are insulated**, so the dual anchor *bounds* the blast radius to whoever opted
@@ -196,23 +197,25 @@ this settles the meta-model: **resource types are layered Classes composed of sc
       consistent with the event-route dotting (naming-conventions §154). Each root-type in the registry defines
       how its hierarchy is interpreted, resolved, and governed.
     - **Root vs attribute (keeps the root set from bloating).** A **routing root** changes *who resolves* — you
-      route *through* it (a peer DCM, a tenant, a jurisdiction that fronts its own authority). This is
+      route *through* it (a peer implementation, a tenant, a jurisdiction that fronts its own authority). This is
       `data_reference.resolving_authority` made explicit. An **attribute** is what you resolve *to*
       (`residency` / zone) — carried on the record, not a root. Zones/borders are attributes **unless** one fronts
       a distinct control plane (then it *is* a peer/authority root). The test: *does it change the resolver?*
       Yes → root; no → attribute.
     - **Extensible root registry.** Root-types are an open, curated registry (Data/UDLM); routing + resolution is
-      Policy + peer (DCM). Demand-driven — start with the **`peer`** root (the federation case); add others when a
+      Policy + peer. Demand-driven — start with the **`peer`** root (the federation case); add others when a
       use case makes them distinct authorities, not speculatively.
     - **Cross-boundary resolve is governed** — the §10 rule at federation scale. A rooted address you *name*
       freely; *resolving* it across a peer or sovereignty border fires the sovereignty hard-gate (ADR-024 §1) and
       is attributed via `resolving_authority`. A fully-qualified cross-border address never bypasses that gate.
     - **Native URL is the primary form** (OData/REST-shaped — the standard set §Prior-art aligns to), each part a
-      URL component (above). The **authority is the host** — a *logical* authority name resolved by DCM's
+      URL component (above). The **authority is the host** — a *logical* authority name resolved by the
+implementation's
       **governed resolver**, **not public DNS** (native-URL-shaped *and* governed; this refines the earlier
       "keep `udlm.dev` the host" lean). **Two URLs, two purposes:** **type-definition identity** lives at the
       naming authority (`$id` = `https://udlm.dev/registry/udlm/0.1/Compute.VM/0.6.0`); an **instance
-      address** lives at the owning DCM's authority (`https://peer.dcm.east/Compute/VM/…`). The URL is still a
+      address** lives at the owning implementation's authority (`https://peer.dcm.east/Compute/VM/…` — the host
+is illustrative). The URL is still a
       **name**, exactly like `$id` — HTTP-shaped does **not** imply a free GET; resolving one goes through the
       governed resolver (auth + sovereignty gate), which is what makes HTTP the natural *governed resolution
       transport* for the federation-resolution ADR. Percent-encode edge characters (minimal — tokens are clean).
@@ -227,12 +230,20 @@ this settles the meta-model: **resource types are layered Classes composed of sc
 - **Provider** — a Provider Class *is* the provider's declared implementation surface; implementation naturalizes to
   native and records the resolution.
 
-## UDLM vs DCM — what lands where (the peer test, ADR-008)
-Apply ADR-008 to every piece: *could an independent conformant peer of DCM do this differently and still be
-valid?* **No → UDLM** (a substrate invariant, wire-compatible — a peer MUST honor it). **Yes → DCM** (a
-implementation choice — Policy/Provider). This determines the repo each piece lands in.
+## What lands in the substrate, and what lands in an implementation (the peer test, ADR-008)
 
-| Piece | **UDLM** — model / grammar / data (a peer MUST honor) | **DCM** — engine / decision (a peer MAY differ) |
+**This section names DCM deliberately — as a non-normative example implementation, and it is the one
+place in this ADR where naming one is the point.**
+The test needs a concrete implementation to be applied against — *could an independent conformant peer
+do this differently and still be valid?* — and DCM is the worked example, non-normative throughout.
+Read the right-hand column as **"any implementation"** — the example is DCM (non-normative) because it
+is the one that exists, never because the answer depends on which implementation it is.
+
+Apply the test to every piece: **No → the substrate** (an invariant, wire-compatible — every peer
+MUST honor it). **Yes → the implementation** (a choice — Policy/Provider). That determines which repo
+each piece lands in.
+
+| Piece | **Substrate (UDLM)** — model / grammar / data (every peer MUST honor) | **Implementation** — engine / decision (a peer MAY differ; e.g. DCM, non-normative) |
 |---|---|---|
 | **Class hierarchy** | **canonical** Base/Type definitions; the Class **spec** for all layers (`extends`, Liskov invariant, flattening, `SharedDataElement` scoping) | org/provider-authored **class definitions** (any layer) — one register/validate/promote lifecycle, policy/profile-driven; optional example/default classes |
 | **`SharedDataElement`** | the unit `{scope, element, schema, values, state}`, value vocabularies | promotion / canonicalization, ≥2-adopter promotion, upward-contribution gating |
@@ -245,14 +256,15 @@ implementation choice — Policy/Provider). This determines the repo each piece 
 | **Re-porting** | the requirements (updatable intent) | migration / rehydration, re-placement (ADR-003) |
 | **Naturalization** | the generic/portable form (the contract) | the provider's native translation (naturalize / denaturalize) |
 | **Governance** | audit records + provenance (the **data**) | policy gates (skip, repoint, promotion, break-glass) + enforcement |
-| **Conformance** | the design criteria + meta-schema (what is *valid*) | CI runs the checks; DCM enforces at realization |
+| **Conformance** | the design criteria + meta-schema (what is *valid*) | CI runs the checks; the implementation enforces at realization |
 
-**One line:** UDLM owns the **model, grammar, classification, and data** — the portable, wire-compatible
-substrate; DCM owns the **engine** — placement, policy-fill, assembly, resolution, promotion, matching,
-migration, and governance. The coordinate *grammar* is UDLM; the `Compute.VM.OCPVirt` *definition* — and every
-*decision* about it — is provider/DCM (next).
+**One line:** the substrate owns the **model, grammar, classification, and data** — portable and
+wire-compatible; an implementation owns the **engine** — placement, policy-fill, assembly, resolution,
+promotion, matching, migration, and governance. The coordinate *grammar* is UDLM; the
+`Compute.VM.OCPVirt` *definition* — and every *decision* about it — belongs to the provider and the
+implementation (next).
 
-## Authorship & domain — UDLM defines the specs; DCM runs one contribution lifecycle over them
+## Authorship & domain — the substrate defines the specs; an implementation runs one contribution lifecycle over them
 The three Class layers are **not** authored in the same place, and neither are data layers. Sharpening the peer
 test (ADR-008) along the **authorship** axis:
 
@@ -260,32 +272,32 @@ test (ADR-008) along the **authorship** axis:
   a Class (Base/Type/Provider: `extends`, the Liskov invariant, effective-schema flattening, `SharedDataElement`
   scoping) and a data layer (`covers`/`skip`, precedence, override, `narrow_only`) — *and* a **canonical set of
   Base/Type classes** (`Compute`, `Compute.VM`, …) as the shared, portable baseline. UDLM defines the spec and
-  **instructs DCM what to do with instances of it**; it does not itself author org/provider content.
+  **instructs an implementation what to do with instances of it**; it does not itself author org/provider content.
 - **Provider Classes are provider-authored.** A `Compute.VM.OCPVirt` definition is **by its nature a
   provider-created artifact** — the provider declares its implementation surface as scoped `SharedDataElement`s
   under the Class spec. UDLM ships **no** concrete Provider Class; the `Compute.VM.OCPVirt` used throughout this
   ADR is **illustrative of the spec**, not a UDLM-owned definition.
-- **Organizations may author their own Base, Type, and Provider classes — a DCM policy/profile feature.** When
+- **Organizations may author their own Base, Type, and Provider classes — a policy/profile feature of the implementation.** When
   the canonical library lacks a type, an org authors its own class (any layer) **under its own authority**
   (`acme.example/Compute.VM` — a distinct identity that never shadows canonical `Compute.VM`; portability is
   authority-scoped — narrower, never zero). This is **not a UDLM meta-model act**: UDLM defines the spec the
-  class conforms to and instructs DCM; **DCM implements class-authoring as a policy/profile-driven feature**,
+  class conforms to and instructs the implementation; **an implementation provides class-authoring as a policy/profile-driven feature**,
   governed by org policy (same family as *Org standards*). Standardizing an *existing* class stays Policy/Profile
   (a constraint profile); authoring a *new* one your library lacks is this feature — told apart by **authority**,
-  both Policy/DCM. **How to author one well:** `docs/design/custom-classes-best-practice.md`
+  both Policy/implementation. **How to author one well:** `docs/design/custom-classes-best-practice.md`
   (the cheapest-tool ladder, custom Type vs Base, the discipline, anti-patterns, the lifecycle, the never-redefine guard).
 - **Data-layer definitions are organization-level** — the layer *contract* is UDLM; *which* layers exist and what
   they hold (an org compliance overlay, a Data-Center info bundle) are org implementation details.
-- **DCM runs one contribution lifecycle over all of them.** Provider/org classes, data layers, and
+- **One contribution lifecycle covers all of them**, run by the implementation. Provider/org classes, data layers, and
   `SharedDataElement`/vocabularies share **one** pipeline — **register → validate against the UDLM spec for that
   kind → bind/resolve → promote (`proposed → canonical`)** — the same process, differing only in the **data spec**
   validated against (Class spec, layer contract, element spec). This **subsumes vocab ingest (ADR-039) and
   Provider-Class registration into one engine**; who may contribute/promote is policy/profile + trust (ADR-022).
-  **DCM MAY ship examples or defaults** (a starter class, a default compliance layer) — conveniences, never
-  canon. (DCM's side: DCM ADR-025.)
+  **An implementation MAY ship examples or defaults** (a starter class, a default compliance layer) —
+  conveniences, never canon. (The control-plane side, non-normative: DCM ADR-025.)
 
 In one line: **specs + canonical library = UDLM; anyone may author classes and layers under those specs,
-authority-scoped and promotable, run through one DCM register/validate/promote lifecycle governed by
+authority-scoped and promotable, run through one register/validate/promote lifecycle governed by
 policy/profile.**
 
 ## Options considered
@@ -342,7 +354,8 @@ policy/profile.**
 An organization's standards are **Policy over the shared classes**, not a fork of the shared ones (authoring your
 *own* classes under your own authority is a separate, allowed capability — see the end of this section). The peer test (ADR-008)
 routes it: *could another org do this differently and still be valid?* — yes, every org differs → **Policy
-(DCM)**, not substrate. This is what keeps the classes valuable: Acme's and Globex's VMs are both `Compute.VM`
+(the implementation's)**, not substrate. This is what keeps the classes valuable: Acme's and Globex's VMs are
+both `Compute.VM`
 — *interoperable* — each governed by its own policy. Forking a class per org would destroy the portability the
 paradigm exists to provide.
 
@@ -358,7 +371,7 @@ hierarchy* to change what `Compute.VM` means fragments the shared type (per-org 
 couples governance into the wire contract (T1/T2) — that is what the Policy mechanisms above are for. **Authoring
 your *own* classes under your *own* authority is different, and allowed** — `acme.example/Compute.VM` is a
 distinct identity in the org's namespace, canon untouched, portability authority-scoped, promotable to canon when
-proven; it runs through **DCM's policy/profile class-authoring feature** and the one contribution lifecycle (see
+proven; it runs through the implementation's **policy/profile class-authoring feature** and the one contribution lifecycle (see
 *Authorship & domain*). The line is **authority, not permission**: standardize a *shared* class → Policy/Profile;
 author a type the library lacks → your own class under your authority. **Org = a docs/spec/governance/tenancy overlay on the
 shared classes and, where the library falls short, an authority-scoped author of its own.** Best practice for that
@@ -420,7 +433,7 @@ that produces a **Composite Entity — one UUID** across all four states, fulfil
   ]
 }
 ```
-One request → one Composite Entity, one UUID (Intent holds the catalog ref + params; DCM expands to the
+One request → one Composite Entity, one UUID (Intent holds the catalog ref + params; the implementation expands to the
 constituent graph at Requested; realized states record against each `component_id`; aggregate health rides
 `status.conditions`). From the consumer's side it is a **single resource**; internally it is the wired
 cluster+container graph.
@@ -452,7 +465,7 @@ Class paradigm and that mechanism ratify separately.
   `residency` (attribute) distinct:
 
   ```
-  compact:  state.mn / Compute.VM.*                              → VMs MANAGED BY Minnesota's DCM   (authority-rooted)
+  compact:  state.mn / Compute.VM.*                              → VMs MANAGED BY that authority's peer (e.g. DCM)
   URL:      https://state.mn/Compute/VM
 
   compact:  peer.dcm.* / Compute.VM.* [ .residency = state.mn ]  → VMs RESIDING in Minnesota, across ALL DCMs (attribute-filtered)
@@ -461,12 +474,13 @@ Class paradigm and that mechanism ratify separately.
 
   A VM managed by `peer.dcm.us-central` but hosted in an MN datacenter appears in the **second**, never the first —
   a query an authority-only model cannot express. It composes **two filter mechanisms already in the grammar**:
-  the **structural** filter is dotted prefix/wildcard over the *authority* (`peer.dcm.*` = fan out across every DCM)
+  the **structural** filter is dotted prefix/wildcard over the *authority* (`peer.dcm.*` = fan out across every
+peer — the host pattern is illustrative)
   and *entity* (`Compute.VM.*` = all VMs, any Provider Class); the **attribute predicate** `[.residency = state.mn]`
   filters on a *field value* — the same `<anchor>.<field-path>` coordinate (§10) serving as the left-hand side of a
   comparison, so field addressing does double duty (name a value **and** filter on one). Maps directly to
   OData `$filter=residency eq 'state.mn'` federated across services, or a SPARQL `SERVICE` fan-out with `FILTER`.
-  **Sovereignty at fan-out scale:** the gate applies **per authority** — each DCM runs its own sovereignty gate on
+  **Sovereignty at fan-out scale:** the gate applies **per authority** — each peer runs its own sovereignty gate on
   the read, each cross-authority resolve is attributed (`resolving_authority`), and the result is **best-effort /
   sparse** (the union of what each sovereign estate chooses to expose). No silent global enumeration. And because
   `residency` is recorded as *provenance over time*, "VMs that **were** in MN" is the same predicate on the audit
@@ -525,7 +539,8 @@ layers, policies, and instances.
 **2. The pipeline is a scope descent.** An intent binds a scope — Type (portable) or Provider
 (the consumer opted into specificity: permitted, priced, visible; whether allowed at all is
 organizational policy) — and the receipt is the flattened leaf of the descended branch. How
-the pipeline runs is defined only in DCM's request-realization flow; this addendum adds the
+the pipeline runs is defined only in the implementation's request-realization flow (DCM's, non-normative);
+this addendum adds the
 reading, not mechanics.
 
 **3. Portability is a computation over the states** (§3's derivation, made operational). The
