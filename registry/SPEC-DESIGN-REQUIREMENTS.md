@@ -50,8 +50,9 @@ Each hard constraint cites the UDLM contract it derives from.
     side-effect-free: cross-dependency criteria are computed against **reserved** facts before anything
     is built. A `reserve` request carries a `requested_ttl` bounded by the provider-advertised
     `min_hold_ttl` / `max_hold_ttl`; **TTL expiry is an implied release** and MUST emit
-    `reservation.expired`. DCM MUST **independently** time each hold (`reservation_reconcile_grace`) and,
-    if the provider misses that event, emit its own `reservation.expiry_unconfirmed` and force-resolve
+    `reservation.expired`. **The implementation MUST independently time each hold**
+    (`reservation_reconcile_grace`) and, if the provider misses that event, emit its own
+    `reservation.expiry_unconfirmed` and force-resolve
     by policy (`RELEASE_AND_NOTIFY_AFFECTED`) — a lapsed hold never resolves by silence.
 
 ### Portability & provider-neutrality
@@ -94,7 +95,8 @@ Each hard constraint cites the UDLM contract it derives from.
     is not recoverable. Relationship edges are therefore **auditable events, not merely resource fields** —
     which requires `audit-record.schema.json` to carry a relationship-mutation event shape. **[enforced: validate.py + audit schema]**
 18e. **Undo/revert is permitted, but it resolves to an explicit forward action — never a differential.** A
-    consumer may request an undo or revert; DCM **resolves it into a new, explicit forward action**, and the
+    consumer may request an undo or revert; **the implementation resolves it into a new, explicit forward
+    action**, and the
     audit chain records the **resulting** relationship explicitly (a forward create/change/remove to that
     state) — never an "undo the last event" reference. This keeps the chain append-only and self-describing and
     keeps LIFO (18c) valid: the newest event always states the full current state, so no replay or
@@ -111,16 +113,18 @@ Each hard constraint cites the UDLM contract it derives from.
     Policy, *static* values are Layers (`docs/spec/foundations/layering-and-versioning.md` §1b).
 21. **No embedded expressions** — a spec carries *declarative* constraints only (JSON Schema
     `if/then` · `dependentSchemas` · `enum` · bounds + markers like `createOnly`); it embeds **no**
-    expression language or executable behavior. Transformation/enrichment is Policy, applied by DCM;
-    the contract layer stays deterministic + reproducible (`docs/spec/principles/core-tenets.md` T2/T3).
+    expression language or executable behavior. Transformation/enrichment is Policy, applied by the
+    implementation; the contract layer stays deterministic + reproducible (`docs/spec/principles/core-tenets.md` T2/T3).
     **Computation is relocated, not banned.** When a computed binding *is* needed (e.g. a CEL
-    expression combining declared outputs), it is a **Transformation Policy evaluated by DCM's policy
+    expression combining declared outputs), it is a **Transformation Policy evaluated by the
+    implementation's policy
     engine** — never embedded in the portable data. It is safe *iff*: (a) the evaluator is
     **pure/deterministic** (sandboxed CEL — no I/O, clock, or randomness), so it is reproducible from
     the immutable record; (b) its inputs are **declared typed bindings** (governable edges); and (c) the
     **policy engine records the evaluation** (`expression@version` + resolved inputs + output), so the
     computed field's provenance points to the policy and every input edge. The policy-evaluation seam is
-    already the audit/provenance capture point (DCM ADR-006/010) — computation stays expressive while the
+    already the audit/provenance capture point (control-plane decisions, non-normative: DCM ADR-006/010) —
+    computation stays expressive while the
     portable data stays declarative and the result stays auditable + provenanced.
     Two further controls bound it: **(d) per-field opt-in** — a field is a valid CEL target only if its
     definition declares **`cel_permitted: true`** (default **false**; a declarative field marker alongside
@@ -129,7 +133,7 @@ Each hard constraint cites the UDLM contract it derives from.
     engine rejects a CEL op targeting a non-permitted field. **(e) Uncovered-computed-field notification**
     — if a CEL op sets a field that **no policy reads or constrains**, the result is *ungoverned*
     ("unbounded"): the engine emits an **`uncovered_computed_field`** observation (recorded, pairs with
-    provenance) and the **DCM operational profile** sets the action (notify → warn → block; sovereign/
+    provenance) and the **operational profile** sets the action (notify → warn → block; sovereign/
     critical → block). Together: producers gate *which* fields may be computed; the platform flags *when*
     a computed field is ungoverned.
     **Field markers are contract data — policy governs and gates them, but never rewrites them.** A
@@ -166,7 +170,7 @@ Each hard constraint cites the UDLM contract it derives from.
     **metadata value**, never a key: `adopts[].standard_name`, a field-level `x-standard` pointer, or
     `aliases[]`. Foreign casing MAY appear ONLY as such a metadata value, as an enum/string *value*, or
     inside an explicitly-opaque extension/raw blob (`provider_hints`, `x-…`, discovered-raw) — **never**
-    as a typed key in the resource body. This keeps the canonical wire (and the AEP-bound DCM API it
+    as a typed key in the resource body. This keeps the canonical wire (and the AEP-bound API it
     rides) uniformly `snake_case` even though the registry adopts many differently-cased standards
     (`registry/naming-conventions.md` §4 carve-outs). A type that mints a foreign-cased live key violates
     both §25 and this rule.
@@ -225,14 +229,15 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Decision decomposition — the three abstractions
 29. **Every type and every decision is decomposed across the three foundational abstractions —
-    `Data · Policy · Provider`** (DCM ADR-002; the UDLM Data⇄Policy boundary, `docs/spec/principles/core-tenets.md`).
+    `Data · Policy · Provider`** (the UDLM Data⇄Policy boundary, `docs/spec/principles/core-tenets.md`;
+    control-plane origin, non-normative: DCM ADR-002).
     A capability is only fully scoped when each is named: **Data** = what UDLM models/holds (types,
-    common-elements, served overlays); **Policy** = what DCM decides/computes/governs (the rules,
+    common-elements, served overlays); **Policy** = what the implementation decides/computes/governs (the rules,
     matching, gating); **Provider** = what a provider *declares as possible* and the *mechanism it
     executes* (unmodeled). A DecisionRecord/ADR MUST carry a **Data · Policy · Provider** section (or
     explicitly state "n/a, because…" for any that genuinely doesn't apply). This prevents modeling a
     requirement as data with no policy to consume it, or a mechanism with no provider to declare it. It
-    is foundational across UDLM, DCM, and (where applicable) DAV.
+    is foundational across the substrate and every implementation of it.
 
 30. **Universal identity is RFC 9562 UUID — v4 for identity, v7 for time-ordered artifacts,
     everything else prohibited** (`docs/spec/contracts/identifier-scheme.md` §2.1, normative). Every entity,
@@ -277,13 +282,14 @@ Each hard constraint cites the UDLM contract it derives from.
     `mounts`) — plus its **graph-bearing** (`data_reference` / relationship / service-graph),
     **audit/provenance/identity**, and **docs/spec/contracts/drift** elements. The line is **portable vs
     provider-specific**, not config-vs-not: portable config that defines the resource is base;
-    **provider-specific** config is declared by the provider, projected as a config interface DCM offers
+    **provider-specific** config is declared by the provider, projected as a config interface the
+    implementation offers
     (`docs/spec/contracts/provider-contract.md` §1a.3), and its **values stored** as Provider-Class
-    `SharedDataElement`s (ADR-038; schema implementation #199) across Requested/Realized, portability-flagged. **DCM stores the config
+    `SharedDataElement`s (ADR-038; schema implementation #199) across Requested/Realized, portability-flagged. **The implementation stores the config
     *state* — base and extra — because it is the state system-of-record and drift is a diff; there is no
     "store a pointer instead of the values".** The provider owns the *schema*; the *mechanism* stays out of
-    the substrate (DCM ADR-023); the *state* is always recorded. **Corollary:** every resource DCM manages
-    has a resource record type. **[enforced: review]**
+    the substrate (control-plane decision, non-normative: DCM ADR-023); the *state* is always recorded.
+    **Corollary:** every resource the implementation manages has a resource record type. **[enforced: review]**
 
 35. **Provider-neutral framing — model the fact, never dictate the mechanism.** A type models *what* a
     fact is, never *how* or *by what* it is realized, and MUST NOT imply a particular mechanism or provider
@@ -337,7 +343,7 @@ Each hard constraint cites the UDLM contract it derives from.
     keeps it current). A type an engineer cannot place without reading its schema is not done.
     **(k) Corpus use cases:** the type ships model-validation
     use cases in `use-cases/` covering its capability axes — **usage (provision through day-2
-    update), migration, rehydration, portability, sovereignty, and tenancy** — so DAV gap
+    update), migration, rehydration, portability, sovereignty, and tenancy** — so an assessment tool's gap
     analysis can detect regressions per type, not just per model. **[enforced: review; (b), (j),
     and (k) are CI-gate candidates — outputs-nonempty, example-currency, and UC-coverage checks]**
 
@@ -358,7 +364,7 @@ Each hard constraint cites the UDLM contract it derives from.
 | `DRV-001` | A resource type MUST NOT declare a field whose value is derivable from other model records (relationships, instance records, declared ranges, provenance) as an independently stored fact. A field whose **name** is shaped like a history/recency fact (`last_*`, `latest_*`, `previous_*`, `runs_*`, `history_*`, `*_history`, `*_completed`) or, in `outputs`, like an aggregation (`total_*`, `num_*`, `count_*`, `sum_*`, `avg_*`, `current_*`, `*_count`, `*_total`, `*_sum`, `*_average`) MUST either declare its classification in its description — **DERIVED** (naming the source it is computed from) or **OBSERVED** (a provider-watched fact not derivable from model records) — or not exist on the type, its facts living on the instance records that own them. The gate reads names, not semantics: aggregation names are checked on `outputs` only, because in a `spec` an aggregate name can be legitimate intent; a derivable value under a neutral name is the reviewer's derivability question, not the gate's. |
 
 38. **The managed surface is a control plane, not a DCIM — and observed inventory is opt-in,
-    never authored.** UDLM/DCM is the system-of-record **only for the resources whose lifecycle
+    never authored.** The model is the system-of-record **only for the resources whose lifecycle
     it owns**; it is not a hardware-component inventory authority. Component-level observation
     enters solely through `classification: substrate | ancillary` (default `substrate`): an
     **ancillary** type is **observe-only** (valid solely as Discovered/Realized records — never
@@ -457,7 +463,7 @@ Each hard constraint cites the UDLM contract it derives from.
 - **One concept per field**; cross-field/conditional constraints expressed **declaratively** in JSON
   Schema (`if`/`then`, `dependentSchemas`, `enum`), never an embedded expression language. Cross-entity
   data flow is a declarative typed binding (`target_field` → output); any real transformation/computation
-  is **Policy**, applied by DCM — never in the spec (T2/T4).
+  is **Policy**, applied by the implementation — never in the spec (T2/T4).
 - **Right altitude — model the contract, not the implementation or product surface.** A type/taxonomy
   captures the *concept and contract* (what a resource is, what it guarantees), never product/UI/impl
   detail (specific screens, feature lists, internal mechanics). Such detail belongs in specs/product
