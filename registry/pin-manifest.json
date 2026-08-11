@@ -136,6 +136,13 @@
    "2.0.0": "sha256:0fc512da44e75d97993a39b4e6791cc00ee4679657dae0c54a2a8f87aec57d30"
   }
  },
+ "layer:platform/network-tiers/high-throughput": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-reference-data-network-tier.yaml",
+  "versions": {
+   "1.0.0": "sha256:ca13eefbcbff62513ea308c83d3916d3a67a5d09e7324e0cd2b29e94bb82e952"
+  }
+ },
  "layer:platform/network-zones/dmz-restricted": {
   "current": "2.0.0",
   "path": "registry/examples/example-reference-data-network-zone-v2.yaml",
