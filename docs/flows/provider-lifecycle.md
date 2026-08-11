@@ -516,6 +516,10 @@ spec:
     - name: eth0
       network_ref: uuid/b7e3f1a2-...   # → existing Network.VirtualNetwork
       ip_mode: dynamic
+      # RESOLVED, not necessarily stated. The consumer may have written a requirement
+      # instead — a zone, a tier, a segment — and placement converged on this network
+      # (ADR-036: name-selectable but requirements-authoritative). By dispatch the
+      # reference is concrete either way, which is what "fully enriched" means.
 
 # Provider-specific references are Provider-Class `SharedDataElement`s (ADR-038), declared by
 # the provider's Class; schema implementation is tracked in #199 (the retired provider_extensions

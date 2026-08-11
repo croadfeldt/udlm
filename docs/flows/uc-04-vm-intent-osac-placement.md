@@ -94,27 +94,33 @@ estate is populated by providers reporting what they have.
 
 ```mermaid
 flowchart LR
-  subgraph SRC["WHO KNOWS — populated by discovery, before any request exists"]
+  subgraph SRC["WHO KNOWS — populated before any request exists"]
     direction TB
-    PROV["Provider registration<br/>declares capability + capacity"]
+    PROV["Provider registration<br/>declares capability, capacity,<br/>and what each thing IS (§2.5a)"]
     DISC["Discovery<br/>observes what actually exists"]
-    PROV --> EST[("Estate<br/>Network.VirtualNetwork · Network.IPAddressPool<br/>Platform.StorageClass · Platform.Namespace")]
+    PROV --> EST[("Estate<br/>Network.VLAN · Network.Subnet<br/>Network.VirtualNetwork · Network.IPAddressPool<br/>Platform.StorageClass · Platform.Namespace")]
     DISC --> EST
   end
 
-  subgraph REQ["WHO ASKS — during the convergence loop"]
+  subgraph VOCAB["WHAT THE TERMS MEAN — governed, versioned, curated"]
     direction TB
-    EN2["Enrich<br/>adds the provider-specific fields"]
-    PL2["Placement<br/>narrows to providers that can satisfy"]
+    ZN["network_zone taxonomy<br/>dmz · internal · management · storage"]
+    TR["network_tier / storage_tier<br/>each term denotes a FLOOR"]
   end
 
-  EST -->|"which networks exist, and what each one IS"| PL2
-  EST -->|"which storage classes, and what each advertises"| PL2
-  PL2 -->|"provider selected — now its namespace and native<br/>names are knowable, and were not before"| EN2
+  subgraph REQ["WHO ASKS — inside the convergence loop"]
+    direction TB
+    PL2["Placement<br/>match requirements against what is advertised"]
+    EN2["Enrich<br/>add the selected provider's own fields"]
+  end
+
+  EST -->|"segment · subnet · zone · tier"| PL2
+  VOCAB -->|"what a term REQUIRES, so two<br/>providers' answers are comparable"| PL2
+  PL2 -->|"provider selected — its namespace and native<br/>names are knowable now, and were not before"| EN2
   EN2 -->|"the selection changed the payload — round again"| PL2
 
-  CONS["Consumer intent<br/>'a VM, 4 vCPU, needs fast storage'"] --> PL2
-  CONS -.->|"names no network, no storage class,<br/>no namespace — it cannot"| X1[" "]
+  CONS["Consumer intent<br/>'a VM, 4 vCPU, on the DMZ,<br/>10G-class, fast storage'"] -->|"REQUIREMENTS, not names"| PL2
+  CONS -.->|"names no network, no storage class, no<br/>namespace — it cannot, and no longer must"| X1[" "]
   style X1 fill:none,stroke:none
 ```
 
@@ -131,13 +137,19 @@ anything is built:
 
 | # | Step | What is read | What is written |
 |---|---|---|---|
-| 1 | Consumer declares intent | — | a VM, its size, and a requirement — *"reachable from the office network"* |
-| 2 | Placement reads the estate | every `Network.VirtualNetwork` a candidate provider reports | — |
-| 3 | Placement selects | the network whose declared characteristics satisfy the requirement | the chosen network on the payload |
-| 4 | Walk to the pool | `Network.IPAddressPool` `contained_by` that network | — |
-| 5 | Reserve an address | the pool's free capacity | a held `Network.IPAddress` — **before the VM exists** |
-| 6 | Enrich | the selected provider's Provider Class | namespace, native storage class, native subnet |
-| 7 | Round again | the payload changed at 3–6 | re-validated against every policy |
+| 1 | Consumer declares intent | — | a VM, its size, and **requirements** — *DMZ zone, 10G-class*. No network is named |
+| 2 | Placement reads the estate | every segment, subnet and network a candidate provider reports, with its `zone` and `tier` | — |
+| 3 | Placement resolves the terms | what `dmz` and `high-throughput` REQUIRE — the floors behind the names | — |
+| 4 | Placement selects | the candidates clearing both floors | the chosen network on the payload |
+| 5 | Walk to the pool | `Network.IPAddressPool` within that subnet | — |
+| 6 | Reserve an address | the pool's free capacity | a held `Network.IPAddress` — **before the VM exists** |
+| 7 | Enrich | the selected provider's Provider Class | namespace, native storage class, native subnet |
+| 8 | Round again | the payload changed at 4–7 | re-validated against every policy |
+
+Step 3 is what makes this portable: the match is against the **floor**, so a provider calling its
+network `10G` and one calling it `high-throughput` are both candidates. Step 6 is why reserve is per
+component — the address is held while the VM is still hypothetical, so a request that cannot get one
+fails before anything is created.
 
 Step 5 is why reserve is per component: the address is held while the VM is still hypothetical, so a
 request that cannot get one fails before anything is created.
