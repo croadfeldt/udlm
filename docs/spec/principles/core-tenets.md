@@ -124,7 +124,7 @@ validation layer — **valid spec** (CONFORMANCE) + **valid data** (valid-by-con
 ## T7 — Reach for an existing mechanism before coining a new one
 Before introducing a new primitive — a "module", a new field family, a new envelope, a parallel type —
 first try to **compose it from mechanisms the model already has**: classification tags, profiles
-(ADR-007), provider capability declaration (ADR-004), conformance tiers, must-ignore-unknown, object
+(ADR-007), provider capability declaration (ADR-PROV-002), conformance tiers, must-ignore-unknown, object
 references, and typed edges. Most "we need a new X" is an existing mechanism under a new name, and a
 coined primitive is permanent surface — every peer must implement it and every reader must learn it.
 **This is an active review gate, not advice:** a PR that introduces a net-new mechanism must show, in its

@@ -110,7 +110,7 @@ stored classifier with no consumer that its own description marks as inferable e
 `portability` (`portable` / `partial` / `provider-specific`) is the same pattern, with a sharper reason to drop
 the stored field: **portability is not a property a provider self-declares — it is decided by whoever chooses to
 *support* the element.** A type asserting "this is portable" binds nothing; portability is realized only when a
-*target* provider advertises a capability that satisfies the element (ADR-004), or an org adopts it.
+*target* provider advertises a capability that satisfies the element (ADR-PROV-002), or an org adopts it.
 
 - **Already derivable — and ADR-038 §3 already says so:** *"an element's Class **is** its portability … read off
   scope"* (Base = portable; lower = narrower, never zero). The stored classification just restates the scope.

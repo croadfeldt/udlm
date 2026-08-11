@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-004 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-PROV-002 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
 **Tracking:** placement-data family — "how is data migration handled, and how do we pre-validate it?"
 
 ## Context
@@ -42,7 +42,7 @@ Per **T6**: how continuously the mobility outcome must be proven.
 **Modes:** `simulated` runs the process with synthetic, schema-conformant, non-sensitive data — the *process* is proven with **no regulated data moved**, enabling sovereignty-safe cross-jurisdiction DR rehearsal (the high-value FSI/sovereign case); `rehearsal` runs real data to a reversible/scratch target to prove the *real* path. Cadence is criticality-derived and stale claims gate dependence — both enforced as Policy (DCM ADR-020) — so a resilience claim is a living, freshness-tracked property, not a one-time cert.
 
 ### 3. Provider mobility capability (provider declares; in the provider declaration)
-What the provider can actually do — matched against `data_mobility`. Extends the provider-adopted-standards pattern (ADR-004).
+What the provider can actually do — matched against `data_mobility`. Extends the provider-adopted-standards pattern (ADR-PROV-002).
 ```json
 "mobility": [
   { "resource_type": "Data.Database", "methods": ["online-streaming", "snapshot-ship"],
@@ -78,4 +78,4 @@ Both **rehearsals and real incidents** write this — a real DR event *is* a val
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** `data_mobility` + `process_validation` requirements + `mobility_validation` evidence.
 - **Policy (the control plane):** migration permission/sequence + freshness gating + rehearsal scheduling (DCM ADR-020).
-- **Provider:** declares `mobility` + `operational_capability` (ADR-004); **executes** the migration mechanism and the rehearsals (unmodeled "how").
+- **Provider:** declares `mobility` + `operational_capability` (ADR-PROV-002); **executes** the migration mechanism and the rehearsals (unmodeled "how").

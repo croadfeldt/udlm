@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §Extensibility (profile scope note); `docs/spec/governance/governance-matrix.md` (profile-bound defaults); ADR-002 (adopt-by-reference); ADR-004 (provider capability declaration); ADR-005 (time-sync as a profile capability); ADR-006 (re-entrant policy); `docs/spec/contracts/policy-contract.md` (policy engine model)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §Extensibility (profile scope note); `docs/spec/governance/governance-matrix.md` (profile-bound defaults); ADR-002 (adopt-by-reference); ADR-PROV-002 (provider capability declaration); ADR-005 (time-sync as a profile capability); ADR-006 (re-entrant policy); `docs/spec/contracts/policy-contract.md` (policy engine model)
 **Tracking:** review of dcm #66 — "the human-approval/escalation ladder is organization-dependent"; and "are custom/admin-defined profiles a feature?"
 
 ## Context
@@ -22,7 +22,7 @@ A profile establishes the **minimum** required policies, configuration, and mech
 Built-in profiles are stable, referenceable, reproducible. **Any modification of a built-in profile produces a new *custom* profile** (copy-on-write); customization never mutates a built-in. This is the answer to "are custom profiles a feature?" — **yes, first-class**, and they are created by forking a built-in.
 
 **4. Profile-governed mechanics are organization-dependent.**
-Mechanisms like the **human-approval / escalation ladder** are defined by the profile (its operational config + policy set), not by a fixed platform ladder. Different organizations/profiles define different ladders. The platform provides the *mechanism*; the profile provides the *definition* — the same pattern as ADR-005 (time-sync) and ADR-004 (capabilities).
+Mechanisms like the **human-approval / escalation ladder** are defined by the profile (its operational config + policy set), not by a fixed platform ladder. Different organizations/profiles define different ladders. The platform provides the *mechanism*; the profile provides the *definition* — the same pattern as ADR-005 (time-sync) and ADR-PROV-002 (capabilities).
 
 **5. Scope — platform-scoped now; finer scopes are mechanism-available but deliberately unpopulated.**
 A profile is scoped to the **platform**: one resolved profile set per control-plane instance. Finer scopes — per tenant / service / compliance domain / resource — are **group-scopable later** and the resolution mechanism for them already exists (`profile-resolution.md §1` precedence `resource_type → tenant → group → platform default`), but **below the platform default it is not populated**: an instance carries its one platform profile and no sub-scoped overrides. Available as mechanism, not populated as policy. See the profile-scope note in `foundations.md`.
@@ -35,7 +35,7 @@ A profile is scoped to the **platform**: one resolved profile set per control-pl
 
 - **Data** — the profile record: a set of policy references + operational configuration + declarations of the required data/mechanics; custom profiles as forked records; the floor declarations.
 - **Policy** — the policies the profile bundles; the "may restrict, never below floor" composition rule; fork-on-modify enforcement; the org-defined approval/escalation ladder.
-- **Provider** — the operational configuration names the mechanics providers must satisfy (e.g. an attestation provider for `sovereign`, a time-sync capability per ADR-005); placement/admission matches provider/node capability (ADR-004) against the profile's required mechanics.
+- **Provider** — the operational configuration names the mechanics providers must satisfy (e.g. an attestation provider for `sovereign`, a time-sync capability per ADR-005); placement/admission matches provider/node capability (ADR-PROV-002) against the profile's required mechanics.
 
 ## Options considered
 
@@ -54,5 +54,5 @@ A profile is scoped to the **platform**: one resolved profile set per control-pl
 - **+** One profile bundles policy + config + required mechanics to *guarantee* intent (e.g. `sovereign` = FIPS/hardware attestation + tighter time-sync bound + audit retention + a specific approval ladder).
 - **+** Custom profiles are first-class, reproducible, and auditable (fork-on-modify).
 - **+** Human-gate/escalation ladders and other operational mechanics are organization-specific **without platform code changes** — the adaptability priority (`foundations.md`).
-- **−** The profile record must reference operational configuration + required-mechanics, not only policies; placement/admission must verify a node/provider meets the profile's required mechanics (ADR-004/005).
+- **−** The profile record must reference operational configuration + required-mechanics, not only policies; placement/admission must verify a node/provider meets the profile's required mechanics (ADR-PROV-002/005).
 - **−** Composition semantics (floor enforcement now; group-scope overlay later) must be specified as they land.

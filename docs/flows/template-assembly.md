@@ -103,7 +103,7 @@ flowchart LR
 ## Data · Policy · Provider
 - **Data** — Pattern is Knowledge (type-level intent); Template is a catalog definition (Requested); System is a realized composite + bound-activity records (Realized).
 - **Policy** — resolving a Pattern into a Template *is* policy (Intent → Requested); each binding's `lifecycle_policy` governs suspend/cancel propagation across the System.
-- **Provider** — constituents are fulfilled by their ordinary providers; bound processes by process/automation providers; a *composable-infrastructure* provider may assemble constituents from pools (a capability, ADR-004 — not a tier).
+- **Provider** — constituents are fulfilled by their ordinary providers; bound processes by process/automation providers; a *composable-infrastructure* provider may assemble constituents from pools (a capability, ADR-PROV-002 — not a tier).
 
 ## Where each piece is specified
 | Piece | Home |

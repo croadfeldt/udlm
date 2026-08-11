@@ -4,7 +4,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); downstream (dcm-project) adoption pending eng alignment (it amends ADR-027, the `Category.Type` naming, and the provider-extension rule it subsumes).
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (foundational — meta-model)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-027 (entity-family model — this extends it); ADR-024 (filling provider-required inputs — the policy-fill); ADR-004 (provider capability declaration); ADR-019 (Placement); ADR-012 (data-references + lineage); ADR-008 (wire-compatibility); ADR-010 (dependency-graph completion — the governed cross-entity surface §10 must not bypass); **T4** (cross-entity flow is edge, not address); **the provider-extension rule** (provider extensions + Vendor.Type fork — *subsumed*); core-tenets **T1/T2/T3** (data is not logic), **T5** (adopt, don't re-express), **T7** (reduce to existing); the reference-discipline set (PVD-001 / ADR-035–037 — *recast as applications*)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-027 (entity-family model — this extends it); ADR-024 (filling provider-required inputs — the policy-fill); ADR-PROV-002 (provider capability declaration); ADR-019 (Placement); ADR-012 (data-references + lineage); ADR-008 (wire-compatibility); ADR-010 (dependency-graph completion — the governed cross-entity surface §10 must not bypass); **T4** (cross-entity flow is edge, not address); **the provider-extension rule** (provider extensions + Vendor.Type fork — *subsumed*); core-tenets **T1/T2/T3** (data is not logic), **T5** (adopt, don't re-express), **T7** (reduce to existing); the reference-discipline set (PVD-001 / ADR-035–037 — *recast as applications*)
 
 **Settles:** resource types are layered **Base / Type / Provider Classes** of scoped `SharedDataElement`s — one meta-model that unifies base fields, shared vocabularies, and provider extensions, and makes portability legible from the name.
 
@@ -389,7 +389,7 @@ for depth, check the three cheaper axes (T7) — most apparent "sub-providers" a
   duplicates versioning you already have.
 - **Capability advertisement — two OCPVirt deployments, same Class, different features.** One cluster's OCPVirt
   offers GPU passthrough + SR-IOV, another doesn't. Both are `Compute.VM.OCPVirt`; each **advertises its own
-  capabilities** (ADR-004). The difference is capability data on the provider, not a Class fork.
+  capabilities** (ADR-PROV-002). The difference is capability data on the provider, not a Class fork.
 - **Authority / instance axis — *which* OCPVirt.** Two separate OCPVirt installations are two provider
   *instances*, addressed on the **authority axis** (`peer.dcm.east/…` vs `peer.dcm.west/…`, §10) — **orthogonal**
   to Class depth.
