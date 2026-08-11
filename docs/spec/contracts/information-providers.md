@@ -14,7 +14,7 @@
 
 ## 1. Purpose
 
-An **Information Provider** is a registered the control plane provider that serves as the authoritative source for a specific category of data that the control plane needs to reference but does not own. It exposes external data to the control plane through a standard interface, enabling the control plane to look up, verify, and relate external records without caching or owning them.
+An **Information Provider** is a registered control-plane provider that serves as the authoritative source for a specific category of data that the control plane needs to reference but does not own. It exposes external data to the control plane through a standard interface, enabling the control plane to look up, verify, and relate external records without caching or owning them.
 
 In the unified provider model ([provider-contract.md](provider-contract.md) §8), an "Information Provider" is a provider that declares the **`serve_data`** capability — fixed provider *types* are superseded by capability declarations, and `serve_data` is the convenience label for the serve-authoritative-external-data capability profile. A provider MAY declare `serve_data` alongside others (e.g. an IPAM that both serves data and realizes resources). This document details the `serve_data` capability; it follows the same registration, health check, trust, and contract model as any provider — adapted where applicable to the lookup-only nature of information retrieval.
 
@@ -86,7 +86,7 @@ Same model as Service Providers. Information Providers have a contractual obliga
 | `PROVIDER_DEGRADED` | Provider is degraded but operational | The control plane flags affected references for on-demand verification |
 
 ### 4.6 Naturalization/Denaturalization Contract
-Information Providers translate their native data format (HR system JSON, finance system XML, LDAP records, REST APIs) into the control plane unified data model format. The translation is the provider's responsibility — the control plane always receives data in the control plane format.
+Information Providers translate their native data format (HR system JSON, finance system XML, LDAP records, REST APIs) into the control plane unified data model format. The translation is the provider's responsibility — the control plane always receives data in control-plane format.
 
 ---
 
@@ -139,7 +139,7 @@ external_entity_reference:
 
   external_uuid: <stable uuid from the external system>
   information_provider_uuid: <uuid of registered Information Provider>
-  information_type_uuid: <uuid of information type in the control plane registry>
+  information_type_uuid: <uuid of information type in the registry>
   information_type_name: Business.BusinessUnit
 
   lookup_method:

@@ -401,7 +401,7 @@ This rule applies automatically and silently when the hierarchy resolves cleanly
 | `notify` is the winning action | `warning` | Notify owner — human decision required |
 | Immutable lifecycle lock overridden by REL-018 | `critical` | Notify entity owner, policy owner, and platform admin |
 
-**The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), the control plane records
+**The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), control-plane records
 durably: the full recommendation set (per edge — the recommended action and the policy or
 lifecycle declaration it came from), the resolved action and the rule that resolved it, the
 severity, and the notifications dispatched — citable from the affected entity's audit trail.
@@ -507,7 +507,7 @@ Deferred destruction record created (if action was deferred)
 
 ### 9.4 Deferred Destruction — the Obligation
 
-When a destruction is deferred because active edges remain (REL-015), the control plane records durably: the
+When a destruction is deferred because active edges remain (REL-015), control-plane records durably: the
 triggering request, the entity whose edge was being released, the derived count before and
 after, the remaining blocking edges (declaring entity + edge_type + strength), and the reason —
 citable from the shared entity's audit trail. When the count later reaches the declared

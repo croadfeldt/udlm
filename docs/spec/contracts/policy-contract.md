@@ -230,7 +230,7 @@ Most policies are soft. Hard enforcement is reserved for absolute security const
 Policies operate within a domain hierarchy. More-specific domains win within the same concern type:
 
 ```
-system (most trusted — the control plane built-in)
+system (most trusted — control-plane built-in)
   └── platform (platform admin declared)
         └── tenant (Tenant admin declared)
               └── resource_type (per resource type spec)
@@ -381,14 +381,14 @@ the same resolved constraint set.
 
 *How* an engine reaches convergence — the multi-pass loop, its pass bound, the concrete
 collection→resolution→application scheduling, and the worked convergence/escalation traces — is a
-**implementation concern**, specified in the control plane architecture docs, not fixed here (§7.2a: built-in or
+**implementation concern**, specified in control-plane architecture docs, not fixed here (§7.2a: built-in or
 delegated, the contract is identical).
 
 ### 7.2a Policy engine — built-in vs. delegated (external)
 
 This document is the policy **contract**. *Where* policies live and *who* evaluates them is an implementation choice, in one of two modes — the contract is identical either way:
 
-- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For the control plane specifically, **policies are control-plane-controlled**: the policy engine is a core the control plane component and its policy store sits under the control plane's governance. Whether that store is *physically* the same database as other the control plane Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
+- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For the control plane specifically, **policies are control-plane-controlled**: the policy engine is a core control-plane component and its policy store sits under the control plane's governance. Whether that store is *physically* the same database as other the control plane Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
 - **Delegated to an external engine.** An implementation MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the implementation sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
 
 Wire-compatibility holds regardless: a peer cannot tell — and need not care — whether a decision came from a built-in or a delegated engine, only that it conforms to §2–§5 and the re-entrant, convergent evaluation contract (§7.2; ADR-006).
@@ -517,7 +517,7 @@ Constraint types are the shared vocabulary of the Evaluation Context. Every cons
 constraint_type:
   handle: "zone_restriction"
   version: "1.0.0"
-  tier: core                              # core (the control plane built-in) | organization (custom)
+  tier: core                              # core (control-plane built-in) | organization (custom)
   schema:                                 # OpenAPI v3 schema for the constraint value
     type: object
     properties:
@@ -874,7 +874,7 @@ lifecycle_policy_output:
 
 ## 17. Output Schema — ITSM Action
 
-The ITSM Action policy type triggers actions in connected ITSM systems as a side-effect of the control plane pipeline events.
+The ITSM Action policy type triggers actions in connected ITSM systems as a side-effect of control-plane pipeline events.
 
 ```yaml
 itsm_action_output:
@@ -1064,7 +1064,7 @@ a fixed order — an active **Override Policy**, then an **Exception Grant**, th
 covering the scope; the first that applies lets the request continue. If none applies, the request takes the
 `POLICY_BLOCKED` outcome (§7.7), carrying the resolution guidance below. *How* an implementation then surfaces
 the block and drives the consumer's choice — the events it publishes, the notifications it routes, the API
-it exposes — is control-plane, specified in the control plane architecture docs, not fixed by this contract.
+it exposes — is control-plane, specified in control-plane architecture docs, not fixed by this contract.
 
 **Resolution options presented to the consumer:**
 
@@ -1114,7 +1114,7 @@ The `compliant_values` guidance is derived from the blocking policy's constraint
 
 The consumer-facing resolution API (`GET …/resolution`, `POST …:resolve` with a `modify` / `request_override`
 / `cancel` / `escalate` action) and the `request.policy_blocked` / `request.resolution_chosen` / `override.*`
-lifecycle events are the implementation's control-plane surface — specified in the control plane architecture docs and the
+lifecycle events are the implementation's control-plane surface — specified in control-plane architecture docs and the
 [event catalog](event-catalog.md), not fixed by this contract.
 
 ### 18.9 Override Approval Flow
@@ -1151,7 +1151,7 @@ override_request:
 **Control-plane surface (implementation / the control plane).** The approver Admin API
 (`POST …/overrides/{id}/approve|reject`, `GET …/overrides`), the notification routing (which roles and
 webhooks are notified per policy domain and enforcement level), and the block/override **timeout values**
-are implementation control-plane — specified in the control plane architecture docs, not fixed by this contract.
+are implementation control-plane — specified in control-plane architecture docs, not fixed by this contract.
 
 Three facts the contract *does* fix:
 - **Timeouts are profile-governed.** A `POLICY_BLOCKED` request has a bounded window for a consumer action
@@ -1193,7 +1193,7 @@ For a single request, all active matching policies at all domain levels evaluate
 
 | Policy | Rule |
 |--------|------|
-| `POL-001` | All the control plane policy types implement the unified base contract. The output schema is the only thing that varies. |
+| `POL-001` | All control-plane policy types implement the unified base contract. The output schema is the only thing that varies. |
 | `POL-002` | Every policy evaluation produces an audit record. No evaluation is silent. |
 | `POL-003` | Hard enforcement policies require dual-approval to override. Override policies (Model 1) cannot target hard policies — caught at activation. |
 | `POL-004` | Policies in `proposed` status execute in shadow mode — output is captured and never applied. Shadow mode is the primary mechanism for safe policy change management. |

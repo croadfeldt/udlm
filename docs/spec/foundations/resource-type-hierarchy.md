@@ -22,7 +22,7 @@ The control plane Resource Type Hierarchy is the structural model that defines h
 The hierarchy serves four goals:
 
 1. **Portability** — consumer intent can be fulfilled by any provider that satisfies the resource type contract, without the consumer needing to know which provider that is
-2. **Standardization** — a common vocabulary and data contract for all resource types encourages interoperability across providers, implementors, and the broader the control plane community
+2. **Standardization** — a common vocabulary and data contract for all resource types encourages interoperability across providers, implementors, and the broader control-plane community
 3. **Extensibility** — the model can be extended at every level without breaking existing definitions
 4. **Transparency** — any deviation from full portability is explicitly declared, versioned, and surfaced to consumers. This includes **instance-level** deviation: when a provider attaches provider-specific data (Provider-Class `SharedDataElement`s, ADR-038) to a realized entity, portability is a computed **instance** property — the entity is marked `portability_breaking`, its classification narrowed, the provider-specific elements + bound provider recorded, and **the consumer is notified before/at realization**. A resource is portable exactly to the extent it carries no provider extensions; silent non-portability is prohibited.
 
@@ -114,7 +114,7 @@ Worked example: `registry/classes/resource/compute/vm/cexample-cloud.yaml`. Auth
 - Registry entries are **versioned and immutable** once published — changes produce new versions
   (the versioning/deprecation rules are owned by [registry-governance](../governance/registry-governance.md) §5, `REG-DP-*`)
 - Registry definitions are **vendor-neutral by hard requirement** — no vendor-specific data is permitted in a control plane-specified resource type unless that vendor is the exclusive provider of that technology stack
-- The registry itself is subject to the same **deprecation model** as all other the control plane definitions
+- The registry itself is subject to the same **deprecation model** as all other control-plane definitions
 - All registry entries follow the **universal versioning scheme** (Major.Minor.Revision)
 
 ### 2.2 Default Resource Type Categories
@@ -312,7 +312,7 @@ Defines an abstract resource within a category. A Resource Type represents a cla
 
 The data contract for a Resource Type. A Resource Type Specification is itself
 a **data layer artifact** — it follows the same versioning, ownership, lifecycle,
-GitOps governance, and domain model as all other the control plane layers. The Resource Type
+GitOps governance, and domain model as all other control-plane layers. The Resource Type
 Authority is the `owned_by` declaration on the specification artifact. Changes
 produce new versions. The specification is immutable once active.
 
@@ -459,7 +459,7 @@ Every field in every Resource Type Specification carries a portability classific
 
 | Classification | Description | Portability Impact |
 |---|---|---|
-| `universal` | Part of the control plane standard spec. All providers implementing this type must support it. | Fully portable across all implementing providers |
+| `universal` | Part of control-plane standard spec. All providers implementing this type must support it. | Fully portable across all implementing providers |
 | `conditional` | Supported by multiple providers but not all. Providers declare support in their registration. | Portable across providers that declare support |
 | `provider-specific` | Specific to one provider or technology stack. Using this field locks the request to that provider. | Portability-breaking — must be explicitly marked |
 | `exclusive` | Only one provider supports this technology stack. Portability is not applicable by definition. | Not applicable — acknowledged and declared |
@@ -472,7 +472,7 @@ The following are non-negotiable requirements for any control-plane-specified Re
 2. **Provider-specific** fields MUST be explicitly marked as portability-breaking in the field metadata
 3. Consumers MUST be warned when their request contains portability-breaking fields
 4. The only exception to vendor-neutrality is the **exclusive** classification — where one provider is the sole implementor of a technology stack, explicitly acknowledged and declared in the registry
-5. Any Resource Type in the control plane registry that contains provider-specific fields as universal fields is invalid and must be rejected
+5. Any Resource Type in the registry that contains provider-specific fields as universal fields is invalid and must be rejected
 
 ### 4.3 Portability Field Metadata
 
@@ -629,7 +629,7 @@ When consumers reference a resource type — in API calls, policy conditions, or
 
 The control plane resolves either form to the canonical `(resource_type_uuid, resource_type_name)` pair during request assembly. The resolution happens in the **Request Payload Processor** before layer enrichment begins. Unresolvable references are rejected at validation time with a `422 Unprocessable Entity` response and code `RESOURCE_TYPE_NOT_FOUND`.
 
-**Internal representation:** All internal the control plane data — entity records, dispatch payloads, audit records — always carry **both** `resource_type_uuid` and `resource_type_name` (FQN). The consumer-facing accept-both model is purely at the API boundary; internally the control plane always uses the canonical pair.
+**Internal representation:** All internal control-plane data — entity records, dispatch payloads, audit records — always carry **both** `resource_type_uuid` and `resource_type_name` (FQN). The consumer-facing accept-both model is purely at the API boundary; internally the control plane always uses the canonical pair.
 
 **Dispatch to operators:** The `CreateRequest` and `UpdateRequest` payloads sent to Service Providers always include both:
 - `resource_type_uuid` — the Registry UUID

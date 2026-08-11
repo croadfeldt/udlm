@@ -80,7 +80,7 @@ priority order, first. (The full definition is §2.)
 ### Policies Are Logic
 
 A policy answers **"given this data, is it valid? what should change? should this proceed?"**
-— executable logic (OPA Rego, the control plane native rules, external calls) that reads the assembled
+— executable logic (OPA Rego, control-plane native rules, external calls) that reads the assembled
 result, validates, transforms, injects derived values, and gates. Policies come after layers.
 
 **What belongs in a policy:**
@@ -164,7 +164,7 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 
 **Scope:** Can be type-agnostic (a universal base) or type-scoped (a base specific to a Resource Type). A Base Layer that is type-scoped must declare its Resource Type.
 
-**Ownership:** the control plane platform or platform implementor.
+**Ownership:** the control-plane platform or platform implementor.
 
 **Characteristics:**
 - Every layer chain must begin with a Base Layer
@@ -185,7 +185,7 @@ The control plane defines six layer types. Each has a distinct purpose, scope, o
 
 **Scope:** Type-agnostic by default. Core Layers apply to all resource types unless explicitly scoped. This is the primary distinction from Service Layers.
 
-**Ownership:** the control plane platform, infrastructure teams, or platform implementors.
+**Ownership:** the control-plane platform, infrastructure teams, or platform implementors.
 
 **Characteristics:**
 - Applied to every request regardless of resource type
@@ -542,7 +542,7 @@ Hot/warm/cold storage tiers with decreasing detail. Recent provenance at full de
 
 ### 3a.2 Configurable Provenance Model
 
-The provenance model is declared in the control plane deployment configuration and activated via a Policy Group:
+The provenance model is declared in control-plane deployment configuration and activated via a Policy Group:
 
 ```yaml
 provenance_config:
@@ -825,7 +825,7 @@ Higher number = higher priority. Organizations adopt, adapt, or ignore this taxo
 
 ## 4b. Artifact Metadata Standard
 
-Every the control plane artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a standard **Artifact Metadata** block. This is a structural requirement, not optional.
+Every control-plane artifact — layers, policies, resource types, catalog items, provider registrations, entity definitions, and all other defined or stored objects — carries a standard **Artifact Metadata** block. This is a structural requirement, not optional.
 
 The artifact metadata block answers: **who created this, when, who owns it, what changed, and how do we contact them?**
 
@@ -952,7 +952,7 @@ Dashboard. The capture's shape is the control plane's implementation; this conte
 Contact information supports both IdP-backed and standalone deployments:
 
 **Mode 1 — Identity Provider backed:**
-The `uuid` field contains the control plane external entity reference UUID linking to an Identity.Person or Identity.Team in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. The control plane can resolve the full identity record via the Information Provider on demand.
+The `uuid` field contains control-plane external entity reference UUID linking to an Identity.Person or Identity.Team in a registered Information Provider. The `display_name` is cached non-authoritatively for UI display. The control plane can resolve the full identity record via the Information Provider on demand.
 
 **Mode 2 — Standalone (no Identity Provider):**
 The `uuid` field is absent. `display_name`, `email`, and `notification_endpoint` are the primary identity fields. The control plane accepts and records these directly without external verification. This mode supports bootstrapping, air-gapped deployments, and organizations that have not yet registered an Identity Information Provider.
@@ -961,7 +961,7 @@ Both modes are fully supported. An organization can start in standalone mode and
 
 ### 4b.5 Notifications from Artifact Metadata
 
-The `owned_by.notification_endpoint` is the target for all proactive the control plane notifications about an artifact:
+The `owned_by.notification_endpoint` is the target for all proactive control-plane notifications about an artifact:
 
 | Event | Who Is Notified |
 |-------|----------------|
@@ -1444,7 +1444,7 @@ Pre-placement policies produce **placement constraints** — declarative require
 
 ### Step 6 — Placement
 
-Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is implementation concern (see the control plane operational model and the provider contract). What the data model retains from this step is two records:
+Placement takes the policy-processed payload and the **placement constraints** from Step 5 and selects a provider that satisfies them. The selection *protocol* — candidate iteration, atomic capacity **reserve/hold with TTL**, per-candidate policy re-evaluation, exhaustion handling, and the reserve-query **wire contract** with providers — is implementation concern (see control-plane operational model and the provider contract). What the data model retains from this step is two records:
 
 - **Policy-gap record** — when a field is absent and *no* policy declares `required_context` for it, an `implicit_approval` record is written (field, `provider_uuid`, reason, `recorded_at`, `resolution_expected: realized_payload`). This is the same road-not-taken provenance discipline UDLM applies elsewhere: the fact that a field went un-evaluated is recorded, not silently dropped.
 - **Metadata completeness** — metadata a provider cannot supply at placement is completed later via the **realized payload** (primary) or **discovery** (fallback); the realized entity carries `enrichment_status: pending | partial | complete`. Same pattern as the ingestion model.
@@ -1534,7 +1534,7 @@ All layers follow the universal the control plane versioning scheme: **Major.Min
 
 ## 10. Artifact Lifecycle — The Five Statuses
 
-All the control plane artifacts — layers, policies, resource types, catalog items, and all other defined objects — follow a five-status lifecycle. The statuses are defined in Section 4b.2. For layers specifically:
+All control-plane artifacts — layers, policies, resource types, catalog items, and all other defined objects — follow a five-status lifecycle. The statuses are defined in Section 4b.2. For layers specifically:
 
 | Status | Layer Behavior |
 |--------|---------------|
@@ -1678,7 +1678,7 @@ policy:
 
 ## 15. Related Concepts
 
-- **Request Payload Processor** — the control plane component that executes the assembly process; enforces structural layer rules
+- **Request Payload Processor** — control-plane component that executes the assembly process; enforces structural layer rules
 - **Policy Engine** — executes Policy Layers (Validation Policy, Transformation) during the assembly process; the sole authority for setting field override control
 - **Field Override Control** — the mechanism governing who can change what field, under what conditions, at what policy level
 - **Override Preference** — per-field metadata declaring `allow`, `constrained`, or `immutable` — the formalization of the original data model "override preference" subtag
