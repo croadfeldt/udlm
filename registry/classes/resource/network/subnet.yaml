@@ -70,9 +70,12 @@ adopts:
   version: 'AWS VPC subnet / Azure VNet subnet / GCP subnetwork (convergent de-facto model)'
   standard_name: VPC subnet
   role: >-
-    The cloud realization of an L3 network within a logical network. Recorded so a cloud provider
-    naturalizes into this class rather than a cloud-only branch — the VPC is the logical network
-    (`Network.VirtualNetwork` / the segment axis) and this is the L3 network inside it.
+    The cloud realization of an L3 network. Recorded so a cloud provider naturalizes into this class
+    rather than a cloud-only branch.
+    The VPC that CONTAINS such a subnet has no class yet, and `contained_by → Network.VirtualNetwork`
+    below is the on-prem attachment-point case rather than a VPC. Tracked separately: a subnet is
+    useful without its container, and guessing the container's shape would be worse than leaving it
+    open.
   source: https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html
   license: vendor-documentation
   license_compatibility: reference-only

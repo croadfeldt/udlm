@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.3
 conforms_to: udlm/0.1
 uuid: 009c7bcb-53ae-4a3b-96fd-12ee35b3b426
 record_type: class
 class: type
 resource_type: Network.VLAN
 parent: Network
-version: 0.5.2
+version: 0.5.3
 family: Resource
 status: active
 # OWN-007 — the canonical `shareable` case (ownership-sharing-allocation §2.3): one VLAN entity exists,
@@ -89,13 +89,16 @@ adopts:
   version: 'AWS VPC / Azure VNet / GCP VPC (convergent de-facto model)'
   standard_name: VPC subnet
   role: >-
-    The public-cloud realization of segment identity. A cloud provider exposes no VLAN, so "which
-    logical network" there is a SUBNET within a VPC — which maps onto this model rather than needing
-    a parallel one: the VPC is a `Network.VirtualNetwork`, and the subnet is the addressed segment
-    within it (`Network.IPAddressPool` contained_by that network). Adopted BY REFERENCE (T5): the
-    three clouds converged on the same shape independently, and re-expressing it would be inventing
-    a fourth. Recorded here rather than as a class so a provider naturalizes into the existing
-    segment/pool pair instead of a cloud-only branch.
+    The public-cloud realization of segment identity. A cloud exposes no VLAN, so "which logical
+    network" there is a subnet within a VPC, and `Network.Subnet` is where that lands. Adopted by
+    reference (T5): the three clouds converged on the subnet shape independently, and re-expressing
+    it would invent a fourth.
+    THE VPC ITSELF HAS NO CLASS, stated rather than implied. VirtualNetwork is an ATTACHMENT POINT —
+    its own description reads "the network a VM's or pod's NIC attaches to: a libvirt network, a
+    NetworkAttachmentDefinition, an OVN logical switch". A VPC is a tenant-scoped CONTAINER with its
+    own address space, holding many subnets, route tables and gateways. Treating one as the other
+    would make a container and an attachment point the same thing, and a subnet is useful without
+    its container — so the container half is left open rather than guessed at.
   source: https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html
   license: vendor-documentation
   license_compatibility: reference-only
