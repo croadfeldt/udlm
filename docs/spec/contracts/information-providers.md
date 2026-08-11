@@ -172,7 +172,7 @@ external_entity_reference:
 ### 6.2 Why the control plane UUID Wraps External UUID
 
 The control-plane-generated UUID is the stable internal anchor. This means:
-- All relationship declarations inside the control plane reference the control plane UUID
+- All relationship declarations inside the control plane reference the control-plane UUID
 - If the external system changes its UUID (migration, system upgrade), only the `external_entity_reference` record needs updating
 - All relationships pointing to the control plane UUID remain valid without modification
 - The provenance chain tracks the change via the `UUID_CHANGED` lifecycle event

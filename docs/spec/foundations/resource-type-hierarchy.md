@@ -17,7 +17,7 @@
 
 ## 1. Purpose
 
-The control plane Resource Type Hierarchy is the structural model that defines how services and resources are categorized, specified, and exposed through the control plane Service Catalog. It is the mechanism by which the control plane achieves **resource portability** — the ability to express what a consumer needs independently of which specific provider delivers it.
+The control plane Resource Type Hierarchy is the structural model that defines how services and resources are categorized, specified, and exposed through the Service Catalog. It is the mechanism by which the control plane achieves **resource portability** — the ability to express what a consumer needs independently of which specific provider delivers it.
 
 The hierarchy serves four goals:
 

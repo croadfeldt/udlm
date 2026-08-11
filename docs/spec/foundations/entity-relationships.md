@@ -188,7 +188,7 @@ rule, which is where not-found and not-authorized are separated for the whole mo
 tenants, so the refusal record names both — today's denial records carry a single
 `tenant_uuid`, which leaves the owning tenant unable to see that their resource was reached for.
 
-### 6.3 the control plane System Policies for Cross-Tenant Relationships
+### 6.3 System Policies for Cross-Tenant Relationships
 
 Three relationship rules govern this surface and are **defined in §13.1**, not restated here:
 `GRP-INV-002` (a constituent relationship may not cross a tenant boundary), `REL-011` (a cross-tenant
@@ -421,10 +421,10 @@ Provider Catalog Item default (provider preference)
 Consumer declaration (at request time — within Resource Type bounds)
   │
   ▼
-The control plane System Policy (non-overridable — sovereignty and compliance mandates)
+System Policy (non-overridable — sovereignty and compliance mandates)
 ```
 
-**Example:** A control plane System Policy might declare that all storage entities in a PCI-DSS scope must `retain` when their parent VM is destroyed — regardless of what the provider default or consumer declared.
+**Example:** A System Policy might declare that all storage entities in a PCI-DSS scope must `retain` when their parent VM is destroyed — regardless of what the provider default or consumer declared.
 
 ---
 
@@ -648,13 +648,13 @@ Request Payload Processor
   │       and the child stub
   │    3. Applies lifecycle policy from:
   │       consumer declaration → provider default → Resource Type default
-  │       → the control plane System Policy override
+  │       → System Policy override
   │    4. Adds the child entity stub to the relationship graph
   ▼
 Policy Engine validates:
   │  Binding type is permitted by Resource Type Specification
   │  Consumer has override_matrix permission to declare binding type
-  │  Lifecycle policy is not overridden by a control plane System Policy
+  │  Lifecycle policy is not overridden by a System Policy
   ▼
 Service Provider receives:
   │  Parent entity request payload
@@ -730,7 +730,7 @@ The relationship graph exists across all four states:
 
 ## 13. Relationship Integrity
 
-### 13.1 the control plane System Policies for Relationships
+### 13.1 System Policies for Relationships
 
 | Policy | Rule |
 |--------|------|
@@ -764,7 +764,7 @@ Resource Type Specification default
     → Consumer declaration at request time
       → Transformation Policy (may set override: constrained)
         → Validation Policy (checks — no modification; compliance-class may set override: immutable)
-            → the control plane System Policies REL-008, REL-009 (non-overridable)
+            → System Policies REL-008, REL-009 (non-overridable)
 ```
 
 **Within the Policy Engine**, the priority schema governs conflicts between policies at the same tier. Highest numeric priority value within a tier runs first. The first policy to set `override: immutable` on a lifecycle policy field locks it — all subsequent policies in that execution find it locked and cannot modify it.

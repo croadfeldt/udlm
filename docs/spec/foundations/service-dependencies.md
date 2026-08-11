@@ -413,7 +413,7 @@ catalog_item:
 
 ---
 
-## 11. The control plane System Policies for Dependencies
+## 11. System Policies for Dependencies
 
 | Policy | Rule | Enforcement |
 |--------|------|-------------|
@@ -536,7 +536,7 @@ composite_service_registration:
 
 ---
 
-## 13. The control plane System Policies — Dependency Gaps
+## 13. System Policies — Dependency Gaps
 
 | Policy | Rule |
 |--------|------|

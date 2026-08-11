@@ -389,7 +389,7 @@ relationship:
 
 ## 6. Example 4 — Brownfield Ingestion
 
-A VM discovered by the provider that the implementation did not provision is brought under UDLM lifecycle management.
+A VM discovered by the provider that the control plane did not provision is brought under UDLM lifecycle management.
 
 ```yaml
 # Step 1: INGEST — discovery finds unknown VM

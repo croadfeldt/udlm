@@ -39,7 +39,7 @@ sovereign, audited, drift-checked implementation — with neither locked to the 
 ## How they compose
 
 **OSAC becomes a DCM Provider.** DCM owns the four state stores and the governance; OSAC's Fulfillment API is
-the implementation target.
+the control-plane target.
 
 ```
 Consumer intent ─► DCM: Intent (immutable)
