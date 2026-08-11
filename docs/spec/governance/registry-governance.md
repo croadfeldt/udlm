@@ -396,7 +396,7 @@ form the rest of the model uses — typed, actionable, non-leaking, auditable
 exist in the registry (`registry/classes/`, `registry/class.schema.json` — ADR-061); the
 class-compat classifier and the estate-side pin resolver do not. `REG-011` through `REG-016` are
 therefore **specification, not enforcement** — they state the contract the P0 gates must satisfy
-when they are built, in the same way the rest of this repository specifies behavior that DCM
+when they are built, in the same way the rest of this repository specifies behavior that the control plane
 realizes. The honest-enforcement ledger is
 [`docs/spec/foundations/data-model-core.md`](../foundations/data-model-core.md) §8, and none of these rules
 claims `[enforced]`. Two of them describe checks that already run on the flat-spec plane and are

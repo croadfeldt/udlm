@@ -30,7 +30,7 @@ Authentication and credential issuance are **capabilities** (yields) a provider 
 > **Identity-model authority (UDLM vs an implementation's auth architecture).** This document and the
 > `Identity.*` types (`Identity.Person` / `Identity.ServiceAccount` / `Identity.Group`, the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix))
 > are the **authoritative data contract** for actors/identities and the actor-type vocabulary (incl. the
-> `provider` actor). An implementation's authentication *implementation* — e.g. DCM's IDM/IAM Authentication
+> `provider` actor). An implementation's authentication *implementation* — e.g. The control plane's IDM/IAM Authentication
 > Layer (`dcm-project/enhancements/.../authentication/authentication.md`: Keycloak/IdP, middleware,
 > OpenAPI security, flows, and its internal `Actor`/`Actor Identity` tables + status enforcement) — is
 > **implementation architecture** (ADR-008): it owns *how* actors authenticate and the external-identity
@@ -142,7 +142,7 @@ The substrate defines a closed taxonomy of authentication modes. Any conformant 
 
 Substrate-required default. Always registered. Cannot be deregistered — only deprioritized.
 
-This is the **default RBAC method** — DCM RBAC works with **zero external IdP** (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a grouping with `record kind: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
+This is the **default RBAC method** — the control plane RBAC works with **zero external IdP** (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix): `local_users` are `Identity.Person` / `Identity.ServiceAccount` accounts, grouped for RBAC via a grouping with `record kind: access_grouping`. At first-run **bootstrap** the initial account receives a `platform_admin` `role_assignment` (GOV-006) so the `platform_admin` gate (PRV-009) exists before anything else is admitted. Roles, the role→function matrix, and assignments are **governed data** (access-role taxonomy + FunctionCapabilityMatrix + role_assignment), not baked into the auth provider — and they project onto Kessel/SpiceDB later without changing this default path.
 
 ```yaml
 built_in_auth_provider:

@@ -1,4 +1,4 @@
-# UDLM/DCM Naming Charter (Proposed)
+# the substrate and its control plane Naming Charter (Proposed)
 
 > **Status: Proposed — a straw man for engineering review.** The goal is **one cohesive naming pass before
 > the 0.1 tag, then a freeze.** This charter proposes the canonical vocabulary, shows how the axes relate,
@@ -69,7 +69,7 @@ archetype — an identity is maintained, not one-shot.)*
 
 ## The tiers and the triad (unchanged — just naming them once)
 
-- **Data · Policy · Provider** — the invariant decomposition. UDLM = Data (substrate); DCM = Policy
+- **Data · Policy · Provider** — the invariant decomposition. UDLM = Data (substrate); the control plane = Policy
   (implementation); Provider = mechanism (wraps tools, T8). Every decision decomposes across all three.
 - **Pattern → Template → System** — two definitions and one instance (above). **Composite Service =
   Template** (ADR-034); **Blueprint** — do not use; the term is **Template**.
@@ -86,7 +86,7 @@ archetype — an identity is maintained, not one-shot.)*
 | **has_constituents** (derived) | constituent shape (is it a composite?) | the stored `entity_type` shape · Atomic/Composite · single/multi — all retired (derived, ADR-027 addendum) |
 | **edge_type** | the relationship-kind field | `kind` (for edges) |
 | **Converge** | the single lifecycle act | realize/reconcile/rehydrate/teardown (colloquial shortcuts, not distinct acts) |
-| **implementation** | a system that implements UDLM's interfaces (UDLM is *implementation-neutral*); DCM/DAV are examples | *realization* (system sense) — retired 2026-07-28 (ADR-056). The lifecycle sense is unchanged: **realize** (verb), **Realized** (state), **two-phase realization** (act) all keep their names |
+| **implementation** | a system that implements UDLM's interfaces (UDLM is *implementation-neutral*) — DCM and DAV are non-normative examples | *realization* (system sense) — retired 2026-07-28 (ADR-056). The lifecycle sense is unchanged: **realize** (verb), **Realized** (state), **two-phase realization** (act) all keep their names |
 | **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (ADR-017; registry `profile-homelab.yaml`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine; `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
 
 *(Note a residual collision to resolve: "family" is also used for a **rule-ID prefix family** — an unrelated
@@ -112,7 +112,7 @@ Real-world usage of these words varies by group — the charter should map onto 
 - **`family` vs `kind` / `type`** (review feedback — *"why `family` and not `kind` or even `type`?"*). A fair
   poke, and it lands on a term this charter is already reconsidering. **Not `kind`** — it collides head-on with
   Kubernetes' object `kind` (`kind: Pod`); ADR-026 *retired* `kind` for exactly this reason (edges became
-  `edge_type`), and since DCM naturalizes **to** Kubernetes, reusing `kind` for our own top classification
+  `edge_type`), and since the control plane naturalizes **to** Kubernetes, reusing `kind` for our own top classification
   re-introduces the collision at the provider edge. **Not bare `type`** — `type` is deliberately noun-namespaced
   (`resource_type` / `entity_type` / `edge_type`, ADR-026's `<noun>_type` convention); bare `type` is ambiguous
   (*type of what?*) and overloads those fields. `family` names a **different tier** — the coarse

@@ -19,7 +19,7 @@ it governs.
   disagreement at resolution is drift, not failure.
 - `correlation_ids` carry stable natural keys (smbios-uuid, mac, provider-id, …) for entity
   resolution across discovery sources: one real resource, one uuid.
-- Boundary translation: external systems that reference by name (e.g. the DCM control-plane
+- Boundary translation: external systems that reference by name (e.g. control-plane control-plane
   catalog's `requires_resources` name-edges) map name↔uuid at the Provider/catalog boundary;
   the external name is recorded as a `correlation_ids` entry (`scheme: provider-id`).
 
@@ -28,7 +28,7 @@ it governs.
 ## 2. Entities, types, instances
 
 - Four families (ADR-027): **Resource** and **Process** — maintained state vs bounded
-  execution — each with a **derived** Atomic/Composite shape (`has_constituents`, the coarse shape from DCM's
+  execution — each with a **derived** Atomic/Composite shape (`has_constituents`, the coarse shape from the control plane's
   orchestration perspective, not a stored field); plus **Knowledge** (members defined in
   `docs/spec/foundations/knowledge-family.md` §4 — the one home for that list) and **Access** (`Identity`),
   which do not carry the Atomic/Composite shape axis.
@@ -55,7 +55,7 @@ it governs.
 
 - **`lifecycle_state` is the ONLY lifecycle enum**: `Intent → Requested → Realized ↔ Discovered`
   plus terminal `Decommissioned` (DEP-007's "retired" prose names the same phase). Two entry
-  paths populate the same record: greenfield (forward: consumer declares Intent; DCM assembles
+  paths populate the same record: greenfield (forward: consumer declares Intent; the control plane assembles
   Requested; **the Provider writes Realized — a receipt, never hand-authored**; discovery
   observes) and brownfield greening (reverse: Discovered-first/unclaimed → provider
   claim/adoption writes Realized, uuid preserved → Requested/Intent backfilled with
@@ -95,7 +95,7 @@ it governs.
   forward topological order = provision/startup, **reverse = teardown/shutdown** — teardown is
   a first-class projection of the same edges. `soft` edges order but never block
   (degrade-don't-break, DEP-006).
-- **Projection to the DCM execution DAG** (per the 2026-07-06 dcm-project comparison — their
+- **Projection to the control plane execution DAG** (per the 2026-07-06 dcm-project comparison — their
   merged model is a single untyped "must-come-before" DAG from `requires_resources` +
   CEL-inferred edges, name-referenced, hard-only, with teardown unspecified and runtime
   execution TODO): the UDLM model projects LOSSLESSLY DOWN onto theirs —

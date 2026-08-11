@@ -8,7 +8,7 @@ policies (§14).
 
 **In one breath.** The implementation is a trust **broker**, never a credential authority:
 credential *values* are produced and held by a provider and flow **directly** to the
-authorized consumer (CPX-001) — DCM never sees, stores, or relays one. Its role is to
+authorized consumer (CPX-001) — the control plane never sees, stores, or relays one. Its role is to
 **select** a provider, **scope** the request, **gate** on attestation, and **audit**; and
 "Credential Provider" is a **capability** a provider declares, not a separate provider kind.
 
@@ -24,13 +24,13 @@ permitted/forbidden algorithms, FIPS floors per profile, and certificate protoco
 
 > **The implementation brokers credentials; it does not hold or issue them.**
 > Credential **values** are produced and held by a registered Credential Provider and flow **directly** to the
-> authorized consumer (CPX-001) — the implementation (DCM) never sees, stores, or relays a value. The implementation's
+> authorized consumer (CPX-001) — the implementation (the control plane) never sees, stores, or relays a value. The implementation's
 > role is to **select** a provider, **scope** the request, **gate** on attestation, and **audit** — the same
 > declare → select → attest pattern the Placement Engine uses for any resource. A request **declares** what it
 > needs (credential type, scope, assurance); each candidate provider **declares** what it can issue and to what
 > assurance level (its credential capability); the implementation **selects** the provider that meets the profile's
-> trust floor. This is the credential expression of the DCM Trust Model (DCM `DCM ADR-022`): DCM is a trust **broker**,
-> not a credential authority. See the DCM trust documents for the cross-plane model; this document specifies the
+> trust floor. This is the credential expression of the control plane Trust Model (the control plane `DCM ADR-022`): the control plane is a trust **broker**,
+> not a credential authority. See the control plane trust documents for the cross-plane model; this document specifies the
 > UDLM substrate contract — the data model, lifecycle, and provider interface — that the brokering rests on.
 >
 > **"Credential Provider" is a capability, not a separate provider kind.** Any provider that declares the
@@ -74,7 +74,7 @@ provider:
     supported_algorithms: [rsa-2048, rsa-4096, ecdsa-p256, ecdsa-p384, ed25519]
 ```
 
-The implementation **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see DCM `DCM ADR-022`, attestation ladder).
+The implementation **selects** among providers declaring the needed `Credential.*` type by matching `credential_capability.max_assurance` and `attestation.level` against the profile's required floor (a `sovereign` profile may demand `hardware_attested` + `fips_140_level: 3`), then scoring on the usual placement signals. A provider whose declared (and verified) attestation does not meet the floor is filtered out before selection — a *claim* of capability is not *trust* in it (see the control plane `DCM ADR-022`, attestation ladder).
 
 ---
 
@@ -202,7 +202,7 @@ redaction, and intake-time coercion to a reference.**
 > issuance, rotation, and revocation must **produce and guarantee**: the states below, the credential
 > scopes, the transition-window and propagation SLAs, broker-not-issue, and metadata-only return. The
 > step-by-step **routing** and the components that execute it — dependency-resolution and placement
-> sequencing, the revocation registry, cache propagation — are implementation runtime (DCM). The ASCII
+> sequencing, the revocation registry, cache propagation — are implementation runtime (the control plane). The ASCII
 > sequences in this section are **illustrative of the contract**, not a required implementation; a peer
 > that upholds the same states, scopes, and SLAs conforms however it routes.
 
@@ -304,7 +304,7 @@ Bootstrap anchor present (out-of-band; single-purpose; short TTL)
   │   From here, ALL credentials flow through registered Credential Providers
 ```
 
-After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the DCM Trust Model sense (DCM `DCM ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
+After the handoff the bootstrap path is closed; there is no standing bootstrap credential. The bootstrap anchor is itself a `trust anchor` in the control plane Trust Model sense (the control plane `DCM ADR-022`); its `anchor_type` is selected by profile (homelab may use a TOFU/self-asserted anchor, sovereign demands a hardware-attested one).
 
 ---
 
@@ -783,7 +783,7 @@ When an idle alert fires:
 - Credential is NOT automatically revoked — it remains valid until its `expires_at`
 - If still idle after 2× the threshold: optional auto-revocation per profile configuration
 
-Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; the detection MUST be present. The idle record and its threshold are data (CPX-010); *when and how* the alert fires and is routed to admin/consumer is implementation runtime (DCM).
+Substrate invariant: idle detection is required in ALL profiles. The threshold and remediation action vary; the detection MUST be present. The idle record and its threshold are data (CPX-010); *when and how* the alert fires and is routed to admin/consumer is implementation runtime (the control plane).
 
 ---
 

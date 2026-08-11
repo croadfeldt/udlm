@@ -11,7 +11,7 @@
 
 ## 1. Purpose
 
-UDLM is the foundational data model upon which a conformant implementation (e.g. DCM) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of an implementation communicates: reading, writing, validating, enriching, transforming, or comparing data.
+UDLM is the foundational data model upon which a conformant implementation (e.g. The control plane) operates. It is not a storage mechanism or a database schema — it is the **lingua franca** through which every component of an implementation communicates: reading, writing, validating, enriching, transforming, or comparing data.
 
 The data model exists to solve a problem that is endemic to enterprise IT: **there is no single, trustworthy, consistent representation of infrastructure state**. Tools proliferate, CMDBs diverge, and the result is that no one knows with confidence what exists, what was requested, what was provisioned, or whether the current state matches the intended state.
 
@@ -23,7 +23,7 @@ UDLM establishes a **unified, versioned, declarative single source of truth** fo
 
 The data model is not owned by any single component — it is the **contract between all of them**. Every component of an implementation acts on the data in some well-defined way (assembling a request payload, evaluating policy, provisioning via a provider, recording audit at each state transition, comparing states for drift, attributing cost, discovering current state, gating access, exposing a catalog), and even components that never talk directly are coupled through the shared data model. This is what lets each component be built, tested, and evolved independently.
 
-*How a specific implementation's components consume the data model — the component roster and each one's read/write relationship to the data — is implementation architecture, not part of the data model. See the DCM architecture documentation for that mapping.*
+*How a specific implementation's components consume the data model — the component roster and each one's read/write relationship to the data — is implementation architecture, not part of the data model. See control-plane architecture documentation for that mapping.*
 
 ---
 
@@ -112,7 +112,7 @@ Provenance recording is a **data-model obligation, not optional**: any entity th
 
 This obligation is stated **normatively**, together with the assembly and storage models that satisfy it (LAY-00x / OPS-00x), in [layering-and-versioning.md](layering-and-versioning.md) — the layering/assembly spec. This section summarizes why it matters; that spec binds.
 
-*Which specific implementation components carry this obligation, and exactly what each records, is implementation architecture — see the DCM architecture documentation.*
+*Which specific implementation components carry this obligation, and exactly what each records, is implementation architecture — see control-plane architecture documentation.*
 
 ### 4.6 Relationship to Audit
 
@@ -171,7 +171,7 @@ Artifact metadata answers: **who created this, when, who owns it, what changed, 
 
 ### The Five Artifact Statuses
 
-All DCM artifacts follow a five-status lifecycle:
+All control-plane artifacts follow a five-status lifecycle:
 
 | Status | Meaning | Key Behavior |
 |--------|---------|-------------|
@@ -187,7 +187,7 @@ All DCM artifacts follow a five-status lifecycle:
 
 **Contact info — two modes:** When an Identity Provider is registered, the `uuid` field links to the IdP record and `display_name` is a non-authoritative display cache. In standalone/air-gapped mode, `uuid` is absent and `display_name` + `email` are the primary identity fields. Both modes are fully supported.
 
-**created_via:** Declares the ingestion path — `pr` (full GitOps review history), `api` (direct submission), `migration` (imported, limited provenance), `system` (DCM-created). Makes audit quality transparent.
+**created_via:** Declares the ingestion path — `pr` (full GitOps review history), `api` (direct submission), `migration` (imported, limited provenance), `system` (control-plane-created). Makes audit quality transparent.
 
 **Proposed shadow execution:** Policy artifacts in `proposed` status execute in shadow mode against real traffic — output is captured and reported but never applied. Enables safe validation before activation.
 
@@ -229,7 +229,7 @@ The data model defines the boundary between an implementation and its providers.
 
 This separation of concerns is what makes an implementation technology-agnostic while maintaining a consistent and trustworthy data model across all providers.
 
-*The wire protocol that carries data across this boundary — how a provider transforms unified data into its own tool-specific format and back (naturalization / denaturalization) — is the provider INTERFACE. See [Provider Contract](../contracts/provider-contract.md) and the DCM architecture documentation.*
+*The wire protocol that carries data across this boundary — how a provider transforms unified data into its own tool-specific format and back (naturalization / denaturalization) — is the provider INTERFACE. See [Provider Contract](../contracts/provider-contract.md) and control-plane architecture documentation.*
 
 ### 7.1 The substrate never translates into a provider's native spec — and why
 
@@ -282,7 +282,7 @@ table has been removed so those decisions are not duplicated here.
 ## 9. Related Concepts
 
 - **Sovereign Execution Posture** — the target end state the data model enables by providing a verified, auditable chain of custody through the full resource lifecycle
-- **CMDB Replacement** — DCM's four-state model is intended to replace the fragmented multi-CMDB problem by becoming the singular resource domain
+- **CMDB Replacement** — the control plane's four-state model is intended to replace the fragmented multi-CMDB problem by becoming the singular resource domain
 - **GitOps** — an ingress/carrier profile: consumers who prefer PR-based workflows can submit intent via Git; at the `homelab` profile git is itself a conforming State-Store carrier. Store bindings are contract-based per profile + sovereignty policy ([data-model-core](data-model-core.md) §6, ruling D1)
 - **Data Lineage** — the chain of custody of a field value from origin through every modification; defined canonically with field-level provenance in [layering-and-versioning.md](layering-and-versioning.md) (see [GLOSSARY](../../../GLOSSARY.md) and §4 here for the summary)
 - **Field-Level Provenance** — the structural mechanism by which data lineage is captured and carried; defined canonically in [layering-and-versioning.md](layering-and-versioning.md) (§4 here summarizes it)

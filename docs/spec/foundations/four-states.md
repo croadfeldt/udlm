@@ -53,7 +53,7 @@ The four states answer four distinct questions:
 | **Realized State** | What did the provider actually build? | State Store (realized) — versioned snapshots, `is_current` flag |
 | **Discovered State** | What is observed actually existing right now? | Discovered stream — ephemeral, refreshed per discovery run |
 
-> **Store note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). The four states bind to conforming stores per profile and sovereignty/tenancy policy — a single PostgreSQL-compatible database at `standard`/`prod` (the reference implementation), git as a conforming carrier at `homelab`, and per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`. The concrete storage mechanics are implementation architecture (see the DCM architecture documentation).
+> **Store note:** Stores are defined by CONTRACT, not technology ([data-model-core](data-model-core.md) §6, ruling D1). The four states bind to conforming stores per profile and sovereignty/tenancy policy — a single PostgreSQL-compatible database at `standard`/`prod` (the reference implementation), git as a conforming carrier at `homelab`, and per-tenant/zone store instances, WORM audit tiers, or accredited substitutes at `fsi`/`sovereign`. The concrete storage mechanics are implementation architecture (see control-plane architecture documentation).
 
 ---
 
@@ -123,7 +123,7 @@ The **Realized State** is the provider-confirmed record of what was actually bui
 The transition from Requested State to Realized State is **not a single dispatch** — it is **two-phase:
 validate-and-reserve, then commit** ([ADR-011](../../adr/ADR-011-validate-and-reserve.md)). What the data
 model fixes is **the guarantee and the artifacts, not the procedure**: nothing is built until the whole
-request is validated and reserved. *How* an implementation gets there is DCM runtime (below).
+request is validated and reserved. *How* an implementation gets there is control-plane runtime (below).
 
 **The contract (data model):**
 - **A reservation is a first-class, TTL'd artifact.** A reserve validates the request against a provider's
@@ -145,11 +145,11 @@ request is validated and reserved. *How* an implementation gets there is DCM run
 - **No sixth lifecycle state.** `lifecycle_state` stays on its five canonical values; an active hold is a
   `RESERVATION_HELD` **`status.conditions`** overlay (§2.5), not a state.
 
-**The mechanism (implementation / DCM).** *How* an implementation reaches a consistent set of holds — the
+**The mechanism (implementation / the control plane).** *How* an implementation reaches a consistent set of holds — the
 reserve→recompute-dependents **reconciliation loop**, its multi-round negotiation and iteration to a fixed
 point, the re-entrant convergence it runs inside, and its terminal conditions
 (`RESERVE_QUERY_ALL_EXHAUSTED`, `RESERVATION_RECONCILE_STALEMATE`) — is implementation architecture, specified
-by ADR-011 / [ADR-006](../../adr/ADR-006-convergence-control-model.md) and the DCM docs, not by this data
+by ADR-011 / [ADR-006](../../adr/ADR-006-convergence-control-model.md) and control-plane docs, not by this data
 model. A peer that upholds the guarantee and the artifacts above conforms, however it converges. Policies
 that opt into that loop (`reconciliation.participates`, policy-contract §7.6) re-evaluate as reserved facts
 land; others evaluate once at the commit barrier.
@@ -185,7 +185,7 @@ The **Discovered State** is what is observed actually existing through active di
 | `COMPENSATION_IN_PROGRESS` | Compound service rollback underway | `PARTIAL_REALIZATION` trigger |
 | `COMPENSATION_FAILED` | Rollback itself failed; orphaned resources possible | Compensation step failure |
 
-The complete recovery-condition machine and Recovery Policy model — how an implementation drives these conditions — is implementation concern; see the DCM operational model. (Earlier revisions called these "five additional states" — superseded; they never extend the lifecycle enum.)
+The complete recovery-condition machine and Recovery Policy model — how an implementation drives these conditions — is implementation concern; see control-plane operational model. (Earlier revisions called these "five additional states" — superseded; they never extend the lifecycle enum.)
 
 ---
 
@@ -198,7 +198,7 @@ values are illustrative — the normative shapes are the resource-type spec + `r
 | State | The record (illustrative) | Who wrote it |
 |-------|---------------------------|--------------|
 | **Intent** | `{entity_uuid: …a1b2, resource_type: Compute.VM, cpu: 4, memory: 16GiB, network: "app-tier"}` — the consumer's raw ask, nothing added. | consumer (PR / API ingress) |
-| **Requested** | the Intent, **assembled**: org-default image + tags layered in, policy results recorded (sovereignty zone resolved, quota green), **provider selected** (`kubevirt-prod`), and a `reservation_hold_uuid` from validate-and-reserve. **Nothing is built yet.** | assembly + policy (DCM) |
+| **Requested** | the Intent, **assembled**: org-default image + tags layered in, policy results recorded (sovereignty zone resolved, quota green), **provider selected** (`kubevirt-prod`), and a `reservation_hold_uuid` from validate-and-reserve. **Nothing is built yet.** | assembly + policy (the control plane) |
 | **Realized** | provider-confirmed **after commit** — everything above **plus the provider's facts**: `ip: 198.51.100.20`, `vm_id: kv-9f3c`, actual disk `20GiB`. A write-once snapshot, traceable to exactly one Requested record. | provider → denaturalized to UDLM |
 | **Discovered** | a later discovery cycle observes the VM running at `198.51.100.20`, correlated to `…a1b2` via `correlation_ids`. It **matches** Realized → **no drift**. | discovery |
 
@@ -228,7 +228,7 @@ Given an entity UUID, the complete history of that entity can be reconstructed a
 
 ## 4. The Data Domain Model
 
-All four states are distinct data domains, each with specific immutability rules and access patterns. These immutability contracts are part of the data model; any conforming store binding MUST satisfy them (the concrete enforcement mechanism is implementation architecture — see the DCM architecture documentation for the reference PostgreSQL implementation).
+All four states are distinct data domains, each with specific immutability rules and access patterns. These immutability contracts are part of the data model; any conforming store binding MUST satisfy them (the concrete enforcement mechanism is implementation architecture — see control-plane architecture documentation for the reference PostgreSQL implementation).
 
 | Domain | Immutability contract |
 |--------|----------------------|
@@ -247,7 +247,7 @@ All four states are distinct data domains, each with specific immutability rules
 
 Rehydration is using a previously stored state record as the starting point for a new request — for DR, cloning, environment refresh, or replacing a failed resource. It is **not** a shortcut around governance: the estate's declared touch-trigger stance (ADR-045 §8 — adopt-on-touch, offer-on-touch, or provenance-until-explicit, declared once as a policy clause) decides which policy revisions govern the replay, with adopt-current the common default; RHY-001's floor (§5.3 — tenancy, sovereignty, cross-tenant authorization always current) applies under every stance.
 
-**Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order). The entity's identity is preserved on a **restore in place** and re-established on a **rebuild** (§5.2). UDLM contributes only the three irreducible things below; *how* an implementation runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is implementation concern (see the DCM operational model, `operations/rehydration.md`).
+**Rehydration adds almost nothing to the data model.** It is an *operation over data UDLM already carries* — replay a stored **Intent / Requested / Realized** record through the **dependency graph** (which supplies the correct order). The entity's identity is preserved on a **restore in place** and re-established on a **rebuild** (§5.2). UDLM contributes only the three irreducible things below; *how* an implementation runs the replay — placement re-evaluation, policy-version pinning, leases, concurrency, the tenancy-conflict pause — is implementation concern (see control-plane operational model, `operations/rehydration.md`).
 
 ### 5.1 Sources — the three stored states
 
@@ -277,13 +277,13 @@ Everything genuinely data-model about rehydration reduces to two rules:
 | `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use **current** policies during rehydration — they cannot be pinned to a historical version (only resource-configuration policy may be pinned). |
 | `RHY-005` | On a **restore in place** (Faithful mode) the entity **UUID is preserved** and only the provider-side identifier changes (recorded in `provider_entity_id_history`); a **rebuild** (Provider-Portable mode — the original is gone) is a **new entity with a new UUID**, kept traceable to its source by lineage (§5.2). Rehydration is transactional either way — a failed target leaves the pre-rehydration state intact. |
 
-*The rest is implementation/policy, not data model, and lives in the DCM operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
+*The rest is implementation/policy, not data model, and lives in control-plane operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
 
 ---
 
 ## 6. Drift Detection
 
-Drift is the difference between what the model believes exists (Realized State) and what actually exists (Discovered State). The drift-detection **runtime** — the comparison cycle, the drift-response actions (the closed action vocabulary is defined once in `docs/spec/foundations/resource-service-entities.md` §3), and their evaluation — is implementation concern (see the DCM operational model). The **drift record shape and severity model** are data model:
+Drift is the difference between what the model believes exists (Realized State) and what actually exists (Discovered State). The drift-detection **runtime** — the comparison cycle, the drift-response actions (the closed action vocabulary is defined once in `docs/spec/foundations/resource-service-entities.md` §3), and their evaluation — is implementation concern (see control-plane operational model). The **drift record shape and severity model** are data model:
 
 A drift record carries `entity_uuid`, `drifted_fields: [{field_path, realized_value, discovered_value}]`, `discovery_timestamp`, and `drift_severity`.
 
@@ -328,7 +328,7 @@ An **unsanctioned change** is a change made directly to a resource without a cor
 
 - **data store** — the formal provider type for all stores
 - **Entity UUID** — the universal linking key across all four states
-- **Rehydration** — using a prior state record as the starting point for a new request (data-model aspects here; runtime in the DCM operational model)
+- **Rehydration** — using a prior state record as the starting point for a new request (data-model aspects here; runtime in control-plane operational model)
 - **Provider-Portable Rehydration** — rehydration with provider selection re-evaluated
 - **Drift Detection** — comparing Realized State against Discovered State
 - **Unsanctioned Change** — a discovered resource modification with no corresponding request

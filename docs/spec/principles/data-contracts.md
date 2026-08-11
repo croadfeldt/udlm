@@ -66,4 +66,4 @@ The `DSC-*` policies below are the **normative, enforceable encoding** of the pr
 
 ---
 
-*UDLM substrate document. Specific storage technology (PostgreSQL, CockroachDB, event-sourced stores, etc.), schema design, indexing, query optimization, retention/archival, and control-plane service architecture are implementation choices. The DCM implementation's PostgreSQL mandate and concrete schema live in the DCM implementation's documentation.*
+*UDLM substrate document. Specific storage technology (PostgreSQL, CockroachDB, event-sourced stores, etc.), schema design, indexing, query optimization, retention/archival, and control-plane service architecture are implementation choices. The control plane implementation's PostgreSQL mandate and concrete schema live in the control plane implementation's documentation.*

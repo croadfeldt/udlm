@@ -10,20 +10,20 @@
 
 ## 1. The reciprocal contract
 
-Cost is a **two-way** contract between a UDLM-conformant implementation (e.g. DCM) and a cost engine — neither side owns both halves:
+Cost is a **two-way** contract between a UDLM-conformant implementation (e.g. The control plane) and a cost engine — neither side owns both halves:
 
 ```
                  outbound: metering inputs
    implementation ───────────────────────────────▶  cost engine (serve_data:cost)
-   (DCM)         resource ref + priced_by +          applies its cost model
+   (the control plane)         resource ref + priced_by +          applies its cost model
                  resolved meterable dimensions        (rates, capex/opex math)
         ▲                                                     │
         └───────────────────────────────────────────────────┘
                  inbound: cost.attributed {capex, opex}
 ```
 
-- **Outbound (UDLM/DCM → engine):** for a resource, the implementation hands the engine (a) the `priced_by` cost-model reference and (b) the resolved values of the resource's meterable dimensions. This is the "give the engine a method to look up resource data."
-- **Inbound (engine → UDLM/DCM):** the engine returns cost (`cost.attributed`, provider-contract §10), which the implementation **consumes** — attributing it to the owning tenant, and OPTIONALLY feeding it into its own decisions (placement, budgets). 
+- **Outbound (the substrate and its control plane → engine):** for a resource, the implementation hands the engine (a) the `priced_by` cost-model reference and (b) the resolved values of the resource's meterable dimensions. This is the "give the engine a method to look up resource data."
+- **Inbound (engine → the substrate and its control plane):** the engine returns cost (`cost.attributed`, provider-contract §10), which the implementation **consumes** — attributing it to the owning tenant, and OPTIONALLY feeding it into its own decisions (placement, budgets). 
 
 **The engine computes; it never decides.** No placement, budget, or quota decision is delegated into the cost calculation. Those decisions stay in the implementation as **policy** ([ADR-COST-001](../../../docs/adr/ADR-COST-001-metering-placement-reference-dont-model.md)), using returned cost as an *input*. The cost engine is a pure function: `(resource dimensions + cost model) → cost`.
 
@@ -76,11 +76,11 @@ Given an `entity_uuid`, a conformant implementation MUST be able to resolve ever
 | `provisioned_hours` | capex | lifecycle `realized_to_decommissioned` | its in-service window |
 | `power_kwh` | opex | telemetry `host.power.draw` | actual energy consumed |
 
-`priced_by → onprem-baremetal-2026-q3` in the cost engine. DCM resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider, hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Compute.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
+`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider, hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Compute.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
 
 ---
 
-## 4. DCM side — enabling the hooks
+## 4. control-plane side — enabling the hooks
 
 The cost engine registers as a provider declaring the reciprocal need:
 
@@ -93,7 +93,7 @@ provider:
     - domain: metering            # the meterable dimensions
 ```
 
-DCM's metering resolver walks each Resource Type's `metering.dimensions`, resolves values per `source`, and calls the engine with `{resource ref, priced_by, values}`. It consumes `cost.attributed`, attributes to the owning tenant (the accountability edge in [ownership-sharing-allocation.md](../foundations/ownership-sharing-allocation.md) §7), and MAY use the result as a placement/budget input — but that decision stays in DCM policy, never in the engine.
+The control plane's metering resolver walks each Resource Type's `metering.dimensions`, resolves values per `source`, and calls the engine with `{resource ref, priced_by, values}`. It consumes `cost.attributed`, attributes to the owning tenant (the accountability edge in [ownership-sharing-allocation.md](../foundations/ownership-sharing-allocation.md) §7), and MAY use the result as a placement/budget input — but that decision stays in control-plane policy, never in the engine.
 
 ---
 

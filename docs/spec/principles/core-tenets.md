@@ -28,9 +28,9 @@ roles:
 | Domain | Owner | Responsibility |
 |---|---|---|
 | **Data** | UDLM | Custody of data through its lifecycle: identity, the four states, versioning, relationships, provenance, audit, sovereignty. *Hold, move, reference, version, audit.* |
-| **Policy** | DCM (the implementation) | Transformation, enrichment, derivation, decision, governance. *Compute, derive, evaluate, decide.* |
+| **Policy** | The control plane (the implementation) | Transformation, enrichment, derivation, decision, governance. *Compute, derive, evaluate, decide.* |
 
-UDLM *defines* the contracts (Data, Provider, **and** Policy); **DCM is where Policy is applied** — it
+UDLM *defines* the contracts (Data, Provider, **and** Policy); **the control plane is where Policy is applied** — it
 evaluates and enforces policy and performs all transformation and enrichment. UDLM never applies policy;
 it carries the data that policy acts on, and records the decisions policy makes.
 
@@ -48,7 +48,7 @@ model." Read the row, then the section for the reasoning.
 | Tenet | In one line | So what — for an author / implementer |
 |---|---|---|
 | **T1** custodian, not mutator | the model holds, moves, and versions data; it never transforms it | put transformation in your provider/policy, never in the spec |
-| **T2** transformation is Policy | any enrich / convert / compute is Policy (DCM), not data | if a field must be *computed*, it's a policy input, not a spec default |
+| **T2** transformation is Policy | any enrich / convert / compute is Policy (the control plane), not data | if a field must be *computed*, it's a policy input, not a spec default |
 | **T3** deterministic & reproducible | no embedded expressions; re-validatable years later against the pinned contract | pin the type version; use declarative JSON Schema, never a runtime expression |
 | **T4** flow is relationship | cross-entity data moves by typed reference, not by copying/transforming | wire a `target_field` edge; don't restate another entity's value |
 | **T5** adopt by reference | bring standards in by referencing them; the owner stays authoritative | reference AEP / TOSCA / FOCUS — don't fork or absorb their text |
@@ -70,7 +70,7 @@ translation's ramifications (`docs/spec/foundations/context-and-purpose.md` §7.
 
 ## T2 — Transformation and enrichment are Policy
 All logic that **derives, computes, modifies, or enriches** data is the **Policy** abstraction's
-responsibility — evaluated and audited by the implementation (DCM), never embedded in the portable data.
+responsibility — evaluated and audited by the implementation (the control plane), never embedded in the portable data.
 *Layers are data; Policies are logic.* If you find yourself wanting an expression inside the data, you
 want a Policy.
 
@@ -116,7 +116,7 @@ the claim, with **freshness** (a claim un-rehearsed within its cadence goes *sta
 failure. The consequence: **a real incident executes an already-validated path — it *validates the
 outcome*, it does not *test an unknown*.** The cadence is driven by the workload's declared *criticality*
 (data, consumer-set); whether to *gate* on stale validation (e.g. refuse to place a critical workload on
-an unproven path) is **Policy** (DCM). The requirements, criticality, and evidence are **data**; the
+an unproven path) is **Policy** (the control plane). The requirements, criticality, and evidence are **data**; the
 rehearsal *mechanism* is the **provider**; the gating is **Policy**. (UDLM ADR-003.) This is the third
 validation layer — **valid spec** (CONFORMANCE) + **valid data** (valid-by-construction + provenance) +
 **valid process** (this) — over the same evidence/freshness machinery, never a parallel one.
@@ -150,7 +150,7 @@ hold-all activation for free), and *lowered* complexity — exactly the balance 
 
 ## T8 — Adopt tools by reference: orchestrate, don't reimplement
 Where a mature tool already owns a **mechanism** — building, scanning, signing, deploying, orchestrating
-CI/CD — the implementation (DCM) **wraps it as a Provider** and **never reimplements it**. This is the
+CI/CD — the implementation (the control plane) **wraps it as a Provider** and **never reimplements it**. This is the
 tool-level twin of T5 and T7: T5 keeps the data model from re-expressing an external *standard*'s schema;
 T7 keeps it from coining a redundant *primitive*; T8 keeps the *implementation* from rebuilding a *mechanism*
 a best-of-breed tool already provides. The **naturalization boundary** (DCM ADR-023) is the wrap point — a
@@ -169,7 +169,7 @@ that's ours.
   constraints (JSON Schema `if/then` · `dependentSchemas` · `enum` · bounds, plus declarative markers
   like `createOnly`), typed `outputs`, and typed relationship edges.
 - **Does not contain:** embedded expression languages, transforms, computed values, or any executable
-  behavior. Everything dynamic is a **Policy** evaluated by DCM and written to the audit log.
+  behavior. Everything dynamic is a **Policy** evaluated by the control plane and written to the audit log.
 
 See `cross-cutting-requirements.md` for the pillar requirements these tenets serve, and
 `registry/SPEC-DESIGN-REQUIREMENTS.md` for the per-entity authoring rubric.
@@ -178,7 +178,7 @@ See `cross-cutting-requirements.md` for the pillar requirements these tenets ser
 ## T9 — The substrate never translates into a provider's native spec
 
 UDLM data crosses the provider boundary in UDLM form; **naturalization into a provider's
-native format happens at the provider edge, never in the substrate** (the DCM implementation
+native format happens at the provider edge, never in the substrate** (the control plane implementation
 records this as ADR-023). The substrate carries conformant data in and conformant data out —
 it has no per-provider translation layer, so providers stay interchangeable and the data
 model stays free of any provider's vocabulary. The narrative *why* is

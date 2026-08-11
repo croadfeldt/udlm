@@ -7,7 +7,7 @@ implementation (a non-normative example; UDLM depends on no implementation — s
 > the family concept in [Entity-Type Families](entity-type-families.md).
 > **This document maps to: DATA.**
 > **Universality:** these are UDLM definitions grouped here for organization. They are
-> **free to use by any implementation, regardless of family** — DCM or any peer may use a
+> **free to use by any implementation, regardless of family** — the control plane or any peer may use a
 > `Capability` exactly as DAV does. Constraints apply to *instances* (ownership,
 > classification, scope), never to these definitions.
 > **Implementation:** `dav/docs/capability-catalog-design.md`. Case study:
@@ -56,7 +56,7 @@ to the Resource family's Realized-vs-Discovered drift. This *is* DAV's gap analy
   provenance; data classification; contributor identity (the LLM-proposes / human-curates
   step is UDLM's federated-contribution model).
 - **Provenance is first-order:** every field records origin — e.g. a `Capability.domain`
-  sourced from the DCM taxonomy vs an `evidence` field sourced from a specific assessment
+  sourced from the control plane taxonomy vs an `evidence` field sourced from a specific assessment
   finding.
 - **Classification defaults:** canonical, shared vocabulary (TaxonomyTerm, Alias,
   Antipattern seeded from public taxonomy) defaults **public**; field-derived
@@ -92,7 +92,7 @@ A canonical vocabulary term — the **normalization authority** the catalog norm
   category (source grouping).
 - **Relationships:** `parent` → TaxonomyTerm; normalized **by** Capability/Alias.
 - **States:** `PROPOSED` (a back-fill candidate the catalog surfaced) → `UNDER_REVIEW` →
-  `CANONICAL`. Seeded `CANONICAL` from an authoritative taxonomy (e.g. the DCM Taxonomy).
+  `CANONICAL`. Seeded `CANONICAL` from an authoritative taxonomy (e.g. The control plane Taxonomy).
   `DEPRECATED` for retired terms.
 - **Note:** TaxonomyTerm is the "spec"; Capability is "reality." Their gap drives back-fill
   (Discovered/OBSERVED capabilities with no term ⇒ propose a term ⇒ the taxonomy grows).
@@ -154,7 +154,7 @@ anchor is architecture;** process/enablement decisions are DecisionRecords too.
   This is **distinct from a *runtime* decision** (a policy firing, a placement / provider selection), which is
   captured as **Audit + field-level provenance** ([Universal Audit](../contracts/universal-audit.md)) — **not** a
   DecisionRecord. A DecisionRecord is the deliberate *why* at **authoring time** (any scope); audit is *what
-  happened* at **runtime**. A consuming control plane (e.g. DCM) records its architecture decisions *as*
+  happened* at **runtime**. A consuming control plane (e.g. The control plane) records its architecture decisions *as*
   architecture-scoped DecisionRecords (its ADRs) per this definition rather than maintaining a parallel form.
 
 > **Fit with the UDLM model (coherence).** The ADR/DR sits cleanly on the substrate: it is `Data` (Knowledge),
@@ -173,14 +173,14 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 > local-discovery Knowledge records is a **POC** to demonstrate filter + blast-radius; it is
 > **not** the recommended production shape and **may be removed** for a more robust solution.
 > The authoritative source for *what is deployed and its config* is the live **System of
-> Record** — the cluster API and its **gitops repos** (once DCM-at-home lands, query OCP/gitops
+> Record** — the cluster API and its **gitops repos** (once control-plane-at-home lands, query OCP/gitops
 > directly), and for SBOM a central SBOM/SCA/VEX store. The robust direction is to
 > **reference / query the SOR on demand** rather than duplicate it here; a Knowledge record,
 > where kept, should *point at* its SOR, not *be* it. *Which* SOR, refresh cadence, and
 > precedence are an **operational detail each organization sets per its internal policy**.
 > Tracked: [udlm#197](https://github.com/croadfeldt/udlm/issues/197) (principle),
 > [udlm#188](https://github.com/croadfeldt/udlm/issues/188) (SBOM SoR),
-> [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, DCM-at-home).
+> [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, control-plane-at-home).
 - **`SoftwareImage`** — a container image (correlation id: **digest**). *Adopts:* OCI image-spec. `contains`
   (→ SoftwarePackage) is its SBOM; referenced by `Compute.Container` via `runs_image`.
 - **`SoftwarePackage`** — a library/package (correlation id: **purl**). *Adopts:* Package-URL + SPDX/CycloneDX

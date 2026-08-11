@@ -5,9 +5,9 @@
 > **Scope.** This document defines the three abstractions the **data model** is built from and their
 > universal properties. How an implementation *connects* them at runtime — the event loop, the policy
 > evaluator, the control-plane components — is implementation architecture, not the data model; it is owned by
-> the DCM architecture docs, and this document points to it rather than specifying it (the UDLM/DCM boundary,
+> control-plane architecture docs, and this document points to it rather than specifying it (the the substrate and its control plane boundary,
 > [ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md): if a peer could realize it differently and still be
-> valid, it is DCM, not UDLM).
+> valid, it is the control plane, not UDLM).
 
 ---
 
@@ -26,11 +26,11 @@ flowchart TD
 The three abstractions are **peers** in the decomposition — no fixed importance order. Data is the substrate;
 a Provider is how external reality is reached under contract; a Policy is how a decision is declared over Data.
 
-**Connecting them at runtime is DCM's concern.** At runtime these operate as a trigger-driven,
+**Connecting them at runtime is the control plane's concern.** At runtime these operate as a trigger-driven,
 re-entrant convergence loop — an event (a Data state change, a provider outcome, a denial) re-evaluates the
 matching Policies, whose results invoke Providers or produce new Data, which emit new events, until the
 target state converges. That loop is the **operational model of an implementation**, not part of the data model:
-it is specified in the DCM architecture docs, with its soundness rules (bounded convergence, idempotent
+it is specified in control-plane architecture docs, with its soundness rules (bounded convergence, idempotent
 re-entry, causal audit of every trigger) in [ADR-006 — Convergence control model](../../adr/ADR-006-convergence-control-model.md).
 UDLM defines the three abstractions and their contracts; an implementation wires them into a running system.
 
@@ -168,7 +168,7 @@ alongside workflow steps, without being declared in the workflow. Adding conditi
 dynamic policy.
 
 Both levels are *data* — Policy artifacts with typed output schemas. How an implementation evaluates and
-sequences them (the policy evaluator, the event bus) is DCM runtime; the two levels compose naturally
+sequences them (the policy evaluator, the event bus) is control-plane runtime; the two levels compose naturally
 because a named workflow provides the sequence skeleton and dynamic policies provide conditional behavior
 within it.
 
@@ -180,7 +180,7 @@ is the Policy abstraction applied at interaction boundaries.
 
 ---
 
-## 5. Connecting the three at runtime — DCM's concern
+## 5. Connecting the three at runtime — the control plane's concern
 
 The three abstractions are connected, at runtime, by machinery that is **implementation architecture, not the
 data model**: an event bus that routes Data state-changes to a policy evaluator, the evaluator that fires
@@ -188,9 +188,9 @@ matching Policies, the results that invoke Providers or produce new Data, and th
 that specialize this loop (placement, discovery scheduling, drift reconciliation, notification routing, a
 queryable search projection, and the rest).
 
-By the boundary test ([ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md)), all of that is DCM: a peer could
+By the boundary test ([ADR-008](../../adr/ADR-008-udlm-dcm-boundary.md)), all of that is the control plane: a peer could
 implement the event bus, the evaluator, and each control-plane component differently and still honor the
-same Data, Provider, and Policy contracts. So it is **specified in the DCM architecture docs, not here.**
+same Data, Provider, and Policy contracts. So it is **specified in control-plane architecture docs, not here.**
 
 What UDLM fixes — and what any conforming implementation must preserve — is the *contract* the runtime operates
 over: the four states and their transitions ([four-states.md](four-states.md)), the layer-assembly precedence
@@ -216,7 +216,7 @@ Provider Type Registry.
 the unified Policy base contract with a new output schema. Register in the Policy Store via GitOps.
 
 **The extension principle:** If you can express it as Data, Provider, or Policy, it belongs in the model. If
-you cannot express it within these three abstractions, it is either a runtime implementation detail (DCM's,
+you cannot express it within these three abstractions, it is either a runtime implementation detail (the control plane's,
 not the model's) or a genuinely novel concept that should be explicitly identified and documented as such.
 
 ---

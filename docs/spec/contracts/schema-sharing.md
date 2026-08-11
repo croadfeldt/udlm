@@ -72,7 +72,7 @@ that catalogs all its declared types and extensions.
   "bundle_uuid": "f3b64dda-...",
   "bundle_version": "2.4.1",
   "implementation": {
-    "name": "DCM",
+    "name": "the control plane",
     "vendor": "example-org",
     "udlm_version": "udlm/0.1"
   },
