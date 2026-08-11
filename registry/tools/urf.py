@@ -34,6 +34,13 @@ _QUERY_SAFE = set(
 )
 _PIN_RE = re.compile(r"^(\d+\.\d+\.\d+|sha256:[a-f0-9]{64})$")
 _SELECTOR_RE = re.compile(r"^[a-z0-9_]+(\.[a-z0-9_]+)*$")
+# VIRTUAL FIELDS (§9.2, closed set). A selector dot addresses WITHIN one record; crossing to another
+# is a named traversal, never a longer dotted name — that is what keeps a cheap field read and an
+# authorized dereference visibly different.
+#   member_of      membership in a named grouping
+#   via(<relation>) read a field on the other end of ONE declared relationship (URF-009)
+_VIA_RE = re.compile(r"^via\(([a-z][a-z0-9_]*)\)$")
+VIRTUAL_FIELDS = ("member_of",)
 _NAME_RE = re.compile(r"^[A-Z][A-Za-z0-9]*(\.[A-Z][A-Za-z0-9]*)*$")
 
 
@@ -185,8 +192,16 @@ def _parse_term(t):
                 raise URFError(f"unencoded space in term {t!r} (URF-001)")
             if '"' in t:
                 raise URFError(f'double-quote not accepted (single-quote is canonical): {t!r}')
-            if not _SELECTOR_RE.match(sel):
-                raise URFError(f"selector {sel!r} is not a snake_case dot-path")
+            if not _SELECTOR_RE.match(sel) and sel not in VIRTUAL_FIELDS:
+                m = _VIA_RE.match(sel)
+                if not m:
+                    # `via(a)via(b)` and `via(a.b)` both land here: the first is a chain, which
+                    # URF-009 refuses because a value depending on two other records belongs on the
+                    # record in between; the second is a dotted path smuggled through the traversal.
+                    if sel.startswith("via("):
+                        raise URFError(f"malformed or chained via selector {sel!r} — URF-009 "
+                                       f"permits exactly one hop, `via(<relation>)`")
+                    raise URFError(f"selector {sel!r} is not a snake_case dot-path")
             _refuse_regex(val, t)
             if op in ("=in=", "=out="):
                 if not (val.startswith("(") and val.endswith(")")):
