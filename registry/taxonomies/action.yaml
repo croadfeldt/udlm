@@ -85,10 +85,16 @@ terms:
   - {term: capability_admit,  root: action, parent: action, curation_state: canonical, definition: A declared provider capability is admitted to the effective set., enabled_by: realize_resources}
   - {term: execute,           root: action, parent: action, curation_state: canonical, definition: A process runs against a thing., enabled_by: execute_workflows}
 
-  # ── RESERVATION — the two-phase realize (ADR-011) ────────────────────────────────────────────
-  - {term: hold_place,        root: action, parent: action, curation_state: canonical, definition: A reservation is taken with no side effects., enabled_by: realize_resources}
-  - {term: hold_confirm,      root: action, parent: action, curation_state: canonical, definition: A held reservation is committed., enabled_by: realize_resources}
-  - {term: hold_release,      root: action, parent: action, curation_state: canonical, definition: A held reservation is dropped without being built., enabled_by: realize_resources}
+  # ── PROVIDER DISPATCH — the two-phase realize (ADR-011) and the question that precedes it ───
+  # The provider's OWN verbs (provider-contract §6a), not a parallel set. These were `hold_place` /
+  # `hold_confirm` / `hold_release` — a second name for one act, needing a mental translation, which
+  # is the defect that made permit and record incomparable in the first place.
+  - {term: reserve,   root: action, parent: action, curation_state: canonical, definition: "The provider VALIDATES it can satisfy the request, then holds it — no side effects. Validation is not separable: a hold that skipped it is a hold on nothing. Deliberately not a `validate` action of its own — `validate` already means four things (a policy class, the refusal-code family, the registry gates, the loop stage), and a fifth sense would collide.", enabled_by: realize_resources}
+  - {term: commit,    root: action, parent: action, curation_state: canonical, definition: A held reservation is built. Two-phase commit — distinct from the audit COMMIT LOG, which always says so as a compound., enabled_by: realize_resources}
+  - {term: release,   root: action, parent: action, curation_state: canonical, definition: A held reservation is dropped without being built. Not a failure — a release is the normal end of a hold nobody committed., enabled_by: realize_resources}
+  - {term: inquire,   root: action, parent: action, curation_state: canonical, definition: "Ask a provider what it COULD do, without taking a hold. The placement loop already does this — `reserve query` in operational-models §2, with its own timeout and an ALL_EXHAUSTED recovery state — and it had no action term, so a question a provider was asked could not be audited. Distinct from `query` (select a set from the model) and `discover` (observe reality): an inquiry asks a PARTY a question and changes nothing.", enabled_by: realize_resources}
+  - {term: converge,  root: action, parent: action, curation_state: canonical, definition: The provider is driven to make realized state match requested state. A dispatch verb (provider-contract §6a) that had no action term., enabled_by: realize_resources}
+  - {term: decommission, root: action, parent: action, curation_state: canonical, definition: The provider tears down a realized thing. Distinct from `delete` — decommission is the dispatch to the provider; delete is the record ending., enabled_by: realize_resources}
 
   # ── RELATIONSHIP AND MEMBERSHIP ─────────────────────────────────────────────────────────────
   - {term: relationship_create,  root: action, parent: action, curation_state: canonical, definition: An edge between two things is declared., enabled_by: realize_resources}

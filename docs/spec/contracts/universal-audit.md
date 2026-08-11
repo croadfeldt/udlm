@@ -184,7 +184,7 @@ audit_record:
 
 ## 4. Action Vocabulary
 
-The `action` field uses a closed vocabulary. Free-text actions are invalid and rejected at write time (AUD-007).
+The `action` field uses a GOVERNED vocabulary — `registry/taxonomies/action.yaml`, the single declaration the audit record, the audit leaf and the governance matrix all resolve against. Free-text actions remain invalid and rejected at write time (AUD-007); an estate MAY extend the vocabulary under that root, entering `proposed` and promoted by the same curation ladder a standard term used. What the audit SHOWS and what a policy PERMITS are the same terms because they are the same source.
 
 | Action | Applies To | Description |
 |--------|-----------|-------------|
@@ -207,9 +207,12 @@ The `action` field uses a closed vocabulary. Free-text actions are invalid and r
 | `REFUSE` | Requests, changes, dispatches, promotions | A request, change, dispatch, or promotion was refused by a named rule at a named enforcement point (`AUD-023`). Distinct from `EVALUATE`: an evaluation that happened to fail is a policy fact, a refusal is an operational one — the thing the actor asked for did not happen |
 | `ENRICH` | Fields | Field enriched by policy, layer, or external policy evaluation |
 | `LOCK` | Fields | Field locked (override: immutable set) |
-| `HOLD_PLACE` | Resources | Resource hold placed with provider |
-| `HOLD_CONFIRM` | Resources | Resource hold confirmed |
-| `HOLD_RELEASE` | Resources | Resource hold released |
+| `RESERVE` | Resources | Provider validated it can satisfy the request and holds it — no side effects |
+| `COMMIT` | Resources | A held reservation is built |
+| `RELEASE` | Resources | A held reservation is dropped without being built |
+| `INQUIRE` | Resources | A provider is asked what it COULD do, with no hold taken |
+| `CONVERGE` | Resources | The provider is driven to make realized match requested |
+| `DECOMMISSION` | Resources | The provider tears down a realized thing |
 | `DRIFT_DETECT` | Entities | Drift detected between Realized and Discovered |
 | `DRIFT_RESOLVE` | Entities | Drift resolved |
 | `INGEST` | Entities | Entity ingested (brownfield or import) |

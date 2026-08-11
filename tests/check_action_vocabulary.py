@@ -42,7 +42,15 @@ import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOCAB = os.path.join(ROOT, "registry", "taxonomies", "action.yaml")
-AUDIT = os.path.join(ROOT, "registry", "audit-record.schema.json")
+# EVERY schema that enumerates an action. There were FIVE copies of this list when the vocabulary
+# landed — audit-record, audit-leaf, commit-log-entry, the governance matrix and universal-audit's
+# table — and the first version of this gate checked ONE. A single-source rule policed at one of five
+# sites is not a single-source rule; it is the same fork with a gate watching the wrong door.
+AUDIT_SCHEMAS = [
+    os.path.join(ROOT, "registry", "audit-record.schema.json"),
+    os.path.join(ROOT, "registry", "audit-leaf.schema.json"),
+    os.path.join(ROOT, "registry", "commit-log-entry.schema.json"),
+]
 
 # The half the audit enum lacked. Named explicitly because their ABSENCE is the regression:
 # a boundary crossing is a movement, so a governance matrix with no movement verbs governs nothing.
@@ -71,13 +79,33 @@ def main():
                          f"reader walking the vocabulary")
 
     # ACT-001 — the schema's standard set is a subset of the vocabulary
-    audit = json.load(open(AUDIT, encoding="utf-8"))
-    enum = audit["properties"]["action"].get("enum", [])
     lower = {t.lower() for t in terms}
-    for a in enum:
-        if a.lower() not in lower:
-            fails.append(f"ACT-001 audit action {a!r} resolves to no term in action.yaml — the "
-                         f"permit and record vocabularies have started to fork again")
+    enum = []
+
+    def _enums(node):
+        """Every action-shaped enum in a schema, at any depth — a copy nested inside a $defs or an
+        allOf branch is still a copy."""
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if k == "enum" and isinstance(v, list) and any(
+                        isinstance(x, str) and x.isupper() and x.lower() in lower for x in v):
+                    yield v
+                else:
+                    yield from _enums(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from _enums(v)
+
+    for path in AUDIT_SCHEMAS:
+        if not os.path.exists(path):
+            continue
+        rel = os.path.relpath(path, ROOT)
+        for e in _enums(json.load(open(path, encoding="utf-8"))):
+            enum += e
+            for a in e:
+                if a.lower() not in lower:
+                    fails.append(f"ACT-001 {rel}: action {a!r} resolves to no term in action.yaml "
+                                 f"— the vocabularies have started to fork again")
 
     # ACT-003 — the movement half survives
     missing = sorted(MOVEMENT - set(terms))
