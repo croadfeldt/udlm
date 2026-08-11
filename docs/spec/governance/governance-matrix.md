@@ -102,13 +102,34 @@ data:
       - "fields.treatment_plan"
     # Supports wildcards: "fields.phi_*" matches all fields prefixed phi_
 
-  # Capability being exercised
-  capability:
-    match: <capability> | in: [<list>] | any
-    # Capabilities (closed substrate vocabulary):
-    #   read | write | store | replicate | export | notify |
-    #   execute | discover | query | federate
+  # The ACTION being exercised against the target
+  action:
+    match: <action> | in: [<list>] | any
+    # Governed vocabulary: registry/taxonomies/action.yaml — the SAME terms the audit record
+    # writes, so a permit and its audit entry are comparable without a translation table.
+    # Standard set includes: read | write | store | replicate | export | notify |
+    #                        execute | discover | query | federate | create | modify | delete | …
+    # Extensible under that root; an estate's term enters `proposed` and is promoted by the same
+    # curation ladder a standard term used.
 ```
+
+> **`action`, not `capability`** (maintainer ruling 2026-08-11). Three different axes had collided
+> on one word:
+>
+> | | is | lives in |
+> |---|---|---|
+> | **capability** | what a PROVIDER can do — `realize_resources`, `serve_data` | `taxonomies/provider-capability.yaml` |
+> | **thing** | what it offers — `Compute.VM`, `Storage.Volume` | the class system |
+> | **action** | what may be DONE to that thing — `read`, `replicate` | `taxonomies/action.yaml` |
+>
+> This axis was previously labelled `capability` and carried ten terms of its own, overlapping the
+> audit vocabulary on **two words** — so *"was this action authorized?"* could not be answered by
+> matching a permit against a record. `read` is not something a provider is *capable of*; it is
+> something an actor *does to* a resource. One vocabulary now serves both sides.
+>
+> UDLM carries the vocabulary and the format. **Whether a given actor may perform a given action is
+> policy's call and the implementation's** — the matrix declares the axes a decision is made over,
+> never the decision.
 
 ### 2.3 Axis 3 — Target (Where)
 

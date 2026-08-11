@@ -160,7 +160,10 @@
         "DRIFT_RESOLVE",
         "ENRICH",
         "EVALUATE",
+        "EXECUTE",
         "EXPIRE",
+        "EXPORT",
+        "FEDERATE",
         "HOLD_CONFIRM",
         "HOLD_PLACE",
         "HOLD_RELEASE",
@@ -168,21 +171,27 @@
         "LOCK",
         "LOGIN",
         "LOGOUT",
+        "MEMBERSHIP_EXPIRE",
         "MEMBER_ADD",
         "MEMBER_REMOVE",
-        "MEMBERSHIP_EXPIRE",
         "MODIFY",
+        "NOTIFY",
         "PROMOTE",
         "QUERY",
+        "READ",
         "REFUSE",
         "REHYDRATE",
         "RELATIONSHIP_CREATE",
         "RELATIONSHIP_RELEASE",
+        "REPLICATE",
         "RETIRE",
         "REVOKE",
-        "STATE_TRANSITION"
+        "STATE_TRANSITION",
+        "STORE",
+        "WRITE"
       ],
-      "description": "Closed vocabulary (universal-audit §4; free-text rejected, AUD-007)."
+      "description": "The action recorded. GOVERNED, NOT CLOSED (maintainer ruling 2026-08-11): the term must resolve to `registry/taxonomies/action.yaml` — free text is still rejected (AUD-007) — but an estate MAY extend the vocabulary under that root, entering as `proposed` and reaching `canonical` through the same curation ladder a standard term used (ADR-039). What is policed is the WAY it is extended, so audit, policy and governance keep one shape whoever added the term.\n\nONE VOCABULARY FOR PERMIT AND RECORD. The governance matrix now matches on these same terms. Previously it carried ten of its own under the heading `capability`, overlapping this list on TWO words — so 'was this action authorized?' could not be answered by comparing a permit to a record. The enum below is the standard set and includes the data-movement terms (`read`, `store`, `replicate`, `export`, `notify`, `federate`) the audit side previously lacked.\n\nUDLM does not decide WHETHER an action is permitted — policy and the implementation do. UDLM carries the vocabulary and the format.",
+      "x-extensible-enum": true
     },
     "action_detail": {
       "type": "object",
@@ -211,23 +220,52 @@
     {
       "$comment": "SPEC-DESIGN §Relationships 18d/18e: a relationship mutation MUST carry an explicit, self-describing resulting-state detail so LIFO reconstruction (18c) works and an undo/revert is recorded as a forward result, never a differential.",
       "if": {
-        "required": ["action"],
-        "properties": { "action": { "enum": ["RELATIONSHIP_CREATE", "RELATIONSHIP_RELEASE"] } }
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "RELATIONSHIP_CREATE",
+              "RELATIONSHIP_RELEASE"
+            ]
+          }
+        }
       },
       "then": {
-        "required": ["action_detail"],
-        "properties": { "action_detail": { "$ref": "#/$defs/relationship_mutation" } }
+        "required": [
+          "action_detail"
+        ],
+        "properties": {
+          "action_detail": {
+            "$ref": "#/$defs/relationship_mutation"
+          }
+        }
       }
     },
     {
       "$comment": "ADR-PROV-003: a provider capability-admission change (admit/provision/scope/deny/revoke) is an admin decision that MUST be audited and PERMANENT. Recorded as an explicit forward event carrying the RESULTING disposition (+ actor + reason), never a destructive edit; the current admission is the LIFO-newest CAPABILITY_ADMIT for the (provider, capability) pair — same durability model as relationship_mutation (18c/18e).",
       "if": {
-        "required": ["action"],
-        "properties": { "action": { "enum": ["CAPABILITY_ADMIT"] } }
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "CAPABILITY_ADMIT"
+            ]
+          }
+        }
       },
       "then": {
-        "required": ["action_detail"],
-        "properties": { "action_detail": { "$ref": "#/$defs/capability_admission" } }
+        "required": [
+          "action_detail"
+        ],
+        "properties": {
+          "action_detail": {
+            "$ref": "#/$defs/capability_admission"
+          }
+        }
       }
     }
   ],
@@ -236,7 +274,12 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Explicit, self-describing relationship-edge event (SPEC-DESIGN §Relationships 18a-e). Records the RESULTING edge state, not a differential — enabling audit-based, LIFO rebuild/confirm of relationships (18c). An undo/revert resolves to one of these explicit results (18e).",
-      "required": ["source_uuid", "target_uuid", "edge_type", "resulting_state"],
+      "required": [
+        "source_uuid",
+        "target_uuid",
+        "edge_type",
+        "resulting_state"
+      ],
       "properties": {
         "source_uuid": {
           "type": "string",
@@ -253,11 +296,19 @@
           "description": "Advisory only; target_uuid is authoritative (never name alone)."
         },
         "edge_type": {
-          "enum": ["depends_on", "binds_to", "references", "contained_by"],
+          "enum": [
+            "depends_on",
+            "binds_to",
+            "references",
+            "contained_by"
+          ],
           "description": "Typed relationship edge_type (§18)."
         },
         "resulting_state": {
-          "enum": ["present", "absent"],
+          "enum": [
+            "present",
+            "absent"
+          ],
           "description": "The edge's state AFTER this event — explicit forward state (18e). RELATIONSHIP_CREATE -> present, RELATIONSHIP_RELEASE -> absent. An undo/revert is recorded as one of these explicit results, never as a differential."
         }
       }
@@ -266,7 +317,13 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Explicit, self-describing provider capability-admission event (ADR-PROV-003). Records the RESULTING PLATFORM-LEVEL admin disposition of one (provider × capability/category), not a differential — enabling audit-based LIFO reconstruction of the current admission (the newest CAPABILITY_ADMIT wins). This is the COARSE, platform-level admit; GRANULAR/conditional approval (per tenant/zone/resource/context) is POLICY (Governance-Matrix rules), NOT recorded here (no scope field). A revoke/override resolves to an explicit resulting_disposition (e.g. denied), never an undo. Admin identity (actor) and reason are REQUIRED — admin changes are audited and permanent.",
-      "required": ["provider_uuid", "capability", "resulting_disposition", "actor", "reason"],
+      "required": [
+        "provider_uuid",
+        "capability",
+        "resulting_disposition",
+        "actor",
+        "reason"
+      ],
       "properties": {
         "provider_uuid": {
           "type": "string",
@@ -278,11 +335,21 @@
           "description": "The capability or capability category being admitted — a (verb × domain) term handle from the provider-capability taxonomy (e.g. `realize_resources/Storage`). ADR-PROV-002."
         },
         "resulting_disposition": {
-          "enum": ["pending", "approved", "provisional", "denied"],
+          "enum": [
+            "pending",
+            "approved",
+            "provisional",
+            "denied"
+          ],
           "description": "The admission disposition AFTER this event — explicit forward state. A revoke of a prior `approved` is recorded as resulting_disposition `denied` (an explicit result, not an undo). `provisional` = admitted but restricted/shadowed (reuses the federation provisional posture). ADR-PROV-003."
         },
         "prior_disposition": {
-          "enum": ["pending", "approved", "provisional", "denied"],
+          "enum": [
+            "pending",
+            "approved",
+            "provisional",
+            "denied"
+          ],
           "description": "Advisory: the disposition immediately before this event (LIFO already yields it; recorded for a self-describing chain)."
         },
         "actor": {
