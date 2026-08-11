@@ -1,6 +1,6 @@
 # UDLM ADR-049: Credential material at intent intake — the rejecting path must not be where the secret lands
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the invariant is UDLM; the enforcement mechanism and its rigor are delegated to policy/profile — a DCM obligation, tracked in the DCM policy-obligations register.** The mechanism catalogue below is *informative* — shapes an implementation may implement, not a choice UDLM makes.
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the invariant is UDLM; the enforcement mechanism and its rigor are delegated to policy/profile — a control plane obligation, tracked in control-plane policy-obligations register.** The mechanism catalogue below is *informative* — shapes an implementation may implement, not a choice UDLM makes.
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
@@ -63,17 +63,17 @@ error payload, or the audit `detail`). Every conformant implementation must meet
 the invariant, not an implementation detail — a correct decision taken *after* the write is a failed
 decision, because the store is immutable.
 
-**Delegated to policy/profile (a DCM obligation).** *How* intake meets the invariant — and *how strictly*
+**Delegated to policy/profile (a control plane obligation).** *How* intake meets the invariant — and *how strictly*
 — is a policy decision the implementation makes, and its rigor is a **profile floor**:
 
 - A profile may accept **detect-and-refuse-before-persist** (mechanism A below) as the floor, or **raise
   the floor to coercion-to-a-reference** (mechanism D) where the stakes warrant — the same profile-priced
   rigor as bare-vs-governed vocabulary (ADR-007). UDLM names the *knob*; the profile sets it.
-- The implementation (DCM) picks the mechanism that satisfies the invariant at its profile's floor.
+- The implementation (the control plane) picks the mechanism that satisfies the invariant at its profile's floor.
 
 UDLM does **not** rule scan-vs-coerce-vs-quarantine. The catalogue that follows is informative — the
-shapes an implementation may implement and their honest costs, recorded so DCM's policy work weighs them
-rather than rediscovering them. **This is registered as a DCM policy item** (see *Delegated work* below).
+shapes an implementation may implement and their honest costs, recorded so the control plane's policy work weighs them
+rather than rediscovering them. **This is registered as control-plane policy item** (see *Delegated work* below).
 
 ### Mechanism A — Scan before persist *(the common floor)*
 
@@ -162,19 +162,19 @@ leaf discipline the audit model already applies to field values, extended to the
 feeds it, and it is stated in `docs/spec/contracts/error-model.md` §6a rather than here so it applies to
 every refusal rather than only this one.
 
-## Delegated work — the DCM policy obligation
+## Delegated work — control-plane policy obligation
 
-Registered in the DCM policy-obligations register. **DCM must** decide and implement, as a policy
+Registered in control-plane policy-obligations register. **the control plane must** decide and implement, as a policy
 governed by the profile:
 - **the mechanism** (a Mechanism above, or another that satisfies the invariant): where the check sits in
   the intake pipeline, the detector (formats, entropy thresholds, tuning), and its false-positive remedy —
   most plausibly a per-field opt-out declared on the type, itself reviewable;
 - **the profile floor**: which profiles accept detect-and-refuse (A) and which require coercion-to-a-
-  reference (D). Under coercion, DCM must record the transformation and its provenance (the vocabulary-
+  reference (D). Under coercion, the control plane must record the transformation and its provenance (the vocabulary-
   ladder discipline), and price the narrow `CPX-001` exception (hand-off only, never at rest, never logged).
 
 UDLM will not accept a UC or conformance claim that asserts a *specific* mechanism as the portable
-requirement; the portable requirement is the invariant. The mechanism belongs to DCM.
+requirement; the portable requirement is the invariant. The mechanism belongs to the control plane.
 
 ## Data · Policy · Provider
 
@@ -188,9 +188,9 @@ requirement; the portable requirement is the invariant. The mechanism belongs to
   on the intake path, which is the new dependency that option introduces. No realizing provider is
   dispatched for a refused intent.
 
-## UDLM vs DCM — what lands where (the peer test, ADR-008)
+## UDLM vs the control plane — what lands where (the peer test, ADR-008)
 
-| Piece | **UDLM** — model / contract (a peer MUST honor) | **DCM** — engine / mechanism (a peer MAY differ) |
+| Piece | **UDLM** — model / contract (a peer MUST honor) | **the control plane** — engine / mechanism (a peer MAY differ) |
 |---|---|---|
 | The prohibition | inline credential material where a reference is required is invalid (`CPX-013`) | — |
 | Ordering | the check precedes persistence — a normative sequencing constraint | where in the intake pipeline the stage sits |

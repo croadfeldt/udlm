@@ -41,7 +41,7 @@ These are the same tier. **Two names for one objective is not simple** — this 
 ## Open questions for engineering
 
 1. **`CMP-*` → `TPL-*`** rename + timing (rides the rule-ID registry renumber).
-2. **Composite Entity → System** in the runtime/DCM docs — agree the runtime instance name. A System is the instance, and the only one of the three tiers carrying `states` (ADR-033).
+2. **Composite Entity → System** in the runtime/control-plane docs — agree the runtime instance name. A System is the instance, and the only one of the three tiers carrying `states` (ADR-033).
 3. **Migration sequencing.** `catalog-item.schema.json` is an *accepted, implemented* 0.1 surface — so this touches shipping code. Baseline-then-ratchet (the rule-ID path) or a single cut?
 
 ## What it does NOT change

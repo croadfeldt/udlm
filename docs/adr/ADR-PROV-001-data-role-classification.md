@@ -19,7 +19,7 @@ set should be formalized apart from the raw domain schema. The clean primitive i
 answers 'who may see it'; data_role answers 'what is it for', and governs dispatch: only
 role:execution crosses to a provider by default. This reuses existing machinery end-to-end —
 data_classification is already field-level and already a policy match source, and the
-Governance Matrix already fires on every DCM->Provider interaction with
+Governance Matrix already fires on every control-plane->Provider interaction with
 STRIP_FIELD/DENY/REDACT — so role dispatch is a match source, not new policy. Providers opt
 into non-execution roles via accepts_roles, and may tag data they return by role;
 sovereignty/profile policy can strip a requested role but never widen beyond accepts_roles.
@@ -38,7 +38,7 @@ precedence field > section > default(execution) — list only non-execution exce
 `excluded_layers[]` (LAY-003). Providers declare `accepts_roles` (default [execution]) and may
 tag returned data by role; the delivered set = accepts_roles INTERSECT Governance-Matrix-
 permitted. data_role becomes a Governance-Matrix match source; the default rule STRIP_FIELDs
-non-execution at the DCM->Provider boundary. Defined once in contracts/data-roles.md.
+non-execution at control-plane->Provider boundary. Defined once in contracts/data-roles.md.
 
 ## Data · Policy · Provider
 

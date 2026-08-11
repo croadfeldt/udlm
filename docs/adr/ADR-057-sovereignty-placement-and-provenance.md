@@ -5,9 +5,9 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.
-- **P4** ([`docs/spec/principles/cross-cutting-requirements.md`](../spec/principles/cross-cutting-requirements.md) — *sovereignty is structural, not advisory*): today sovereignty = **placement** — immutable `sovereignty_zone` / `data_classification` / jurisdiction fields; an entity cannot silently leave its zone; DCM's **Governance Matrix** enforces.
-- **ADR-008** (UDLM/DCM boundary — *could a peer enforce this differently and still be valid? then it's DCM*): the split this ADR keeps.
-- **core-tenets** (UDLM is **custodian, not enforcer**; Data · Policy · Provider): UDLM carries the record, DCM decides/enforces, the provider is the mechanism.
+- **P4** ([`docs/spec/principles/cross-cutting-requirements.md`](../spec/principles/cross-cutting-requirements.md) — *sovereignty is structural, not advisory*): today sovereignty = **placement** — immutable `sovereignty_zone` / `data_classification` / jurisdiction fields; an entity cannot silently leave its zone; the control plane's **Governance Matrix** enforces.
+- **ADR-008** (the substrate and its control plane boundary — *could a peer enforce this differently and still be valid? then it's the control plane*): the split this ADR keeps.
+- **core-tenets** (UDLM is **custodian, not enforcer**; Data · Policy · Provider): UDLM carries the record, the control plane decides/enforces, the provider is the mechanism.
 - **Attestation R2** (`registry/realized-entity.schema.json` — per-plane attestation that an entity's *sovereignty is **BACKED**, not merely claimed*): the evidence substrate.
 - **Accreditation** (`registry/accreditation.schema.json` — vets **subjects**: service/credential providers, external policy evaluators, peer implementations) and **capability admission** (ADR-PROV-003 — platform-admin disposition over a provider's declared capabilities, **default-deny**): the admission substrate that exists but is not framed *as sovereignty*.
 
@@ -15,7 +15,7 @@
 1. **Placement / containment** — an entity stays within its approved zone (P4 today).
 2. **Provenance / admission** — an entity, and the things that realize it, come from sources **approved for that boundary**: *did this server come from an approved source? is this firewall / image on the approved list for my zone?*
 
-For **both**, UDLM's role is identical and bounded (ADR-008): **codify the requirement as immutable data and communicate it to whoever enforces. UDLM does not vet or enforce.** DCM (the Governance Matrix) gets the decisions made and enables enforcement; providers, backed by attestation and gated by accreditation, are the enforcement substrate.
+For **both**, UDLM's role is identical and bounded (ADR-008): **codify the requirement as immutable data and communicate it to whoever enforces. UDLM does not vet or enforce.** the control plane (the Governance Matrix) gets the decisions made and enables enforcement; providers, backed by attestation and gated by accreditation, are the enforcement substrate.
 
 ## Context
 
@@ -29,14 +29,14 @@ So the operator question "is this server/image/firewall from an approved source,
 ## Decision (proposed)
 
 1. **Sovereignty = placement + provenance-admission.** Amend P4 to name both dimensions under the same "structural, not advisory" spine.
-2. **UDLM codifies, does not vet.** UDLM carries the **approved-source / approved-list requirement as immutable data** on the sovereignty contract, and communicates it. It never decides admission and never enforces. (Same boundary P4 already keeps for placement: immutable fields in UDLM, Matrix enforcement in DCM.)
+2. **UDLM codifies, does not vet.** UDLM carries the **approved-source / approved-list requirement as immutable data** on the sovereignty contract, and communicates it. It never decides admission and never enforces. (Same boundary P4 already keeps for placement: immutable fields in UDLM, Matrix enforcement in the control plane.)
 3. **Reuse, don't invent** (T7 — minimal custom surface). The requirement expresses **by reference** to what exists — accreditation subjects + attestation evidence — rather than a parallel primitive. UDLM adds the *pointer and the obligation*, not a new admission engine.
-4. **DCM enforces.** The Governance Matrix decides "is this entity's provenance approved for this boundary?" at admission/realization, reusing accreditation + capability-admission (default-deny) + attestation R2 as the evidence.
+4. **the control plane enforces.** The Governance Matrix decides "is this entity's provenance approved for this boundary?" at admission/realization, reusing accreditation + capability-admission (default-deny) + attestation R2 as the evidence.
 
 ## Data · Policy · Provider
 
 - **Data (UDLM):** the codified sovereignty requirement — zone/classification (placement) **plus** the approved-source / approved-list expression (admission), as immutable, communicable data referencing accreditation subjects + attestation evidence records. UDLM holds it; it does not evaluate it.
-- **Policy (DCM):** the Governance Matrix evaluates provenance-admission — approved source for this boundary? — and gates realization; reuses accreditation + capability-admission (default-deny).
+- **Policy (the control plane):** the Governance Matrix evaluates provenance-admission — approved source for this boundary? — and gates realization; reuses accreditation + capability-admission (default-deny).
 - **Provider:** presents provenance/attestation evidence, is itself subject to accreditation, and enforces at the mechanism edge.
 
 ## Open questions for engineering (what this ADR tees up)

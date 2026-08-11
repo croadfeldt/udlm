@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/guides/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/guides/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (UDLM/DCM boundary)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/guides/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/guides/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (the substrate and its control plane boundary)
 **Tracking:** September 0.1 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before implementation").
 
 ## Context
@@ -54,12 +54,12 @@ Same shape family as `DependencyCycle`: members + the offending edge + severity-
 ### 4. Policy addresses all three (Data · Policy · Provider)
 
 - **Data (UDLM):** the three shapes above are the exposed diagnostics; derived, never stored on resources.
-- **Provider (DCM):** computes them from the effective graph on each resolution (reverse-reachability + co-anchor grouping + edge-target resolution).
-- **Policy (DCM policy engine):** new match sources — `graph.fault_domain`, `graph.blast_radius`, `graph.unmet_dependency` (severity/members/reason) — added to `policy.schema.json`, alongside the existing `graph.cycle*`. So an org authors "deny a blocking UnmetDependency," "warn if blast_radius > N," "require redundancy across fault domains for tier-1 workloads" — rather than the engine hard-coding any of it.
+- **Provider (the control plane):** computes them from the effective graph on each resolution (reverse-reachability + co-anchor grouping + edge-target resolution).
+- **Policy (control-plane policy engine):** new match sources — `graph.fault_domain`, `graph.blast_radius`, `graph.unmet_dependency` (severity/members/reason) — added to `policy.schema.json`, alongside the existing `graph.cycle*`. So an org authors "deny a blocking UnmetDependency," "warn if blast_radius > N," "require redundancy across fault domains for tier-1 workloads" — rather than the engine hard-coding any of it.
 
 ### 5. Boundary (ADR-008 test)
 
-The **diagnostic shapes and the derivation definitions** are UDLM (a peer must interpret a `SharedFaultDomain` / `UnmetDependency` the same, or interop breaks). The **computation** (traversal, grouping) is DCM. A peer may compute differently; it must expose the same shapes.
+The **diagnostic shapes and the derivation definitions** are UDLM (a peer must interpret a `SharedFaultDomain` / `UnmetDependency` the same, or interop breaks). The **computation** (traversal, grouping) is the control plane. A peer may compute differently; it must expose the same shapes.
 
 ## Options considered
 

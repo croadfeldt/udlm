@@ -116,7 +116,7 @@ whose integrity they protect** — a pathway or a lifecycle:
 
 **The resource chain (in-record).** Each version's `integrity.head` is computed over the
 RFC 8785-canonical record minus `integrity.*` (the ADR-051 strip machinery) and links the
-previous version's head. DCM is the sole hasher.
+previous version's head. The control plane is the sole hasher.
 
 **The seal (ledger-side).** Every change seal is an OpenLineage event embedding the working
 copy and its resource-chain head (the `udlm_workingCopy` facet — the one-way bridge; the
@@ -218,7 +218,7 @@ which consumes this ADR's admission rule and claims discipline and ratifies sepa
   discipline; the typed-chain model and the seal facet shapes; the Merkle-log *contract*
   (append-only, RFC 9162-verifiable, root externally anchorable — the store is an
   implementation choice).
-- **Policy (DCM):** every policy write (sealed); emission completeness and delivery;
+- **Policy (the control plane):** every policy write (sealed); emission completeness and delivery;
   Discovered-seal retention; per-profile posture on pathway continuity citations (provider
   event streams and discovery runs); Governance-Matrix emission gating; the finding policies
   (ADR-060) and response matrix per finding class.
@@ -234,7 +234,7 @@ which consumes this ADR's admission rule and claims discipline and ratifies sepa
   `udlm_provenance` facet and the chain block is added when that phase lands; the estate's
   records migrate by idempotent tooling.
 - The sealing obligation joins the provider write contract; emission completeness, retention,
-  and continuity-citation postures are registered as DCM policy obligations (OBL-003).
+  and continuity-citation postures are registered as control-plane policy obligations (OBL-003).
 - Dashboards, compliance surfaces, and DAV source lineage from the ledger only — rendering
   working-record content under a lineage heading is a defect.
 

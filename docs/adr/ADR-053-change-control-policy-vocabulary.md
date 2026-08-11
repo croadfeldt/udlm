@@ -13,7 +13,7 @@ sits on. ADR-046 (blue/green typed-output diff) — the evidence this must never
 (staleness as a declared expectation) — the freshness machinery §7 reuses. ADR-051 (publish law +
 digest referrers) — how the meta-policy and approvals bind. ADR-052/048 (verdicts derived, never
 stored) — the debt-state pattern. ADR-003/T6 (RTO/RPO — a provider-backed validated time bound) —
-what §8 generalizes. ADR-008 — the UDLM/DCM boundary.
+what §8 generalizes. ADR-008 — the the substrate and its control plane boundary.
 
 ## Context
 
@@ -92,15 +92,15 @@ The gate evaluates `estimate + margin ≤ window_remaining`, and the three roles
   on its realized-state report, and the provenance/freshness contract. Not a new mechanism: an RTO is
   already a provider-backed validated time bound, and implementation time-to-complete generalizes it
   (RTO becomes a special case).
-- **DCM/policy acts.** The fit gate reads the estimate, and on a miss refuses (naming estimate,
+- **the control plane/policy acts.** The fit gate reads the estimate, and on a miss refuses (naming estimate,
   source, remaining) and applies the policy's response — defer, batch-fit, or expedite. Because
   propagation is dependency-ordered, batched, and resumable, batch-fit runs the batches that fit and
   carries the rest as `windowed` debt with recorded progress — partial-but-safe, never a mid-batch
   overrun.
 
-## The UDLM / DCM boundary (ADR-008)
+## The UDLM / the control plane boundary (ADR-008)
 
-| UDLM — data + contracts | DCM — evaluates + runs |
+| UDLM — data + contracts | The control plane — evaluates + runs |
 |---|---|
 | the `schedule` clause vocabulary; the whether/when firewall | evaluates clauses; decides run/defer/expedite/refuse; emits the typed refusals |
 | the derived debt verdicts; the change-calendar Knowledge type + freshness | computes the verdicts; ingests/refreshes calendar knowledge |
@@ -118,7 +118,7 @@ evidence guarantee.
 
 The JSON-Schema shapes (the `schedule` block on `policy.schema.json`, the change-calendar Knowledge
 type, the approval referrer, the freshness stopgap, the estimate datum) follow as an implementing PR
-once ratified. DCM owns the policy defaults — window values, freeze calendars, approver ladders, the
+once ratified. The control plane owns the policy defaults — window values, freeze calendars, approver ladders, the
 §8 safety margin and fit-miss response — never the portable model. Genuinely open for your ruling:
 the debt-verdict names (`pin_behind | windowed | frozen`), whether freshness gets the per-type
 stopgap now or waits for the Base Class, and the expedite-elevation shape (a higher-authority tier vs

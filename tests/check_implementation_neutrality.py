@@ -75,6 +75,26 @@ EXEMPT = re.compile(
 POINTER = re.compile(r"\b(DCM|DAV)\s+(ADR-\d{3}|repo\b|repository\b)", re.I)
 
 
+# IDENTIFIER-SAFE: a rewrite must never touch an ADR/DR NAME. `DR-UDLM-DCM-001` is an identity, not
+# prose, and substituting inside it produced `DR-UDLM-control-plane-001` — a dangling link the link
+# gate caught and three stale citations it could not (a bare identifier in prose resolves to
+# nothing, and nothing checks that). Any future rewrite pass must protect these before substituting.
+
+# A DOCUMENT-LEVEL EXEMPTION. Some decision records are ABOUT an implementation — ADR-008 records
+# the split of one repository into a substrate and an implementation, and the peer test it defines
+# needs a concrete peer to be applied against. Generalizing such a document erases what it decides.
+#
+# The marker is a sentence the AUTHOR writes, not a filename pattern, so claiming the exemption is a
+# deliberate act visible in the diff — and one that says WHY, since the marker is prose rather than a
+# flag. Note the framing paragraph itself names the implementation several times: without this, the
+# gate penalises exactly the fix it should reward.
+DOC_EXEMPT = re.compile(
+    r"names (DCM|DAV|an implementation) throughout, and that is not the defect"
+    r"|this (ADR|document) is ABOUT (DCM|DAV|an implementation)"
+    r"|IMP-001 (exempt|exemption)",
+    re.I)
+
+
 def violations():
     out = []
     paths = []
@@ -83,7 +103,10 @@ def violations():
             paths += glob.glob(os.path.join(d, "**", ext), recursive=True)
     for path in sorted(p for p in set(paths) if not any(sk in p for sk in SKIP)):
         rel = os.path.relpath(path, ROOT)
-        for i, line in enumerate(open(path, encoding="utf-8"), 1):
+        body = open(path, encoding="utf-8", errors="ignore").read()
+        if DOC_EXEMPT.search(body):
+            continue                          # the document declares itself about an implementation
+        for i, line in enumerate(body.splitlines(), 1):
             probe = POINTER.sub("", line)
             if IMPLS.search(probe) and not EXEMPT.search(line):
                 out.append((rel, i, line.strip()[:110]))
@@ -131,6 +154,8 @@ def main():
     # self-test: both arms must behave, or this proves only that the walk ran.
     probe_hit = IMPLS.search("DCM evaluates the policy") and not EXEMPT.search("DCM evaluates the policy")
     probe_ok = EXEMPT.search("DCM realizes this (non-normative example)")
+    probe_doc = DOC_EXEMPT.search("This ADR names DCM throughout, and that is not the defect IMP-001 exists to catch.")
+    probe_nodoc = not DOC_EXEMPT.search("DCM evaluates the policy and returns a decision.")
     probe_ptr = not IMPLS.search(POINTER.sub("", "trust is never self-declared (DCM ADR-022)"))
     probe_still = IMPLS.search(POINTER.sub("", "DCM evaluates the policy, see DCM ADR-022"))
     if not probe_hit:
@@ -138,6 +163,13 @@ def main():
         new.append(("self-test", 0, ""))
     if not probe_ok:
         print("FAIL [IMP-SELF] a marked non-normative reference was not exempted")
+        new.append(("self-test", 0, ""))
+    if not probe_doc:
+        print("FAIL [IMP-SELF] a document declaring itself about an implementation was not exempted")
+        new.append(("self-test", 0, ""))
+    if not probe_nodoc:
+        print("FAIL [IMP-SELF] an ordinary sentence claimed the document-level exemption — the "
+              "marker is too loose, and any file could opt out")
         new.append(("self-test", 0, ""))
     if not probe_ptr:
         print("FAIL [IMP-SELF] a qualified pointer (`DCM ADR-022`) was treated as prose")

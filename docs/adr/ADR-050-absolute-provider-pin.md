@@ -1,6 +1,6 @@
 # UDLM ADR-050: The absolute provider pin — whether a pin may confer eligibility, or only express preference
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the ceiling is a UDLM invariant; whether a pin may bypass it is an operational policy — a DCM obligation, tracked in the DCM policy-obligations register.** The option catalogue below is *informative* — the policy shapes DCM may adopt, not a choice UDLM makes.
+**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the ceiling is a UDLM invariant; whether a pin may bypass it is an operational policy — a control plane obligation, tracked in control-plane policy-obligations register.** The option catalogue below is *informative* — the policy shapes the control plane may adopt, not a choice UDLM makes.
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
@@ -64,12 +64,12 @@ naming an ineligible provider yields `placement.capability_mismatch` **before di
 required-versus-declared comparison. The pin stays absolute over the *choice*; it is not absolute over
 *capability*. This makes one sentence true everywhere instead of true-with-an-exception.
 
-**Delegated to policy (a DCM obligation).** A *deliberate* eligibility bypass — the genuine case of a
+**Delegated to policy (a control plane obligation).** A *deliberate* eligibility bypass — the genuine case of a
 provider that can do the work but never declared it — is not forbidden; it is **priced as policy**,
 through the existing override-record flow (an approver, a reason, a scope, a time bound —
 `policy-contract.md` §18). No new mechanism: an override is already a first-class, approved, audited data
 record. UDLM does **not** bake an absolute-bypass into the model, and does not choose whether a given
-profile permits the override at all — that is DCM's policy call. **This is registered as a DCM policy
+profile permits the override at all — that is the control plane's policy call. **This is registered as control-plane policy
 item** (see *Delegated work* below).
 
 **The corpus typing, settled by the same ruling:** a capability mismatch is a `policy_violation`
@@ -142,21 +142,21 @@ pre-dispatch — and not a provider failure, because the provider did not break;
 eligible. `provider.unavailable` and its neighbours remain reserved for providers that were
 eligible and then failed.
 
-## Delegated work — the DCM policy obligation
+## Delegated work — control-plane policy obligation
 
-Registered in the DCM policy-obligations register. UDLM guarantees the ceiling; **DCM must** decide, as
+Registered in control-plane policy-obligations register. UDLM guarantees the ceiling; **the control plane must** decide, as
 policy governed by the profile:
 - **whether a deliberate bypass exists at all** in a given profile, and if so its shape — the override-
-  record flow (Shape B) is the priced default; the two-field split (Shape C) is an alternative DCM may
+  record flow (Shape B) is the priced default; the two-field split (Shape C) is an alternative the control plane may
   adopt if authorship clarity outweighs the larger surface;
 - **the deprecation window** for operators relying on today's absolute-pin behaviour, and the declaration-
   defect remedy (fix the stale declaration) named in the same change, so no operator's pin simply "stops
   working" without a path;
-- **the placement algorithm text** that currently describes the pin as skipping the remaining steps — DCM
+- **the placement algorithm text** that currently describes the pin as skipping the remaining steps — the control plane
   amends it so the eligibility check is unconditional at the dispatch boundary.
 
 UDLM will not accept a UC or conformance claim in which a pin reaches dispatch outside the ceiling; a
-bypass is only ever a recorded, approved policy override, and its permissibility is DCM's to set per profile.
+bypass is only ever a recorded, approved policy override, and its permissibility is the control plane's to set per profile.
 
 ## Data · Policy · Provider
 
@@ -168,9 +168,9 @@ bypass is only ever a recorded, approved policy override, and its permissibility
 - **Provider** — the provider is the party protected by the rule. It receives no work it never
   declared for, and it is not blamed for failing at work it never claimed.
 
-## UDLM vs DCM — what lands where (the peer test, ADR-008)
+## UDLM vs the control plane — what lands where (the peer test, ADR-008)
 
-| Piece | **UDLM** — model / contract (a peer MUST honor) | **DCM** — engine / mechanism (a peer MAY differ) |
+| Piece | **UDLM** — model / contract (a peer MUST honor) | **the control plane** — engine / mechanism (a peer MAY differ) |
 |---|---|---|
 | The ceiling | `effective_capabilities` and its formula | how the intersection is computed and cached |
 | Enforcement point | the check happens at the dispatch boundary, on every path (`PRV-011`) | where in the pipeline the stage sits |
@@ -196,5 +196,5 @@ bypass is only ever a recorded, approved policy override, and its permissibility
 ---
 *Citation note: the pin short-circuit description cites control-plane text that lives in the
 DCM repository (a cross-repo citation — it does not resolve in this tree), and the sibling
-placement case with the conflicting `provider_failure` typing is in the DCM-side corpus, not
+placement case with the conflicting `provider_failure` typing is in the control-plane-side corpus, not
 this repository's. Both were verified there; flagged so an in-tree reader does not chase them.*

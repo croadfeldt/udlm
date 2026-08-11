@@ -27,11 +27,11 @@ The entity taxonomy previously named its primary Resource-family types `Infrastr
 ### Shape — `entity_type ∈ { Atomic, Composite }` for Resource and Process
 `entity_type` records the coarse shape: **Atomic** (owns no constituents) or **Composite** (owns constituents). Composite is *not* a separate kind or family — it is a shape either a Resource or a Process can take, carrying the same lifecycle, drift, ownership, and decommission machinery, plus a `composite_health` axis and declared constituents.
 
-**The Atomic/Composite line is drawn from the implementation's (DCM's) perspective — its orchestration scope — not the entity's internal complexity:**
-- **Atomic** = a single thing DCM manages / a single call DCM makes. A VM is Atomic; an Ansible/AWX workflow *invoked as one call* is Atomic (the provider orchestrates its internal jobs, opaque to DCM).
-- **Composite** = DCM owns/orchestrates more than one constituent — several managed resources, or several process calls DCM itself sequences.
+**The Atomic/Composite line is drawn from the implementation's (the control plane's) perspective — its orchestration scope — not the entity's internal complexity:**
+- **Atomic** = a single thing the control plane manages / a single call the control plane makes. A VM is Atomic; an Ansible/AWX workflow *invoked as one call* is Atomic (the provider orchestrates its internal jobs, opaque to the control plane).
+- **Composite** = the control plane owns/orchestrates more than one constituent — several managed resources, or several process calls the control plane itself sequences.
 
-A composite Resource's constituents are its owned resources; a composite Process's constituents are the sub-process calls DCM sequences — recorded via the **same constituent-relationship model** in both cases.
+A composite Resource's constituents are its owned resources; a composite Process's constituents are the sub-process calls the control plane sequences — recorded via the **same constituent-relationship model** in both cases.
 
 ### Tiers
 `family` (Resource | Process | Knowledge | Access) + `entity_type` (the coarse shape — never redundant with family) + `resource_type` (the specific type: `Compute.VM`, `Automation.AnsiblePlaybook`). Vendor-specifics ("playbook") live in `resource_type`; the coarse, generic, policy-gateable distinction (`Atomic`/`Composite`) lives in `entity_type`. Both tiers are queryable and gateable.
@@ -43,7 +43,7 @@ A composite Resource's constituents are its owned resources; a composite Process
 - Composite is `entity_type: Composite`, queryable at the catalog **and** instance layers (structure alone can't classify a catalog item — `constituents[]` is realized-only).
 - A registry migration: `family` enum +`Process`; `family: Resource` and `family: Process` → `entity_type ∈ {Atomic, Composite}`; existing specs `Infrastructure Resource → Atomic`, `automation.job → family: Process`.
 - **Follow-up:** classify which existing specs are genuinely `Composite` (a real OpenShift VM owns its disks/pod) and model their `constituents[]`.
-- Opens a clean correlation between AAP/AWX workflows and DCM-naturalized composite-process orchestration (constituents = job templates).
+- Opens a clean correlation between AAP/AWX workflows and control-plane-naturalized composite-process orchestration (constituents = job templates).
 
 ## Alternatives considered
 
@@ -116,11 +116,11 @@ the stored field: **portability is not a property a provider self-declares — i
   scope"* (Base = portable; lower = narrower, never zero). The stored classification just restates the scope.
 - **It drifts:** a `provider-specific` element becomes portable the moment a second provider advertises the
   capability; the stored label never updates. The informative answer is **relative to the target set** — the
-  eligible providers — which ADR-038 already assigns to DCM (*"computing the eligible set; grading an instance;
+  eligible providers — which ADR-038 already assigns to the control plane (*"computing the eligible set; grading an instance;
   re-derivation"*).
 - **`partial` is the tell:** partial across *which* providers? A static label carries almost no information.
 
-**Proposal:** derive portability from **scope × advertised capabilities** (DCM's eligible-set computation); remove
+**Proposal:** derive portability from **scope × advertised capabilities** (the control plane's eligible-set computation); remove
 the stored `portability` field from the meta-schema (drop from `required`) and from authored specs. This resolves
 ADR-038's internal contradiction — §3 says *read off scope* (derived) while the peer-test table + meta-schema said
 *declared* — in favour of derived. Same discipline as the two findings above; removing the field is the

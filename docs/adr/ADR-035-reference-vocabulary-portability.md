@@ -31,7 +31,7 @@ For any reference kind whose vocabulary must **federate across providers**:
 2. **Advertised eligibility (UDLM contract → provider data).** Each provider advertises the subset it realizes
    via capability discovery (ADR-004): the provider support matrix carries *which* `os_image` / `storage_class`
    / `vm_size` identities it offers.
-3. **Validated membership (DCM / Policy).** At request, DCM validates the declared reference ∈
+3. **Validated membership (the control plane / Policy).** At request, the control plane validates the declared reference ∈
    *(portable vocabulary ∩ provider-advertised set)*; a miss is a placement/validation finding (ADR-024).
    Selection is *from the advertised set*, never a guessed string; a net-new string enters the vocabulary via
    the intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039 — minted `proposed`, profile-priced),
@@ -39,11 +39,11 @@ For any reference kind whose vocabulary must **federate across providers**:
 
 **Boundary (peer test, ADR-008).** The reference *kind*, the *adopted identity standard*, and the *obligation to
 advertise* are substrate invariants a peer must honor to interoperate → **UDLM**. Negotiating, matching, and
-validating membership are implementation choices → **DCM**.
+validating membership are implementation choices → **the control plane**.
 
 ## Data · Policy · Provider (SPEC-DESIGN §29)
 - **Data** — the `reference_data` vocabulary + its adopted identity; the provider's advertised set (capability data).
-- **Policy** — DCM validates membership and gates a non-portable inline value.
+- **Policy** — the control plane validates membership and gates a non-portable inline value.
 - **Provider** — advertises its eligible subset; naturalizes native names to the portable identity.
 
 ## Options considered

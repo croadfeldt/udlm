@@ -14,7 +14,7 @@ The time-and-clock contract conflated three separate concerns and got each sligh
 2. It **hardcoded a ±5 s skew tolerance as a platform constant**. ±5 s is not a recognized standard for regulated/sensitive data — every established regime is tighter (FINRA CAT 50 ms; MiFID II RTS 25 1 s / 1 ms / 100 µs) — and baking one number into the substrate forces one regime on every deployment.
 3. It **mandated leap-second smearing** as the sole conformant behavior, which conflicts with ISO 8601 permitting `:60`.
 
-It also never addressed the federated case: two independent DCMs each keep their own audit chain, and may present different orderings (DCM 1 says XYZ, peer says YXZ). Forcing a single global total order across independent systems is impossible without consensus (FLP) and usually the wrong goal.
+It also never addressed the federated case: two independent DCMs each keep their own audit chain, and may present different orderings (the control plane 1 says XYZ, peer says YXZ). Forcing a single global total order across independent systems is impossible without consensus (FLP) and usually the wrong goal.
 
 ## Decision
 
@@ -33,20 +33,20 @@ REQUIRE monotonic, UTC-traceable time (never steps backward). RECOMMEND smearing
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 
 - **Data (UDLM)** — the `TimeSync` capability shape (UTC-traceable, `max_divergence`, mechanism class); causal references (and optional HLC) on events; the per-implementation Merkle/hash-linked chain; the cross-signed checkpoints (root + watermark + attested identity).
-- **Policy (DCM / profile)** — the *profile* declares which time standard it requires (adopt-by-reference); the "node capability ≥ profile bound" placement/admission rule; the choice of authority-per-shared-resource vs consensus; the checkpoint/witnessing cadence.
+- **Policy (the control plane / profile)** — the *profile* declares which time standard it requires (adopt-by-reference); the "node capability ≥ profile bound" placement/admission rule; the choice of authority-per-shared-resource vs consensus; the checkpoint/witnessing cadence.
 - **Provider** — NTP/PTP holding the sync; the attestation source signing identity + measured divergence; the witnessing/gossip exchange between peers; consensus where invoked.
 
 ## Options considered
 
 - **(A) Keep a hardcoded platform skew (±5 s).** Rejected: not a recognized standard, not fit-for-purpose for regulated data, and forces one regime on all deployments.
-- **(B) Global total order via distributed consensus for all events.** Rejected: impossible/unnecessary (FLP; concurrency is real and correct), heavy, and the wrong goal — most cross-DCM "disagreements" are legitimate concurrency.
+- **(B) Global total order via distributed consensus for all events.** Rejected: impossible/unnecessary (FLP; concurrency is real and correct), heavy, and the wrong goal — most cross-the control plane "disagreements" are legitimate concurrency.
 - **(C) [chosen] Structural causal ordering + profile-scoped adopt-by-reference time-sync capability + mutual attestation.** Ordering correctness is clock-independent; the tolerance is regime-appropriate and enforceable; federated divergence is detectable.
 
 ## Consequences
 
 - **+** Audit ordering is provable from the chain, independent of clock accuracy.
 - **+** Time-sync is enforceable (placement-gating) and regime-appropriate per profile; multi-regime / sovereign deployments coexist on one platform without the substrate picking a winner.
-- **+** Cross-DCM divergence is detectable and attributable; federation gets a real integrity story, not trust-by-assertion.
+- **+** Cross-the control plane divergence is detectable and attributable; federation gets a real integrity story, not trust-by-assertion.
 - **−** Events must carry causal references (largely already true via the dependency graph); HLC is needed where cross-node ordering granularity is tight.
 - **−** Federated DCMs must run the checkpoint/witnessing exchange (ties to the trust model) — new mechanism, though it reuses attestation.
 - Supersedes the ±5 s constant and the smear mandate in `docs/spec/contracts/time-and-clock.md` (redrafted alongside this ADR).

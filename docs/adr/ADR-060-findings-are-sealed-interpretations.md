@@ -78,7 +78,7 @@ always **derived on read** from the states — never answered from a finding (a 
 **Ruled 2026-08-05.** A drift finding routes to **policy first**; policies dictate what happens,
 when, and *perform the action* — the substrate ships **no built-in action and no built-in
 decision** for any finding class. What UDLM guarantees is that every resolution option is
-*expressible*; DCM carries example policies and profiles MAY bind defaults. The enabled
+*expressible*; the control plane carries example policies and profiles MAY bind defaults. The enabled
 vocabulary:
 
 | Resolution action | What it is on the wire |
@@ -105,7 +105,7 @@ cites the chain end-to-end, decision and resulting action included.
 - **Data (UDLM):** the `udlm_finding` facet shape; the finding-class vocabulary's home; the
   lifecycle semantics (open-once keying, closure by citing seal); the derived-on-read rule for
   current status.
-- **Policy (DCM):** the comparator and when it speaks (convergence consulted first); the drift
+- **Policy (the control plane):** the comparator and when it speaks (convergence consulted first); the drift
   policy — field relevance, severity classification, flap debounce; the response matrix per
   finding class; the example resolution policies (OBL-003) and any profile-bound defaults.
 - **Provider:** unaffected — providers report state (sealed, anchored); they never emit or
