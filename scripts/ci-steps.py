@@ -26,7 +26,7 @@ NAMES = {
     "python3 registry/tools/validate.py": "registry valid-by-construction",
     "python3 tests/validate_registry.py": "registry meta-schema",
     "python3 tests/check_estate_tokens.py": "estate-token scrub",
-    "python3 tests/check_single_source.py": "single-source (rule IDs)",
+    "python3 tests/check_single_source.py": "single-source (rule IDs + vocabularies)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",

@@ -106,13 +106,7 @@
       "description": "security | compliance | operational | recovery_posture | zero_trust_posture | data_authorization_boundary | orchestration_flow (policy-contract.md; open string — profile policy-group vocabularies extend it)."
     },
     "domain": {
-      "enum": [
-        "system",
-        "platform",
-        "tenant",
-        "resource_type",
-        "entity"
-      ],
+      "$ref": "common-elements.schema.json#/$defs/policy_domain",
       "description": "Precedence scope. resource_type override wins over tenant wins over profile default (policy-contract domain precedence)."
     },
     "match": {

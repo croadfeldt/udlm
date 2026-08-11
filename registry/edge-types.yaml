@@ -6,8 +6,13 @@
 # gate would reject it). The reverse is *derived* by inverting the edge: `A contained_by B` yields
 # `B contains A`. This registry is the single source for that inversion — consumed by the
 # graph-integrity gate (tests/check_graph_integrity.py) and by any consumer that materializes the
-# two-sided graph. It MUST stay in sync with the `edge_type` enum in resource-type-spec.schema.json
-# (the gate enforces that they match).
+# two-sided graph.
+#
+# It is also the single source for the NAMES. `common-elements.schema.json#/$defs/edge_type` is a
+# PROJECTION of the `edge_type` column here, declared with `x-generated-from` and proven equal by
+# tests/check_single_source.py (VOC-002); the schemas that need the vocabulary $ref that one $defs
+# entry. This used to read "MUST stay in sync with the enum in resource-type-spec.schema.json" —
+# which is two homes plus an obligation, and the obligation is what drifts.
 
 record_type: edge_type_registry
 version: 1.0.0

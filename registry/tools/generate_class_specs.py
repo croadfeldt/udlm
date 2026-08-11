@@ -19,7 +19,13 @@ import os
 import sys
 
 import yaml
-from jsonschema import Draft202012Validator
+import pathlib
+import sys
+
+from jsonschema import Draft202012Validator, RefResolver
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import refstore
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSES = os.path.join(ROOT, "classes")
@@ -29,7 +35,14 @@ GENERATOR_VERSION = "class-spec-gen/1.1.0"
 # Type tier only — schema-enforced — so a Provider Class cannot restate or widen who owns the result.
 OWNERSHIP_PASSTHROUGH = ("ownership_model", "allocated_from_pool_type", "allocation_produces_type",
                          "publicly_stakeable", "publicly_allocatable")
-SPEC_VALIDATOR = Draft202012Validator(json.load(open(os.path.join(ROOT, "resource-type-spec.schema.json"))))
+# Resolved against the shared offline store rather than bare: resource-type-spec.schema.json $refs
+# common-elements.schema.json for the vocabularies both share, and a bare validator resolves that by
+# attempting a network fetch — a generator that needs DNS is not reproducible.
+_SPEC_SCHEMA = json.load(open(os.path.join(ROOT, "resource-type-spec.schema.json")))
+SPEC_VALIDATOR = Draft202012Validator(
+    _SPEC_SCHEMA,
+    resolver=RefResolver(base_uri=pathlib.Path(os.path.join(ROOT, "resource-type-spec.schema.json")).as_uri(),
+                         referrer=_SPEC_SCHEMA, store=refstore.build_store()))
 
 
 def load_classes():

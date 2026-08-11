@@ -271,7 +271,13 @@ Each hard constraint cites the UDLM contract it derives from.
     four ways, and ID families reused for unrelated meanings across files.) A rule-ID *defined* in
     more than one file fails CI (`tests/check_single_source.py`); existing debt is grandfathered in
     that check's baseline and burned down as the dedup PRs land, and a family split across files is
-    warned. When a rule must appear elsewhere, cite it by ID with a one-line gist
+    warned. **The same holds for a closed VOCABULARY** — an enum declared literally in more than one
+    authored file fails (`VOC-001`). Declare it once and `$ref` it
+    (`common-elements.schema.json#/$defs/<name>`); where its home is a YAML taxonomy, which an enum
+    cannot `$ref`, each projection carries `x-generated-from: <path>` and the gate proves it still
+    equals its source (`VOC-002`). Until 2026-08-11 this rule said "rule, vocabulary, or wire-shape"
+    while the check read only the rule half — the action vocabulary had forked into five literal
+    copies and six other lists into two or three each, all passing CI. When a rule must appear elsewhere, cite it by ID with a one-line gist
     — the reference carries its own gist (e.g. `ADR-008 — the UDLM/DCM boundary test`), never a bare number. **[enforced]**
     (`tests/check_single_source.py`) To find the home before you write, use the file
     index (`docs/file-index.md`) — it names what each document owns.

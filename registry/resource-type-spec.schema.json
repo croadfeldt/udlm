@@ -45,12 +45,7 @@
       "description": "ENTITY-axis version: this type's own Major.Minor.Revision (see registry/VERSIONING.md). Immutable once published; any change produces a new version."
     },
     "family": {
-      "enum": [
-        "Resource",
-        "Process",
-        "Knowledge",
-        "Access"
-      ],
+      "$ref": "common-elements.schema.json#/$defs/family",
       "description": "Entity-type family (docs/spec/foundations/entity-type-families.md) — a logical grouping for discovery, NOT a usage boundary. Resource = maintained states; Process = bounded executions; Knowledge = information; Access = identity."
     },
     "entity_type": {
@@ -238,12 +233,7 @@
         ],
         "properties": {
           "edge_type": {
-            "enum": [
-              "depends_on",
-              "references",
-              "contained_by",
-              "binds_to"
-            ]
+            "$ref": "common-elements.schema.json#/$defs/edge_type"
           },
           "target": {
             "type": "string",

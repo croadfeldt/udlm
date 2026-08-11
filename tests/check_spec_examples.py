@@ -34,19 +34,14 @@ def load(p):
     return (yaml.safe_load(t) if p.endswith((".yaml", ".yml")) else json.loads(t)) or {}
 
 
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import refstore
+
+
 def _build_store():
-    """Offline $ref store: every registry/*.schema.json under both its file URI (what a relative
-    ../../common-elements.schema.json ref resolves to) and its $id — so an example that exercises a
-    shared-schema $ref resolves deterministically without the network (the same STORE the fuzz gate
-    uses)."""
-    store = {}
-    for p in sorted(glob.glob(os.path.join(ROOT, "registry", "*.schema.json"))):
-        doc = json.loads(open(p, encoding="utf-8").read())
-        store[pathlib.Path(p).resolve().as_uri()] = doc
-        if isinstance(doc.get("$id"), str):
-            store[doc["$id"]] = doc
-        store[f"https://udlm.dev/registry/{os.path.basename(p)}"] = doc
-    return store
+    """The shared offline store (registry/tools/refstore.py) — this was one of three copies."""
+    return refstore.build_store()
 
 
 STORE = _build_store()

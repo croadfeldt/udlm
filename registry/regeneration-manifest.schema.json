@@ -55,7 +55,9 @@
     "registry_ref": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["commit"],
+      "required": [
+        "commit"
+      ],
       "description": "The registry revision this change set landed as. The registry ref pins everything at once and is the sole intra-registry pinning mechanism (ADR-045 Decision 3), so it is the coordinate an estate uses to place this change relative to its own pins.",
       "properties": {
         "commit": {
@@ -76,7 +78,10 @@
     "change": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifact", "summary"],
+      "required": [
+        "artifact",
+        "summary"
+      ],
       "description": "The change that started the ripple — the one artifact a maintainer actually edited. Everything in affected_artifacts is downstream of this.",
       "properties": {
         "artifact": {
@@ -96,11 +101,20 @@
     "classification": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["compatibility", "classified_by", "required_bump", "declared_bump"],
+      "required": [
+        "compatibility",
+        "classified_by",
+        "required_bump",
+        "declared_bump"
+      ],
       "description": "How the compatibility classifier ruled on the change, and by which rule. Classification is by rule, never by review judgment (ADR-045 Decision 4) — which is why the rule that produced the verdict is recorded alongside the verdict itself.",
       "properties": {
         "compatibility": {
-          "enum": ["additive", "breaking", "revision"],
+          "enum": [
+            "additive",
+            "breaking",
+            "revision"
+          ],
           "description": "additive = the surface only grew, existing carriers keep validating; breaking = an existing carrier stops validating or loses portable surface (includes element removal and any move to a narrower scope, which no schema differ can see); revision = neither — descriptions, prose, and other content changes with no surface effect."
         },
         "classified_by": {
@@ -108,15 +122,27 @@
           "description": "The classifier rule that produced the verdict, named as it appears in the classifier's own rule table (e.g. the element-scope-narrowing rule of ADR-045 Decision 4, or the field-removal row of VERSIONING.md). Once the class-compat rule family is registered in registry/rule-id-registry.yaml this carries the rule ID."
         },
         "required_bump": {
-          "enum": ["major", "minor", "revision"],
+          "enum": [
+            "major",
+            "minor",
+            "revision"
+          ],
           "description": "The bump the classification demands."
         },
         "declared_bump": {
-          "enum": ["major", "minor", "revision"],
+          "enum": [
+            "major",
+            "minor",
+            "revision"
+          ],
           "description": "The bump the change actually declared on the changed artifact."
         },
         "enforced_bump": {
-          "enum": ["major", "minor", "revision"],
+          "enum": [
+            "major",
+            "minor",
+            "revision"
+          ],
           "description": "OPTIONAL — the bar the gate enforced, where it differs from required_bump. Pre-1.0 a breaking change is permitted under a MINOR bump (VERSIONING.md, the pre-1.0 bump floor); the classification stays visible either way, which is the point of recording both."
         },
         "reasons": {
@@ -125,10 +151,17 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["level", "detail"],
+            "required": [
+              "level",
+              "detail"
+            ],
             "properties": {
               "level": {
-                "enum": ["major", "minor", "revision"],
+                "enum": [
+                  "major",
+                  "minor",
+                  "revision"
+                ],
                 "description": "The bump this single difference on its own would demand."
               },
               "rule": {
@@ -150,7 +183,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["artifact", "disposition"],
+        "required": [
+          "artifact",
+          "disposition"
+        ],
         "properties": {
           "artifact": {
             "$ref": "#/$defs/artifact_revision",
@@ -161,7 +197,11 @@
             "description": "The same artifact before the change set. Absent where the artifact is new."
           },
           "disposition": {
-            "enum": ["regenerated", "revalidated_bumped", "revalidated_unchanged"],
+            "enum": [
+              "regenerated",
+              "revalidated_bumped",
+              "revalidated_unchanged"
+            ],
             "description": "What the atomic recompilation did to it (ADR-045 Decision 1, on the ADR-051 model). regenerated = a generated flat spec re-rendered from the class graph; revalidated_bumped = an authored Type or Provider Class whose own content changed, so it bumped its version under the publish law (identity uuid frozen; a new digest row lands in the pin manifest); revalidated_unchanged = an authored artifact that re-validated with no content change and therefore did NOT bump — the identity gate's no-op rule."
           },
           "path": {
@@ -170,7 +210,9 @@
           },
           "reached_via": {
             "type": "array",
-            "items": {"type": "string"},
+            "items": {
+              "type": "string"
+            },
             "description": "OPTIONAL — the class-graph path from the changed artifact to this one (each hop by handle). This is what makes the set auditable rather than merely asserted: a reader can re-walk the reason each artifact is in the list."
           }
         }
@@ -182,7 +224,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["consumer", "manifest_ref", "handle", "debt"],
+        "required": [
+          "consumer",
+          "manifest_ref",
+          "handle",
+          "debt"
+        ],
         "properties": {
           "consumer": {
             "type": "string",
@@ -207,7 +254,13 @@
             "description": "The version the registry now carries for that artifact after this change set."
           },
           "debt": {
-            "enum": ["behind", "current", "ahead", "unknown_revision", "version_undeclared"],
+            "enum": [
+              "behind",
+              "current",
+              "ahead",
+              "unknown_revision",
+              "version_undeclared"
+            ],
             "description": "behind = legal, enumerated debt — the consumer reads an older revision and re-opens the question when it advances its registry ref; current = no distance; ahead and unknown_revision are refusals, not debt (ADR-045 Decision 3), and appear here only to name a consumer whose declaration cannot resolve; version_undeclared = the manifest consumes the tree without naming versions, so distance is not computable from it."
           },
           "distance": {
@@ -220,7 +273,10 @@
     "gate_suite": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["runner", "gates"],
+      "required": [
+        "runner",
+        "gates"
+      ],
       "description": "The standing gate suite that re-proved the regenerated set. Atomic recompilation means the existing deterministic hammer suite runs against every regenerated artifact in the same change (ADR-045 Consequences) — so this block names gates that already exist and always run, never tests authored for this one change. Its presence is what turns 'the change was verified' from an assertion into a citation.",
       "properties": {
         "runner": {
@@ -237,14 +293,21 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["gate", "result"],
+            "required": [
+              "gate",
+              "result"
+            ],
             "properties": {
               "gate": {
                 "type": "string",
                 "description": "The gate as it runs — its script path or CI job name, so a reader can run it themselves."
               },
               "result": {
-                "enum": ["passed", "failed", "skipped"],
+                "enum": [
+                  "passed",
+                  "failed",
+                  "skipped"
+                ],
                 "description": "A manifest recording a failed or skipped gate is a legitimate record of a change that did not earn its merge; the emitter never silently drops a gate."
               },
               "covered": {
@@ -263,7 +326,9 @@
     },
     "decision_refs": {
       "type": "array",
-      "items": {"type": "string"},
+      "items": {
+        "type": "string"
+      },
       "description": "OPTIONAL — the DecisionRecords or ADRs that authorized or motivated the change (by uuid or handle). The manifest records what happened; the decision record records why."
     },
     "emitted_at": {
@@ -274,7 +339,9 @@
     "provenance": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["enumerator"],
+      "required": [
+        "enumerator"
+      ],
       "description": "What produced this manifest. REQUIRED because the record's authority rests entirely on being computed: a manifest with no named enumerator is a hand-written list wearing a schema.",
       "properties": {
         "enumerator": {
@@ -295,17 +362,30 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "display_name": {"type": "string"},
+        "display_name": {
+          "type": "string"
+        },
         "notes": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["at", "author", "text"],
+            "required": [
+              "at",
+              "author",
+              "text"
+            ],
             "properties": {
-              "at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
-              "author": {"type": "string"},
-              "text": {"type": "string"}
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              },
+              "author": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
             }
           }
         }
@@ -316,19 +396,16 @@
     "artifact_revision": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifact_kind", "handle", "version", "digest"],
+      "required": [
+        "artifact_kind",
+        "handle",
+        "version",
+        "digest"
+      ],
       "description": "One artifact at one exact revision. A published (identity, version) is immutable and its content digest names the exact bytes (ADR-051; VERSIONING.md § \"Identity, version, digest\") — so handle plus version plus digest names a thing, a claim about it, and the exact bytes that claim is about. The digest lives HERE, in the referrer, never in the artifact itself.",
       "properties": {
         "artifact_kind": {
-          "enum": [
-            "base_class",
-            "type_class",
-            "provider_class",
-            "shared_data_element",
-            "generated_type_spec",
-            "provider_definition",
-            "capability"
-          ],
+          "$ref": "common-elements.schema.json#/$defs/artifact_kind",
           "description": "Which layer of the model the artifact belongs to. The three class scopes are Base/Type/Provider (ADR-038); generated_type_spec is the flat spec compiled from them; provider_definition and capability are the provider-edge units that version under the same rules (ADR-045 §8)."
         },
         "handle": {

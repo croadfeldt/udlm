@@ -30,6 +30,10 @@ import os
 import re
 import subprocess
 import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "registry", "tools"))
+import refstore  # the vocabulary's single home
+
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCHEMA = os.path.join(REPO, "registry", "realized-entity.schema.json")
@@ -76,14 +80,13 @@ TEXT_SUFFIX = (".md",)
 
 def live_edge_type_enum():
     """The authoritative edge_type vocabulary, read from the schema the registry validates against."""
-    try:
-        with open(SCHEMA, encoding="utf-8") as fh:
-            schema = json.load(fh)
-        enum = schema["properties"]["dependencies"]["items"]["properties"]["edge_type"]["enum"]
-        return set(enum)
-    except (OSError, KeyError, ValueError):
-        # Fallback keeps the guard working if the schema shape moves; validate_registry catches that.
-        return {"depends_on", "references", "contained_by", "binds_to"}
+    # Read from the vocabulary's single home rather than out of a schema that merely USES it.
+    # This used to dig the enum out of realized-entity.schema.json by literal path, with a
+    # hardcoded four-value fallback for when that path moved — and a fallback copy is a home that
+    # activates precisely when something is already wrong, so the guard would have gone on passing
+    # against a stale list at the moment it mattered. If the home is unreadable, that is a failure
+    # to report, not a value to invent.
+    return set(refstore.vocabulary("edge_type"))
 
 
 def tracked_files():

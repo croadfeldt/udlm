@@ -140,13 +140,7 @@
       "description": "Optional fine-grained ordering WITHIN a precedence_class (e.g. multiple stacked intermediate layers); higher wins. Ties break by class then by declared chain order."
     },
     "domain": {
-      "enum": [
-        "system",
-        "platform",
-        "tenant",
-        "resource_type",
-        "entity"
-      ],
+      "$ref": "common-elements.schema.json#/$defs/policy_domain",
       "description": "Ownership/precedence scope. resource_type-scoped layers MUST declare resource_type."
     },
     "resource_type": {
