@@ -52,6 +52,10 @@ jobs:
       # the removed vocabulary must not return one convenience field at a time.
       - run: python3 tests/check_policy_boundary.py
       - run: python3 tests/check_definition_single_source.py
+      # IMP-001 — the normative tier names no implementation (dcm-project review, 6 comments).
+      - run: python3 tests/check_implementation_neutrality.py
+      # ADR-CITE-001 — a cited ADR resolves, or names whose it is (numbering spaces overlap).
+      - run: python3 tests/check_adr_citations.py
       # Rule-ID single-source: every normative rule-ID prefix must be registered in
       # registry/rule-id-registry.yaml and defined only in its home file (ADR-028,
       # registry/rule-id-naming.md). Was authored but never CI-wired.
