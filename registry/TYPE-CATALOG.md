@@ -73,7 +73,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## Capability
 
-### Capability (0.3.1)
+### Capability (0.3.2)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
@@ -137,7 +137,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.7.3)
+### Compute.Container (0.7.4)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -184,7 +184,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## Data
 
-### Data.Database (0.7.1)
+### Data.Database (0.7.2)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -205,7 +205,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 ## Facility
 
-### Facility.Location (0.4.2)
+### Facility.Location (0.4.3)
 
 **Purpose:** Names a physical place — site, room, rack, bench — that resources sit in, nesting into a containment hierarchy.
 
@@ -289,7 +289,7 @@ A tenant. A thing belongs to exactly one at a time, and that is a structural loc
 
 ## Hardware
 
-### Hardware.BMC (0.6.1)
+### Hardware.BMC (0.6.2)
 
 **Purpose:** Models a host's baseboard management controller so power and reset actions have a first-class, addressable target.
 
@@ -308,7 +308,7 @@ The always-on management controller inside a server that answers even when the h
 - Security.CredentialRef — the BMC credential, by reference.
 - Hardware.BiosProfile — firmware profiles applied over the BMC's out-of-band path.
 
-### Hardware.BiosProfile (0.6.1)
+### Hardware.BiosProfile (0.6.2)
 
 **Purpose:** Captures a reusable desired BIOS/firmware configuration that a fleet of hosts converge to.
 
@@ -407,7 +407,7 @@ One storage device as a record: its required `capacity` — a whole-number quant
 
 ## Identity
 
-### Identity.Group (0.4.3)
+### Identity.Group (0.4.4)
 
 **Purpose:** Models a group of identities — native or mirrored from a directory — that role bindings and memberships resolve through.
 
@@ -425,7 +425,7 @@ A named set of person and service-account identities, keyed by its required `han
 - Identity.Person / Identity.ServiceAccount — the members, for built_in groups.
 - Security.DirectoryService — the source of an external group's membership.
 
-### Identity.Person (0.6.3)
+### Identity.Person (0.6.4)
 
 **Purpose:** Models a human account — the actor that gets authenticated, authorized, and audited.
 
@@ -445,7 +445,7 @@ One human's identity: its `handle` (the login name) and its `actor_type` — alw
 - Security.CredentialRef — the person's credentials, by reference.
 - Security.DirectoryService — the external authenticator when federated.
 
-### Identity.ServiceAccount (0.6.3)
+### Identity.ServiceAccount (0.6.4)
 
 **Purpose:** Models a non-human account — automation, an agent, a provider integration — as an authenticated, auditable actor.
 
@@ -466,7 +466,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Job
 
-### Job (1.2.1)
+### Job (1.2.2)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -706,7 +706,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 
 ## Observability
 
-### Observability.LogShipper (0.6.1)
+### Observability.LogShipper (0.6.2)
 
 **Purpose:** Declares the outcome that a host's logs reach the central sink — without saying anything about how.
 
@@ -726,7 +726,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Platform
 
-### Platform.Hub (0.3.1)
+### Platform.Hub (0.3.2)
 
 **Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
 
@@ -740,7 +740,7 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 **Not for:**
 - the cluster a hub happens to run on — that host is a plain Compute.Cluster, and hub-ness on it is a derived role marker, never authored
 - single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service on the cluster
-- a peer DCM instance in federation — that is the federate capability on the provider contract, not a Hub
+- a peer control plane instance in federation — that is the federate capability on the provider contract, not a Hub
 
 **Works with:**
 - Compute.Cluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster
@@ -824,7 +824,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## Security
 
-### Security.CredentialRef (0.6.2)
+### Security.CredentialRef (0.6.3)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -972,7 +972,7 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 - Storage.Volume — volumes provisioned from the cluster.
 - Platform.StorageClass — the class records naming what this cluster serves.
 
-### Storage.Dataset (0.5.1)
+### Storage.Dataset (0.5.2)
 
 **Purpose:** Models a dataset carved from a host-local pool — the mounted filesystem or block device host workloads use.
 
@@ -992,7 +992,7 @@ The consumable unit of host-local storage — its required `dataset_kind` says w
 - Compute.BareMetalHost — the host the dataset is local to.
 - Storage.Dataset — the parent dataset, when nested.
 
-### Storage.FileShare (0.6.2)
+### Storage.FileShare (0.6.3)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 

@@ -8,10 +8,10 @@ conforms_to: udlm/0.1
 name: Sovereign
 description: Data-sovereignty profile — the FSI floor plus in-boundary signing/key material (audit STH
   keys never leave the sovereignty boundary, universal-audit AUD-012), sovereign-only placement (realization
-  confined to authorized jurisdictions/zones, sovereignty declaration attested not self-asserted, DCM
+  confined to authorized jurisdictions/zones, sovereignty declaration attested not self-asserted, the control plane
   ADR-022), and sub-processor restriction. Every mechanic is production-grade; September implements it
   against the dev floor for evaluation.
-version: 1.1.0
+version: 1.1.1
 status:
   state: active
 contains:

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/realized-entity.schema.json",
   "title": "UDLM Realized Entity (instance)",
-  "description": "The operational record of one entity (or Composite Entity) as it flows through the four states. This is the data substrate DCM reads and writes — UDLM carries the records, DCM applies the policy that produces them (core-tenets G3). It complements the Resource Type Specification (which defines the TYPE); this defines an INSTANCE. Field values inside the state snapshots are typed by the entity's Resource Type Spec, not re-validated here.",
+  "description": "The operational record of one entity (or Composite Entity) as it flows through the four states. This is the data substrate the control plane reads and writes — UDLM carries the records, the control plane applies the policy that produces them (core-tenets G3). It complements the Resource Type Specification (which defines the TYPE); this defines an INSTANCE. Field values inside the state snapshots are typed by the entity's Resource Type Spec, not re-validated here.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -91,7 +91,7 @@
     },
     "provenance": {
       "type": "object",
-      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; DCM writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.",
       "additionalProperties": {
         "type": "array",
         "items": {
@@ -355,7 +355,7 @@
         },
         "plane_attestations": {
           "type": "array",
-          "description": "R2 evidence binding — per-plane attestation that this entity's sovereignty is BACKED, not merely declared. Each ties an enforcement plane to the accreditation that satisfies it plus the verification result — the *why-entitled*, not just the verdict (a `zone`/`classification` alone records the claim, not its authorization). Written by DCM at realization from the resolved accreditation (accreditation-and-authorization-matrix.md §3.7 verify-then-appraise, §3.8 enforcement-plane).",
+          "description": "R2 evidence binding — per-plane attestation that this entity's sovereignty is BACKED, not merely declared. Each ties an enforcement plane to the accreditation that satisfies it plus the verification result — the *why-entitled*, not just the verdict (a `zone`/`classification` alone records the claim, not its authorization). Written by the control plane at realization from the resolved accreditation (accreditation-and-authorization-matrix.md §3.7 verify-then-appraise, §3.8 enforcement-plane).",
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -395,7 +395,7 @@
         "locality": {
           "type": "object",
           "additionalProperties": false,
-          "description": "R2 evidence binding — the concrete fault-domain / physical locality this entity was placed in (the per-resource anchor the placement grammar keys on — ADR-019 placement, ADR-010 SharedFaultDomain). Written by the provider/DCM at realization; the basis for anti-affinity, blast-radius, and per-resource jurisdiction checks.",
+          "description": "R2 evidence binding — the concrete fault-domain / physical locality this entity was placed in (the per-resource anchor the placement grammar keys on — ADR-019 placement, ADR-010 SharedFaultDomain). Written by the provider/the control plane at realization; the basis for anti-affinity, blast-radius, and per-resource jurisdiction checks.",
           "properties": {
             "topology_ref": {
               "type": "string",
@@ -488,7 +488,7 @@
     "audit": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Linkage to the tamper-evident audit log (AUD-001/002). UDLM carries the reference (the Merkle head + leaf count); DCM produces and proves the chain (G3).",
+      "description": "Linkage to the tamper-evident audit log (AUD-001/002). UDLM carries the reference (the Merkle head + leaf count); the control plane produces and proves the chain (G3).",
       "properties": {
         "log_head": {
           "type": "string",
@@ -502,7 +502,7 @@
     },
     "adopted_standards": {
       "type": "array",
-      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of DCM's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether DCM translated between versions (ADS-003/004/008). UDLM carries this record; DCM (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join.",
+      "description": "ADOPTED-STANDARD BINDINGS (T5): for each external standard adopted by this entity's type, the realized record of the control plane's version negotiation — the requested range, the provider's chosen version, the negotiated effective version, and whether the control plane translated between versions (ADS-003/004/008). UDLM carries this record; the control plane (Policy) produces it and writes it to the audit log. The external data itself is NOT carried here — it is referenced from its Information Provider via the identity join.",
       "items": {
         "$ref": "#/$defs/adopted_standard_binding"
       }
@@ -519,7 +519,7 @@
             "provider-specific",
             "exclusive"
           ],
-          "description": "Effective instance classification. Narrows from the type's declared value when provider-specific data is present (e.g. portable -> provider-specific). COMPUTED by DCM, not provider-declared."
+          "description": "Effective instance classification. Narrows from the type's declared value when provider-specific data is present (e.g. portable -> provider-specific). COMPUTED by the control plane, not provider-declared."
         },
         "portability_breaking": {
           "type": "boolean",
@@ -731,7 +731,7 @@
         "translated": {
           "type": "boolean",
           "default": false,
-          "description": "True when DCM translated between provider_version and effective_version (ADS-004) — a Policy act, lowering confidence for derived values."
+          "description": "True when the control plane translated between provider_version and effective_version (ADS-004) — a Policy act, lowering confidence for derived values."
         },
         "translation_ref": {
           "type": "string",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/audit-leaf.schema.json",
-  "title": "DCM Audit Merkle Leaf",
+  "title": "the control plane Audit Merkle Leaf",
   "description": "Machine-validatable Merkle tree leaf (universal-audit §8, RFC 9162 CT v2 pattern; AUD-006). Each audit record is a leaf; the tree provides O(log n) inclusion + consistency proofs; Signed Tree Heads are the root of trust. leaf_uuid MAY be v7 (declared time-ordered). data-model-core §2 [D8.5].",
   "type": "object",
   "additionalProperties": false,

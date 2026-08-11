@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/layer.schema.json",
-  "title": "DCM Data Layer record",
-  "description": "Machine-validatable Data Layer (docs/spec/foundations/layering-and-versioning.md; DCM ADR-012). A request payload is assembled by merging ordered layers lowest-authority-first; every field a layer sets records that layer's uuid as its provenance source. UDLM carries the layer records; DCM's assembly engine merges them. Layers carry DATA (the what); Policies (policy.schema.json) decide/transform (the how). data-model-core.md §2 [D8.4].",
+  "title": "the control plane Data Layer record",
+  "description": "Machine-validatable Data Layer (docs/spec/foundations/layering-and-versioning.md; DCM ADR-012). A request payload is assembled by merging ordered layers lowest-authority-first; every field a layer sets records that layer's uuid as its provenance source. UDLM carries the layer records; the control plane's assembly engine merges them. Layers carry DATA (the what); Policies (policy.schema.json) decide/transform (the how). data-model-core.md §2 [D8.4].",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -122,7 +122,7 @@
     "skip": {
       "type": "string",
       "format": "udlm-filter-url",
-      "description": "SOURCE scoping (subscribe side; ADR-054): the negative form — ONE URF filter naming layers to EXCLUDE even though their covers matches. Governed: freely skippable for defaults, but narrow_only/compliance layers require authorization to skip (a DCM policy step)."
+      "description": "SOURCE scoping (subscribe side; ADR-054): the negative form — ONE URF filter naming layers to EXCLUDE even though their covers matches. Governed: freely skippable for defaults, but narrow_only/compliance layers require authorization to skip (control-plane policy step)."
     },
     "precedence_class": {
       "enum": [

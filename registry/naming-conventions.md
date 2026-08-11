@@ -121,16 +121,16 @@ To translate to/from other ecosystems, a type carries its alternative names with
 
 This section governs the **casing of the data model itself** (the keys in a resource definition). The
 *runtime* concerns — how the API / event bus serialize it, Go/Python mapping, CloudEvents envelope,
-broker routing — are a **DCM** concern: see DCM **ADR-018 (Wire serialization & event conventions)**.
-DCM follows the same casing for the reason below, so there is no translation seam.
+broker routing — are a **the control plane** concern: see the control plane **ADR-018 (Wire serialization & event conventions)**.
+The control plane follows the same casing for the reason below, so there is no translation seam.
 
 **Decision: `snake_case` keys.** UDLM is a **canonical data model meant to be consumed natively** by
 every component (the "consume UDLM natively or it isn't universal" rule). Native consumption means the
-model **is** the wire form — there is no separate "API casing" to translate to. DCM's API is the consumer
+model **is** the wire form — there is no separate "API casing" to translate to. The control plane's API is the consumer
 with a hard external constraint: it conforms to **AEP** (`aep.dev`, the dcm-project engineering team's
 adopted API-design standard, enforced by the `aep-dev/aep-openapi-linter`), and AEP's prescribed fields
 are snake_case (`page_size`, `*_time`). Native-universal consumption **+** AEP-bound API therefore jointly
-force one casing — **snake_case** — across UDLM and DCM. (camelCase would re-introduce the very
+force one casing — **snake_case** — across UDLM and the control plane. (camelCase would re-introduce the very
 translation layer native consumption exists to eliminate.) snake_case is also native to UDLM's actual stack: Python (providers, tooling), SQL stores,
 protobuf/gRPC, and AEP itself; fully supported via tags in Go; only K8s/CRDs prefer camelCase, reached by
 an **export adapter** at that domain boundary (not native consumption).
@@ -151,7 +151,7 @@ an **export adapter** at that domain boundary (not native consumption).
 
 **Event-type identifiers** (UDLM event-catalog names, e.g. `resource.discovered`, `entity.realized`) use
 lowercase **dot notation** so brokers can wildcard-route — distinct from payload property keys. The
-routing mechanics live in DCM (ADR-018).
+routing mechanics live in the control plane (ADR-018).
 
 ### Carve-outs — keep foreign / idiomatic casing
 - **Adopted vocabulary is referenced, not minted as a live key.** The live field name is always the

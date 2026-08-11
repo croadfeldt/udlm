@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/commit-log-entry.schema.json",
-  "title": "DCM Commit Log Entry (Stage-1)",
+  "title": "the control plane Commit Log Entry (Stage-1)",
   "description": "Machine-validatable Stage-1 Commit Log entry (universal-audit §7.2). Written synchronously to a consensus-durable store (Raft-class; etcd reference impl) BEFORE the operation returns success (AUD-001). Enriched into a full audit_record asynchronously (Stage-2). data-model-core §2 [D8.5]; the Commit Log is a store CONTRACT (D1).",
   "type": "object",
   "additionalProperties": false,

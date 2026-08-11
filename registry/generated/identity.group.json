@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Identity.Group/0.4.4",
   "conforms_to": "udlm/0.1",
   "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd",
   "resource_type": "Identity.Group",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "family": "Access",
   "status": "active",
   "metadata": {
     "display_name": "Identity Group",
-    "description": "An identity-side group of persons/service-accounts — identity DATA (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix). Distinct from a grouping: a grouping with record kind `access_grouping` is the DCM-native RBAC subject-set that role-assignments bind to (and that the authority-enforcement voting model references); an Identity.Group models a group as it exists in a directory / IdP (e.g. an external group mapped to roles via auth-providers role_mapping) or a native logical grouping of accounts. A grouping (access_grouping) MAY reference an Identity.Group as its membership source. The two are kept distinct so external directory groups stay referenced (PIP), not custodied.",
+    "description": "An identity-side group of persons/service-accounts — identity DATA (the RBAC bridge — `Grouping` subject_bindings plus the function-capability matrix). Distinct from a grouping: a grouping with record kind `access_grouping` is the control-plane-native RBAC subject-set that role-assignments bind to (and that the authority-enforcement voting model references); an Identity.Group models a group as it exists in a directory / IdP (e.g. an external group mapped to roles via auth-providers role_mapping) or a native logical grouping of accounts. A grouping (access_grouping) MAY reference an Identity.Group as its membership source. The two are kept distinct so external directory groups stay referenced (PIP), not custodied.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -22,7 +22,7 @@
         },
         {
           "class": "Identity.Group",
-          "version": "0.4.3",
+          "version": "0.4.4",
           "uuid": "679b1fad-95f4-4910-99ae-72147eef4dbd"
         }
       ]

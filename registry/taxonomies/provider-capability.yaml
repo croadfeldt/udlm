@@ -116,7 +116,7 @@ terms:
     parent: federate
     domain: Peer
     curation_state: canonical
-    definition: Federate with a peer DCM. Category label for the federate verb.
+    definition: Federate with a peer control plane. Category label for the federate verb.
   - term: execute_workflows/Process
     category: workflow-execution
     root: provider-capability

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Capability/0.3.2",
   "conforms_to": "udlm/0.1",
   "uuid": "1d8e581f-71a1-4023-aaba-2d581a02da0e",
   "resource_type": "Capability",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Capability",
-          "version": "0.3.1",
+          "version": "0.3.2",
           "uuid": "1d8e581f-71a1-4023-aaba-2d581a02da0e"
         }
       ]
@@ -41,7 +41,7 @@
       },
       "domain": {
         "type": "string",
-        "description": "Capability domain (e.g. one of the DCM capability domains) this capability belongs to."
+        "description": "Capability domain (e.g. one of control-plane capability domains) this capability belongs to."
       },
       "curation_state": {
         "enum": [
@@ -79,7 +79,7 @@
       "target": "TaxonomyTerm",
       "target_field": "termHandle",
       "cardinality": "0..n",
-      "description": "normalized_to — this capability is mapped to one or more canonical taxonomy terms (e.g. the DCM capability taxonomy). A declarative typed reference; the mapping act is Policy."
+      "description": "normalized_to — this capability is mapped to one or more canonical taxonomy terms (e.g. control-plane capability taxonomy). A declarative typed reference; the mapping act is Policy."
     },
     {
       "edge_type": "depends_on",

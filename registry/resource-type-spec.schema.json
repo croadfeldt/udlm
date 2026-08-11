@@ -70,7 +70,7 @@
         "partial",
         "provider-specific"
       ],
-      "description": "Portability classification (docs/spec/foundations/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (DCM's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
+      "description": "Portability classification (docs/spec/foundations/resource-type-hierarchy.md). Any deviation from full portability MUST be explicitly declared. DERIVED (ADR-027 addendum, 3rd finding): portability is scope × advertised capabilities (the control plane's eligible-set computation), not a stored self-declaration — a provider does not declare its own portability; support is decided by target providers/orgs. Optional; authored specs may omit it."
     },
     "ownership_model": {
       "enum": [
@@ -191,7 +191,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Dot-paths into `spec` that are createOnly — set at Intent, never changed post-realization; a change forces replace → supersession. Use for sovereignty-determining fields (zone / classification). Declarative noun; DCM enforces it (R3 / cross-cutting P4)."
+      "description": "Dot-paths into `spec` that are createOnly — set at Intent, never changed post-realization; a change forces replace → supersession. Use for sovereignty-determining fields (zone / classification). Declarative noun; the control plane enforces it (R3 / cross-cutting P4)."
     },
     "outputs": {
       "type": "object",
@@ -308,7 +308,7 @@
     },
     "adopts": {
       "type": "array",
-      "description": "External standards this type ADOPTS by reference (core-tenets T5, docs/spec/principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (DCM), never the data model.",
+      "description": "External standards this type ADOPTS by reference (core-tenets T5, docs/spec/principles/adopted-standards.md). The standard's schema is NOT restated here — only an identity join + a version-pinned conformance pointer. Negotiating/translating versions is Policy (the control plane), never the data model.",
       "items": {
         "$ref": "#/$defs/adopted_standard_ref"
       }
@@ -344,7 +344,7 @@
     "metering": {
       "type": "object",
       "additionalProperties": false,
-      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). The meterable cost SURFACE — WHAT about this resource is measurable and WHERE each value comes from — the inputs a cost engine consumes. UDLM carries the surface only; rates and the calculation are the engine's (ADR-COST-001). This is one side of the reciprocal contract: UDLM/DCM hands these dimensions out; the engine hands cost back.",
+      "description": "PROPOSED (cost-metering-linkage.md; ADR-COST-002). The meterable cost SURFACE — WHAT about this resource is measurable and WHERE each value comes from — the inputs a cost engine consumes. UDLM carries the surface only; rates and the calculation are the engine's (ADR-COST-001). This is one side of the reciprocal contract: the substrate and its control plane hands these dimensions out; the engine hands cost back.",
       "required": [
         "dimensions"
       ],
@@ -620,7 +620,7 @@
     "standard_version": {
       "type": "string",
       "minLength": 1,
-      "description": "A reference over an external standard's OWN versioning scheme — a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (DCM), not the data model (T2/T5)."
+      "description": "A reference over an external standard's OWN versioning scheme — a pin (\"1.4\"), a wildcard (\"1.x\"), or a range expression (\">=1.2 <2.0\"). The schema only checks it is a non-empty string; RANGE RESOLUTION / negotiation is Policy (the control plane), not the data model (T2/T5)."
     },
     "adopted_standard_ref": {
       "type": "object",

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.2
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: type
 resource_type: Data.Database
 parent: Data
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 metadata:
@@ -61,7 +61,7 @@ elements:
         description: Provider-neutral size class (e.g. small|medium|large, or a named profile). Generic
           sizing INTENT — usable in place of, or alongside, explicit cpu/memory/storage. The PROVIDER
           reconciles it to concrete resources / its own instance classes at naturalization (DCM ADR-023,
-          provider-naturalization boundary); UDLM/DCM does NOT define the mapping. A shared sizing option
+          provider-naturalization boundary); the substrate and its control plane does NOT define the mapping. A shared sizing option
           available to any resource type (common-elements §sizing).
       cpu:
         type: string

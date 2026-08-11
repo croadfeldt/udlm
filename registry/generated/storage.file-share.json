@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.6.3",
   "conforms_to": "udlm/0.1",
   "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27",
   "resource_type": "Storage.FileShare",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "File Share",
-    "description": "A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network. The shares and their access are TYPED config — UDLM owns them and DCM's interface manages them (DCM ADR-023 tier (i), the \"full\" scale). Provider-specific serialization (the smb.conf file, an identity suite's [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into typed fields ride the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored.",
+    "description": "A file-sharing service (SMB/CIFS, extensible to NFS) exposing one or more shares over a network. The shares and their access are TYPED config — UDLM owns them and the control plane's interface manages them (DCM ADR-023 tier (i), the \"full\" scale). Provider-specific serialization (the smb.conf file, an identity suite's [global] block) is naturalized by the provider (DCM ADR-023 §1); share knobs not lifted into typed fields ride the `options` passthrough (basic scale, DCM ADR-023 §6). Authentication data lives in the referenced DirectoryService (PDP/PIP, provider-contract §1a.8) — referenced, not stored.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-11T00:00:00Z",
     "generated": true,
@@ -22,7 +22,7 @@
         },
         {
           "class": "Storage.FileShare",
-          "version": "0.6.2",
+          "version": "0.6.3",
           "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27"
         }
       ]
@@ -49,7 +49,7 @@
       },
       "shares": {
         "type": "array",
-        "description": "The exported shares — TYPED config (tier i). DCM owns these; the provider naturalizes them to smb.conf.",
+        "description": "The exported shares — TYPED config (tier i). The control plane owns these; the provider naturalizes them to smb.conf.",
         "items": {
           "type": "object",
           "required": [

@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.3.2
 conforms_to: udlm/0.1
 uuid: e22decb9-0931-43ee-897e-6548459fd35a
 record_type: class
 class: type
 resource_type: Platform.Hub
 parent: Platform
-version: 0.3.1
+version: 0.3.2
 family: Resource
 status: active
 metadata:
@@ -106,7 +106,7 @@ context:
     a derived role marker, never authored
   - single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service
     on the cluster
-  - a peer DCM instance in federation — that is the federate capability on the provider contract, not
+  - a peer control plane instance in federation — that is the federate capability on the provider contract, not
     a Hub
   works_with:
   - Compute.Cluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane;

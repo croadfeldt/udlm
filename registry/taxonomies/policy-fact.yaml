@@ -265,7 +265,7 @@ terms:
     definition: >-
       The role the data plays at a boundary (ADR-PROV-001) — parallel to data_classification, and
       what lets a Governance-Matrix policy control which roles a provider may receive at the
-      DCM→Provider boundary.
+      the control plane→Provider boundary.
 
   - term: actor.roles
     root: policy-fact
