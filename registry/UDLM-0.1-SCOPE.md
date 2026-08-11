@@ -6,9 +6,9 @@ enables the 21 release use cases, what is deliberately **deferred**, the **exit 
 the `0.1 → 1.0` tag, and the **profile posture** (implement against dev/eval; architect for
 sovereign/fsi). It turns the scattered `P1–P7` gap references into one checkable definition.
 
-UDLM is the **data / contract / type** layer. DCM is the orchestration/runtime. The boundary rule
-(DCM ADR-008): *"could a peer implement this differently and still be valid? Yes → DCM; No → UDLM."*
-Many use-case success criteria are satisfied by **DCM runtime** behavior over a UDLM shape — those are
+UDLM is the **data / contract / type** layer. The control plane is the orchestration/runtime. The boundary rule
+(DCM ADR-008): *"could a peer implement this differently and still be valid? Yes → the control plane; No → UDLM."*
+Many use-case success criteria are satisfied by **control-plane runtime** behavior over a UDLM shape — those are
 called out below and are **not** 0.1 spec gaps.
 
 ---
@@ -18,7 +18,7 @@ called out below and are **not** 0.1 spec gaps.
 - **Bar A — enable the 21 release use cases (data/contract layer).** Reached. After #69/#70/#71 and
   the 0.1-definition changes, exactly the concrete gaps below remained, and both are now closed:
   **tenant quota (P7)** and **override on the machine-validatable surface (P6)**. Everything else is
-  covered or is DCM-runtime by the ADR-008 boundary.
+  covered or is control-plane-runtime by the ADR-008 boundary.
 - **Bar B — declare "UDLM 1.0" (ratified, backward-compat-committed).** A larger, mostly non-code bar:
   ratify the decisions, finish the load-bearing draft contracts, ship an executable conformance suite,
   and re-stamp `0.1 → 1.0`. Tracked in §5 (exit criteria) and §6 (deferred).
@@ -45,13 +45,13 @@ architecture is provably production-grade, not to be implemented first.
 
 ## 3. The 21 use cases → coverage (verified against merged `main`)
 
-Grouped by what enables them. "Covered" cites the merged spec; "DCM-runtime" = enabled by a UDLM shape
-but executed by DCM (ADR-008).
+Grouped by what enables them. "Covered" cites the merged spec; "control-plane-runtime" = enabled by a UDLM shape
+but executed by the control plane (ADR-008).
 
 | # | Use case (handle) | UDLM basis | Status |
 |---|---|---|---|
 | 1 | libvirt-vm-provider/vm-resource-representation | `compute.vm` 0.3.0; `realized-entity` | Covered |
-| 2 | architecture/solution-architecture-decomposition | `catalog-item` (constituents/bindings/fulfillment); realized receipt | Covered (DSL ingestion = DCM/Information-Provider) |
+| 2 | architecture/solution-architecture-decomposition | `catalog-item` (constituents/bindings/fulfillment); realized receipt | Covered (DSL ingestion = the control plane/Information-Provider) |
 | 3 | compute/provision-vm-standard | profile-resolution; policy §7.7; universal-audit | Covered |
 | 4 | compute/vm-intent-osac-placement | provider-contract §8 `realize_resources`; osac-better-together; provider provenance | Covered (placement algo = DCM ADR-019) |
 | 5 | libvirt-vm-provider/vm-status-provenance | `realized-entity` field-level `provenance`/`status`/`drift` | Covered |
@@ -59,21 +59,21 @@ but executed by DCM (ADR-008).
 | 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
 | 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
 | 9 | intent-fulfillment/operational-dependency-cascade | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
-| 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = DCM) |
+| 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = the control plane) |
 | 11 | compute/vm-provision-provider-failure-refused | policy §13 recovery; four-states §2.5 conditions; ADR-011 release | Covered |
-| 12 | docs/spec/contracts/rehydration-rto-measurement | ADR-003 rto/rpo; realized snapshots | DCM/Observability-runtime |
+| 12 | docs/spec/contracts/rehydration-rto-measurement | ADR-003 rto/rpo; realized snapshots | the control plane/Observability-runtime |
 | 13 | compute/idempotent-reconvergence | `generation`/`observed_generation`; four-states §3 | Covered (no-op decision = DCM ADR-006) |
 | 14 | docs/spec/contracts/drift-detection-remediation | four-states §6 drift record; policy §13 | Covered |
 | 15 | docs/spec/governance/audit-merkle-tree-verification | universal-audit §8 (RFC 9162); AUD-012 key residency | Covered |
 | 16 | docs/spec/governance/policy-override-approval | policy-contract §18; **`override` policy_type** (now on schema) | **Closed this release (P6)** |
 | 17 | osac/cloud-provider-registration | provider-contract §8.1a `resource_advertisement` (capacity) | Covered |
-| 18 | osac/provider-portability-new-cloud | naturalization; portability + `bound_providers`; four-states §5.3 | Covered (re-resolution = DCM) |
+| 18 | osac/provider-portability-new-cloud | naturalization; portability + `bound_providers`; four-states §5.3 | Covered (re-resolution = the control plane) |
 | 19 | docs/spec/governance/policy-resolution-capability | policy-contract §7.7 three-state; profile-resolution | Covered |
 | 20 | cross-domain/profile-resolution-capability | profile-resolution; the `profile` record + instances | Covered |
 | 21 | docs/spec/governance/audit-chain-proofs-capability | universal-audit §8 (single-signer v1; witness = follow-up) | Covered |
 
 **Net:** all 21 are enabled at the UDLM layer. Residual items for this set are either already closed
-by the merged spec (ADR-010 / §8.1a / realized-entity) or are DCM-runtime by the ADR-008 boundary.
+by the merged spec (ADR-010 / §8.1a / realized-entity) or are control-plane-runtime by the ADR-008 boundary.
 
 ## 4. September `P#` gap tracker — consolidated
 
@@ -110,7 +110,7 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
 
 ## 6. Explicitly deferred (out of 0.1 scope, tracked)
 
-- **Executable conformance test runner** — large; overlaps DCM/test-infra. `CONFORMANCE.md` is Draft
+- **Executable conformance test runner** — large; overlaps the control plane/test-infra. `CONFORMANCE.md` is Draft
   and `tests/test-framework-specification.md` specifies but does not implement it. Highest-value
   post-scope item; gates the honest 1.0 claim.
 - **Draft contracts not load-bearing for the 21 UCs** — `error-model`, `time-and-clock`,

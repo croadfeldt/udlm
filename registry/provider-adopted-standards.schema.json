@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
   "title": "UDLM Provider — Capability Declaration (adopted standards + docs/spec/foundations/mobility/operational/sovereignty)",
-  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, DCM ADS-001; UDLM ADR-004). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-004 §2 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (DCM).",
+  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, the control plane ADS-001; UDLM ADR-004). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-004 §2 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (the control plane).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -98,7 +98,7 @@
         "supports": {
           "type": "string",
           "minLength": 1,
-          "description": "The version range/pins the provider can serve — a pin (\"1.4\"), wildcard (\"1.x\"), or range (\">=1.2 <2.0\"). RANGE RESOLUTION is Policy (DCM ADS-003), not the schema."
+          "description": "The version range/pins the provider can serve — a pin (\"1.4\"), wildcard (\"1.x\"), or range (\">=1.2 <2.0\"). RANGE RESOLUTION is Policy (the control plane ADS-003), not the schema."
         },
         "preferred": {
           "type": "string",
@@ -200,7 +200,7 @@
         },
         "instance_size_catalog": {
           "type": "array",
-          "description": "The provider's size-class → raw-resources mapping for this category (ADR-014; provider-contract.md §8.1a — the abstract↔precise bridge). The class VOCABULARY + ordering is UDLM (comparable/portable across providers); this MAPPING is the provider's (it owns what its 'medium' resolves to); DCM resolves instance_size → raw here for placement + comparison against raw requirements. Declared, not live-queried.",
+          "description": "The provider's size-class → raw-resources mapping for this category (ADR-014; provider-contract.md §8.1a — the abstract↔precise bridge). The class VOCABULARY + ordering is UDLM (comparable/portable across providers); this MAPPING is the provider's (it owns what its 'medium' resolves to); the control plane resolves instance_size → raw here for placement + comparison against raw requirements. Declared, not live-queried.",
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -355,7 +355,7 @@
             "both"
           ],
           "default": "both",
-          "description": "Which plane the provider commits to enforce this stance on (accreditation §3.8). DCM does NOT enforce residency at the byte level — it conveys the sovereignty requirement + the role:execution data slice (docs/spec/contracts/data-roles.md) to the provider, and the provider's accreditation (§3.7, matching `plane`) attests it enforces at the DATA plane. The control-plane path (operator access / support / telemetry) is the universal leak; a data-only stance does not cover it."
+          "description": "Which plane the provider commits to enforce this stance on (accreditation §3.8). The control plane does NOT enforce residency at the byte level — it conveys the sovereignty requirement + the role:execution data slice (docs/spec/contracts/data-roles.md) to the provider, and the provider's accreditation (§3.7, matching `plane`) attests it enforces at the DATA plane. The control-plane path (operator access / support / telemetry) is the universal leak; a data-only stance does not cover it."
         },
         "sub_processors": {
           "type": "array",

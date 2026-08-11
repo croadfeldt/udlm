@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/policy.schema.json",
-  "title": "DCM Policy record",
-  "description": "Machine-validatable Policy record (docs/spec/contracts/policy-contract.md; DCM ADR-006). Every Policy implements one base contract; what varies by policy_type is the `output` schema — what the policy PRODUCES when its match conditions are satisfied. UDLM carries the record; DCM's Policy Engine evaluates it (core-tenets G3). data-model-core.md §2 [D8.3].",
+  "title": "the control plane Policy record",
+  "description": "Machine-validatable Policy record (docs/spec/contracts/policy-contract.md; DCM ADR-006). Every Policy implements one base contract; what varies by policy_type is the `output` schema — what the policy PRODUCES when its match conditions are satisfied. UDLM carries the record; the control plane's Policy Engine evaluates it (core-tenets G3). data-model-core.md §2 [D8.3].",
   "type": "object",
   "additionalProperties": false,
   "required": [

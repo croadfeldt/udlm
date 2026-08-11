@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Capability/0.3.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Capability/0.3.2
 conforms_to: udlm/0.1
 uuid: 1d8e581f-71a1-4023-aaba-2d581a02da0e
 record_type: class
 class: base
 resource_type: Capability
-version: 0.3.1
+version: 0.3.2
 family: Knowledge
 status: active
 metadata:
@@ -47,10 +47,10 @@ elements:
   scope: Capability
   optional: true
   state: canonical
-  description: Capability domain (e.g. one of the DCM capability domains) this capability belongs to.
+  description: Capability domain (e.g. one of control-plane capability domains) this capability belongs to.
   schema:
     type: string
-    description: Capability domain (e.g. one of the DCM capability domains) this capability belongs to.
+    description: Capability domain (e.g. one of control-plane capability domains) this capability belongs to.
 - element: curation_state
   scope: Capability
   optional: true
@@ -85,7 +85,7 @@ relationships:
   target_field: termHandle
   cardinality: 0..n
   description: normalized_to — this capability is mapped to one or more canonical taxonomy terms (e.g.
-    the DCM capability taxonomy). A declarative typed reference; the mapping act is Policy.
+    control-plane capability taxonomy). A declarative typed reference; the mapping act is Policy.
 - edge_type: depends_on
   target: Capability
   cardinality: 0..n

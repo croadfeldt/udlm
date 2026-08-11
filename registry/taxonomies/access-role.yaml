@@ -1,6 +1,6 @@
 # Access-role taxonomy (seed) — the RBAC bridge (`Grouping` subject_bindings + the function-capability matrix).
 #
-# The ONE governed vocabulary of DCM RBAC roles, replacing the >=3 disagreeing string enums
+# The ONE governed vocabulary of the control plane RBAC roles, replacing the >=3 disagreeing string enums
 # (auth-providers role_mapping, layer.schema contributor_type, policy-contract eligible_approver_roles).
 # Each entry is a TaxonomyTerm (registry/resource-types/knowledge/taxonomy-term.json), curation-governed
 # (Core/Verified/Org tiers, registry-governance §2). This is the `access-role` ROOT subtree — DISJOINT
@@ -19,7 +19,7 @@ terms:
     root: access-role
     parent: null
     curation_state: canonical
-    definition: Root of the DCM RBAC role vocabulary. Core-tier terms below are the closed platform role set.
+    definition: Root of the control plane RBAC role vocabulary. Core-tier terms below are the closed platform role set.
 
   # ---- Core tier (parent = root) ----
   - term: platform_admin

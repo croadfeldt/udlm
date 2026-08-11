@@ -8,7 +8,7 @@
 consumer:
   name: control-plane-servicetype-gen
   repo: croadfeldt/control-plane
-  description: Translates registry type specs into DCM service-type OpenAPI specs (servicetypes/<slug>/spec.yaml, then oapi-codegen Go types).
+  description: Translates registry type specs into control-plane service-type OpenAPI specs (servicetypes/<slug>/spec.yaml, then oapi-codegen Go types).
 consumes:
   - resource_type: Compute.VM
     noted_version: 0.6.2

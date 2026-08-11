@@ -1,5 +1,5 @@
 # Multi-document data-layer stream — the k8s `---` idiom: a STANDARD BASE plus a data-center/rack
-# OVERLAY in ONE file. The DCM assembly engine merges them lowest-authority-first (base → intermediate),
+# OVERLAY in ONE file. The control plane assembly engine merges them lowest-authority-first (base → intermediate),
 # and every assembled field records the layer uuid that set it as its provenance source
 # (foundations/layering-and-versioning.md; DCM ADR-012). This is exactly "reuse a common dataset, add/
 # modify what deviates for a data center / rack / segment."

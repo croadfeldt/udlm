@@ -1,16 +1,16 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Person/0.6.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Identity.Person/0.6.4
 conforms_to: udlm/0.1
 uuid: 679b14ef-f169-441e-968d-dacafffe1966
 record_type: class
 class: type
 resource_type: Identity.Person
 parent: Identity
-version: 0.6.3
+version: 0.6.4
 family: Access
 status: active
 metadata:
   display_name: Person
-  description: A human identity/account — an ACTOR that DCM authenticates and authorizes (the RBAC bridge
+  description: A human identity/account — an ACTOR that the control plane authenticates and authorizes (the RBAC bridge
     — `Grouping` subject_bindings plus the function-capability matrix). Fills the named-but-unbuilt
     Identity.* slot (naming-conventions §2; resource-type-hierarchy §Identity). Holds NO secret material
     — credentials are referenced (Security.CredentialRef). Backs the built-in auth provider's local users

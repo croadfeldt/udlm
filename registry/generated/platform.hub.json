@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Hub/0.3.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Hub/0.3.2",
   "conforms_to": "udlm/0.1",
   "uuid": "e22decb9-0931-43ee-897e-6548459fd35a",
   "resource_type": "Platform.Hub",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Platform.Hub",
-          "version": "0.3.1",
+          "version": "0.3.2",
           "uuid": "e22decb9-0931-43ee-897e-6548459fd35a"
         }
       ]
@@ -104,7 +104,7 @@
     "not_for": [
       "the cluster a hub happens to run on — that host is a plain Compute.Cluster, and hub-ness on it is a derived role marker, never authored",
       "single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service on the cluster",
-      "a peer DCM instance in federation — that is the federate capability on the provider contract, not a Hub"
+      "a peer control plane instance in federation — that is the federate capability on the provider contract, not a Hub"
     ],
     "works_with": [
       "Compute.Cluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster",

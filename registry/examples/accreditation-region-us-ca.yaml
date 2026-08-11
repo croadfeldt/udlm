@@ -33,7 +33,7 @@ verification:
   stale_after: P7D
   stale_action: suspend
   verification_failure_count: 0
-# Verifiable Credential proof (§3.7) — DCM verifies this signature + chains to the trust_anchor BEFORE appraising scope.
+# Verifiable Credential proof (§3.7) — the control plane verifies this signature + chains to the trust_anchor BEFORE appraising scope.
 trust_anchor:
   type: government_registry
   reference: "na-sovereignty-authority/root"

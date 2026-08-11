@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.6.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.BMC/0.6.2",
   "conforms_to": "udlm/0.1",
   "uuid": "ea6715e2-30d1-4a34-9611-00c85208e20a",
   "resource_type": "Hardware.BMC",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "BMC",
-    "description": "A host's baseboard management controller — its management address, protocol, and the power/reset control surface — modeled so power actions have a first-class target. Every board vendor ships its own BMC family; this record is vendor-neutral. Credentials are never inline (reference a Security.CredentialRef). `manages` points at the host it powers; power operations are Redfish (or a vendor tool like ipmitool where a board's Redfish is incomplete) — the mechanism is Policy (DCM), not data.",
+    "description": "A host's baseboard management controller — its management address, protocol, and the power/reset control surface — modeled so power actions have a first-class target. Every board vendor ships its own BMC family; this record is vendor-neutral. Credentials are never inline (reference a Security.CredentialRef). `manages` points at the host it powers; power operations are Redfish (or a vendor tool like ipmitool where a board's Redfish is incomplete) — the mechanism is Policy (the control plane), not data.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-12T00:00:00Z",
     "generated": true,
@@ -22,7 +22,7 @@
         },
         {
           "class": "Hardware.BMC",
-          "version": "0.6.1",
+          "version": "0.6.2",
           "uuid": "ea6715e2-30d1-4a34-9611-00c85208e20a"
         }
       ]

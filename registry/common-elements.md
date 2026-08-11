@@ -135,17 +135,17 @@ supports **both at once** (SPEC-DESIGN-REQUIREMENTS §26):
   "64GB"`, `cpu.count: 16`) and MAY carry a structured inline inventory (`memory.modules[]`, `disks[]`).
   A consumer that only needs totals reads these; the **portable contract never requires** the component
   breakout.
-- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — DCM is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
+- **First-class entity (optional).** A `Hardware.NetworkInterface` resource `contained_by` the parent (the one component UDLM keeps — it is *configured*, bond/bridge). Component-level memory/CPU/disk/GPU are **out of scope** (ADR-013 — the control plane is not a hardware system-of-record); host capacity lives on the Compute host. Whether these exist is governed
   by **`composition_visibility`** (`opaque|transparent|selective`, `docs/spec/foundations/service-dependencies.md`
   §11d): `opaque` → rollup only; `transparent` → every component an entity; `selective` → the org
   picks which.
 
 **The relationship (the keystone):** where a component *is* a kept entity, it is `contained_by` the
 parent and reconciles against the parent's rollup. Post-ADR-013 the only such component is
-`Hardware.NetworkInterface` (DCM configures it — bond/bridge); a host's `nics[]` rollup and its
+`Hardware.NetworkInterface` (the control plane configures it — bond/bridge); a host's `nics[]` rollup and its
 `Hardware.NetworkInterface` entities describe the same interfaces, and a mismatch is **drift** —
 surfaced with provenance, never silently reconciled away. This is the same `transparent` composition
-that registers sub-resources as DCM entities (service-dependencies §11d), applied below the device
+that registers sub-resources as control-plane entities (service-dependencies §11d), applied below the device
 boundary. For memory/CPU/disk/GPU there is **no component entity** to reconcile against: capacity is a
 rollup *attribute* of the Compute host (`memory.size: "64GB"`, `cpu.count: 16`), full stop — the sum is
 never re-derived from parts because the parts are out of scope (ADR-013).
@@ -311,7 +311,7 @@ overhead; it does not disable it. What varies by profile is the **implementation
 | Profile | Conforming provenance implementation |
 |---|---|
 | `homelab` / `dev` | **Derivable-carrier provenance**: records live in a git-carried store; field-level provenance entries are *materialized on demand* from the carrier's history by tooling, with the documented mapping — `source: {kind: actor, id: <commit author>}`, `timestamp` = committer instant normalized to UTC, previous value from the parent revision. The carrier must be able to produce a conforming `provenance` object for any record at any time; CI verifies derivability. |
-| `standard` / `prod` | Materialized `provenance` written at assembly/implementation time (DCM writes, UDLM carries). |
+| `standard` / `prod` | Materialized `provenance` written at assembly/implementation time (the control plane writes, UDLM carries). |
 | `fsi` / `sovereign` | Materialized provenance **plus** the tamper-evident audit chain linkage (`audit.log_head`, AUD-001/002). |
 
 A store that can neither carry nor derive field-level provenance for its records does not
