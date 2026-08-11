@@ -27,9 +27,9 @@ what builds ON that model: the cross-tenant rules (`XTA-*`), the allocated- and 
 operational models, relationship lifecycle policies, the declaration tiers, bundled expansion,
 notification traversal, and the graph itself (`ERL-*`, `REL-005+`).
 
-**Why relationships exist at all.** Relationships are not bookkeeping — they are what lets DCM act on a system instead of a pile of independent resources. From the graph DCM **auto-resolves dependencies** (a VM that `requires` a network triggers the network's provisioning), **orders lifecycle operations** (build, suspend, destroy, and rehydrate in dependency order), computes **blast radius** (what is affected if this entity changes state), and rolls up cost and ownership. Without the relationship the platform cannot sequence or reason about impact; the relationship is the price of that automation.
+**Why relationships exist at all.** Relationships are not bookkeeping — they are what lets the control plane act on a system instead of a pile of independent resources. From the graph the control plane **auto-resolves dependencies** (a VM that `requires` a network triggers the network's provisioning), **orders lifecycle operations** (build, suspend, destroy, and rehydrate in dependency order), computes **blast radius** (what is affected if this entity changes state), and rolls up cost and ownership. Without the relationship the platform cannot sequence or reason about impact; the relationship is the price of that automation.
 
-**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A catalog item or resource type declares its standard relationships once (the structural ceiling, §10.1); when a consumer requests it, DCM expands those automatically (§11). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about.
+**Users should rarely hand-write relationships.** The common case is **inferred**, not authored. A catalog item or resource type declares its standard relationships once (the structural ceiling, §10.1); when a consumer requests it, the control plane expands those automatically (§11). A consumer only writes an explicit relationship for the **exception** — a non-standard cross-link the catalog could not know about.
 
 ---
 
@@ -188,7 +188,7 @@ rule, which is where not-found and not-authorized are separated for the whole mo
 tenants, so the refusal record names both — today's denial records carry a single
 `tenant_uuid`, which leaves the owning tenant unable to see that their resource was reached for.
 
-### 6.3 DCM System Policies for Cross-Tenant Relationships
+### 6.3 the control plane System Policies for Cross-Tenant Relationships
 
 Three relationship rules govern this surface and are **defined in §13.1**, not restated here:
 `GRP-INV-002` (a constituent relationship may not cross a tenant boundary), `REL-011` (a cross-tenant
@@ -201,7 +201,7 @@ direction). The cross-tenant authorization rules below are defined here.
 | `XTA-001` | Cross-tenant information sharing is closed by default — explicit authorization required for all cross-tenant relationships of any nature (see Policy Organization document Section 6) |
 | `XTA-002` | Cross-tenant authorizations must specify who, what, when, and where |
 | `XTA-003` | More specific authorizations take precedence: field_specific > resource_specific > tenant_global |
-| `XTA-004` | All cross-tenant authorization decisions are policy-driven and DCM-enforced |
+| `XTA-004` | All cross-tenant authorization decisions are policy-driven and control-plane-enforced |
 | `XTA-005` | Sovereignty constraints declared by either Tenant must be honored by all cross-tenant relationships |
 | `XTA-006` | An intent whose dependency targets an entity in another Tenant without an active `cross_tenant_authorization` is refused **whole** at request validation — never repaired by dropping the edge and realizing the remainder, and never partially accepted. The refusal is emitted as `authz.cross_tenant_unauthorized`, names the grant that would make the reference legal, and discloses nothing about the target beyond existence-as-forbidden: no attributes, no type, no state, and the same response whether or not the target exists (`docs/spec/contracts/error-model.md` §3.3) |
 | `XTA-007` | The refusal record for a cross-tenant crossing names **both** Tenant identities and the attempted target identifier, alongside the refusing policy (`AUD-024` — a refusal record names every subject of the crossing it refused). A single-tenant denial record is insufficient: the owning Tenant is a party to the attempt and cannot audit what it cannot see |
@@ -250,7 +250,7 @@ parent_resource_entity:
 
 ### 7.3 Allocated Entity — In the Consuming Tenant
 
-When a consuming Tenant claims an available allocation, DCM creates a first-class entity in the consuming Tenant's scope:
+When a consuming Tenant claims an available allocation, the control plane creates a first-class entity in the consuming Tenant's scope:
 
 ```yaml
 allocated_entity:
@@ -296,13 +296,13 @@ allocated_entity:
 
 ### 7.4 Lifecycle Event Propagation
 
-When the parent resource changes state, DCM iterates all active allocations and propagates according to each allocation's `parent_lifecycle_policy`:
+When the parent resource changes state, the control plane iterates all active allocations and propagates according to each allocation's `parent_lifecycle_policy`:
 
 ```
 Parent resource enters MAINTENANCE
   │
   ▼
-DCM iterates active_allocations
+The control plane iterates active_allocations
   │
   For each active allocation:
   │  Read parent_lifecycle_policy.on_parent_maintenance
@@ -332,7 +332,7 @@ Policy Engine evaluates:
   │  Does Tenant A's cross_tenant policy permit this?
   │  Does Infrastructure Tenant's cross_tenant policy permit this?
   ▼
-DCM creates:
+The control plane creates:
   │  Allocated Entity (owned by Tenant A) with UUID
   │  depends_on edge on the allocated entity (the parent’s inbound reading is derived; cross_tenant: true)
   │  Updates parent's available_allocation status: available → claimed
@@ -363,7 +363,7 @@ Lifecycle policies declare what happens to an entity when its related entity cha
 
 ### 8.2 Lifecycle Action Hierarchy — Save Overrides Destroy
 
-When a shared resource has multiple active relationships and a lifecycle event triggers, each relationship may produce a different action recommendation. DCM resolves conflicts using a deterministic hierarchy — **the most conservative action always wins**:
+When a shared resource has multiple active relationships and a lifecycle event triggers, each relationship may produce a different action recommendation. The control plane resolves conflicts using a deterministic hierarchy — **the most conservative action always wins**:
 
 ```
 retain        ← most conservative — entity preserved unconditionally
@@ -401,11 +401,11 @@ This rule applies automatically and silently when the hierarchy resolves cleanly
 | `notify` is the winning action | `warning` | Notify owner — human decision required |
 | Immutable lifecycle lock overridden by REL-018 | `critical` | Notify entity owner, policy owner, and platform admin |
 
-**The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), DCM records
+**The record is an obligation, not a shape.** When a conflict is surfaced (REL-019), the control plane records
 durably: the full recommendation set (per edge — the recommended action and the policy or
 lifecycle declaration it came from), the resolved action and the rule that resolved it, the
 severity, and the notifications dispatched — citable from the affected entity's audit trail.
-The record's shape is DCM's implementation; the content above is the contract.
+The record's shape is the control plane's implementation; the content above is the contract.
 
 ### 8.4 Lifecycle Policy Authority Hierarchy
 
@@ -421,10 +421,10 @@ Provider Catalog Item default (provider preference)
 Consumer declaration (at request time — within Resource Type bounds)
   │
   ▼
-DCM System Policy (non-overridable — sovereignty and compliance mandates)
+The control plane System Policy (non-overridable — sovereignty and compliance mandates)
 ```
 
-**Example:** A DCM System Policy might declare that all storage entities in a PCI-DSS scope must `retain` when their parent VM is destroyed — regardless of what the provider default or consumer declared.
+**Example:** A control plane System Policy might declare that all storage entities in a PCI-DSS scope must `retain` when their parent VM is destroyed — regardless of what the provider default or consumer declared.
 
 ---
 
@@ -484,7 +484,7 @@ When a parent entity is destroyed and has a relationship to a shared resource:
 Parent entity destroyed
   │
   ▼
-DCM collects action recommendations from all active relationships on shared resource
+The control plane collects action recommendations from all active relationships on shared resource
   │  Each relationship's lifecycle policy produces one recommendation
   │  Informational relationships excluded
   │
@@ -507,12 +507,12 @@ Deferred destruction record created (if action was deferred)
 
 ### 9.4 Deferred Destruction — the Obligation
 
-When a destruction is deferred because active edges remain (REL-015), DCM records durably: the
+When a destruction is deferred because active edges remain (REL-015), the control plane records durably: the
 triggering request, the entity whose edge was being released, the derived count before and
 after, the remaining blocking edges (declaring entity + edge_type + strength), and the reason —
 citable from the shared entity's audit trail. When the count later reaches the declared
 `minimum_relationship_count` and destruction proceeds, the destruction audit record cites the
-deferral, closing the loop. The record shapes are DCM's implementation; this content is the
+deferral, closing the loop. The record shapes are the control plane's implementation; this content is the
 contract.
 
 ### 9.5 Unified with the Allocated Resource Model
@@ -562,7 +562,7 @@ relationships:
     default_lifecycle_policy:
       on_related_destroy: destroy
     consumer_declarable: false
-    # DCM manages this automatically — consumer cannot override
+    # the control plane manages this automatically — consumer cannot override
 ```
 
 ### 10.2 Catalog Item (offering-specific)
@@ -648,21 +648,21 @@ Request Payload Processor
   │       and the child stub
   │    3. Applies lifecycle policy from:
   │       consumer declaration → provider default → Resource Type default
-  │       → DCM System Policy override
+  │       → the control plane System Policy override
   │    4. Adds the child entity stub to the relationship graph
   ▼
 Policy Engine validates:
   │  Binding type is permitted by Resource Type Specification
   │  Consumer has override_matrix permission to declare binding type
-  │  Lifecycle policy is not overridden by a DCM System Policy
+  │  Lifecycle policy is not overridden by a control plane System Policy
   ▼
 Service Provider receives:
   │  Parent entity request payload
   │  Child entity stub UUIDs embedded in parent payload
   │  Provisions resources natively
-  │  Returns realized payloads for all entities in DCM unified format
+  │  Returns realized payloads for all entities in the control plane unified format
   ▼
-DCM updates:
+The control plane updates:
   │  Parent entity: PENDING → REALIZED
   │  Child entities: PENDING → REALIZED
   │  All relationship records: status → active
@@ -694,7 +694,7 @@ field_definition:
 
 ## 12. The Entity Relationship Graph
 
-All relationships across all entities form a traversable **Entity Relationship Graph** — the complete map of how all entities in DCM relate to each other.
+All relationships across all entities form a traversable **Entity Relationship Graph** — the complete map of how all entities in the control plane relate to each other.
 
 ### 12.1 Graph Properties
 
@@ -730,7 +730,7 @@ The relationship graph exists across all four states:
 
 ## 13. Relationship Integrity
 
-### 13.1 DCM System Policies for Relationships
+### 13.1 the control plane System Policies for Relationships
 
 | Policy | Rule |
 |--------|------|
@@ -754,7 +754,7 @@ The relationship graph exists across all four states:
 
 ### 13.2 Lifecycle Policy Conflict Resolution
 
-Lifecycle policy fields on relationships are fields. They carry the same `override` metadata, the same provenance obligations, and resolve under the same Policy Engine authority hierarchy as any other field in DCM. There is no special case — minimum variance applies.
+Lifecycle policy fields on relationships are fields. They carry the same `override` metadata, the same provenance obligations, and resolve under the same Policy Engine authority hierarchy as any other field in the control plane. There is no special case — minimum variance applies.
 
 **Authority chain for a relationship lifecycle policy field (lowest to highest):**
 
@@ -764,7 +764,7 @@ Resource Type Specification default
     → Consumer declaration at request time
       → Transformation Policy (may set override: constrained)
         → Validation Policy (checks — no modification; compliance-class may set override: immutable)
-            → DCM System Policies REL-008, REL-009 (non-overridable)
+            → the control plane System Policies REL-008, REL-009 (non-overridable)
 ```
 
 **Within the Policy Engine**, the priority schema governs conflicts between policies at the same tier. Highest numeric priority value within a tier runs first. The first policy to set `override: immutable` on a lifecycle policy field locks it — all subsequent policies in that execution find it locked and cannot modify it.

@@ -2,7 +2,7 @@
 
 UDLM is a **substrate**, not just a schema. Beyond the four-state lifecycle, every Resource Type
 Specification and every conformant implementation must serve a set of cross-cutting requirements that
-DCM — the canonical operationalizer — holds as **hard** requirements: **auditability, observability,
+The control plane — the canonical operationalizer — holds as **hard** requirements: **auditability, observability,
 an explicit dependency graph, and sovereignty.** These are design principles, not options; they
 shape how specs are authored and how providers realize them.
 
@@ -20,7 +20,7 @@ chains the transitions, observability compares Discovered against Requested, the
 orders implementation, and sovereignty governs where each state may live. (`docs/spec/foundations/four-states.md`)
 
 ## P1 — Auditability by construction
-**DCM requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
+**the control plane requirement:** `AUD-001` (every modification produces a synchronous Commit Log entry *before*
 success; a write failure aborts — no silent unaudited change), `AUD-002` (append-only, immutable
 while retention is live), a tamper-evident **Merkle tree** (RFC 9162 / CT v2.0), and audit
 records that **survive at least as long as any referenced resource**.
@@ -29,7 +29,7 @@ records that **survive at least as long as any referenced resource**.
   JSON Schema `$id` encodes both version axes — and there is **no runtime late-binding**
   (`$dynamicRef` is forbidden). A record must be re-validatable years later against the same contract.
 - **Field-level provenance.** Every assembled field records the layer / policy / actor / provider
-  that set it — the *same* per-field provenance DCM's audit chain consumes (see G3).
+  that set it — the *same* per-field provenance the control plane's audit chain consumes (see G3).
 - **Interpretability across retention.** Tombstones (`supersededBy`): never delete a field within a
   major version, so historical Realized/Discovered records stay interpretable for their full
   retention lifetime.
@@ -37,17 +37,17 @@ records that **survive at least as long as any referenced resource**.
   a new entity in the chain rather than an in-place mutation.
 
 ## P2 — Observability as a base obligation
-**DCM requirement:** provider-contract **§7** — observability (metrics, logs, telemetry) is a *base*
-provider obligation; DCM MAY be the authoritative telemetry arbiter; observed dependencies are
+**the control plane requirement:** provider-contract **§7** — observability (metrics, logs, telemetry) is a *base*
+provider obligation; the control plane MAY be the authoritative telemetry arbiter; observed dependencies are
 **provider-introspected, post-implementation**.
 
-- **Declared vs observed.** Relationships and outputs are declared in the spec so DCM can reconcile
+- **Declared vs observed.** Relationships and outputs are declared in the spec so the control plane can reconcile
   the provider-introspected reality against the declared contract — drift on **data and topology**.
 - **Typed, not opaque.** Realized/observed signals are schema-typed outputs, never an opaque `status`.
 - **Offline-capable.** Output/telemetry schemas resolve offline (bundling, P4) for disconnected sites.
 
 ## P3 — Explicit, typed dependency graph
-**DCM requirement:** `RDG-001` — the implementation MUST validate the dependency graph is a **DAG**
+**the control plane requirement:** `RDG-001` — the implementation MUST validate the dependency graph is a **DAG**
 before acknowledging; circular dependencies are rejected (422); rehydration runs in dependency
 order, compensation in reverse.
 
@@ -62,7 +62,7 @@ order, compensation in reverse.
 - **Acyclic, validated at submission** — not discovered at realization time.
 
 ## P4 — Sovereignty is structural, not advisory
-**DCM requirement:** the **Governance Matrix** unifies authorization, sovereignty, and data-boundary
+**the control plane requirement:** the **Governance Matrix** unifies authorization, sovereignty, and data-boundary
 control into one substrate; *"scoring cannot be used to route around data sovereignty or regulatory
 boundaries"*; sovereignty zones + data classifications (sovereign / classified / PHI) are **hard**
 boundaries.
@@ -83,7 +83,7 @@ boundaries.
   approved-source / approved-list dimension: "did this server come from an approved source; is this
   firewall on the approved list?"). UDLM **codifies** this requirement as data and **communicates** it —
   by reference to accreditation subjects + attestation evidence, not a new primitive — and does **not**
-  vet or enforce; DCM's Governance Matrix decides and enables enforcement. Pending ratification (ADR-057).
+  vet or enforce; the control plane's Governance Matrix decides and enables enforcement. Pending ratification (ADR-057).
 
 ---
 
@@ -98,9 +98,9 @@ boundaries.
   expression language). Its cross-cutting force here: a single impure expression would break
   tamper-evident audit (`AUD-002`) and sovereignty (P4), so definition and validation use only
   *declarative* constructs (JSON Schema `if/then` · `dependentSchemas` · `enum` · bounds + markers like
-  `createOnly`), and **transformation/enrichment is Policy, applied by DCM** and recorded in the audit log.
+  `createOnly`), and **transformation/enrichment is Policy, applied by the control plane** and recorded in the audit log.
 - **G3 — Contract, not parallel implementation.** UDLM defines the *data contract* for provenance,
-  dependencies, and policy inputs; **DCM operationalizes it** (the Merkle audit log, the DAG engine,
+  dependencies, and policy inputs; **the control plane operationalizes it** (the Merkle audit log, the DAG engine,
   the Governance Matrix). One model — never a competing UDLM-side implementation.
 - **G4 — Universal definitions.** Entity-type families *organize*; they do not *bound*. Definitions
   are free to use across implementations (`docs/spec/foundations/entity-type-families.md`).

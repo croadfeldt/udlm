@@ -16,7 +16,7 @@
 
 ## 1. Purpose
 
-The Universal Audit Model defines the **unconditional obligation** for every DCM component to record every change to every artifact in a uniform, tamper-evident, retention-governed audit trail. No change is silent. No change is exempt.
+The Universal Audit Model defines the **unconditional obligation** for every the control plane component to record every change to every artifact in a uniform, tamper-evident, retention-governed audit trail. No change is silent. No change is exempt.
 
 **The four required fields for every audit record:**
 - **Date and time** — when the change occurred (RFC 3339, normalized to UTC `Z`; millisecond precision permitted — `registry/common-elements.md` §8.1)
@@ -30,7 +30,7 @@ The Universal Audit Model defines the **unconditional obligation** for every DCM
 
 ## 2. Design Principles
 
-**Universal — no exceptions.** Every mutation to every DCM artifact produces an audit record. Resources, policies, layers, groups, relationships, providers, configurations, authorizations, external evaluation queries, ingestion events, rehydration events, drift events, login events — all covered.
+**Universal — no exceptions.** Every mutation to every the control plane artifact produces an audit record. Resources, policies, layers, groups, relationships, providers, configurations, authorizations, external evaluation queries, ingestion events, rehydration events, drift events, login events — all covered.
 
 **Append-only — tamper-evident.** Audit records are never modified or deleted while retention obligations apply. Each record is a leaf in the RFC 9162 Merkle tree (§8; [D2]/AUD-006) — inclusion and consistency proofs against signed tree heads make insertion, modification, or deletion of already-logged records detectable.
 
@@ -49,7 +49,7 @@ audit_record:
   # IDENTITY — immutable once written
   record_uuid: <uuid>
   record_timestamp: <RFC 3339 UTC 'Z', millisecond precision permitted — when the change occurred (common-elements §8.1)>
-  dcm_version: <DCM version that produced this record>
+  dcm_version: <the control plane version that produced this record>
 
   # WHO — composite actor chain
   actor:
@@ -69,7 +69,7 @@ audit_record:
       # direct_action:      human directly performed this
       # request_submission: human submitted the request that triggered this
       # policy_activation:  human activated the policy that triggered this
-      # system_policy:      DCM System Policy — no individual human
+      # system_policy:      the control plane System Policy — no individual human
       # scheduled:          scheduled job — authorized by job owner
 
     # Links to originating context
@@ -162,7 +162,7 @@ audit_record:
     referenced_entities:
       - entity_uuid: <uuid>
         entity_type: <type>
-        last_known_state: <state — updated by DCM lifecycle events>
+        last_known_state: <state — updated by the control plane lifecycle events>
     retention_status: <live|all_retired|policy_governed>
     # live:           at least one referenced entity is non-retired — retain unconditionally
     # all_retired:    all referenced entities have reached terminal state
@@ -220,7 +220,7 @@ The `action` field uses a closed vocabulary. Free-text actions are invalid and r
 | `DISCOVER` | Entities | Discovery cycle completed |
 | `LOGIN` | Actors | Actor authentication event |
 | `LOGOUT` | Actors | Actor session ended |
-| `CONFIG_CHANGE` | Platform | DCM configuration changed (profile activated, etc.) |
+| `CONFIG_CHANGE` | Platform | The control plane configuration changed (profile activated, etc.) |
 
 ---
 
@@ -254,7 +254,7 @@ actor:
     display_name: "Lifecycle Constraint Enforcer"
   authorized_by:
     uuid: null   # no specific human — system policy
-    display_name: "DCM System Policy LTC-003"
+    display_name: "the control plane System Policy LTC-003"
     authorization_method: system_policy
   policy_uuid: <uuid of LTC-003>
   policy_version: "1.0.0"
@@ -275,7 +275,7 @@ Audit record created
   ▼  [continuous monitoring]
   │
   As referenced entities change state:
-  │  DCM updates last_known_state on each referenced_entity
+  │  the control plane updates last_known_state on each referenced_entity
   │  When all reach terminal state → retention_status: all_retired
   │
   ▼  retention_status: all_retired
@@ -338,11 +338,11 @@ commit_log_entry:
 
 *How* an implementation implements this — the two-stage synchronous-commit / asynchronous-forward pipeline, the
 quorum/consensus store (e.g. a Raft-class store such as etcd), the forward-service retry and recovery
-handling, and the latency budget — is implementation architecture, specified in the DCM architecture docs.
+handling, and the latency budget — is implementation architecture, specified in the control plane architecture docs.
 
 ## 8. Tamper-Evidence and Payload Integrity — Merkle Tree
 
-DCM unifies audit trail integrity and payload chain-of-custody verification into a single mechanism: a **Merkle tree** following the RFC 9162 (Certificate Transparency v2.0) pattern. Each audit record is a leaf in the tree. The tree provides O(log n) inclusion proofs (prove a record exists) and O(log n) consistency proofs (prove the log is append-only). Signed Tree Heads provide the root of trust.
+The control plane unifies audit trail integrity and payload chain-of-custody verification into a single mechanism: a **Merkle tree** following the RFC 9162 (Certificate Transparency v2.0) pattern. Each audit record is a leaf in the tree. The tree provides O(log n) inclusion proofs (prove a record exists) and O(log n) consistency proofs (prove the log is append-only). Signed Tree Heads provide the root of trust.
 
 This model satisfies NIST SP 800-53 AU-9(3) (cryptographic protection of audit information), AU-10 (non-repudiation with AU-10(2) producer identity binding, AU-10(3) chain of custody, AU-10(5) digital signatures), SI-7 (information integrity), and NIST SP 800-171 3.3 (audit and accountability for CUI/CMMC).
 
@@ -443,7 +443,7 @@ signed_tree_head:
   tree_size: <int>                          # number of leaves in the tree
   timestamp: <RFC 3339 UTC 'Z'>
   sha256_root_hash: <sha-256>               # Merkle root
-  signature: <Ed25519>                      # signed by DCM's audit signing key
+  signature: <Ed25519>                      # signed by the control plane's audit signing key
 ```
 
 Signed Tree Heads are computed every N leaves or every T seconds (configurable). They are the root of trust for all verification. External auditors verify records against the signed tree head — they don't need access to the database, only the tree head and the inclusion proof.
@@ -484,7 +484,7 @@ them; how it exposes them (the API surface) is implementation control-plane, not
 
 | Policy | Rule |
 |--------|------|
-| `AUD-001` | Every modification to any DCM artifact must produce a Commit Log entry synchronously before the operation returns success. Commit Log write failure aborts the operation — no silent unaudited changes. |
+| `AUD-001` | Every modification to any the control plane artifact must produce a Commit Log entry synchronously before the operation returns success. Commit Log write failure aborts the operation — no silent unaudited changes. |
 | `AUD-002` | Audit records are append-only and immutable. No audit record may be modified or deleted while retention_status is `live` or `policy_governed`. |
 | `AUD-003` | Audit records must survive at least as long as any referenced entity is in a non-retired/non-decommissioned state (retention_status: live). |
 | `AUD-004` | Post-lifecycle retention is governed by policy. Default is `retain_for: P7Y` after all referenced entities reach terminal state. |
@@ -561,7 +561,7 @@ commit_log_capacity:
 
 Audit records for system-initiated changes use the same **nested actor shape as every other
 record** (§3, AUD-005): `actor.immediate.type: system_component` with a `system_actor` detail
-block identifying the DCM component and trigger, and the `authorized_by` chain naming the
+block identifying the control plane component and trigger, and the `authorized_by` chain naming the
 authorizing policy. (An earlier resolution used a flat `actor.type: human|service_account|system`
 model — superseded; the §3 nested model with the single §5.1 vocabulary is canonical.)
 
@@ -582,7 +582,7 @@ audit_record:
     authorized_by:
       uuid: null                      # no specific human — traceable to the policy
       display_name: "Policy <policy-handle>"
-      authorization_method: policy_activation   # or system_policy for DCM System Policies
+      authorization_method: policy_activation   # or system_policy for the control plane System Policies
     policy_uuid: <policy-that-triggered>
 ```
 
@@ -593,11 +593,11 @@ System actor records are full audit records — they appear in all queries and c
 
 ### 10.4 Distributed Audit Integrity (Q4)
 
-In distributed DCM deployments (Hub + Regional + Sovereign DCMs), each instance maintains its own independent Merkle tree. Federation-level integrity is provided by daily Merkle root proofs.
+In distributed the control plane deployments (Hub + Regional + Sovereign DCMs), each instance maintains its own independent Merkle tree. Federation-level integrity is provided by daily Merkle root proofs.
 
 ```yaml
 distributed_audit_trees:
-  model: per_instance               # each DCM instance has its own Merkle tree
+  model: per_instance               # each the control plane instance has its own Merkle tree
   instance_tree:
     tree_id: <dcm-instance-uuid>    # tree scoped to this instance
 
@@ -605,14 +605,14 @@ distributed_audit_trees:
     enabled: true
     schedule: "0 0 * * *"           # daily
     mechanism: merkle_root
-    # Hub DCM collects the Merkle roots from all Regional DCMs
+    # Hub the control plane collects the Merkle roots from all Regional DCMs
     # Computes Merkle root → stores as federation_integrity_record
     # Any integrity break in any instance is detectable against this root
     stored_at: hub_dcm_audit_store
     signed_by: hub_dcm_service_account
 ```
 
-**Cross-instance queries:** Records from different trees are presented as parallel trees with cross-references via `correlation_id`. Not merged into a single chain — each instance's chain remains independently verifiable. Federation-level verification requires Hub DCM connectivity; per-instance verification is always available locally.
+**Cross-instance queries:** Records from different trees are presented as parallel trees with cross-references via `correlation_id`. Not merged into a single chain — each instance's chain remains independently verifiable. Federation-level verification requires Hub the control plane connectivity; per-instance verification is always available locally.
 
 ### 10.5 System Policies — Universal Audit Gaps
 
@@ -620,8 +620,8 @@ distributed_audit_trees:
 |--------|------|
 | `AUD-020` | Merkle-tree integrity verification operates at three levels: continuous (leaf hashed and inserted on every write), scheduled sweep (weekly to every 6 hours per profile), and on-demand (operator-triggered for any time range). Verification failure triggers a security alert and integrity incident. New audit writes continue — halting writes is itself a security risk. |
 | `AUD-021` | The Commit Log has configurable maximum capacity with a declared overflow policy: alert_and_continue (standard/prod) or reject_new_ops (fsi/sovereign). Backpressure alerts fire at 75% and 90% capacity. Records older than P7D trigger escalation regardless of capacity. |
-| `AUD-016` | Audit records for system-initiated changes use the nested actor shape (AUD-005): actor.immediate.type: system_component with a system_actor detail block identifying the DCM component and trigger, and an authorized_by chain naming the authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.immediate.type (single vocabulary: human, service_account, system_component, policy, provider, scheduled_job) enables filtering between human-, service-account-, and system-initiated changes. |
-| `AUD-017` | In distributed DCM deployments, each instance maintains its own independent Merkle tree scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub DCM. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
+| `AUD-016` | Audit records for system-initiated changes use the nested actor shape (AUD-005): actor.immediate.type: system_component with a system_actor detail block identifying the control plane component and trigger, and an authorized_by chain naming the authorizing policy. System actor records are full audit records appearing in all queries and compliance reports. actor.immediate.type (single vocabulary: human, service_account, system_component, policy, provider, scheduled_job) enables filtering between human-, service-account-, and system-initiated changes. |
+| `AUD-017` | In distributed the control plane deployments, each instance maintains its own independent Merkle tree scoped to that instance. Federation-level integrity is maintained via daily Merkle root proofs computed from all instance chain tips, stored at the Hub the control plane. Cross-instance audit queries present parallel chains with cross-references via correlation_id. |
 
 ## 11. Audit vs Observability — The Definitive Distinction (Q16)
 
@@ -668,7 +668,7 @@ These are different questions requiring different storage architectures.
 | 1 | Should integrity verification run continuously or on-demand? | Security | ✅ Resolved — three levels: continuous write (tree append), scheduled sweep (weekly to 6-hourly per profile), on-demand (operator-triggered); failure → security alert + integrity incident (AUD-020) |
 | 2 | Should the WAL have a configurable maximum capacity, and what happens when it is reached? | Availability | ✅ Resolved — configurable max capacity; alert_and_continue (standard/prod); reject_new_ops (fsi/sovereign); backpressure at 75%/90%; P7D max age escalation (AUD-021) |
 | 3 | Should audit records for system-initiated changes (no human actor) be flagged differently in the dashboard? | Operational | ✅ Resolved — nested actor shape with actor.immediate.type: system_component + system_actor block (component/trigger) + authorized_by chain; full audit records; enables filtering in queries and dashboards (AUD-016) |
-| 4 | How does integrity verification interact with distributed DCM deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance RFC 9162 Merkle trees with signed tree heads; federation integrity via daily cross-instance consistency proofs at Hub DCM; cross-instance queries via parallel trees + correlation_id (AUD-017) |
+| 4 | How does integrity verification interact with distributed the control plane deployments where audit records may be written to multiple regional stores? | Architecture | ✅ Resolved — per-instance RFC 9162 Merkle trees with signed tree heads; federation integrity via daily cross-instance consistency proofs at Hub the control plane; cross-instance queries via parallel trees + correlation_id (AUD-017) |
 
 ---
 
@@ -682,4 +682,4 @@ These are different questions requiring different storage architectures.
 
 ---
 
-*Document maintained by the DCM Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*
+*Document maintained by the control plane Project. For questions or contributions see [GitHub](https://github.com/dcm-project).*

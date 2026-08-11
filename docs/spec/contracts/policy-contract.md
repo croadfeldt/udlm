@@ -41,7 +41,7 @@ All four sources are addressable via dot-notation field paths.
 
 ### 2.2 Lifecycle Operation Types
 
-Every request into DCM carries an `operation.type` that identifies what lifecycle operation is being performed. This is the primary dimension for scoping which policies fire on which operations.
+Every request into the control plane carries an `operation.type` that identifies what lifecycle operation is being performed. This is the primary dimension for scoping which policies fire on which operations.
 
 | Operation Type | When it occurs | Description |
 |---------------|---------------|-------------|
@@ -230,7 +230,7 @@ Most policies are soft. Hard enforcement is reserved for absolute security const
 Policies operate within a domain hierarchy. More-specific domains win within the same concern type:
 
 ```
-system (most trusted — DCM built-in)
+system (most trusted — the control plane built-in)
   └── platform (platform admin declared)
         └── tenant (Tenant admin declared)
               └── resource_type (per resource type spec)
@@ -243,11 +243,11 @@ Within the same domain level, DENY wins over ALLOW. More-specific domain wins ov
 
 ## 5. Base Contract — Artifact Structure
 
-All policies are first-class DCM Data artifacts. They share the standard artifact metadata and lifecycle:
+All policies are first-class the control plane Data artifacts. They share the standard artifact metadata and lifecycle:
 
 ```yaml
 policy_artifact:
-  # Standard DCM artifact metadata (all artifacts carry this)
+  # Standard the control plane artifact metadata (all artifacts carry this)
   artifact_metadata:
     uuid: <uuid>
     handle: "<domain>/<concern>/<name>"
@@ -381,19 +381,19 @@ the same resolved constraint set.
 
 *How* an engine reaches convergence — the multi-pass loop, its pass bound, the concrete
 collection→resolution→application scheduling, and the worked convergence/escalation traces — is a
-**implementation concern**, specified in the DCM architecture docs, not fixed here (§7.2a: built-in or
+**implementation concern**, specified in the control plane architecture docs, not fixed here (§7.2a: built-in or
 delegated, the contract is identical).
 
 ### 7.2a Policy engine — built-in vs. delegated (external)
 
 This document is the policy **contract**. *Where* policies live and *who* evaluates them is an implementation choice, in one of two modes — the contract is identical either way:
 
-- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For DCM specifically, **policies are DCM-controlled**: the policy engine is a core DCM component and its policy store sits under DCM's governance. Whether that store is *physically* the same database as other DCM Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
+- **Built-in engine (default).** An implementation evaluates with its own engine, and its policies are **first-class, implementation-controlled Data** — under the same lifecycle, provenance, audit, and security governance as every other artifact (§6). For the control plane specifically, **policies are control-plane-controlled**: the policy engine is a core the control plane component and its policy store sits under the control plane's governance. Whether that store is *physically* the same database as other the control plane Data or a separate one is an **implementation detail** — the contract requires the governance, lifecycle, security, and capability constraints to hold, not any particular physical colocation.
 - **Delegated to an external engine.** An implementation MAY delegate evaluation to an external engine (e.g. OPA or a third-party decision service). An external engine is a **black box governed by this contract**: the implementation sends the **evaluation context** (§7.1) and receives a **decision / constraint set** (§7.2 outputs). It does **not** see or store the external engine's policies — only the data in and the decision out. An external engine is, in effect, a *Provider of policy decisions*, bound by the contract, not by shared storage.
 
 Wire-compatibility holds regardless: a peer cannot tell — and need not care — whether a decision came from a built-in or a delegated engine, only that it conforms to §2–§5 and the re-entrant, convergent evaluation contract (§7.2; ADR-006).
 
-If evaluation cannot converge, the request fails with a full conflict report — every constraint, every conflict, and every attempted resolution. The convergence bound itself (e.g. a maximum pass count) is an engine parameter, set by the implementation (DCM), not by this contract.
+If evaluation cannot converge, the request fails with a full conflict report — every constraint, every conflict, and every attempted resolution. The convergence bound itself (e.g. a maximum pass count) is an engine parameter, set by the implementation (the control plane), not by this contract.
 
 ### 7.3 Constraint Emission
 
@@ -517,7 +517,7 @@ Constraint types are the shared vocabulary of the Evaluation Context. Every cons
 constraint_type:
   handle: "zone_restriction"
   version: "1.0.0"
-  tier: core                              # core (DCM built-in) | organization (custom)
+  tier: core                              # core (the control plane built-in) | organization (custom)
   schema:                                 # OpenAPI v3 schema for the constraint value
     type: object
     properties:
@@ -665,8 +665,8 @@ policy_artifact:
 The contract is that every emitted constraint references a **registered constraint type** (§8) — freeform
 constraint objects are not permitted. *How* an implementation makes that ergonomic for policy authors — e.g.
 auto-generating an engine-native constructor library from the Constraint Type Registry so wrong field
-names/types are caught at bundle-compile time rather than at runtime — is an implementation concern. The DCM
-implementation ships such a library for its engine; that library and its packaging live in the DCM
+names/types are caught at bundle-compile time rather than at runtime — is an implementation concern. The control plane
+implementation ships such a library for its engine; that library and its packaging live in the control plane
 architecture docs, not in this contract.
 
 ### 9.4 Template Registration Validation
@@ -792,7 +792,7 @@ Orchestration operates at two levels that compose through the same policy-evalua
 - **Level 1 — Named Workflow Artifacts:** Orchestration Flow Policies with `ordered: true` declare an explicit, visible, auditable sequence of steps. Each step references a payload type from the closed vocabulary. This is what operators see and reason about. Adding a step = adding to a workflow Policy.
 - **Level 2 — Dynamic Policies:** Validation, Transformation, Recovery, and Governance Matrix Policies fire when their conditions match, within or alongside workflow steps, without being declared in the workflow. Adding conditional behavior = writing a dynamic policy.
 
-Both named workflow steps and dynamic policies evaluate against the same payload-type events, through the same evaluation contract; an implementation's event bus routes them (DCM). The workflow provides the skeleton; dynamic policies fill in conditional behavior.
+Both named workflow steps and dynamic policies evaluate against the same payload-type events, through the same evaluation contract; an implementation's event bus routes them (the control plane). The workflow provides the skeleton; dynamic policies fill in conditional behavior.
 
 **Fires on:** Pipeline payload type events.
 **Produces:** A flow directive governing step ordering.
@@ -831,7 +831,7 @@ Custom steps extend this vocabulary by publishing new payload types.
 
 ## 15. Output Schema — Governance Matrix Rule
 
-**Fires on:** Any cross-boundary interaction (DCM → Provider, DCM → Peer DCM, Provider → DCM).
+**Fires on:** Any cross-boundary interaction (the control plane → Provider, the control plane → Peer the control plane, Provider → the control plane).
 **Produces:** A boundary control decision with optional field permissions.
 
 ```yaml
@@ -874,7 +874,7 @@ lifecycle_policy_output:
 
 ## 17. Output Schema — ITSM Action
 
-The ITSM Action policy type triggers actions in connected ITSM systems as a side-effect of DCM pipeline events.
+The ITSM Action policy type triggers actions in connected ITSM systems as a side-effect of the control plane pipeline events.
 
 ```yaml
 itsm_action_output:
@@ -1057,14 +1057,14 @@ An auditor asking "why did this request bypass sovereignty?" gets the complete a
 
 ### 18.8 Policy Block Resolution
 
-When a policy blocks a request and no automatic resolution exists, DCM does not silently enter an override queue. The consumer is notified with actionable guidance: what blocked the request, why, and what their options are to resolve it.
+When a policy blocks a request and no automatic resolution exists, the control plane does not silently enter an override queue. The consumer is notified with actionable guidance: what blocked the request, why, and what their options are to resolve it.
 
 **Resolution precedence (contract).** When a policy blocks a request, automatic resolution is attempted in
 a fixed order — an active **Override Policy**, then an **Exception Grant**, then a **Compensating Control**
 covering the scope; the first that applies lets the request continue. If none applies, the request takes the
 `POLICY_BLOCKED` outcome (§7.7), carrying the resolution guidance below. *How* an implementation then surfaces
 the block and drives the consumer's choice — the events it publishes, the notifications it routes, the API
-it exposes — is control-plane, specified in the DCM architecture docs, not fixed by this contract.
+it exposes — is control-plane, specified in the control plane architecture docs, not fixed by this contract.
 
 **Resolution options presented to the consumer:**
 
@@ -1114,7 +1114,7 @@ The `compliant_values` guidance is derived from the blocking policy's constraint
 
 The consumer-facing resolution API (`GET …/resolution`, `POST …:resolve` with a `modify` / `request_override`
 / `cancel` / `escalate` action) and the `request.policy_blocked` / `request.resolution_chosen` / `override.*`
-lifecycle events are the implementation's control-plane surface — specified in the DCM architecture docs and the
+lifecycle events are the implementation's control-plane surface — specified in the control plane architecture docs and the
 [event catalog](event-catalog.md), not fixed by this contract.
 
 ### 18.9 Override Approval Flow
@@ -1148,10 +1148,10 @@ override_request:
     approved_at: <ISO 8601>
 ```
 
-**Control-plane surface (implementation / DCM).** The approver Admin API
+**Control-plane surface (implementation / the control plane).** The approver Admin API
 (`POST …/overrides/{id}/approve|reject`, `GET …/overrides`), the notification routing (which roles and
 webhooks are notified per policy domain and enforcement level), and the block/override **timeout values**
-are implementation control-plane — specified in the DCM architecture docs, not fixed by this contract.
+are implementation control-plane — specified in the control plane architecture docs, not fixed by this contract.
 
 Three facts the contract *does* fix:
 - **Timeouts are profile-governed.** A `POLICY_BLOCKED` request has a bounded window for a consumer action
@@ -1193,7 +1193,7 @@ For a single request, all active matching policies at all domain levels evaluate
 
 | Policy | Rule |
 |--------|------|
-| `POL-001` | All DCM policy types implement the unified base contract. The output schema is the only thing that varies. |
+| `POL-001` | All the control plane policy types implement the unified base contract. The output schema is the only thing that varies. |
 | `POL-002` | Every policy evaluation produces an audit record. No evaluation is silent. |
 | `POL-003` | Hard enforcement policies require dual-approval to override. Override policies (Model 1) cannot target hard policies — caught at activation. |
 | `POL-004` | Policies in `proposed` status execute in shadow mode — output is captured and never applied. Shadow mode is the primary mechanism for safe policy change management. |

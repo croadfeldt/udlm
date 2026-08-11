@@ -17,12 +17,12 @@
 
 ## 1. Purpose
 
-The DCM Resource Type Hierarchy is the structural model that defines how services and resources are categorized, specified, and exposed through the DCM Service Catalog. It is the mechanism by which DCM achieves **resource portability** — the ability to express what a consumer needs independently of which specific provider delivers it.
+The control plane Resource Type Hierarchy is the structural model that defines how services and resources are categorized, specified, and exposed through the control plane Service Catalog. It is the mechanism by which the control plane achieves **resource portability** — the ability to express what a consumer needs independently of which specific provider delivers it.
 
 The hierarchy serves four goals:
 
 1. **Portability** — consumer intent can be fulfilled by any provider that satisfies the resource type contract, without the consumer needing to know which provider that is
-2. **Standardization** — a common vocabulary and data contract for all resource types encourages interoperability across providers, implementors, and the broader DCM community
+2. **Standardization** — a common vocabulary and data contract for all resource types encourages interoperability across providers, implementors, and the broader the control plane community
 3. **Extensibility** — the model can be extended at every level without breaking existing definitions
 4. **Transparency** — any deviation from full portability is explicitly declared, versioned, and surfaced to consumers. This includes **instance-level** deviation: when a provider attaches provider-specific data (Provider-Class `SharedDataElement`s, ADR-038) to a realized entity, portability is a computed **instance** property — the entity is marked `portability_breaking`, its classification narrowed, the provider-specific elements + bound provider recorded, and **the consumer is notified before/at realization**. A resource is portable exactly to the extent it carries no provider extensions; silent non-portability is prohibited.
 
@@ -38,13 +38,13 @@ These terms are frequently conflated. The distinction is architectural:
 
 **Provider Catalog Item** — what a specific Service Provider is offering to consumers. The provider's declaration: "I can fulfill `Compute.VM v2.1.0` with these specific options, at this cost, with these availability characteristics, in this region." A catalog item is always linked to a specific Resource Type Specification version. Catalog items can represent resource allocations (a VM, a subnet) or processes (an automation job, a playbook execution, a pipeline run) — anything a provider offers for consumption.
 
-**The key relationship:** Consumers request by Resource Type (or Resource Type Specification version). DCM resolves to a Provider Catalog Item through the specificity narrowing algorithm. The catalog item is what actually gets provisioned. The resource type is the portable, vendor-neutral expression of intent.
+**The key relationship:** Consumers request by Resource Type (or Resource Type Specification version). The control plane resolves to a Provider Catalog Item through the specificity narrowing algorithm. The catalog item is what actually gets provisioned. The resource type is the portable, vendor-neutral expression of intent.
 
 **Anti-vocabulary update:** Never say "catalog item" when you mean "resource type specification." Never say "resource type" when you mean a specific provider offering — use "catalog item" or "provider catalog item."
 
-## 2. The DCM Resource Type Registry
+## 2. The control plane Resource Type Registry
 
-DCM maintains an official **Resource Type Registry** — the authoritative source of standard resource type definitions. The registry is the foundation of portability across the DCM ecosystem.
+The control plane maintains an official **Resource Type Registry** — the authoritative source of standard resource type definitions. The registry is the foundation of portability across the control-plane ecosystem.
 
 ### 2.1c Resource Type Authority
 
@@ -113,13 +113,13 @@ Worked example: `registry/classes/resource/compute/vm/cexample-cloud.yaml`. Auth
 - The registry is **open** — third parties, implementors, and the community can propose new resource type definitions
 - Registry entries are **versioned and immutable** once published — changes produce new versions
   (the versioning/deprecation rules are owned by [registry-governance](../governance/registry-governance.md) §5, `REG-DP-*`)
-- Registry definitions are **vendor-neutral by hard requirement** — no vendor-specific data is permitted in a DCM-specified resource type unless that vendor is the exclusive provider of that technology stack
-- The registry itself is subject to the same **deprecation model** as all other DCM definitions
+- Registry definitions are **vendor-neutral by hard requirement** — no vendor-specific data is permitted in a control plane-specified resource type unless that vendor is the exclusive provider of that technology stack
+- The registry itself is subject to the same **deprecation model** as all other the control plane definitions
 - All registry entries follow the **universal versioning scheme** (Major.Minor.Revision)
 
 ### 2.2 Default Resource Type Categories
 
-DCM ships with a default set of Resource Type Categories. Implementors may define additional categories following the specification. The registry contains both **Resource Types** (for provisioned resources) and **Information Types** (for external data references) — distinguished by category prefix.
+The control plane ships with a default set of Resource Type Categories. Implementors may define additional categories following the specification. The registry contains both **Resource Types** (for provisioned resources) and **Information Types** (for external data references) — distinguished by category prefix.
 
 **Resource Type Categories:**
 
@@ -168,7 +168,7 @@ registry_entry:
     portability_breaking: <true|false>
     portability_notes: <human-readable explanation of any portability limitations>
   ownership:
-    owner: <DCM|community|implementor|provider>
+    owner: <the control plane|community|implementor|provider>
     owner_uuid: <uuid of owning entity>
     origination_date: <ISO 8601 timestamp>
   description: <human-readable description>
@@ -185,7 +185,7 @@ The hierarchy has four levels, from most abstract to most concrete. Each level b
 
 The broadest classification. Defines the domain of a resource without any specificity about what the resource is.
 
-- DCM ships with default categories (see Section 2.2)
+- the control plane ships with default categories (see Section 2.2)
 - Implementors may define additional categories
 - Categories have no data fields — they are organizational containers
 - Categories are versioned and can be deprecated
@@ -247,7 +247,7 @@ whether organizational governance of the allowed values adds value.
 **What the consumer sees:**
 
 When `GET /api/v1/catalog/{uuid}` renders a field with a `layer_reference` constraint,
-DCM resolves the active layer instances of that type and returns them as the
+The control plane resolves the active layer instances of that type and returns them as the
 `allowed_values` list — each entry containing both the value to submit and the
 display data the GUI needs to render the selection:
 
@@ -283,7 +283,7 @@ display data the GUI needs to render the selection:
 }
 ```
 
-The consumer submits the layer UUID as the field value. DCM resolves it to the full
+The consumer submits the layer UUID as the field value. The control plane resolves it to the full
 layer, assembles the layer chain into the payload, and the provider receives the
 complete structured location context — not just a string.
 
@@ -296,9 +296,9 @@ what values are valid for that field.
 
 ### Level 2 — Resource Type
 
-Defines an abstract resource within a category. A Resource Type represents a class of resource that multiple providers can implement. Resource Types are the primary unit of portability in DCM.
+Defines an abstract resource within a category. A Resource Type represents a class of resource that multiple providers can implement. Resource Types are the primary unit of portability in the control plane.
 
-- DCM maintains default Resource Types in the registry
+- the control plane maintains default Resource Types in the registry
 - Community and implementors can define and register new Resource Types
 - Resource Types must be **vendor-neutral** — no provider-specific data
 - Resource Types declare their **base field specification** (universal fields only)
@@ -312,7 +312,7 @@ Defines an abstract resource within a category. A Resource Type represents a cla
 
 The data contract for a Resource Type. A Resource Type Specification is itself
 a **data layer artifact** — it follows the same versioning, ownership, lifecycle,
-GitOps governance, and domain model as all other DCM layers. The Resource Type
+GitOps governance, and domain model as all other the control plane layers. The Resource Type
 Authority is the `owned_by` declaration on the specification artifact. Changes
 produce new versions. The specification is immutable once active.
 
@@ -371,7 +371,7 @@ constraint:
 
 **Use when:** The valid values are a governed, versioned, authority-owned set that
 changes over time and carries structured metadata. Location, OS images, network zones,
-storage classes, and approved size profiles are all layer-referenced by default in DCM.
+storage classes, and approved size profiles are all layer-referenced by default in the control plane.
 
 **Portability:** Fields with `layer_reference` constraints are **fully portable** — any
 provider implementing this resource type resolves the same layer type to its own
@@ -459,20 +459,20 @@ Every field in every Resource Type Specification carries a portability classific
 
 | Classification | Description | Portability Impact |
 |---|---|---|
-| `universal` | Part of the DCM standard spec. All providers implementing this type must support it. | Fully portable across all implementing providers |
+| `universal` | Part of the control plane standard spec. All providers implementing this type must support it. | Fully portable across all implementing providers |
 | `conditional` | Supported by multiple providers but not all. Providers declare support in their registration. | Portable across providers that declare support |
 | `provider-specific` | Specific to one provider or technology stack. Using this field locks the request to that provider. | Portability-breaking — must be explicitly marked |
 | `exclusive` | Only one provider supports this technology stack. Portability is not applicable by definition. | Not applicable — acknowledged and declared |
 
 ### 4.2 Hard Portability Requirements
 
-The following are non-negotiable requirements for any DCM-specified Resource Type:
+The following are non-negotiable requirements for any control-plane-specified Resource Type:
 
 1. All **universal** fields MUST be supported by ALL providers implementing that Resource Type
 2. **Provider-specific** fields MUST be explicitly marked as portability-breaking in the field metadata
 3. Consumers MUST be warned when their request contains portability-breaking fields
 4. The only exception to vendor-neutrality is the **exclusive** classification — where one provider is the sole implementor of a technology stack, explicitly acknowledged and declared in the registry
-5. Any Resource Type in the DCM registry that contains provider-specific fields as universal fields is invalid and must be rejected
+5. Any Resource Type in the control plane registry that contains provider-specific fields as universal fields is invalid and must be rejected
 
 ### 4.3 Portability Field Metadata
 
@@ -533,7 +533,7 @@ equal or narrower than its parent's — scope *is* portability. Authoring proced
 ## 6. Provider Registration and Catalog Item Declaration
 
 Both surfaces are owned elsewhere; the hierarchy consumes them. **Registration** — the
-machine-readable declaration DCM consumes at admission (capabilities as (verb × Category),
+machine-readable declaration the control plane consumes at admission (capabilities as (verb × Category),
 adopted-standard support, sovereignty posture) — is the provider contract
 ([provider-contract §2](../contracts/provider-contract.md); wire shape
 `registry/provider-adopted-standards.schema.json`). **Catalog items** — a provider's concrete
@@ -546,7 +546,7 @@ request.
 
 ## 7. Request Resolution — Specificity Narrowing
 
-Provider selection in DCM is never explicit. The consumer declares intent using Resource Types and field values. The appropriate provider catalog item is selected by the DCM Policy Engine through progressive specificity narrowing.
+Provider selection in the control plane is never explicit. The consumer declares intent using Resource Types and field values. The appropriate provider catalog item is selected by the control plane Policy Engine through progressive specificity narrowing.
 
 ### 7.1 Resolution Steps
 
@@ -583,7 +583,7 @@ When a request contains portability-breaking fields, the Policy Engine applies t
 | `warn` | Request proceeds. Portability warning is recorded in request provenance and surfaced to the consumer. |
 | `allow` | Request proceeds silently. Portability-breaking fields are still recorded in provenance but no warning is surfaced. |
 
-The enforcement mode is itself a versioned, auditable policy — subject to the same provenance tracking as all other data in DCM.
+The enforcement mode is itself a versioned, auditable policy — subject to the same provenance tracking as all other data in the control plane.
 
 ---
 
@@ -620,16 +620,16 @@ Enforcement is strict, with `version_policy` options and profile-governed defaul
 
 ## Resource Type Reference — Consumer vs Internal Format
 
-When consumers reference a resource type — in API calls, policy conditions, or query filters — DCM accepts two forms:
+When consumers reference a resource type — in API calls, policy conditions, or query filters — the control plane accepts two forms:
 
 | Form | Example | Notes |
 |------|---------|-------|
 | **FQN string** (recommended) | `Compute.VM` | Stable across deployments; human-readable; returned by the service catalog |
 | **Registry UUID** | `a1b2c3d4-e5f6-...` | Deployment-specific; obtained from catalog API; suitable for programmatic use |
 
-DCM resolves either form to the canonical `(resource_type_uuid, resource_type_name)` pair during request assembly. The resolution happens in the **Request Payload Processor** before layer enrichment begins. Unresolvable references are rejected at validation time with a `422 Unprocessable Entity` response and code `RESOURCE_TYPE_NOT_FOUND`.
+The control plane resolves either form to the canonical `(resource_type_uuid, resource_type_name)` pair during request assembly. The resolution happens in the **Request Payload Processor** before layer enrichment begins. Unresolvable references are rejected at validation time with a `422 Unprocessable Entity` response and code `RESOURCE_TYPE_NOT_FOUND`.
 
-**Internal representation:** All internal DCM data — entity records, dispatch payloads, audit records — always carry **both** `resource_type_uuid` and `resource_type_name` (FQN). The consumer-facing accept-both model is purely at the API boundary; internally DCM always uses the canonical pair.
+**Internal representation:** All internal the control plane data — entity records, dispatch payloads, audit records — always carry **both** `resource_type_uuid` and `resource_type_name` (FQN). The consumer-facing accept-both model is purely at the API boundary; internally the control plane always uses the canonical pair.
 
 **Dispatch to operators:** The `CreateRequest` and `UpdateRequest` payloads sent to Service Providers always include both:
 - `resource_type_uuid` — the Registry UUID
