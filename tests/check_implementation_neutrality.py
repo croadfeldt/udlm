@@ -14,7 +14,8 @@ implementation. Where DCM or DAV are named, they are examples, never requirement
 across 44 normative files name one anyway. A rule nothing checks is indistinguishable from a rule nobody
 wrote (DR-UDLM-002).
 
-  IMP-001  a file under docs/spec/ does not name an implementation, unless the line marks it
+  IMP-001  a file in the normative tier — docs/spec/, docs/adr/, registry/ — does not name an
+           implementation, unless the line marks it
            NON-NORMATIVE. The exemption is the point rather than a loophole: the glossary's own
            definition of DCM is a legitimate naming, and so is "DCM realizes this — non-normative
            example". What is not legitimate is a normative sentence whose subject is an
@@ -43,7 +44,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ADR-038 alone carried 30. An ADR is where a decision is argued, so an unmarked implementation
 # reference there does more damage than one in a schema description: it reads as the decision itself
 # depending on one implementation.
-SCAN_DIRS = [os.path.join(ROOT, "docs", "spec"), os.path.join(ROOT, "docs", "adr")]
+SCAN_DIRS = [os.path.join(ROOT, "docs", "spec"), os.path.join(ROOT, "docs", "adr"),
+             os.path.join(ROOT, "registry")]
+# generated/ is a PROJECTION — a reference there is a copy of one in the authored class, and failing
+# on both would make one defect look like two and be fixable in the wrong place.
+SKIP = (os.sep + "generated" + os.sep,)
 BASELINE = os.path.join(ROOT, "tests", "implementation-neutrality-baseline.yaml")
 
 # The named implementations (GLOSSARY.md). DAV is included for the same reason DCM is: the case
@@ -64,8 +69,9 @@ def violations():
     out = []
     paths = []
     for d in SCAN_DIRS:
-        paths += glob.glob(os.path.join(d, "**", "*.md"), recursive=True)
-    for path in sorted(paths):
+        for ext in ("*.md", "*.json", "*.yaml"):
+            paths += glob.glob(os.path.join(d, "**", ext), recursive=True)
+    for path in sorted(p for p in set(paths) if not any(sk in p for sk in SKIP)):
         rel = os.path.relpath(path, ROOT)
         for i, line in enumerate(open(path, encoding="utf-8"), 1):
             if IMPLS.search(line) and not EXEMPT.search(line):
