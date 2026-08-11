@@ -119,6 +119,26 @@ def main():
         if s2 != s:
             fails.append(f"block round-trip not byte-stable: {s!r} -> {back!r} -> {s2!r}")
 
+    # --- URF-009: `via` traverses ONE declared relationship ---
+    # The virtual-field set is CLOSED, so a new member needs arms that prove it discriminates.
+    # Accepting `via(x)` is the easy half; the half that matters is refusing a CHAIN, because a
+    # chain is how a one-hop traversal quietly becomes a graph query.
+    for expr, want_ok, why in [
+        ("estate?via(located_in)==abc", True, "one hop over a declared relation"),
+        ("estate?via(located_in)via(rack)==x", False, "chained via — URF-009 permits one hop"),
+        ("estate?via(a.b)==x", False, "a dotted path smuggled through the traversal"),
+        ("estate?via()==x", False, "no relation named"),
+        ("estate?member_of==access/groupings/hold", True, "the other virtual field still parses"),
+        ("estate?tenant_uuid==abc", True, "an ordinary selector is unaffected"),
+    ]:
+        try:
+            U.canonicalize(expr); got = True
+        except Exception:
+            got = False
+        if got != want_ok:
+            fails.append(f"URF-009 {'accepted' if got else 'refused'} {expr!r} — expected the "
+                         f"opposite ({why})")
+
     # --- URF-006 cycle refusal (criterion graph walk over member_of) ---
     criteria = {
         "access/groupings/g1": "estate?member_of==access/groupings/g2",

@@ -257,6 +257,36 @@ name alone:
   references form a dependency graph; **cycles refuse** (the CYCLE discipline applied to
   criteria).
 
+- `via` — **read a field on the other end of a declared edge.** `via(<relation>)#<field>`
+  resolves the named relationship from the record carrying the expression, then projects a field
+  off the single record it resolves to: `via(located_in)#network.fabric_id` reads the fabric id
+  from the Facility.Location this record is placed in.
+
+  This is the bridge the "selector dots address within one record only" rule reserves. A dot stays
+  what it always was — a field inside the record you already hold, free and unfailing. Crossing to
+  another record stays visible, because it is a named traversal rather than a longer name.
+
+  **Why a relation name and not a path of field names.** `via(located_in)` names an edge the type
+  DECLARED (`relationships[].name`, REL-001), so what may be traversed is part of the contract
+  rather than whatever a consumer can spell. A class or template cannot know *which* location it
+  will sit in — that is placement's answer — but it can say it reads from *the one it is placed in*.
+  That is the whole reason an absolute URF does not solve this case: the address is not knowable
+  until realization, but the RELATION is knowable at authoring time.
+
+  **One hop, and one record.** The relation must resolve to cardinality 1 (URF-004 — more than one
+  match refuses `ambiguous` with `candidate_targets`); `via(a)#x` may not be chained into
+  `via(a)via(b)#x`. Multi-hop is a graph query, and a value that depends on two other records is
+  better modelled as a value on the thing in between.
+
+  **It is a read, so it is a crossing.** §9.6 already rules that every dereference is evaluated by
+  the governance matrix and that `#` projections cross the policy information firewall (ADR-041).
+  `via` inherits both — it introduces no new permission path, which is the point of expressing it
+  as a virtual field rather than a new axis. An unreadable target is refused exactly as any other
+  unauthorized read; it does not silently resolve to absent.
+
+  **Acyclic, by URF-006**, which already reserves the rule for "future virtual fields": a `via`
+  chain that returns to its origin is refused at validation rather than at resolution.
+
 Examples:
 
 ```
@@ -266,6 +296,7 @@ estate?uuid=in=(89d02cc3-…,4c1f8e2a-…)                # explicit set (the ma
 estate?tenant_uuid==abc;member_of!=access/groupings/maintenance-hold
 Compute/VM@1.2.0#cpu                                  # pinned element projection
 //state.mn/Compute/VM#firmware                        # federated authority
+estate?via(located_in)#network.fabric_id              # a field on the other end of a declared edge
 ```
 
 ### 9.3 The operational layer — single `=` at dereference only
@@ -355,4 +386,5 @@ not a policy predicate grammar and does not become one.
 | `URF-005` | A stored URF filters declared fields only; a stored form containing an operational term (single `=`) or operational-state selector is refused. |
 | `URF-006` | Criterion→criterion references (`member_of` and future virtual fields) MUST be acyclic; a cycle is refused at validation. |
 | `URF-007` | Credentials or bearer material MUST NOT appear in any URF axis. |
+| `URF-009` | `via(<relation>)#<field>` traverses ONE declared relationship (`relationships[].name`, REL-001) and projects a field off a cardinality-1 resolution. An undeclared relation name is refused at validation, never resolved; a relation resolving to more than one record refuses `ambiguous` (URF-004); `via` MUST NOT be chained. The traversal is a dereference — the governance matrix evaluates the read and the projection crosses the policy information firewall (§9.6, ADR-041) — so an unauthorized target is refused, never rendered absent. |
 | `URF-008` | Regex metacharacters (`^ $ [ ] { } \| \`) MUST NOT appear in a URF value; the accepted subset matches with `*` glob and has no regex operator, so a regex compares as a literal and silently never matches. Refused at validation. `{self}` (§9.2) is the one exception. |
