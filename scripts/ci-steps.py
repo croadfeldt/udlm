@@ -46,6 +46,8 @@ NAMES = {
     "python3 tests/check_conformance_consolidation.py": "§6 consolidates its sources (CNS-001)",
     "python3 tests/check_uc_traceability.py": "UC traceability (flow -> corpus)",
     "python3 tests/check_policy_facts.py": "Policy-fact vocabulary (policy-contract 2.1)",
+    "python3 tests/check_action_vocabulary.py": "One action vocabulary (ACT-001/002/003)",
+    "python3 tests/check_triad_coherence.py": "Capability/action/thing triad closes (TRI-001/002/003)",
     "python3 tests/check_policy_boundary.py": "Policy-engine boundary (ADR-065)",
     "python3 tests/check_urf.py": "URF grammar (identifier-scheme 9)",
     "python3 tests/check_urf_conformance.py": "URF conformance (dereference + portability)",

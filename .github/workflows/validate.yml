@@ -47,6 +47,9 @@ jobs:
       # language, so the FACTS a policy may reference are the deliverable — governed here
       # rather than as prose in a field description, which is how five rival spellings grew.
       - run: python3 tests/check_policy_facts.py
+      # One vocabulary for permit and record (ACT-*), and the three axes reach each other (TRI-*).
+      - run: python3 tests/check_action_vocabulary.py
+      - run: python3 tests/check_triad_coherence.py
       # Policy-engine boundary (ADR-065): UDLM declares the facts a policy reads and the
       # decision it produces; the comparison language stays with the engine. Anti-creep —
       # the removed vocabulary must not return one convenience field at a time.

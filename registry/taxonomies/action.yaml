@@ -1,0 +1,105 @@
+# Action taxonomy — ONE vocabulary for what may be done to a thing, and what was done to it.
+#
+# THE DEFECT THIS CLOSES. There were two lists. `audit-record.action` carried 34 terms (what
+# HAPPENED); `governance-matrix.md` carried ten under the heading `capability` (what MAY happen).
+# They overlapped on TWO words. So "was this action authorized?" could not be answered by matching a
+# permit against a record — it needed a translation table, and a translation table is where drift
+# lives. Maintainer ruling 2026-08-11: one vocabulary for permit and record.
+#
+# THE THIRD AXIS. The matrix's ten were labelled `capability`, which is a different thing:
+#   capability  what a PROVIDER can do             realize_resources, serve_data   (provider-capability.yaml)
+#   thing       what it offers                     Compute.VM, Storage.Volume      (the class system)
+#   action      what may be DONE to that thing     read, create, replicate         (this file)
+# Only `federate` reads both ways, which is why the collision went unnoticed.
+#
+# WHAT UDLM ENFORCES, AND WHAT IT DOES NOT (maintainer ruling 2026-08-11):
+#   ENFORCED   a cited action resolves to a term here; a term is well-formed; an extension enters
+#              as `proposed` and reaches `canonical` through the same ladder a standard term used
+#   NOT        which actions an estate uses, and WHETHER A GIVEN ACTOR MAY PERFORM ONE. That is
+#              policy's call and the implementation's. UDLM carries the vocabulary and the format;
+#              it does not decide what is allowed.
+#
+# EXTENSIBLE, BY THE SAME PIPELINE. The set below is the standard set, not the whole set. An estate
+# adds a term under this root as `proposed`; promotion to `canonical` runs the curation ladder
+# (ADR-039). What is policed is the WAY it is extended — so audit, policy and governance keep one
+# shape no matter who added the term.
+#
+# CASING. Terms are lower_snake_case here. The audit record has historically written them
+# UPPER_SNAKE; both denote the same term and the resolver compares case-insensitively, so an
+# existing audit record stays valid.
+
+# THE TRIAD MUST CLOSE. Each term declares `enabled_by` — the provider capability it is exercised
+# THROUGH. That is the edge nothing carried before: `provider-capability.yaml`'s `<capability>/<Domain>`
+# categories already link capability -> thing, and this links action -> capability. With both, the
+# three axes form a connected graph and `tests/check_triad_coherence.py` can ask whether a newly
+# added member of any axis reaches the other two. An action enabled by no capability is one nobody
+# can offer; a capability with no action is one nobody can use.
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: action
+
+terms:
+  - term: action
+    root: action
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the action vocabulary — what may be done to a thing, and what was done to it. One
+      vocabulary serves the permit side (governance matrix) and the record side (audit), so a
+      permission and its audit entry are comparable without translation.
+
+  # ── LIFECYCLE — the thing itself changes ────────────────────────────────────────────────────
+  - {term: create,            root: action, parent: action, curation_state: canonical, definition: A thing is brought into existence., enabled_by: realize_resources}
+  - {term: modify,            root: action, parent: action, curation_state: canonical, definition: An existing thing's declared state changes., enabled_by: realize_resources}
+  - {term: delete,            root: action, parent: action, curation_state: canonical, definition: A thing is removed. Distinct from retire — deletion ends the record, retirement ends its use., enabled_by: realize_resources}
+  - {term: retire,            root: action, parent: action, curation_state: canonical, definition: A thing stops being offered while its record and identity persist., enabled_by: realize_resources}
+  - {term: deprecate,         root: action, parent: action, curation_state: canonical, definition: A thing is marked for eventual retirement; it still works., enabled_by: realize_resources}
+  - {term: activate,          root: action, parent: action, curation_state: canonical, definition: A thing is made effective., enabled_by: realize_resources}
+  - {term: deactivate,        root: action, parent: action, curation_state: canonical, definition: A thing is made ineffective without being removed., enabled_by: realize_resources}
+  - {term: state_transition,  root: action, parent: action, curation_state: canonical, definition: A thing moves between lifecycle states., enabled_by: realize_resources}
+  - {term: rehydrate,         root: action, parent: action, curation_state: canonical, definition: A thing is rebuilt from recorded intent., enabled_by: realize_resources}
+  - {term: promote,           root: action, parent: action, curation_state: canonical, definition: A thing advances a curation or environment tier., enabled_by: realize_resources}
+  - {term: expire,            root: action, parent: action, curation_state: canonical, definition: A time bound elapsed and the thing lapsed by that fact rather than by an act., enabled_by: realize_resources}
+
+  # ── DATA MOVEMENT — the thing stays, its data goes somewhere ────────────────────────────────
+  # These are the terms the governance matrix carried and the audit enum lacked, which is the
+  # half that made the two lists incomparable. A boundary crossing is precisely a movement.
+  - {term: read,      root: action, parent: action, curation_state: canonical, definition: Data is looked at. The lightest crossing, and still a crossing when it leaves a boundary., enabled_by: serve_data}
+  - {term: write,     root: action, parent: action, curation_state: canonical, definition: Data is placed into a thing., enabled_by: serve_data}
+  - {term: store,     root: action, parent: action, curation_state: canonical, definition: Data is durably retained somewhere. Distinct from write — where it lands is the governed question., enabled_by: serve_data}
+  - {term: replicate, root: action, parent: action, curation_state: canonical, definition: Data is copied to a second location. The copy is a new crossing, which is why this is not `store`., enabled_by: serve_data}
+  - {term: export,    root: action, parent: action, curation_state: canonical, definition: Data leaves the boundary for a destination outside it., enabled_by: serve_data}
+  - {term: notify,    root: action, parent: action, curation_state: canonical, definition: Data is sent to an endpoint as a message. A notification carries content, so it is a movement., enabled_by: serve_data}
+  - {term: query,     root: action, parent: action, curation_state: canonical, definition: A set is selected. Distinct from `read` because what a query DISCLOSES is the shape of the set, not only its members., enabled_by: serve_data}
+  - {term: discover,  root: action, parent: action, curation_state: canonical, definition: Reality is observed and recorded. The one action whose subject is the world rather than the model., enabled_by: serve_data}
+  - {term: federate,  root: action, parent: action, curation_state: canonical, definition: Data or a request crosses to a peer authority. The single term that reads as both an action and a capability, and it is retained on both axes deliberately., enabled_by: federate}
+
+  # ── EVALUATION AND CONTROL ──────────────────────────────────────────────────────────────────
+  - {term: evaluate,          root: action, parent: action, curation_state: canonical, definition: A policy or rule is applied to produce a decision., enabled_by: realize_resources}
+  - {term: authorize,         root: action, parent: action, curation_state: canonical, definition: A request is permitted., enabled_by: authenticate}
+  - {term: refuse,            root: action, parent: action, curation_state: canonical, definition: A request is denied. Recorded as its own action because a refusal is an outcome somebody must be able to audit., enabled_by: realize_resources}
+  - {term: revoke,            root: action, parent: action, curation_state: canonical, definition: A previously granted permission is withdrawn., enabled_by: authenticate}
+  - {term: lock,              root: action, parent: action, curation_state: canonical, definition: A thing is held against change., enabled_by: authenticate}
+  - {term: enrich,            root: action, parent: action, curation_state: canonical, definition: A request gains values it did not carry., enabled_by: realize_resources}
+  - {term: config_change,     root: action, parent: action, curation_state: canonical, definition: Provider-side configuration changes, reported back so the state record stays authoritative., enabled_by: realize_resources}
+  - {term: capability_admit,  root: action, parent: action, curation_state: canonical, definition: A declared provider capability is admitted to the effective set., enabled_by: realize_resources}
+  - {term: execute,           root: action, parent: action, curation_state: canonical, definition: A process runs against a thing., enabled_by: execute_workflows}
+
+  # ── RESERVATION — the two-phase realize (ADR-011) ────────────────────────────────────────────
+  - {term: hold_place,        root: action, parent: action, curation_state: canonical, definition: A reservation is taken with no side effects., enabled_by: realize_resources}
+  - {term: hold_confirm,      root: action, parent: action, curation_state: canonical, definition: A held reservation is committed., enabled_by: realize_resources}
+  - {term: hold_release,      root: action, parent: action, curation_state: canonical, definition: A held reservation is dropped without being built., enabled_by: realize_resources}
+
+  # ── RELATIONSHIP AND MEMBERSHIP ─────────────────────────────────────────────────────────────
+  - {term: relationship_create,  root: action, parent: action, curation_state: canonical, definition: An edge between two things is declared., enabled_by: realize_resources}
+  - {term: relationship_release, root: action, parent: action, curation_state: canonical, definition: An edge is removed., enabled_by: realize_resources}
+  - {term: member_add,           root: action, parent: action, curation_state: canonical, definition: A thing joins a grouping., enabled_by: authenticate}
+  - {term: member_remove,        root: action, parent: action, curation_state: canonical, definition: A thing leaves a grouping., enabled_by: authenticate}
+  - {term: membership_expire,    root: action, parent: action, curation_state: canonical, definition: A membership lapsed by a time bound rather than by an act., enabled_by: authenticate}
+
+  # ── SESSION AND INGEST ──────────────────────────────────────────────────────────────────────
+  - {term: login,        root: action, parent: action, curation_state: canonical, definition: An actor establishes a session., enabled_by: authenticate}
+  - {term: logout,       root: action, parent: action, curation_state: canonical, definition: An actor ends a session., enabled_by: authenticate}
+  - {term: ingest,       root: action, parent: action, curation_state: canonical, definition: An external artifact is brought under management., enabled_by: realize_resources}
+  - {term: drift_detect, root: action, parent: action, curation_state: canonical, definition: Observed reality is found to differ from what was requested., enabled_by: realize_resources}
+  - {term: drift_resolve, root: action, parent: action, curation_state: canonical, definition: A detected divergence is closed, in either direction., enabled_by: realize_resources}
