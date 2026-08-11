@@ -78,6 +78,121 @@ nothing has been created ([ADR-011](../adr/ADR-011-validate-and-reserve.md)).
 
 ---
 
+## Where the data comes from
+
+The loop above shows *when* each step runs. It does not show **where the facts come from**, and that
+is the question a placement author actually has to answer. Raised in the 2026-08-10 engineering
+review:
+
+> *If OpenShift A reports five networks and OpenShift B another five, the person writing the
+> placement needs to know **what each network does**. On "network A" I don't know anything.*
+
+So: to place a VM on a KubeVirt-lineage provider you must know the **network**, the **storage class**
+and the **namespace**. None of the three is in the consumer's intent — a portable intent cannot name
+a provider's namespace — and none is invented by the loop. Each is **read from the estate**, and the
+estate is populated by providers reporting what they have.
+
+```mermaid
+flowchart LR
+  subgraph SRC["WHO KNOWS — populated by discovery, before any request exists"]
+    direction TB
+    PROV["Provider registration<br/>declares capability + capacity"]
+    DISC["Discovery<br/>observes what actually exists"]
+    PROV --> EST[("Estate<br/>Network.VirtualNetwork · Network.IPAddressPool<br/>Platform.StorageClass · Platform.Namespace")]
+    DISC --> EST
+  end
+
+  subgraph REQ["WHO ASKS — during the convergence loop"]
+    direction TB
+    EN2["Enrich<br/>adds the provider-specific fields"]
+    PL2["Placement<br/>narrows to providers that can satisfy"]
+  end
+
+  EST -->|"which networks exist, and what each one IS"| PL2
+  EST -->|"which storage classes, and what each advertises"| PL2
+  PL2 -->|"provider selected — now its namespace and native<br/>names are knowable, and were not before"| EN2
+  EN2 -->|"the selection changed the payload — round again"| PL2
+
+  CONS["Consumer intent<br/>'a VM, 4 vCPU, needs fast storage'"] --> PL2
+  CONS -.->|"names no network, no storage class,<br/>no namespace — it cannot"| X1[" "]
+  style X1 fill:none,stroke:none
+```
+
+**The re-entrant loop is not a retry.** Placement cannot run until the estate has been read, and
+enrichment cannot run until placement has chosen — because *which* namespace and *which* native
+storage-class name apply are properties of the provider that was selected. Selecting changes the
+payload, and the changed payload has to be re-validated. That is the loop, and it is why placement
+sits inside it rather than after it.
+
+### Worked: from "I need a network" to a reserved address
+
+The concrete path the review asked for — network identified first, address reserved *before*
+anything is built:
+
+| # | Step | What is read | What is written |
+|---|---|---|---|
+| 1 | Consumer declares intent | — | a VM, its size, and a requirement — *"reachable from the office network"* |
+| 2 | Placement reads the estate | every `Network.VirtualNetwork` a candidate provider reports | — |
+| 3 | Placement selects | the network whose declared characteristics satisfy the requirement | the chosen network on the payload |
+| 4 | Walk to the pool | `Network.IPAddressPool` `contained_by` that network | — |
+| 5 | Reserve an address | the pool's free capacity | a held `Network.IPAddress` — **before the VM exists** |
+| 6 | Enrich | the selected provider's Provider Class | namespace, native storage class, native subnet |
+| 7 | Round again | the payload changed at 3–6 | re-validated against every policy |
+
+Step 5 is why reserve is per component: the address is held while the VM is still hypothetical, so a
+request that cannot get one fails before anything is created.
+
+### What makes step 3 decidable
+
+The consumer does not name a network. **They state what they need, and the loop converges on one** —
+name-selectable but requirements-authoritative (ADR-036), the precedence `storage_tier` has followed
+since 2026-07-27. Networks now follow it too.
+
+**Three independent axes**, because they are three different questions, and a consumer may state
+any, all, or none of them:
+
+| Axis | The question | The provider reports | The consumer requires |
+|---|---|---|---|
+| **segment** | *which* logical network | `Network.VLAN`, via the `segment` edge | `networks[].vlan` |
+| **zone** | *what kind* — DMZ, management, internal | `Network.zone` → a governed **taxonomy** term | `networks[].zone` |
+| **tier** | *how good* — bandwidth, latency | `Network.tier` → a governed **floor** | `networks[].tier` |
+
+A DMZ segment and an internal segment may perform identically, and two networks in the same zone may
+not. One vocabulary would force an estate to choose which question it wanted the term to answer.
+
+**`zone` and `tier` sit on the Network BASE**, not on a type — they are expected to be consumable by
+every network provider, and scope IS portability (ADR-038 §3).
+
+**A category is not a floor, which is why they are different artifacts.** `tier` is reference data
+because a tier denotes something a second provider can measurably *meet*. `zone` is a **taxonomy**
+because it is what a network *is* — and only a taxonomy carries `normalization_rules`, which is what
+this needs: providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three must land
+on one canonical term before a policy can match on it.
+
+**Zone is placement data, and nothing else** (maintainer ruling 2026-08-10). It is not an
+authorization, not a control, and nothing critical hangs off it directly — **anything required
+because of a zone is enforced by policy reading that zone**, never by the zone itself. That keeps
+the model on the right side of its own boundary, and on the right side of zero-trust architecture,
+which derives no trust from network location (NIST SP 800-207) — UDLM already ships a
+`zero_trust.posture` setting that a location-as-trust reading would contradict.
+
+**The segment axis survives leaving the datacenter.** `encapsulation` already carries
+vlan / vxlan / geneve / flat, so the class is a segment of which 802.1Q is one form. A public cloud
+exposes no VLAN — there the segment is a **VPC subnet**, adopted by reference (T5) rather than given
+a parallel class: the VPC is the `Network.VirtualNetwork` and the subnet is the addressed segment
+within it. The three clouds converged on that shape independently, so re-expressing it would invent
+a fourth.
+
+**`network_ref` is now optional.** Requiring it was the defect: it forced a consumer to name a
+network they had no basis to choose between, which is exactly the objection above. Stating nothing
+means policy decides. Stating a requirement means the loop must satisfy it. Naming a network that
+fails a stated requirement is a **conflict**, not an override.
+
+And a stated requirement is still only a request — the provider validates and reserves (ADR-011).
+Nothing here lets a consumer assert past a provider that cannot deliver.
+
+---
+
 ## Who provides what, and when — and what THIS case changes
 
 The lifecycle answer — the personas, what a request contains, what is added and by whom, why nobody

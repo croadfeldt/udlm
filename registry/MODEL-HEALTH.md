@@ -4,20 +4,20 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **55 types** (Access 7, Knowledge 6, Process 2, Resource 40). Every spec is strict (`additionalProperties: false`, 55/55 (100%)) and the instance-fuzz harness rejected 4540 of 4540 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/55 (63%) of types appear in at least one use case; 20 appear in none. 5 types are named by a specific consumer manifest; the other 50 are carried only by the 4 envelope-level (all-types) consumers. 9 types declare no outputs and 25 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **56 types** (Access 7, Knowledge 6, Process 2, Resource 41). Every spec is strict (`additionalProperties: false`, 56/56 (100%)) and the instance-fuzz harness rejected 4725 of 4725 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/56 (62%) of types appear in at least one use case; 21 appear in none. 5 types are named by a specific consumer manifest; the other 51 are carried only by the 4 envelope-level (all-types) consumers. 9 types declare no outputs and 25 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
-| Types (by family) | 55 (Access 7, Knowledge 6, Process 2, Resource 40) | — |
-| Discrimination density | 4540/4540 = 100.00% | mutations rejected / attempted; 0 finding(s) |
-| Strictness coverage | 55/55 (100%) | asserted — a non-strict spec fails this tool |
+| Types (by family) | 56 (Access 7, Knowledge 6, Process 2, Resource 41) | — |
+| Discrimination density | 4725/4725 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Strictness coverage | 56/56 (100%) | asserted — a non-strict spec fails this tool |
 | Outputs adequacy | 9 zero-output, 25 one-output | declared Realized binding surface |
-| Context coverage | 55/55 (100%) | plain-English `context` blocks |
-| Relationships coverage | 44/55 (80%) | types declaring `relationships[]` |
-| UC coverage | 35/55 (63%) | types appearing in >=1 use case (149 UC files scanned) |
-| Consumer coverage | 55/55 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
+| Context coverage | 56/56 (100%) | plain-English `context` blocks |
+| Relationships coverage | 45/56 (80%) | types declaring `relationships[]` |
+| UC coverage | 35/56 (62%) | types appearing in >=1 use case (149 UC files scanned) |
+| Consumer coverage | 56/56 (100%) | ADR-044 manifests; 5 named explicitly, rest via all-types consumers |
 
 ## Outputs adequacy
 
@@ -30,7 +30,7 @@ downstream consumer can bind on.
 
 ## UC coverage gaps
 
-Types appearing in no use case (20) — each is either ahead of its
+Types appearing in no use case (21) — each is either ahead of its
 scenarios or untested by any story (textual scan; a dotted handle is unambiguous,
 single-word handles could in principle match prose):
 
@@ -48,6 +48,7 @@ single-word handles could in principle match prose):
 - `Identity.Group`
 - `Identity.Person`
 - `Identity.ServiceAccount`
+- `Network.Subnet`
 - `Network.Switch`
 - `Network.VLAN`
 - `SovereigntyZone`

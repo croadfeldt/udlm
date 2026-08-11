@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.4.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.5.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.4.2
+version: 1.5.0
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -79,18 +79,27 @@ elements:
   scope: Compute.VM
   optional: true
   state: canonical
-  description: Network attachment INTENT — each entry SELECTS an existing Network.VirtualNetwork (platform-layer
-    and/or provider-advertised) the NIC attaches to; the responsible network provider + policy decide
-    elig
+  description: >-
+    Network attachment INTENT — NAME-SELECTABLE BUT REQUIREMENTS-AUTHORITATIVE (ADR-036), the same
+    precedence storage_tier already follows. An entry MAY select a specific network by `network_ref`,
+    or state what it NEEDS (`zone`, `requires`) and let the loop converge on one.
+    NEITHER IS REQUIRED. Unstated, policy decides — the zone is derived or policy-dictated when the
+    consumer does not state it (maintainer ruling 2026-08-10). Where both are given the explicit
+    requirements drive the match and a zone name resolves to the same floor, so naming a network that
+    does not meet the stated requirements is a CONFLICT rather than an override.
+    Requiring `network_ref` was the defect this replaces: it forced a consumer to name a network they
+    had no basis to choose between — "on network A I don't know anything" (engineering review,
+    2026-08-10). The responsible network provider and policy still decide eligibility, and the
+    provider validates and reserves (ADR-011): a stated requirement is a request, never a guarantee.
+    The VM references existing networks; it does not define network segments itself.
   schema:
     type: array
-    description: Network attachment INTENT — each entry SELECTS an existing Network.VirtualNetwork (platform-layer
-      and/or provider-advertised) the NIC attaches to; the responsible network provider + policy decide
-      eligibility. The VM references existing networks, it does not define network segments itself.
+    description: >-
+      Network attachment INTENT — name-selectable but requirements-authoritative (ADR-036). Select a
+      network by `network_ref`, or state `zone`/`requires` and let placement converge on one. Neither
+      is required; unstated, policy decides. Explicit requirements are authoritative over a name.
     items:
       type: object
-      required:
-      - network_ref
       properties:
         name:
           type: string
@@ -99,6 +108,70 @@ elements:
           description: The Network.VirtualNetwork this interface attaches to — common-elements Reference
             (handle string or {uuid, handle} object); resolvable, policy-walkable, never an opaque string.
           $ref: ../../../common-elements.schema.json#/$defs/Reference
+        vlan:
+          description: >-
+            REQUIREMENT — WHICH LOGICAL NETWORK, as a reference to a `Network.VLAN`. The VLAN is the
+            identity of a logical network (maintainer ruling 2026-08-10): a segment id under an
+            encapsulation, which is what an operator means by "put it on that network".
+            Stated when the attachment must land on a specific logical network — because it has to
+            reach something already there, or an existing application lives on it. Absent means
+            policy decides.
+            REALIZATION VARIES; THE AXIS DOES NOT. `Network.VLAN.encapsulation` already carries
+            vlan / vxlan / geneve / flat, so the class is a SEGMENT of which 802.1Q is one form. A
+            public cloud exposes no VLAN — there the segment is a VPC subnet, adopted by reference on
+            Network.VLAN rather than given a parallel class: the VPC is the Network.VirtualNetwork
+            and the subnet is the addressed segment within it. A consumer states the segment; which
+            encapsulation realizes it is the provider's.
+            Resolved against the `segment` relationship a Network.VirtualNetwork already declares, so
+            placement narrows to networks on that segment rather than requiring the consumer to know
+            which provider network carries it.
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
+        subnet:
+          description: >-
+            REQUIREMENT — WHICH IP NETWORK, as a reference to a `Network.Subnet`. Layer 3, and
+            INDEPENDENTLY SELECTABLE from `vlan` (layer 2): a subnet usually sits on a segment, but
+            one segment may carry several subnets and a cloud may expose no segment at all, so the
+            mapping is not concrete (maintainer ruling 2026-08-10). "Put me on 198.51.100.0/24" and "put
+            me on VLAN 3020" are different requests; a consumer may state either, both, or neither.
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
+        subnet:
+          description: >-
+            REQUIREMENT — WHICH IP NETWORK, as a reference to a `Network.Subnet`. Layer 3, and
+            INDEPENDENTLY SELECTABLE from `vlan` (layer 2): a subnet usually sits on a segment, but
+            one segment may carry several subnets and a cloud may expose no segment at all, so the
+            mapping is not concrete (maintainer ruling 2026-08-10). "Put me on 198.51.100.0/24" and "put
+            me on VLAN 3020" are different requests; a consumer may state either, both, or neither.
+          $ref: ../../../common-elements.schema.json#/$defs/Reference
+        zone:
+          description: >-
+            REQUIREMENT — the network CATEGORY this attachment needs (DMZ, management, internal), as a
+            governed taxonomy term. Independent of `vlan` and `tier`: which logical network, what kind
+            of network, and how good it is are three different questions, and a consumer may state
+            any, all, or none of them.
+            FOR PLACEMENT ONLY. Requiring the management zone does not grant access to it, and
+            nothing critical may hang off the category directly — anything required because of a zone
+            is enforced by a policy reading it (maintainer ruling 2026-08-10). A zero-trust posture
+            derives no trust from network location (NIST SP 800-207).
+          allOf:
+          - $ref: ../../../data-reference.schema.json#/$defs/data_reference
+          - required:
+            - reference_data_type
+            properties:
+              reference_data_type:
+                const: network_zone
+        tier:
+          description: >-
+            REQUIREMENT — the governed `network_tier` (performance) this attachment needs. Independent
+            of `vlan`: which logical network and how good it is are different questions, and a
+            consumer may state either, both, or neither. Each term denotes a floor, so any network
+            meeting it qualifies — name-selectable but requirements-authoritative (ADR-036).
+          allOf:
+          - $ref: ../../../data-reference.schema.json#/$defs/data_reference
+          - required:
+            - reference_data_type
+            properties:
+              reference_data_type:
+                const: network_tier
         mac:
           type: string
           description: Optional requested MAC address.
