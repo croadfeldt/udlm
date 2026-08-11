@@ -11,8 +11,6 @@ known:
 - file: registry/classes/resource/compute/_base.yaml
   adr: '023'
 - file: registry/classes/resource/compute/_base.yaml
-  adr: '036'
-- file: registry/classes/resource/compute/_base.yaml
   adr: '012'
 - file: registry/classes/resource/compute/_base.yaml
   adr: '004'
@@ -26,8 +24,6 @@ known:
   adr: '014'
 - file: registry/classes/resource/compute/container.yaml
   adr: '023'
-- file: registry/classes/resource/compute/vm.yaml
-  adr: '036'
 - file: registry/classes/resource/compute/vm.yaml
   adr: 009
 - file: registry/classes/resource/compute/vm.yaml
@@ -58,10 +54,6 @@ known:
   adr: '025'
 - file: registry/classes/resource/platform/resource-quota.yaml
   adr: '025'
-- file: registry/classes/resource/platform/storage-class.yaml
-  adr: '036'
-- file: registry/classes/resource/storage/layout.yaml
-  adr: '036'
 - file: registry/classes/resource/storage/volume.yaml
   adr: '025'
 - file: registry/classes/resource/template/application/_base.yaml
@@ -119,8 +111,6 @@ known:
 - file: registry/generated/compute.bare-metal-host.json
   adr: '023'
 - file: registry/generated/compute.bare-metal-host.json
-  adr: '036'
-- file: registry/generated/compute.bare-metal-host.json
   adr: '012'
 - file: registry/generated/compute.bare-metal-host.json
   adr: '004'
@@ -129,8 +119,6 @@ known:
 - file: registry/generated/compute.cluster.json
   adr: '023'
 - file: registry/generated/compute.cluster.json
-  adr: '036'
-- file: registry/generated/compute.cluster.json
   adr: '012'
 - file: registry/generated/compute.cluster.json
   adr: '004'
@@ -139,8 +127,6 @@ known:
 - file: registry/generated/compute.container.json
   adr: '023'
 - file: registry/generated/compute.container.json
-  adr: '036'
-- file: registry/generated/compute.container.json
   adr: '012'
 - file: registry/generated/compute.container.json
   adr: '004'
@@ -148,8 +134,6 @@ known:
   adr: '014'
 - file: registry/generated/compute.vm.json
   adr: '023'
-- file: registry/generated/compute.vm.json
-  adr: '036'
 - file: registry/generated/compute.vm.json
   adr: '012'
 - file: registry/generated/compute.vm.json
@@ -182,10 +166,6 @@ known:
   adr: '025'
 - file: registry/generated/platform.resource-quota.json
   adr: '025'
-- file: registry/generated/platform.storage-class.json
-  adr: '036'
-- file: registry/generated/storage.layout.json
-  adr: '036'
 - file: registry/generated/storage.volume.json
   adr: '025'
 - file: registry/layer.schema.json
@@ -210,8 +190,6 @@ known:
   adr: '044'
 - file: registry/SPEC-DESIGN-REQUIREMENTS.md
   adr: 009
-- file: registry/TYPE-CATALOG.md
-  adr: '036'
 - file: registry/UDLM-0.1-SCOPE.md
   adr: '017'
 - file: registry/UDLM-0.1-SCOPE.md
@@ -278,16 +256,10 @@ known:
   adr: '012'
 - file: docs/spec/principles/portable-values.md
   adr: '025'
-- file: docs/spec/principles/portable-values.md
-  adr: '036'
-- file: docs/flows/application-tier-provisioning.md
-  adr: '036'
 - file: docs/flows/application-tier-provisioning.md
   adr: '055'
 - file: docs/flows/change-control-adoption.md
   adr: '044'
-- file: docs/flows/compute-provisioning-lifecycle.md
-  adr: '036'
 - file: docs/flows/compute-provisioning-lifecycle.md
   adr: '055'
 - file: docs/flows/credential-and-identity-lifecycle.md
@@ -297,17 +269,11 @@ known:
 - file: docs/flows/network-provisioning-lifecycle.md
   adr: '055'
 - file: docs/flows/platform-provisioning-lifecycle.md
-  adr: '036'
-- file: docs/flows/platform-provisioning-lifecycle.md
   adr: '055'
 - file: docs/flows/provider-lifecycle.md
   adr: '024'
 - file: docs/flows/request-realization.md
   adr: '024'
-- file: docs/flows/scoped-class-lifecycle.md
-  adr: '036'
-- file: docs/flows/storage-provisioning-lifecycle.md
-  adr: '036'
 - file: docs/flows/storage-provisioning-lifecycle.md
   adr: '055'
 - file: docs/flows/template-assembly.md
