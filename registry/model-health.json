@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 55,
+    "types": 56,
     "by_family": {
       "Access": 7,
       "Knowledge": 6,
       "Process": 2,
-      "Resource": 40
+      "Resource": 41
     }
   },
   "discrimination": {
-    "mutations_attempted": 4540,
-    "mutations_rejected": 4540,
+    "mutations_attempted": 4725,
+    "mutations_rejected": 4725,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -44,8 +44,8 @@
         "rejected": 334
       },
       "Compute.VM": {
-        "attempted": 227,
-        "rejected": 227
+        "attempted": 246,
+        "rejected": 246
       },
       "Data.Database": {
         "attempted": 70,
@@ -108,44 +108,48 @@
         "rejected": 85
       },
       "Network.AddressService": {
-        "attempted": 32,
-        "rejected": 32
+        "attempted": 42,
+        "rejected": 42
       },
       "Network.ConnectionProfile": {
-        "attempted": 25,
-        "rejected": 25
+        "attempted": 35,
+        "rejected": 35
       },
       "Network.DHCPScope": {
-        "attempted": 85,
-        "rejected": 85
+        "attempted": 95,
+        "rejected": 95
       },
       "Network.DNSZone": {
-        "attempted": 142,
-        "rejected": 142
+        "attempted": 152,
+        "rejected": 152
       },
       "Network.Gateway": {
-        "attempted": 109,
-        "rejected": 109
+        "attempted": 119,
+        "rejected": 119
       },
       "Network.IPAddress": {
-        "attempted": 29,
-        "rejected": 29
+        "attempted": 39,
+        "rejected": 39
       },
       "Network.IPAddressPool": {
-        "attempted": 77,
-        "rejected": 77
+        "attempted": 87,
+        "rejected": 87
+      },
+      "Network.Subnet": {
+        "attempted": 66,
+        "rejected": 66
       },
       "Network.Switch": {
-        "attempted": 84,
-        "rejected": 84
+        "attempted": 94,
+        "rejected": 94
       },
       "Network.VLAN": {
-        "attempted": 32,
-        "rejected": 32
+        "attempted": 42,
+        "rejected": 42
       },
       "Network.VirtualNetwork": {
-        "attempted": 38,
-        "rejected": 38
+        "attempted": 48,
+        "rejected": 48
       },
       "Observability.LogShipper": {
         "attempted": 52,
@@ -238,8 +242,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 55,
-    "total": 55
+    "strict_specs": 56,
+    "total": 56
   },
   "outputs": {
     "per_type": {
@@ -273,6 +277,7 @@
       "Network.Gateway": 1,
       "Network.IPAddress": 1,
       "Network.IPAddressPool": 4,
+      "Network.Subnet": 3,
       "Network.Switch": 2,
       "Network.VLAN": 1,
       "Network.VirtualNetwork": 1,
@@ -339,13 +344,13 @@
     ]
   },
   "context": {
-    "with_context": 55,
-    "total": 55,
+    "with_context": 56,
+    "total": 56,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 44,
-    "total": 55,
+    "with_relationships": 45,
+    "total": 56,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -414,6 +419,7 @@
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "Network.Subnet",
       "Network.Switch",
       "Network.VLAN",
       "SovereigntyZone",
@@ -474,6 +480,7 @@
       "Network.Gateway",
       "Network.IPAddress",
       "Network.IPAddressPool",
+      "Network.Subnet",
       "Network.Switch",
       "Network.VLAN",
       "Network.VirtualNetwork",
@@ -499,7 +506,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 55
+    "consumed_by_at_least_one": 56
   },
   "expressibility_coverage": {
     "value": null,

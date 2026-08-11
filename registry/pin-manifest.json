@@ -395,7 +395,7 @@
   }
  },
  "type:Compute.VM": {
-  "current": "1.4.2",
+  "current": "1.5.0",
   "path": "registry/classes/resource/compute/vm.yaml",
   "versions": {
    "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7",
@@ -404,7 +404,8 @@
    "1.3.0": "sha256:b4a75d1aea0b47ed0933ca07c94edcbb74f4ab3d72ac3e91e2441271fb9f9f8a",
    "1.4.0": "sha256:e3b8a4d25fe5046bbfa93342aa865c889913b3031263372e68d6471fb07fa4c5",
    "1.4.1": "sha256:0c77ef24609312bf62e46771b4bc9cb0a5f3d32276d692dfc2ae018cf6371165",
-   "1.4.2": "sha256:6d4c330adab9250af9cfc0f13233b411d177487a9912f2154212e2239416f378"
+   "1.4.2": "sha256:6d4c330adab9250af9cfc0f13233b411d177487a9912f2154212e2239416f378",
+   "1.5.0": "sha256:31787dcfd5711ba1f1ef146f67ec920fc31fb8cd4f816a11730555630caab510"
   }
  },
  "type:Compute.VM.CExampleCloud": {
@@ -635,10 +636,11 @@
   }
  },
  "type:Network": {
-  "current": "1.0.0",
+  "current": "1.1.0",
   "path": "registry/classes/resource/network/_base.yaml",
   "versions": {
-   "1.0.0": "sha256:e231a3a2876f05a7103f6f11aa96a791ec434e1c02ef15e0c7fa87396c84a345"
+   "1.0.0": "sha256:e231a3a2876f05a7103f6f11aa96a791ec434e1c02ef15e0c7fa87396c84a345",
+   "1.1.0": "sha256:547c295e829f9a1f720f3a63a82ed7eef4d49b494f6ae45e582f8a7a268de9a8"
   }
  },
  "type:Network.AddressService": {
@@ -708,7 +710,7 @@
   }
  },
  "type:Network.IPAddressPool": {
-  "current": "0.6.2",
+  "current": "0.7.0",
   "path": "registry/classes/resource/network/ipaddress-pool.yaml",
   "versions": {
    "0.3.5": "sha256:22a5c47296a577200fbfb9d2c57331c9832704662cf1a80b95fc487366d325f8",
@@ -716,7 +718,15 @@
    "0.5.0": "sha256:0cf7fadc10bb99d74a78cda9e5689d327513806f8494390e85bbfdc286e902c1",
    "0.6.0": "sha256:9aab15ee4b82b89111b04479092b971095b38bd6a2ce4abb7606aa580d0b8778",
    "0.6.1": "sha256:b6673f8e3086d88606fda9a80db7797a9460cf21d9321623215b5cd5a79ed207",
-   "0.6.2": "sha256:b1446008de93bc6e1c77425285544623267f6fea9f467f27e21f234765a2ab22"
+   "0.6.2": "sha256:b1446008de93bc6e1c77425285544623267f6fea9f467f27e21f234765a2ab22",
+   "0.7.0": "sha256:d4000ab843684259313bbcf47b13b24478fc680bf95accc6a036633410f4b5c1"
+  }
+ },
+ "type:Network.Subnet": {
+  "current": "0.1.0",
+  "path": "registry/classes/resource/network/subnet.yaml",
+  "versions": {
+   "0.1.0": "sha256:5ff9d4e68c92ea3e021a0c38454e7edbec05b919d78cc85b9c439e085367fc3d"
   }
  },
  "type:Network.Switch": {
@@ -732,14 +742,15 @@
   }
  },
  "type:Network.VLAN": {
-  "current": "0.5.1",
+  "current": "0.5.2",
   "path": "registry/classes/resource/network/vlan.yaml",
   "versions": {
    "0.3.2": "sha256:99d73486c573b649ec37ef3164cc170ce02625438df1d1beac0abeb601c80b2e",
    "0.4.0": "sha256:ee6f1eaca8e4119300ae072b78a54fae6fc0ac579423a28e17102b5a3dc33b73",
    "0.4.1": "sha256:d6b6dfc81273fb2df53a7f075c882f29c43156bfac3d235f668cc0626a46aec9",
    "0.5.0": "sha256:398c55438222c2d1ff98eee4f2f394072951353080cf15f84f742c4941c164f4",
-   "0.5.1": "sha256:47bdf0a27a5057de1edb2acdf55dff020e491f168f928a110b4104b2ae28e100"
+   "0.5.1": "sha256:47bdf0a27a5057de1edb2acdf55dff020e491f168f928a110b4104b2ae28e100",
+   "0.5.2": "sha256:5c37f85cf315ebf94cbac93544d3f103bc525814f9d846c1028fc44ff3169cc8"
   }
  },
  "type:Network.VirtualNetwork": {

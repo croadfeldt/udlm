@@ -1,0 +1,190 @@
+# Network.Subnet — the LAYER 3 network. Distinct from the layer 2 segment, deliberately.
+#
+# WHY THIS IS ITS OWN CLASS (maintainer ruling 2026-08-10): "vpc/vlan is the logical network, subnet
+# is the layer 3 network stack, which can be used to indicate VLAN, but that is not concrete. They
+# all need to be selectable individually."
+#
+# A subnet usually SITS ON a segment, and the temptation is to treat them as one thing. They are not:
+# one VLAN may carry several subnets, a subnet may be reachable across segments, and in a public
+# cloud the VPC-to-subnet relationship is the provider's arrangement rather than a fact a consumer
+# can rely on. Collapsing them would make "put me on VLAN 3020" and "put me on 198.51.100.0/24" the same
+# request, and they are not — a consumer may care about either, both, or neither.
+#
+# WHAT THIS REPLACES. `ownership-sharing-allocation.md` has named Subnet as a first-class resource
+# twice — "Subnet (from SubnetPool)", and a worked example of a /28 allocated from a /16 held by the
+# network team — while no such class existed. Network.IPAddressPool was standing in for it, which
+# conflated an ALLOCATION POOL (which addresses may be handed out) with the L3 NETWORK ITSELF (what
+# the network is, where its gateway is, how it routes). A pool now sits WITHIN a subnet.
+#
+# ADOPT, DO NOT INVENT (T5). The prefix/gateway/DHCP shape is RFC 4632 CIDR plus the model every
+# cloud and every IPAM converged on independently. Nothing here is novel; what it adds is a home.
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.Subnet/0.1.0
+conforms_to: udlm/0.1
+uuid: 07faf9f7-511b-4a77-8743-092fa6ca06a1
+record_type: class
+class: type
+resource_type: Network.Subnet
+parent: Network
+version: 0.1.0
+family: Resource
+status: active
+
+metadata:
+  display_name: Subnet
+  maintainer: UDLM project
+  origination_timestamp: '2026-08-10T00:00:00Z'
+  description: >-
+    An IP network — a prefix, its gateway, and how addresses on it are assigned. The layer 3 half of
+    "which network", independently selectable from the layer 2 segment it usually sits on.
+
+context:
+  purpose: >-
+    Give the layer 3 network a first-class identity, so a consumer can require an IP network without
+    naming a segment, and an allocation pool has something to sit inside.
+  plain_description: >-
+    The IP side of a network — the address range, the way out of it, and how hosts on it get an
+    address. Usually paired with one VLAN, but not always, which is why it is its own thing.
+  use_when:
+    - A workload must land on a particular IP network, whatever segment carries it
+    - An address pool needs an L3 network to belong to
+    - A /28 is allocated from a larger prefix somebody else holds
+  not_for:
+    - The layer 2 segment — that is `Network.VLAN`, and a subnet may not map to exactly one
+    - Handing out individual addresses — that is `Network.IPAddressPool` within this subnet
+    - Routing between networks — that is `Network.Gateway`
+  works_with:
+    - '`Network.VLAN` — the segment this subnet usually rides on, when there is one'
+    - '`Network.IPAddressPool` — the allocatable ranges within this subnet'
+    - '`Network.Gateway` — the egress from it'
+
+adopts:
+- standard: RFC 4632
+  version: RFC 4632
+  standard_name: CIDR prefix
+  role: The prefix notation and the aggregation semantics — adopted by reference, never re-expressed.
+  source: https://www.rfc-editor.org/rfc/rfc4632.html
+  license: IETF-Trust
+  license_compatibility: compatible-reference
+  disposition: tier1_value
+- standard: Public-cloud subnet
+  version: 'AWS VPC subnet / Azure VNet subnet / GCP subnetwork (convergent de-facto model)'
+  standard_name: VPC subnet
+  role: >-
+    The cloud realization of an L3 network within a logical network. Recorded so a cloud provider
+    naturalizes into this class rather than a cloud-only branch — the VPC is the logical network
+    (`Network.VirtualNetwork` / the segment axis) and this is the L3 network inside it.
+  source: https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html
+  license: vendor-documentation
+  license_compatibility: reference-only
+  disposition: tier1_value
+
+elements:
+- element: prefix
+  scope: Network.Subnet
+  optional: false
+  state: proposed
+  description: >-
+    The IP network in CIDR notation (RFC 4632) — `198.51.100.0/24`, `2001:db8::/64`. Required: a subnet
+    without a prefix is not a subnet, it is a name.
+  schema:
+    type: string
+    description: CIDR prefix, IPv4 or IPv6 (RFC 4632).
+
+- element: ip_family
+  scope: Network.Subnet
+  optional: true
+  state: proposed
+  description: >-
+    Address family. Derivable from `prefix` and carried anyway ONLY where a provider reports it
+    independently; a value disagreeing with the prefix is drift, not an override.
+  schema:
+    type: string
+    enum: [ipv4, ipv6]
+    x-extensible-enum: true
+
+- element: gateway_address
+  scope: Network.Subnet
+  optional: true
+  state: proposed
+  description: >-
+    The default route off this subnet, as an address rather than a reference — the address is a
+    property of the subnet, while the device answering it is a `Network.Gateway` and may change
+    without the subnet changing. Absent means no default route (an isolated L3 network).
+  schema:
+    type: string
+
+- element: address_assignment
+  scope: Network.Subnet
+  optional: true
+  state: proposed
+  description: >-
+    How a host on this subnet gets its address. `pool` means an IPAddressPool within this subnet
+    hands one out and it is reserved before realization — which is what lets an address be held while
+    the workload is still hypothetical (ADR-011).
+  schema:
+    type: string
+    enum: [static, dhcp, slaac, pool]
+    x-extensible-enum: true
+
+- element: dns_servers
+  scope: Network.Subnet
+  optional: true
+  state: proposed
+  description: >-
+    Resolvers offered to hosts on this subnet. Secondary to prefix and gateway (maintainer ruling
+    2026-08-10 — IPs, gateways and DNS are secondary to segment and performance), carried because a
+    provider reports it with the subnet and a consumer cannot obtain it any other way.
+  schema:
+    type: array
+    items:
+      type: string
+
+spec_examples:
+- prefix: 198.51.100.0/24        # RFC 5737 documentation range
+  ip_family: ipv4
+  gateway_address: 198.51.100.1
+  address_assignment: pool
+  dns_servers:
+  - 198.51.100.10
+  - 198.51.100.11
+
+outputs:
+  prefix:
+    type: string
+    description: >-
+      The CIDR actually realized. Where the subnet was ALLOCATED from a larger prefix (the /28-from-a-/16
+      case), the requested size and the granted range differ, so what a consumer got is a realized fact
+      rather than a restatement of intent.
+  gateway_address:
+    type: string
+    description: The default route as realized — the address a host on this subnet actually uses.
+  usable_addresses:
+    type: integer
+    description: >-
+      How many addresses are assignable. DERIVED from the prefix minus the reservations the provider
+      makes (network, broadcast, and whatever the platform holds back — clouds commonly take several),
+      which is why it is an output and not a stored field: only the realizing provider knows its own
+      reservations.
+
+relationships:
+- edge_type: references
+  name: segment
+  target: Network.VLAN
+  cardinality: 0..1
+  description: >-
+    The layer 2 segment this subnet rides on, WHERE THERE IS ONE. Optional and 0..1 on purpose: the
+    L2-to-L3 mapping is not concrete — one segment may carry several subnets, and a cloud provider
+    may expose no segment at all. A consumer selecting a subnet is making a different request from a
+    consumer selecting a segment, and this edge is what relates them without merging them.
+
+- edge_type: contained_by
+  name: network
+  target: Network.VirtualNetwork
+  cardinality: 0..1
+  description: The logical network (VPC analogue) this subnet belongs to, where the provider exposes one.
+
+coverage:
+  use_cases:
+  - compute/provision-vm-standard
+  flows:
+  - docs/flows/uc-04-vm-intent-osac-placement.md

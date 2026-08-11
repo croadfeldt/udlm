@@ -1,0 +1,83 @@
+# Network-zone taxonomy (seed) — WHAT KIND of network, as a classification.
+#
+# Raised in the 2026-08-10 engineering review: "on network A I don't know anything... I need more
+# context in order to write that policy." A network's NAME tells a placement author nothing, and
+# five networks reported by one cluster and five by another are incomparable without a shared
+# vocabulary for what each one IS.
+#
+# WHY A TAXONOMY AND NOT REFERENCE DATA. `network_tier` is reference data because a tier DENOTES A
+# FLOOR — something a second provider can measurably MEET. A zone is a CATEGORY — something a network
+# IS — and the two behave differently. Only a taxonomy carries `normalization_rules`, which is what
+# this needs: providers report `dmz-2`, `DMZ_RESTRICTED` and `dmz restricted`, and all three have to
+# land on one canonical term before any policy can match on it. Reference data has no normalization
+# concept, so it would preserve the spelling problem it was meant to solve.
+#
+# NOT A SECURITY BOUNDARY. Zero-trust architecture (NIST SP 800-207) explicitly rejects trust derived
+# from network location, and UDLM ships a `zero_trust.posture` setting. A zone classifies for
+# PLACEMENT and for human legibility. Requiring the management zone does not grant access to it — who
+# may reach what stays with policy and grouping. A term below that starts being read as an
+# authorization is a defect in the reader, and worth catching in review.
+#
+# SEED, NOT A CLOSED SET. These are the categories that recur across estates; `curation_state:
+# proposed` is honest about the fact that they have not been validated against a second estate yet.
+# An organization adds its own under this root (registry-governance §2 Org tier) rather than bending
+# one of these — a term nobody agreed on is worse than a term nobody uses.
+
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: network-zone
+
+terms:
+  - term: network-zone
+    root: network-zone
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the network-category vocabulary — what KIND of network a segment is, independent of
+      which segment it is (`Network.VLAN`) and of how well it performs (`network_tier`). Three
+      questions, three axes; a consumer may state any, all, or none.
+
+  - term: dmz
+    root: network-zone
+    parent: network-zone
+    curation_state: proposed
+    definition: >-
+      A network positioned between an untrusted network and an internal one, carrying workloads that
+      are deliberately reachable from outside. The defining property is EXPOSURE, not the controls
+      around it — a DMZ with strict controls is still a DMZ.
+    normalization_rules:
+      - match: '(?i)^dmz([-_ ].*)?$'
+      - match: '(?i)^(perimeter|edge|public[-_ ]facing)$'
+
+  - term: internal
+    root: network-zone
+    parent: network-zone
+    curation_state: proposed
+    definition: >-
+      A general-purpose network for workloads that serve other internal workloads and are not
+      deliberately exposed. The default category for most application traffic, and the one most
+      likely to be over-applied — if everything is internal, the vocabulary is doing no work.
+    normalization_rules:
+      - match: '(?i)^(internal|intranet|private|trusted)([-_ ].*)?$'
+
+  - term: management
+    root: network-zone
+    parent: network-zone
+    curation_state: proposed
+    definition: >-
+      A network carrying control-plane and out-of-band administration traffic — BMCs, hypervisor
+      management, switch management. Distinguished from `internal` because the workloads on it manage
+      infrastructure rather than run on it, which is a different blast radius.
+    normalization_rules:
+      - match: '(?i)^(management|mgmt|oob|out[-_ ]of[-_ ]band|admin)([-_ ].*)?$'
+
+  - term: storage
+    root: network-zone
+    parent: network-zone
+    curation_state: proposed
+    definition: >-
+      A network dedicated to storage traffic — iSCSI, NFS, Ceph, FCoE. A category rather than a tier:
+      a storage network is often also high-performance, but the two are independent and a slow
+      storage network is still a storage network.
+    normalization_rules:
+      - match: '(?i)^(storage|san|iscsi|nfs|ceph)([-_ ].*)?$'

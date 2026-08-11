@@ -158,7 +158,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.4.2)
+### Compute.VM (1.5.0)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -602,7 +602,7 @@ One IP address, bound to the interface it is configured on, with how it came to 
 - Network.IPAddressPool — the pool the address was carved from.
 - Compute.VM — consumers that request or bring addresses.
 
-### Network.IPAddressPool (0.6.2)
+### Network.IPAddressPool (0.7.0)
 
 **Purpose:** Makes an allocatable IP range a first-class record so allocation ownership and exhaustion are visible facts.
 
@@ -620,6 +620,27 @@ A range of addresses that individual address records are carved from: the requir
 - Network.IPAddress — the records carved from the pool (allocated_from).
 - Network.VirtualNetwork — the segment the pool serves.
 - Network.DHCPScope — the service-side projection of the same subnet.
+
+### Network.Subnet (0.1.0)
+
+**Purpose:** Give the layer 3 network a first-class identity, so a consumer can require an IP network without naming a segment, and an allocation pool has something to sit inside.
+
+The IP side of a network — the address range, the way out of it, and how hosts on it get an address. Usually paired with one VLAN, but not always, which is why it is its own thing.
+
+**Use when:**
+- A workload must land on a particular IP network, whatever segment carries it
+- An address pool needs an L3 network to belong to
+- A /28 is allocated from a larger prefix somebody else holds
+
+**Not for:**
+- The layer 2 segment — that is `Network.VLAN`, and a subnet may not map to exactly one
+- Handing out individual addresses — that is `Network.IPAddressPool` within this subnet
+- Routing between networks — that is `Network.Gateway`
+
+**Works with:**
+- `Network.VLAN` — the segment this subnet usually rides on, when there is one
+- `Network.IPAddressPool` — the allocatable ranges within this subnet
+- `Network.Gateway` — the egress from it
 
 ### Network.Switch (0.7.2)
 
@@ -642,7 +663,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.5.1)
+### Network.VLAN (0.5.2)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 
@@ -1143,4 +1164,4 @@ One advisory, one record, keyed by its public id (e.g. a CVE id). It carries the
 - SoftwareImage — reached transitively for blast radius (advisory → package → image).
 
 ---
-*55 types; 55 with context, 0 pending.*
+*56 types; 56 with context, 0 pending.*

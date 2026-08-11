@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.6.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddressPool/0.7.0
 conforms_to: udlm/0.1
 uuid: 00257168-ae65-475c-bf34-f14f2e39f855
 record_type: class
 class: type
 resource_type: Network.IPAddressPool
 parent: Network
-version: 0.6.2
+version: 0.7.0
 family: Resource
 status: active
 # OWN-007 — the pool entity itself is owned outright by the platform Tenant; what it PRODUCES is an
@@ -120,6 +120,15 @@ outputs:
 immutable:
 - ip_family
 relationships:
+- edge_type: contained_by
+  name: subnet
+  target: Network.Subnet
+  cardinality: 0..1
+  description: >-
+    The L3 network these ranges carve up. Added 2026-08-10 with Network.Subnet: a pool is an
+    ALLOCATION surface (which addresses may be handed out), never the network itself (what the
+    network is, where its gateway is). Before the subnet class existed this pool's own `prefix` was
+    standing in for both, which conflated the two.
 - edge_type: contained_by
   name: network
   target: Network.VirtualNetwork
