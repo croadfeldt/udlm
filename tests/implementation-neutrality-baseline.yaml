@@ -4,8 +4,6 @@ _comment: "Burn-down baseline for tests/check_implementation_neutrality.py (IMP-
   \ a new violation."
 known:
 - file: docs/adr/ADR-002-capacity-utilization-served-overlay.md
-  hash: edabec98c7baa621
-- file: docs/adr/ADR-002-capacity-utilization-served-overlay.md
   hash: f0ffcd4f7d3e9ebf
 - file: docs/adr/ADR-002-capacity-utilization-served-overlay.md
   hash: 1fafd33176160150
@@ -18,11 +16,7 @@ known:
 - file: docs/adr/ADR-002-capacity-utilization-served-overlay.md
   hash: 7f8a57c74e64be89
 - file: docs/adr/ADR-003-data-mobility-and-process-validation.md
-  hash: edabec98c7baa621
-- file: docs/adr/ADR-003-data-mobility-and-process-validation.md
   hash: 9f98566ea60115dc
-- file: docs/adr/ADR-003-data-mobility-and-process-validation.md
-  hash: c65309acf322f4a8
 - file: docs/adr/ADR-003-data-mobility-and-process-validation.md
   hash: 991f459696db3590
 - file: docs/adr/ADR-003-data-mobility-and-process-validation.md
@@ -73,8 +67,6 @@ known:
   hash: 698c939c68d28f32
 - file: docs/adr/ADR-010-dependency-graph-completion.md
   hash: 643a193c4afc2c85
-- file: docs/adr/ADR-011-validate-and-reserve.md
-  hash: bc4589365a496a87
 - file: docs/adr/ADR-011-validate-and-reserve.md
   hash: c71b445e9d955324
 - file: docs/adr/ADR-011-validate-and-reserve.md
@@ -182,10 +174,6 @@ known:
 - file: docs/adr/ADR-033-templates.md
   hash: 82059bdd53c97e02
 - file: docs/adr/ADR-034-composite-service-is-template.md
-  hash: df0104e0953ab5ba
-- file: docs/adr/ADR-034-composite-service-is-template.md
-  hash: 7110bcea16b4b931
-- file: docs/adr/ADR-034-composite-service-is-template.md
   hash: 66440006fd45db35
 - file: docs/adr/ADR-035-reference-vocabulary-portability.md
   hash: b9fdf1fcc6425fac
@@ -208,15 +196,11 @@ known:
 - file: docs/adr/ADR-041-policy-information-firewall.md
   hash: 754477dc5be7484c
 - file: docs/adr/ADR-041-policy-information-firewall.md
-  hash: 8d48248377944d9a
-- file: docs/adr/ADR-041-policy-information-firewall.md
   hash: 7a942950df1f7d64
 - file: docs/adr/ADR-041-policy-information-firewall.md
   hash: 17cf6dc7ec7f056a
 - file: docs/adr/ADR-041-policy-information-firewall.md
   hash: 7d8eb7aaae585355
-- file: docs/adr/ADR-042-standard-neutrality-and-portability-policy.md
-  hash: '2700168335989027'
 - file: docs/adr/ADR-042-standard-neutrality-and-portability-policy.md
   hash: eedf530377aada1f
 - file: docs/adr/ADR-046-blue-green-promotion-contract.md
@@ -261,8 +245,6 @@ known:
   hash: 7a942950df1f7d64
 - file: docs/adr/ADR-050-absolute-provider-pin.md
   hash: 98c8a5e830bba479
-- file: docs/adr/ADR-050-absolute-provider-pin.md
-  hash: 5eff734049184a77
 - file: docs/adr/ADR-050-absolute-provider-pin.md
   hash: e70d2b81cf718ddd
 - file: docs/adr/ADR-051-identity-version-revision.md
@@ -364,8 +346,6 @@ known:
 - file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
   hash: 8c00bd76116ec4e7
 - file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
-  hash: a3de5805a3a1de18
-- file: docs/adr/ADR-PROV-002-provider-capabilities-and-categories.md
   hash: e1d93f5184d4777b
 - file: docs/adr/ADR-PROV-003-provider-capability-admission.md
   hash: 18e696b27b27ca33
@@ -384,29 +364,11 @@ known:
 - file: docs/adr/README.md
   hash: 1c3a23355e42813f
 - file: docs/adr/README.md
-  hash: f4b713567ae9404b
-- file: docs/adr/README.md
-  hash: e5d163366f27f985
-- file: docs/adr/README.md
-  hash: 53d031e8aebaf445
-- file: docs/adr/README.md
-  hash: b758d6f11a2f6403
-- file: docs/adr/README.md
-  hash: 5094bdb254465638
-- file: docs/adr/README.md
-  hash: 3c95cb5313a4beb8
-- file: docs/adr/README.md
   hash: 925b130d965d1ca2
-- file: docs/adr/README.md
-  hash: 2258381f6ea08ad0
 - file: docs/adr/README.md
   hash: 15fe1796e4b393c4
 - file: docs/adr/README.md
   hash: a3d40491276fa0d4
-- file: docs/adr/README.md
-  hash: e32c9dc4fe0e35f8
-- file: docs/adr/README.md
-  hash: 026da6a1a45a1561
 - file: docs/adr/README.md
   hash: a02446780e083a30
 - file: docs/adr/README.md
@@ -568,8 +530,6 @@ known:
 - file: docs/spec/contracts/policy-contract.md
   hash: 4dc29da0e500c5ac
 - file: docs/spec/contracts/policy-contract.md
-  hash: ac807729cb2e5a48
-- file: docs/spec/contracts/policy-contract.md
   hash: 5e997885d8345c8a
 - file: docs/spec/contracts/policy-contract.md
   hash: d2d24dce0f5d6b99
@@ -585,198 +545,6 @@ known:
   hash: 0b8cbbabfd471666
 - file: docs/spec/contracts/provider-callback-auth.md
   hash: 42ad7f36c934ba50
-- file: docs/spec/contracts/provider-contract.md
-  hash: aceed64ff78995c5
-- file: docs/spec/contracts/provider-contract.md
-  hash: 2d2f398c3acdce7b
-- file: docs/spec/contracts/provider-contract.md
-  hash: 6f76f06ad0388fce
-- file: docs/spec/contracts/provider-contract.md
-  hash: 9fe50ea427593a9d
-- file: docs/spec/contracts/provider-contract.md
-  hash: 38350eadd53c74f1
-- file: docs/spec/contracts/provider-contract.md
-  hash: 8896a3785103ec74
-- file: docs/spec/contracts/provider-contract.md
-  hash: 9e0c9e57887b03b6
-- file: docs/spec/contracts/provider-contract.md
-  hash: 468f96c8e628e17b
-- file: docs/spec/contracts/provider-contract.md
-  hash: cc462bffb583ce43
-- file: docs/spec/contracts/provider-contract.md
-  hash: e8d08cc61063d7e3
-- file: docs/spec/contracts/provider-contract.md
-  hash: 399cad3862324db9
-- file: docs/spec/contracts/provider-contract.md
-  hash: c1e62bf77d9fabaf
-- file: docs/spec/contracts/provider-contract.md
-  hash: b3ee223305b038c2
-- file: docs/spec/contracts/provider-contract.md
-  hash: bced48f9188c5cef
-- file: docs/spec/contracts/provider-contract.md
-  hash: 5e2c8d2a9c41a9a9
-- file: docs/spec/contracts/provider-contract.md
-  hash: 397f16cfd0f29c0c
-- file: docs/spec/contracts/provider-contract.md
-  hash: a333595f29d10b14
-- file: docs/spec/contracts/provider-contract.md
-  hash: d4949a65c249b46e
-- file: docs/spec/contracts/provider-contract.md
-  hash: 37efcf3f9257834f
-- file: docs/spec/contracts/provider-contract.md
-  hash: 76e0a0183d771eae
-- file: docs/spec/contracts/provider-contract.md
-  hash: 7f9d2b2cb81350e6
-- file: docs/spec/contracts/provider-contract.md
-  hash: 1958b046ad767097
-- file: docs/spec/contracts/provider-contract.md
-  hash: 81e7bfe98589ce99
-- file: docs/spec/contracts/provider-contract.md
-  hash: 8b47fd4c91ae06af
-- file: docs/spec/contracts/provider-contract.md
-  hash: e8970b42e162a9fc
-- file: docs/spec/contracts/provider-contract.md
-  hash: a62f9fc5cecdbc05
-- file: docs/spec/contracts/provider-contract.md
-  hash: 469247eff9e1503f
-- file: docs/spec/contracts/provider-contract.md
-  hash: 6d2da774e3fabebe
-- file: docs/spec/contracts/provider-contract.md
-  hash: cdf6d8674948e0c5
-- file: docs/spec/contracts/provider-contract.md
-  hash: 16b26a118adc0130
-- file: docs/spec/contracts/provider-contract.md
-  hash: 8f9ec8fc76c55129
-- file: docs/spec/contracts/provider-contract.md
-  hash: abadeab2bdfd2aad
-- file: docs/spec/contracts/provider-contract.md
-  hash: b795d7e20a979127
-- file: docs/spec/contracts/provider-contract.md
-  hash: 2b81ee9bda4818e6
-- file: docs/spec/contracts/provider-contract.md
-  hash: fc19289fd1751bdb
-- file: docs/spec/contracts/provider-contract.md
-  hash: f6e0aeb3138fb1fd
-- file: docs/spec/contracts/provider-contract.md
-  hash: bd8d71095d9b88d0
-- file: docs/spec/contracts/provider-contract.md
-  hash: 505cff821db6b48a
-- file: docs/spec/contracts/provider-contract.md
-  hash: cad7d60fef72d427
-- file: docs/spec/contracts/provider-contract.md
-  hash: f16a07b945db2bc4
-- file: docs/spec/contracts/provider-contract.md
-  hash: 98bbc544dc8d0cd0
-- file: docs/spec/contracts/provider-contract.md
-  hash: e91a78e0c51d9186
-- file: docs/spec/contracts/provider-contract.md
-  hash: 168eacec86be3cb4
-- file: docs/spec/contracts/provider-contract.md
-  hash: f45d6acb1515ea6a
-- file: docs/spec/contracts/provider-contract.md
-  hash: e1873f18e5957a69
-- file: docs/spec/contracts/provider-contract.md
-  hash: 1173b7dabad8d8b3
-- file: docs/spec/contracts/provider-contract.md
-  hash: a67153c5dc135b8f
-- file: docs/spec/contracts/provider-contract.md
-  hash: b924f91bd5489b20
-- file: docs/spec/contracts/provider-contract.md
-  hash: fa76f3eaa4effe00
-- file: docs/spec/contracts/provider-contract.md
-  hash: 41c844880c840107
-- file: docs/spec/contracts/provider-contract.md
-  hash: c2303ff5415f2a6b
-- file: docs/spec/contracts/provider-contract.md
-  hash: db7291d7751a63d0
-- file: docs/spec/contracts/provider-contract.md
-  hash: d94ace40a8adfc5c
-- file: docs/spec/contracts/provider-contract.md
-  hash: cc82dee0f007d100
-- file: docs/spec/contracts/provider-contract.md
-  hash: 9296d4249a3eb5b2
-- file: docs/spec/contracts/provider-contract.md
-  hash: b63bd300927bb792
-- file: docs/spec/contracts/provider-contract.md
-  hash: 7488de08c8ca56c2
-- file: docs/spec/contracts/provider-contract.md
-  hash: f8328c40ea18b7df
-- file: docs/spec/contracts/provider-contract.md
-  hash: 30a4020a1f9db04d
-- file: docs/spec/contracts/provider-contract.md
-  hash: ed7d5f9b5260eb1d
-- file: docs/spec/contracts/provider-contract.md
-  hash: 3bf18262409cdf84
-- file: docs/spec/contracts/provider-contract.md
-  hash: 7e2bdb47833bf715
-- file: docs/spec/contracts/provider-contract.md
-  hash: fc3b0e6ba0e48b65
-- file: docs/spec/contracts/provider-contract.md
-  hash: 4d1880b222625537
-- file: docs/spec/contracts/provider-contract.md
-  hash: 2ca5eeb4d3e40828
-- file: docs/spec/contracts/provider-contract.md
-  hash: 34f8d6a112b8b691
-- file: docs/spec/contracts/provider-contract.md
-  hash: cbef591e7baba2cc
-- file: docs/spec/contracts/provider-contract.md
-  hash: 96a66156fe1e708c
-- file: docs/spec/contracts/provider-contract.md
-  hash: af9359164b446b12
-- file: docs/spec/contracts/provider-contract.md
-  hash: 42cd5fc24feb7ed2
-- file: docs/spec/contracts/provider-contract.md
-  hash: 3a21c91c6a479bc1
-- file: docs/spec/contracts/provider-contract.md
-  hash: 78f224d813a3c774
-- file: docs/spec/contracts/provider-contract.md
-  hash: f564248afab21e7b
-- file: docs/spec/contracts/provider-contract.md
-  hash: b9c0083ba6f399ee
-- file: docs/spec/contracts/provider-contract.md
-  hash: 8b458e0dafcfc7d9
-- file: docs/spec/contracts/provider-contract.md
-  hash: 2ba12fbf5c8d7d08
-- file: docs/spec/contracts/provider-contract.md
-  hash: b2ab3c92d1db017a
-- file: docs/spec/contracts/provider-contract.md
-  hash: 535a254d4b85c525
-- file: docs/spec/contracts/provider-contract.md
-  hash: 759159e1a5b9f5fd
-- file: docs/spec/contracts/provider-contract.md
-  hash: 27831b78d079ba20
-- file: docs/spec/contracts/provider-contract.md
-  hash: 5fc4005663313daf
-- file: docs/spec/contracts/provider-contract.md
-  hash: c89a11b7db3e9926
-- file: docs/spec/contracts/provider-contract.md
-  hash: 1600c61ce78e0cb6
-- file: docs/spec/contracts/provider-contract.md
-  hash: d9188a20e963ce1f
-- file: docs/spec/contracts/provider-contract.md
-  hash: 3e03587d170e3b05
-- file: docs/spec/contracts/provider-contract.md
-  hash: 2f21599514eeea5a
-- file: docs/spec/contracts/provider-contract.md
-  hash: 6502851c071af0ff
-- file: docs/spec/contracts/provider-contract.md
-  hash: 6b6703d042cd6573
-- file: docs/spec/contracts/provider-contract.md
-  hash: 60692dfc5bb5a580
-- file: docs/spec/contracts/provider-contract.md
-  hash: 750d9264ed01d7c3
-- file: docs/spec/contracts/provider-contract.md
-  hash: baf27cbfcb721250
-- file: docs/spec/contracts/provider-contract.md
-  hash: ad801c5b83bafe3d
-- file: docs/spec/contracts/provider-contract.md
-  hash: 32547be2274a201c
-- file: docs/spec/contracts/provider-contract.md
-  hash: 5216fb6569847d4b
-- file: docs/spec/contracts/provider-contract.md
-  hash: 1e6e79f4df4a0f83
-- file: docs/spec/contracts/provider-contract.md
-  hash: 07b510a4e8faa12a
 - file: docs/spec/contracts/schema-sharing.md
   hash: 2c82b375a55f9da1
 - file: docs/spec/contracts/storage-providers.md
@@ -844,21 +612,13 @@ known:
 - file: docs/spec/foundations/context-and-purpose.md
   hash: 390b2dd2475f33ca
 - file: docs/spec/foundations/context-and-purpose.md
-  hash: 5953ffd8479eb09f
-- file: docs/spec/foundations/context-and-purpose.md
   hash: 5872df6033e0ba43
 - file: docs/spec/foundations/data-model-core.md
   hash: 59197c30edcbad78
 - file: docs/spec/foundations/data-model-core.md
-  hash: 27ede157637452d6
-- file: docs/spec/foundations/data-model-core.md
   hash: 8f1c2b6b8febdd3b
 - file: docs/spec/foundations/data-model-core.md
   hash: 71025fc072602b00
-- file: docs/spec/foundations/data-model-core.md
-  hash: 40f286db408471ad
-- file: docs/spec/foundations/data-model-core.md
-  hash: 40f4aaa3b82e29a8
 - file: docs/spec/foundations/entity-relationships.md
   hash: 993e34fe4368dc4e
 - file: docs/spec/foundations/entity-relationships.md
@@ -1262,12 +1022,6 @@ known:
 - file: docs/spec/governance/accreditation-and-authorization-matrix.md
   hash: e2eafdc8d29a3a66
 - file: docs/spec/governance/auth-providers.md
-  hash: 01b08f5d63345dac
-- file: docs/spec/governance/auth-providers.md
-  hash: 7fa62437eed675b3
-- file: docs/spec/governance/auth-providers.md
-  hash: 9c6ecbb8b0a26e21
-- file: docs/spec/governance/auth-providers.md
   hash: bb1c6e329d0980db
 - file: docs/spec/governance/credentials.md
   hash: 33830501d84b53ff
@@ -1328,15 +1082,11 @@ known:
 - file: docs/spec/principles/core-tenets.md
   hash: ec73489c76aaf1e5
 - file: docs/spec/principles/core-tenets.md
-  hash: e797249d37aa26b5
-- file: docs/spec/principles/core-tenets.md
   hash: 100837f9d2c8a9c6
 - file: docs/spec/principles/core-tenets.md
   hash: 620226dd66c3c814
 - file: docs/spec/principles/core-tenets.md
   hash: 503c0f0b1d81879a
-- file: docs/spec/principles/core-tenets.md
-  hash: 50b6db4d1c7f6085
 - file: docs/spec/principles/core-tenets.md
   hash: 826e0f121f66e9bc
 - file: docs/spec/principles/core-tenets.md
@@ -1402,23 +1152,15 @@ known:
 - file: registry/UDLM-0.1-SCOPE.md
   hash: 6ea46dfb00141a5c
 - file: registry/UDLM-0.1-SCOPE.md
-  hash: 76deb32ee4cb7396
-- file: registry/UDLM-0.1-SCOPE.md
   hash: 4bca5096e1b2bbb5
 - file: registry/UDLM-0.1-SCOPE.md
   hash: 479f65bd0cfb4b85
 - file: registry/UDLM-0.1-SCOPE.md
   hash: a1e3e1be8152216d
 - file: registry/UDLM-0.1-SCOPE.md
-  hash: 0ea0a941a58f22d8
-- file: registry/UDLM-0.1-SCOPE.md
-  hash: 8c6298d76a69b7f1
-- file: registry/UDLM-0.1-SCOPE.md
   hash: bc82db99a41c2aa6
 - file: registry/UDLM-0.1-SCOPE.md
   hash: c82f6ca80833fe50
-- file: registry/UDLM-0.1-SCOPE.md
-  hash: a6028da2e6f6e197
 - file: registry/UDLM-0.1-SCOPE.md
   hash: 2573042b3a2e451e
 - file: registry/UDLM-0.1-SCOPE.md
@@ -1454,21 +1196,11 @@ known:
 - file: registry/classes/process/job/_base.yaml
   hash: b96178a901625fa2
 - file: registry/classes/resource/compute/container.yaml
-  hash: eba80e4f8a03c2ff
-- file: registry/classes/resource/compute/container.yaml
   hash: 780a3bc7fe90d872
 - file: registry/classes/resource/compute/container.yaml
-  hash: 8cbdbf48ca86cc84
-- file: registry/classes/resource/compute/container.yaml
   hash: 780a3bc7fe90d872
-- file: registry/classes/resource/compute/container.yaml
-  hash: 8cbdbf48ca86cc84
-- file: registry/classes/resource/compute/container.yaml
-  hash: 0c626789609cf0b5
 - file: registry/classes/resource/compute/container.yaml
   hash: 501e3672f54bc21a
-- file: registry/classes/resource/data/database.yaml
-  hash: e2f87d5b0b7f7a32
 - file: registry/classes/resource/data/database.yaml
   hash: 387756ea85dde7b4
 - file: registry/classes/resource/facility/location.yaml
@@ -1485,26 +1217,16 @@ known:
   hash: b2fdcc0ea891a645
 - file: registry/classes/resource/security/credential-ref.yaml
   hash: 3d6f226c717d8ae0
-- file: registry/classes/resource/software/service.yaml
-  hash: c5c87b129cc82365
 - file: registry/classes/resource/storage/dataset.yaml
   hash: e3c9b0a02454edf6
 - file: registry/classes/resource/storage/file-share.yaml
   hash: 72468905dbf1740c
-- file: registry/classes/resource/storage/file-share.yaml
-  hash: cc0b1bba54e7cab7
-- file: registry/classes/resource/storage/file-share.yaml
-  hash: 96f3cfaeefd1bfb9
-- file: registry/classes/resource/storage/file-share.yaml
-  hash: 75e7ee47d5fe18a6
 - file: registry/classes/resource/storage/file-share.yaml
   hash: 8ad423af7a88c396
 - file: registry/classes/resource/storage/file-share.yaml
   hash: 98ab0e3f81344c46
 - file: registry/commit-log-entry.schema.json
   hash: 5c11ccab5406fe72
-- file: registry/common-elements.md
-  hash: 47fe8c314cf8f0ea
 - file: registry/common-elements.md
   hash: ebd20497bef518e4
 - file: registry/common-elements.md
@@ -1531,8 +1253,6 @@ known:
   hash: 2bbfffa8d5b4bb1d
 - file: registry/examples/example-layer-multidoc.yaml
   hash: 8d37e09e786a98ee
-- file: registry/examples/example-layer-multidoc.yaml
-  hash: 5138bf54fbef7f05
 - file: registry/function-capability-matrix.schema.json
   hash: 5e759c3935b1c6c3
 - file: registry/function-capability-matrix.schema.json
@@ -1561,24 +1281,8 @@ known:
   hash: e8ce1202b3139bff
 - file: registry/policy.schema.json
   hash: 1c8828076f67e0ab
-- file: registry/policy.schema.json
-  hash: 221f381d31748391
-- file: registry/profiles/dev.yaml
-  hash: 7116fbf956080344
-- file: registry/profiles/fsi.yaml
-  hash: 47ff09eac10a8166
-- file: registry/profiles/fsi.yaml
-  hash: e467f042279e5b90
-- file: registry/profiles/prod.yaml
-  hash: 59fe022913796db3
-- file: registry/profiles/prod.yaml
-  hash: 2f74245c83294667
-- file: registry/profiles/sovereign.yaml
-  hash: 37b80dc442c89fcb
 - file: registry/profiles/sovereign.yaml
   hash: e4808a3507df768a
-- file: registry/profiles/standard.yaml
-  hash: 8a37798ca29bf7ab
 - file: registry/provider-adopted-standards.schema.json
   hash: f92ab7fd406689fa
 - file: registry/provider-adopted-standards.schema.json
@@ -1591,8 +1295,6 @@ known:
   hash: ebf6c9bc5d7b52e3
 - file: registry/realized-entity.schema.json
   hash: 53374d19f7dad7ae
-- file: registry/realized-entity.schema.json
-  hash: bf1e5a672b286334
 - file: registry/realized-entity.schema.json
   hash: 9fdf4162770e8bfa
 - file: registry/realized-entity.schema.json
