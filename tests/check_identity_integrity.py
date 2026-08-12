@@ -55,6 +55,10 @@ _spec.loader.exec_module(_pin)
 
 IMMUTABLE_RECORD_TYPES = {
     "decision_record", "layer", "audit_record", "audit_leaf", "commit_log_entry",
+    # A governed vocabulary term is published and pointed AT — a consumer pins a version and gets
+    # the floor that version promised. Correcting a term is a NEW term that supersedes the old, the
+    # pattern the reference-data corpus already used, never an edit under the reader's feet.
+    "vocabulary_term",
     "accreditation", "regeneration_manifest", "finding_routing_record",
 }
 KNOWN_MUTABLE_RECORD_TYPES = {"policy", "catalog_item"}

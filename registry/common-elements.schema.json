@@ -201,6 +201,40 @@
         "provider_definition",
         "generated_type_spec"
       ]
+    },
+    "curation_state": {
+      "title": "Curation state",
+      "description": "The vocabulary-intake ladder (ADR-039). A term enters as `proposed`, is examined `under-review`, and becomes `canonical` when the curation ladder promotes it; `deprecated` marks one on the way out that still resolves. How strictly an estate binds an unpromoted term is a PROFILE floor (ADR-007), not a field here — homelab may mint on write, sovereign refuses anything but canonical. Declared once here; Knowledge.TaxonomyTerm and Knowledge.Capability still carry literal copies pending the SharedDataElement that lets them narrow (#520).",
+      "type": "string",
+      "enum": [
+        "proposed",
+        "under-review",
+        "canonical",
+        "deprecated"
+      ]
+    },
+    "contributor_type": {
+      "title": "Contributor type",
+      "description": "Who authored a governed record — the federated-contribution model's actor classes (federated-contribution-model §3). Shared by every record a contributor can author; declared once because a class present on one record kind and missing from another would mean the same review rules could not be applied uniformly.",
+      "type": "string",
+      "enum": [
+        "platform_admin",
+        "tenant_admin",
+        "consumer",
+        "provider",
+        "system"
+      ]
+    },
+    "contribution_review": {
+      "title": "Review required for a contribution",
+      "description": "How much review a governed record's change needs before it lands. `none` is for a consumer's own request layer — a direct declaration nobody else reviews; every other class flows through the GitOps PR model, and `dual_approval` is the two-person floor a profile can require (federated-contribution-model §3). Declared once: a review level available on one governed record kind and absent from another is a hole in the contribution model, not a difference.",
+      "type": "string",
+      "enum": [
+        "auto",
+        "per_profile",
+        "none",
+        "dual_approval"
+      ]
     }
   }
 }

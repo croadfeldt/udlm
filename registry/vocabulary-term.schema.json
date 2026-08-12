@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/vocabulary-term.schema.json",
+  "title": "Vocabulary term",
+  "description": "ONE canonical term of a governed vocabulary — `high-throughput` of `network_tier`, `gold` of `storage_tier` — carried by a record keyed to (`vocabulary_kind`, `scope`).\n\nWHERE THIS CAME FROM. A term used to be a `layer` with `layer_type: reference_data`, and that was two things wearing one hat. ADR-054 retired the layer form because context is never merged into an assembly, so it was never a layer; ADR-058 settles where the terms go instead — and its answer is this record, keyed rather than layered (ADR-058 Q1: keyed records keep a large vocabulary out of the Class artifact and preserve independent curation).\n\nWHAT THE MOVE BUYS, which is the whole reason it is not a rename. A reference-data layer sat OUTSIDE both enforcements the model already had. This record sits inside both:\n\n  - `scope` puts the term at a Class position, and the scope position IS the portability contract (ADR-038 §3). A term canonical at `Network` is portable to every Network provider; one at a Provider scope is that provider's. Before, a vocabulary had no scope at all, which is exactly why `os_image` and `vm_size` came to \"mean many things\" — nothing said WHERE a meaning held.\n  - `curation_state` puts it on the vocabulary-intake ladder (ADR-039), so `proposed → canonical` is a state the record carries rather than a convention around it.\n\nTHE TERM DENOTES A FLOOR, NOT A LABEL (ADR-036). `requirements` carries what the name actually promises — `high-throughput` means at least 10G-class and sub-millisecond, and any provider clearing that qualifies. The match is against the floor, never the string, which is the only reason a term survives leaving the estate that coined it. A term with no floor is a label, and two estates' labels are incomparable by construction.\n\nNOT A TAXONOMY TERM, and the distinction is load-bearing. `Knowledge.TaxonomyTerm` carries a CATEGORY — what a thing IS (`dmz`, `management`), with normalization rules so five spellings converge. This carries a FLOOR — what a thing must MEET. `network_zone` is a taxonomy because a zone is a classification; `network_tier` is a vocabulary term because a tier is a measurable minimum. Collapsing them would put normalization rules on a floor and minima on a category.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "name",
+    "version",
+    "tenant_uuid",
+    "vocabulary_kind",
+    "scope",
+    "term",
+    "curation_state",
+    "requirements"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "vocabulary_term"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Frozen identity (ADR-051). A content change bumps `version`; the uuid never moves."
+    },
+    "handle": {
+      "type": "string",
+      "pattern": "^([a-z0-9][a-z0-9-]{0,61}[a-z0-9]/)*[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
+      "description": "The authoring name. A reference is AUTHORED by handle and RESOLVED to the uuid form (WIR-004) — never resolved by name alone."
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "A published (identity, version) is immutable: change the floor, bump the version. A consumer pinned to a version is pinned to the promise that version made."
+    },
+    "tenant_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Owning tenant (TEN-001)."
+    },
+    "vocabulary_kind": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
+      "description": "The vocabulary this term belongs to — `network_tier`, `storage_tier`, `os_image`, `vm_size`. Half the key. A `SharedDataElement` names this kind in `values.reference_data_type` to declare that its values are governed rather than an inline enum (ADR-038 §2).",
+      "examples": [
+        "network_tier",
+        "storage_tier",
+        "os_image"
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*(\\.[A-Z][A-Za-z0-9]*)*$",
+      "description": "The Class scope this term is canonical AT — the other half of the key, and the portability contract (ADR-038 §3, ADR-058 §2).\n\nRead it as the answer to \"how far does this meaning travel?\" A term at `Network` holds for every Network provider; the same name at `Network.Fabric.AcmeSDN` holds only there. Portable reliance on a term requires it be canonical at a scope at least as general as the consumer's — which is checkable in a diff rather than asserted in prose, and promoted by the governed contribution operation rather than by editing a copy.",
+      "examples": [
+        "Network",
+        "Storage",
+        "Compute.VM"
+      ]
+    },
+    "term": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "The selectable name — what a consumer writes. Portable because of what `requirements` says it means, not because the string matches.",
+      "examples": [
+        "high-throughput",
+        "gold"
+      ]
+    },
+    "curation_state": {
+      "$ref": "common-elements.schema.json#/$defs/curation_state",
+      "description": "Where this term sits on the intake ladder. Whether an estate may BIND a term that is not yet `canonical` is a profile floor (ADR-007), not a property of the term."
+    },
+    "requirements": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "The FLOOR the term denotes — what a provider must clear to qualify (ADR-036). Kind-specific by nature: a `network_tier` states bandwidth and latency minima, a `storage_tier` states IOPS and throughput. Open by construction because UDLM does not know every vocabulary an estate will govern; what it does know is that a term with no floor cannot be compared across estates, which is why at least one property is required.\n\nThis is the data that used to sit in a layer's `fields`. It never was a contribution to an assembled payload — nothing merged it — which is the plainest evidence the layer form was wrong."
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "active",
+            "deprecated",
+            "retired"
+          ]
+        },
+        "deprecation_date": {
+          "type": "string"
+        },
+        "sunset_date": {
+          "type": "string"
+        },
+        "replacement_uuid": {
+          "type": "string"
+        },
+        "deprecation_reason": {
+          "type": "string"
+        },
+        "migration_guidance": {
+          "type": "string"
+        }
+      },
+      "description": "Lifecycle, distinct from `curation_state`. A term can be `canonical` and `deprecated` at once: canonical says the ladder promoted it, deprecated says stop using it. Collapsing the two would make \"retire a term\" indistinguishable from \"the ladder rejected it\"."
+    },
+    "contributor": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Who may author this term and the review it requires (federated-contribution-model §3).",
+      "properties": {
+        "contributor_type": {
+          "$ref": "common-elements.schema.json#/$defs/contributor_type"
+        },
+        "review": {
+          "$ref": "common-elements.schema.json#/$defs/contribution_review"
+        }
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      },
+      "description": "The term record(s) this one replaces, by uuid — never edit a published term, supersede it (ADR-051)."
+    }
+  },
+  "examples": [
+    {
+      "record_type": "vocabulary_term",
+      "uuid": "3f5c81d0-6b74-4a29-9e13-5c2087ab41de",
+      "handle": "platform/network-tiers/high-throughput",
+      "conforms_to": "udlm/0.1",
+      "name": "Network tier — high throughput",
+      "description": "Governed definition of the 'high-throughput' network tier.",
+      "version": "2.0.0",
+      "tenant_uuid": "75ccf4ff-3e8d-4963-bc51-459ae1014cb7",
+      "status": {
+        "state": "active"
+      },
+      "vocabulary_kind": "network_tier",
+      "scope": "Network",
+      "term": "high-throughput",
+      "curation_state": "canonical",
+      "contributor": {
+        "contributor_type": "platform_admin",
+        "review": "dual_approval"
+      },
+      "requirements": {
+        "min_bandwidth_mbps": 10000,
+        "max_latency_ms": 1,
+        "description": "10G-class or better with sub-millisecond intra-segment latency."
+      },
+      "supersedes": [
+        "a827a652-8e10-4ecf-be04-a68a395052c2"
+      ]
+    }
+  ]
+}
