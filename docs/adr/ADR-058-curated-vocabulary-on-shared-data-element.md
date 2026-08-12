@@ -5,7 +5,7 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.
-- **ADR-054** (references-context is a classified edge; `reference_data` retired from `layer_type`): moved *orthogonal context* — data **about** a resource — onto a `nature: context` edge to a linked entity. It addressed **only** context, not vocabulary.
+- **ADR-054** (references-context is a classified edge): moved *orthogonal context* — data **about** a resource — onto a context edge to a linked entity (an `edge_type: references` edge with a declared `relation`; nature is derived, never stored). It addressed **only** context, not vocabulary — and it did not retire `reference_data`, which marks a layer other layers reference.
 - **ADR-038 §2–§3** (`SharedDataElement`, `registry/class.schema.json` `$defs.shared_data_element`): the composable unit of the Class hierarchy — "**base field, shared vocabulary, and provider extension collapse into one shape distinguished only by `scope`**," and **"the scope position IS the element's portability."** An element's `values.reference_data_type` already declares a **governed vocabulary** (not an inline enum).
 - **ADR-039 + `docs/design/vocabulary-intake-ladder.md`** (the vocabulary-intake ladder): `proposed → canonical` curation + **profile-gated strictness** (homelab mint-on-write … sovereign canonical-only, unknown **refused**; near-matches never bind silently). Scope promotion is the class system's portability-improvement operation.
 - **ADR-012** (data references / dual anchor): the binding a `values`-typed element uses to resolve one canonical term.
@@ -26,7 +26,11 @@ The first draft of this ADR proposed a *new* `Codelist` entity + `vocabulary` ed
 
 **3. Standardization is the vocabulary-intake ladder — enforced by profile.** A value binds through ADR-039: `proposed → canonical`, with **profile-gated strictness** — homelab may mint on write, sovereign/fsi is canonical-only and **refuses** an unknown term (citing the pending proposal); near-matches never bind silently. Standardization is therefore a **floor the profile sets** (ADR-007), not a hope.
 
-**4. The retirement relocates term storage into the scoped-element model.** When `reference_data` leaves `layer_type`, canonical terms move from standalone `reference_data` **layers** into the **scoped-element** model — anchored to the `SharedDataElement`'s declared vocabulary kind at its scope — so every vocabulary is under scope-portability (#2) and the intake ladder (#3) **by construction**. This closes the current gap where vocabularies sat in loose layers *outside* both enforcements. `reference_data` retires **entirely** (neither role needs a `layer_type` or a bespoke record kind).
+**4. Term storage relocates into the scoped-element model.** Canonical terms move from standalone `reference_data` **layers** into the **scoped-element** model — anchored to the `SharedDataElement`'s declared vocabulary kind at its scope — so every vocabulary is under scope-portability (#2) and the intake ladder (#3) **by construction**. This closes the current gap where vocabularies sat in loose layers *outside* both enforcements. **`reference_data` does NOT retire** (maintainer ruling 2026-08-11, correcting this ADR). It marks a
+layer that other layers reference — shared data, defined once and pointed at — and that role is
+sound. What leaves is the VOCABULARY role only: a term is matched against, never merged, so it was
+never layer-shaped. The terms now live in `registry/vocabulary-term.schema.json`, keyed to
+(`vocabulary_kind`, `scope`); `reference_data` keeps the role it was actually doing.
 
 ## Alternatives considered (and why not)
 

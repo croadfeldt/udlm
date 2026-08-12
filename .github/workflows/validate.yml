@@ -64,6 +64,7 @@ jobs:
       # registry/rule-id-naming.md). Was authored but never CI-wired.
       - run: python3 tests/check_single_source.py
       - run: python3 tests/check_conformance_constants.py
+      - run: python3 tests/check_adr_retirement_claims.py
       # Repo-cleanliness gates (the nine questions — dav docs/repo-cleanliness-review.md):
       # referential integrity (Q8) + CI/signoff parity (these two ran only in signoff.sh before).
       - run: python3 tests/check_links.py

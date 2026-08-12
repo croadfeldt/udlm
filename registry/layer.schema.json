@@ -94,7 +94,7 @@
         "policy",
         "reference_data"
       ],
-      "description": "The six+ layer types (layering-and-versioning §3): base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization), service (catalog/provider), request (consumer's direct declarations — highest data authority), policy (applied over the merged result), reference_data (shared lookup data)."
+      "description": "The layer types (layering-and-versioning §3). Six are ASSEMBLY positions, ordered by authority: base (foundation, every chain begins here), core (standards/compliance defaults), intermediate (org/customization — a business unit, an enclave, an application team's configuration set), service (catalog/provider), request (the consumer's direct declaration — highest data authority), policy (applied over the merged result).\n\n`reference_data` is the seventh and is NOT an assembly position: it marks a layer that OTHER LAYERS REFERENCE — shared data, defined once and pointed at by `data_reference` rather than merged by precedence. Ruled 2026-08-11 to stay, correcting ADR-054's draft retirement. Two kinds of record were misfiled under it and have moved: a governed vocabulary TERM (matched against, never merged — now `vocabulary-term.schema.json`) and an application-team config set (contributed, so an `intermediate` layer). The test is what the record does — matched, contributed, or pointed at."
     },
     "reference_data_type": {
       "type": "string",
