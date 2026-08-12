@@ -166,11 +166,6 @@
       "type": "object",
       "description": "The DATA this layer contributes to the assembled payload — dot-path-or-nested field values. Each field set here records THIS layer's uuid as its provenance source. Values are typed by the target Resource Type Spec and are not re-validated here (the layer is a partial contribution, not a complete entity)."
     },
-    "narrow_only": {
-      "type": "boolean",
-      "default": false,
-      "description": "When true, this is a constraint/narrowing layer (E1): it may only TIGHTEN field markers/values declared by lower layers, never loosen them (narrow-never-widen). Recorded so the assembly engine enforces the direction."
-    },
     "metadata": {
       "type": "object",
       "additionalProperties": false,
@@ -206,6 +201,50 @@
           }
         }
       }
+    },
+    "extends": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The layer(s) this one extends — explicit lineage, readable from the record instead of reconstructible only by running assembly. Any layer may be a parent and any layer a child: the reference is what creates the relationship, so no layer needs marking as extensible — being pointed at is a property of the pointer, not the target, which is how the class system already works.\n\nA LIST, because a template or composite request draws on several lineages at once, and each extension carries its OWN matching criteria — `when` — so which parents apply depends on the context being assembled.\n\nVALUES OVERRIDE, LIMITS INTERSECT, and the asymmetry is what makes multiple parents safe. If `limits` merged like values, a permissive parent would erase a restrictive one's bound and you could buy permission by extending one more thing. Intersecting is MONOTONE: another parent can only tighten. There is deliberately no override for a bound — the audited way out is `skip`, which declines the layer's participation and is visible as such, rather than accepting a layer and ignoring what it said.\n\nA CYCLE IS REFUSED: an extension chain that loops computes no value, and the model refuses what cannot be computed. DEPTH IS NOT CAPPED — deep chains are normal here, and how deep is too deep is a policy judgement, never a structural one.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "layer"
+        ],
+        "properties": {
+          "layer": {
+            "type": "string",
+            "description": "The parent, as a URF reference — authored by handle, resolved to the uuid form (WIR-004). It resolves to a layer record; nothing else about that layer has to opt in."
+          },
+          "when": {
+            "$ref": "common-elements.schema.json#/$defs/constraint_clause/properties/when",
+            "description": "OPTIONAL — the criteria under which THIS extension applies. Same equality-only grammar as a constraint clause, for the same reason: it has to stay decidable. Absent, the extension always applies."
+          },
+          "reason": {
+            "type": "string",
+            "description": "OPTIONAL — why this lineage is drawn on. For the human reading a deep chain; never evaluated."
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "The envelope this layer's DESCENDANTS must stay inside — keyed by dot-path into the fields it bounds, each holding a list of constraint clauses whose union is the permitted set.\n\nABSENT MEANS UNBOUNDED, NEVER EMPTY. A layer that says nothing constrains nothing (NDF-001 — UDLM ships no defaults). The expected shape is wide or silent at the base, tightening as each extension determines the use case further — the same convergence the class tier runs when a declared range collapses to a selected value.\n\nAN ENVELOPE RATHER THAN A DIRECTION FLAG. A layer could instead declare only 'tighten, never loosen'; that is weaker because a direction can be judged solely against whatever happened to merge beneath it, so the legality of a layer cannot be established without assembling everything under it first. A declared envelope is checkable against every descendant independently, which is what makes one validation pass work over a deep chain.\n\nWHO ENFORCES IT IS NOT UDLM. A Class's `supports` containment is a gate, because a Class is UDLM's own portable artifact. A layer holds an estate's configuration, so what is permitted there is the estate's call: the envelope is DATA here and a policy enforces it (`policy_type: validation`) — one generic policy reading declared limits, not one policy per case.",
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "common-elements.schema.json#/$defs/constraint_clause"
+        },
+        "description": "The clauses bounding this field. Union of those whose `when` holds; a descendant's own clauses must be CONTAINED in the intersection of every applicable ancestor envelope."
+      }
+    },
+    "narrow_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, this is a constraint/narrowing layer (E1): it may only TIGHTEN field markers/values declared by lower layers, never loosen them (narrow-never-widen). Recorded so the assembly engine enforces the direction."
     }
   },
   "allOf": [

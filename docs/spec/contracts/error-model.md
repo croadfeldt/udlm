@@ -117,6 +117,7 @@ Every conformant implementation MUST recognize and may emit these codes:
 | `validation.timestamp_malformed` | no | 400 |
 | `validation.timestamp_skew_exceeded` | yes (after clock sync) | 400 |
 | `validation.error_envelope_malformed` | no | 400 |
+| `validation.layer_limit_exceeded` | no | 422 |
 | `lifecycle.invalid_transition` | no | 409 |
 | `lifecycle.terminal_state` | no | 409 |
 | `lifecycle.dependency_unsatisfied` | yes (when dependency resolves) | 409 |
@@ -274,6 +275,15 @@ surface, whatever the surface:
    rule that refused and the enforcement point that ran it. Refusals are recorded under the
    `REFUSE` audit action (`AUD-023` — refusals are first-class, not inferred from an evaluation
    record's outcome field), with the record shape and its subject list per `AUD-024`.
+
+**Worked instance of obligation 2 — a layer-limit denial (`LAY-010`).** "Actionable" is easy to
+satisfy shallowly and the layer path is where that shows: extension chains are deep and multi-parent
+by design, so *"value not permitted"* leaves a reader unable to tell which of a dozen ancestors
+objected. `validation.layer_limit_exceeded` therefore carries the binding **layer** (uuid, handle,
+version), its **owner**, the **field path** and submitted **value**, and the **binding clause** with
+its `reason` — every contributing layer where more than one bound the field, not merely the
+tightest. The route it names is the parent's own limit, which is where the bound is renegotiated;
+there is no override to ask for, by design.
 
 The four are jointly necessary. A refusal satisfying three of them is the failure mode the
 must-reject corpus exists to catch, which is why every case's success criteria enumerate all

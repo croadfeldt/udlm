@@ -653,38 +653,7 @@
           "minItems": 1,
           "description": "OPTIONAL — what THIS scope can actually support: the values and ranges on offer. Read as an OFFER it says what the provider can satisfy; read as a MENU it says what a consumer may select. One declaration, both readings — the catalog reads this rather than restating it. A LIST of clauses whose UNION is the supported set, because a real support matrix is a mix of discrete values and ranges, and which of them apply can depend on other selections. Distinct from `schema` (which says what shape is VALID and stays portable) and from `values` (which names a governed vocabulary). `supports` narrows what is OFFERED, never what is legal. A child Class's clauses MUST be contained in its parent's (check_class_liskov) — declaring the matrix as DATA rather than as JSON Schema if/then is what keeps that containment decidable.",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "minProperties": 1,
-            "description": "One support clause. Carries discrete `values`, or a `min`/`max` range (optionally with `step`), or both. An optional `when` scopes the clause to other selections — that is how a grouped matrix is expressed (`m5` allows one memory range, `r5` another). A clause with no `when` always applies.",
-            "properties": {
-              "values": {
-                "type": "array",
-                "minItems": 1,
-                "description": "Discrete supported values. Use where the offer is a fixed set rather than a continuum (fixed memory sizes, named shapes, specific image versions). Each entry MUST satisfy the element's own `schema` — `supports` narrows the offer, it never widens what is valid."
-              },
-              "min": {
-                "description": "Inclusive lower bound. Same type as the element's schema — a Quantity element takes a Quantity string (`8Gi`), a numeric element a number."
-              },
-              "max": {
-                "description": "Inclusive upper bound, same typing as `min`."
-              },
-              "step": {
-                "description": "OPTIONAL granularity within [min, max] — e.g. memory offered in 8Gi increments. A selection between steps is not supported."
-              },
-              "when": {
-                "type": "object",
-                "minProperties": 1,
-                "additionalProperties": {
-                  "description": "The required value of that element."
-                },
-                "description": "OPTIONAL — scopes this clause to other selections. Keys are element names at or above this scope; values are the selections that must hold (including governed-vocabulary terms). Equality only, deliberately: a general expression language here would make containment undecidable, which is the whole reason the matrix is data rather than schema logic."
-              },
-              "reason": {
-                "type": "string",
-                "description": "OPTIONAL — why the offer is bounded here (a hardware limit, a licensing tier, a policy floor). Carried for the human reading the menu; never evaluated."
-              }
-            }
+            "$ref": "common-elements.schema.json#/$defs/constraint_clause"
           }
         }
       }
