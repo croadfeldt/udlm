@@ -18,18 +18,25 @@ map, and **freeze at 0.1**.
 
 There is one shape. Don't invent parallel vocabulary for it.
 
-| Entity scale (four states) | Assembly scale | Role |
-|---|---|---|
-| **Intent** | **Pattern** | the reusable, design-time desire (type level) |
-| **Requested** | **Template** | the resolved, orderable definition |
-| **Realized** | **System** | the running instance |
-| **Discovered** | — | observed reality with no intent (joined by adoption) |
+`Pattern → Template → System` (ADR-033) is **two definitions and one instance**, and the two halves
+of that sentence sit at different levels — which is why they do not line up one-for-one with the
+four states.
 
-`Pattern → Template → System` (ADR-033) is **two definitions and one instance**, related by reference:
-a Pattern `refines` into a Template, and a Template is **realized** into a System. Only the second arrow
-is `Intent → Requested → Realized` (ADR-030), because a System is the only one of the three carrying
-`states`. The first is not a lifecycle transition — one Pattern yields many Templates, and states are 1:1
-within a record.
+| Assembly scale | Is | Carries states |
+|---|---|---|
+| **Pattern** | the reusable, design-time definition (type level) | no |
+| **Template** | the resolved, orderable definition | no |
+| **System** | the running instance | **yes** — Intent · Requested · Realized · Discovered |
+
+A Pattern `refines` into a Template: a reference between definitions, one Pattern yielding many
+Templates, and the chain may be arbitrarily deep. A Template is **realized** into a System, and that
+arrow alone is `Intent → Requested → Realized` (ADR-030).
+
+The parallel that does hold is one level up: **Pattern and Template are to a System what a
+`resource_type` is to a record written against it.** The states live in the instance, never in the
+definition. Reading the tiers as three states would forbid two things the model allows — a refinement
+chain deeper than three, and one definition yielding many instances — because states are 1:1 and
+ordered within a single record.
 
 ## The classification axes (proposed — collapse the overlap)
 
