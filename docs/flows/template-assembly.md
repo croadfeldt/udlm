@@ -1,38 +1,64 @@
 # Template assembly — Pattern → Template → System
 
-**What this settles:** the assembly-scale telling of the lifecycle — how a *reusable design* becomes an *orderable definition* becomes a *running system*. The three tiers are not a new taxonomy: they are **Intent → Requested → Realized** ([lifecycle-convergence](lifecycle-convergence.md)) one scale up. The engine is [request-realization](request-realization.md) generalized to a whole assembly; the decision and the *why* are **ADR-033 (Templates)**.
+**What this settles:** the assembly-scale telling — how a *reusable design* becomes an *orderable definition* becomes a *running system*. The decision and the *why* are **ADR-033 (Templates)**.
+
+**Two definitions and one instance** — not three states. A Pattern and a Template are both
+**definitions**; a System is the **instance**, and it is the only one of the three that carries
+`states` (ADR-033). The four states live inside the System, exactly as they live inside a record
+written against a `resource_type` and not inside the `resource_type` itself.
+
+That distinction is load-bearing rather than pedantic, and the clearest evidence is depth: a broad
+Pattern may refine into a narrower Pattern before it reaches a Template, and refinement chains are
+walked, never flattened (DRV-001). **States could not have nested that way** — they are 1:1 and
+ordered within one record. A three-tier mapping onto the state ladder would forbid a shape ADR-033
+explicitly allows.
 
 The three tiers:
 
-- **Pattern** — the reusable, provider-neutral design ("how a 3-tier app is built"). Names shape and rules, not parts; **not orderable**. It is **type-level Intent** (design-time), and it lives in Knowledge as `Antipattern`'s positive twin.
-- **Template** — that design **resolved** by policy/profile into a concrete, **orderable** definition. It is the assembly's **Requested** state. ≈ a **TOSCA Service Template** / **OAM Application**.
-- **System** — the Template **Realized**: real instances with the provider's specific output (IDs, addresses).
+- **Pattern** — the reusable, provider-neutral design ("how a 3-tier app is built"). Names shape and rules, not parts; **not orderable**. A definition, design-time, living in Knowledge as `Antipattern`'s positive twin.
+- **Template** — that design **resolved** by policy/profile into a concrete, **orderable** definition. Still a definition. ≈ a **TOSCA Service Template** / **OAM Application**.
+- **System** — the Template **realized**: real instances with the provider's specific output (IDs, addresses). The only tier with states.
+
+*Which one a composition is stays **derived**, never declared: a composition naming a `Capability`
+leaves the shape open and is a Pattern; one whose every constituent names something a provider can
+realize is a Template (ADR-033, DRV-001).*
 
 ---
 
-## 1 · The spine — two arrows, both already in the model
+## 1 · The spine — two arrows, and only one of them is a lifecycle transition
 
-Going down the tiers is the request-realization pipeline, at assembly scope. The first arrow is **codification** (a design is resolved into a concrete request); the second is **Converge** (a request is realized).
+The arrows are different in kind, and reading them as one pipeline is the error this section exists
+to prevent. **Pattern → Template is `refines`** — a reference between two definitions, which is why
+the Pattern *persists* and why the chain may be arbitrarily deep. **Template → System is
+realization** — `Converge` (ADR-030), the arrow that does cross into the four states, because the
+System is where they live.
 
 ```mermaid
 flowchart LR
-    PAT["Pattern<br/>reusable design<br/>type-level Intent"]:::p
-    TMP["Template<br/>orderable definition<br/>Requested"]:::t
-    SYS["System<br/>running instance<br/>Realized"]:::s
-    PAT -->|"codify · pin profile + providers<br/>(Intent → Requested)"| TMP
-    TMP -->|"Converge<br/>(Requested → Realized)"| SYS
+    PAT["Pattern<br/>reusable design<br/>definition"]:::p
+    TMP["Template<br/>orderable definition<br/>definition"]:::t
+    SYS["System<br/>running instance<br/>carries the four states"]:::s
+    PAT -->|"refines · pin profile + providers<br/>(reference, not a state change)"| TMP
+    TMP -->|"Converge<br/>(the four states live here)"| SYS
     classDef p fill:#f2e8ff,stroke:#7c3aed,color:#111
     classDef t fill:#e8f2ff,stroke:#2563eb,color:#111
     classDef s fill:#e8ffe8,stroke:#16a34a,color:#111
 ```
 
-*Neither arrow is new. `Pattern → Template` is `resource_type → request` (authoring — pick the design, resolve it under a profile). `Template → System` is `request → realized` (Converge). The whole doc is [request-realization](request-realization.md) with "one resource" replaced by "one assembly."*
+*Neither arrow is new. `Pattern → Template` is authoring — pick the design, resolve it under a
+profile — the same act as writing a record against a `resource_type`, and no more a state transition
+than that is. `Template → System` is [request-realization](request-realization.md) with "one
+resource" replaced by "one assembly", and it is where the four states happen.*
 
 ---
 
 ## 2 · One design, many concrete definitions, many instances
 
-The fan-out is why the tiers are distinct objects, not stages of one record. A **Pattern** is resolved once **per profile / provider set** into a Template; a **Template** is converged once **per environment** into a System — exactly as one `resource_type` yields many requests, and one request yields many realized instances.
+The fan-out is why the tiers are distinct objects, not stages of one record — and it is the second
+reason the state reading cannot hold. A **Pattern** is resolved once **per profile / provider set**
+into a Template; a **Template** is converged once **per environment** into a System. States are 1:1
+within a record; these arrows are one-to-many, exactly as one `resource_type` yields many requests
+and one request yields many realized instances.
 
 ```mermaid
 flowchart TD
@@ -47,11 +73,11 @@ flowchart TD
     classDef s fill:#e8ffe8,stroke:#16a34a,color:#111
 ```
 
-| Tier | In the example | State | What is pinned |
+| Tier | In the example | Kind | What is pinned |
 |---|---|---|---|
-| **Pattern** | "3-Tier Web App" — tiers, dependencies, "data tier HA in prod", TLS, a backup process | Intent (type-level) | nothing concrete — no product, size, or provider |
-| **Template** | "FSI/prod" — Kubernetes, HA Postgres, sovereign placement, audit-heavy; params: hostname prefix, DB size, replica count | Requested | every blank has a real type + provider; **orderable** |
-| **System** | "acme-prod-3tier-01" — three pods/VMs with UUIDs+IPs, a Postgres with a connection string, backup scheduled, cert issued | Realized | the provider's actual output |
+| **Pattern** | "3-Tier Web App" — tiers, dependencies, "data tier HA in prod", TLS, a backup process | definition — no states | nothing concrete — no product, size, or provider |
+| **Template** | "FSI/prod" — Kubernetes, HA Postgres, sovereign placement, audit-heavy; params: hostname prefix, DB size, replica count | definition — no states | every blank has a real type + provider; **orderable** |
+| **System** | "acme-prod-3tier-01" — three pods/VMs with UUIDs+IPs, a Postgres with a connection string, backup scheduled, cert issued | instance — carries all four states | the provider's actual output |
 
 *Gut-check for any artifact: names no providers/sizes → **Pattern**; orderable, everything pinned → **Template**; one-of, with live IDs → **System**.*
 
@@ -98,11 +124,11 @@ flowchart LR
 ## What UDLM decides, and what it hands to DCM
 
 - **UDLM (the stage):** the three tiers, the edges (`contained_by` for the Composite, `binds_to` for the bound processes), and the invariant that a System is a Template Realized — nothing more, nothing less than its intent plus the provider's output.
-- **DCM (the actors):** *how* a Pattern resolves into a Template (profile + placement + enrichment — the Intent → Requested policy), and *how* a Template converges into a System (the provider mechanism). Both are implementation; a conformant peer may do either differently.
+- **The implementation (the actors):** *how* a Pattern refines into a Template (profile + placement + enrichment — the resolution policy), and *how* a Template converges into a System (the provider mechanism). Both are implementation; a conformant peer may do either differently.
 
 ## Data · Policy · Provider
-- **Data** — Pattern is Knowledge (type-level intent); Template is a catalog definition (Requested); System is a realized composite + bound-activity records (Realized).
-- **Policy** — resolving a Pattern into a Template *is* policy (Intent → Requested); each binding's `lifecycle_policy` governs suspend/cancel propagation across the System.
+- **Data** — Pattern and Template are both definitions (Knowledge and a catalog definition respectively); a System is a realized composite + bound-activity records, and the only one of the three carrying `states`.
+- **Policy** — resolving a Pattern into a Template *is* policy; each binding's `lifecycle_policy` governs suspend/cancel propagation across the System.
 - **Provider** — constituents are fulfilled by their ordinary providers; bound processes by process/automation providers; a *composable-infrastructure* provider may assemble constituents from pools (a capability, ADR-PROV-002 — not a tier).
 
 ## Where each piece is specified
@@ -116,4 +142,4 @@ flowchart LR
 
 ## The whole story in one line
 
-A **Pattern** (reusable design · Intent) is **codified** into a **Template** (orderable definition · Requested), which is **Converged** into a **System** (running instance · Realized) — the lifecycle you already have, one scale up. See ADR-033 for the decision and the *why*.
+A **Pattern** (reusable design) `refines` into a **Template** (orderable definition) — a reference between two definitions, arbitrarily deep and one-to-many — and a Template is **Converged** into a **System** (running instance), which is the only tier carrying the four states. See ADR-033 for the decision and the *why*.

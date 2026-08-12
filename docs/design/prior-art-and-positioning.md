@@ -86,7 +86,7 @@ Strip the adopted parts away and what remains — the thing no single neighbor, 
 union, gives you:
 
 1. **Intent as a portable, provider-independent contract with a four-state lifecycle**
-   (Pattern/Intent → Requested → Realized, UUID-stable across destruction). TF/CFN/ARM couple desired
+   (Intent → Requested → Realized, UUID-stable across destruction). TF/CFN/ARM couple desired
    config to one provider; K8s/Crossplane have a two-state spec/status bound to a cluster. UDLM's
    intent is *not* a provider's config, so it can be re-realized elsewhere or **rehydrated from intent
    alone** after total loss (uc-10). This is the portability thesis, and it is the load-bearing claim.

@@ -80,8 +80,8 @@ Per-candidate detail with sources is in the appendix below.
 
 None of the surveyed standards is an intent vocabulary. An Ignition config names `/dev/sdb`, partition 1,
 1024 MiB from sector so-and-so — that is a **complete concrete plan**, which in
-[ADR-033's](../adr/ADR-033-templates.md) tiers (Pattern / Template / System = Intent / Requested /
-Realized, per ADR-030) sits at the **Requested** tier; the lsblk/zpool readback is the **Realized** tier.
+the four-state ladder ([ADR-030](../adr/ADR-030-convergence-lifecycle-model.md)) sits at the **Requested** state; the
+lsblk/zpool readback is the **Realized** state.
 The **Intent** tier — "boot redundancy, data encrypted at rest, ≥ N usable, tolerate one drive loss,"
 with device *selectors* rather than device paths — is covered by **no surveyed standard**. The closest
 things to intent-altitude prior art are compilers *down to* specific layout, not standards: Butane's
