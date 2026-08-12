@@ -18,6 +18,10 @@ import re
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "registry", "tools"))
+import containment as _containment
+
 import yaml
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as _VErr
@@ -152,32 +156,20 @@ def _as_instance(v, schema):
 
 def supports_containment(parent_el, child_el, where):
     """Every child clause must fall inside SOME parent clause. A child offering anything the parent
-    does not is a widened offer, which is the same defect as a widened enum."""
+    does not is a widened offer, which is the same defect as a widened enum.
+
+    The containment math lives in `registry/tools/containment.py` and is shared with the LAYER tier,
+    where `limits` asks the identical question of an ancestor envelope. Same question, different
+    authority: a Class is UDLM's own artifact so this is a gate, while a layer is the estate's
+    configuration so that one is a policy. Two implementations would drift, and each would look
+    correct in its own file."""
     perrs, pclauses = [], parent_el.get("supports") or []
     if not pclauses:
         return perrs                      # parent declares no offer — the child is free to state one
     for i, c in enumerate(child_el.get("supports") or []):
-        at = f"{where}.supports[{i}]"
-        clo, chi = _num(c.get("min")), _num(c.get("max"))
-        cvals = set(map(str, c.get("values") or []))
-        fits = False
-        for p in pclauses:
-            plo, phi = _num(p.get("min")), _num(p.get("max"))
-            pvals = set(map(str, p.get("values") or []))
-            if cvals and not (cvals <= pvals or (plo is not None and phi is not None and all(
-                    _num(v) is not None and plo <= _num(v) <= phi for v in cvals))):
-                continue
-            if clo is not None and plo is not None and clo < plo:
-                continue
-            if chi is not None and phi is not None and chi > phi:
-                continue
-            if (clo is not None or chi is not None) and not pvals and plo is None and phi is None:
-                continue
-            fits = True
-            break
-        if not fits:
-            perrs.append(f"{at}: offers values outside every parent clause — a child may narrow the "
-                         f"offer, never widen it")
+        if _containment.clause_inside(c, pclauses) is None:
+            perrs.append(f"{where}.supports[{i}]: offers values outside every parent clause — a "
+                         f"child may narrow the offer, never widen it")
     return perrs
 
 

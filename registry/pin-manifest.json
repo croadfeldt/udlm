@@ -129,10 +129,11 @@
   }
  },
  "layer:intermediate/payments/prod-web": {
-  "current": "1.0.0",
+  "current": "2.0.0",
   "path": "registry/examples/example-layer-extends-multi.yaml",
   "versions": {
-   "1.0.0": "sha256:4f347f2c2a01c22e09caa750fb521dedcbe27f060b2223d26fd91e0d32f2cb10"
+   "1.0.0": "sha256:4f347f2c2a01c22e09caa750fb521dedcbe27f060b2223d26fd91e0d32f2cb10",
+   "2.0.0": "sha256:3e7d65ab8c3757fdd2313c5f9223e343712a96a0192b0d9b2b26d6de008faf63"
   }
  },
  "layer:org-eu-hardening": {
