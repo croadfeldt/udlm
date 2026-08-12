@@ -27,6 +27,7 @@ NAMES = {
     "python3 tests/validate_registry.py": "registry meta-schema",
     "python3 tests/check_estate_tokens.py": "estate-token scrub",
     "python3 tests/check_single_source.py": "single-source (rule IDs + vocabularies)",
+    "python3 tests/check_conformance_constants.py": "no coined constant in a certification rule (CNF-001)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",

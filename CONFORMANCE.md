@@ -324,10 +324,10 @@ gates here.
 | Rule | Tested by | Requirement |
 |---|---|---|
 | `WIR-007` | artifact | All wire timestamps are RFC 3339 instants normalized to UTC with a `Z` suffix, seconds precision minimum; sub-second precision is permitted, and the producing clock is attributed via the nearest `time_source` |
-| `WIR-008` | runtime | Skew ≤±5 seconds from peers |
-| `WIR-009` | runtime | Future timestamps >5s ahead are rejected |
+| `WIR-008` | runtime | A `max_divergence` bound is **in effect and declared** — the profile adopts one by reference (`time-and-clock.md` §6.2), and an implementation MAY declare its own — and the implementation enforces the bound it declared: provider-supplied artifacts beyond it are rejected with `validation.timestamp_skew_exceeded`, peer-supplied ones are audited and the source flagged (§6.4) |
+| `WIR-009` | runtime | A timestamp beyond the declared bound **in the future** is rejected (§6.4) |
 | `WIR-010` | runtime | Leap-second strategy declared (monotonic clock required; smear recommended) per [`time-and-clock.md`](docs/spec/contracts/time-and-clock.md) §8 |
-| `WIR-011` | runtime | Total ordering via `(timestamp, sequence_uuid)` available |
+| `WIR-011` | runtime | Total order within a stream is reconstructible from the hash links + `sequence_uuid` **alone** — the wall-clock timestamp is never transmitted or compared for ordering (`time-and-clock.md` §4.1) |
 
 ### Errors ([`error-model.md`](docs/spec/contracts/error-model.md))
 

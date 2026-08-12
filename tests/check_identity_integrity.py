@@ -37,6 +37,7 @@ Doctrine: registry/VERSIONING.md § "Identity, version, digest"; docs/adr/ADR-05
 """
 import glob
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -99,20 +100,58 @@ def _identity_view(doc):
     return _pin._strip_nonnormative(doc) if isinstance(doc, dict) else doc
 
 
+# The identity field a record type actually uses. Three of the four append-only audit types name it
+# something other than `uuid`, and reading only `uuid` made R4a UNSATISFIABLE for them: the gate
+# never saw the identity change, so every arm fell through to "edited in place" and no edit could
+# ever pass. Found by hitting it — adding a required field to audit-record left its worked example
+# permanently unfixable.
+IDENTITY_KEYS = ("uuid", "record_uuid", "entry_uuid", "leaf_uuid")
+
+# Immutable types with no `supersedes` carrier — the append-only audit family. For these a NEW
+# identity is the whole of the compliant path: an audit chain is append-only, a fact is not
+# withdrawn and re-issued, and there is nowhere to put the link. Requiring one would model a
+# relationship the chain rejects. Derived from the schemas rather than asserted, so it cannot drift.
+def _has_supersedes(record_type):
+    name = {"audit_record": "audit-record", "audit_leaf": "audit-leaf",
+            "commit_log_entry": "commit-log-entry", "decision_record": "decision-record",
+            "finding_routing_record": "finding-routing-record",
+            "regeneration_manifest": "regeneration-manifest",
+            "accreditation": "accreditation", "layer": "layer"}.get(record_type)
+    if not name:
+        return True          # unknown type: demand the link rather than quietly excusing it
+    path = os.path.join(ROOT, "registry", f"{name}.schema.json")
+    if not os.path.exists(path):
+        return True
+    return "supersedes" in json.load(open(path, encoding="utf-8")).get("properties", {})
+
+
+def _identity_uuid(doc):
+    for k in IDENTITY_KEYS:
+        v = doc.get(k)
+        if isinstance(v, str):
+            return v
+    return None
+
+
 def check_pair(rel, old_doc, new_doc, fails, warns):
     """Family rules for one (base, working) document pair from the same file."""
     if _identity_view(old_doc) == _identity_view(new_doc):
         return
     family = classify(new_doc, warns, rel)
-    old_uuid, new_uuid = old_doc.get("uuid"), new_doc.get("uuid")
+    old_uuid, new_uuid = _identity_uuid(old_doc), _identity_uuid(new_doc)
 
     if family == "immutable":
-        if old_uuid is not None and old_uuid != new_uuid and old_uuid in _supersedes(new_doc):
-            return  # a NEW record superseding the old one, carried in the same file — legal
-        fails.append(f"{rel}: R4a immutable record ({new_doc.get('record_type')}) edited in "
-                     f"place — a change is a NEW record: mint a new uuid and name "
-                     f"{old_uuid or 'the predecessor'} in `supersedes`; published records "
-                     f"are never edited (ADR-051 family rule)")
+        rt = new_doc.get("record_type")
+        if old_uuid is not None and old_uuid != new_uuid:
+            if old_uuid in _supersedes(new_doc):
+                return  # a NEW record superseding the old one, carried in the same file — legal
+            if not _has_supersedes(rt):
+                return  # append-only family: a new identity IS the new record (see _has_supersedes)
+        link = ("mint a new identity and name "
+                f"{old_uuid or 'the predecessor'} in `supersedes`") if _has_supersedes(rt) else (
+                "mint a new identity — this type is append-only and carries no `supersedes`")
+        fails.append(f"{rel}: R4a immutable record ({rt}) edited in place — a change is a NEW "
+                     f"record: {link}; published records are never edited (ADR-051 family rule)")
         return
 
     if old_uuid is not None and old_uuid != new_uuid:
