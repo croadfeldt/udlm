@@ -29,6 +29,14 @@ debt cannot be cleared before anything else lands, and a gate that blocks everyt
 **Fix by qualifying, never by baselining.** Adding an entry to silence a new citation defeats the
 one thing this catches.
 
+**AMBIGUOUS-QUALIFIED is reported, not enforced, and the distinction is honest rather than lazy.**
+A `DCM ADR-027` whose number ALSO exists locally cannot be resolved from this repository: the
+numbering spaces overlap, so both readings are well-formed, and deciding which was meant needs the
+DCM tree — which is not a checkout away, it is a different repository whose contents this gate has
+no access to. Failing on it would be asserting a fact we cannot establish; ignoring it would leave a
+reader unable to tell a deliberate cross-repo citation from an over-qualified local one. So it is
+listed for a human, with the count in the summary line so it cannot quietly grow.
+
 Exit 0 = no new unresolvable citation; 1 = at least one.
 """
 import glob
@@ -47,8 +55,16 @@ BASELINE = os.path.join(ROOT, "tests", "adr-citation-baseline.yaml")
 CITE = re.compile(r"(?<!DCM )(?<!dcm )\bADR-(\d{3})\b")
 QUALIFIED = re.compile(r"\b(DCM|DAV)\s+ADR-\d{3}\b")
 
+# EVERY surface that cites an ADR, including the ADR corpus itself. Excluding docs/adr/ made the
+# records the one place a dead citation could live unchallenged — and they are the densest citers in
+# the repo, so it was the worst place to leave unscanned. docs/authoring/ and use-cases/ were
+# omitted for no stated reason; use-cases/PERSONAS.yaml attributes five refusal-contract elements to
+# ADR-003, which is about data mobility and contains no refusal contract.
 SCAN = ["registry/**/*.yaml", "registry/**/*.json", "registry/**/*.md",
-        "docs/spec/**/*.md", "docs/flows/**/*.md"]
+        "docs/spec/**/*.md", "docs/flows/**/*.md",
+        "docs/adr/**/*.md", "docs/dr/**/*.md", "docs/authoring/**/*.md",
+        "docs/design/**/*.md", "docs/guides/**/*.md",
+        "use-cases/**/*.yaml", "use-cases/**/*.md"]
 
 
 def local_adrs():
@@ -81,8 +97,30 @@ def main():
         else:
             new.append((rel, ln, num))
 
+    # AMBIGUOUS-QUALIFIED — a qualified citation whose number also resolves locally. Reported,
+    # never enforced: both readings are well-formed and only the DCM tree could settle which was
+    # meant, so failing would assert a fact this repository cannot establish.
+    local = local_adrs()
+    ambiguous = set()
+    for pat in SCAN:
+        for path in sorted(glob.glob(os.path.join(ROOT, pat), recursive=True)):
+            try:
+                text = open(path, encoding="utf-8", errors="ignore").read()
+            except OSError:
+                continue
+            for m in QUALIFIED.finditer(text):
+                if m.group(0).split("-")[-1] in local:
+                    ambiguous.add((os.path.relpath(path, ROOT), m.group(0)))
+
     print(f"adr-citations: {len(found)} unresolvable citation(s) "
-          f"({still} baselined, {len(new)} new) · {len(local_adrs())} local ADR(s)")
+          f"({still} baselined, {len(new)} new) · {len(local)} local ADR(s) · "
+          f"{len(ambiguous)} qualified-but-locally-ambiguous")
+    if ambiguous:
+        print("  Qualified citations whose number ALSO exists locally — both readings are "
+              "well-formed and this repo cannot tell which was meant. Confirm each against the DCM "
+              "tree; if it meant the local one, drop the qualifier:")
+        for rel, cite in sorted(ambiguous):
+            print(f"    ? {rel}: {cite}  (local ADR-{cite.split('-')[-1]} also exists)")
     for rel, ln, num in new:
         print(f"  FAIL [ADR-CITE-001] {rel}:{ln} — cites ADR-{num}, which has no local file.")
         print(f"       If it is the control plane's, write `DCM ADR-{num}` — the numbering spaces "
