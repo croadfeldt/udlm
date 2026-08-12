@@ -1,0 +1,76 @@
+# MULTIPLE PARENTS, EACH WITH ITS OWN CRITERIA — the shape a template or composite request needs,
+# where one layer draws on several lineages and which of them apply depends on what is being
+# assembled.
+#
+# WHY A LIST IS SAFE HERE, and it rests entirely on one asymmetry:
+#
+#     values  OVERRIDE  — higher precedence replaces lower. That is assembly.
+#     limits  INTERSECT — every applicable ancestor envelope binds at once.
+#
+# If limits merged the way values do, a permissive parent would erase a restrictive one's bound and
+# you could buy permission by extending one more thing. Intersecting is MONOTONE: another parent can
+# only tighten, never loosen. That is what makes multi-parent a composition mechanism rather than an
+# escape hatch — and it is why a bound has no override. The audited way out is `skip`, which
+# declines a layer's participation and shows up as a skip; accepting a layer and ignoring what it
+# said would show up as nothing.
+#
+# WHAT THE SINGLE VALIDATION PASS LOOKS LIKE. Each parent's own limits were already checked against
+# ITS parents, so a child only ever compares against declared limits — no chain walk, no recursion:
+#
+#     for field in child:
+#         envelope = intersect(p.limits[field] for p in extends if p.when holds)
+#         refuse unless child[field] is contained in envelope
+#
+# O(fields x applicable parents), which is why deep chains cost nothing here. Depth is not capped —
+# how deep is too deep is a policy judgement. A CYCLE is refused: it computes no value, and the
+# model refuses what cannot be computed.
+record_type: layer
+uuid: 4d81b2e7-3c05-4a9f-8b16-7e2d90f4c153
+handle: intermediate/payments/prod-web
+conforms_to: udlm/0.1
+name: Payments production web tier
+description: The payments business unit's production web configuration, drawing on the org baseline
+  and — only in the regulated jurisdictions — the stricter residency lineage.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+
+extends:
+  # No `when` — always applies. The org baseline is the floor everything here sits on.
+  - layer: uuid/9f2c1a04-7b83-4e51-9c60-3a5d82e1f704@1.0.0
+    reason: Org-wide intermediate baseline (retention 7–90 days, memory ≤ 384Gi).
+
+  # Applies ONLY where the criteria hold. Equality only, same grammar as a constraint clause and for
+  # the same reason — a general expression language would make containment undecidable, and an
+  # envelope nobody can check is a comment.
+  - layer: uuid/08784152-e4f3-4c84-b8a6-8a47c328817c@1.0.0
+    when:
+      jurisdiction: eu
+    reason: EU hardening lineage. Outside the EU this extension does not apply at all — neither its
+      values nor any envelope it declares. It currently declares no `limits`, which means unbounded
+      (NDF-001), so today it contributes values only; the moment it declares one, this child is
+      checked against that too, with no edit here.
+
+# This layer's own envelope, tightening what it inherited as the use case gets more determined.
+# It must itself be contained in the intersection of the applicable parents above: 30–90 is inside
+# the baseline's 7–90, and 256Gi is inside its 384Gi. Widening either — 5 days, or 512Gi — is the
+# refusal this mechanism exists to produce.
+limits:
+  backup_retention_days:
+    - min: 30
+      max: 90
+      reason: Payments keeps more than the org floor.
+  vm.memory:
+    - max: 256Gi
+      reason: The reservation this business unit actually holds.
+
+fields:
+  tier: web
+  backup_retention_days: 30

@@ -98,6 +98,13 @@
    "1.0.0": "sha256:b9a7d5f74419ab1ac85d44610dff406a057f20e5c976d0948858ac57d35d3133"
   }
  },
+ "layer:core/org-baseline": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-layer-limits-baseline.yaml",
+  "versions": {
+   "1.0.0": "sha256:53dc5c7d7c7bdad71b5871b11a84d59d89e40583bac7e15fc18389a03647968a"
+  }
+ },
  "layer:intermediate/app-tier/network-binding": {
   "current": "2.0.0",
   "path": "registry/examples/example-layer-referencing.yaml",
@@ -119,6 +126,13 @@
   "versions": {
    "1.0.0": "sha256:6ab1a045486c3992cad9ebf0862269ad2c7073806416bbbc0ad465e34b5ed640",
    "2.0.0": "sha256:d5213ede119a333456bd872e1e05bdb77676767a633a3fa669ff3acd3ce50ad3"
+  }
+ },
+ "layer:intermediate/payments/prod-web": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-layer-extends-multi.yaml",
+  "versions": {
+   "1.0.0": "sha256:4f347f2c2a01c22e09caa750fb521dedcbe27f060b2223d26fd91e0d32f2cb10"
   }
  },
  "layer:org-eu-hardening": {

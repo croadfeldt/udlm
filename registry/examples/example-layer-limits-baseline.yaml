@@ -1,0 +1,52 @@
+# A LAYER THAT DECLARES AN ENVELOPE (`limits`, LAY-009) — the bounds its descendants must stay
+# inside. Paired with example-layer-extends-multi.yaml, which extends this one and is contained in
+# it.
+#
+# WHY AN ENVELOPE RATHER THAN A DIRECTION FLAG. A layer could instead carry "tighten only", and the
+# reason that is weaker is worth keeping: a direction can only be judged against whatever happened
+# to merge beneath it, so a child could tighten its way anywhere if the layers below were
+# permissive, and "is this layer legal?" could not be answered without first assembling everything
+# under it. A declared envelope is checkable against every descendant on its own — which is what
+# makes a single validation pass work over a deep chain.
+#
+# ABSENT MEANS UNBOUNDED, NEVER EMPTY (NDF-001 — UDLM ships no defaults). This layer bounds the two
+# fields it names and nothing else. That is the expected shape: wide or silent at the base,
+# tightening as each extension determines the use case further.
+#
+# UDLM DOES NOT ENFORCE THIS. A Class's `supports` containment is a gate, because a Class is UDLM's
+# own portable artifact. A layer holds an estate's configuration, so what is permitted there is the
+# estate's call: the envelope is DATA here, and a `validation` policy reads it — one generic policy
+# over declared limits rather than one policy per case.
+record_type: layer
+uuid: 9f2c1a04-7b83-4e51-9c60-3a5d82e1f704
+handle: core/org-baseline
+conforms_to: udlm/0.1
+name: Org baseline — the envelope every descendant sits inside
+description: Organisation-wide bounds on retention and VM size. Wide on purpose; the layers that
+  extend this one tighten as the use case determines itself.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: core
+precedence_class: core
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+
+limits:
+  backup_retention_days:
+    - min: 7
+      max: 90
+      reason: Seven days is the org's compliance floor; ninety is what the backup estate can hold.
+  vm.memory:
+    # Clauses use the SHARED grammar (common-elements.schema.json#/$defs/constraint_clause) — the
+    # same shape a Class element's `supports` uses. The containment question is identical at both
+    # tiers, so it is answered by one routine rather than two that drift.
+    - max: 384Gi
+      step: 8Gi
+      reason: Largest shape the standard capacity reservation covers, in the increments it is sold.
+
+fields:
+  backup_retention_days: 14

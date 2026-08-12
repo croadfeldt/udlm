@@ -235,6 +235,46 @@
         "none",
         "dual_approval"
       ]
+    },
+    "constraint_clause": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "One clause of a constraint envelope. Carries discrete `values`, or a `min`/`max` range (optionally with `step`), or both. An optional `when` scopes the clause to other selections — that is how a grouped matrix is expressed (`m5` allows one memory range, `r5` another). A clause with no `when` always applies; the envelope is the UNION of the clauses that apply.\n\nONE GRAMMAR, TWO TIERS. A Class element's `supports` declares what a provider can satisfy; a layer's `limits` declares what its descendants may set. Same shape on purpose — the containment question is identical (`is this narrower than that?`), so it is answered by one routine rather than two that drift.\n\nDATA, NOT LOGIC, and that is the load-bearing choice. Declaring the matrix as data keeps containment DECIDABLE: `when` is equality only, because a general expression language would make 'is the child inside the parent' undecidable in general, and an envelope nobody can check is a comment.",
+      "properties": {
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Discrete supported values. Use where the offer is a fixed set rather than a continuum (fixed memory sizes, named shapes, specific image versions). Each entry MUST satisfy the element's own `schema` — `supports` narrows the offer, it never widens what is valid."
+        },
+        "min": {
+          "description": "Inclusive lower bound. Same type as the element's schema — a Quantity element takes a Quantity string (`8Gi`), a numeric element a number."
+        },
+        "max": {
+          "description": "Inclusive upper bound, same typing as `min`."
+        },
+        "step": {
+          "description": "OPTIONAL granularity within [min, max] — e.g. memory offered in 8Gi increments. A selection between steps is not supported."
+        },
+        "when": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ],
+            "description": "The required value of that element — a SCALAR. Equality is the whole grammar, and the type restriction is what enforces it: an object value would smuggle in an operator (`{$gt: x}`, `{in: [...]}`), and the moment a clause can express an operator, `is the child inside the parent?` stops being decidable. A prose statement that a field is equality-only is not a constraint; this is."
+          },
+          "description": "OPTIONAL — scopes this clause to other selections. Keys are element names at or above this scope; values are the selections that must hold (including governed-vocabulary terms). Equality only, deliberately: a general expression language here would make containment undecidable, which is the whole reason the matrix is data rather than schema logic."
+        },
+        "reason": {
+          "type": "string",
+          "description": "OPTIONAL — why the offer is bounded here (a hardware limit, a licensing tier, a policy floor). Carried for the human reading the menu; never evaluated."
+        }
+      },
+      "title": "Constraint clause"
     }
   }
 }
