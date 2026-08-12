@@ -25,13 +25,15 @@
 # how deep is too deep is a policy judgement. A CYCLE is refused: it computes no value, and the
 # model refuses what cannot be computed.
 record_type: layer
-uuid: 4d81b2e7-3c05-4a9f-8b16-7e2d90f4c153
+uuid: b17e93c5-04af-4d28-9e61-8c3a705f2b46
+supersedes:
+  - 4d81b2e7-3c05-4a9f-8b16-7e2d90f4c153
 handle: intermediate/payments/prod-web
 conforms_to: udlm/0.1
 name: Payments production web tier
 description: The payments business unit's production web configuration, drawing on the org baseline
   and — only in the regulated jurisdictions — the stricter residency lineage.
-version: 1.0.0
+version: 2.0.0
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 status:
   state: active
@@ -68,7 +70,12 @@ limits:
       max: 90
       reason: Payments keeps more than the org floor.
   vm.memory:
+    # The step is INHERITED EXPLICITLY, not by omission. Dropping it would widen: the baseline
+    # offers 8Gi increments, and a child stating only `max: 256Gi` would admit 100Gi — a value no
+    # ancestor granted. Narrowing the ceiling while silently loosening the granularity is the
+    # subtle form of the escape this envelope exists to prevent.
     - max: 256Gi
+      step: 8Gi
       reason: The reservation this business unit actually holds.
 
 fields:

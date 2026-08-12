@@ -29,6 +29,7 @@ NAMES = {
     "python3 tests/check_single_source.py": "single-source (rule IDs + vocabularies)",
     "python3 tests/check_conformance_constants.py": "no coined constant in a certification rule (CNF-001)",
     "python3 tests/check_adr_retirement_claims.py": "no ADR claims a retirement the schemas contradict (RET-001)",
+    "python3 tests/check_layer_limits.py": "layer lineage + envelope containment (LAY-009/010)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",
