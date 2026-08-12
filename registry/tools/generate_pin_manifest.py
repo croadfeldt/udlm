@@ -26,10 +26,10 @@ Canonicalization notes (the two silent-divergence traps, guarded loudly):
   problem to fix, never something to paper over.
 """
 import glob
+import os
 import hashlib
 import json
 import math
-import os
 import subprocess
 import sys
 
@@ -209,9 +209,15 @@ def _semver_key(v):
 
 
 def build(existing):
-    """Fold the tree into an existing manifest, append-only. Returns (manifest, violations)."""
+    """Fold the tree into an existing manifest, append-only. Returns (manifest, violations).
+
+    A handle that leaves the tree KEEPS its rows — that is the append-only rule, and the digests
+    stay verifiable for anyone holding an old pin. What such a row cannot keep is a live `path`:
+    the file is gone, so the recorded path names nothing. Those rows are marked `stranded: true`
+    rather than left looking current, because a stale path that reads as current is the version of
+    this that misleads. The mark is derived on every regeneration, never authored."""
     manifest = {k: {"current": v["current"], "path": v["path"], "versions": dict(v["versions"])}
-                for k, v in (existing or {}).items()}
+                for k, v in (existing or {}).items()}   # `stranded` is derived below, not carried
     violations = []
     for handle, version, dig, rel in tree_rows():
         entry = manifest.setdefault(handle, {"current": version, "path": rel, "versions": {}})
@@ -225,6 +231,11 @@ def build(existing):
         if _semver_key(version) >= _semver_key(entry["current"]):
             entry["current"] = version
             entry["path"] = rel
+        entry.pop("stranded", None)          # it is in the tree, so it is not stranded
+
+    for handle, entry in manifest.items():
+        if not os.path.exists(os.path.join(ROOT, entry["path"])):
+            entry["stranded"] = True
     return manifest, violations
 
 

@@ -67,6 +67,7 @@ jobs:
       - run: python3 tests/check_adr_retirement_claims.py
       - run: python3 tests/check_layer_limits.py
       - run: python3 tests/check_tier_state_conflation.py
+      - run: python3 tests/check_duplicate_yaml_keys.py
       # Repo-cleanliness gates (the nine questions — dav docs/repo-cleanliness-review.md):
       # referential integrity (Q8) + CI/signoff parity (these two ran only in signoff.sh before).
       - run: python3 tests/check_links.py
