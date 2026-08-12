@@ -28,7 +28,7 @@ NAMES = {
     "python3 tests/check_estate_tokens.py": "estate-token scrub",
     "python3 tests/check_single_source.py": "single-source (rule IDs + vocabularies)",
     "python3 tests/check_conformance_constants.py": "no coined constant in a certification rule (CNF-001)",
-    "python3 tests/check_adr_retirement_claims.py": "no ADR claims a retirement the schemas contradict (RET-001)",
+    "python3 tests/check_adr_retirement_claims.py": "no doc claims a model state the schemas contradict (RET-001/002)",
     "python3 tests/check_layer_limits.py": "layer lineage + envelope containment (LAY-009/010)",
     "python3 tests/check_tier_state_conflation.py": "no definition tier described as a state (TIER-001)",
     "python3 tests/check_duplicate_yaml_keys.py": "no duplicate YAML mapping keys (DUP-001)",

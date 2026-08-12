@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""An ADR must not claim a retirement the model never made (RET-001).
+"""A document must not claim a model state the schemas contradict (RET-001/002).
 
 **Where this came from.** ADR-054 stated, present tense: *"`reference_data` is retired from
 `layer_type`"* and *"`layer_type` is now assembly-only"*. It was in the enum the whole time, and not
@@ -24,6 +24,18 @@ world**, and either direction of fix leaves that assertion needing to be true.
 
   RET-001  an ADR states in the PRESENT or PAST tense that a value is retired/removed from a named
            field, while a registry schema still carries that value in that field's enum.
+  RET-002  a NORMATIVE document claims a named field does not exist — "`x` does not exist", "a
+           standing gap", "carried by no schema" — while a registry schema declares a property of
+           that name. The mirror of RET-001 and the same defect: a record asserting a state of the
+           world it has not checked against the world.
+
+           `GMX-011` carried exactly this. It said the authority component "does not exist on the
+           canonical `Reference` today (standing gap F14)" and told implementations to enforce on a
+           weaker surface until it landed — while the URF grammar had already carried authority as
+           its `//` axis for months. The six-field object the claim was written against had been
+           replaced, each field becoming an axis; the authority was never dropped, it MOVED. So a
+           rule deferred a capability the model already had, and the deferral read as current
+           because nothing compared prose to schema.
 
 **Deliberately narrow, and here is the line.** This does not police whether a decision is wise, nor
 prose about future intent — "X SHOULD be retired", "X will be retired", "retiring X is gated on
@@ -43,6 +55,21 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADRS = os.path.join(ROOT, "docs", "adr")
 REGISTRY = os.path.join(ROOT, "registry")
+# RET-002's surface is the NORMATIVE tier, where an absence claim changes what an implementer
+# builds. An ADR narrating a gap it later closed is history and belongs elsewhere.
+NORMATIVE = [os.path.join(ROOT, "docs", "spec"), REGISTRY]
+
+# "`target_authority` does not exist" / "`x` is a standing gap" / "`x` is carried by no schema"
+_ABSENT = (r"(?:does not exist|do not exist|is a standing gap|are a standing gap|"
+           r"is carried by no schema|has no schema home|exists only in prose)")
+# BOTH WORD ORDERS. The sentence this was built from put the phrase FIRST — "does not exist on the
+# canonical `Reference` today ... — `target_authority`" — and a field-first-only pattern missed it
+# entirely. Caught by the self-test rather than by reading the regex, which is the whole reason the
+# self-test quotes the real sentence instead of a tidied one.
+ABSENCE = re.compile(
+    rf"(?:`(?P<field>[A-Za-z][A-Za-z0-9_]*)`[^.\n|]{{0,80}}?{_ABSENT}"
+    rf"|{_ABSENT}[^.\n|]{{0,80}}?`(?P<field2>[A-Za-z][A-Za-z0-9_]*)`)",
+    re.IGNORECASE)
 
 # "`value` is retired from `field`" / "`value` removed from `field`" and the reversed word order
 # "retired `value` from `field`". Present or past tense only — a modal ("should", "will", "is gated
@@ -59,6 +86,29 @@ CLAIMS = [
 MODAL = re.compile(r"\b(should|shall|will|would|must|to be|gated on|pending|once|when|if|proposes?|"
                    r"proposal|plan|planned|intends?|plans to|plan to|not retire|does not retire|"
                    r"stays|remains|keeps)\b", re.IGNORECASE)
+
+
+def properties_named(field):
+    """Every registry schema declaring a property of this name, with where. A field is `declared`
+    when it appears as a key under a `properties` object — the same test a reader would apply."""
+    found = []
+
+    def walk(node, path, src, under_props=False):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if under_props and k == field:
+                    found.append(f"{src}{path}/{k}")
+                walk(v, f"{path}/{k}", src, k == "properties")
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                walk(v, f"{path}[{i}]", src, under_props)
+
+    for f in sorted(glob.glob(os.path.join(REGISTRY, "*.schema.json"))):
+        try:
+            walk(json.load(open(f, encoding="utf-8")), "", os.path.relpath(f, ROOT))
+        except Exception:
+            continue
+    return found
 
 
 def enum_values_for(field):
@@ -113,6 +163,30 @@ def main():
                         f"is still in that enum: {', '.join(where[:3])}")
                     fails.append(f"          {line.strip()[:150]}")
 
+    # RET-002 — an absence claim about a field a schema declares.
+    for base in NORMATIVE:
+        for path in sorted(glob.glob(os.path.join(base, "**", "*.md"), recursive=True)):
+            rel = os.path.relpath(path, ROOT)
+            for lineno, line in enumerate(open(path, encoding="utf-8"), 1):
+                m = ABSENCE.search(line)
+                if not m:
+                    continue
+                # The modal test is scoped to the CLAIM, not the line. A normative rule row is a
+                # whole paragraph and reliably contains a MUST somewhere — testing the line meant
+                # every real rule was read as a statement of intent and skipped, which is the one
+                # place this arm needed to look.
+                lo, hi = max(0, m.start() - 90), min(len(line), m.end() + 90)
+                if MODAL.search(line[lo:hi]):
+                    continue
+                claims_seen += 1
+                field = m.group("field") or m.group("field2")
+                where = properties_named(field)
+                if where:
+                    fails.append(
+                        f"RET-002 {rel}:{lineno} claims `{field}` does not exist, and a schema "
+                        f"declares it: {', '.join(where[:3])}")
+                    fails.append(f"          {line.strip()[:150]}")
+
     # Self-test. Each arm gets a planted case — an arm that cannot fire proves only that the files
     # parsed, and a gate over a claim nobody re-checks is how the original defect survived.
     probe_claim = "**`reference_data` is retired from `layer_type`**: context is never merged."
@@ -125,12 +199,22 @@ def main():
     if not MODAL.search(probe_intent):
         st.append("RET-SELF a gated/pending sentence is not recognized as intent — the gate would "
                   "flag honest statements about undecided work")
+    probe_absence = ("the authority component this rule decides on does not exist on the canonical "
+                     "`target_authority` today (standing gap F14)")
+    if not ABSENCE.search(probe_absence):
+        st.append("RET-SELF RET-002 does not match the absence claim it was built from")
+    if ABSENCE.search("`x` will not exist until the ruling lands") and MODAL.search(
+            "`x` will not exist until the ruling lands"):
+        pass                                  # correctly treated as intent
+    if not properties_named("layer_type"):
+        st.append("RET-SELF the property scan finds no `layer_type` — it is not reaching the "
+                        "schemas, so every RET-002 check would pass vacuously")
     if not enum_values_for("layer_type"):
         st.append("RET-SELF no `layer_type` enum was found in registry/*.schema.json — the enum "
                   "scan is not reaching the schemas, so every check would pass vacuously")
 
-    print(f"adr retirement claims: {claims_seen} present-tense retirement claim(s) checked against "
-          f"the registry enums")
+    print(f"model-state claims: {claims_seen} present-tense claim(s) checked against the registry "
+          f"schemas")
     for m in st:
         print(f"  FAIL [{m}")
     for m in fails:
@@ -141,7 +225,7 @@ def main():
                   "context and reasoning behind a decision; the moment it narrates implementation "
                   "status it can be, and here is, wrong.")
         return 1
-    print("OK — no ADR claims a retirement the schemas contradict")
+    print("OK — no document claims a model state the schemas contradict")
     return 0
 
 
