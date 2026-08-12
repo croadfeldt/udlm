@@ -1,0 +1,57 @@
+# THE SUBSCRIBE SIDE of two-sided scoping (ADR-054 §, shipped #317) — a request layer that adds
+# criteria modifying which layers reach it (maintainer ruling 2026-08-11: "we may have a layer
+# reference to add additional filters / criteria to modify the match").
+#
+# WHY THIS EXAMPLE EXISTS. Two-sided scoping shipped with four keys and demonstrated none of them
+# until `covers` got one. `covers`/`applies_on` are the publish side — a layer saying who it MAY
+# reach. `from_layers`/`skip` are the subscribe side — a request saying which layers actually feed
+# it. ADR-054 is explicit that neither alone is the boundary:
+#
+#     L injects into R  iff  R.target ∈ L.covers
+#                        and R.operation ∈ L.applies_on
+#                        and L ∈ R.from_layers
+#                        and L ∉ R.skip
+#
+# `covers` says WHO MAY; `from_layers` says WHO DOES. An example of only the first shows half a
+# handshake, and half a handshake reads as the whole thing.
+#
+# WHAT THIS IS NOT. It is not a layer whose content is a pointer at another layer. That shape —
+# `fields: {other_layer: <data_reference>}` — carried no criteria, so it modified no match; it was
+# an indirection standing in for the scoping the model already has. The reference here is in the
+# SCOPING, which is what makes it able to narrow anything.
+record_type: layer
+uuid: 6ae1c40f-9d38-4b52-8c07-1f2a5b83e6d4
+handle: request/frontend/web-01-provision
+conforms_to: udlm/0.1
+name: Frontend web-01 provisioning request
+description: A consumer's direct declaration for one host, narrowing which platform layers assemble
+  into it.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: request
+precedence_class: request
+domain: tenant
+contributor:
+  # `none` is correct for a request layer and only for a request layer: it is the consumer's own
+  # direct declaration, not a contribution to shared configuration, so nothing reviews it.
+  contributor_type: consumer
+  review: none
+
+# ─── THE ADDITIONAL CRITERIA ─────────────────────────────────────────────────────────────────
+# An OPTIONAL narrowing. Absent, assembly already draws this tenant's layers plus platform/system
+# ones — tenant isolation is the default, never a re-declaration. Declared here to select an
+# explicit subset: this request takes platform layers only, so a tenant-authored intermediate layer
+# whose `covers` would otherwise match does not reach it.
+from_layers: estate?domain==platform
+
+# The negative form, and the governed one. A default is freely skippable; a `narrow_only` or
+# compliance layer requires attested break-glass and is audited — which is why `skip` is Data (the
+# declaration) while whether the skip is ALLOWED is Policy (the control plane's assembly engine).
+# Skipping the app-profile layer here is the freely-skippable case: this host is web-tier by label,
+# so `covers: estate?labels.app_tier==web` matches it, and the consumer is declining the default.
+skip: estate?handle==platform/app-profiles/web-tier
+
+fields:
+  hostname: web-01

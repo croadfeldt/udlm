@@ -32,9 +32,26 @@ thing.
 **1. References-context is a classified edge, not a layer.** Orthogonal context is a
 **classified, dereferenceable edge** in the relationship graph (relation nature = `context` +
 strength, dual anchor, `§10` coordinate) — never an assembly layer, never a bare pointer.
-**`reference_data` is retired from `layer_type`**: context is never merged into the assembly, so it
-was never a layer — it is a **linked entity** reached by an edge. `layer_type` is now assembly-only
-(`base`/`core`/`intermediate`/`service`/`request`/`policy`). One entity, many linkers — a Data-Center
+**Context is never merged into the assembly, so it was never a layer** — it is a **linked entity**
+reached by an edge.
+
+**`reference_data` STAYS a `layer_type`** (maintainer ruling 2026-08-11), and the first draft of this
+ADR was wrong to retire it. `reference_data` does not mean "context"; it marks **a layer that other
+layers reference** — shared data, defined once and pointed at. That is a real and useful thing, and
+nothing about moving context onto an edge touches it.
+
+What the mis-retirement actually caught was **two records misfiled under it**, each now in its
+correct home:
+
+| Was `layer_type: reference_data` | Actually | Now |
+|---|---|---|
+| `network_tier`, `storage_tier` | a **floor** — matched against, never merged | `vocabulary_term` records, keyed to (kind, scope) — ADR-058 |
+| an app profile | **contributed** config for an app team — `tier: web` lands on a resource | an `intermediate` layer carrying `covers` |
+| a shared network definition | **shared data other layers reference** | unchanged — this is what `reference_data` is for |
+
+The test that separates them is what the record DOES: a floor is *matched*, configuration is
+*contributed*, and shared data is *pointed at*. One `layer_type` held all three, which is why the
+retirement looked correct from any single example. One entity, many linkers — a Data-Center
 info bundle is one entity every resource in the DC links via a `located-in` (context) edge; no
 duplication, and the edge carries a nature a bare reference could not.
 
@@ -169,8 +186,9 @@ match, resolves projections, and enforces the invariants (a peer MAY differ).
 - The paradigm's third axis is named and separable from the Class hierarchy, so a reviewer can ratify
   one without the other — and ADR-041's citations (`§references-context`, `PROJ-P1..P6`) now resolve
   to a decision of their own instead of a section of ADR-038.
-- `reference_data` leaving `layer_type` makes "context is a linked entity, assembly is layers" a hard
-  line rather than a convention.
+- "context is a linked entity, assembly is layers" is a hard line rather than a convention — drawn by
+  the edge, not by removing a `layer_type`. `reference_data` was never the context carrier; the
+  original draft of this consequence assumed it was.
 - One filter mechanism (`§10` selectors) serves injection scoping, addressing, query, and event
   routing — no parallel construct for any of them.
 
