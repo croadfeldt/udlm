@@ -98,9 +98,14 @@ with no re-keying. Prior rotations remain in history as the names of prior revis
 changelog rows describing them are never rewritten, only annotated as superseded. The rename
 map (`registry/renames.yaml`) keeps its one job: it maps file paths, never identities.
 
-**8. The Reference shape evolves once.** `$defs/Reference` gains its pin fields
-(`target_version`, `target_digest`) and the standing-gap `target_authority` field in the same
-change, so the canonical reference shape moves a single MINOR instead of two.
+**8. The Reference shape evolves once.** The reference carries version, digest and authority
+together rather than gaining them one at a time.
+
+*What this became.* The six-field object this decision was written against no longer exists: the URF
+grammar (`identifier-scheme.md` §9) carries each of its fields as an **axis** — `//` the authority,
+`@` the version-or-digest pin, `?` a type constraint — so "the shape evolves once" was satisfied by
+replacing the shape rather than by extending it. The decision holds; the field names in it are the
+vocabulary of a form that is gone.
 
 ## The standards, and what each one settles here
 
