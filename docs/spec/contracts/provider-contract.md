@@ -213,7 +213,7 @@ provider_base_registration:
     provisioned_by: platform             # platform provisions policy from this declaration
 ```
 
-**control-plane-assigned registration verdict.** Produced by the control plane *after* attestation verification; **not part of the provider's submission** — the provider cannot set these, and a submitted value is rejected. This is the structural guarantee behind DCM ADR-022 (trust is never self-declared):
+**control-plane-assigned registration verdict** (`registry/registration-verdict.schema.json` — a record of its own, with `registry/examples/example-registration-verdict.yaml` as the worked case). Produced by the control plane *after* attestation verification; **not part of the provider's submission** — the provider cannot set these, and a submitted value is rejected. A separate record with a different author is what makes that structural rather than procedural, and it is the guarantee behind DCM ADR-022 (trust is never self-declared). The ceiling is checked, not merely stated: `validate.py` refuses an `effective_capabilities` entry that no admission approves, and refuses a capability name that resolves to no term in `provider-capability.yaml`:
 
 ```yaml
 dcm_registration_verdict:                # the control plane-OWNED — references the submission above

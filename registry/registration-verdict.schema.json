@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/registration-verdict.schema.json",
+  "title": "Registration verdict",
+  "description": "What the CONTROL PLANE decided about a provider after attestation — the ceiling a provider can never exceed, whatever it declared about itself.\n\nTHE STRUCTURAL GUARANTEE IS THE OWNERSHIP SPLIT. A provider submits a registration; this record is produced separately, by the control plane, after verification. A provider-supplied value here is rejected rather than merged. That is what makes \"trust is never self-declared\" a property of the data model instead of an instruction an implementation might skip: the two documents have different authors, so a provider cannot write its own verdict any more than it can write its own audit record.\n\nDEFAULT-DENY IS THE DEFAULT STATE, NOT A POLICY SETTING. `effective_capabilities` starts EMPTY and each declared capability starts `pending`. A provider holds no authority from declaring — declaring is a claim, admission is a grant, and the gap between them is where a platform admin stands. A model where declaration implied capability would make registration an act of self-authorization.\n\nTHE CEILING IS AN INTERSECTION of four independent sources: declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted. Each can only narrow. That is why it is a ceiling and not a setting — no single party can widen it, so a compromise of any one of them cannot grant authority the others withhold.\n\nCOARSE HERE, GRANULAR IN POLICY. A disposition is platform-wide per capability category. Per-tenant, per-zone and per-context approval is the Governance Matrix's, deliberately: mixing them would put an operational grant and a governance decision in one field, and one of the two would then be changed by whoever owned the other.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "provider_uuid",
+    "trust_posture",
+    "capability_admissions",
+    "effective_capabilities"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "registration_verdict"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "provider_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "The provider this verdict is about. A separate record rather than a block on the provider's own submission — a verdict living inside the document it judges could be edited by whoever edits that document."
+    },
+    "trust_posture": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "vouched",
+        "provisional"
+      ],
+      "description": "How the attestation evidence checked out, computed — never submitted. `verified` = independently checked; `vouched` = attested by a trusted third party; `provisional` = self-asserted only, and therefore the weakest and capability-gated. Ordered weakest-last on purpose: `provisional` is where a provider sits when nothing external corroborated it, which is a fact about the EVIDENCE, not a grade of the provider."
+    },
+    "effective_accepts_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The intersection of the roles the provider requested and what the Governance Matrix permits. Computed, authoritative, and the same shape of answer as `effective_capabilities` — a requested role is a claim, the intersection is the grant."
+    },
+    "capability_admissions": {
+      "type": "array",
+      "description": "A platform admin's disposition of each DECLARED capability or category.\n\nAPPEND-ONLY. A disposition is never edited in place: each change is a new entry with its own `CAPABILITY_ADMIT` audit event, and the current disposition is the newest entry for that capability. Rewriting a disposition would erase the fact that a capability was once denied, which is exactly what an auditor asks about.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capability",
+          "disposition"
+        ],
+        "properties": {
+          "capability": {
+            "type": "string",
+            "description": "The declared capability or `<capability>/<Domain>` category, from `registry/taxonomies/provider-capability.yaml`. Domain granularity is inherent in the category: `realize_resources/Storage` may be approved while `realize_resources/Compute` is denied, because a category IS verb × domain.",
+            "examples": [
+              "realize_resources/Storage",
+              "serve_data/Network"
+            ]
+          },
+          "disposition": {
+            "$ref": "common-elements.schema.json#/$defs/capability_disposition",
+            "description": "`pending` is where every declared capability STARTS — unusable, and not an error state. It is the shape of default-deny: absence of a decision is absence of a grant, so a capability nobody has looked at yet behaves exactly like one that was refused."
+          },
+          "actor": {
+            "type": "string",
+            "description": "Who dispositioned it. Present because a grant nobody can be asked about is a grant nobody can withdraw with confidence."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why. Carried for the human reading an admission history; never evaluated."
+          },
+          "at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+            "description": "RFC 3339 UTC. Ordering within this list is by position (append-only), never by comparing these — the wall clock is for correlation and display (`time-and-clock.md` §4)."
+          },
+          "audit_record_uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "description": "The `capability_admit` audit record for this change. The disposition and its audit entry name the same act in the one action vocabulary, so \"was this admission authorized\" is answered by matching, not by translating."
+          }
+        }
+      }
+    },
+    "effective_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The computed ceiling: declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted (`PRV-009`).\n\nSTARTS EMPTY, and an empty array is a valid, meaningful verdict — a registered provider that may do nothing yet. Distinguishable from ABSENT, which would mean the ceiling was never computed; the field is required so that distinction cannot be lost.\n\nDERIVED, and recorded rather than recomputed at every use because the inputs are held by four different parties and the answer must be the same for everyone reading it at a given moment. Whether a stale ceiling is re-derived, and how often, is the implementation's (ADR-008): a conformant peer could recompute on every dispatch."
+    },
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How the submitted evidence was checked. The evidence itself is the provider's; this is the control plane's record of examining it.",
+      "properties": {
+        "verified_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "method": {
+          "type": "string",
+          "description": "How the evidence was checked — the sentence a reader needs to judge what `trust_posture` is worth."
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "record_type": "registration_verdict",
+      "uuid": "c4e0a712-9b35-4d68-8f21-06a7d3e5149b",
+      "conforms_to": "udlm/0.1",
+      "provider_uuid": "3f8b1d40-72c6-4a19-9e05-8d24b1706fa3",
+      "trust_posture": "verified",
+      "effective_accepts_roles": [
+        "execution"
+      ],
+      "capability_admissions": [
+        {
+          "capability": "realize_resources/Storage",
+          "disposition": "approved",
+          "actor": "platform-admin/alice",
+          "reason": "Attestation independently verified; storage estate reviewed.",
+          "at": "2026-08-12T09:14:00Z"
+        },
+        {
+          "capability": "realize_resources/Compute",
+          "disposition": "denied",
+          "actor": "platform-admin/alice",
+          "reason": "No compute accreditation on file.",
+          "at": "2026-08-12T09:14:00Z"
+        },
+        {
+          "capability": "serve_data/Network",
+          "disposition": "pending"
+        }
+      ],
+      "effective_capabilities": [
+        "realize_resources/Storage"
+      ],
+      "attestation": {
+        "verified_at": "2026-08-12T09:02:00Z",
+        "method": "Certificate chain checked to the platform root; accreditation references resolved."
+      }
+    }
+  ]
+}

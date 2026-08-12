@@ -343,21 +343,11 @@
           "description": "The capability or capability category being admitted — a (verb × domain) term handle from the provider-capability taxonomy (e.g. `realize_resources/Storage`). ADR-PROV-002."
         },
         "resulting_disposition": {
-          "enum": [
-            "pending",
-            "approved",
-            "provisional",
-            "denied"
-          ],
+          "$ref": "common-elements.schema.json#/$defs/capability_disposition",
           "description": "The admission disposition AFTER this event — explicit forward state. A revoke of a prior `approved` is recorded as resulting_disposition `denied` (an explicit result, not an undo). `provisional` = admitted but restricted/shadowed (reuses the federation provisional posture). ADR-PROV-003."
         },
         "prior_disposition": {
-          "enum": [
-            "pending",
-            "approved",
-            "provisional",
-            "denied"
-          ],
+          "$ref": "common-elements.schema.json#/$defs/capability_disposition",
           "description": "Advisory: the disposition immediately before this event (LIFO already yields it; recorded for a self-describing chain)."
         },
         "actor": {
