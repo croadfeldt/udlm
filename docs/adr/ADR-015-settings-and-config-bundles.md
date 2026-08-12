@@ -12,26 +12,46 @@ The deeper issue: a "setting" is not just a value. From the **data model** it is
 
 ## Decision
 
-### 1. A Setting is a UDLM data primitive
+### 1. A Setting is a layer field — not a primitive of its own
 
-A **Setting** is a named parameter with a typed value and a rule:
+A setting is a **named value with a rule about who may change it and how far**. That is a layer
+field, exactly: a layer contributes values, declares the envelope its descendants must stay inside
+(`limits`, `LAY-009`), and states who it applies to (`covers`). Nothing about a setting needs a
+second mechanism.
 
 ```yaml
-setting:
-  name: credential.max_lifetime          # stable id, one home
-  value_type: duration                   # duration | enum | number | boolean | string | ref
-  constraint: ">= PT5M"                   # the rule (allowed values / bounds / enum)
-  scope: tenant                           # OVERRIDE CEILING — the finest tier on the scope ladder (§2a)
-                                          #   at which this may be set; settable base…tenant, an override
-                                          #   at any finer tier is REJECTED. `platform` = ceiling `profile`.
-  override_direction: tighten_only        # free | tighten_only — a finer layer may only NARROW the value
-                                          #   per the comparator (a security floor is tighten_only), never weaken it
-  conformity: comparable                 # does the value mean the same across peers? (ADR-014)
-  profile_governed: true                 # does it vary by profile?
-  default: PT1H                           # or a per-profile default set (below)
+# The setting AND its ceiling, on one layer. `limits` is the override rule: a descendant may
+# narrow within the envelope and cannot leave it, and there is no override for a bound —
+# declining the layer via `skip` is the audited route, visible as a skip.
+record_type: layer
+handle: core/credential-floor
+precedence_class: core                    # WHERE in the merge order
+domain: platform                          # WHOSE authority sets it
+covers: estate?resource_type==Access.*    # WHO it applies to
+limits:
+  credential.max_lifetime:
+    - min: PT5M
+      max: PT1H
+      reason: The org's credential floor; a finer layer may narrow, never widen.
+fields:
+  credential.max_lifetime: PT1H
 ```
 
-UDLM owns the **definition** — the parameter, its legal values, and the rule — and *nothing about how it is applied*. This is the ADR-014 split: the data carries transport + conformity; the concrete requirement/choice is provider/org/implementation.
+**Why not a primitive.** Every part the original shape asked for now exists, and each is stronger
+in its layer form:
+
+| The setting shape wanted | The layer already has | And it is better because |
+|---|---|---|
+| `scope` — an override ceiling | `limits` | a ceiling states the BOUND, where a tier states only how far down someone may write. A tier cannot say `PT5M..PT1H`. |
+| `override_direction: tighten_only` | `limits` | a direction can only be judged against whatever happened to merge beneath it; an envelope is checkable against every descendant independently, which is what makes one validation pass work over a deep chain. |
+| the §3 scoping filter | `covers` / `from_layers` / `skip` | already the two-sided handshake, already governed for skipping. |
+| effective value + provenance | `LAY-005` / `LAY-008` | already compute-never-store, already per-field. |
+
+`value_type`, `constraint`, `conformity` and `default` are the element's own `schema` and
+`SharedDataElement` concerns — the layer carries the value, the class carries what a valid value is.
+
+**The one thing that was genuinely missing** was the envelope, and it now exists (`LAY-009`). That is
+why this decision reduces rather than builds: the mechanism arrived by another route.
 
 ### 2. Settings compose in Configuration Bundles — the layer model, applied to config
 
@@ -51,7 +71,26 @@ Composition is deterministic precedence along the **one canonical scope ladder**
 
 ### 2a. Scoping — the two declarations that make precedence *resolvable*
 
-Precedence *orders* layers; to actually **resolve** a setting the resolver must also know **how far down a setting may be set** and **which overlay is in scope for this request**. Two declarations supply that, both against the one ladder above — so `Setting.scope`, the bundle tiers, and `profile-resolution.md §1`'s precedence are finally **one vocabulary**, not three.
+Precedence *orders* layers; to actually **resolve** a setting the resolver must also know **how far a
+value may be moved** and **which overlay is in scope for this request**. Both are declarations on the
+layer: `limits` bounds the first, `covers`/`from_layers`/`skip` selects the second.
+
+**There is no single ladder, and asking for one was the error.** This ADR proposed
+`base ▸ module ▸ profile ▸ org ▸ domain ▸ tenant ▸ resource` as the one vocabulary that would
+replace three. It could not be built, because it fuses **two independent axes** into one line:
+
+| Axis | Answers | Carried by |
+|---|---|---|
+| **precedence** | WHERE in the merge order — who overrides whom | `precedence_class` (`base ▸ core ▸ intermediate ▸ service ▸ request ▸ policy`) |
+| **domain** | WHOSE authority sets it | `domain` (`system ▸ platform ▸ tenant ▸ resource_type ▸ entity`) |
+
+They vary independently, and the shipped corpus proves it: `base` appears at both `platform` and
+`resource_type` authority; `intermediate` at both `platform` and `tenant`. A flattened seven-tier
+line cannot express `base`-order-with-`tenant`-authority at all, so unifying them would have lost
+information rather than removed duplication.
+
+The three vocabularies this ADR set out to merge were therefore not three spellings of one thing.
+Two of them are the two real axes, and the model already carries both, on every layer.
 
 **(1) A setting declares its override ceiling** (§1). `scope` is the **finest tier at which the setting may be set**: settable from `base` up to and including `scope`, an override at any finer tier is **rejected** (never silently dropped). `scope: platform` is shorthand for ceiling `profile` — platform-wide, no org/tenant/resource override. `override_direction: free | tighten_only` adds the *direction*: a `tighten_only` floor may only be **narrowed** by a finer layer, per the value's comparator (`duration` → shorter; numeric → the tightening bound; `enum` → a declared sub-order), never weakened. Together these are the setting's **precedence-eligibility** (named in §3).
 

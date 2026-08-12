@@ -113,7 +113,7 @@
     },
     "settings": {
       "type": "object",
-      "description": "Profile-level configuration values that have no artifact to reference. Values only — a setting whose home is an artifact belongs in that entry's `settings`."
+      "description": "Profile-level configuration values that have no artifact to reference. VALUES ONLY — a setting whose home is an artifact belongs in that entry's `settings`.\n\nA setting is not a primitive of its own (ADR-015). A named value plus a rule about who may change it and how far IS a layer field: the layer carries the value, `limits` carries the envelope a descendant must stay inside (LAY-009), and `covers`/`from_layers`/`skip` carry who it applies to. So anything here that needs an override ceiling, a tightening rule or a scope filter belongs on a layer instead — this object is for the residue that genuinely has nowhere else to live, and it stays deliberately shapeless because giving it a shape would be building the second mechanism back."
     },
     "activation": {
       "type": "object",

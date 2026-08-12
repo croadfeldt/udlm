@@ -6,7 +6,7 @@
 
 For any request, the **applicable profile** is the **most-specific approved** profile in scope, else the applicable **default**:
 
-1. Scope precedence (most specific wins): `resource_type` override → tenant → group → **platform default**. (Same precedence spine as policy domains, `policy-contract.md §4`.)
+1. Scope precedence (most specific wins) runs on the **domain** axis — `system ▸ platform ▸ tenant ▸ resource_type ▸ entity` (`common-elements.schema.json#/$defs/policy_domain`), the same spine as policy domains (`policy-contract.md §4`). This is one of TWO independent axes and answers *whose authority sets a value*; **where in the merge order** a contribution sits is `precedence_class`, and the two vary independently (ADR-015 §2a) — a value's authority and its position in the merge order are separate questions, and a single flattened ladder can answer only one of them.
 2. **Only `approved: true` profiles are selectable.** A custom (forked) profile is first-class but must be org-ratified before it can resolve — the "org ratifies" rule (`foundational-resources.md`). An unapproved profile is inert.
 3. If nothing more specific is selected, the profile with `default: true` for that scope resolves.
 
