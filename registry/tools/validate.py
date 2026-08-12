@@ -555,19 +555,32 @@ def _descendants(uuid, succ):
 
 
 def _find_data_references(obj, path=""):
-    """Yield (dot-path, ref-object) for every data reference embedded in a record — any dict carrying
-    `ref_uuid` (the k8s ObjectReference shape, UDLM ADR-012). A reference is a leaf; its own scalar
-    values are not re-scanned."""
+    """Yield (dot-path, target_uuid) for every data reference embedded in a record.
+
+    A reference is a URF STRING — `uuid/<v4>[@version][?reference_data_type==<kind>]`
+    (ADR-012 + identifier-scheme §9).
+
+    THIS READ THE WRONG SHAPE FOR MONTHS. It looked for a dict carrying `ref_uuid` — the k8s
+    ObjectReference form the corpus left behind at the URF cutover (the superseding records say so
+    by name: "the object-form example this replaces"). `check_data_references` was moved to URF
+    strings; this was not, and it is the ONLY input to the change-impact graph. So `impact_report`
+    found no edges and printed "0 reference(s) pinned to a superseded version" on every run — while
+    the corpus deliberately staged the case it exists to show: app_profile pins network_zone v1,
+    v2 supersedes v1. A clean-looking zero, over a graph with no edges in it.
+
+    Kept as one helper so the two can never disagree again: whatever `check_data_references`
+    validates is what the impact graph traverses."""
     out = []
     if isinstance(obj, dict):
-        if "ref_uuid" in obj:
-            out.append((path or "(root)", obj))
-        else:
-            for k, v in obj.items():
-                out += _find_data_references(v, f"{path}.{k}" if path else k)
+        for k, v in obj.items():
+            out += _find_data_references(v, f"{path}.{k}" if path else k)
     elif isinstance(obj, list):
         for i, v in enumerate(obj):
             out += _find_data_references(v, f"{path}[{i}]")
+    elif isinstance(obj, str) and obj.startswith("uuid/") and "reference_data_type==" in obj:
+        parts = obj[len("uuid/"):].split("?")[0].split("@")[0].split("/")
+        if parts and parts[0]:
+            out.append((path or "(root)", parts[0]))
     return out
 
 
@@ -895,12 +908,12 @@ def _reverse_reference_graph():
                     continue
                 nodes[src] = {
                     "label": doc.get("handle") or doc.get("name") or src,
-                    "is_refdata": doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data",
+                    "is_refdata": (doc.get("record_type") == "vocabulary_term"
+                                   or (doc.get("record_type") == "layer"
+                                       and doc.get("layer_type") == "reference_data")),
                 }
-                for _loc, ref in _find_data_references(doc):
-                    tgt = ref.get("ref_uuid")
-                    if tgt:
-                        referrers.setdefault(tgt, []).append(src)
+                for _loc, tgt in _find_data_references(doc):
+                    referrers.setdefault(tgt, []).append(src)
     return nodes, referrers
 
 
@@ -919,6 +932,36 @@ def impact_report():
     superseded = {u for u in index if _descendants(u, succ)}         # versions with a newer descendant
     direct = sorted({(s, t) for t in superseded for s in referrers.get(t, [])})
     print("== change-impact (explicit supersedes DAG; advisory) ==")
+
+    # THE INSTRUMENT CHECKS ITSELF, and this is not the same thing as the report failing.
+    # The report is advisory by design (ADR-012 §7: the DECISION to act on impact is a cascade
+    # policy, never automatic here). But "no impact to report" and "the graph has no edges to
+    # traverse" print the SAME line, and for months it was the second — `_find_data_references`
+    # looked for the object-form reference the corpus had already left behind. A tool that cannot
+    # tell you it is blind will keep reassuring you.
+    #
+    # So: an estate with zero impacts is fine and common. An estate whose records contain data
+    # references while the graph holds no edges is a broken instrument, and that IS a hard failure —
+    # it is a statement about the tool, not about the estate.
+    if not referrers:
+        # Counted by RAW TEXT, deliberately independent of `_find_data_references`. The first
+        # version of this check called that helper to decide whether references existed — using the
+        # broken finder to detect that the finder was broken, which of course reported zero and
+        # passed. A detector that shares a failure mode with its subject detects nothing.
+        refs_in_corpus = 0
+        for subdir in ("examples", "taxonomies", "profiles"):
+            base = ROOT / subdir
+            if not base.exists():
+                continue
+            for path in sorted(base.rglob("*")):
+                if path.suffix not in (".json", ".yaml", ".yml") or "must-reject" in path.parts:
+                    continue
+                refs_in_corpus += path.read_text(encoding="utf-8").count("reference_data_type==")
+        if refs_in_corpus:
+            print(f"FAIL the reference graph has NO edges, yet the corpus text contains "
+                  f"{refs_in_corpus} data reference(s) — the impact graph is blind, and a blind "
+                  f"graph reports '0 impacted' exactly like a healthy one")
+            return "blind"
     if not direct:
         print("0 reference(s) pinned to a superseded reference_data version")
         return
@@ -960,7 +1003,8 @@ def main() -> int:
                      lambda d: f"{d['resource_type']} ({d['class']} Class) v{d['version']} — {len(d.get('elements') or [])} element(s)"
                                + (f" + {len(d['constituents'])} constituent(s)" if d.get('constituents') else ""),
                      check_class_record))
-    impact_report()
+    if impact_report() == "blind":
+        failures += 1
     print(f"\n{'FAILED' if failures else 'ALL VALID'} — {failures} invalid")
     return 1 if failures else 0
 

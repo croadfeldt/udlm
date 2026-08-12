@@ -1,0 +1,52 @@
+# AN APP PROFILE IS AN INTERMEDIATE LAYER — a set of configuration assigned to an application team
+# (maintainer ruling 2026-08-11). It was filed as `layer_type: reference_data`, and the test that
+# settles it is what the record DOES: `tier: web` is a value that lands on a resource. A layer
+# contributes fields to an assembled payload; that is the definition, and this contributes.
+#
+# CONTRAST WITH A VOCABULARY TERM, which is what the other reference-data records turned out to be
+# (registry/vocabulary-term.schema.json). `network_tier: high-throughput` carries
+# `min_bandwidth_mbps: 10000` — nothing merges that into a resource. It is what the NAME MEANS, a
+# floor a provider is matched against. One is contributed, the other is matched. `reference_data`
+# held both, which is why it could not be retired by moving it to one place.
+#
+# WHY `intermediate`. layering-and-versioning §3: intermediate is org/customization — "encode
+# organizational structure (business unit, enclave, logical unit)", with "Business unit layer" among
+# its own examples. An app team's configuration set is that, exactly.
+#
+# `covers` IS THE ASSIGNMENT (ADR-054 two-sided scoping, shipped #317), and it is why the layer form
+# is not just a relabel. A reference-data record was inert: something had to point AT it, so the
+# corpus carried a second layer whose only content was that pointer. As a layer this record says
+# who it applies to itself, and the assembly engine gathers it — the indirection disappears rather
+# than moving. First worked example of `covers` in the corpus.
+record_type: layer
+# A NEW record: the shape changed (reference_data -> intermediate, `covers` added), and a published
+# immutable record is never edited (ADR-051). The predecessor is named below.
+uuid: 2c9e57a3-8f14-4b06-9d72-6ae350188cbf
+handle: platform/app-profiles/web-tier
+conforms_to: udlm/0.1
+name: App profile — web tier
+description: Governed web-tier application profile — the configuration a web-tier application team's
+  resources are assembled with. Binds its network zone by reference so the zone is defined once.
+version: 3.0.0
+supersedes:
+  - 035e8844-4fa2-40f7-8dd3-fa6dfb0c2e33   # the `layer_type: reference_data` form of this profile
+  - a99c0de1-4040-4a10-8b20-1122334455aa   # its object-form data-reference ancestor (URF cutover 4b)
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+layer_type: intermediate
+precedence_class: intermediate
+# WHO GETS THIS CONFIGURATION. The assignment is on the layer, stated once, rather than restated by
+# every resource that wants it.
+covers: estate?labels.app_tier==web
+domain: platform
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+fields:
+  tier: web
+  # STILL A DATA REFERENCE, and deliberately: the zone is a governed definition living in one place,
+  # so this binds it rather than copying it. This record pins v1.0.0 while v2.0.0 exists, which is
+  # the corpus's standing change-impact case (DCM ADR-012 #2) — `validate.py impact_report()` names
+  # this record as directly impacted.
+  network_zone: uuid/b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50@1.0.0?reference_data_type==network_zone
