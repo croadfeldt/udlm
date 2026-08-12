@@ -275,6 +275,17 @@
         }
       },
       "title": "Constraint clause"
+    },
+    "capability_disposition": {
+      "title": "Capability disposition",
+      "description": "A platform admin's decision about one declared provider capability. `pending` is where every declared capability starts — unusable, and not an error state: absence of a decision is absence of a grant, so a capability nobody has looked at behaves exactly like one refused. That is what default-deny means as a data shape (ADR-PROV-003).\n\nShared by the registration verdict (the current disposition) and the audit record's `capability_admit` event (the act that set it), so \"was this admission authorized\" is answered by matching a permit against a record rather than by translating between two vocabularies.",
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "provisional",
+        "denied"
+      ]
     }
   }
 }

@@ -1,0 +1,53 @@
+# A REGISTRATION VERDICT — what the control plane decided about a provider after checking its
+# attestation (ADR-PROV-003, provider-contract §2).
+#
+# THE OWNERSHIP SPLIT IS THE GUARANTEE. The provider submitted a registration; this is a SEPARATE
+# record with a different author. A provider-supplied value here is rejected rather than merged,
+# which is what makes "trust is never self-declared" a property of the data model rather than an
+# instruction an implementation might skip — a provider can no more write its own verdict than its
+# own audit record.
+#
+# DEFAULT-DENY IS THE STARTING STATE. Every declared capability begins `pending` and the ceiling
+# begins EMPTY. Declaring is a claim; admission is a grant; the gap between them is where a platform
+# admin stands. Note `serve_data/Network` below: dispositioned `pending`, which is not an error —
+# nobody has looked at it, and a capability nobody has looked at behaves exactly like one refused.
+record_type: registration_verdict
+uuid: c4e0a712-9b35-4d68-8f21-06a7d3e5149b
+conforms_to: udlm/0.1
+provider_uuid: 3f8b1d40-72c6-4a19-9e05-8d24b1706fa3
+trust_posture: verified
+effective_accepts_roles:
+  - execution
+
+# APPEND-ONLY. A disposition is never edited in place: a change is a new entry with its own
+# CAPABILITY_ADMIT audit record, and the current disposition is the newest entry for that
+# capability. Rewriting one would erase the fact that a capability was once denied — which is
+# exactly what an auditor asks about.
+capability_admissions:
+  - capability: realize_resources/Storage
+    disposition: approved
+    actor: platform-admin/alice
+    reason: Attestation independently verified; storage estate reviewed.
+    at: '2026-08-12T09:14:00Z'
+  # Domain granularity is inherent in a category — a category IS verb × domain — so this provider is
+  # trusted for storage and not for compute, with no extra mechanism.
+  - capability: realize_resources/Compute
+    disposition: denied
+    actor: platform-admin/alice
+    reason: No compute accreditation on file.
+    at: '2026-08-12T09:14:00Z'
+  - capability: serve_data/Network
+    disposition: pending
+
+# THE CEILING: declared ∩ admitted ∩ registry-enabled ∩ Governance-Matrix-permitted (PRV-009). Every
+# input can only NARROW, which is why it is a ceiling and not a setting — no single party can widen
+# it, so compromising one cannot grant authority the others withhold.
+#
+# `realize_resources/Compute` is absent because it was denied; `serve_data/Network` because it was
+# never admitted. Putting either here would be authority nobody granted, and validate.py refuses it.
+effective_capabilities:
+  - realize_resources/Storage
+
+attestation:
+  verified_at: '2026-08-12T09:02:00Z'
+  method: Certificate chain checked to the platform root; accreditation references resolved.

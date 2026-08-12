@@ -67,6 +67,7 @@ POLICY_VALIDATOR = _validator("policy.schema.json")
 EVAL_CONTEXT_VALIDATOR = _validator("evaluation-context.schema.json")
 LAYER_VALIDATOR = _validator("layer.schema.json")
 VOCABULARY_TERM_VALIDATOR = _validator("vocabulary-term.schema.json")
+REGISTRATION_VERDICT_VALIDATOR = _validator("registration-verdict.schema.json")
 AUDIT_RECORD_VALIDATOR = _validator("audit-record.schema.json")
 COMMIT_LOG_VALIDATOR = _validator("commit-log-entry.schema.json")
 AUDIT_LEAF_VALIDATOR = _validator("audit-leaf.schema.json")
@@ -584,6 +585,52 @@ def _find_data_references(obj, path=""):
     return out
 
 
+def check_registration_verdict(doc):
+    """The ceiling must actually be a ceiling.
+
+    JSON Schema can require both lists; it cannot say one is contained in the other. And containment
+    is the whole invariant: an `effective_capabilities` entry with no `approved` disposition behind
+    it is authority nobody granted, which is precisely what default-deny exists to prevent. A verdict
+    that merely HAS the fields is the failure mode this catches."""
+    errors = []
+    # A capability name that resolves to nothing is a ceiling over an empty set: it looks
+    # restrictive and restricts nothing, which is worse than an absent verdict because it reads as
+    # a decision.
+    try:
+        import yaml as _y
+        _caps = _y.safe_load(open(ROOT / "taxonomies" / "provider-capability.yaml", encoding="utf-8"))
+        known = {t["term"] for t in (_caps or {}).get("terms", [])}
+    except Exception:
+        known = set()
+    if known:
+        for i, a in enumerate(doc.get("capability_admissions", [])):
+            if a["capability"] not in known:
+                errors.append(f"capability_admissions[{i}]: {a['capability']!r} is not a term in "
+                              f"provider-capability.yaml — a disposition over a capability nobody "
+                              f"offers governs nothing")
+        for cap in doc.get("effective_capabilities", []):
+            if cap not in known:
+                errors.append(f"effective_capabilities: {cap!r} is not a term in "
+                              f"provider-capability.yaml")
+    admitted = {a["capability"] for a in doc.get("capability_admissions", [])
+                if a.get("disposition") in ("approved", "provisional")}
+    for cap in doc.get("effective_capabilities", []):
+        if cap not in admitted:
+            errors.append(f"effective_capabilities: {cap!r} is in the ceiling but no admission "
+                          f"approves it — the ceiling is declared \u2229 admitted \u2229 "
+                          f"registry-enabled \u2229 matrix-permitted, so nothing can enter it that "
+                          f"was not admitted")
+    seen = {}
+    for i, a in enumerate(doc.get("capability_admissions", [])):
+        cap = a["capability"]
+        if cap in seen and a.get("disposition") == doc["capability_admissions"][seen[cap]].get("disposition"):
+            errors.append(f"capability_admissions[{i}]: {cap!r} repeats its previous disposition "
+                          f"{a.get('disposition')!r} \u2014 the list is append-only history, and an "
+                          f"entry that changes nothing records no act")
+        seen[cap] = i
+    return errors
+
+
 def check_data_references(doc):
     """A data reference is a URF string — `uuid/<v4>[@version][?reference_data_type==<kind>]`
     (ADR-012 + identifier-scheme §9). It MUST parse, and MUST resolve to an ACTIVE reference_data
@@ -842,6 +889,12 @@ def pick_instance(doc):
                 lambda d: f"evaluation_context pass {d['pass_number']} req {d['request_uuid'][:8]} "
                           f"({len(d.get('constraints') or [])} constraints)",
                 check_evaluation_context)
+    if isinstance(doc, dict) and doc.get("record_type") == "registration_verdict":
+        return (REGISTRATION_VERDICT_VALIDATOR,
+                lambda d: f"registration_verdict {d['provider_uuid'][:8]} "
+                          f"[{d['trust_posture']}] {len(d['effective_capabilities'])} effective / "
+                          f"{len(d['capability_admissions'])} dispositioned",
+                check_registration_verdict)
     if isinstance(doc, dict) and doc.get("record_type") == "vocabulary_term":
         return (VOCABULARY_TERM_VALIDATOR,
                 lambda d: f"vocabulary_term {d['vocabulary_kind']}/{d['term']} @{d['scope']} "
