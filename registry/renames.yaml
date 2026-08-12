@@ -117,6 +117,11 @@ renames:
   registry/examples/example-reference-data-network-tier.yaml: registry/examples/example-vocabulary-term-network-tier.yaml
   registry/examples/example-reference-data-storage-tier.yaml: registry/examples/example-vocabulary-term-storage-tier.yaml
 
+  # 2026-08-11 — an app profile is an INTERMEDIATE LAYER, not reference data (maintainer ruling):
+  # it CONTRIBUTES `tier: web` to an assembled payload, which is what a layer does. The record moves
+  # to the layer example set; `covers` now carries the assignment the old indirection layer carried.
+  registry/examples/example-reference-data-app-profile.yaml: registry/examples/example-layer-app-profile.yaml
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),
@@ -131,6 +136,15 @@ retired:
   registry/examples/example-reference-data-app-profile.yaml#a99c0de1-4040-4a10-8b20-1122334455aa: >-
     superseded by 035e8844-4fa2-40f7-8dd3-fa6dfb0c2e33 — same example, URF data reference (the object form it
     demonstrated was removed in cutover 4b)
+  # 2026-08-11 — the app-profile indirection collapses. This layer's entire content was a pointer
+  # at the app_profile reference-data record: `fields: {app_profile: <data_reference>}`. Now that an
+  # app profile is itself a layer carrying `covers`, the profile says who it applies to and the
+  # assembly engine gathers it — so a record whose only job was to point at it has no job. Deleted
+  # rather than repointed: there is nothing left for it to say.
+  registry/examples/example-layer-referencing-app-profile.yaml: >-
+    retired with the app-profile indirection — an app profile is now an intermediate layer whose
+    `covers` states its own assignment (2c9e57a3-8f14-4b06-9d72-6ae350188cbf), so nothing needs to
+    bind a resource to it by reference.
   registry/instances/adr-resource-type-extension.json: >-
     ADR-PROV-004 — superseded by ADR-038 (Provider-Class SharedDataElement); its mechanism
     (provider_extensions) is retired and now only a rejection guard. ADR-038 records the

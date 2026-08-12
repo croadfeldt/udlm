@@ -129,11 +129,12 @@
   }
  },
  "layer:platform/app-profiles/web-tier": {
-  "current": "2.0.0",
-  "path": "registry/examples/example-reference-data-app-profile.yaml",
+  "current": "3.0.0",
+  "path": "registry/examples/example-layer-app-profile.yaml",
   "versions": {
    "1.0.0": "sha256:420c22b14761a9ad1c26ff4c08eb24512507d1a45e5a2026e84d9062d7c5a167",
-   "2.0.0": "sha256:0fc512da44e75d97993a39b4e6791cc00ee4679657dae0c54a2a8f87aec57d30"
+   "2.0.0": "sha256:0fc512da44e75d97993a39b4e6791cc00ee4679657dae0c54a2a8f87aec57d30",
+   "3.0.0": "sha256:3d767415ed7698a8c12c455fcc813b2d81b80d3543e27411ec5485ffbb04af20"
   }
  },
  "layer:platform/network-tiers/high-throughput": {
