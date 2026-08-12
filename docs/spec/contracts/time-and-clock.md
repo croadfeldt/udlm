@@ -90,7 +90,9 @@ orders as follows:
    ([`universal-audit.md`](universal-audit.md)) is hash-linked:
    each entry references the hash of its predecessor. Ties (entries appended in
    the same millisecond) break on `sequence_uuid`, a **UUIDv7** generated at
-   append time. A UUIDv7 carries a **millisecond**-resolution Unix timestamp (not
+   append time and **carried by the audit record itself** — a required field on
+   `registry/audit-record.schema.json`, so the order lives in the record rather
+   than only in this sentence. A UUIDv7 carries a **millisecond**-resolution Unix timestamp (not
    sub-millisecond); the same-millisecond tie-break is **structural, not
    temporal** — a **monotonic counter** seeded into its random field (RFC 9562
    §6.2 monotonicity), *not* finer-grained time. A conformant peer MUST
@@ -149,6 +151,15 @@ The platform mandates **no** fixed skew tolerance. Instead:
    | Regulated / FSI | **1 s / 1 ms / 100 µs** by activity | **MiFID II RTS 25** |
    | High-precision | sub-µs | **PTP (IEEE 1588)**, hardware timestamping |
    | Sovereign | per regime | the regime's national time standard |
+
+   An implementation **MAY declare its own** `max_divergence` in place of the
+   profile's. The profile value is the **floor the profile expects**, not a ceiling
+   on what an implementation may say about itself — a homelab that can hold only
+   250 ms declares 250 ms rather than claiming 50 ms it cannot keep. Nothing is
+   lost by allowing it: the declared bound is what placement admits against (3),
+   so an implementation that declares a looser bound simply fails admission for
+   the workloads needing a tighter one. A bound honestly declared and enforced is
+   a fact the model can act on; one asserted to clear a floor is not.
 
 3. **Providers advertise and attest** achievable sync as a capability
    ([ADR-PROV-002](../../adr/README.md)); **placement

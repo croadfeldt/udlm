@@ -1,6 +1,14 @@
 record_type: audit_record
-record_uuid: f0eb4596-d884-40e2-9312-69e10bcacad1
+# A NEW record, not an edit of the previous one. An audit record is immutable and the chain is
+# append-only, so gaining the required `sequence_uuid` below makes this a different record with a
+# different identity — there is no `supersedes` on this type because a fact is never withdrawn and
+# re-issued (tests/check_identity_integrity.py R4a).
+record_uuid: 8b3f0c27-5a41-4d96-b0e8-2f7c14ad9e63
 record_timestamp: '2026-07-07T13:50:00Z'
+# The structural order (time-and-clock.md §4.1). UUIDv7: millisecond timestamp + a monotonic
+# counter, so two records appended in the same millisecond still order — without comparing the
+# wall clock above, which §4 forbids for ordering.
+sequence_uuid: 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
 dcm_version: 0.1.0
 actor:
   immediate:

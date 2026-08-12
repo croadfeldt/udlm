@@ -11,7 +11,8 @@
     "record_timestamp",
     "actor",
     "subject",
-    "action"
+    "action",
+    "sequence_uuid"
   ],
   "properties": {
     "record_type": {
@@ -218,6 +219,14 @@
       "type": "string",
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[47][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
       "description": "Link back to the Stage-1 commit_log_entry this was enriched from."
+    },
+    "sequence_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "The record's position in its stream — a UUIDv7 generated at append time (RFC 9562 §5.7), with a monotonic counter seeded into the random field (§6.2) so two records appended in the same millisecond still order. This is a DECLARED time-ordered field, the only place UUIDv7 is permitted (identifier-scheme.md §2, WIR-002).\n\nWhy the record needs its own handle rather than borrowing the leaf's. `time-and-clock.md` §4.1 rules that ordering MUST NOT depend on wall-clock comparison, and that the wall-clock timestamp is never compared for ordering. Until this field existed, a record carried `record_timestamp` and an OPTIONAL `audit_leaf_uuid` — so a record not yet bound into the Merkle tree had no structural order at all, and the only thing left to sort by was the one field the contract forbids sorting by. That window is not an edge case: §5's WAL pattern writes the record locally first and delivers to the Audit Store asynchronously, so EVERY record passes through it.",
+      "examples": [
+        "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b"
+      ]
     }
   },
   "allOf": [
