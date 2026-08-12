@@ -154,21 +154,10 @@
       "description": "Who may author this layer + the review it requires (layering-and-versioning §2; federated-contribution-model §3).",
       "properties": {
         "contributor_type": {
-          "enum": [
-            "platform_admin",
-            "tenant_admin",
-            "consumer",
-            "provider",
-            "system"
-          ]
+          "$ref": "common-elements.schema.json#/$defs/contributor_type"
         },
         "review": {
-          "enum": [
-            "auto",
-            "per_profile",
-            "none",
-            "dual_approval"
-          ],
+          "$ref": "common-elements.schema.json#/$defs/contribution_review",
           "description": "request layers = none (direct consumer declaration); all others flow through the GitOps PR review model."
         }
       }

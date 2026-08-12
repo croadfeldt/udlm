@@ -66,6 +66,7 @@ CONFORMANCE_DECL_VALIDATOR = _validator("conformance-declaration.schema.json")
 POLICY_VALIDATOR = _validator("policy.schema.json")
 EVAL_CONTEXT_VALIDATOR = _validator("evaluation-context.schema.json")
 LAYER_VALIDATOR = _validator("layer.schema.json")
+VOCABULARY_TERM_VALIDATOR = _validator("vocabulary-term.schema.json")
 AUDIT_RECORD_VALIDATOR = _validator("audit-record.schema.json")
 COMMIT_LOG_VALIDATOR = _validator("commit-log-entry.schema.json")
 AUDIT_LEAF_VALIDATOR = _validator("audit-leaf.schema.json")
@@ -488,8 +489,13 @@ def check_provider_extensions(doc):
 
 
 def _reference_data_index():
-    """uuid -> the reference_data layer it identifies, for {ref_uuid,ref_name} integrity (ADR-012).
-    Scans the record directories for record_type: layer + layer_type: reference_data."""
+    """uuid -> the governed term it identifies, for {ref_uuid,ref_name} integrity (ADR-012).
+
+    Reads BOTH homes while the retirement is in flight: `record_type: vocabulary_term` (the home
+    ADR-058 settled) and the legacy `record_type: layer` + `layer_type: reference_data`. Reading
+    both is deliberate — a reference must not break in the window between the vocabulary half of
+    the migration and the context/taxonomy halves, and a resolver that silently stopped finding a
+    referent would turn a structural move into a corpus of dangling edges."""
     index = {}
     for base in (ROOT / "examples", ROOT / "profiles", ROOT / "taxonomies"):
         if not base.exists():
@@ -498,9 +504,17 @@ def _reference_data_index():
             if path.suffix not in (".json", ".yaml", ".yml"):
                 continue
             for doc in load_all(path):                       # multi-doc aware (`---` streams)
-                if isinstance(doc, dict) and doc.get("record_type") == "layer" and doc.get("layer_type") == "reference_data":
+                if not isinstance(doc, dict):
+                    continue
+                is_term = doc.get("record_type") == "vocabulary_term"
+                is_legacy = (doc.get("record_type") == "layer"
+                             and doc.get("layer_type") == "reference_data")
+                if is_term or is_legacy:
                     index[doc.get("uuid")] = {
-                        "reference_data_type": doc.get("reference_data_type"),
+                        # One key either way: a consumer's `?reference_data_type==<kind>` predicate
+                        # resolves against the same field name whichever home answered it.
+                        "reference_data_type": (doc.get("vocabulary_kind") if is_term
+                                                else doc.get("reference_data_type")),
                         "handle": doc.get("handle"),
                         "name": doc.get("name"),
                         "version": doc.get("version"),
@@ -815,6 +829,10 @@ def pick_instance(doc):
                 lambda d: f"evaluation_context pass {d['pass_number']} req {d['request_uuid'][:8]} "
                           f"({len(d.get('constraints') or [])} constraints)",
                 check_evaluation_context)
+    if isinstance(doc, dict) and doc.get("record_type") == "vocabulary_term":
+        return (VOCABULARY_TERM_VALIDATOR,
+                lambda d: f"vocabulary_term {d['vocabulary_kind']}/{d['term']} @{d['scope']} "
+                          f"[{d['curation_state']}] {d['uuid'][:8]}")
     if isinstance(doc, dict) and doc.get("record_type") == "layer":
         return (LAYER_VALIDATOR,
                 lambda d: f"layer {d['name']} ({d['layer_type']}) {d['uuid'][:8]}",

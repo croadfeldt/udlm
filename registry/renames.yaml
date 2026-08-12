@@ -110,6 +110,13 @@ renames:
 # Retired records — removed, not renamed. A retirement is DECLARED (never silent), and the
 # identity gate consults this map so a deliberate removal is not read as a vanished record.
 # The decision itself survives where the superseding artifact records it.
+  # 2026-08-11 — ADR-054/ADR-058: `reference_data` leaves `layer_type`, and a curated vocabulary's
+  # canonical terms move from standalone layers into scope-keyed `vocabulary_term` records. A term
+  # was never a layer: nothing merged it into an assembly, it is a term other records point AT.
+  # The uuid rides through untouched, which is what keeps every existing `data_reference` resolving.
+  registry/examples/example-reference-data-network-tier.yaml: registry/examples/example-vocabulary-term-network-tier.yaml
+  registry/examples/example-reference-data-storage-tier.yaml: registry/examples/example-vocabulary-term-storage-tier.yaml
+
 retired:
   # 2026-08-06 — URF cutover 4b: these worked examples demonstrated the OBJECT-form data
   # reference, a shape that no longer exists. An immutable record is never edited (ADR-051),

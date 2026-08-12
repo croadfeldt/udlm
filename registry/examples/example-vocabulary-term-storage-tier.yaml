@@ -1,0 +1,49 @@
+# A VOCABULARY TERM (registry/vocabulary-term.schema.json) — one canonical term of the
+# `storage_tier` vocabulary the Compute Base Class's `storage_tier` SharedDataElement is governed by
+# (ADR-038 §2). The vocabulary is the set of them (standard / performance / archive), curated
+# proposed → canonical.
+#
+# THE SCOPE IS `Compute`, NOT `Storage`, and the reason is worth reading. Scope is not where the
+# subject sounds like it belongs — it is where the ELEMENT that binds the vocabulary lives. The
+# `storage_tier` element sits on the Compute Base Class, because what is being selected is the
+# storage performance a COMPUTE resource requests. Putting the term at `Storage` would claim a
+# portability contract with the wrong providers: it would promise that every Storage provider honors
+# this term, when the consumers are Compute ones. Scope IS the contract (ADR-038 §3), so getting it
+# wrong is not cosmetic.
+#
+# THIS WAS A LAYER (`layer_type: reference_data`) until ADR-054 retired that form and ADR-058 named
+# this home. Nothing ever merged it into an assembly — a term is pointed AT, not contributed — which
+# is the plainest evidence it was never a layer.
+#
+# An instance's `storage_tier` is a bare string (permissive profiles) or a data_reference to one of
+# these canonical terms (strict profiles) — profile-driven rigor (ADR-007 / ADR-039).
+record_type: vocabulary_term
+# A NEW record superseding the layer that carried this term. The uuid moves because a
+# published record is never edited (ADR-051) — and this is the model's own mechanism, the
+# one the reference-data corpus already demonstrates: the resolver follows `supersedes`,
+# so a consumer pinned to the old record still resolves and is marked impacted (DCM ADR-012 #2 — impact cascades up the reference graph).
+uuid: 7d21e6b8-0c93-4f57-8a6d-b41e39c05a72
+supersedes:
+  - bae49d04-7924-4cf5-8f22-24d01091c609   # the retired `layer_type: reference_data` record
+handle: platform/storage-tiers/performance
+conforms_to: udlm/0.1
+name: Storage tier — performance
+description: Governed definition of the 'performance' storage tier — the shared source of truth for its SLA floor.
+# MAJOR: the shape changed. The FLOOR did not — a consumer reading `min_iops`
+# gets the same promise — but the record a resolver receives is a different shape, and the
+# publish law is about what a consumer receives, not about what the author intended.
+version: 2.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+vocabulary_kind: storage_tier
+scope: Compute
+term: performance
+curation_state: canonical
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+requirements:
+  min_iops: 20000
+  min_throughput_mbps: 500
+  description: Low-latency SSD/NVMe-class backing for latency-sensitive workloads.

@@ -57,20 +57,26 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 
 | Ships with the vocabulary term | Why | Gate |
 |---|---|---|
-| Validates against `layer.schema.json` (required fields; `reference_data_type` present) | Valid by construction | `registry/tools/validate.py` |
+| Validates against `vocabulary-term.schema.json` (`vocabulary_kind` + `scope` + `term` + `curation_state` + a non-empty `requirements`) | Valid by construction | `registry/tools/validate.py` |
 | Every `data_reference` to this vocabulary resolves — active target, matching kind, pin naming the resolved version | Referential integrity (ADR-012 `check_data_references`) | `registry/tools/validate.py` |
-| Each `supersedes` uuid resolves to a same-type layer at a strictly lower version | Lineage integrity (`check_layer_lineage`) | `registry/tools/validate.py` |
+| Each `supersedes` uuid resolves to a same-type record at a strictly lower version | Lineage integrity (`check_layer_lineage`) | `registry/tools/validate.py` |
 | Fresh `uuid`; a revision is a new record, never an in-place edit | Immutable-record family (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
 | Any normative rule the vocabulary doc introduces uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |
 
 ## 4. A worked pointer
 
 Copy
-[`../../registry/examples/example-reference-data-storage-tier.yaml`](../../registry/examples/example-reference-data-storage-tier.yaml)
-— the `performance` term of the `storage_tier` vocabulary: a `layer` with `layer_type: reference_data`,
-`reference_data_type: storage_tier`, `contributor.review: dual_approval`, and `fields: {tier_code: performance,
-min_iops: 20000, min_throughput_mbps: 500, description: …}`. It is the canonical illustration of the rule in
-step 3 — the term *is* its requirements floor, not a string. For lineage, the standing pattern is
+[`../../registry/examples/example-vocabulary-term-storage-tier.yaml`](../../registry/examples/example-vocabulary-term-storage-tier.yaml)
+— the `performance` term of the `storage_tier` vocabulary: `vocabulary_kind: storage_tier`, `scope: Compute`,
+`term: performance`, `curation_state: canonical`, `contributor.review: dual_approval`, and
+`requirements: {min_iops: 20000, min_throughput_mbps: 500, description: …}`. It is the canonical illustration
+of the rule in step 3 — the term *is* its requirements floor, not a string.
+
+**Read `scope` first.** It says how far the meaning travels, and it is the portability contract
+(ADR-038 §3, ADR-058 §2) rather than a label. `storage_tier` sits at `Compute` and not at `Storage`
+because scope is where the ELEMENT that binds the vocabulary lives — what is being selected is the
+storage performance a *compute* resource asks for. A term filed at the wrong scope promises the
+wrong providers. For lineage, the standing pattern is
 `example-reference-data-network-zone.yaml` + its `-v2.yaml` (a new immutable version that `supersedes` v1) —
 see ADR-012 §"Consequences". How the vocabulary is consumed and requirements-matched end to end is walked in
 [`../flows/storage-provisioning-lifecycle.md`](../flows/storage-provisioning-lifecycle.md).

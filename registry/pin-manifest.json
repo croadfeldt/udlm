@@ -1119,5 +1119,19 @@
    "0.2.0": "sha256:2a092769f9a41c7f7c091552047cd2571bc5e9e0452a66388d806c95d81ab3ae",
    "0.2.1": "sha256:34aaf44e5cc866ad0d1a8839f3ec3e48529ba54ce8b3479837795b0795d8be81"
   }
+ },
+ "vocabulary_term:platform/network-tiers/high-throughput": {
+  "current": "2.0.0",
+  "path": "registry/examples/example-vocabulary-term-network-tier.yaml",
+  "versions": {
+   "2.0.0": "sha256:b0b59d49457b38fb8ceb004ef94ca111e29e38681c6699ff7c9e92c7331a01bc"
+  }
+ },
+ "vocabulary_term:platform/storage-tiers/performance": {
+  "current": "2.0.0",
+  "path": "registry/examples/example-vocabulary-term-storage-tier.yaml",
+  "versions": {
+   "2.0.0": "sha256:c8597c3a544fb72233fbba74db35115aebae5492b3f24c01fc107a4606dc1cc5"
+  }
  }
 }

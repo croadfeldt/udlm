@@ -1,0 +1,58 @@
+# A VOCABULARY TERM (registry/vocabulary-term.schema.json) — one canonical term of the
+# `network_tier` vocabulary the Network Base Class's `tier` SharedDataElement is governed by
+# (ADR-038 §2).
+#
+# THIS WAS A LAYER, AND SHOULD NEVER HAVE BEEN ONE. It used to carry `record_type: layer` +
+# `layer_type: reference_data`, and the plainest evidence that was wrong is that nothing ever merged
+# it: a layer contributes fields to an assembled payload, and this contributes nothing — it is a
+# term other records point AT. ADR-054 retired the layer form; ADR-058 settles this as the home.
+#
+# WHAT THE MOVE BUYS. `scope: Network` is new, and it is the whole point (ADR-058 §2): a term
+# canonical at the Network Base is portable to every Network provider, and the scope position IS
+# that contract (ADR-038 §3) rather than a claim in prose. As a loose reference-data layer this term
+# had no scope at all — which is exactly how `os_image` and `vm_size` came to "mean many things".
+# `curation_state` is new for the same reason: the intake ladder (ADR-039) is now a state the record
+# carries, not a convention around it.
+#
+# THE FLOOR IS THE POINT (ADR-036). A tier term is name-selectable but requirements-authoritative:
+# a consumer writes `high-throughput` and means the minima below, so one provider's "10G" and
+# another's "high-throughput" both qualify iff both clear them. The match is against the floor, never
+# the string — which is the whole reason a tier name is portable. A term with no floor is a label,
+# and two estates' labels are incomparable.
+#
+# THE MIRROR OF storage_tier, deliberately. Same record kind, same curation, same profile-driven
+# rigor (bare string in permissive profiles, data_reference in strict ones — ADR-007 / ADR-039).
+record_type: vocabulary_term
+# A NEW record superseding the layer that carried this term. The uuid moves because a
+# published record is never edited (ADR-051) — and this is the model's own mechanism, the
+# one the reference-data corpus already demonstrates: the resolver follows `supersedes`,
+# so a consumer pinned to the old record still resolves and is marked impacted (DCM ADR-012 #2 — impact cascades up the reference graph).
+uuid: 3f5c81d0-6b74-4a29-9e13-5c2087ab41de
+supersedes:
+  - a827a652-8e10-4ecf-be04-a68a395052c2   # the retired `layer_type: reference_data` record
+handle: platform/network-tiers/high-throughput
+conforms_to: udlm/0.1
+name: Network tier — high throughput
+description: Governed definition of the 'high-throughput' network tier — the shared source of truth for its floor.
+# MAJOR: the shape changed. The FLOOR did not — a consumer reading `min_bandwidth_mbps`
+# gets the same promise — but the record a resolver receives is a different shape, and the
+# publish law is about what a consumer receives, not about what the author intended.
+version: 2.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+# The key: which vocabulary, and how far its meaning travels.
+vocabulary_kind: network_tier
+scope: Network
+term: high-throughput
+curation_state: canonical
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+# What the name PROMISES. A provider clearing these qualifies, whatever it calls its own tier.
+requirements:
+  min_bandwidth_mbps: 10000
+  max_latency_ms: 1
+  description: >-
+    10G-class or better with sub-millisecond intra-segment latency — for storage replication, cluster
+    interconnect, and anything where the network is the bottleneck rather than the transport.
