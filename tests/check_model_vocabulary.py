@@ -44,8 +44,16 @@ _EDGE = r"(depends_on|contained_by|binds_to|references)"
 RETIRED_FIELDS = [
     (re.compile(_P + r"relationship_types?\s*:"),   "use `edge_type` (+ `strength`) and a declared `relation` name"),
     (re.compile(_P + r"relationship_nature\s*:"),   "nature is derived from `edge_type` — drop the field (entity-relationships.md §6)"),
-    (re.compile(_P + r"nature\s*:\s*(<?\s*)?(constituent|operational|informational)"),
-                                                    "nature is derived from `edge_type`, not a stored field — drop it (§6)"),
+    # ANY authored `nature:` is retired, not only the three known readings. The value-scoped form
+    # missed `nature: context` in ADR-054 for two weeks — an INVENTED fourth nature, which is worse
+    # than a retired one: a retired value at least names something the model once meant. Nature is
+    # DERIVED from edge_type and never stored (§6), so the field is wrong whatever follows the colon.
+    # Bare-word values only, so `nature: <the derived reading>` in a placeholder and prose like
+    # "the nature: of the thing" are not caught by an over-broad match.
+    (re.compile(_P + r"nature\s*:\s*(<?\s*)?[a-z][a-z_]*\b"),
+                                                    "nature is derived from `edge_type`, not a stored field — drop it (§6). "
+                                                    "A context edge is `edge_type: references` + a declared `relation` "
+                                                    "(entity-relationships.md §4: `references` IS the business-context cell)"),
     # edge-field `kind:` is retired → `edge_type` (ADR-026). Value-scoped so source.kind is safe.
     (re.compile(_P + r"kinds?\s*:\s*[\[<]?\s*" + _EDGE),
                                                     "the edge field `kind` is retired — use `edge_type` (ADR-026)"),

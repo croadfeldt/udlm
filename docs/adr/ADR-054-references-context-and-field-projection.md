@@ -47,7 +47,18 @@ Resolving it yields a **derived layer value**, landed in the effective spec with
 and the dual anchor (the immutable pin captures the target field *at realization* — reproducible; the
 named head follows current). On a later target change: rehydrate replays the pin; `impact_report`
 surfaces the linker as affected (the projection recorded a *data* dependency); a governed re-resolve
-repoints and re-pins. `nature: context` means it never gated the linker's *lifecycle*, only its data.
+repoints and re-pins. The edge never gates the linker's *lifecycle*, only its data — and that is
+exactly what `edge_type: references` already means, so **context needs no nature of its own**.
+`references` is the one edge type carrying no lifecycle coupling, its derived reading is
+`informational`, and `entity-relationships.md` §4 already names that cell the **business-context
+cell**. A context edge is therefore a declared `relation` refining a `references` edge, which is the
+same sentence §3 uses for every peer and management concept.
+
+This ADR first wrote it as `nature: context`, and that was wrong twice over: nature is **derived
+from `edge_type` and never stored** (ADR-027 addendum), and `context` was not one of the three
+readings — an invented fourth. The value-scoped guard in `tests/check_model_vocabulary.py` only knew
+the three retired words, so it read the line as clean; it now rejects an authored `nature:` whatever
+follows the colon.
 
 **3. Projection policy-safety — a projection feeds policy, never skirts it (`PROJ-P1..P5`).** A
 projection is a layer-contributed value, so policy over the merged result sees the concrete value
@@ -100,7 +111,8 @@ $id: acme.example/DataCenter#dc-east                     class: Compute.BareMeta
 network:  { fabric_id: fab-7 }                           relationships:
 power:    { feed: "A+B" }                                  - relation: located-in    # classified edge
 location: { residency: state.mn }                            target: acme.example/DataCenter#dc-east
-                                                             nature: context         # not a lifecycle dep
+                                                             edge_type: references   # nature DERIVED:
+                                                                                     # informational
 # ③ a layer projects DC fields via the edge
 layer: core/baremetal-dc-binding
 covers:     [ Compute.BareMetalHost.* ]                  # target: entity
