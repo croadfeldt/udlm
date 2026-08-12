@@ -286,6 +286,53 @@
         "provisional",
         "denied"
       ]
+    },
+    "TimeSync": {
+      "title": "Time synchronization claim",
+      "description": "What clock accuracy a node or provider can HOLD — UTC-traceable, a bound, and the mechanism class that achieves it (ADR-005 Decision 2).\n\nA CLAIM, MATCHED AT PLACEMENT. The same shape as `sovereignty_declaration`: a provider advertises what it can hold, an accreditation or attestation is what makes the claim honorable, and placement admits a workload only where the claim clears the bound in effect. An unattested claim is self-asserted — usable where a profile permits that, and not where it does not.\n\nUDLM DEFINES THE SHAPE AND NO VALUE. The platform mandates no fixed tolerance: a profile adopts one by reference (FINRA CAT, MiFID II RTS 25, a national regime), and an implementation may declare its own in place of the profile's — a homelab that can hold 250 ms declares 250 ms rather than claiming 50 ms it cannot keep. Nothing is lost by allowing that, because the declared bound is what placement admits against: a looser declaration simply fails admission for the workloads needing tighter. A bound honestly declared and enforced is a fact the model can act on; one asserted to clear a floor is not.\n\nWHY A BOUND AND NOT A GRADE. `max_divergence` is a measurable quantity a second implementation can meet, which is what makes a time claim portable across an estate boundary — the same reason a governed term denotes a requirements floor rather than a label (ADR-036).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_divergence",
+        "mechanism",
+        "utc_traceable"
+      ],
+      "properties": {
+        "max_divergence": {
+          "type": "string",
+          "pattern": "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(?!$)(\\d+H)?(\\d+M)?(\\d+(\\.\\d+)?S)?)?$",
+          "description": "The bound this party can hold from UTC, as an ISO 8601 duration — the repo's one time-quantity form (`PT1H`, `P30D`). Fractional seconds carry the small end: `PT0.05S` is 50 ms, `PT0.0001S` is 100 µs.\n\nNOT a `Quantity`: that shape is the Kubernetes byte/SI form (`32GB`, `500m`) and has no time unit at all, so `50ms` would be unrepresentable and `50m` would silently mean fifty milli-somethings. NOT a bare number: these bounds span six orders of magnitude, and the unit is the part a reader most needs.",
+          "examples": [
+            "PT0.05S",
+            "PT1S",
+            "PT0.0001S"
+          ]
+        },
+        "mechanism": {
+          "type": "string",
+          "enum": [
+            "ntp",
+            "ptp",
+            "gnss",
+            "atomic",
+            "none"
+          ],
+          "description": "The mechanism CLASS achieving the bound. A class, not a product: what matters for placement is whether the approach can hold the bound, and naming a product would make the claim unportable. `none` is honest and permitted — a node with no synchronization says so, and then clears no bound tighter than its drift."
+        },
+        "utc_traceable": {
+          "type": "boolean",
+          "description": "Whether the source chains to UTC (NIST / BIPM or a national standard). Required in every profile — a bound against an untraceable reference is a bound against nothing, since two parties could both hold 1 ms of different clocks."
+        },
+        "attested_by": {
+          "type": "string",
+          "description": "OPTIONAL — the accreditation or attestation backing this claim. Absent means SELF-ASSERTED, which is a real and usable posture rather than an error: a profile decides whether a self-asserted claim is honored, exactly as it does for a sovereignty claim."
+        },
+        "measured_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "OPTIONAL — when the divergence was last measured. A time claim decays: a bound measured a year ago says little about now, and this is what lets a consumer judge that (the `expected_observation` question applied to a claim rather than a resource)."
+        }
+      }
     }
   }
 }

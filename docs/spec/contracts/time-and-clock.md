@@ -139,18 +139,35 @@ by causality and prove integrity by mutual attestation:
 
 The platform mandates **no** fixed skew tolerance. Instead:
 
-1. UDLM defines the **shape** of a `TimeSync` requirement: UTC-traceable, a
-   `max_divergence` bound, and a mechanism class (NTP / PTP). The bound MUST be
-   **attestable** — a node declares the sync it can hold.
+1. UDLM defines the **shape** of a `TimeSync` requirement — UTC-traceable, a
+   `max_divergence` bound, and a mechanism class — and no value.
+   `common-elements.schema.json#/$defs/TimeSync` is that shape; a provider or node
+   carries one to declare the sync it can hold, and placement matches against it.
+
+   It is the same shape as `sovereignty_declaration` and for the same reason: a
+   claim, honorable when attested, matched at placement. `attested_by` absent
+   means **self-asserted**, which is a real posture rather than an error — a
+   profile decides whether to honor one.
 2. The **profile declares the standard**, adopted **by reference** (T5), not a
    value coined here:
 
-   | Profile | `max_divergence` | Adopted standard |
-   |---|---|---|
-   | Base | **50 ms** of UTC | FINRA **CAT** (business-clock sync to NIST) |
-   | Regulated / FSI | **1 s / 1 ms / 100 µs** by activity | **MiFID II RTS 25** |
-   | High-precision | sub-µs | **PTP (IEEE 1588)**, hardware timestamping |
-   | Sovereign | per regime | the regime's national time standard |
+   | Setting | homelab | dev | standard | prod | fsi | sovereign |
+   |---|---|---|---|---|---|---|
+   | `time.sync_tolerance` (`max_divergence`) | self-declared | self-declared | **PT0.05S** (50 ms) | **PT0.05S** (50 ms) | **PT1S / PT0.001S / PT0.0001S** by activity | per regime |
+   | Adopted standard | — | — | FINRA **CAT** | FINRA **CAT** | **MiFID II RTS 25** | the regime's national time standard |
+
+   Keyed to the six canonical profiles (`registry/profiles/`), because a per-profile value table
+   that names anything else is invisible to the reader looking for their profile and to
+   `tests/check_profile_tables.py`, which resolves against that set. `homelab`/`dev` are
+   self-declared rather than unbounded — a bound is always in effect (`WIR-008`); what varies is
+   whether a standard binds it or the implementation declares its own.
+
+   Values are ISO 8601 durations, the form `TimeSync.max_divergence` takes — fractional seconds
+   carry the small end (`PT0.0001S` is 100 µs).
+
+   Sub-µs is reachable in any profile that declares it: **PTP (IEEE 1588)** with hardware
+   timestamping is a `mechanism`, not a profile tier, and treating it as one implied a precision
+   ceiling no profile actually sets.
 
    An implementation **MAY declare its own** `max_divergence` in place of the
    profile's. The profile value is the **floor the profile expects**, not a ceiling
