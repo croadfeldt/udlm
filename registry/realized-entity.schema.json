@@ -91,7 +91,7 @@
     },
     "provenance": {
       "type": "object",
-      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.\n\nA HISTORY CLAIM ON A WORKING RECORD IS NOT CITABLE AS LINEAGE. Only sealed, chained and anchored records carry that weight (ADR-059) — this block is readable, but a consumer needing provable lineage reads the ledger's seal, not this. `integrity` is what makes the record's own timeline verifiable on its own; this is the convenience copy of who set what.",
       "additionalProperties": {
         "type": "array",
         "items": {
@@ -694,6 +694,41 @@
         "external_model_id": {
           "type": "string",
           "description": "Opaque id of the cost model within that engine."
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "head",
+        "algorithm"
+      ],
+      "description": "THE RESOURCE CHAIN — the record's own version timeline, made tamper-evident in the record (ADR-059 Decision 2). Every new version appends, whichever pathway caused it, so a Discovered write is as tamper-evident as an Intent one.\n\nWHY IT IS ON THE RECORD AND NOT ONLY IN THE LEDGER. Records are unbounded in lifetime; stores are not. A realized entity may run for a decade while audit is retained for years and observability for weeks, so an operation that reaches into the ledger to verify itself works until the day it silently does not. The chain answers `has this record been altered` without any other system — which is ADR-059's record-content test applied to integrity itself.\n\nONE-WAY BRIDGE. The ledger's seal embeds the working copy and this head; the record never references the ledger. That direction is deliberate: operations must never hang on compliance storage being reachable.\n\nCLAIMS DISCIPLINE. This is a STATE claim — `the bytes of this version, and what preceded it`. It is not provenance, lineage or history, and presenting it under such a heading is a defect (ADR-059 Decision 1). Only sealed, chained, anchored ledger records make history claims.",
+      "properties": {
+        "head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "This version's link. Computed over the RFC 8785 (JCS) canonical form of the record MINUS `integrity` itself, with `previous` folded in — the same strip-and-canonicalize machinery the identity digest uses (ADR-051), so the two can never disagree about what the bytes of a record are. Self-exclusion is not a convention but a necessity: a digest that covered itself would be uncomputable."
+        },
+        "previous": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "The prior version's `head`, or null at the first version. Null means `chain root`, and it is distinct from ABSENT: an omitted `previous` on a later version is a broken chain, while an explicit null is a beginning. A verifier that could not tell them apart would read every truncation as a fresh start."
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sha256-jcs"
+          ],
+          "description": "How `head` was computed: SHA-256 over the RFC 8785 canonical form. Stated rather than assumed so a future algorithm is a declared migration and not a silent reinterpretation of existing heads — a verifier reading an old record must know which rule produced it."
+        },
+        "hashed_by": {
+          "type": "string",
+          "description": "OPTIONAL — the control-plane identity that computed this head. The control plane is the sole hasher (ADR-059); recorded where an estate runs more than one and needs to attribute a break to an instance."
         }
       }
     }
