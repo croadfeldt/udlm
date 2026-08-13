@@ -1,0 +1,100 @@
+# Dependency-diagnostic vocabulary — WHY an edge cannot be satisfied (ADR-010).
+#
+# THIS COMPOSES WITH DEP-017; IT DOES NOT DUPLICATE IT. The two answer different questions about the
+# same stuck member, and they share no term:
+#
+#   DEP-017 `status.conditions[].type`   the PROPAGATION class — blocked-transient, blocked-permanent,
+#                                        refused, dependency-cancelled. What a DEPENDENT should do
+#                                        about it (wait, refuse, inherit).
+#   this vocabulary                      the DIAGNOSIS — what is actually wrong with the edge.
+#
+# So a member is `blocked-permanent` BECAUSE `capability_mismatch`, or `blocked-transient` BECAUSE
+# `unrealized`. Collapsing them would force a choice between telling a dependent how to behave and
+# telling an operator what to fix.
+#
+# CLOSED, AND THAT IS THE POINT. ADR-010: "the closed reason vocabulary is what makes the failure
+# ATTRIBUTABLE — a peer must name it the same way, or the diagnostic cannot be acted on." A free-text
+# reason is a sentence one implementation writes and another cannot match on.
+#
+# DERIVED, NEVER STORED (ADR-010 §4, DRV-001). These are computed over the dependency graph at the
+# moment they are asked for. A stored diagnostic is a claim about a graph that has since changed —
+# which is why there is no `UnmetDependency` record type here, only the vocabulary a computation
+# emits and a policy matches on.
+conforms_to: udlm/0.1
+term_type: TaxonomyTerm
+root: dependency_diagnostic
+
+terms:
+  - term: dependency_diagnostic
+    root: dependency_diagnostic
+    parent: null
+    curation_state: canonical
+    definition: >-
+      Root of the dependency-diagnostic vocabulary — why a declared dependency edge cannot be
+      satisfied. Emitted by the graph computation, matched on by policy, and named identically by
+      every conformant peer so a diagnostic crossing an estate boundary stays actionable.
+
+  # ── THE TARGET CANNOT BE IDENTIFIED ─────────────────────────────────────────────────────────
+  - term: unresolved
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      The edge names a target that does not resolve — no such resource. Distinct from `unrealized`:
+      here nothing was ever found, there something was found and has not been built yet, and the
+      operator's next move differs (fix the reference vs wait or investigate).
+
+  - term: ambiguous
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      More than one target matches and none is authoritative. Reported rather than narrowed:
+      silently picking one would make the edge resolve to something nobody chose. The candidates
+      accompany this diagnosis, because "ambiguous" without them cannot be acted on.
+
+  # ── THE TARGET EXISTS BUT IS NOT USABLE ─────────────────────────────────────────────────────
+  - term: unrealized
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      The target resolves but is not realized yet. Frequently EARLY rather than wrong — a member
+      waiting on something one step behind it is on track — which is why the propagation class
+      (DEP-017) and not this term decides whether to wait or refuse.
+
+  - term: decommissioned
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      The target resolves to a decommissioned resource. Never transient: a decommissioned resource
+      does not come back, and its uuid is never reused (WIR-005), so waiting on one waits forever.
+
+  # ── THE TARGET IS REAL AND STILL WILL NOT DO ────────────────────────────────────────────────
+  - term: locality_violation
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      The target is real and usable but sits in the wrong place — wrong fault domain, jurisdiction,
+      or co-residency. The one diagnosis that can be true of a perfectly healthy target, which is
+      why it is its own term rather than a flavour of mismatch.
+
+  - term: capability_mismatch
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      The target does not offer what the edge needs — capability, protocol, or version. Answerable
+      before dispatch from the provider's declared ceiling (`effective_capabilities`), which is what
+      makes it a pre-implementation diagnostic rather than a dispatch failure.
+
+  - term: unreachable
+    root: dependency_diagnostic
+    parent: dependency_diagnostic
+    curation_state: canonical
+    definition: >-
+      Realized and correct, and the network will not carry it. The only term here that cannot be
+      settled from the model alone — it is an observation, so it decays, and a diagnosis of
+      unreachable is true as of a moment rather than structurally.

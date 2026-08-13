@@ -219,7 +219,9 @@ block form §9.4, JSON embedding, English renderings) — never a second parse s
 
 - **A reference is a filter constrained to cardinality 1.** A URF used where one thing is
   required must resolve uniquely; more than one match refuses `ambiguous` with
-  `candidate_targets` (service-dependencies §15's UnmetDependency vocabulary).
+  `candidate_targets` — the diagnosis names `ambiguous` from the closed dependency-diagnostic
+  vocabulary (`registry/taxonomies/dependency-diagnostic.yaml`, ADR-010), and the candidates
+  accompany it because "ambiguous" without them cannot be acted on.
 - **Authored by handle, resolved to uuid — both ends one grammar** (AEP-124 unchanged):
   `estate/jobs/nightly-backup` resolves to `uuid/4c1f8e2a-…@sha256:…`; a sealed citation is
   itself a valid URF.
