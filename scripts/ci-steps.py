@@ -34,6 +34,7 @@ NAMES = {
     "python3 tests/check_duplicate_yaml_keys.py": "no duplicate YAML mapping keys (DUP-001)",
     "python3 tests/check_precedence_ladders.py": "no third ordering ladder (LAD-001)",
     "python3 tests/check_integrity_chain.py": "declared integrity chains verify (INT-001/002/003)",
+    "python3 tests/check_status_claims.py": "a completion claim cites an artifact that exists (STA-001)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",

@@ -77,13 +77,15 @@ by the merged spec (ADR-010 / §8.1a / realized-entity) or are control-plane-run
 
 ## 4. September `P#` gap tracker — consolidated
 
+**A ✅ cites the ARTIFACT, never the decision.** Every row below names a schema, a version, or a contract section — something a consumer can resolve. An ADR is a decision that something SHOULD exist; citing one as evidence that it does is how P4 and P5 read ✅ while carrying no machine surface at all. `⏳` with what is missing is more useful than a ✅ nobody can check.
+
 | P# | Item | Status |
 |---|---|---|
 | P1 | VM enrichment (placement/networks/power) | ✅ `compute.vm` 0.3.0 |
 | P2 | Profile schema | ✅ `profile.schema.json` |
 | P3 | Provider capacity/inventory advertisement | ✅ provider-contract §8.1a `resource_advertisement` |
-| P4 | Fault domains / SharedFaultDomain | ✅ ADR-010 |
-| P5 | Blast-radius / redundancy / UnmetDependency | ✅ ADR-010 + `policy.schema` graph.* |
+| P4 | Fault domains / SharedFaultDomain | ⏳ derivation ruled (ADR-010); no anchor designation or `SharedFaultDomain` projection yet |
+| P5 | Blast-radius / redundancy / UnmetDependency | ⏳ partial — the diagnosis vocabulary ships (`registry/taxonomies/dependency-diagnostic.yaml`); the cycle facts ship (`policy.schema` `graph.has_cycle` / `graph.cycle_severity`); blast-radius and redundancy have no match source |
 | P6 | Policy override (validatable surface) | ✅ `override` policy_type + allOf (this release) |
 | P7 | Tenant quota (consumption) | ✅ quota settings on the tenancy `Grouping` + `quota.*` match sources (this release) |
 
