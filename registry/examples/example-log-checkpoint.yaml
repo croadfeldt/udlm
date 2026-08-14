@@ -1,0 +1,52 @@
+# A LOG CHECKPOINT — the artifact that makes an audit log externally anchorable and third-party
+# auditable (ADR-059's log contract; ADR-005 Decision 3's cross-signed checkpoints are the same
+# mechanism).
+#
+# APPEND-ONLY AND MERKLE-VERIFIABLE ARE PROPERTIES A LOG HAS ON ITS OWN. These two are not: a log
+# that verifies only against itself proves it is internally consistent, which is exactly what a
+# rewritten log also proves. A checkpoint is the statement someone else can hold.
+record_type: log_checkpoint
+uuid: e2c7a940-6b18-4f3d-8a52-0d19c46b7e83
+conforms_to: udlm/0.1
+
+# WHOSE tree. A root hash carries no indication of which log produced it, so two logs at the same
+# size are otherwise indistinguishable to a witness holding checkpoints from several peers.
+log_id: cexample/audit/primary
+
+# THE CONSISTENCY PAIR. `(tree_size, root_hash)` at two points is what proves the later tree EXTENDS
+# the earlier rather than replacing it (RFC 9162). A single latest checkpoint proves nothing about
+# what came before it — which is why earlier checkpoints are retained rather than replaced.
+tree_size: 148302
+root_hash: 4a7d1ed414474e4033ac29ccb8653d9b1ee7d1e0b1c2f3a4b5c6d7e8f9a0b1c2
+
+# Ordering is structural, never temporal (time-and-clock §4), so this is what a peer reconciles
+# causality against. `issued_at` below is correlation and display only — never compared to order two
+# checkpoints, which is what `tree_size` is for.
+sequence_high_water: 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+issued_at: '2026-08-14T06:00:00Z'
+
+issuer:
+  identity: cexample/control-plane/primary
+  # Absent would mean self-asserted — a real posture, and one a profile may decline to accept from
+  # a witness.
+  attestation_ref: accreditations/providers/full-stack-sp/region-us-ca
+
+# Over (log_id, tree_size, root_hash, sequence_high_water). Unsigned, a checkpoint is an assertion
+# nobody is accountable for, which is the one thing an anchor cannot be.
+signature: base64:MEUCIQD...
+
+# WHAT A WITNESS ADDS. Once a peer has countersigned this root, the issuer can no longer rewrite
+# history below tree_size 148302 without contradicting a signature it does not hold. Divergence
+# stops being a disagreement and becomes attributable to a signed identity — the Certificate-
+# Transparency cross-witnessing pattern, which needs a known federation rather than a shared ledger.
+#
+# The witness signs the SAME tuple the issuer signed. A witness signing a different digest witnesses
+# a different statement, and the two signatures would then agree about nothing.
+#
+# An empty list is valid and means unwitnessed: still a self-anchor, still useful for a consistency
+# proof against this issuer's own later checkpoints — just not external evidence. How many witnesses
+# make it external is the profile's call.
+witnesses:
+  - identity: cexample-peer/control-plane/dr
+    signature: base64:MEQCIF...
+    witnessed_at: '2026-08-14T06:04:12Z'

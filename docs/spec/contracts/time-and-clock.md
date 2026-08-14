@@ -123,9 +123,11 @@ by causality and prove integrity by mutual attestation:
    either **concurrency** (both are valid linearizations of the same DAG — no
    conflict) or a **causal-order violation** (detected below).
 2. **Mutual signed checkpoints.** Each peer periodically publishes a **signed
-   checkpoint** — its audit-chain Merkle root plus its `sequence_uuid`/HLC
-   high-water-mark — under an **attested identity** (see the trust/attestation
-   model). When peer A cross-references an event from peer B, A embeds B's signed
+   checkpoint** (`registry/log-checkpoint.schema.json`) — its audit-chain Merkle
+   root plus its `sequence_uuid`/HLC high-water-mark — under an **attested
+   identity** (see the trust/attestation model). A witness signs the same tuple
+   the issuer signed; signing a different digest witnesses a different statement,
+   and the two signatures would then agree about nothing. When peer A cross-references an event from peer B, A embeds B's signed
    root at that point.
 3. **Divergence is detectable and attributable.** A peer that reorders or rewrites
    its chain breaks the cross-anchors its peers hold; verification against the

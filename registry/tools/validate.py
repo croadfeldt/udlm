@@ -69,6 +69,7 @@ LAYER_VALIDATOR = _validator("layer.schema.json")
 VOCABULARY_TERM_VALIDATOR = _validator("vocabulary-term.schema.json")
 REGISTRATION_VERDICT_VALIDATOR = _validator("registration-verdict.schema.json")
 PROMOTION_EVIDENCE_VALIDATOR = _validator("promotion-evidence.schema.json")
+LOG_CHECKPOINT_VALIDATOR = _validator("log-checkpoint.schema.json")
 AUDIT_RECORD_VALIDATOR = _validator("audit-record.schema.json")
 COMMIT_LOG_VALIDATOR = _validator("commit-log-entry.schema.json")
 AUDIT_LEAF_VALIDATOR = _validator("audit-leaf.schema.json")
@@ -586,6 +587,30 @@ def _find_data_references(obj, path=""):
     return out
 
 
+def check_log_checkpoint(doc):
+    """A checkpoint must extend what it supersedes, and every signature must be over one statement.
+
+    Schema can require the fields. It cannot check that a checkpoint claiming to supersede an
+    earlier one actually covers MORE of the log — and a checkpoint that supersedes a larger tree is
+    the artifact a rewrite produces, so it is the one thing worth refusing structurally."""
+    errors = []
+    if doc.get("tree_size") == 0 and doc.get("supersedes"):
+        errors.append("tree_size 0 with a `supersedes` — an empty tree cannot extend anything; a "
+                      "consistency proof from a later size back to zero is a truncation, not a "
+                      "checkpoint")
+    seen = set()
+    for i, w in enumerate(doc.get("witnesses") or []):
+        if w["identity"] == (doc.get("issuer") or {}).get("identity"):
+            errors.append(f"witnesses[{i}]: the issuer cannot witness its own checkpoint — a "
+                          f"countersignature by the signer adds no independent statement, and "
+                          f"counting it would let an unwitnessed log claim to be anchored")
+        if w["identity"] in seen:
+            errors.append(f"witnesses[{i}]: {w['identity']!r} appears twice — one witness, one "
+                          f"signature, or a witness threshold can be met by repetition")
+        seen.add(w["identity"])
+    return errors
+
+
 def check_promotion_evidence(doc):
     """The outcome must agree with the diff, and the revision sets must actually differ.
 
@@ -923,6 +948,11 @@ def pick_instance(doc):
                 lambda d: f"evaluation_context pass {d['pass_number']} req {d['request_uuid'][:8]} "
                           f"({len(d.get('constraints') or [])} constraints)",
                 check_evaluation_context)
+    if isinstance(doc, dict) and doc.get("record_type") == "log_checkpoint":
+        return (LOG_CHECKPOINT_VALIDATOR,
+                lambda d: f"log_checkpoint {d['log_id']} @{d['tree_size']} "
+                          f"({len(d.get('witnesses') or [])} witness(es))",
+                check_log_checkpoint)
     if isinstance(doc, dict) and doc.get("record_type") == "promotion_evidence":
         return (PROMOTION_EVIDENCE_VALIDATOR,
                 lambda d: f"promotion_evidence {d['corpus_ref'][:14]} "
