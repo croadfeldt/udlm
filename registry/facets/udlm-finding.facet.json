@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/facets/udlm-finding.facet.json",
+  "title": "udlm_finding — a detected condition, as a sealed interpretation",
+  "description": "Drift, tamper, staleness, a missed cadence — represented as a SEALED LEDGER INTERPRETATION with a lifecycle, never as a field on the working record (ADR-060).\n\nWHY NOT A FIELD ON THE RECORD. A finding is an INTERPRETATION: someone compared two things and concluded something. Storing `drift: true` on the record mixes a fact with a judgment about the fact, and then cannot answer who concluded it, when, or on what evidence. It would also be a stored derivable and a lineage claim in the state store — both of which the claims discipline forbids (ADR-059).\n\nCURRENT STATUS IS DERIVED ON READ, ALWAYS. A finding says 'was detected'; it never says 'is drifted'. Asking a finding for current status is asking a historical record a present-tense question, and it will answer confidently and wrongly the moment the condition clears.\n\nTHE LEDGER HOLDS THE WHOLE STORY AS ONE CITATION WALK: divergence version -> finding -> disposition -> resolution version.",
+  "type": "object",
+  "required": [
+    "_producer",
+    "_schemaURL",
+    "finding_class",
+    "finding_key",
+    "subject",
+    "state"
+  ],
+  "properties": {
+    "_producer": {
+      "type": "string",
+      "format": "uri",
+      "description": "OpenLineage: what emitted this facet."
+    },
+    "_schemaURL": {
+      "type": "string",
+      "format": "uri",
+      "const": "https://udlm.dev/registry/udlm/0.1/facets/udlm-finding.facet.json",
+      "description": "OpenLineage: the schema defining this facet. Pinned to this file."
+    },
+    "finding_class": {
+      "type": "string",
+      "enum": [
+        "drift",
+        "tamper",
+        "staleness",
+        "cadence-miss"
+      ],
+      "x-extensible-enum": true,
+      "description": "What KIND of condition was detected. Distinct classes carry distinct response postures — tamper is not drift, and treating them alike would route a suspected compromise into a reconciliation queue. One mechanism, one routing home, one lifecycle; a profile MAY add a class, entering by the curation ladder like any other governed term."
+    },
+    "finding_key": {
+      "type": "string",
+      "description": "OPENED ONCE, keyed on resource plus the diverged field set. A second detection of the same divergence CONFIRMS the finding rather than opening another — without this, a condition that recurs every reconciliation cycle produces a finding per cycle, and the signal drowns in its own repetition. Flap debounce is policy; the key is what makes debounce possible at all."
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uuid"
+      ],
+      "description": "The record the finding is about, with the version and chain head at detection — so the evidence stays checkable after the record moves on.",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "version": {
+          "type": "string"
+        },
+        "chain_head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "diverged_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The dot-paths that differed. Part of the key, and the reason a finding is specific enough to close: 'this resource has drifted' cannot be resolved, 'these three fields differ' can."
+    },
+    "detected_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ],
+      "description": "A finding is opened by its detection seal and CLOSED BY A RESOLUTION SEAL THAT CITES IT — reconverged, accepted, or reviewed. Two states, because a finding is not a workflow: the disposition lives in the closing seal, so adding states here would duplicate what the citation walk already tells you."
+    },
+    "closed_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seal_id",
+        "disposition"
+      ],
+      "description": "The resolution seal that closed this finding.",
+      "properties": {
+        "seal_id": {
+          "type": "string"
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "reconverged",
+            "accepted",
+            "reviewed"
+          ],
+          "description": "`reconverged` = the divergence was removed; `accepted` = it stands and is now intended; `reviewed` = looked at, no action. Three different facts about the same condition, and an operator needs to tell them apart later."
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

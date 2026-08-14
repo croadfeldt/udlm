@@ -91,7 +91,7 @@
     },
     "provenance": {
       "type": "object",
-      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.\n\nA HISTORY CLAIM ON A WORKING RECORD IS NOT CITABLE AS LINEAGE. Only sealed, chained and anchored records carry that weight (ADR-059) — this block is readable, but a consumer needing provable lineage reads the ledger's seal, not this. `integrity` is what makes the record's own timeline verifiable on its own; this is the convenience copy of who set what.",
+      "description": "FIELD-LEVEL PROVENANCE (#191 / E4): keyed by dot-path into the spec, an ordered history of who set each field. UDLM carries this record; the control plane writes it during assembly (a Layer, a Policy, an actor) and at realization (a Provider). It is the same record the audit chain consumes (G3) — never a parallel model. Each array is the ordered modification chain for that field: entries map 1:1 to the audit-provenance modifications[] records (origin = the first entry), with optional `sequence` for explicit ordering and `operation_type` for the write semantics.\n\nA HISTORY CLAIM ON A WORKING RECORD IS NOT CITABLE AS LINEAGE. Only sealed, chained and anchored records carry that weight (ADR-059) — this block is readable, but a consumer needing provable lineage reads the seal's `udlm_provenance` facet (`registry/facets/udlm-provenance.facet.json`), not this. `integrity` is what makes the record's own timeline verifiable on its own; this is the convenience copy of who set what.",
       "additionalProperties": {
         "type": "array",
         "items": {
@@ -111,15 +111,7 @@
               ],
               "properties": {
                 "kind": {
-                  "enum": [
-                    "layer",
-                    "policy",
-                    "actor",
-                    "provider",
-                    "discovery",
-                    "rehydration",
-                    "override"
-                  ],
+                  "$ref": "common-elements.schema.json#/$defs/provenance_source_kind",
                   "description": "Canonical provenance source kinds (data-model-core §6/§7): layer = layer assembly wrote the value; policy = a policy set/enriched/locked it; actor = an authenticated identity wrote it directly ('consumer' in older documents maps here — a consumer acts as an actor); provider = the realizing provider reported it; discovery = a discovery cycle observed it; rehydration = a rehydration pipeline restored it; override = an authorized override set it (DCM ADR-013)."
                 },
                 "id": {
