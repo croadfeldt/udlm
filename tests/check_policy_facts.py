@@ -37,7 +37,13 @@ import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOCAB = os.path.join(ROOT, "registry", "taxonomies", "policy-fact.yaml")
-SOURCE_SUBTREES = {"request-payload", "operation-context", "evaluation-context", "entity-metadata"}
+# The §2.1 match sources are the taxonomy's own direct children of the root — DERIVED, never
+# restated. This was a hardcoded set of four, so adding the fifth source (`reference-graph`,
+# ADR-041) made the gate reject the very terms the ADR asked for: the checker had its own copy of a
+# list the vocabulary already owned, which is the defect SPEC-DESIGN §33 names.
+def source_subtrees(terms, root):
+    """Every direct child of the root — one match source each."""
+    return {n for n, t in terms.items() if t.get("parent") == root and n != root}
 # Subtrees whose members are addressed by dot-path rather than enumerated. `request-payload` admits
 # any spec dot-path of the requested type (§2.1); `reserved` admits reserved.<component>.<fact>.
 OPEN_SUBTREES = {"request-payload", "reserved"}
@@ -86,6 +92,7 @@ def main():
         print(f"FAILED — the policy-fact vocabulary is missing: {os.path.relpath(VOCAB, ROOT)}")
         return 1
     terms = load_vocab()
+    sources = source_subtrees(terms, "policy-fact")
     fails, referenced = [], set()
 
     # PFACT-002 — the taxonomy is reachable and every fact has a source
@@ -102,15 +109,16 @@ def main():
         if parent != "policy-fact":
             # walk to the source subtree
             cur, seen = parent, set()
-            while cur in terms and cur not in SOURCE_SUBTREES and cur != "policy-fact":
+            while cur in terms and cur not in sources and cur != "policy-fact":
                 if cur in seen:
                     fails.append(f"PFACT-002: term '{name}' has a cyclic parent chain")
                     break
                 seen.add(cur)
                 cur = terms[cur].get("parent")
-            if cur not in SOURCE_SUBTREES:
-                fails.append(f"PFACT-002: term '{name}' does not land under one of the four "
-                             f"§2.1 source subtrees — an engine cannot bind a fact with no source")
+            if cur not in sources:
+                fails.append(f"PFACT-002: term '{name}' does not land under any §2.1 source subtree "
+                             f"({', '.join(sorted(sources))}) — an engine cannot bind a fact with "
+                             f"no source, because the subtree IS the binding instruction")
 
     # PFACT-001 — every fact a policy references resolves
     checked = 0
@@ -134,7 +142,7 @@ def main():
                                  f"canonical policy-fact term and sits under no open subtree")
 
     canonical = {n for n, t in terms.items()
-                 if n != "policy-fact" and n not in SOURCE_SUBTREES}
+                 if n != "policy-fact" and n not in sources}
     unused = sorted(canonical - referenced)
     print(f"policy-facts: {len(terms)} term(s) · {checked} reference(s) checked · "
           f"{len(unused)} term(s) referenced by no policy")

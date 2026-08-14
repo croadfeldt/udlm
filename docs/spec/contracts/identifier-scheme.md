@@ -289,6 +289,28 @@ name alone:
   **Acyclic, by URF-006**, which already reserves the rule for "future virtual fields": a `via`
   chain that returns to its origin is refused at validation rather than at resolution.
 
+  **The invariants a projection must satisfy (`PROJ-001..006`).** A projection lands a value that came
+  from somewhere else, so the questions are what policy sees, whose policy runs, and what is
+  recorded. These are the answers; ADR-054 ruled P1–P5 and ADR-041 added the ingress half its
+  directional model requires.
+
+  | Rule | Invariant |
+  |---|---|
+  | `PROJ-001` | **Resolve before policy.** A projection resolves within the merge, so policy sees a concrete value — never an unresolved traversal. A policy that matched on `via(located_in)#…` rather than on `fab-7` would be matching the address instead of the datum, and the two can be governed differently. |
+  | `PROJ-002` | **The target's egress gate runs.** The dereference is evaluated against the TARGET's egress and sovereignty policy, not only the reader's. Addressing a thing is not reading it, and the party that owns the data decides whether it leaves. This is the anti-exfil guarantee: without it, anyone who can name a record can extract a field from it. |
+  | `PROJ-003` | **Provenance is mandatory.** Source, edge and anchor are recorded for every projected value. Nothing enters an effective spec from nowhere — a value whose origin is unrecorded cannot be re-evaluated, re-pinned, or explained. |
+  | `PROJ-004` | **Replay re-runs policy.** Rehydration re-evaluates policy as it stands TODAY. A pin reproduces the data; it never exempts that data from current rules, or a stale pin would become a way to carry an old permission forward. |
+  | `PROJ-005` | **Edge nature is governed, not self-asserted.** The relation's nature is validated against the type's declaration (REL-001), so a dependency cannot be relabelled as context to escape lifecycle gating. |
+  | `PROJ-006` | **Ingress admission.** A projected value is admitted by the RECEIVER's policy on arrival, not only released by the sender's. Egress and ingress are different security properties with different owners — a crossing both parties must permit is the directional pair ADR-041 rules for, and layer injection is one (`layering-and-versioning.md`). |
+
+  **Why these attach to `via` and not to a second notation.** ADR-054 spells the same operation as a
+  navigational coordinate — `self.located-in.network.fabric_id` — and it reaches exactly as far: one
+  hop, then a field path, no chaining either way. The difference is what the syntax SHOWS. In the
+  coordinate form `located-in`, `network` and `fabric_id` are spelled identically, so a reader cannot
+  tell which dot leaves the record without the type definition in hand — and the dot that leaves is
+  the one that is governed, firewalled, and refusable, while a dot inside the record is free and
+  unfailing. A syntax that hides the crossing hides the only part these six rules are about.
+
 Examples:
 
 ```

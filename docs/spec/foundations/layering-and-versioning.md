@@ -481,7 +481,7 @@ matches `L.covers` (or `L.resource_type`) **and** `R.operation ∈ L.applies_on`
 matches `R.from_layers` (default: `R`'s tenant + platform) **and** `L` is not matched by
 `R.skip`. `covers` says
 *who may*; `from_layers` says *who does*. Because injection lands data into the assembled spec it is an
-**ingress crossing**: the policy information firewall's admission applies (`PROJ-P6`, ADR-041).
+**ingress crossing**: the policy information firewall's admission applies (`PROJ-006`, ADR-041).
 Authoritative: [ADR-054](../../adr/ADR-054-references-context-and-field-projection.md).
 
 ---

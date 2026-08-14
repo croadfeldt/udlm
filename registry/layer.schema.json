@@ -117,7 +117,7 @@
     "from_layers": {
       "type": "string",
       "format": "udlm-filter-url",
-      "description": "SOURCE scoping (subscribe side; ADR-054): ONE URF filter selecting which layers feed THIS request. OPTIONAL OVERRIDE — tenant isolation is the DEFAULT, not a re-declaration: absent, assembly draws the request's own tenant's layers plus platform/system-domain layers, never another tenant's. Declare only to select an EXPLICIT subset. Injection = the intersection: L injects into R iff R.target matches L.covers (or L.resource_type) ∧ R.operation ∈ L.applies_on ∧ L matches R.from_layers (default: tenant+platform) ∧ L not matched by R.skip. Injection is an ingress crossing — PROJ-P6 admission applies (ADR-041)."
+      "description": "SOURCE scoping (subscribe side; ADR-054): ONE URF filter selecting which layers feed THIS request. OPTIONAL OVERRIDE — tenant isolation is the DEFAULT, not a re-declaration: absent, assembly draws the request's own tenant's layers plus platform/system-domain layers, never another tenant's. Declare only to select an EXPLICIT subset. Injection = the intersection: L injects into R iff R.target matches L.covers (or L.resource_type) ∧ R.operation ∈ L.applies_on ∧ L matches R.from_layers (default: tenant+platform) ∧ L not matched by R.skip. Injection is an ingress crossing — PROJ-006 admission applies (ADR-041)."
     },
     "skip": {
       "type": "string",
