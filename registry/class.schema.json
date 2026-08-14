@@ -348,9 +348,14 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by output name — a JSON-Schema fragment per output, same shape as the flat spec's `outputs`. Scoped like elements: any tier may declare (a Provider Class declaring provider-specific outputs is exactly the intended use, #323); the declaring Class IS the scope. Compile: merged down the chain, nearer Class overrides by name; a redeclare MUST refine (the Liskov gate applies element refinement rules to outputs).",
+      "description": "Typed Realized-state outputs this Class publishes (E2), keyed by output name — a JSON-Schema fragment per output, same shape as the flat spec's `outputs`. Scoped like elements: any tier may declare (a Provider Class declaring provider-specific outputs is exactly the intended use, #323); the declaring Class IS the scope. Compile: merged down the chain, nearer Class overrides by name; a redeclare MUST refine (the Liskov gate applies element refinement rules to outputs). An output whose value differs between two realizations of the same intent declares `volatile: true` — the promotion diff excludes it by that declaration, never ad hoc (ADR-046).",
       "additionalProperties": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "volatile": {
+            "$ref": "common-elements.schema.json#/$defs/volatile_output"
+          }
+        }
       }
     },
     "relationships": {

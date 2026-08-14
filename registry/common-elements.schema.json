@@ -333,6 +333,12 @@
           "description": "OPTIONAL — when the divergence was last measured. A time claim decays: a bound measured a year ago says little about now, and this is what lets a consumer judge that (the `expected_observation` question applied to a claim rather than a resource)."
         }
       }
+    },
+    "volatile_output": {
+      "title": "Volatile output marker",
+      "description": "Declares that this output's VALUE changes between two realizations of the same intent — a timestamp, a generated identifier, an assigned port. The output is real and typed; what it is not is comparable.\n\nWHY IT MUST BE DECLARED RATHER THAN INFERRED (ADR-046). Promotion is gated on a typed-output diff: compile the same intent under both revisions and compare. A volatile output differs every time, so an undeclared one makes the diff perpetually dirty — and a gate that is always red is a gate everyone learns to override. The failure is not a false alarm; it is the loss of the signal.\n\nAT THE DECLARATION, BY THE PARTY WHO KNOWS. Whoever declares the output knows whether it is generated; nobody downstream reliably does. Excluding it at diff time instead would be an ad-hoc exclusion, which is the thing ADR-046 rules against — a promotion could then be waved through by excluding whatever happened to differ.\n\nIT NARROWS NOTHING. A volatile output is still typed, still published, still consumable. This says only that its value is not evidence of compatibility, which is why it is an annotation on the output rather than a different kind of output.",
+      "type": "boolean",
+      "default": false
     }
   }
 }

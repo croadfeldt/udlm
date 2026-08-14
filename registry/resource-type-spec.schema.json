@@ -190,7 +190,7 @@
     },
     "outputs": {
       "type": "object",
-      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern) — they are the referenceable, typed binding surface: a catalog-item binding names a producer output by this key, and the validator resolves it against this list (data-model-core §2 [D8.3] typed outputs).",
+      "description": "Typed Realized-state outputs (E2): named values this type publishes when it reaches Realized. Other entities bind to these via dependency references; the binding is contract-checked against these types rather than string-spliced. Output NAMES are snake_case (propertyNames pattern) — they are the referenceable, typed binding surface: a catalog-item binding names a producer output by this key, and the validator resolves it against this list (data-model-core §2 [D8.3] typed outputs). An output whose value differs between two realizations of the same intent declares `volatile: true` — the promotion diff excludes it by that declaration, never ad hoc (ADR-046).",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -214,6 +214,9 @@
           "sensitive": {
             "type": "boolean",
             "default": false
+          },
+          "volatile": {
+            "$ref": "common-elements.schema.json#/$defs/volatile_output"
           }
         }
       },

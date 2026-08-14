@@ -1,0 +1,58 @@
+# PROMOTION EVIDENCE — the record a promotion is decided on (ADR-046, REG-016).
+#
+# PROMOTION HAPPENS ON EVIDENCE, NEVER ON A VERSION CLAIM. "The upstream change is compatible" is a
+# claim about someone else's estate, and the evidence exists deterministically: compile this
+# estate's own intent corpus under both revision sets and compare what each publishes. So the
+# alternative to producing it is not trust — it is deciding with the answer available and unread.
+record_type: promotion_evidence
+uuid: b8d1f602-3a47-4c95-9e28-51f0a7c34d6b
+conforms_to: udlm/0.1
+
+# ONE REF, BOTH COMPILATIONS. An invariant, not a convenience: a corpus that moved between the two
+# runs makes the diff meaningless, because a difference could then be the revision change or the
+# corpus change and nothing here distinguishes them. Recording it is what lets someone who did not
+# run this re-derive it.
+corpus_ref: sha256:9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5
+
+from_revisions:
+  - Compute.VM@0.3.0
+to_revisions:
+  - Compute.VM@0.4.0
+
+# THE DIFF IS THE ENTIRE GATE: empty, or every entry explicitly approved. Anything else refuses
+# outright — nothing partially promotes, because a half-promoted estate is one where both revisions
+# are live and neither answers "what is this estate running".
+#
+# Compared on DECLARED OUTPUTS ONLY. Provider internals are not a contract, and diffing them would
+# make every provider change look like a breakage.
+diff:
+  - output: instance.boot_mode
+    # The subtle case. `removed` and `type_changed` break any consumer bound to the output;
+    # `value_changed` on a NON-volatile output means the shape held while the realized fact moved —
+    # which is exactly what the compatibility claim promised would not happen.
+    change: value_changed
+    from: bios
+    to: uefi
+    # PER ENTRY, never a blanket sign-off on the diff. Approving a list is approving whatever is on
+    # it; the point of the gate is that a human looked at each difference.
+    approval:
+      approved_by: platform-admin/alice
+      reason: Estate re-imaged to UEFI in the same window; the new default matches reality.
+      at: '2026-08-13T11:20:00Z'
+
+# EXCLUDED BY DECLARATION, NEVER AD HOC. These outputs carry `volatile: true` at the point they are
+# declared, by the party who knows they are generated. Excluding them at diff time instead would let
+# a promotion be waved through by excluding whatever happened to differ — and an undeclared volatile
+# output makes the diff perpetually dirty, which does not raise a false alarm so much as destroy the
+# signal, because a gate that is always red is a gate everyone learns to override.
+#
+# Recorded so the exclusion is auditable: an exclusion nobody can see is indistinguishable from a
+# difference nobody reported.
+volatile_outputs_excluded:
+  - instance.created_at
+  - instance.provider_id
+
+# DERIVED — `promoted` iff the diff is empty or every entry is approved. validate.py recomputes it
+# rather than trusting it: a record stating `promoted` over an unapproved entry is the one artifact
+# this record exists to make impossible, and the one a later reader could not detect for themselves.
+outcome: promoted
