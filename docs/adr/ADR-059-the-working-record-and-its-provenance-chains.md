@@ -151,7 +151,11 @@ only that it arrived governed.
 The audit log is a **Merkle log (RFC 9162)** — the repo's standing audit ruling; a linear
 framing of the log is a defect. UDLM specifies the **log contract only** — append-only,
 Merkle-verifiable, root externally anchorable, third-party auditable; the store is an
-implementation choice. Corruption isolates per-asset (one resource chain breaks) while the log
+implementation choice. The last two are carried by a **log checkpoint**
+(`registry/log-checkpoint.schema.json`): a signed `(log_id, tree_size, root_hash,
+sequence_high_water)` a peer can countersign. Append-only and Merkle-verifiable are properties a log
+has on its own; anchorable and third-party auditable are not, because a log that verifies only
+against itself proves internal consistency — which is exactly what a rewritten log also proves. Corruption isolates per-asset (one resource chain breaks) while the log
 stays globally verifiable and locates when the corruption entered.
 
 **Coverage mandate:** provenance covers **all data on all records across the full lifecycle** —

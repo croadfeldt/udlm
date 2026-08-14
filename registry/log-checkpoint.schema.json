@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/log-checkpoint.schema.json",
+  "title": "Log checkpoint",
+  "description": "A signed statement of what an audit log contained at a point: the Merkle root, the tree size, the ordering high-water mark — and, where a peer has witnessed it, their countersignature.\n\nTHIS IS WHAT MAKES THE LOG EXTERNALLY ANCHORABLE AND THIRD-PARTY AUDITABLE (ADR-059's log contract). Append-only and Merkle-verifiable are properties a log can have on its own; those two are not. A log that only verifies against itself proves it is internally consistent, which is exactly what a rewritten log also proves.\n\nWHAT A WITNESS ADDS. Once a peer has countersigned a root, the issuer can no longer rewrite history below that tree size without contradicting a signature it does not hold. Divergence stops being a disagreement and becomes attributable to a signed identity — the Certificate-Transparency cross-witnessing pattern, which needs a known federation rather than a shared ledger.\n\nUDLM SPECIFIES THE CHECKPOINT, NOT THE STORE. Where the log lives, how often checkpoints are cut, and who witnesses whom are the implementation's and the profile's (ADR-008). What has to be portable is the artifact a third party verifies against, because a checkpoint only one implementation can read is not external evidence.\n\nCONSISTENCY IS THE POINT OF KEEPING OLD ONES. Two checkpoints from one log at different tree sizes admit an RFC 9162 consistency proof: the later tree provably extends the earlier. A single latest checkpoint proves nothing about what came before it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "log_id",
+    "tree_size",
+    "root_hash",
+    "issued_at",
+    "signature"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "log_checkpoint"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "log_id": {
+      "type": "string",
+      "description": "Which log this describes. Required because a witness may hold checkpoints from several peers, and a root hash carries no indication of whose tree produced it — two logs at the same size are otherwise indistinguishable."
+    },
+    "tree_size": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The number of leaves the root covers. Half of the pair a consistency proof needs: `(tree_size, root_hash)` at two points is what proves the later tree extends the earlier rather than replacing it. Zero is valid — an empty log that has been checkpointed is a stronger statement than no checkpoint at all."
+    },
+    "root_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "The Merkle root over the first `tree_size` leaves (RFC 9162). Bare hex, matching `signed_tree_head.sha256_root_hash` on the audit leaf — the same value in the same spelling, so a checkpoint and a leaf's tree head compare directly."
+    },
+    "sequence_high_water": {
+      "type": "string",
+      "description": "The ordering high-water mark at this checkpoint — the `sequence_uuid` (UUIDv7) or HLC of the last entry covered. Ordering is structural, never temporal (`time-and-clock.md` §4), so this is what a peer reconciles causality against; `issued_at` below is for correlation and display only."
+    },
+    "issued_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+      "description": "RFC 3339 UTC. Correlation and display — never compared to establish order between checkpoints. Use `tree_size`, which is monotonic by construction."
+    },
+    "issuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity"],
+      "description": "Who cut this checkpoint, under attested identity.",
+      "properties": {
+        "identity": { "type": "string" },
+        "attestation_ref": {
+          "type": "string",
+          "description": "The accreditation or attestation backing the identity. Absent means self-asserted — a real posture, and one a profile may decline to accept as a witness."
+        }
+      }
+    },
+    "signature": {
+      "type": "string",
+      "description": "The issuer's signature over `(log_id, tree_size, root_hash, sequence_high_water)`. Unsigned, a checkpoint is an assertion nobody is accountable for, which is the one thing an anchor cannot be."
+    },
+    "witnesses": {
+      "type": "array",
+      "description": "Peers that have countersigned this root.\n\nEMPTY IS VALID AND MEANS UNWITNESSED — a checkpoint nobody has countersigned is still a self-anchor, and still useful for a consistency proof against the issuer's own later checkpoints. What it is not is external evidence, and a profile decides how many witnesses it requires before treating it as such.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["identity", "signature"],
+        "properties": {
+          "identity": { "type": "string" },
+          "attestation_ref": { "type": "string" },
+          "signature": {
+            "type": "string",
+            "description": "The witness's signature over the same tuple the issuer signed. Over the same tuple deliberately: a witness signing a different digest witnesses a different statement, and the two signatures would then agree about nothing."
+          },
+          "witnessed_at": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+          }
+        }
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      },
+      "description": "An earlier checkpoint of the same log this one extends. Not a replacement — earlier checkpoints are retained, because a consistency proof needs both endpoints and discarding the earlier one discards the proof."
+    }
+  },
+  "examples": [
+    {
+      "record_type": "log_checkpoint",
+      "uuid": "e2c7a940-6b18-4f3d-8a52-0d19c46b7e83",
+      "conforms_to": "udlm/0.1",
+      "log_id": "cexample/audit/primary",
+      "tree_size": 148302,
+      "root_hash": "4a7d1ed414474e4033ac29ccb8653d9b1ee7d1e0b1c2f3a4b5c6d7e8f9a0b1c2",
+      "sequence_high_water": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b",
+      "issued_at": "2026-08-14T06:00:00Z",
+      "issuer": {
+        "identity": "cexample/control-plane/primary",
+        "attestation_ref": "accreditations/providers/full-stack-sp/region-us-ca"
+      },
+      "signature": "base64:MEUCIQD...",
+      "witnesses": [
+        {
+          "identity": "cexample-peer/control-plane/dr",
+          "signature": "base64:MEQCIF...",
+          "witnessed_at": "2026-08-14T06:04:12Z"
+        }
+      ]
+    }
+  ]
+}
