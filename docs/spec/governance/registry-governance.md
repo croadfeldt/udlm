@@ -447,10 +447,20 @@ candidate ones, and ADR-046's ruling is that this happens on evidence: compile t
 intent corpus under both, at the same recorded corpus ref, and diff the declared typed outputs. A
 diff that is neither empty nor explicitly approved refuses the promotion outright — nothing
 partially promotes — and, because the diff contradicts the upstream compatibility claim, it
-routes home as a finding with the diff as provenance. That upstream route is the part with no
-carrier today: the promotion-evidence record has no schema today, and the finding-routing record's schema (`registry/finding-routing-record.schema.json`) lands as its own change — this rule binds regardless of carrier availability, and a refusal that cannot yet file the record queues the filing rather than dropping it. Formerly: neither record existed as a
-registry kind, and ADR-046's Consequences names both as owed before P0 freezes. `REG-016` states
-the refusal contract; the record shapes remain to be defined.
+routes home as a finding with the diff as provenance. Both carriers exist: the evidence is a
+`promotion_evidence` record (`registry/promotion-evidence.schema.json` — corpus ref, both revision
+sets, the diff, per-entry approvals) and the upstream route is the finding-routing record
+(`registry/finding-routing-record.schema.json`). A refusal that cannot yet file the finding **queues
+the filing rather than dropping it** — the rule binds regardless of carrier availability, which is
+why it was stated before the shapes existed.
+
+Two properties of the evidence are checked rather than asserted (`registry/tools/validate.py`): the
+stated `outcome` is recomputed from the diff, so a record cannot read as evidence-backed while its
+own evidence says otherwise; and an output cannot be both excluded as volatile and present in the
+diff, since claiming both hides which happened. **Volatile outputs are excluded by declaration** —
+`volatile: true` at the point the output is declared (`common-elements.schema.json`
+`$defs/volatile_output`), by the party who knows it is generated — never ad hoc at diff time, which
+would let a promotion be waved through by excluding whatever happened to differ.
 
 **Which of these an organization may loosen.** Adoption is governed twice: by the gates above,
 which decide whether a change is *sound*, and by an organization's change policy, which decides

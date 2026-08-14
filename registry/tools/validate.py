@@ -68,6 +68,7 @@ EVAL_CONTEXT_VALIDATOR = _validator("evaluation-context.schema.json")
 LAYER_VALIDATOR = _validator("layer.schema.json")
 VOCABULARY_TERM_VALIDATOR = _validator("vocabulary-term.schema.json")
 REGISTRATION_VERDICT_VALIDATOR = _validator("registration-verdict.schema.json")
+PROMOTION_EVIDENCE_VALIDATOR = _validator("promotion-evidence.schema.json")
 AUDIT_RECORD_VALIDATOR = _validator("audit-record.schema.json")
 COMMIT_LOG_VALIDATOR = _validator("commit-log-entry.schema.json")
 AUDIT_LEAF_VALIDATOR = _validator("audit-leaf.schema.json")
@@ -585,6 +586,39 @@ def _find_data_references(obj, path=""):
     return out
 
 
+def check_promotion_evidence(doc):
+    """The outcome must agree with the diff, and the revision sets must actually differ.
+
+    JSON Schema can hold the fields; it cannot check that the record is internally honest. An
+    `outcome: promoted` over an unapproved diff entry is the exact artifact this record exists to
+    make impossible — a promotion that reads as evidence-backed while the evidence says otherwise —
+    and it is the one thing a later reader has no way to detect for themselves."""
+    errors = []
+    diff = doc.get("diff", [])
+    unapproved = [e["output"] for e in diff if not e.get("approval")]
+    computed = "refused" if unapproved else "promoted"
+    stated = doc.get("outcome")
+    if stated and stated != computed:
+        errors.append(f"outcome: states {stated!r} but the diff computes {computed!r}"
+                      + (f" — unapproved: {unapproved}" if unapproved else "")
+                      + ". The diff is the entire gate: empty, or every entry explicitly approved.")
+    if doc.get("from_revisions") == doc.get("to_revisions"):
+        errors.append("from_revisions equals to_revisions — a promotion to what is already pinned "
+                      "compares a revision set with itself, so an empty diff proves nothing")
+    seen = set()
+    for e in diff:
+        if e["output"] in seen:
+            errors.append(f"diff: {e['output']!r} appears twice — one output, one verdict, or an "
+                          f"approval on one entry silently covers the other")
+        seen.add(e["output"])
+    for v in doc.get("volatile_outputs_excluded", []):
+        if v in seen:
+            errors.append(f"volatile_outputs_excluded names {v!r}, which also appears in the diff "
+                          f"— an output is either excluded from the comparison or compared, and "
+                          f"claiming both hides which happened")
+    return errors
+
+
 def check_registration_verdict(doc):
     """The ceiling must actually be a ceiling.
 
@@ -889,6 +923,12 @@ def pick_instance(doc):
                 lambda d: f"evaluation_context pass {d['pass_number']} req {d['request_uuid'][:8]} "
                           f"({len(d.get('constraints') or [])} constraints)",
                 check_evaluation_context)
+    if isinstance(doc, dict) and doc.get("record_type") == "promotion_evidence":
+        return (PROMOTION_EVIDENCE_VALIDATOR,
+                lambda d: f"promotion_evidence {d['corpus_ref'][:14]} "
+                          f"{len(d['diff'])} diff entr(y/ies) -> "
+                          f"{d.get('outcome') or 'unstated'}",
+                check_promotion_evidence)
     if isinstance(doc, dict) and doc.get("record_type") == "registration_verdict":
         return (REGISTRATION_VERDICT_VALIDATOR,
                 lambda d: f"registration_verdict {d['provider_uuid'][:8]} "

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/promotion-evidence.schema.json",
+  "title": "Promotion evidence",
+  "description": "The record a promotion is decided on: one corpus, one corpus ref, two revision sets, the typed-output diff between them, and the approvals for anything the diff found (ADR-046, `REG-016`).\n\nPROMOTION HAPPENS ON EVIDENCE, NEVER ON A VERSION CLAIM. \"The upstream change is compatible\" is a claim about someone else's estate, and claims about someone else's estate deserve evidence. The evidence exists deterministically — compile the organization's own intent corpus under both revisions and compare what each publishes — so the alternative to producing it is not trust, it is a decision taken with the answer available and unread.\n\nTHE DIFF IS THE ENTIRE GATE. Empty, or every entry explicitly approved. Anything else refuses the promotion outright, and nothing partially promotes: a half-promoted estate is one where the pinned and candidate revisions are both live and neither is the answer to \"what is this estate running\".\n\nAND A NON-EMPTY DIFF IS ALSO A FINDING. It contradicts the upstream compatibility claim, so it routes home with the diff as provenance (`finding-routing-record.schema.json`). The estate that discovered the incompatibility is the one holding the evidence for it, and letting that die locally means the next estate rediscovers it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "uuid",
+    "conforms_to",
+    "corpus_ref",
+    "from_revisions",
+    "to_revisions",
+    "diff"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "promotion_evidence"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "conforms_to": {
+      "type": "string",
+      "pattern": "^udlm/[0-9]+\\.[0-9]+$"
+    },
+    "corpus_ref": {
+      "type": "string",
+      "description": "The single ref both compilations ran against — a commit, a tag, a content digest.\n\nONE REF, RECORDED, AND IT IS AN INVARIANT RATHER THAN A CONVENIENCE. A corpus that moved between the two compilations makes the diff meaningless: a difference could then be the revision change or the corpus change, and nothing in the artifact distinguishes them. Recording the ref is what makes the evidence re-derivable by someone who did not run it — which is the only kind of evidence worth the name."
+    },
+    "from_revisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "The revision set the estate is pinned to — what it runs today. Pinned handles in `thing@version` or `thing@sha256:` form.",
+      "examples": [["Compute.VM@0.3.0", "Storage.Volume@1.2.0"]]
+    },
+    "to_revisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "The candidate revision set — what promotion would move it to. A set rather than a single version because a promotion is an estate moving, not an artifact bumping, and the diff is only interpretable against the whole set that produced it."
+    },
+    "diff": {
+      "type": "array",
+      "description": "What the two compilations published differently, compared on DECLARED OUTPUTS ONLY — never provider internals, which are not a contract and would make every provider change look like a breakage.\n\nOutputs the model declares `volatile` are excluded BY THAT DECLARATION (`common-elements` `$defs/volatile_output`), never ad hoc at diff time. An ad-hoc exclusion would let a promotion be waved through by excluding whatever happened to differ.\n\nAn empty array is the passing case and must be distinguishable from an absent one — hence required.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["output", "change"],
+        "properties": {
+          "output": {
+            "type": "string",
+            "description": "The declared output that differed, by name."
+          },
+          "change": {
+            "type": "string",
+            "enum": ["removed", "added", "type_changed", "value_changed"],
+            "description": "`removed` and `type_changed` break any consumer bound to the output. `value_changed` on a non-volatile output is the subtler case: the shape held and the realized fact moved — which is exactly what the compatibility claim promised would not happen. `added` is reported rather than ignored, because an output nobody expected is a surface nobody reviewed."
+          },
+          "from": { "description": "The value or type under `from_revisions`." },
+          "to": { "description": "The value or type under `to_revisions`." },
+          "approval": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["approved_by", "reason"],
+            "description": "The explicit approval for THIS entry. Per-entry, never a blanket sign-off on the diff: approving a list is approving whatever is on it, and the point of the gate is that a human looked at each difference.",
+            "properties": {
+              "approved_by": { "type": "string" },
+              "reason": { "type": "string" },
+              "at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "volatile_outputs_excluded": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The outputs left out of the comparison because they declare `volatile: true`. Recorded so the exclusion is auditable: an exclusion nobody can see is indistinguishable from a difference nobody reported."
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["promoted", "refused"],
+      "description": "Derived, and recorded because the record is the artifact somebody reads later: `promoted` iff the diff is empty or every entry carries an approval; `refused` otherwise. `validate.py` recomputes it rather than trusting it — an outcome that disagrees with its own diff is the one failure this record exists to make impossible."
+    },
+    "finding_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "The finding-routing record that carried this diff upstream, where one was filed. A non-empty diff contradicts the upstream compatibility claim, and `REG-016` rules that a refusal which cannot yet file the record QUEUES the filing rather than dropping it — so absence here means not-yet-filed, never not-required."
+    }
+  },
+  "examples": [
+    {
+      "record_type": "promotion_evidence",
+      "uuid": "b8d1f602-3a47-4c95-9e28-51f0a7c34d6b",
+      "conforms_to": "udlm/0.1",
+      "corpus_ref": "sha256:9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5",
+      "from_revisions": ["Compute.VM@0.3.0"],
+      "to_revisions": ["Compute.VM@0.4.0"],
+      "diff": [
+        {
+          "output": "instance.boot_mode",
+          "change": "value_changed",
+          "from": "bios",
+          "to": "uefi",
+          "approval": {
+            "approved_by": "platform-admin/alice",
+            "reason": "Estate re-imaged to UEFI in the same window; the new default matches reality.",
+            "at": "2026-08-13T11:20:00Z"
+          }
+        }
+      ],
+      "volatile_outputs_excluded": ["instance.created_at", "instance.provider_id"],
+      "outcome": "promoted"
+    }
+  ]
+}
