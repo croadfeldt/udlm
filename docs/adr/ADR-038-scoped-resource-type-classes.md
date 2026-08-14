@@ -448,7 +448,7 @@ Class name + version and *orchestrates* them. **Classes for the parts (*is-a*), 
 Beyond *is-a* (the Class hierarchy) and *has-a* (Composite Service, above), a resource carries
 **orthogonal context** — data *about* it that is not part of its own definition (a Data-Center info
 bundle, a compliance bundle). That third axis — references-context as a classified edge, field
-projection along edges (the navigational coordinate, `PROJ-P1..P5`), and two-sided layer scoping
+projection along edges (the navigational coordinate, `PROJ-001..005`), and two-sided layer scoping
 (`covers`/`applies_on` ⋈ `from_layers`/`skip`) — is decided in
 **[ADR-054](ADR-054-references-context-and-field-projection.md)**, extracted from this ADR so the
 Class paradigm and that mechanism ratify separately.

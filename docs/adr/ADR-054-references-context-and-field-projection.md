@@ -9,7 +9,7 @@ once with what it settles. ADR-038 — the scoped-Class hierarchy (`SharedDataEl
 dotted coordinate + dual anchor this builds on); this ADR is the third relationship axis alongside
 its *is-a* and *has-a*. ADR-012 — data references point at immutable records (the linkage this
 classifies and projects). ADR-041 — the policy information firewall *over* projection (it adds
-`PROJ-P6` to the invariants below and governs data entering by reference). `docs/spec/foundations/layering-and-versioning.md`
+`PROJ-006` to the invariants below and governs data entering by reference). `docs/spec/foundations/layering-and-versioning.md`
 — the assembly/layer model (`covers`/`skip` extend it). T1/T2 + ADR-023 — the naturalization
 boundary the anti-exfil invariants protect.
 
@@ -55,10 +55,18 @@ retirement looked correct from any single example. One entity, many linkers — 
 info bundle is one entity every resource in the DC links via a `located-in` (context) edge; no
 duplication, and the edge carries a nature a bare reference could not.
 
-**2. The navigational coordinate — project a target field along an edge.** A `§10` coordinate may
-reach its anchor by **traversing a classified edge from self**:
-`self.located-in.network.fabric_id` = self → the `located-in` edge → a field-path on the DataCenter
-at its far end. This is the OData navigation-property / RDF property-path shape — a graph hop in the
+**2. Project a target field along an edge.** A projection reaches its anchor by **traversing a
+classified edge from self**: self → the `located-in` edge → a field-path on the DataCenter at its
+far end. The URF virtual field is the form this takes —
+`via(located_in)#network.fabric_id` (`identifier-scheme.md` §9, with the `PROJ-001..006` invariants).
+
+*This ADR first spelled it as a navigational coordinate,* `self.located-in.network.fabric_id`.
+The two reach exactly as far — one hop, then a field path, no chaining either way — so the choice
+was not about capability. It is about what the syntax shows: in the coordinate form `located-in`,
+`network` and `fabric_id` are spelled identically, and a reader cannot tell which dot leaves the
+record without the type definition in hand. The dot that leaves is governed, firewalled and
+refusable; a dot inside the record is free and unfailing. Since every `PROJ` invariant is about
+that crossing, a syntax that hides it hides the only part they govern. This is the OData navigation-property / RDF property-path shape — a graph hop in the
 address, not a new construct (edge + coordinate + layer + dual anchor + governed dereference).
 Resolving it yields a **derived layer value**, landed in the effective spec with provenance (LAY-008)
 and the dual anchor (the immutable pin captures the target field *at realization* — reproducible; the
@@ -77,18 +85,18 @@ readings — an invented fourth. The value-scoped guard in `tests/check_model_vo
 the three retired words, so it read the line as clean; it now rejects an authored `nature:` whatever
 follows the colon.
 
-**3. Projection policy-safety — a projection feeds policy, never skirts it (`PROJ-P1..P5`).** A
+**3. Projection policy-safety — a projection feeds policy, never skirts it (`PROJ-001..005`).** A
 projection is a layer-contributed value, so policy over the merged result sees the concrete value
-exactly as if typed. Five invariants (ADR-041 adds `PROJ-P6`, the firewall admission):
-- `PROJ-P1` **resolve-before-policy** — projections resolve within the merge; policy sees concrete
+exactly as if typed. Five invariants (ADR-041 adds `PROJ-006`, the firewall admission):
+- `PROJ-001` **resolve-before-policy** — projections resolve within the merge; policy sees concrete
   values, never unresolved coordinates.
-- `PROJ-P2` **target-egress gate** — the dereference runs the *target's* egress/sovereignty policy
+- `PROJ-002` **target-egress gate** — the dereference runs the *target's* egress/sovereignty policy
   (address ≠ dereference), not only the source's — the anti-exfil guarantee.
-- `PROJ-P3` **mandatory provenance** — source + edge + anchor recorded for every projected value;
+- `PROJ-003` **mandatory provenance** — source + edge + anchor recorded for every projected value;
   nothing enters the spec from nowhere.
-- `PROJ-P4` **re-run policy on replay** — rehydration re-evaluates *current* policy; a pin reproduces
+- `PROJ-004` **re-run policy on replay** — rehydration re-evaluates *current* policy; a pin reproduces
   data, never exempts it from today's rules.
-- `PROJ-P5` **governed edge nature** — the relation's nature is validated, not self-asserted; no
+- `PROJ-005` **governed edge nature** — the relation's nature is validated, not self-asserted; no
   downgrading a dependency to `context` to escape gating.
 
 **4. Two-sided layer scoping — injection is the intersection of publish ⋈ subscribe.** A layer
@@ -107,7 +115,7 @@ speaking the one `§10` selector language:
 - **Injection = the intersection:** `L` injects into `R` iff `R.target ∈ L.covers` **and**
   `R.operation ∈ L.applies_on` **and** `L ∈ R.from_layers` **and not** `L ∈ R.skip`. `covers` says
   *who may*; `from_layers` says *who does* — both required, neither alone the boundary. Because
-  injection lands data into the spec it is an **ingress crossing**: `PROJ-P6` admission applies
+  injection lands data into the spec it is an **ingress crossing**: `PROJ-006` admission applies
   (ADR-041). `covers`/`skip` are Data (the declaration); the match is Policy (the control plane's assembly engine).
 
 ## The three relationship axes (all existing mechanisms)
@@ -173,7 +181,7 @@ UDLM's own.
 - **Data (UDLM):** the classified edge, the navigational coordinate, the `covers`/`applies_on`/
   `from_layers`/`skip` declarations, the dual anchor. Portable record shape.
 - **Policy (the control plane):** the assembly-engine match (injection intersection), the dereference, the
-  `PROJ-P1..P6` enforcement, the skip authorization.
+  `PROJ-001..006` enforcement, the skip authorization.
 - **Provider:** none dispatched by a projection; the target's provider owns the projected field's
   source of truth.
 
@@ -184,7 +192,7 @@ match, resolves projections, and enforces the invariants (a peer MAY differ).
 ## Consequences
 
 - The paradigm's third axis is named and separable from the Class hierarchy, so a reviewer can ratify
-  one without the other — and ADR-041's citations (`§references-context`, `PROJ-P1..P6`) now resolve
+  one without the other — and ADR-041's citations (`§references-context`, `PROJ-001..006`) now resolve
   to a decision of their own instead of a section of ADR-038.
 - "context is a linked entity, assembly is layers" is a hard line rather than a convention — drawn by
   the edge, not by removing a `layer_type`. `reference_data` was never the context carrier; the
@@ -196,6 +204,6 @@ match, resolves projections, and enforces the invariants (a peer MAY differ).
 
 The `§10` coordinate/addressing grammar itself (ADR-038 + the class-hierarchy design notes);
 the assembly precedence/override/`narrow_only` model (`docs/spec/foundations/layering-and-versioning.md`); and
-the firewall admission `PROJ-P6` and cross-domain guard (ADR-041). The JSON-Schema shapes (the edge
+the firewall admission `PROJ-006` and cross-domain guard (ADR-041). The JSON-Schema shapes (the edge
 `nature`, `covers`/`applies_on`/`from_layers`/`skip` on the layer/request envelopes) follow as an
 implementing PR once ratified.

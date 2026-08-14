@@ -26,9 +26,9 @@ schema projects onto.
 fields, never pre-assignment, routing tables, or static configuration. Any piece of data in
 the request can be the trigger.
 
-### 2.1 Four Match Sources
+### 2.1 Five Match Sources
 
-Policies can match against data from four sources, all available during evaluation:
+Policies can match against data from five sources, all available during evaluation:
 
 | Source | What it contains | Examples |
 |--------|-----------------|---------|
@@ -36,8 +36,23 @@ Policies can match against data from four sources, all available during evaluati
 | **Operation context** | What lifecycle operation is being performed and what changed | `operation.type`, `operation.changed_fields`, `operation.pipeline_stage` |
 | **Evaluation Context** | Constraints emitted by policies earlier in this evaluation pass | `allowed_zones`, `distribution_requirement`, `cost_ceiling`, `excluded_providers` |
 | **Entity metadata** | Tenant, actor, resource classification, lifecycle state | `tenant_uuid`, `actor.roles`, `data_classification`, `lifecycle_state`, `cost_center` |
+| **Reference graph** | The record's declared edges, matched **structurally** — no dereference | `edge_relation`, `edge_type`, `edge_target_authority`, `edge_target_lifecycle_state` |
 
-All four sources are addressable via dot-notation field paths.
+All five sources are addressable via dot-notation field paths.
+
+**The fifth is structural, and that is what makes it useful to a firewall** (ADR-041). The other four
+match on VALUES; matching on a value means resolving the pointer first, and resolving is the act a
+sovereignty boundary exists to control. Structural matching decides on the **address** — so it works
+when resolution is gated, unavailable, or is itself what is being refused. *"Gate any edge to a
+decommissioning DC"* and *"nothing in `tenant/acme` may reference into `state.wi/*`"* are answerable
+without reading anything either side holds.
+
+It also matches **stable identity** rather than transient value, and it reads the same graph
+`impact_report` walks (ADR-010) — so decommission-impact and structural policy share one graph
+rather than two that must agree.
+
+**Closed, like the other four subtrees.** A general graph query language would make *"can this policy
+be checked before it runs"* unanswerable; a fifth predicate arrives by the curation ladder.
 
 ### 2.2 Lifecycle Operation Types
 

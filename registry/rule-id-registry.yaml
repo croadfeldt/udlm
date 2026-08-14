@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.8"
+version: "1.0.9"
 
 prefixes:
   - prefix: ACC
@@ -168,6 +168,13 @@ prefixes:
     name: Policy contract
     home: docs/spec/contracts/policy-contract.md
     domain: The unified policy contract
+    status: active
+  - prefix: PROJ
+    name: Field projection along an edge
+    home: docs/spec/contracts/identifier-scheme.md
+    domain: The safety invariants a projected value must satisfy — resolve-before-policy, the
+      target's egress gate, mandatory provenance, replay re-evaluation, governed edge nature, and
+      ingress admission
     status: active
   - prefix: PRV
     name: Provider contract

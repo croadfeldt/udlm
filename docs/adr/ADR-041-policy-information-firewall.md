@@ -3,7 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); companion to ADR-054 (references-context + the projection mechanism), which sits on ADR-038's scoped-Class paradigm
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-P1..P5`, to which this adds `PROJ-P6`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-001..005`, to which this adds `PROJ-006`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
 dual anchor); ADR-025 (the control plane implementation); ADR-008 (the substrate and its control plane peer test); ADR-011 (sovereignty & residency);
 `docs/spec/contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
@@ -55,7 +55,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
      without dereferencing the data*. "Block anything pointing to `dc-east-us`", "no hard dependency crossing
      into `state.wi/*`", "gate any edge to a decommissioning DC" are all structural — no data pulled.
    - **Value / resolved (L7).** Match on the **dereferenced datum** (`residency`, `fabric_id`). Requires the
-     resolver (Decision 4) and resolution-before-policy (`PROJ-P1`).
+     resolver (Decision 4) and resolution-before-policy (`PROJ-001`).
    - **The reference/edge graph is a new policy match source**, added alongside the existing four
      (`docs/spec/contracts/policy-contract.md` §2.1). Structural is cheaper, matches **stable identity** rather than
      transient value, and works when resolution is gated/unavailable — often the surface you want. It also
@@ -82,7 +82,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
 4. **A policy resolver, and reactive re-convergence.**
    - **Resolver.** Policy must resolve any datum for inspection — dereference an edge-projected / navigational
      coordinate to the concrete value, on the **same data plane assembly uses**. This is what makes value
-     inspection (`PROJ-P1`) real: policy sees `fab-7`, never `self.located-in.…`.
+     inspection (`PROJ-001`) real: policy sees `fab-7`, never `self.located-in.…`.
    - **Re-convergence (the outer loop).** Policy is a *settled state over inputs*; when an input changes it must
      re-establish. **Provenance the policy's inputs** (not only spec values): recording each `policy → datum`
      dependency makes that dependency set a **subscription**. A change fires the **same `impact_report` graph** —
@@ -112,18 +112,18 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
      `dc-east.network.*` while denying `dc-east.location.residency` to a foreign-authority destination — a
      partial release / **firewall rule with a projection mask**.
 
-6. **The projection invariants are this firewall applied to a projection (`PROJ-P1..P6`).** ADR-054 states
-   `PROJ-P1..P5`; this ADR adds the ingress half the directional model requires:
-   - `PROJ-P1` resolve-before-policy · `PROJ-P2` **egress** gate at the target · `PROJ-P3` mandatory provenance ·
-     `PROJ-P4` re-run policy on replay · `PROJ-P5` governed edge-nature.
-   - **`PROJ-P6` (new) — ingress admission gate.** A projected/referenced value is **admitted by the receiver's
-     ingress policy** (provenance / trust / classification-in), not assumed. `PROJ-P2` was only the egress half
+6. **The projection invariants are this firewall applied to a projection (`PROJ-001..006`).** ADR-054 states
+   `PROJ-001..005`; this ADR adds the ingress half the directional model requires:
+   - `PROJ-001` resolve-before-policy · `PROJ-002` **egress** gate at the target · `PROJ-003` mandatory provenance ·
+     `PROJ-004` re-run policy on replay · `PROJ-005` governed edge-nature.
+   - **`PROJ-006` (new) — ingress admission gate.** A projected/referenced value is **admitted by the receiver's
+     ingress policy** (provenance / trust / classification-in), not assumed. `PROJ-002` was only the egress half
      of the crossing.
 
 ## Worked illustrations
 - **A projection crosses two gates.** `bm` pulls `dc-east.location.residency` via `located-in`.
-  **Egress at `dc-east`** (`PROJ-P2`): may residency be *released* to `bm`'s authority? — sovereignty/tenancy,
-  the owner's call, pre-crossing. **Ingress at `bm`** (`PROJ-P6`): does `bm` *admit* it? — provenance/trust, the
+  **Egress at `dc-east`** (`PROJ-002`): may residency be *released* to `bm`'s authority? — sovereignty/tenancy,
+  the owner's call, pre-crossing. **Ingress at `bm`** (`PROJ-006`): does `bm` *admit* it? — provenance/trust, the
   receiver's call, on arrival. Two owners, two properties; the value lands only if both pass.
 - **Structural policy, no dereference.** "No resource may hold a `hard` dependency whose target authority is
   outside `state.mn/*`." Evaluated purely on the edge's `nature` + the **authority in the target address** — the
@@ -144,10 +144,10 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
 |---|---|---|
 | **The firewall contract** | flow as the unit; the structural + value match surfaces; the reference/edge graph as a match source | the enforcement engine at each crossing |
 | **Directional mediation** | the egress/ingress **structure**, owners, and required-both rule | which gate fires, the actual release/admit decision |
-| **Resolver** | the requirement that policy inspects concrete values (`PROJ-P1`) | the resolver implementation, shared with assembly |
+| **Resolver** | the requirement that policy inspects concrete values (`PROJ-001`) | the resolver implementation, shared with assembly |
 | **Re-convergence** | policy-input provenance is recorded; a change re-evaluates dependents | the reactive engine (push/pull), the graph walk |
 | **Strictness** | strictness is **profile-governed**; the guard/transform + field-granular-egress **grammar** | the guard implementation (redact/mask/sanitize), the posture |
-| **Invariants** | `PROJ-P1..P6` (what must hold) | enforcing them at realization |
+| **Invariants** | `PROJ-001..006` (what must hold) | enforcing them at realization |
 
 **One line:** UDLM owns the **firewall contract** — the surfaces, the directional structure, the invariants, the
 guard grammar; the control plane owns the **engine** — the resolver, the reactive re-convergence, and enforcement at each
@@ -176,4 +176,4 @@ crossing.
 - Re-convergence requires extending **provenance from spec values to policy inputs**.
 - Ties **sovereignty & tenancy** to concrete **egress** gates and **FSI / trust** to concrete **ingress** gates —
   making the earlier profile work (sovereign / FSI) enforceable at named points rather than by prose.
-- **`PROJ-P6`** closes the ingress half of the projection crossing that `PROJ-P2` left open.
+- **`PROJ-006`** closes the ingress half of the projection crossing that `PROJ-002` left open.

@@ -286,3 +286,68 @@ terms:
     parent: entity-metadata
     curation_state: canonical
     definition: The chargeback attribution carried on the record.
+
+  # ── REFERENCE GRAPH — the fifth match source (ADR-041 Decision 2) ────────────────────────────
+  # STRUCTURAL matching: what the graph SAYS, without dereferencing what it points at.
+  #
+  # WHY THIS IS THE CHEAPER SURFACE, and why a firewall wants it. Matching on a VALUE means
+  # resolving the pointer first — and resolving is the act a sovereignty boundary exists to
+  # control. Structural matching pulls no data: it decides on the address. So it works when
+  # resolution is gated, unavailable, or is itself the thing being refused, which is precisely the
+  # situation the guard is for.
+  #
+  # It also matches STABLE IDENTITY rather than transient value. "Gate any edge to a decommissioning
+  # DC" stays true while the DC's fields churn.
+  #
+  # AND IT UNIFIES WITH BLAST RADIUS: "everything that points to X" IS the impact_report graph
+  # query (ADR-010). Decommission-impact and structural policy read one graph, not two that must
+  # agree.
+  #
+  # CLOSED, like every other subtree here. A general graph query language would make "can this
+  # policy be checked before it runs" unanswerable; these four predicates cover every example
+  # ADR-041 gives, and the curation ladder is how a fifth arrives.
+  - term: reference-graph
+    root: policy-fact
+    parent: policy-fact
+    category: reference graph
+    curation_state: canonical
+    definition: >-
+      The declared edges of the record under evaluation — matched STRUCTURALLY, without
+      dereferencing the target. The fifth match source (ADR-041); CLOSED subtree.
+
+  - term: edge_relation
+    root: policy-fact
+    parent: reference-graph
+    curation_state: canonical
+    definition: >-
+      The declared relation name on the edge (`located_in`, `mounts`). What the edge MEANS,
+      answerable from the record alone — a type declares its relations (REL-001), so this is part
+      of the contract rather than whatever a consumer can spell.
+
+  - term: edge_type
+    root: policy-fact
+    parent: reference-graph
+    curation_state: canonical
+    definition: >-
+      Which of the four edge types the edge is (`common-elements` `$defs/edge_type`). Carries the
+      lifecycle coupling: a policy that cares whether a crossing binds lifecycle or merely points
+      reads this rather than inferring it from the relation name.
+
+  - term: edge_target_authority
+    root: policy-fact
+    parent: reference-graph
+    curation_state: canonical
+    definition: >-
+      The authority the edge's target belongs to — the URF `//` axis, present when the target is a
+      peer's and elided when local. The datum a sovereignty refusal decides on (GMX-011), readable
+      from the reference itself, which is what lets the decision be taken BEFORE the crossing
+      rather than after reading what it points at.
+
+  - term: edge_target_lifecycle_state
+    root: policy-fact
+    parent: reference-graph
+    curation_state: canonical
+    definition: >-
+      The lifecycle state of the target, resolved from the local index without dereferencing the
+      target's data. Enough to gate an edge into something decommissioning; not enough to read
+      anything the target holds.
