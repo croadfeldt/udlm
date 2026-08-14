@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/facets/udlm-provenance.facet.json",
+  "title": "udlm_provenance — the modification chain",
+  "description": "What changed on this write, field by field: the source kind, the previous value, and DUAL ATTRIBUTION — the policy that applied the value and the pinned layer that supplied it.\n\nWHY BOTH ATTRIBUTIONS. `source` answers who decided; `via_layer` answers where the value came from. They are routinely different — a policy selects a value a layer carried — and collapsing them loses the ability to ask either question: change the layer and you cannot tell which decisions consumed it; change the policy and you cannot tell what it was choosing between.\n\nTHIS IS A HISTORY CLAIM, WHICH IS WHY IT LIVES HERE. The working record makes state claims only; only a sealed, chained, anchored record may be cited as lineage (ADR-059). The record's own `provenance` block is readable and not citable — this is the citable one.",
+  "type": "object",
+  "required": [
+    "_producer",
+    "_schemaURL",
+    "modifications"
+  ],
+  "properties": {
+    "_producer": {
+      "type": "string",
+      "format": "uri",
+      "description": "OpenLineage: what emitted this facet."
+    },
+    "_schemaURL": {
+      "type": "string",
+      "format": "uri",
+      "const": "https://udlm.dev/registry/udlm/0.1/facets/udlm-provenance.facet.json",
+      "description": "OpenLineage: the schema defining this facet. Pinned to this file — a facet whose schema URL points elsewhere is a different facet wearing the same name, and the name is all a consumer has to go on."
+    },
+    "modifications": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per field this write touched, in application order.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "source_kind"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Dot-path into the spec."
+          },
+          "source_kind": {
+            "$ref": "../common-elements.schema.json#/$defs/provenance_source_kind",
+            "description": "Which class of writer set it (data-model-core §6/§7). The same vocabulary the record's provenance block uses, so the two are comparable rather than merely similar."
+          },
+          "previous_value": {
+            "description": "What it was. Absent means the field was unset — which is distinct from a null previous value, and the distinction is what tells a reader whether this write created the field or changed it."
+          },
+          "value": {
+            "description": "What it became."
+          },
+          "source": {
+            "type": "string",
+            "description": "The APPLYING policy — who decided."
+          },
+          "via_layer": {
+            "type": "string",
+            "description": "The pinned layer that SUPPLIED the value — where it came from. Pinned, so the value is re-derivable at the version that produced it."
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

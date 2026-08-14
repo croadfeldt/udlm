@@ -339,6 +339,20 @@
       "description": "Declares that this output's VALUE changes between two realizations of the same intent — a timestamp, a generated identifier, an assigned port. The output is real and typed; what it is not is comparable.\n\nWHY IT MUST BE DECLARED RATHER THAN INFERRED (ADR-046). Promotion is gated on a typed-output diff: compile the same intent under both revisions and compare. A volatile output differs every time, so an undeclared one makes the diff perpetually dirty — and a gate that is always red is a gate everyone learns to override. The failure is not a false alarm; it is the loss of the signal.\n\nAT THE DECLARATION, BY THE PARTY WHO KNOWS. Whoever declares the output knows whether it is generated; nobody downstream reliably does. Excluding it at diff time instead would be an ad-hoc exclusion, which is the thing ADR-046 rules against — a promotion could then be waved through by excluding whatever happened to differ.\n\nIT NARROWS NOTHING. A volatile output is still typed, still published, still consumable. This says only that its value is not evidence of compatibility, which is why it is an annotation on the output rather than a different kind of output.",
       "type": "boolean",
       "default": false
+    },
+    "provenance_source_kind": {
+      "title": "Provenance source kind",
+      "description": "Which class of writer set a value (data-model-core §6/§7): `layer` = layer assembly wrote it; `policy` = a policy set, enriched or locked it; `actor` = an authenticated identity wrote it directly; `provider` = the realizing provider reported it; `discovery` = a discovery cycle observed it; `rehydration` = a rehydration pipeline restored it; `override` = an authorized override set it.\n\nDeclared once and shared by the record's readable provenance block and the seal's citable `udlm_provenance` facet. They describe the same act from two sides, so two spellings would make them incomparable — which is precisely the join a verifier needs when checking that what the record says happened matches what the ledger sealed.",
+      "type": "string",
+      "enum": [
+        "layer",
+        "policy",
+        "actor",
+        "provider",
+        "discovery",
+        "rehydration",
+        "override"
+      ]
     }
   }
 }

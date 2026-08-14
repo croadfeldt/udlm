@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/facets/udlm-working-copy.facet.json",
+  "title": "udlm_workingCopy — the sealed copy of the record",
+  "description": "The working record as it stood at the change, plus its resource-chain head. This is what makes a seal self-contained evidence rather than a pointer to state that may since have moved.\n\nTHE BRIDGE IS ONE-WAY, AND THE DIRECTION IS THE DESIGN. The seal embeds the record; the record never references the seal. So an operation never has to reach the ledger to proceed — records are unbounded in lifetime and compliance storage is not, and a dependency the other way would make every write contingent on a store that may be unreachable or aged out (ADR-059).\n\nEMBEDDED, NOT REFERENCED, for the reason a receipt shows the amount rather than a link to the till: verification must be possible from the seal alone, by someone with no access to the live estate.",
+  "type": "object",
+  "required": [
+    "_producer",
+    "_schemaURL",
+    "record",
+    "chain_head"
+  ],
+  "properties": {
+    "_producer": {
+      "type": "string",
+      "format": "uri",
+      "description": "OpenLineage: what emitted this facet."
+    },
+    "_schemaURL": {
+      "type": "string",
+      "format": "uri",
+      "const": "https://udlm.dev/registry/udlm/0.1/facets/udlm-working-copy.facet.json",
+      "description": "OpenLineage: the schema defining this facet. Pinned to this file — a facet whose schema URL points elsewhere is a different facet wearing the same name, and the name is all a consumer has to go on."
+    },
+    "record": {
+      "type": "object",
+      "description": "The record's content at seal time, minus `integrity` — that is carried as `chain_head` below, because a digest cannot cover itself."
+    },
+    "chain_head": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "The record's `integrity.head` at seal time. This is the join between the two families: a verifier walks pathway anchor -> seal -> resource chain -> audit log as one mechanical sequence, with no translation step where a mismatch could hide."
+    },
+    "record_uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "record_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    }
+  },
+  "additionalProperties": false
+}

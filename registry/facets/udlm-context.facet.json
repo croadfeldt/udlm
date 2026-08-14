@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://udlm.dev/registry/udlm/0.1/facets/udlm-context.facet.json",
+  "title": "udlm_context — attribution, cause, and the admission anchor",
+  "description": "Who caused this write, under what intent, permitted by which decisions — and the citation of the causal pathway that makes it admissible at all.\n\nTHE ADMISSION RULE LIVES HERE (ADR-059). A state write with no citable `pathway_ref` is REFUSED. Every seal names its cause; there are no anonymous injections, from any source.\n\nWHAT THAT BUYS IS SOURCE-BLINDNESS. Intent-sourced, discovery-sourced and provider-sourced changes all enter through one identical contract — sealed event, cause cited, resource chain appended — so everything downstream (comparison, findings, audit walks) never needs to know HOW data arrived, only that it arrived governed. One code path where there would otherwise be three, and one place to get it right.\n\nAN INQUIRY IS NOT A PATHWAY. A read changes nothing and is a CONSUMER of this surface, not a producer of it — whether reads are access-audited is a separate policy question, and an access-audit event is not a chain link.\n\nTHE PRINCIPAL IS RESOLVED AT SIGN-IN and carried through, never re-looked-up at write time: a late lookup attributes the write to whoever the identity resolves to NOW, which is a different claim than who did it.",
+  "type": "object",
+  "required": [
+    "_producer",
+    "_schemaURL",
+    "principal",
+    "pathway_ref"
+  ],
+  "properties": {
+    "_producer": {
+      "type": "string",
+      "format": "uri",
+      "description": "OpenLineage: what emitted this facet."
+    },
+    "_schemaURL": {
+      "type": "string",
+      "format": "uri",
+      "const": "https://udlm.dev/registry/udlm/0.1/facets/udlm-context.facet.json",
+      "description": "OpenLineage: the schema defining this facet. Pinned to this file — a facet whose schema URL points elsewhere is a different facet wearing the same name, and the name is all a consumer has to go on."
+    },
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "description": "The IdM principal, resolved at sign-in and carried through the pipeline.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        }
+      }
+    },
+    "pathway_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pathway"
+      ],
+      "description": "THE ANCHOR. Which causal pathway produced this write, and its verifiable reference. Two pathways cause action — a REQUEST ('I want a change') and DATA ('I have data', probe- or provider-sourced). Absent = refused.",
+      "properties": {
+        "pathway": {
+          "type": "string",
+          "enum": [
+            "request",
+            "discovery_run",
+            "provider_event"
+          ],
+          "description": "`request` and `discovery_run` cite a chain head; `provider_event` cites an event on the authenticated lifecycle channel the provider contract already obligates — mTLS plus attestation answer 'is this really the provider', so no chain over the provider's stream is required by default. The same independence analysis as discovery runs: successive observations are independent evidence, and cross-time integrity is the resource chain's job."
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "request_chain_head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "discovery_run_head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "provider_id": {
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        }
+      }
+    },
+    "intent_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uuid",
+        "version"
+      ],
+      "description": "A citation: uuid, version, and the chain head if the cited record carries one. Three parts because two are not enough — uuid says WHICH record, version says which of its published states, and the head proves the bytes were those bytes.",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "version": {
+          "type": "string"
+        },
+        "head": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "change_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "version"
+        ],
+        "description": "A citation: uuid, version, and the chain head if the cited record carries one. Three parts because two are not enough — uuid says WHICH record, version says which of its published states, and the head proves the bytes were those bytes.",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "version": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      },
+      "description": "Change/approval records for this write."
+    },
+    "policy_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policy_uuid",
+          "outcome"
+        ],
+        "description": "The decisions that PERMITTED this write.",
+        "properties": {
+          "policy_uuid": {
+            "type": "string"
+          },
+          "policy_version": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "permit",
+              "enrich",
+              "transform"
+            ]
+          }
+        }
+      }
+    },
+    "consulted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uuid",
+          "version"
+        ],
+        "description": "A citation: uuid, version, and the chain head if the cited record carries one. Three parts because two are not enough — uuid says WHICH record, version says which of its published states, and the head proves the bytes were those bytes.",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "version": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      },
+      "description": "Orthogonal records that MATERIALLY PARTICIPATED in a decision. Consulted -> cited; unconsulted -> just an edge. The distinction is what keeps this list evidence rather than a dump of everything reachable: a citation asserts the record was read and mattered."
+    }
+  },
+  "additionalProperties": false
+}
