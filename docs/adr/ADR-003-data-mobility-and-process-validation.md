@@ -1,6 +1,6 @@
 # UDLM ADR-003: Data mobility + process-validation lifecycle
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/realized-entity.schema.json` (`portability`)
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

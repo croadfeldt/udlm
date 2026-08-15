@@ -1,6 +1,6 @@
 # UDLM ADR-006: Convergence control model — event-condition-action, re-entrant policy
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/policy.schema.json` (`policy_type`, `match`, `output`) · `registry/evaluation-context.schema.json`
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

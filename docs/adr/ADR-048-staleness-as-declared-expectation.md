@@ -1,6 +1,6 @@
 # UDLM ADR-048: Staleness is judged against a declared expectation — `expected_observation`, verdicts derived, never stored
 
-**Status:** Proposed (croadfeldt upstream)
+**Status:** Accepted (croadfeldt upstream)
 **Realized by:** `registry/realized-entity.schema.json` (`expected_observation`)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

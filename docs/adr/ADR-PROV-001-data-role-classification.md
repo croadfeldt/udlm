@@ -1,6 +1,6 @@
 # ADR-PROV-001: Data role classification — what goes to a provider is execution data only; the dispatch payload is the role:execution slice
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/taxonomies/policy-fact.yaml` (`data_role`)
 **Type:** Architecture Decision Record — a `DecisionRecord` with architecture scope (`docs/spec/foundations/knowledge-family.md` §4.5)
 

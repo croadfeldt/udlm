@@ -1,6 +1,6 @@
 # DR-UDLM-002: A decision is not done until something checks it
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `tests/check_adr_realization.py` — this record's own rule, applied to the corpus that contains it
 **Type:** Decision Record — a project/process decision (`docs/spec/foundations/knowledge-family.md` §4.5); architecture decisions are ADRs (`../adr/`)
 

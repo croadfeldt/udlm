@@ -1,6 +1,6 @@
 # UDLM ADR-059: The working record and its provenance chains
 
-**Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decisions 2026-08-02/03
+**Status:** Accepted (croadfeldt upstream) — **requires engineering ratification**; maintainer decisions 2026-08-02/03
 **Realized by:** `registry/realized-entity.schema.json` (`integrity`) · `registry/tools/integrity_chain.py` · `registry/facets/` · `registry/log-checkpoint.schema.json` · `tests/check_integrity_chain.py` · `tests/check_seal_facets.py`
 **Date:** 2026-08-03
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)

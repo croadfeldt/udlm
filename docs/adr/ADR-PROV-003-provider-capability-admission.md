@@ -1,6 +1,6 @@
 # ADR-PROV-003: Provider capability admission — platform-admin disposition over a provider's DECLARED capabilities/categories as an intersecting ceiling (effective = declared ∩ admitted); immutable audit-chain record; enforced via the one Governance Matrix, gated by RBAC + a PROF-007-style approval workflow
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/registration-verdict.schema.json` · `registry/tools/validate.py` (`check_registration_verdict`)
 **Type:** Architecture Decision Record — a `DecisionRecord` with architecture scope (`docs/spec/foundations/knowledge-family.md` §4.5)
 

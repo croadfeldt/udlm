@@ -19,19 +19,35 @@ This repo follows the standard ADR model — Michael Nygard, *Documenting Archit
 (2011), as carried forward by MADR. Two things are worth stating because both have been got wrong
 here before.
 
-### Status records agreement, never implementation
+### Status, in this phase, means implemented
 
-| Status | Means |
+| Status | Means here |
 |---|---|
-| `Proposed` | decided by the maintainer upstream; stakeholders have not agreed yet (engineering ratification, #217) |
-| `Accepted` | agreed. Immutable from here — a change is a NEW record that supersedes this one, never an edit (`CONTRIBUTING.md`) |
-| `Rejected` | considered and declined. A rejection is a decision and is recorded as one; a record that says "no" and is marked `Proposed` is mis-stated |
-| `Deprecated` | no longer applies, and nothing replaced it |
-| `Superseded by ADR-N` | replaced. The successor is named, so a reader who arrives at the old record is not stranded |
+| `Proposed` | decided, not built |
+| `Accepted` | built — the decision is carried by a surface |
+| `Rejected` | considered and declined |
+| `Deprecated` | no longer applies, nothing replaced it |
+| `Superseded by ADR-N` | replaced, successor named |
 
-The standard sequence is **propose → accept → implement**. Status says nothing about whether
-anything was built, and a status field that tried to would be answering two questions with one
-value.
+**This diverges from the standard, knowingly.** Nygard keeps `Status` to agreement alone —
+`Proposed` means stakeholders have not signed off, and implementation is tracked nowhere. While the
+base standards are being developed the stakeholder set is one maintainer, so an "agreed but unbuilt"
+state carries no information nobody already has, whereas *"is this real yet"* is the question every
+reader actually asks. When engineering ratification becomes a live gate (#217), agreement and
+implementation separate again and this rule is revisited — recorded as a decision, not drifted into.
+
+**`Status` and `Realized by` move together** (`ADR-REAL-005`, both directions). A record that names
+a surface while saying `Proposed` contradicts itself, and so does one marked `Accepted` with
+nothing behind it.
+
+**Writing `Realized by` is the act that requires care.** It means the decision is CARRIED by the
+surface named — established by reading the decision against it, never inferred from a file
+existing. A schema can exist and carry none of what a record decided.
+
+**One consequence before you edit.** `Accepted` records are immutable (`ADR-REAL-004`), and 44 of
+49 are Accepted. Changing the reasoning in one is a NEW record that supersedes it. The header still
+moves — `Status` and `Realized by` record where a decision stands and where it landed — but
+context, decision, alternatives and consequences are settled.
 
 ### `Realized by` is a local extension
 

@@ -1,6 +1,6 @@
 # UDLM ADR-007: Profile model — composed sets, floors, and fork-on-modify
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/profile.schema.json` · `registry/profiles/` (six profiles) · `tests/check_profile_tables.py`
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

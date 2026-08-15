@@ -1,6 +1,6 @@
 # UDLM ADR-011: Validate-and-reserve — two-phase realization
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/taxonomies/action.yaml` (`reserve`/`commit`/`release`) · `tests/check_action_vocabulary.py`
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

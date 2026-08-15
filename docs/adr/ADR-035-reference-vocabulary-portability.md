@@ -1,6 +1,6 @@
 # UDLM ADR-035: Reference-vocabulary portability and provider advertisement
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
+**Status:** Accepted (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
 **Realized by:** `registry/taxonomies/network-zone.yaml` · `registry/vocabulary-term.schema.json` (`scope` — the portability position)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)

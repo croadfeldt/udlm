@@ -1,6 +1,6 @@
 # UDLM ADR-002: Capacity / Utilization — served overlay, not a type
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/common-elements.schema.json#/$defs/StorageUsage` — capacity + utilization as served Quantities on the shapes that need them, never a type of their own
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

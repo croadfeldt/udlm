@@ -1,6 +1,6 @@
 # UDLM ADR-057: Sovereignty covers **placement AND provenance** — the approved-source / approved-list dimension
 
-**Status:** Proposed (croadfeldt upstream) — foundations; **requires engineering ratification** (extends P4 and unifies existing admission mechanisms); decided 2026-07-28
+**Status:** Accepted (croadfeldt upstream) — foundations; **requires engineering ratification** (extends P4 and unifies existing admission mechanisms); decided 2026-07-28
 **Realized by:** `registry/accreditation.schema.json` · `docs/spec/contracts/provider-contract.md` (`sovereignty_declaration`)
 **Date:** 2026-07-28
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)

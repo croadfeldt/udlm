@@ -1,6 +1,6 @@
 # ADR-027: Entity family model — Resource | Process, and the Atomic/Composite shape
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-17
+**Status:** Accepted (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-17
 **Realized by:** `registry/common-elements.schema.json#/$defs/edge_type` · `registry/edge-types.yaml` · `tests/check_model_vocabulary.py` · `tests/check_graph_integrity.py`
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** [ADR-026 — typed-classification naming](README.md); `docs/spec/foundations/entity-types.md`; `docs/spec/foundations/entity-type-families.md`; ADR-013 (hardware component scope)
 
