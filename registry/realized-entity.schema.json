@@ -514,7 +514,7 @@
         },
         "portability_notes": {
           "type": "string",
-          "description": "Human-readable explanation surfaced to the consumer: which provider-specific elements make it non-portable and which provider(s) it is thereby bound to."
+          "description": "Human-readable explanation surfaced to the consumer: which provider-specific elements make it non-portable and which provider(s) it is thereby bound to. Where a hard `provider_preference` is in force, say so here and say what it costs: a hard pin makes rehydration PROVIDER-DEPENDENT, which is a different failure from lossy movement — replaying the intent against a provider that no longer exists does not degrade, it fails. Whether it counts as degradation at all is policy's call; what the record owes is the fact and the distinction."
         },
         "bound_providers": {
           "type": "array",
@@ -721,6 +721,60 @@
         "hashed_by": {
           "type": "string",
           "description": "OPTIONAL — the control-plane identity that computed this head. The control plane is the sole hasher (ADR-059); recorded where an estate runs more than one and needs to attribute a break to an instance."
+        }
+      }
+    },
+    "provider_preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "strength"
+      ],
+      "description": "A named provider this request PREFERS — the pin (ADR-050).\n\nIT DECIDES WHICH ELIGIBLE PROVIDER, NEVER WHETHER AN INELIGIBLE ONE IS REACHED. The `effective_capabilities` ceiling applies at the dispatch boundary on every path (`PRV-009`, `PRV-011`), so a pin naming a provider that has not been admitted for what the request needs is refused with `placement.capability_mismatch` BEFORE dispatch, carrying the required-versus-declared comparison.\n\nThe pin is absolute over the CHOICE and not over CAPABILITY. That is what keeps one sentence true everywhere — the ceiling always applies — instead of true-with-an-exception, and an exception is the thing a reader cannot see from the rule.\n\nA DELIBERATE BYPASS IS POLICY'S, NOT THE MODEL'S (ADR-008 peer test). Whether an operator may dispatch outside a declared capability is an operational choice a conformant implementation is entitled to make differently, so UDLM fixes only the invariant such a bypass would be an exception TO. A field here that could waive the ceiling would move that choice into the substrate and make every implementation inherit one estate's risk appetite.",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "The preferred provider, as a URF reference — authored by handle, resolved to the uuid form (WIR-004)."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Why this provider is preferred. Carried for the human reading a placement decision; never evaluated."
+        },
+        "set_by": {
+          "type": "string",
+          "description": "Who pinned it — an administrator, or the policy that did. A preference nobody can be asked about is one nobody can safely remove."
+        },
+        "strength": {
+          "type": "string",
+          "enum": [
+            "soft",
+            "hard"
+          ],
+          "description": "Whether placement may substitute.\n\n`soft` — a preference. If the named provider is ineligible, at capacity or absent, placement chooses another eligible one. The request stays portable.\n\n`hard` — a requirement. Placement does not substitute; if the named provider cannot serve the request it is refused. This is the form operators genuinely need and the one that costs something, so it is stated rather than inferred from context.\n\nREQUIRED, WITH NO DEFAULT (NDF-001). A pin whose strength is unstated would be read as soft by one implementation and hard by another, and the difference is whether a request silently moves provider or silently fails.\n\nNEITHER VALUE BYPASSES THE CEILING. `effective_capabilities` applies at the dispatch boundary on every path — a hard pin naming an ineligible provider is refused before dispatch, exactly as a soft one is (ADR-050). Hard changes whether placement SUBSTITUTES, never what is REACHABLE."
+        },
+        "acknowledged": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "at",
+            "by"
+          ],
+          "description": "The consumer was told what a hard pin costs, and when.\n\nWHY THIS IS A RECORD AND NOT A WARNING. A warning is shown once, to the person choosing, and is gone. This is read by whoever inherits the request — the person harmed by a hard pin is rarely the one who set it, but the one who tries to move or rehydrate it later and finds the named provider gone.\n\nWHAT UDLM DOES AND DOES NOT DECIDE. The model carries the pin, its strength, and this acknowledgement, and makes all three readable — `provider_preference.*` resolves as a request-payload dot-path, so a policy can match on it. WHETHER a hard pin degrades portability, and what it means for rehydration, is POLICY's call: an estate with one provider loses nothing by pinning to it, and an estate with five loses a great deal. Computing that here would make UDLM decide an estate's exposure for it.",
+          "properties": {
+            "at": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "by": {
+              "type": "string",
+              "description": "Who acknowledged."
+            },
+            "notes": {
+              "type": "string",
+              "description": "What they were told."
+            }
+          }
         }
       }
     }
@@ -973,5 +1027,38 @@
       "x-extensible-enum": true,
       "description": "Data ROLE — the purpose axis (ADR-PROV-001; docs/spec/contracts/data-roles.md), ORTHOGONAL to data_classification (sensitivity). Governs dispatch: only `execution` crosses to a provider by default. execution = the provider needs it to realize the resource (the dispatch contract); assembly = control-plane assembly record (unapplied contributions, excluded layers); governance/audit/cost = other control-plane concerns. A provider may opt into non-execution roles via accepts_roles, subject to Governance-Matrix policy."
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provider_preference": {
+            "properties": {
+              "strength": {
+                "const": "hard"
+              }
+            },
+            "required": [
+              "strength"
+            ]
+          }
+        },
+        "required": [
+          "provider_preference"
+        ]
+      },
+      "then": {
+        "properties": {
+          "provider_preference": {
+            "required": [
+              "provider",
+              "strength",
+              "acknowledged"
+            ]
+          }
+        }
+      },
+      "$comment": "A hard pin is the one consumer-facing choice that narrows where a request can ever be realized. Requiring the acknowledgement is how the model makes that visible at the moment it is taken, rather than discoverable later by whoever inherits it."
+    }
+  ]
 }

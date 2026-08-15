@@ -1,7 +1,7 @@
 # UDLM ADR-050: The absolute provider pin — whether a pin may confer eligibility, or only express preference
 
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the ceiling is a UDLM invariant; whether a pin may bypass it is an operational policy — a control plane obligation, tracked in control-plane policy-obligations register.** The option catalogue below is *informative* — the policy shapes the control plane may adopt, not a choice UDLM makes.
-**Realized by:** _not yet_ — decided, no machine surface.
+**Status:** Accepted (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the ceiling is a UDLM invariant; whether a pin may bypass it is an operational policy — a control plane obligation, tracked in control-plane policy-obligations register.** The option catalogue below is *informative* — the policy shapes the control plane may adopt, not a choice UDLM makes.
+**Realized by:** `registry/realized-entity.schema.json` (`provider_preference`) · `registry/tools/validate.py` (`check_provider_preference`) · `docs/spec/contracts/error-model.md` (`placement.capability_mismatch`)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited

@@ -587,6 +587,31 @@ def _find_data_references(obj, path=""):
     return out
 
 
+def check_provider_preference(doc):
+    """A pin decides WHICH eligible provider, never WHETHER an ineligible one is reached (ADR-050).
+
+    JSON Schema closes the object, so no bypass field can be added. What it cannot check is the
+    sentence around it: a record that pairs a preference with language claiming the ceiling is
+    waived has written the exception the decision exists to prevent. Cheap to catch, and the whole
+    value of the rule is that it holds on every path — one exception makes the invariant
+    unstatable."""
+    pref = doc.get("provider_preference")
+    if not isinstance(pref, dict):
+        return []
+    errors = []
+    blob = " ".join(str(v) for v in pref.values()).lower()
+    for phrase in ("bypass", "override the ceiling", "ignore capability", "force dispatch",
+                   "regardless of capability", "waive"):
+        if phrase in blob:
+            errors.append(
+                f"provider_preference: {phrase!r} — a pin is preference among ELIGIBLE providers. "
+                f"The effective_capabilities ceiling applies at the dispatch boundary on every path "
+                f"(PRV-009/PRV-011); a pin naming an ineligible provider is refused with "
+                f"placement.capability_mismatch before dispatch. A deliberate bypass is policy's "
+                f"call (ADR-008), never a field here")
+    return errors
+
+
 def check_log_checkpoint(doc):
     """A checkpoint must extend what it supersedes, and every signature must be over one statement.
 
@@ -864,7 +889,8 @@ def check_layer(doc):
 
 def check_realized_entity(doc):
     """All semantic checks for a realized entity."""
-    return check_process_entity(doc) + check_provider_extensions(doc) + check_data_references(doc)
+    return (check_process_entity(doc) + check_provider_extensions(doc)
+            + check_data_references(doc) + check_provider_preference(doc))
 
 
 def check_profile(doc):
