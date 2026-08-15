@@ -1,0 +1,83 @@
+# "A layer said this value may not go there, and the request tried anyway."
+#
+# WHAT THIS IS. LAY-009 rules that a layer's `limits` are DATA and a POLICY enforces them — because
+# a layer holds an estate's configuration, and what is permitted there is the estate's call, not
+# UDLM's. This record is what enforcing it looks like: one generic policy over declared limits,
+# rather than one policy per bounded field.
+#
+# WHY IT IS NOT A GATE. A Class's `supports` containment IS a gate, because a Class is UDLM's own
+# portable artifact. The same containment math runs here (registry/tools/containment.py serves both
+# tiers) with different authority — which is why UDLM ships the fact and the mechanism, and an
+# organization ships the decision.
+#
+# THE REFUSAL NAMES WHO BOUND IT. `limits.violations` carries what LAY-010 requires: the binding
+# layer, its owner, the field, the submitted value, the clause and its reason — every contributing
+# layer where more than one bound the field, not merely the tightest. Extension chains are deep and
+# multi-parent by design, so "value not permitted" leaves a reader unable to tell which of a dozen
+# ancestors objected or who to go and ask. That is the difference between a refusal someone can act
+# on and one they can only retry.
+#
+# NOT A SHIPPED DEFAULT (NDF-001). The deny below is one organization's posture. A peer that warns
+# instead, or that permits a violation on an attested exception, is equally conformant — UDLM
+# facilitates the posture and does not pick one (rule 42). This ships as an EXAMPLE.
+record_type: policy
+uuid: 7c3ba51e-84d6-4f92-b107-2e5a90d4c368
+handle: layer-limit-gate
+conforms_to: udlm/0.1
+name: Refuse a value that falls outside an ancestor layer's envelope
+description: >-
+  Validation policy — a request whose value falls outside any applicable ancestor envelope is
+  refused, and the refusal names the binding layer, its owner and the clause. Worked example
+  (cexample content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+policy_type: validation
+policy_class: structural
+concern_type: configuration_boundary
+domain: platform
+match:
+  # WHAT this policy reads. HOW it compares is the engine's (policy-contract §7.2a). These are facts
+  # OF THE PASS, not fields on a record: which envelopes apply depends on which layers this request
+  # drew from, so the question cannot be answered anywhere but during this assembly.
+  facts: [limits.violations, limits.skipped_layers]
+  rule:
+    engine: rego
+    body: |
+      package udlm.layer_limits
+
+      # Any value outside an applicable envelope is refused. Limits INTERSECT where values override,
+      # so a violation against ONE ancestor is a violation — satisfying a more permissive ancestor
+      # does not excuse it, which is what stops permission being bought by extending one more layer.
+      deny if {
+        count(input.limits.violations) > 0
+      }
+
+      # A skipped compliance layer is the audited escape route, not a silent one. A bound has no
+      # override, so declining the layer is the only way past it; this organization requires that to
+      # be visible rather than assumed.
+      deny if {
+        some layer in input.limits.skipped_layers
+        layer.narrow_only == true
+      }
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+output:
+  decision: deny
+  reason: >-
+    a value in this request falls outside an envelope declared by an ancestor layer — the refusal
+    names the binding layer, its owner, the field, the submitted value and the clause, so the bound
+    can be renegotiated with whoever set it rather than guessed at
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: medium
+metadata:
+  display_name: Layer-limit gate
+  notes:
+  - at: '2026-08-15T00:00:00Z'
+    author: UDLM project
+    text: >-
+      Worked example for LAY-009/LAY-010. The envelope is data on the layer; this is the policy that
+      reads it. One generic policy over declared limits — not one per bounded field, which is what
+      would happen if the bound lived in the policy rather than on the layer.
