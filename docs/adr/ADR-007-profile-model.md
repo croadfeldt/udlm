@@ -1,6 +1,7 @@
 # UDLM ADR-007: Profile model — composed sets, floors, and fork-on-modify
 
 **Status:** Proposed
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §Extensibility (profile scope note); `docs/spec/governance/governance-matrix.md` (profile-bound defaults); ADR-002 (adopt-by-reference); ADR-PROV-002 (provider capability declaration); ADR-005 (time-sync as a profile capability); ADR-006 (re-entrant policy); `docs/spec/contracts/policy-contract.md` (policy engine model)

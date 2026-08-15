@@ -1,6 +1,7 @@
 # UDLM ADR-006: Convergence control model — event-condition-action, re-entrant policy
 
 **Status:** Proposed
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/foundations/foundations.md` §1 (the Data·Policy·Provider runtime loop this specifies); ADR-005 (causal audit — the triggers are the causal edges); `docs/spec/contracts/event-catalog.md`; `docs/spec/contracts/policy-contract.md`; `docs/spec/contracts/provider-contract.md` (provider callback); the control plane convergence engine (loop runner); UCs `idempotent-reconvergence`, `drift-detection-remediation`, dependency-failure-surfaced, `vm-provision-with-provider-failure`

@@ -1,6 +1,7 @@
 # UDLM ADR-002: Capacity / Utilization — served overlay, not a type
 
 **Status:** Proposed
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` (Data⇄Policy boundary, T5 adopt-by-reference); the **cost** decision (FOCUS adopted + served, not modeled — `../design/resource-type-registry-design-notes.md` §4a); ADR-001 (`Topology`); **DCM ADR-019 (Placement Policy)** — a consumer

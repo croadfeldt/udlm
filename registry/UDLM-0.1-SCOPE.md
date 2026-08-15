@@ -111,6 +111,14 @@ The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "
    runner is **deferred** (§6) — until it exists, 1.0 cannot honestly claim the conformance bar.
 4. **`0.1 → 1.0` re-stamp** — the mechanical procedure in `VERSIONING.md`; runs last, once 1–3 pass.
 
+   **No `Accepted` record may be unrealized at the tag.** `Status` follows the standard (Nygard;
+   `docs/adr/README.md`) — it records whether stakeholders agreed, never whether anything was built,
+   and the two axes do not gate each other day to day: accepted-and-unbuilt is the standard order,
+   built-and-unratified is this repo's. At the 1.0 tag they must meet, because a ratified decision
+   with no surface means the spec does not describe the model it claims. Each record must be
+   realized, superseded, or rejected before ratification rather than alongside it;
+   `tests/check_adr_realization.py` reports the split and #544 tracks it.
+
 ## 6. Explicitly deferred (out of 0.1 scope, tracked)
 
 - **Executable conformance test runner** — large; overlaps the control plane/test-infra. `CONFORMANCE.md` is Draft

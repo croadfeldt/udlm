@@ -1,6 +1,7 @@
 # ADR-032: Post-1.0 direction, and how we hold it while building 0.1
 
 **Status:** Proposed (2026-07-19)
+**Realized by:** _not yet_ — decided, no machine surface.
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle — the direction this protects); ADR-031 (1.0 focus); ADR-029 (inventory / observed provenance); ADR-027 (the family axis this eventually refines); the intent-vs-realized split; the managed-vs-observed axis.
 
 ## Context

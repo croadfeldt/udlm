@@ -2,6 +2,7 @@
 
 **Status:** Accepted (croadfeldt/maintainer, 2026-07-28) — under implementation (#189). Two-sided
 layer scoping shipped in #317; the `reference_data` retirement is **gated on [ADR-058](ADR-058-curated-vocabulary-on-shared-data-element.md)** (this ADR addressed only *context*; `reference_data` also stores *curated vocabularies*, whose new home ADR-058 decides). Engineering ratification for dcm-project adoption remains tracked in #217. Extracted from ADR-038 (still Proposed) so the scoped-Class paradigm and this mechanism ratify separately.
+**Realized by:** `docs/spec/contracts/identifier-scheme.md` (`via`, `PROJ-001..006`) · `registry/layer.schema.json` (`covers`/`applies_on`/`from_layers`/`skip`)
 **Date:** 2026-07-27
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited

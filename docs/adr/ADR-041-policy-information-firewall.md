@@ -1,6 +1,7 @@
 # UDLM ADR-041: Policy as information firewall — boundary mediation, structural + value inspection, and the cross-domain guard
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); companion to ADR-054 (references-context + the projection mechanism), which sits on ADR-038's scoped-Class paradigm
+**Realized by:** `registry/taxonomies/policy-fact.yaml` (`reference-graph`) · `docs/spec/contracts/policy-contract.md` §2.1 · `docs/spec/contracts/identifier-scheme.md` `PROJ-006`
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-001..005`, to which this adds `PROJ-006`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,

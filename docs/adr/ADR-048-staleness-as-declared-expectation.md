@@ -1,6 +1,7 @@
 # UDLM ADR-048: Staleness is judged against a declared expectation — `expected_observation`, verdicts derived, never stored
 
 **Status:** Proposed (croadfeldt upstream)
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. `docs/spec/foundations/four-states.md` (Discovered state carries the

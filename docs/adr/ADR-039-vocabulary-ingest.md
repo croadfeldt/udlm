@@ -2,6 +2,7 @@
 
 **Number:** ADR-039 (the vocabulary-ingest Data leg; an application of ADR-037/PVD).
 **Status:** Proposed — **deferred post-1.0** (ruled 2026-08-05): build the staging fields deliberately when vocabulary federation lands  **Date:** 2026-07-21
+**Realized by:** `registry/common-elements.schema.json#/$defs/curation_state` · `registry/vocabulary-term.schema.json`
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
 `proposed → under-review → canonical → deprecated` (`docs/spec/foundations/four-states.md`); ADR-PROV-002 (capability

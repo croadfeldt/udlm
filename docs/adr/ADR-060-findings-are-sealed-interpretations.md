@@ -1,6 +1,7 @@
 # UDLM ADR-060: Findings are sealed interpretations — drift is the first family member
 
 **Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decisions 2026-08-03. Consumes ADR-059; ratifiable separately.
+**Realized by:** `registry/facets/udlm-finding.facet.json`
 **Date:** 2026-08-03
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 

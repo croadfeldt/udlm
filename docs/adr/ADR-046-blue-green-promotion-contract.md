@@ -1,6 +1,7 @@
 # UDLM ADR-046: The blue/green promotion contract — typed-output diff as the gate, evidence to attestation
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
+**Realized by:** `registry/promotion-evidence.schema.json` · `registry/common-elements.schema.json#/$defs/volatile_output` · `registry/tools/validate.py` (`check_promotion_evidence`)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The pin lifecycle this completes (ADR-045

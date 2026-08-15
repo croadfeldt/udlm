@@ -1,6 +1,7 @@
 # UDLM ADR-051: Identity, version, digest — one meaning per field, registry-wide
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25
+**Realized by:** `registry/pin-manifest.json` · `registry/tools/generate_pin_manifest.py` · `tests/check_identity_integrity.py`
 **Date:** 2026-07-27
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The doctrine this replaces

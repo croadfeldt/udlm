@@ -1,6 +1,7 @@
 # UDLM ADR-035: Reference-vocabulary portability and provider advertisement
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); an application of ADR-037 (PVD)
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data-references — the in-field reference shape); ADR-PROV-002 (provider capability declaration);

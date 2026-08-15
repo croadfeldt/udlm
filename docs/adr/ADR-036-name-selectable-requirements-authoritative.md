@@ -1,6 +1,7 @@
 # UDLM ADR-036: A governed term denotes a requirements floor — name-selectable, requirements-authoritative
 
 **Status:** Proposed (ruled 2026-07-27; written up 2026-08-10) — **requires engineering ratification**
+**Realized by:** _not yet_ — decided, no machine surface.
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.

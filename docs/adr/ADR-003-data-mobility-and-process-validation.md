@@ -1,6 +1,7 @@
 # UDLM ADR-003: Data mobility + process-validation lifecycle
 
 **Status:** Proposed
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-PROV-002 (provider capability declaration); **DCM ADR-020** (migration policy + gating)

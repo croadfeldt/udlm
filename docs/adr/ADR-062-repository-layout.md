@@ -1,6 +1,7 @@
 # ADR-062: Repository layout — prose is docs, the normative tier is a path prefix
 
 **Status:** Proposed
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-08-04
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).**
