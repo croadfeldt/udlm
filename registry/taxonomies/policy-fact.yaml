@@ -351,3 +351,44 @@ terms:
       The lifecycle state of the target, resolved from the local index without dereferencing the
       target's data. Enough to gate an edge into something decommissioning; not enough to read
       anything the target holds.
+
+  # ── THE LAYER ENVELOPE — computed during assembly, read by a validation policy ───────────────
+  # LAY-009 rules that a layer's `limits` are DATA and a policy enforces them, because a layer holds
+  # an estate's configuration and what is permitted there is the estate's call. That needs a fact:
+  # assembly computes which envelopes apply and where a value fell, and the policy decides what to
+  # do about it. Without these terms, "a validation policy enforces it" is not expressible — the
+  # policy has no way to read what assembly found.
+  #
+  # These are facts OF THE PASS, not fields on any record — the applicable envelope depends on which
+  # layers this request drew from, so it cannot be answered anywhere but during this assembly. Same
+  # shape as `graph.has_cycle` and `composition.unreadable_constituents`, and it lands in
+  # evaluation-context for the same reason: an envelope IS a constraint emitted earlier in the pass.
+  - term: limits.violations
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      The values that fell outside an applicable ancestor envelope. Empty is the passing case. Each
+      entry carries what LAY-010 requires a denial to name — the binding layer, its owner, the field,
+      the submitted value and the clause with its reason — so the policy that refuses can produce an
+      actionable refusal rather than a boolean.
+
+  - term: limits.binding_layers
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      Every layer whose envelope bound a field on this request, whether or not it was violated.
+      Distinct from the violations above: a policy may want to refuse on WHO bound a value as well
+      as on whether it fit — an org-compliance layer binding a field is a different situation from a
+      team layer binding it, and the two are indistinguishable from the violation list alone.
+
+  - term: limits.skipped_layers
+    root: policy-fact
+    parent: evaluation-context
+    curation_state: canonical
+    definition: >-
+      Layers this request declined via `skip` whose envelopes would otherwise have applied. The
+      audited escape route is visible here: a bound has no override, so declining the layer is the
+      only way past it, and a policy that cares about compliance layers being skipped needs to see
+      that it happened.

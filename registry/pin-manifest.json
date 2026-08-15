@@ -201,6 +201,13 @@
    "2.0.0": "sha256:742bedc43158bc871e522a3d1179a50bc331b97208c669da825a8449c52d11f8"
   }
  },
+ "policy:layer-limit-gate": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-layer-limit.yaml",
+  "versions": {
+   "1.0.0": "sha256:17d3aedd2039a219db629aeb1a734fe4be711c914960707ec040d9b96f3c2012"
+  }
+ },
  "policy:unreadable-constituent-gate": {
   "current": "1.0.0",
   "path": "registry/examples/example-policy-unreadable-constituent.yaml",
