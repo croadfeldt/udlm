@@ -44,6 +44,15 @@ A closed vocabulary may be DECLARED once. Every other site is one of:
              this the baseline silently becomes a permanent exemption list, which is how the debt
              stopped being visible the last time.
 
+**A NARROWING IS NOT A FORK, and the difference is the whole of ADR-038.** Three Hardware Type
+Classes each declare `device_class` as the four values they can actually be, against a family base
+that declares six. They coincide, and they are not one vocabulary declared three times: each is a
+Class making its own claim about what it supports, checked against its parent by
+`check_class_liskov`. Flagging them would teach authors to stop narrowing — which is the mechanism
+the class system exists for. So a class element whose enum is CONTAINED in the enum its parent Class
+declares for the same element is skipped: it has a home (the parent), it is checked (Liskov), and it
+is saying something a `$ref` cannot say.
+
 registry/generated/** is excluded: it is a projection of the authored classes and is already proven
 by `registry/tools/generate_class_specs.py --check`. Checking it here would report one fork three
 times and hide the authored source.
@@ -72,17 +81,10 @@ MIN_MEMBERS = 4
 # KNOWN DEBT, each with the RULING it is waiting on rather than a bare exemption. An entry here
 # WARNS; anything else FAILS. VOC-004 reports an entry that no longer duplicates, so this list can
 # only shrink.
-VOCAB_BASELINE = {
-    frozenset(("physical", "virtual", "passthrough", "partition")):
-        "`device_class` is declared literally by seven classes and narrowed differently by each "
-        "(common-elements.md §7 carries six values; Hardware.Processor offers four). The fix is a "
-        "SharedDataElement at the Hardware scope that children narrow under ADR-038, NOT a $ref — "
-        "narrowing is the point, and a $ref cannot narrow. Needs the element authored first (#520).",
-    frozenset(("proposed", "under-review", "canonical", "deprecated")):
-        "The curation ladder, declared literally by Knowledge.TaxonomyTerm and Knowledge.Capability. "
-        "Same shape as device_class and the same fix — one SharedDataElement at the Knowledge scope "
-        "(#520). Baselined together because splitting them would mean authoring the mechanism twice.",
-}
+# KNOWN DEBT, each with the RULING it is waiting on rather than a bare exemption. An entry here
+# WARNS; anything else FAILS. VOC-004 reports an entry that no longer duplicates, so this list can
+# only shrink — and it is empty, which is the state it is meant to reach.
+VOCAB_BASELINE = {}
 
 # Directories that are not the normative spec surface.
 SKIP_DIRS = {".git", "node_modules", "docs/internal", "tests", ".github"}
@@ -95,6 +97,43 @@ SKIP_DIRS = {".git", "node_modules", "docs/internal", "tests", ".github"}
 ROW_RE = re.compile(r"^\|\s*`?([A-Z][A-Z0-9]{1,7}(?:-[A-Z]{1,5})*-\d{2,3}(?:\.\d{1,2})?)`?\s*\|")
 # The leading prefix of a full ID (REG-DP-002 -> REG; ENT-006 -> ENT).
 LEAD_RE = re.compile(r"^[A-Z][A-Z0-9]{1,5}")
+
+
+def _class_narrowings():
+    """Every (element, enum) a Class declares that is CONTAINED in its parent Class's enum for the
+    same element. These are narrowings under ADR-038, not duplicate declarations."""
+    import yaml as _y
+    by_type, files = {}, glob.glob(os.path.join(REPO, "registry", "classes", "**", "*.yaml"),
+                                   recursive=True)
+    for f in files:
+        try:
+            d = _y.safe_load(open(f, encoding="utf-8")) or {}
+        except Exception:
+            continue
+        if isinstance(d, dict) and d.get("record_type") == "class" and d.get("resource_type"):
+            by_type[d["resource_type"]] = d
+
+    def parent_enum(cls, element):
+        p = cls.get("parent")
+        while p in by_type:
+            for e in by_type[p].get("elements") or []:
+                if e.get("element") == element:
+                    en = (e.get("schema") or {}).get("enum")
+                    if en:
+                        return set(en)
+            p = by_type[p].get("parent")
+        return None
+
+    out = set()
+    for cls in by_type.values():
+        for e in cls.get("elements") or []:
+            en = (e.get("schema") or {}).get("enum")
+            if not en:
+                continue
+            pe = parent_enum(cls, e.get("element"))
+            if pe and set(en) <= pe:
+                out.add(frozenset(str(v).lower() for v in en))
+    return out
 
 
 def _closed_lists(node, path, out, src):
@@ -156,6 +195,7 @@ def check_vocabularies():
             continue
         _closed_lists(doc, "", found, rel)
 
+    narrowings = _class_narrowings()
     fails, notes = [], []
     used_baseline = set()
     n_dupe = 0
@@ -168,6 +208,8 @@ def check_vocabularies():
                 if gen:
                     fails.extend(_check_projection(members, src, where, gen))
             continue
+        if members in narrowings:
+            continue                       # ADR-038 narrowing: a home, a check, and a real claim
         n_dupe += 1
         gens = {g for _, _, g in sites}
         if None not in gens:                       # every copy is a declared projection

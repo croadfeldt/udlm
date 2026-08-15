@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.13.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.NetworkInterface/0.14.0",
   "conforms_to": "udlm/0.1",
   "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23",
   "resource_type": "Hardware.NetworkInterface",
-  "version": "0.13.3",
+  "version": "0.14.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Hardware",
-          "version": "1.0.0",
+          "version": "1.1.0",
           "uuid": "4c140843-579d-4f87-bffe-d197c300d81b"
         },
         {
           "class": "Hardware.NetworkInterface",
-          "version": "0.13.3",
+          "version": "0.14.0",
           "uuid": "04f5c089-85b3-4a89-9b2e-d0c8d172ad23"
         }
       ]
@@ -42,8 +42,7 @@
           "aggregate",
           "bridge"
         ],
-        "description": "Device realization (common-elements.md §7). partition = a slice off ONE physical NIC (SR-IOV VF or VLAN/macvlan sub-interface; set parent_device + partition_mechanism). aggregate = a bond / LACP LAG built from MANY member interfaces (set aggregation + lower_layer). bridge = a software L2 bridge over MANY member ports (set bridge + lower_layer). virtual = virtio/veth with no hardware parent. aggregate + bridge are the N→1 inverse of partition's 1→N.",
-        "x-extensible-enum": true
+        "description": "HOW A HARDWARE THING IS REALIZED (common-elements.md §7) — the full set every Hardware type draws from. Declared at the family base because the question is the same for a processor, a NIC and a drive; what differs is which answers are possible, and that is what a Type Class narrows.\nA child MAY narrow this to the subset it can actually be (ADR-038: refine, never contradict) — a socket cannot be an `aggregate`, so Hardware.Processor offers four of the six. It may not add a value, which is what makes the family set the ceiling rather than a suggestion, and what `check_class_liskov` enforces."
       },
       "partition_mechanism": {
         "type": "string",

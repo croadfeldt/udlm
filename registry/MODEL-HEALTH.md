@@ -4,14 +4,14 @@
 > regenerate, never edit here. `--check` gates staleness in CI. Numbers pair with
 > `registry/model-health.json` (the machine-readable projection of this file).
 
-The registry holds **56 types** (Access 7, Knowledge 6, Process 2, Resource 41). Every spec is strict (`additionalProperties: false`, 56/56 (100%)) and the instance-fuzz harness rejected 4725 of 4725 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/56 (62%) of types appear in at least one use case; 21 appear in none. 5 types are named by a specific consumer manifest; the other 51 are carried only by the 4 envelope-level (all-types) consumers. 9 types declare no outputs and 25 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
+The registry holds **56 types** (Access 7, Knowledge 6, Process 2, Resource 41). Every spec is strict (`additionalProperties: false`, 56/56 (100%)) and the instance-fuzz harness rejected 4749 of 4749 adversarial mutations (100.00% discrimination density, 0 open finding(s)). 35/56 (62%) of types appear in at least one use case; 21 appear in none. 5 types are named by a specific consumer manifest; the other 51 are carried only by the 4 envelope-level (all-types) consumers. 9 types declare no outputs and 25 declare exactly one — the thinnest part of the binding surface. Three metrics are owned by other systems and report null until those systems land (table at the end).
 
 ## Headline
 
 | Metric | Value | Reading |
 |---|---|---|
 | Types (by family) | 56 (Access 7, Knowledge 6, Process 2, Resource 41) | — |
-| Discrimination density | 4725/4725 = 100.00% | mutations rejected / attempted; 0 finding(s) |
+| Discrimination density | 4749/4749 = 100.00% | mutations rejected / attempted; 0 finding(s) |
 | Strictness coverage | 56/56 (100%) | asserted — a non-strict spec fails this tool |
 | Outputs adequacy | 9 zero-output, 25 one-output | declared Realized binding surface |
 | Context coverage | 56/56 (100%) | plain-English `context` blocks |

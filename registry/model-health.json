@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4725,
-    "mutations_rejected": 4725,
+    "mutations_attempted": 4749,
+    "mutations_rejected": 4749,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -28,8 +28,8 @@
         "rejected": 122
       },
       "Capability": {
-        "attempted": 38,
-        "rejected": 38
+        "attempted": 43,
+        "rejected": 43
       },
       "Compute.BareMetalHost": {
         "attempted": 204,
@@ -68,12 +68,12 @@
         "rejected": 66
       },
       "Hardware.BMC": {
-        "attempted": 36,
-        "rejected": 36
+        "attempted": 43,
+        "rejected": 43
       },
       "Hardware.BiosProfile": {
-        "attempted": 32,
-        "rejected": 32
+        "attempted": 39,
+        "rejected": 39
       },
       "Hardware.GraphicsProcessor": {
         "attempted": 74,
@@ -224,8 +224,8 @@
         "rejected": 53
       },
       "TaxonomyTerm": {
-        "attempted": 56,
-        "rejected": 56
+        "attempted": 61,
+        "rejected": 61
       },
       "Template.Application": {
         "attempted": 48,
