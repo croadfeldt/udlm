@@ -1,6 +1,6 @@
 # UDLM ADR-058: Curated vocabulary rides on **SharedDataElement** — scope is portability, the intake ladder is standardization (no new construct)
 
-**Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; completes ADR-054 (the missing half of "context is an edge, assembly is a layer"); maintainer decision 2026-07-28
+**Status:** Accepted (croadfeldt upstream) — **requires engineering ratification**; completes ADR-054 (the missing half of "context is an edge, assembly is a layer"); maintainer decision 2026-07-28
 **Realized by:** `registry/vocabulary-term.schema.json` · `registry/examples/example-vocabulary-term-network-tier.yaml`
 **Date:** 2026-07-28
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)

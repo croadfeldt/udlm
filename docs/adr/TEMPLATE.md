@@ -1,6 +1,6 @@
 # UDLM ADR-NNN: <a short noun phrase — what was decided, not what was discussed>
 
-**Status:** Proposed (<who> upstream) — pending engineering ratification (#217); decided <YYYY-MM-DD>
+**Status:** Proposed — decided <YYYY-MM-DD>, not yet built
 **Realized by:** _not yet_ — decided, no machine surface.
 **Date:** <YYYY-MM-DD>
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
@@ -48,10 +48,15 @@ so; an empty row is information.
 
 ## How to use this file
 
-**Status is agreement, never implementation.** `Proposed` · `Accepted` · `Rejected` · `Deprecated` ·
-`Superseded by ADR-N`. The standard sequence is propose → accept → implement, and a status field
-that also tried to report implementation would be answering two questions with one value. See
-`docs/adr/README.md`.
+**Status, in this phase, means implemented.** `Proposed` = decided, not built. `Accepted` = decided
+and built. Also `Rejected`, `Deprecated`, `Superseded by ADR-N`. This couples status to
+implementation, which the standard does not — a deliberate local rule while the base standards are
+being developed, revisited when engineering ratification becomes a live gate. `ADR-REAL-005` checks
+the coupling. See `docs/adr/README.md`.
+
+A new record starts `Proposed` with `Realized by: _not yet_`. When it is built, both move together:
+name the surfaces and set `Accepted`. Writing `Realized by` means the decision is CARRIED there —
+read the decision against the surface; a file existing is not the same claim.
 
 **`Realized by` is where the decision lives** — the schemas, contracts, vocabularies or gates that
 carry it, or an explicit `_not yet_`. Silence is the only unacceptable answer, because silence and

@@ -1,6 +1,6 @@
 # UDLM ADR-008: The UDLM/DCM boundary and the compatibility rule
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `tests/check_implementation_neutrality.py` (`IMP-001`) — the boundary as a gate: the normative tier names no implementation
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

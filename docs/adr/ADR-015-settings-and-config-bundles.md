@@ -1,6 +1,6 @@
 # UDLM ADR-015: Settings and Configuration Bundles
 
-**Status:** Proposed (2026-07-15)
+**Status:** Accepted (2026-07-15)
 **Realized by:** `registry/layer.schema.json` (`extends`, `limits`) · `docs/spec/foundations/layering-and-versioning.md` `LAY-009`/`LAY-010` · `tests/check_layer_limits.py`
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (the substrate and its control plane boundary — "could a peer differ? yes → the control plane"); ADR-007 (profiles are composed *sets*, not levels); ADR-014 (optionality with conformity — data provides transport + conformity, provider/org owns the requirement); `docs/spec/foundations/layering-and-versioning.md` (the layer/assembly/precedence model this reuses).

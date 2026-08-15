@@ -1,6 +1,6 @@
 # ADR-062: Repository layout — prose is docs, the normative tier is a path prefix
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `docs/spec/` (the normative path prefix) · `tests/check_implementation_neutrality.py`
 **Date:** 2026-08-04
 

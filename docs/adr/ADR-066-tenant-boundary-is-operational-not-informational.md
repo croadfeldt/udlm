@@ -1,6 +1,6 @@
 # UDLM ADR-066: A tenant boundary is an **operational** boundary, not an audit or visibility one
 
-**Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decision 2026-08-08
+**Status:** Accepted (croadfeldt upstream) — **requires engineering ratification**; maintainer decision 2026-08-08
 **Realized by:** `registry/profile.schema.json` · `tests/check_grant_derivation.py` · `tests/check_group_invariants.py`
 **Date:** 2026-08-08
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)

@@ -1,7 +1,7 @@
 # UDLM ADR-038: Scoped resource-type Class hierarchy — Base / Type / Provider Class
 
 **Number:** ADR-038 (foundational — the parent of the reference-discipline set ADR-035–037).
-**Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); downstream (dcm-project) adoption pending eng alignment (it amends ADR-027, the `Category.Type` naming, and the provider-extension rule it subsumes).
+**Status:** Accepted (croadfeldt upstream) — pending engineering ratification (#217); downstream (dcm-project) adoption pending eng alignment (it amends ADR-027, the `Category.Type` naming, and the provider-extension rule it subsumes).
 **Realized by:** `registry/class.schema.json` · `tests/check_class_liskov.py` · `registry/tools/containment.py`
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (foundational — meta-model)

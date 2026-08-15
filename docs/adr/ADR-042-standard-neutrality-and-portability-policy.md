@@ -1,6 +1,6 @@
 # UDLM ADR-042: Enable, don't mandate — opt-in standards governance without an approved-standards list (portability strictness is the consumer-gated illustration)
 
-**Status:** Proposed (croadfeldt upstream) — records the **pattern**; the illustrating mechanism (a `neutrality`
+**Status:** Accepted (croadfeldt upstream) — records the **pattern**; the illustrating mechanism (a `neutrality`
 property + a portability-strictness knob) is **consumer-gated — recorded, not built** — until a use case pulls it
 (ADR-032: pay to remove a future-contradiction, never pre-build a feature).
 **Realized by:** _by design_ — enable, don't mandate. Realized by the ABSENCE of an approved-standards list, plus `registry/standards-adoption-register.md` recording what each adoption settles.

@@ -10,11 +10,30 @@ This repo adds a second, independent axis because it is a SPECIFICATION: the ADR
 and `docs/spec/` + `registry/` hold the artifact, so "where does this decision actually live" is a
 question a reader asks constantly and nothing answered.
 
-**The two axes do not gate each other.** A decision may be accepted and unbuilt (the standard order),
-or built and unratified (this repo's order, because the maintainer builds upstream while engineering
-ratifies downstream). Neither is a defect. What 1.0 cannot ship is an ACCEPTED decision with no
-surface — the spec would then not describe the model it claims — and that is a release gate, stated
-in `registry/UDLM-0.1-SCOPE.md` §5, not a status rule.
+**IN THIS PHASE THE TWO AXES ARE COUPLED, and that is a deliberate local rule** (maintainer,
+2026-08-15). While the base standards are being developed, `Accepted` means IMPLEMENTED:
+
+    Proposed  decided, not built
+    Accepted  decided and built — the surface exists
+    Rejected  considered and declined
+
+The standard keeps status to agreement alone and would call this a conflation. It is a conflation,
+chosen knowingly: the stakeholder set is one maintainer right now, so an "agreed but unbuilt" state
+carries no information nobody already has, while "is this real yet" is the question every reader
+actually asks. When engineering ratification becomes a live gate (#217), agreement and
+implementation separate again and this rule is revisited — that is a decision, not a drift.
+
+  ADR-REAL-005  `Accepted` iff realized. Both directions, because in this phase they are the same
+                fact stated twice: a decision is Accepted when it is implemented.
+
+                    Proposed + not yet    decided, not built
+                    Accepted + realized   built
+                    Accepted + not yet    claims something that does not exist
+                    Proposed + realized   built but says otherwise
+
+                The last two are both refused. `Realized by` is written when a record's decision is
+                carried — checked by reading the decision against the surface, not inferred from a
+                path existing — and `Status` moves with it.
 
   ADR-REAL-001  every decision record declares `**Realized by:**` — either the surfaces that carry
                 it, or an explicit `_not yet_`. Silence is the one unacceptable answer, because
@@ -145,6 +164,14 @@ def main():
         key = f"{status}/{'by design' if by_design else 'realized' if realized else 'not yet'}"
         quad[key] = quad.get(key, 0) + 1
 
+        # ADR-REAL-005 — the two are one fact in this phase.
+        if realized and status == "proposed":
+            fails.append(f"ADR-REAL-005 {rel}: realized but still Proposed. `Realized by` says the "
+                         f"decision is carried, so the status says so too")
+        if not realized and status == "accepted":
+            fails.append(f"ADR-REAL-005 {rel}: Accepted with no realization. In this phase Accepted "
+                         f"means implemented, so this claims something that does not exist")
+
         if realized and not by_design:
             for p in PATH.findall(claim):
                 if not os.path.exists(os.path.join(REPO, p)):
@@ -169,6 +196,10 @@ def main():
         st.append("REAL-SELF a path carrying a `#` fragment is not extracted")
     if "rejected" not in STANDARD or "invented" in STANDARD:
         st.append("REAL-SELF the standard status set is wrong")
+    if not (BY_DESIGN.match("_by design_ — nothing is modelled")
+            and NOT_YET.match("_not yet_ — decided, no machine surface.")):
+        st.append("REAL-SELF the two markers are not both recognised, so the coupling arm would "
+                  "mis-classify every record it reads")
 
     print(f"adr realization: {len(RECORDS)} decision record(s) — "
           + ", ".join(f"{v} {k}" for k, v in sorted(quad.items())))

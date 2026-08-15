@@ -1,6 +1,6 @@
 # UDLM ADR-052: Intent fulfillment — dependency nature and the convergence window
 
-**Status:** Proposed (croadfeldt upstream) — 0.1 work; 1.0 conferred by engineering acceptance
+**Status:** Accepted (croadfeldt upstream) — 0.1 work; 1.0 conferred by engineering acceptance
 (#217), not declared here; decided 2026-07-27
 **Realized by:** `registry/realized-entity.schema.json` (`status.conditions[].type`) · `tests/check_fulfillment_conditions.py`
 **Date:** 2026-07-27

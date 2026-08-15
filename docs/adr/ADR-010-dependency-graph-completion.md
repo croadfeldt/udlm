@@ -1,6 +1,6 @@
 # UDLM ADR-010: Dependency-graph completion — fault domains, blast radius, and the unmet-dependency diagnostic
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `registry/taxonomies/dependency-diagnostic.yaml`
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)

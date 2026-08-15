@@ -1,6 +1,6 @@
 # DR-AEP-001: Adopt AEP — RFC 9457 for the error model (UDLM), resource-oriented design + the Spectral linter for the API specs (DCM)
 
-**Status:** Proposed
+**Status:** Accepted
 **Realized by:** `docs/spec/contracts/error-model.md` (RFC 9457 problem details)
 **Type:** Decision Record — a project/process decision (`docs/spec/foundations/knowledge-family.md` §4.5); architecture decisions are ADRs (`../adr/`)
 

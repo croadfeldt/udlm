@@ -1,6 +1,6 @@
 # ADR-033: Templates — the orderable assembly, and the Pattern → Template → System chain
 
-**Status:** Proposed (2026-07-19) — **requires engineering ratification**. Implemented: the `Template` classes (#405) and the `composition` record (ADR-067).
+**Status:** Accepted (2026-07-19) — **requires engineering ratification**. Implemented: the `Template` classes (#405) and the `composition` record (ADR-067).
 **Realized by:** `registry/composition.schema.json` · `docs/flows/template-assembly.md` · `tests/check_tier_state_conflation.py`
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle / four states — the spine this projects); ADR-027 (the `Composite` entity_type — **unchanged** here; a separate PR renames its *values*); `docs/spec/lifecycle/subscription-lifecycle.md` (the binding + `lifecycle_policy` this reuses); [lifecycle-convergence flow](../flows/lifecycle-convergence.md) (triggers, day-N as projection); ADR-006 (each activity is a convergence firing); ADR-PROV-002 (provider capability — where *composable infrastructure* lives); `registry/standards-adoption-register.md` (TOSCA); AAP/AWX composite-process naturalization.
 
