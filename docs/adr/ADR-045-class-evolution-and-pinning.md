@@ -1,7 +1,7 @@
 # UDLM ADR-045: Class evolution and pinning — atomic recompilation, two-plane pins, portability in the compat contract
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); decided 2026-07-25. **Amended by ADR-051** (identity/version/digest — the uuid is frozen identity; revision exactness moved to content digests; the pin, provenance, and provider-surface clauses below carry the amended text).
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `registry/pin-manifest.json` · `registry/tools/generate_pin_manifest.py` · `registry/tools/generate_class_specs.py`
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The class system this governs (ADR-038 —

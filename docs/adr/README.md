@@ -41,8 +41,15 @@ live"* is a question readers ask constantly and nothing answered. An audit of al
 nine decisions recorded and never built, and several cited elsewhere as though they existed.
 
 Every record carries `**Realized by:**` — the schemas, contracts, vocabularies or gates that carry
-it, or an explicit `_not yet_`. Silence is the one unacceptable answer, because silence and "nobody
-checked" are indistinguishable. `tests/check_adr_realization.py` checks the field is present and
+it, or one of two explicit markers:
+
+- `_not yet_` — decided, not built. Work outstanding.
+- `_by design_` — the decision was that nothing is modelled, and the realization IS the absence
+  plus whatever holds it in place. ADR-COST-001 rules that metering is referenced and not modelled;
+  there is no cost type to point at, and that is the decision working rather than a gap.
+
+Silence is the one unacceptable answer, because silence and "nobody checked" are
+indistinguishable. `tests/check_adr_realization.py` checks the field is present and
 every path it names exists.
 
 **The two axes do not gate each other.** Accepted-and-unbuilt is the standard order.

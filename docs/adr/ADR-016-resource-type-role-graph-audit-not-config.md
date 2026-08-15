@@ -1,7 +1,7 @@
 # UDLM ADR-016: What a Resource Type Models — the resource's portable definition; provider-specific config is stored extra; the control plane is the state system-of-record
 
 **Status:** Proposed (2026-07-15)
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `registry/resource-type-spec.schema.json` · `registry/class.schema.json`
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (the substrate and its control plane boundary — *could a peer realize this differently and still be valid? yes → the control plane*); ADR-014 (optionality with conformity — the data carries transport + conformity, not the provider's policy); ADR-012 (data references — an image ref builds the dependency map) + DCM ADR-024 (reference resolution & change-impact); `docs/spec/contracts/provider-contract.md` §1a.3 (config-projection); ADR-038 (provider-specific data is a Provider-Class `SharedDataElement`); DCM ADR-023 (naturalization). **Prior art:** Kubernetes CRD `spec` vs controller-owned behaviour; Crossplane Composition (the claim is thin, the composition is the provider's); OAM Component vs Trait.
 

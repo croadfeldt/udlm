@@ -1,7 +1,7 @@
 # UDLM ADR-049: Credential material at intent intake — the rejecting path must not be where the secret lands
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); **decided 2026-07-28 (maintainer, ADR-008 peer test): the invariant is UDLM; the enforcement mechanism and its rigor are delegated to policy/profile — a control plane obligation, tracked in control-plane policy-obligations register.** The mechanism catalogue below is *informative* — shapes an implementation may implement, not a choice UDLM makes.
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `registry/tools/validate.py` (inline-credential rejection) · `docs/spec/contracts/error-model.md` (`validation.inline_credential_material`)
 **Date:** 2026-07-25
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited

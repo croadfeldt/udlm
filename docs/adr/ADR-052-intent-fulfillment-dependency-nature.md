@@ -2,7 +2,7 @@
 
 **Status:** Proposed (croadfeldt upstream) — 0.1 work; 1.0 conferred by engineering acceptance
 (#217), not declared here; decided 2026-07-27
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `registry/realized-entity.schema.json` (`status.conditions[].type`) · `tests/check_fulfillment_conditions.py`
 **Date:** 2026-07-27
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** This decision

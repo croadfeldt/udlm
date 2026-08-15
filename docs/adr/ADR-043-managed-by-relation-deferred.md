@@ -1,7 +1,7 @@
 # UDLM ADR-043: No `managed_by` relation — the typed target is the context (deferred, with a re-review trigger)
 
 **Status:** Rejected (croadfeldt upstream) — a **rejection with a defined revisit condition**. Rejected is a decision, not an absence of one (Nygard; `docs/adr/README.md`): the record stands so the next person to reach for `managed-by` finds the reasoning and the condition under which it would be reconsidered, rather than re-deriving both.
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** _by design_ — a Rejected record. `managed_by` is absent from the edge vocabulary (`registry/edge-types.yaml`), which is the decision realized.
 **Date:** 2026-07-24
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. The relation-vocabulary discipline this applies
