@@ -1,6 +1,7 @@
 # UDLM ADR-010: Dependency-graph completion — fault domains, blast radius, and the unmet-dependency diagnostic
 
 **Status:** Proposed
+**Realized by:** `registry/taxonomies/dependency-diagnostic.yaml`
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/guides/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/guides/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (the substrate and its control plane boundary)

@@ -1,6 +1,7 @@
 # UDLM ADR-061: The classes directory mirrors the class hierarchy — a verified projection
 
 **Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decision 2026-08-04
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-08-04
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 

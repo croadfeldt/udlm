@@ -2,6 +2,7 @@
 
 **Number:** ADR-038 (foundational — the parent of the reference-discipline set ADR-035–037).
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217); downstream (dcm-project) adoption pending eng alignment (it amends ADR-027, the `Category.Type` naming, and the provider-extension rule it subsumes).
+**Realized by:** `registry/class.schema.json` · `tests/check_class_liskov.py` · `registry/tools/containment.py`
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (foundational — meta-model)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-027 (entity-family model — this extends it); ADR-024 (filling provider-required inputs — the policy-fill); ADR-PROV-002 (provider capability declaration); ADR-019 (Placement); ADR-012 (data-references + lineage); ADR-008 (wire-compatibility); ADR-010 (dependency-graph completion — the governed cross-entity surface §10 must not bypass); **T4** (cross-entity flow is edge, not address); **the provider-extension rule** (provider extensions + Vendor.Type fork — *subsumed*); core-tenets **T1/T2/T3** (data is not logic), **T5** (adopt, don't re-express), **T7** (reduce to existing); the reference-discipline set (PVD-001 / ADR-035–037 — *recast as applications*)

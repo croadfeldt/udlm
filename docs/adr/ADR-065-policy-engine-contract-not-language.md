@@ -1,6 +1,7 @@
 # UDLM ADR-065: UDLM specifies the policy-engine **contract**, never the predicate language
 
 **Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decision 2026-08-06
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-08-06
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 

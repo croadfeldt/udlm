@@ -1,6 +1,7 @@
 # UDLM ADR-005: Time integrity — structural ordering, profile-scoped time-sync, mutual attestation
 
 **Status:** Proposed
+**Realized by:** `registry/common-elements.schema.json#/$defs/TimeSync` · `docs/spec/contracts/time-and-clock.md` §4, §6 · `CONFORMANCE.md` `WIR-008`/`WIR-009`/`WIR-011`
 **Date:** 2026-07-10
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/contracts/time-and-clock.md` (the contract this governs); `docs/spec/contracts/identifier-scheme.md` (UUIDv7 policy); ADR-002 (adopt-by-reference / served pattern); ADR-PROV-002 (provider capability declaration); the trust/attestation model; `cross-dcm-audit-data-model` (corpus UC); `docs/spec/principles/core-tenets.md` (T5 adopt-by-reference)

@@ -13,6 +13,67 @@ Prose ADRs are short, reviewable records of the **why**. Each is a
 §4.5); UDLM **adopts the ADR/MADR format by reference**, it does not coin its own. The control plane keeps its
 own ADRs in `architecture/adr/` (the control-plane side); UDLM ADRs here cross-reference them.
 
+## The decision-record process
+
+This repo follows the standard ADR model — Michael Nygard, *Documenting Architecture Decisions*
+(2011), as carried forward by MADR. Two things are worth stating because both have been got wrong
+here before.
+
+### Status records agreement, never implementation
+
+| Status | Means |
+|---|---|
+| `Proposed` | decided by the maintainer upstream; stakeholders have not agreed yet (engineering ratification, #217) |
+| `Accepted` | agreed. Immutable from here — a change is a NEW record that supersedes this one, never an edit (`CONTRIBUTING.md`) |
+| `Rejected` | considered and declined. A rejection is a decision and is recorded as one; a record that says "no" and is marked `Proposed` is mis-stated |
+| `Deprecated` | no longer applies, and nothing replaced it |
+| `Superseded by ADR-N` | replaced. The successor is named, so a reader who arrives at the old record is not stranded |
+
+The standard sequence is **propose → accept → implement**. Status says nothing about whether
+anything was built, and a status field that tried to would be answering two questions with one
+value.
+
+### `Realized by` is a local extension
+
+This repo adds a second, independent field because it is a **specification**: the ADR holds the
+reasoning and `docs/spec/` + `registry/` hold the artifact, so *"where does this decision actually
+live"* is a question readers ask constantly and nothing answered. An audit of all 47 records found
+nine decisions recorded and never built, and several cited elsewhere as though they existed.
+
+Every record carries `**Realized by:**` — the schemas, contracts, vocabularies or gates that carry
+it, or an explicit `_not yet_`. Silence is the one unacceptable answer, because silence and "nobody
+checked" are indistinguishable. `tests/check_adr_realization.py` checks the field is present and
+every path it names exists.
+
+**The two axes do not gate each other.** Accepted-and-unbuilt is the standard order.
+Built-and-unratified is this repo's, because the maintainer builds upstream while engineering
+ratifies downstream. Neither is a defect.
+
+Where they must meet is the **1.0 tag**: no `Accepted` record may be unrealized at that point, or
+the spec would not describe the model it claims (`registry/UDLM-0.1-SCOPE.md` §5). That is a release
+gate, not a status rule — an earlier version of this file made acceptance conditional on
+realization, which inverts the standard and would have prevented ratifying a direction before
+building it.
+
+**A new record starts from ** — the standard sections, the header fields, and a note on
+each explaining what it is for.
+
+**Once , the reasoning is immutable.** A change is a NEW record that supersedes this one.
+The header fields still move —  records the lifecycle and  records where the
+decision landed — but context, decision, alternatives and consequences do not:
+`tests/check_adr_realization.py` (`ADR-REAL-004`) compares the body against the base ref.
+
+**A new record starts from `TEMPLATE.md`** — the standard sections, the header fields, and a note on
+each explaining what it is for.
+
+**Once `Accepted`, the reasoning is immutable.** A change is a NEW record that supersedes this one.
+The header fields still move: `Status` records the lifecycle and `Realized by` records where the
+decision landed, and freezing either would make the lifecycle unrecordable or an accepted decision
+permanently unlocatable. What does not move is context, decision, alternatives and consequences —
+`tests/check_adr_realization.py` (`ADR-REAL-004`) compares the body against the base ref.
+
+The realization burn-down is tracked in #544.
+
 ## Where decisions live
 
 - **`docs/adr/`** (this directory) — **architecture** decisions: a peer implementing UDLM must

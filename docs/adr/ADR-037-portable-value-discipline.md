@@ -1,6 +1,7 @@
 # UDLM ADR-037: Portable-value discipline (PVD)
 
 **Status:** Proposed (croadfeldt upstream) — pending engineering ratification (#217)
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); ADR-012 (data-references); ADR-028

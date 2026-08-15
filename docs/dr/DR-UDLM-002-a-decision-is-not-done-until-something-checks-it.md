@@ -1,6 +1,7 @@
 # DR-UDLM-002: A decision is not done until something checks it
 
 **Status:** Proposed
+**Realized by:** _not yet_ — decided, no machine surface.
 **Type:** Decision Record — a project/process decision (`docs/spec/foundations/knowledge-family.md` §4.5); architecture decisions are ADRs (`../adr/`)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** `registry/rule-id-registry.yaml` (one prefix, one family, one home — the mechanism this leans on) · `CONFORMANCE.md` §6 (the wire checklist, and the audit that produced most of the evidence below) · [ADR-060](../adr/ADR-060-findings-are-sealed-interpretations.md) (policies dictate, the substrate enables — the boundary this borrows for defaults).

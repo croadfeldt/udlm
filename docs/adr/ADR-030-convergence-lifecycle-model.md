@@ -1,6 +1,7 @@
 # ADR-030: The convergence lifecycle — one model beneath the entity families
 
 **Status:** Proposed (2026-07-19) — records the unified model as the **post-1.0 direction**; 0.1 keeps the four families verbatim as its archetype vocabulary (see ADR-031 focus, ADR-032 direction).
+**Realized by:** _not yet_ — decided, no machine surface.
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-006 (convergence control — this *completes* it); ADR-027 (entity family model — this *refines* it, post-1.0); ADR-011 (validate-and-reserve — identity mint + reserve, at intent declaration); ADR-029 (inventory / observed provenance); ADR-031 (1.0 focus); ADR-032 (post-1.0 direction). Pictures: [lifecycle-convergence flow](../flows/lifecycle-convergence.md).
 
 ## Context

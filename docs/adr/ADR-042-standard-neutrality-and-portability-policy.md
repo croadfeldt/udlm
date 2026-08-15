@@ -3,6 +3,7 @@
 **Status:** Proposed (croadfeldt upstream) — records the **pattern**; the illustrating mechanism (a `neutrality`
 property + a portability-strictness knob) is **consumer-gated — recorded, not built** — until a use case pulls it
 (ADR-032: pay to remove a future-contradiction, never pre-build a feature).
+**Realized by:** _not yet_ — decided, no machine surface.
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles. This decision sits on the standards-adoption mechanism

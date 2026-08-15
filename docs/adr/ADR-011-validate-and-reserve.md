@@ -1,6 +1,7 @@
 # UDLM ADR-011: Validate-and-reserve — two-phase realization
 
 **Status:** Proposed
+**Realized by:** `registry/taxonomies/action.yaml` (`reserve`/`commit`/`release`) · `tests/check_action_vocabulary.py`
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-009 (dependency fulfillment — `fulfillment: provider` needs realize-time criteria, which reserve supplies without side effects — the cycle this ADR breaks); ADR-006 (convergence control model — the re-entrant loop the reserve phase runs *inside*); ADR-PROV-002 (provider capability declaration); DCM ADR-019 (placement — the orchestration side reserve was over-narrowed into, which this ADR does not re-import). **Mechanism lives in the contracts:** `docs/spec/contracts/provider-contract.md` §6a (reserve/commit/release verbs, TTL negotiation, `reservation.*` events); `docs/spec/foundations/four-states.md` §2.3a (the reserve-then-commit transition + reconciliation loop); `docs/spec/lifecycle/operational-models.md` §2, §5 (`reservation_reconcile_grace`/`budget`, `RESERVATION_*` triggers/actions).
