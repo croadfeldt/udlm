@@ -1,7 +1,7 @@
 # ADR-PROV-002: Provider capabilities and capability categories — one unified interface; providers declare capabilities as (verb × domain), explicitly domain-scoped; a governed capability taxonomy (TaxonomyTerm) organizes them; categories (capability × resource-domain, non-exclusive) group them; policy targets category, capability, or data
 
 **Status:** Proposed
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `registry/taxonomies/provider-capability.yaml` · `tests/check_triad_coherence.py`
 **Type:** Architecture Decision Record — a `DecisionRecord` with architecture scope (`docs/spec/foundations/knowledge-family.md` §4.5)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** The surfaces this decision governs: `docs/spec/contracts/provider-contract.md` §10 (capability discovery) ·

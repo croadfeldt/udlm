@@ -1,7 +1,7 @@
 # ADR-COST-002: Cost/metering linkage hooks — a reciprocal contract; the engine computes, it never decides
 
 **Status:** Proposed
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** _by design_ — linkage hooks only; the engine computes and UDLM carries the reference. No cost calculation surface is owed.
 **Type:** Architecture Decision Record — a `DecisionRecord` with architecture scope (`docs/spec/foundations/knowledge-family.md` §4.5)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** The surfaces this decision governs: `docs/spec/contracts/cost-metering-linkage.md` ·

@@ -1,7 +1,7 @@
 # UDLM ADR-067: A composition is a **record** until someone offers it
 
 **Status:** Proposed (croadfeldt upstream) — **requires engineering ratification**; maintainer decision 2026-08-10
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `registry/composition-record.schema.json` · `registry/composition.schema.json`
 **Date:** 2026-08-10
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 

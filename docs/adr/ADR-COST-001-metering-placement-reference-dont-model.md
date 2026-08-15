@@ -1,7 +1,7 @@
 # ADR-COST-001: Metering & billing is referenced by UDLM, not modeled in it — cost decisions are admin policy, calculation is a provider
 
 **Status:** Proposed
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** _by design_ — the decision is that metering is REFERENCED and not modelled. Its realization is the absence of any cost type in the registry, held by `tests/check_implementation_neutrality.py` and the type registry itself.
 **Type:** Architecture Decision Record — a `DecisionRecord` with architecture scope (`docs/spec/foundations/knowledge-family.md` §4.5)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** The surfaces this decision governs: `docs/spec/contracts/information-providers.md` ·

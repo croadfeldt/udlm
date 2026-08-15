@@ -1,7 +1,7 @@
 # DR-UDLM-DCM-001: UDLM is the data model; DCM is the realization — runtime-architecture prose belongs in DCM, not UDLM
 
 **Status:** Proposed
-**Realized by:** _not yet_ — decided, no machine surface.
+**Realized by:** `tests/check_implementation_neutrality.py` (`IMP-001`) — runtime prose is kept out of the normative tier by the same gate
 **Type:** Decision Record — a project/process decision (`docs/spec/foundations/knowledge-family.md` §4.5); architecture decisions are ADRs (`../adr/`)
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** The surfaces this decision governs: `foundations/context-and-purpose.md` ·

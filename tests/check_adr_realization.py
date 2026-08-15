@@ -54,8 +54,11 @@ import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RECORDS = sorted(glob.glob(os.path.join(REPO, "docs", "adr", "ADR-*.md"))
-                 + glob.glob(os.path.join(REPO, "docs", "dr", "DR-*.md")))
+# TEMPLATE.md matches ADR-*.md by name and is not a decision — counting it would put a permanent
+# `_not yet_` in the burn-down that can never be cleared.
+RECORDS = sorted(f for f in glob.glob(os.path.join(REPO, "docs", "adr", "ADR-*.md"))
+                 + glob.glob(os.path.join(REPO, "docs", "dr", "DR-*.md"))
+                 if os.path.basename(f) != "TEMPLATE.md")
 
 STATUS = re.compile(r"^\*\*Status:\*\*\s*(\w+)", re.M)
 # Nygard's set, as carried by MADR. `Superseded` is normally written `Superseded by ADR-N`; the
@@ -63,6 +66,9 @@ STATUS = re.compile(r"^\*\*Status:\*\*\s*(\w+)", re.M)
 STANDARD = {"proposed", "accepted", "rejected", "deprecated", "superseded"}
 REALIZED = re.compile(r"^\*\*Realized by:\*\*\s*(.+?)$", re.M)
 NOT_YET = re.compile(r"^_not yet_", re.I)
+# A decision whose OUTCOME is that nothing is modelled is realized — by the absence, and by whatever
+# holds the absence in place. Distinct from `_not yet_`, which is work outstanding.
+BY_DESIGN = re.compile(r"^_by design_", re.I)
 # A path inside a code span. `$defs` fragments and § sections ride along on a file that must exist.
 PATH = re.compile(r"`([A-Za-z0-9_./-]+\.(?:json|yaml|yml|md|py))(?:#[^`]*)?`")
 
@@ -132,13 +138,14 @@ def main():
         claim = rm.group(1).strip()
         status = (sm.group(1) if sm else "Proposed").lower()
         realized = not NOT_YET.match(claim)
+        by_design = bool(BY_DESIGN.match(claim))
         if status not in STANDARD:
             fails.append(f"ADR-REAL-003 {rel}: Status {status!r} is not one of the five standard "
                          f"values ({', '.join(sorted(STANDARD))})")
-        key = f"{status}/{'realized' if realized else 'not yet'}"
+        key = f"{status}/{'by design' if by_design else 'realized' if realized else 'not yet'}"
         quad[key] = quad.get(key, 0) + 1
 
-        if realized:
+        if realized and not by_design:
             for p in PATH.findall(claim):
                 if not os.path.exists(os.path.join(REPO, p)):
                     fails.append(f"ADR-REAL-002 {rel}: names `{p}`, which does not exist. A "
