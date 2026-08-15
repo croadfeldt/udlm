@@ -191,7 +191,7 @@ incl. required `tenant_uuid` — plus validate.py semantic checks: component_id 
 sibling depends_on/binding resolution, depends_on cycle rejection, and binding⊆depends_on
 ordering) + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid
 v4-nibble, snake_case key patterns, relationship-name coverage, and the PVD portable-value scan
-(`tests/check_portable_values.py` — planned, not yet landed) are **NOT yet enforced** at the registry layer (semver compat IS now enforced — tests/ci_compat_gate.py runs compat-check on every changed spec vs origin/main) — tracked defects, not claims. Every
+(`tests/check_portable_values.py`, `PVD-001`) are **enforced on new findings**, with the pre-existing set triaged in `tests/portable-values-baseline.yaml` at the registry layer (semver compat IS now enforced — tests/ci_compat_gate.py runs compat-check on every changed spec vs origin/main) — tracked defects, not claims. Every
 "[enforced]" marker elsewhere is audited against this ledger.
 
 **The refusal contract is specification, not enforcement.** The rules governing what a refusal

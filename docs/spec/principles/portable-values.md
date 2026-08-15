@@ -6,10 +6,11 @@ portable value is shaped*: **reference what the model already owns; don't restat
 "what" is a *vocabulary* (PVD-001) or a *standard/type shape* (PVD-002), a value that a provider naturalizes or
 that must federate across providers is not written as a free string or an inline copy.
 
-This discipline is load-bearing for portability — the project's reason to exist — so it is enforced, not
-advised: a violation is a **review finding**; the automated gate (`tests/check_portable_values.py`) is
-**planned, not yet landed** — until it lands, enforcement is the review sweep, and the gap is registered in
-the honest-enforcement ledger (`docs/spec/foundations/data-model-core.md` §8).
+This discipline is load-bearing for portability — the project's reason to exist — so it is enforced,
+not advised: the automated gate is `tests/check_portable_values.py` (`PVD-001`), CI-wired. It fails a
+NEW free-string selectable value; the set present when it landed is triaged in
+`tests/portable-values-baseline.yaml`, where each entry is either a real finding needing a
+vocabulary or a value the name heuristic could not tell from one.
 
 ## Rules
 
@@ -29,7 +30,7 @@ PVD catches.
 
 ## Enforcement
 
-- **Automated (planned)** — `tests/check_portable_values.py` (not yet landed) will flag (a) a `spec` string
+- **Automated** — `tests/check_portable_values.py` (`PVD-001`, CI-wired) flags (a) a `spec` string
   field matching a vocabulary signal without enum/reference/requirements (PVD-001), and (b) a `spec` object
   whose field-set substantially overlaps an adopted-standard body or a referenceable type's shape (PVD-002,
   review-flag) — scanning type specs **and** instances, layer-contributed `fields`, and examples (the
