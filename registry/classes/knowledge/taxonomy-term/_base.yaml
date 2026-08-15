@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.3.2
+$id: https://udlm.dev/registry/udlm/0.1/class/TaxonomyTerm/0.4.0
 conforms_to: udlm/0.1
 uuid: 0874c1b7-94c4-4682-a7a9-a29270c1ba17
 record_type: class
 class: base
 resource_type: TaxonomyTerm
-version: 0.3.2
+version: 0.4.0
 family: Knowledge
 status: active
 metadata:
@@ -95,11 +95,7 @@ elements:
     Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate a catalog
     surfaced. Promotion is a curation act applied by Policy, not by a provider.
   schema:
-    enum:
-    - proposed
-    - under-review
-    - canonical
-    - deprecated
+    $ref: ../../../common-elements.schema.json#/$defs/curation_state
     description: Position in the curation lifecycle — the Knowledge-family interpretation of the four
       states. Seeded `canonical` from an authoritative taxonomy; `proposed` for a back-fill candidate
       a catalog surfaced. Promotion is a curation act applied by Policy, not by a provider.

@@ -403,13 +403,14 @@
   }
  },
  "type:Capability": {
-  "current": "0.3.2",
+  "current": "0.4.0",
   "path": "registry/classes/knowledge/capability/_base.yaml",
   "versions": {
    "0.2.1": "sha256:52ff5af2875712d89c7eea8265884ca7988411db83476e0aea4338a2add00966",
    "0.3.0": "sha256:5e2ddce5e9664cfd0cf299cad39035c8d560928a2ebc258ae87b1d72f6e4cbcd",
    "0.3.1": "sha256:078baa9a8b4f6095a80b9b203a9df3fdaa0d37d4a5eb540cd248f5f101b769f0",
-   "0.3.2": "sha256:f34768c9d8e5c5c0fd4413fac20006f35f06a75a602edcd48f27f381c7721211"
+   "0.3.2": "sha256:f34768c9d8e5c5c0fd4413fac20006f35f06a75a602edcd48f27f381c7721211",
+   "0.4.0": "sha256:6d22e280fc7825d65381766bf5830c23a455177aec0871937641a34a5b7f9591"
   }
  },
  "type:Compute": {
@@ -574,10 +575,11 @@
   }
  },
  "type:Hardware": {
-  "current": "1.0.0",
+  "current": "1.1.0",
   "path": "registry/classes/resource/hardware/_base.yaml",
   "versions": {
-   "1.0.0": "sha256:de2564076a8ef2ac2c694ce6a1fc604355cf16e44c54321555a852ced5d474ce"
+   "1.0.0": "sha256:de2564076a8ef2ac2c694ce6a1fc604355cf16e44c54321555a852ced5d474ce",
+   "1.1.0": "sha256:b5a17623b9b60ddc773dc9b371da592e92fd01a58d96c38c0b263463d1633fd7"
   }
  },
  "type:Hardware.BMC": {
@@ -614,7 +616,7 @@
   }
  },
  "type:Hardware.NetworkInterface": {
-  "current": "0.13.3",
+  "current": "0.14.0",
   "path": "registry/classes/resource/hardware/network-interface.yaml",
   "versions": {
    "0.10.0": "sha256:ef12770400b7f5461de8a8930f2af8e7d6d04e2f2258b6d797720308ab1ce5f5",
@@ -624,6 +626,7 @@
    "0.13.1": "sha256:7a2a6f54e2b70cec789e436729521120f5072362d53f3c102bd26124bc5705e3",
    "0.13.2": "sha256:351a5ca460f0ab9f48a89fb1d702c0e157f1570c56c310427e5c22a5aadefbba",
    "0.13.3": "sha256:25c14f0400041c68243df4e4b3ca9ee4895f6ac067a92529f91f9d7e58ea27bf",
+   "0.14.0": "sha256:d64ad60b3bc39e4eae80214421eb05e297ca301250d021008d161af572cdc96f",
    "0.9.3": "sha256:54643fc6945fea0438cbbf27e5d8c6b64f54700876076c38a2699a217063e8df"
   }
  },
@@ -1122,13 +1125,14 @@
   }
  },
  "type:TaxonomyTerm": {
-  "current": "0.3.2",
+  "current": "0.4.0",
   "path": "registry/classes/knowledge/taxonomy-term/_base.yaml",
   "versions": {
    "0.2.1": "sha256:618725e3e0fd0597f29b41ed87741c7a831c828ae7c84ad68b0de883be5dcfe6",
    "0.3.0": "sha256:d0d651a7ce50ef41a544c3eb7d72a32ec05a3f39db8e3f56323df547d6ccf457",
    "0.3.1": "sha256:45c48844e2d1772284c53b139f0a8243d891b8d45797f0f08f2aab0cd616b324",
-   "0.3.2": "sha256:74e566d73111c02fc9cd4a2e3b766b33ae42568b41adaf3cadaf4edf1d6b5760"
+   "0.3.2": "sha256:74e566d73111c02fc9cd4a2e3b766b33ae42568b41adaf3cadaf4edf1d6b5760",
+   "0.4.0": "sha256:9f916bf38c72c200de598e6e56ab49c688eed067540444b6c5c061a3cb4f8918"
   }
  },
  "type:Template": {

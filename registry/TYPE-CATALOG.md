@@ -73,7 +73,7 @@ Declares that hosts get patched: which package sets, within which maintenance wi
 
 ## Capability
 
-### Capability (0.3.2)
+### Capability (0.4.0)
 
 **Purpose:** Names one discrete platform capability so architecture analysis can track, normalize, and gap-score it.
 
@@ -346,7 +346,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 - Compute.VM — the guest a passthrough or partition is presented to.
 - Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.
 
-### Hardware.NetworkInterface (0.13.3)
+### Hardware.NetworkInterface (0.14.0)
 
 **Purpose:** Models every kind of network interface — physical NIC, virtual NIC, SR-IOV slice, bond, bridge, and switch port — as one traversable device type.
 
@@ -1081,7 +1081,7 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 
 ## TaxonomyTerm
 
-### TaxonomyTerm (0.3.2)
+### TaxonomyTerm (0.4.0)
 
 **Purpose:** Holds one canonical vocabulary term — the fixed point that free-text mentions are normalized onto.
 
