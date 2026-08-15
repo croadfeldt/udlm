@@ -93,18 +93,19 @@ by the merged spec (ADR-010 / §8.1a / realized-entity) or are control-plane-run
 
 The surface is complete (§3–§4). Remaining before the tag (`VERSIONING.md` "Cutting the spec 0.1→1.0"):
 
-1. **Ratify the decisions.** All `docs/adr/` records (now **ADR-001–016** — the 2026-07-15 session added
-   012 data-references, 013 hardware-component-scope, 014 optionality-with-conformity, 015
-   settings-and-config-bundles, 016 resource-type-role) and the ADR/DR prose in `docs/adr/` + `docs/dr/`
-   DecisionRecords are `Proposed`; 1.0 commits to backward-compat and cannot ship on unratified decisions.
-   **Ready to ratify** (settled, exercised by the 21 UCs): ADR-005–011 and the provider/boundary
-   DecisionRecords (PROV-001/002/003, RBAC-001, udlm-dcm-boundary, resource-type-extension). The
-   2026-07-15 additions (013–016) ratify once their PRs merge (#88 / #95 / #97). Review-then-accept is
-   the maintainer's call.
-2. **Finish the load-bearing draft contract.** `docs/spec/contracts/schema-sharing.md` (Draft) defines the
-   `/.well-known/udlm/schema-bundle` the conformance surface depends on — bring to Complete. The other
-   drafts (`error-model`, `time-and-clock`, `retry-semantics`, `rate-limit-and-backpressure`) are
-   triaged in §6.
+1. **Ratify the decisions.** 46 records in `docs/adr/` and 3 in `docs/dr/`, numbered to ADR-067. All
+   are `Proposed` except ADR-054, which is `Accepted`. 1.0 commits to backward-compat and cannot ship
+   on unratified decisions, so this is the criterion with the most records behind it.
+   Review-then-accept is the maintainer's call; the tracking issue is #217.
+
+   The counts above are checked against the corpus (`tests/check_status_claims.py`): a roadmap that
+   describes a repo which no longer exists sends a reader looking for work that is done, and past
+   work that is not.
+2. **Finish the load-bearing draft contract.** `docs/spec/contracts/schema-sharing.md` defines the
+   `/.well-known/udlm/schema-bundle` the conformance surface depends on. It carries no status marker
+   at all — neither Draft nor Complete — so "bring it to Complete" cannot be checked, and the first
+   step is for it to state what it is. The other drafts (`error-model`, `time-and-clock`,
+   `retry-semantics`, `rate-limit-and-backpressure`) are triaged in §6.
 3. **Executable conformance suite.** `VERSIONING.md` makes "the `CONFORMANCE.md` suite passes" the
    literal 1.0 gate; today CI runs only the registry validators. Building the §6 wire-conformance
    runner is **deferred** (§6) — until it exists, 1.0 cannot honestly claim the conformance bar.
