@@ -16,8 +16,6 @@ known:
   path: architecture/00-split-manifest.md
 - file: docs/adr/ADR-002-capacity-utilization-served-overlay.md
   path: ../design/resource-type-registry-design-notes.md
-- file: docs/adr/ADR-037-portable-value-discipline.md
-  path: tests/check_portable_values.py
 - file: docs/adr/ADR-051-identity-version-revision.md
   path: tests/check_uuid_rotation.py
 - file: docs/guides/consumer-perspective.md
@@ -26,14 +24,10 @@ known:
   path: registry/generated/dependency-graph.json
 - file: docs/guides/profiles.md
   path: architecture/trust-profiles.md
-- file: docs/spec/foundations/data-model-core.md
-  path: tests/check_portable_values.py
 - file: docs/spec/foundations/four-states.md
   path: operations/rehydration.md
 - file: docs/spec/foundations/resource-type-hierarchy.md
   path: registry/classes/resource/compute/vm/cexample-cloud.yaml
-- file: docs/spec/principles/portable-values.md
-  path: tests/check_portable_values.py
 - file: registry/REALIZED-ENTITY.md
   path: instances/example-tenant.yaml
 - file: registry/REALIZED-ENTITY.md
