@@ -201,6 +201,13 @@
    "2.0.0": "sha256:742bedc43158bc871e522a3d1179a50bc331b97208c669da825a8449c52d11f8"
   }
  },
+ "policy:hard-provider-pin-gate": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-hard-provider-pin.yaml",
+  "versions": {
+   "1.0.0": "sha256:005ce20a1e491a6b2e4683704846a28404f88c8b3e8aa1b8f4894a01de91381c"
+  }
+ },
  "policy:layer-limit-gate": {
   "current": "1.0.0",
   "path": "registry/examples/example-policy-layer-limit.yaml",

@@ -1,0 +1,78 @@
+# "You pinned this to one provider. Here is what that costs."
+#
+# WHAT UDLM DECIDES AND WHAT THIS DOES. The model carries the pin, its strength and the consumer's
+# acknowledgement, and makes all three readable — `provider_preference.*` resolves as a
+# request-payload dot-path, so a policy can match on it without any new fact.
+#
+# WHETHER a hard pin degrades portability, and what it means for rehydration, is THIS record's call,
+# not the model's. An estate with one provider loses nothing by pinning to it; an estate with five
+# loses a great deal. Computing that in the schema would make UDLM decide an estate's exposure for
+# it (rule 42 — facilitate, don't dictate).
+#
+# WHY THIS ORGANISATION REFUSES RATHER THAN WARNS. A hard pin is the one consumer-facing choice that
+# directly narrows where a request can ever be realized — which is the property the project exists to
+# provide. This estate runs several providers, so it treats a hard pin as a deliberate, reviewed
+# exception rather than a preference someone set in passing. A peer with one provider would permit
+# it silently and be equally conformant.
+#
+# NOT A SHIPPED DEFAULT (NDF-001). This ships as an EXAMPLE.
+record_type: policy
+uuid: 5e91c73a-2f48-4b60-8d15-7a03c9e26418
+handle: hard-provider-pin-gate
+conforms_to: udlm/0.1
+name: A hard provider pin is reviewed, not assumed
+description: >-
+  Validation policy — a request carrying a hard `provider_preference` is refused unless the consumer
+  has acknowledged what it costs. Worked example (cexample content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+policy_type: validation
+policy_class: structural
+concern_type: portability_boundary
+domain: platform
+match:
+  # Read straight off the request. `request-payload` is an open subtree, so a dot-path into the
+  # pin resolves without adding a fact — the model already carries what this needs.
+  facts: [provider_preference.strength, provider_preference.acknowledged, portability.classification]
+  rule:
+    engine: rego
+    body: |
+      package udlm.hard_provider_pin
+
+      # A hard pin without an acknowledgement is refused. The schema already requires the field, so
+      # this is the second half: the estate decides whether an acknowledged pin is ALLOWED, which
+      # the schema deliberately does not.
+      deny if {
+        input.provider_preference.strength == "hard"
+        not input.provider_preference.acknowledged
+      }
+
+      # This estate additionally refuses a hard pin on anything the type declares portable —
+      # pinning a portable resource throws away the property it was chosen for. A peer that permits
+      # it is equally conformant; that judgement is what lives here rather than in the model.
+      deny if {
+        input.provider_preference.strength == "hard"
+        input.portability.classification == "portable"
+      }
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+output:
+  decision: deny
+  reason: >-
+    this request is pinned hard to one provider, which narrows where it can ever be realized and
+    makes rehydration provider-dependent — replaying the intent against a provider that no longer
+    exists does not degrade, it fails. Acknowledge the cost, or use `strength: soft` and let
+    placement choose among eligible providers
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: medium
+metadata:
+  display_name: Hard provider-pin gate
+  notes:
+  - at: '2026-08-16T00:00:00Z'
+    author: UDLM project
+    text: >-
+      Worked example for ADR-050. The model carries the pin, its strength and the acknowledgement;
+      this decides what they mean for an estate that runs more than one provider.
