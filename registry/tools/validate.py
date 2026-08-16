@@ -587,6 +587,50 @@ def _find_data_references(obj, path=""):
     return out
 
 
+def check_schedule_clauses(doc):
+    """Temporal clauses govern WHEN, never WHETHER (ADR-053).
+
+    The clause object is closed and carries no decision field, so "cannot encode a decision" is
+    structural. Three things the schema still cannot say:
+
+    - `expedite` requires an approval at an ELEVATED authority. Without that, compressing the
+      calendar needs no more standing than following it, and the exception becomes the cheap path.
+    - `schedule` belongs on a `validation` or `orchestration_flow` policy — the two that decide
+      whether a change proceeds. Elsewhere it reads as though timing could decide a question the
+      policy does not itself answer.
+    - a `precondition` must name the stage it waits on. One that names nothing waits on nothing and
+      passes silently, which is worse than not declaring it."""
+    sched = doc.get("schedule")
+    if not isinstance(sched, list):
+        return []
+    errors = []
+    pt = doc.get("policy_type")
+    if pt not in ("validation", "orchestration_flow"):
+        errors.append(f"schedule: a temporal clause on a {pt!r} policy — schedule governs WHEN a "
+                      f"change may run, so it belongs on `validation` or `orchestration_flow`. "
+                      f"Elsewhere it reads as though timing could decide a question the policy does "
+                      f"not itself answer")
+    for i, c in enumerate(sched):
+        kind = c.get("kind")
+        if kind == "expedite":
+            ap = c.get("approval") or {}
+            if not ap:
+                errors.append(f"schedule[{i}] expedite: no approval. Compressing the calendar under "
+                              f"no sign-off makes the exception cheaper than the rule")
+            elif not ap.get("authority_level"):
+                errors.append(f"schedule[{i}] expedite: the approval names no `authority_level`. "
+                              f"Expedite requires an ELEVATED authority the policy declares — "
+                              f"otherwise it needs no more standing than following the calendar")
+        if kind == "precondition" and not c.get("predecessor_stage"):
+            errors.append(f"schedule[{i}] precondition: names no `predecessor_stage`. A "
+                          f"precondition that waits on nothing passes silently, which is worse "
+                          f"than not declaring one")
+        if kind == "freeze" and not (c.get("effective_from") or c.get("effective_until")):
+            errors.append(f"schedule[{i}] freeze: undated. A freeze QUEUES rather than runs, so an "
+                          f"undated one queues forever and the change is lost rather than deferred")
+    return errors
+
+
 def check_provider_preference(doc):
     """A pin decides WHICH eligible provider, never WHETHER an ineligible one is reached (ADR-050).
 
@@ -965,7 +1009,9 @@ def pick_instance(doc):
         return (COMPOSITION_RECORD_VALIDATOR,
                 lambda d: f"composition {d.get('handle', d['uuid'][:8])} [{d.get('state')}]")
     if isinstance(doc, dict) and doc.get("record_type") == "policy":
-        return POLICY_VALIDATOR, lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}"
+        return (POLICY_VALIDATOR,
+                lambda d: f"policy {d['name']} ({d['policy_type']}) {d['uuid'][:8]}",
+                check_schedule_clauses)
     # Dispatched by SHAPE, not by record_type: an evaluation context is deliberately NOT a record —
     # no identity uuid, no lifecycle, no version of its own. Giving it a record_type to satisfy the
     # dispatcher would make the model assert something untrue about it (policy-contract §7.1).

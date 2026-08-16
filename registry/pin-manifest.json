@@ -193,6 +193,13 @@
    "1.0.0": "sha256:a6cf01c612b66fdd80138eea58ed5b1541b89ea717652a8a34d2fc964139e353"
   }
  },
+ "policy:adoption-change-window": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-policy-change-window.yaml",
+  "versions": {
+   "1.0.0": "sha256:bfc871322eb5bfcfbf896279755e5a9be4579abdc48641dfefae1215ee527c5c"
+  }
+ },
  "policy:eu-data-residency-gate": {
   "current": "2.0.0",
   "path": "registry/examples/example-policy.yaml",

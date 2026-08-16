@@ -1,0 +1,88 @@
+# "You may adopt this — but not on a Friday afternoon, and not during the freeze."
+#
+# TEMPORAL CLAUSES GOVERN WHEN, NEVER WHETHER (ADR-053). The clause object carries no field that can
+# express a decision, and that absence is the invariant rather than an omission: the evidence check is
+# a separate `match` rule, and no schedule clause — `expedite` included — can reference it away.
+# Expedite compresses the calendar; it never skips the diff. A deadline must not be able to decide a
+# safety question.
+#
+# WHY THIS SITS ON A VALIDATION POLICY and not a new policy_type: when a change may run is a property of
+# the gate, not a different kind of gate. One object, one place to look.
+record_type: policy
+uuid: 9a4c6e18-73b2-4d05-8f39-1c62e0847ab5
+handle: adoption-change-window
+conforms_to: udlm/0.1
+name: Adoption runs in the change window, and pauses for the freeze
+description: >-
+  Validation policy — a promotion may proceed only inside the declared window, is queued during the
+  year-end freeze, and may be expedited only under elevated approval. Worked example (cexample
+  content).
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status: {state: active}
+policy_type: validation
+policy_class: structural
+concern_type: change_control
+domain: platform
+
+# THE EVIDENCE CHECK — separate, and untouchable by anything below. This is what decides WHETHER.
+match:
+  facts: [operation.type, limits.violations]
+  rule:
+    engine: rego
+    body: |
+      package udlm.adoption_gate
+      # The ADR-046 promotion diff is the gate. No schedule clause can reference this away.
+      deny if { count(input.limits.violations) > 0 }
+
+# THE TEMPORAL CLAUSES — these decide WHEN.
+schedule:
+  # A window: allowed execution times, sourced rather than inlined. Whose holidays those are is the
+  # estate's business, so UDLM carries the reference and not the dates.
+  - kind: window
+    recurrence: MON-THU 02:00-05:00 UTC
+    calendar_ref: estate/calendars/platform-maintenance
+    reason: Adoption runs off-peak and never into a Friday, where nobody is available to unwind it.
+
+  # A freeze QUEUES rather than runs, so a change caught by it is deferred and not lost. Dated on
+  # purpose: an undated freeze queues forever, which loses the change rather than deferring it.
+  - kind: freeze
+    effective_from: '2026-12-19T00:00:00Z'
+    effective_until: '2027-01-05T00:00:00Z'
+    reason: Year-end freeze — trading close.
+
+  # Expedite compresses the calendar under an approval at an ELEVATED authority the policy declares.
+  # Without that, the exception would need no more standing than following the rule, and would
+  # become the cheap path. The approval binds to the DIGEST of the evidence it accepts (the
+  # accreditation shape, ADR-053 §4) — an approval naming no digest accepts nothing in particular,
+  # because the evidence can be regenerated afterwards and the signature still reads as covering it.
+  - kind: expedite
+    reason: Security errata may compress the window.
+    approval:
+      approver: platform-admin/alice
+      authority_level: change-board
+      accepts_digest: sha256:9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5
+      scope: Security errata only.
+      at: '2026-08-16T09:30:00Z'
+
+enforcement: hard
+lifecycle_scope:
+  operations: [all]
+output:
+  decision: deny
+  reason: >-
+    this adoption is outside the declared change window, or held by a freeze — the refusal names the
+    clause holding it and the next transition, so an estate that is behind can show it is on-policy
+    behind rather than merely late
+audit_on: [DENY]
+notification_on: [DENY]
+notification_urgency: low
+metadata:
+  display_name: Adoption change window
+  notes:
+  - at: '2026-08-16T00:00:00Z'
+    author: UDLM project
+    text: >-
+      Worked example for ADR-053. Typed adoption debt is DERIVED from these clauses and never stored
+      — `pin_behind` when nothing holds it, `windowed` when a window does, `frozen` when a freeze
+      does. Storing the verdict would let it disagree with the clauses that produce it.
