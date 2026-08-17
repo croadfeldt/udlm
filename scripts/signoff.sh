@@ -12,6 +12,21 @@ run() { # run "name" hard|soft cmd...
   elif [ "$kind" = soft ]; then printf '  \033[33m!\033[0m %s (report-only)\n' "$name"; warn=$((warn+1))
   else printf '  \033[31m✗ %s\033[0m\n' "$name"; echo "$out" | tail -6 | sed 's/^/      /'; fail=$((fail+1)); fi
 }
+# UNTRACKED FILES ARE INVISIBLE TO EIGHT GATES. check_terminology, check_links,
+# check_duplicate_yaml_keys, check_model_vocabulary, check_precedence_ladders,
+# check_tier_state_conflation, check_estate_tokens and check_session_narration all enumerate work
+# with `git ls-files`, so a file that has never been committed is not scanned. Signoff runs BEFORE
+# the commit, so a new file passes here and fails in CI — which happened twice before this warning
+# existed, both times on a gate's own docstring.
+#
+# `git add -N` registers intent to add: the path becomes visible to ls-files while its content stays
+# unstaged, so the gates below see new files without this script staging anything.
+_untracked=$(git ls-files -o --exclude-standard | wc -l | tr -d ' ')
+if [ "${_untracked}" -gt 0 ]; then
+  echo "note: ${_untracked} untracked file(s) — registering intent-to-add so the ls-files gates can see them"
+  git add -N . >/dev/null 2>&1 || true
+fi
+
 echo "== Automated gates =="
 # The gate list is DERIVED from .github/workflows/validate.yml, never restated here. A restated
 # list drifts: 20 of CI's steps were missing from this script, and twice in one week a PR passed

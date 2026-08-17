@@ -82,7 +82,6 @@
       "enum": [
         "validation",
         "transformation",
-        "gating",
         "recovery",
         "orchestration_flow",
         "governance_matrix_rule",
@@ -295,7 +294,7 @@
         "required": [
           "kind"
         ],
-        "description": "One temporal clause. CARRIES TIMING ONLY — there is deliberately no field here that can express a decision, and that absence is the invariant, not an omission.\n\nA schedule clause governs WHEN, never WHETHER (ADR-053 Decision 2). The evidence gate is a separate `match` rule, and no schedule clause — `expedite` included — can reference it away. Expedite compresses the calendar; it never skips the diff. A policy that gated *whether* from a schedule clause would let a deadline decide a safety question, which is the failure this shape makes unrepresentable rather than merely discouraged.",
+        "description": "One temporal clause. CARRIES TIMING ONLY.\n\nA schedule clause governs WHEN, never WHETHER (ADR-053 Decision 2). The evidence gate is a separate `match` rule, and no schedule clause — `expedite` included — can reference it away. Expedite compresses the calendar; it never skips the diff. A policy that gated *whether* from a schedule clause would let a deadline decide a safety question, which is the failure this shape makes unrepresentable rather than merely discouraged.",
         "properties": {
           "kind": {
             "type": "string",
