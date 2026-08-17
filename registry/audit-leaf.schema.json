@@ -59,7 +59,6 @@
       "enum": [
         "actor",
         "layer_merge",
-        "policy_gating",
         "policy_transformation",
         "policy_validation",
         "constraint_resolution",

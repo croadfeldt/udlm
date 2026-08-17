@@ -60,7 +60,7 @@ policy schema's existing vocabulary carries it.
 |---|---|---|---|
 | Change classified additive/breaking | the upstream change record's classification | **PENDING-P0** — the regeneration-manifest record schema | Enriches (`transformation`): stamps the change class every later gate branches on |
 | Blast radius known | class graph + ADR-044 consumer manifests | Manifests **EXIST** (`registry/consumers/`); class graph **PENDING-P0** | Enriches: attaches the affected-artifact set to the change record |
-| Adoption mode chosen per class | the estate's change policy (`policy_type: gating` / `orchestration_flow`) | Policy object **EXISTS** (`policy.schema.json`); the clause vocabulary (window/freeze/expedite/precondition) **PENDING-ADR** | Decides: automatic vs windowed vs full ceremony |
+| Adoption mode chosen per class | the estate's change policy (`policy_type: validation` / `orchestration_flow`) | Policy object **EXISTS** (`policy.schema.json`); the clause vocabulary (window/freeze/expedite/precondition) **PENDING-ADR** | Decides: automatic vs windowed vs full ceremony |
 | Freeze suspends adoption | a dated freeze clause | **PENDING-ADR** — no temporal clause surface exists in the policy schema today (validated: no window/schedule/freeze field anywhere) | Decides: refuse-and-queue vs proceed |
 | Evidence gate | the blue/green typed-output diff record | **PENDING-P1** — the promotion-evidence record shape (ADR-046) | Decides (`gating`): promotion may proceed only on clean/approved diff |
 | Approval gate | named approver sign-off on the diff | **PENDING-ADR** — approval record shape | Decides (`override`-class): a human authority accepts the evidence |

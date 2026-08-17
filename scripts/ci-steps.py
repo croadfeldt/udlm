@@ -38,6 +38,7 @@ NAMES = {
     "python3 tests/check_seal_facets.py": "seal facets are OpenLineage facets; the admission rule is structural (SEAL-001..004)",
     "python3 tests/check_adr_realization.py": "a decision says where it is realized; Accepted requires it (ADR-REAL-001..003)",
     "python3 tests/check_portable_values.py": "no new free-string selectable value (PVD-001)",
+    "python3 tests/check_retired_enum_values.py": "no schema offers a retired name (TERM-002)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",

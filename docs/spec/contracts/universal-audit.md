@@ -402,7 +402,7 @@ audit_leaf:
   stage: intent_submitted | layer_applied | policy_evaluated | constraint_resolved |
          placement_scored | dispatched | provider_callback | ...
   source: "<handle>"                        # which layer, policy, or service
-  source_type: actor | layer_merge | policy_gating | policy_transformation |
+  source_type: actor | layer_merge | policy_validation | policy_transformation |
                policy_validation | constraint_resolution | placement | dispatch |
                provider_callback | system
   action: <closed vocabulary>               # from Section 4
