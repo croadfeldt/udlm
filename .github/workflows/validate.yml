@@ -33,6 +33,7 @@ jobs:
       # nothing upstream to catch it): retired terms fail unless the line documents the change.
       - run: python3 tests/check_terminology.py
       - run: python3 tests/check_retired_enum_values.py
+      - run: python3 tests/check_spec_change_narration.py
       # Derivability gate (DRV-001): history-shaped outputs classify as DERIVED (source named)
       # or OBSERVED, or move to the instance type — stored copies of derivable values drift.
       - run: python3 tests/check_derivability.py

@@ -167,7 +167,7 @@
     },
     "edge_type": {
       "title": "Relationship edge type",
-      "description": "The four edges of the model's graph. `depends_on` needs it to work, `contained_by` is part of it, `binds_to` borrows it across a boundary, `references` merely points at it. Nature is DERIVED from this plus `strength` — never stored (ADR-027 addendum). Declared once here; `kind`/`dependency_type`/`relationship_type` are rejected vocabulary (tests/check_model_vocabulary.py). Its home is registry/edge-types.yaml, which carries each edge's DERIVED inverse as well as its name; this enum is a projection of that file's `edge_type` column and the single-source gate proves the two still agree (VOC-002). Previously the registry header said the enum \"MUST stay in sync\" with it — two homes and a sync obligation, which is the arrangement the rule exists to replace.",
+      "description": "The four edges of the model's graph. `depends_on` needs it to work, `contained_by` is part of it, `binds_to` borrows it across a boundary, `references` merely points at it. Nature is DERIVED from this plus `strength` — never stored (ADR-027 addendum). Declared once here; `kind`/`dependency_type`/`relationship_type` are rejected vocabulary (tests/check_model_vocabulary.py). Its home is registry/edge-types.yaml, which carries each edge's DERIVED inverse as well as its name; this enum is a projection of that file's `edge_type` column and the single-source gate proves the two still agree (VOC-002).",
       "type": "string",
       "enum": [
         "depends_on",
