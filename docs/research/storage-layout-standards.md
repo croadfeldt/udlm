@@ -201,7 +201,7 @@ same fields from lsblk/zpool JSON. One vocabulary, three duties — which was th
 
 1. **Anchor point:** partition/filesystem fields on `Hardware.StorageDevice` + a relaxed `Storage.Dataset`
    edge (as recommended), or a first-class `Storage.Layout` type referenced from
-   `Compute.BareMetalHost` — the "named reference anchor" from the earlier discussion? ADR-013 (components
+   `Compute.BareMetalHost` — the "named reference anchor" from the earlier discussion? DCM ADR-013 (components
    are host rollups, not records) pushes against layout-as-separate-record for *hardware*, but partitions
    are arguably storage, not hardware components.
 2. **`Storage.Dataset` edge relaxation** vs a new `Storage.Filesystem` type — the OpenZFS anchoring of

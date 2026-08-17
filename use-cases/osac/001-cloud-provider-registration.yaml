@@ -43,7 +43,7 @@ scenario:
   - domain: policy
     interaction: registration is validated against the provider contract and the sovereignty declaration is admitted
   - domain: provider
-    interaction: the cloud is the provider; it declares its surface and will naturalize intent at its edge (T9 / ADR-023)
+    interaction: the cloud is the provider; it declares its surface and will naturalize intent at its edge (T9 / DCM ADR-023)
   - domain: audit
     interaction: the registration, its declared capabilities, and the sovereignty binding are recorded
 generated_by:

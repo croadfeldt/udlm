@@ -2,7 +2,7 @@
 
 **Audience:** an organization (or provider) standing up its **own** classes under the scoped-Class paradigm.
 **Status:** design guidance (non-normative) applying ADR-038 (*Authorship & domain*) and its DCM implementation
-(ADR-025). Not a rule family — it cites existing rules, defines none.
+(DCM ADR-025). Not a rule family — it cites existing rules, defines none.
 
 UDLM defines the **spec** for Base/Type classes and ships a **canonical library**; **any authority may author its
 own classes** under that spec, as a **DCM policy/profile-driven feature** (ADR-038 *Authorship & domain*). This
@@ -69,7 +69,7 @@ Author a new element only when the search comes up empty.
 **The element.** A `SharedDataElement` at Provider scope — `{scope: Compute.VM.OCPVirt, element, schema, values,
 state}`. The **provider owns the schema** of what is inside; UDLM **custodies** it (identity, provenance,
 versioning, tenancy) and passes it to the provider to apply. UDLM never renders it into a native spec —
-naturalization stays at the provider edge (ADR-023). A Provider Class element carries provider-specific *data*,
+naturalization stays at the provider edge (DCM ADR-023). A Provider Class element carries provider-specific *data*,
 never the provider's native/naturalized form.
 
 **Discipline (beyond the general discipline in §4):**
@@ -99,7 +99,7 @@ of what should become canonical.
 
 **Lifecycle.** A Provider Class rides the **same one contribution lifecycle** as Base/Type classes (§6): author
 (proposed) → register (Liskov-validated against its Type parent) → use (authority-scoped, policy/profile-governed)
-→ promote or retain. Provider-contribution integration is DCM's (`contribution-pipeline.md` §5; ADR-025).
+→ promote or retain. Provider-contribution integration is DCM's (`contribution-pipeline.md` §5; DCM ADR-025).
 
 ## 4. How to do it well — the discipline
 

@@ -10,21 +10,21 @@ Before 1.0 locks the tenancy model, this checks it against how the industry actu
 
 ## The model, in one line
 
-A **Tenant is a grouping** with `resource_type: Grouping` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
+A **Tenant is a grouping** with `resource_type: Grouping` (`data-model-core §5`) — carrying an `isolation_level`, `nesting`, `ownership`, `quota`, `sovereignty_constraints`, and (via the `cross_tenant_authorization` class) scoped inter-tenant grants. DCM realizes isolation with PostgreSQL **Row-Level Security** (DCM ADR-014). UDLM defines the isolation *contract*; the implementation supplies the mechanism (the ADR-008 split).
 
 ## Model ↔ standards
 
 | Standard / pattern | UDLM/DCM equivalent | Verdict |
 |---|---|---|
 | **AWS SaaS silo / pool / bridge** isolation strategies | `isolation_level` ladder — `shared_rls` (pool) → `schema_per_tenant` (bridge) → `database_per_tenant` (silo) → `store_per_tenant_zone` (silo + sovereignty), profile-keyed | **Exceeds** — a 4th sovereignty rung the SaaS canon lacks |
-| **PostgreSQL Row-Level Security**, defense-in-depth | ADR-014 — RLS scopes every query at the DB, "not application logic"; `tenant_uuid` on every tenant-scoped table | Matches (textbook) |
+| **PostgreSQL Row-Level Security**, defense-in-depth | DCM ADR-014 — RLS scopes every query at the DB, "not application logic"; `tenant_uuid` on every tenant-scoped table | Matches (textbook) |
 | **Kubernetes hierarchical namespaces (HNC)** — org→team | grouping `nesting` (org→dept→team), depth profile-governed, cycles rejected (GRP-INV-005/006) | Matches |
 | **Google Zanzibar / ReBAC** cross-tenant sharing | `cross_tenant_authorization` record kind — a scoped, time-bound grant (granting/consuming tenant, authorized types, `expires_at`, purpose) + the §10 authorization lifecycle | Matches |
 | **Noisy-neighbor control** — quota + throttling | `quota` (consumption ceiling) + `rate-limit-and-backpressure` `per_tenant` scope (runtime fairness) | Matches |
 | **Tenant context propagation** (JWT claim → session → row filter) | `data-store-contracts`: "token claims → per-connection tenant binding → row filtering"; the isolation contract is UDLM, the mechanism is implementation | Matches |
 | **Tenant lifecycle / offboarding** | GRP-013 four-phase staged decommission (pre-validation → resource → membership → audit archival; children resolved first; **audit never destroyed**) | Matches |
 | **Data residency per tenant** | `sovereignty_constraints` — a `tenant_boundary` structurally never spans a sovereignty boundary (GRP-012) | Matches |
-| **Policy scoping by tenant** | policy domain precedence `system > platform > tenant > resource_type > entity` (ADR-014) | Matches |
+| **Policy scoping by tenant** | policy domain precedence `system > platform > tenant > resource_type > entity` (DCM ADR-014) | Matches |
 | **ISO 27017 / CSA / SOC 2** tenant-isolation controls | the above, graded by profile (dev → sovereign) | Aligned |
 
 ## Why the model is right

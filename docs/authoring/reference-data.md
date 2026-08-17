@@ -33,7 +33,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
    (`layer.schema.json` `required`): `record_type: layer`, a fresh v4 `uuid`, `conforms_to: udlm/0.1`,
    `name`, `version`, `tenant_uuid`, `layer_type: reference_data`, and `fields`.
 2. **Set `reference_data_type`** — **required when `layer_type` is `reference_data`** (the schema's `allOf`
-   enforces it). This is the *match axis*: **ADR-012 — a `data_reference` is a URF string,
+   enforces it). This is the *match axis*: **DCM ADR-012 — a `data_reference` is a URF string,
    `uuid/<v4>[@version]?reference_data_type==<kind>`, and it resolves only to an *active* reference-data layer of
    the *same* kind; the type stops a field binding a `network_zone` where an `os_image` was meant.** Use a stable snake_case token (`storage_tier`, `os_image`, `network_zone`).
 3. **Put the governed content in `fields`** — a **named requirements bundle, not a bare enum value.** A
@@ -46,10 +46,10 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 5. **Curate the term proposed → canonical.** A vocabulary value enters staged: **ADR-039 — a value enters as
    `proposed` (a dirty-safe holding pen), and `canonical` is the promoted, portable set; reference resolution
    honors the distinction so a strict profile can require canonical vocabulary. Cleaning *is* lineage — dedupe
-   and rename are `supersede` operations (ADR-012), never deletion.** The `proposed → under-review →
+   and rename are `supersede` operations (DCM ADR-012), never deletion.** The `proposed → under-review →
    canonical → deprecated` lifecycle (`docs/spec/foundations/four-states.md`) is the value-level curation state; a
    revision of a canonical term is a **new immutable record** that names its predecessor via `supersedes`,
-   never an edit (ADR-012 §6, ADR-051). (The `layer` record's own `status.state` — `active`/`deprecated`/
+   never an edit (DCM ADR-012 §6, ADR-051). (The `layer` record's own `status.state` — `active`/`deprecated`/
    `retired` — is the record lifecycle; the proposed/canonical stage is the vocabulary-intake curation the
    intake ladder in [`../design/vocabulary-intake-ladder.md`](../design/vocabulary-intake-ladder.md) operates.)
 
@@ -58,7 +58,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 | Ships with the vocabulary term | Why | Gate |
 |---|---|---|
 | Validates against `vocabulary-term.schema.json` (`vocabulary_kind` + `scope` + `term` + `curation_state` + a non-empty `requirements`) | Valid by construction | `registry/tools/validate.py` |
-| Every `data_reference` to this vocabulary resolves — active target, matching kind, pin naming the resolved version | Referential integrity (ADR-012 `check_data_references`) | `registry/tools/validate.py` |
+| Every `data_reference` to this vocabulary resolves — active target, matching kind, pin naming the resolved version | Referential integrity (DCM ADR-012 `check_data_references`) | `registry/tools/validate.py` |
 | Each `supersedes` uuid resolves to a same-type record at a strictly lower version | Lineage integrity (`check_layer_lineage`) | `registry/tools/validate.py` |
 | Fresh `uuid`; a revision is a new record, never an in-place edit | Immutable-record family (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
 | Any normative rule the vocabulary doc introduces uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |
@@ -78,7 +78,7 @@ because scope is where the ELEMENT that binds the vocabulary lives — what is b
 storage performance a *compute* resource asks for. A term filed at the wrong scope promises the
 wrong providers. For lineage, the standing pattern is
 `example-reference-data-network-zone.yaml` + its `-v2.yaml` (a new immutable version that `supersedes` v1) —
-see ADR-012 §"Consequences". How the vocabulary is consumed and requirements-matched end to end is walked in
+see DCM ADR-012 §"Consequences". How the vocabulary is consumed and requirements-matched end to end is walked in
 [`../flows/storage-provisioning-lifecycle.md`](../flows/storage-provisioning-lifecycle.md).
 
 ## 5. Run the gates
