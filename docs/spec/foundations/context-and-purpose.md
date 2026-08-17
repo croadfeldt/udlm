@@ -274,8 +274,8 @@ The prior-state "open questions" for this document are all resolved, and each
 outcome now lives where it is normative: the store-contract model in
 [data-model-core](data-model-core.md) §6 (ruling D1), `native_passthrough`
 (DATA-001), and the provenance models (LAY-007/LAY-008) in
-[layering-and-versioning.md](layering-and-versioning.md). The resolved-questions
-table has been removed so those decisions are not duplicated here.
+[layering-and-versioning.md](layering-and-versioning.md). Those decisions live there,
+not here.
 
 ---
 

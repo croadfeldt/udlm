@@ -39,6 +39,7 @@ NAMES = {
     "python3 tests/check_adr_realization.py": "a decision says where it is realized; Accepted requires it (ADR-REAL-001..003)",
     "python3 tests/check_portable_values.py": "no new free-string selectable value (PVD-001)",
     "python3 tests/check_retired_enum_values.py": "no schema offers a retired name (TERM-002)",
+    "python3 tests/check_spec_change_narration.py": "the spec says what the model is, not what it was (NARR-001)",
     "python3 tests/check_definition_single_source.py": "single-source (definitions)",
     "python3 tests/check_implementation_neutrality.py": "implementation-neutral normative tier (IMP-001)",
     "python3 tests/check_adr_citations.py": "cited ADRs resolve (ADR-CITE-001)",

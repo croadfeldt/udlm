@@ -50,7 +50,7 @@
     },
     "entity_type": {
       "type": "string",
-      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow | Grouping. Constrained by `family` (see allOf). The specific type (e.g. Compute.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list) — no longer a required stored field; it remains a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
+      "description": "The coarse sub-type within the family. Resource & Process: Atomic (owns no constituents) | Composite (owns constituents — a Composite declares constituents[] at the realized layer). Knowledge: Capability | TaxonomyTerm | Alias | Pattern | Antipattern | UseCase | SoftwareImage | SoftwarePackage | Vulnerability. Access: Identity | Escrow | Grouping. Constrained by `family` (see allOf). The specific type (e.g. Compute.VM, Automation.Workflow) is `resource_type`, not `entity_type`. (docs/spec/foundations/entity-types.md, docs/spec/foundations/knowledge-family.md.) NOTE (ADR-027 addendum, 2026-07-20): for the Resource/Process **shape** this is DERIVED (`has_constituents`, from the constituent list); it is a required discriminator only for Knowledge (Capability/…) and Access (Identity)."
     },
     "lifecycle_archetype": {
       "enum": [
@@ -87,7 +87,7 @@
     },
     "publicly_stakeable": {
       "type": "boolean",
-      "description": "A STANDING declaration that any Tenant may take a stake in instances of this type without a per-grant cross-tenant authorization — one of the two alternatives CTX-001 already names, previously citable in prose and declarable in no schema. This is how shared platform infrastructure (a cluster fabric, a house VLAN) stops requiring a grant dance per consumer. Only meaningful with `ownership_model: shareable`. It waives the GRANT, never the boundary: the resource stays owned by its Tenant, a stake is still a stake, and revocation and decommission behave exactly as they do for a granted stake."
+      "description": "A STANDING declaration that any Tenant may take a stake in instances of this type without a per-grant cross-tenant authorization — one of the two alternatives CTX-001 already names. This is how shared platform infrastructure (a cluster fabric, a house VLAN) stops requiring a grant dance per consumer. Only meaningful with `ownership_model: shareable`. It waives the GRANT, never the boundary: the resource stays owned by its Tenant, a stake is still a stake, and revocation and decommission behave exactly as they do for a granted stake."
     },
     "publicly_allocatable": {
       "type": "boolean",

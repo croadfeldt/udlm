@@ -69,7 +69,7 @@
               "prefer",
               "exclude"
             ],
-            "description": "How the constraint applies. This is EMISSION, not comparison — what a policy produces, which is UDLM's side of the contract (ADR-065 keeps the decision and constraint shapes). It is deliberately NOT the removed predicate vocabulary: a policy compares facts in its engine's language, then emits a constraint in this one."
+            "description": "How the constraint applies. This is EMISSION, not comparison — what a policy produces, which is UDLM's side of the contract (ADR-065 keeps the decision and constraint shapes). A policy compares facts in its engine's language, then emits a constraint in this one."
           },
           "value": {
             "description": "The constraint's payload — a zone set, a ceiling, a distribution rule. Untyped here because its shape follows constraint_type."
