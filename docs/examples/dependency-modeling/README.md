@@ -20,7 +20,7 @@ inferred through a component. `host-a` declares **two** feed edges — `depends_
 `depends_on feed-b`, two independent rails — so losing one feed leaves it up; the blast radius of
 `feed-a` includes `host-a`, but `host-a` survives because it has a second path across a distinct
 power fault domain. `host-b` shows the non-redundant case: a single `depends_on feed-wall`. (Component
-inventory like a PSU is out of scope — ADR-013; DCM is not a hardware system-of-record. Where a
+inventory like a PSU is out of scope — DCM ADR-013; DCM is not a hardware system-of-record. Where a
 dependency genuinely routes through a *managed* component, model it there — e.g. a
 `Hardware.NetworkInterface` `connects_to` a switch port — but power roots at the host.)
 

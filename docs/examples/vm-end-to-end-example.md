@@ -17,7 +17,7 @@ disk_size:    100Gi
 instance_size: medium        # ...OR explicit topology (vcpu: {count: 4}, memory: {size: 8GiB})
 guest_os:
   os_image: linux-server-9   # a reference into the provider-advertised os_image vocabulary
-                             # (ADR-012 reference data; policy validates membership at request;
+                             # (DCM ADR-012 reference data; policy validates membership at request;
                              # inline OS spec is the explicit portability_breaking escape)
 firmware:
   type: uefi                 # bios|uefi; uefi default

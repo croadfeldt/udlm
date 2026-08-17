@@ -118,21 +118,11 @@ known:
 - file: docs/authoring/policy.md
   adr: 028
 - file: docs/authoring/reference-data.md
-  adr: '012'
-- file: docs/authoring/reference-data.md
   adr: 028
 - file: docs/authoring/use-case.md
   adr: '055'
-- file: docs/design/custom-classes-best-practice.md
-  adr: '023'
-- file: docs/design/custom-classes-best-practice.md
-  adr: '025'
 - file: docs/design/operational-response-matrix.md
   adr: '044'
-- file: docs/design/prior-art-and-positioning.md
-  adr: '014'
-- file: docs/design/prior-art-and-positioning.md
-  adr: '023'
 - file: docs/design/prior-art-and-positioning.md
   adr: '026'
 - file: docs/flows/application-tier-provisioning.md
@@ -157,24 +147,12 @@ known:
   adr: '044'
 - file: docs/guides/consuming.md
   adr: '055'
-- file: docs/guides/dependency-modeling.md
-  adr: '013'
 - file: docs/guides/foundational-resources.md
   adr: 009
-- file: docs/guides/host-network-and-config-model.md
-  adr: '023'
 - file: docs/guides/profiles.md
   adr: '017'
 - file: docs/guides/profiles.md
   adr: 018
-- file: docs/guides/profiles.md
-  adr: 019
-- file: docs/guides/profiles.md
-  adr: '020'
-- file: docs/guides/profiles.md
-  adr: '021'
-- file: docs/guides/profiles.md
-  adr: '022'
 - file: docs/guides/signoff.md
   adr: 028
 - file: docs/spec/contracts/provider-contract.md
@@ -193,14 +171,10 @@ known:
   adr: '026'
 - file: docs/spec/principles/naming-charter.md
   adr: '056'
-- file: docs/spec/principles/portable-values.md
-  adr: '025'
 - file: registry/MODEL-HEALTH.md
   adr: '044'
 - file: registry/SPEC-DESIGN-REQUIREMENTS.md
   adr: 009
-- file: registry/UDLM-0.1-SCOPE.md
-  adr: '001'
 - file: registry/UDLM-0.1-SCOPE.md
   adr: 009
 - file: registry/UDLM-0.1-SCOPE.md
@@ -225,10 +199,6 @@ known:
   adr: '025'
 - file: registry/classes/resource/template/application/_base.yaml
   adr: '055'
-- file: registry/common-elements.md
-  adr: '025'
-- file: registry/common-elements.schema.json
-  adr: '025'
 - file: registry/composition.schema.json
   adr: 009
 - file: registry/consumers/control-plane-servicetype-gen.yaml
@@ -243,14 +213,8 @@ known:
   adr: '044'
 - file: registry/consumers/unconsumed.yaml
   adr: '044'
-- file: registry/data-reference.schema.json
-  adr: '012'
 - file: registry/decision-record.schema.json
   adr: '017'
-- file: registry/examples/example-layer-referencing.yaml
-  adr: '012'
-- file: registry/examples/example-reference-data-network-zone.yaml
-  adr: '012'
 - file: registry/generated/compute.container.json
   adr: '012'
 - file: registry/generated/compute.vm.json
@@ -267,8 +231,6 @@ known:
   adr: '025'
 - file: registry/generated/storage.volume.json
   adr: '025'
-- file: registry/layer.schema.json
-  adr: '012'
 - file: registry/naming-conventions.md
   adr: 018
 - file: registry/provider-adopted-standards.schema.json
@@ -287,25 +249,5 @@ known:
   adr: 028
 - file: registry/rule-id-registry.yaml
   adr: 028
-- file: registry/standards-adoption-register.md
-  adr: '012'
-- file: use-cases/PERSONAS.yaml
-  adr: '014'
 - file: use-cases/PERSONAS.yaml
   adr: '044'
-- file: use-cases/osac/001-cloud-provider-registration.yaml
-  adr: '023'
-- file: use-cases/osac/004-provider-portability-new-cloud.yaml
-  adr: '023'
-- file: use-cases/scoped-class/001-author-scoped-class.yaml
-  adr: '023'
-- file: use-cases/scoped-class/002-liskov-refine-accepted.yaml
-  adr: '023'
-- file: use-cases/scoped-class/003-liskov-contradict-refused.yaml
-  adr: '023'
-- file: use-cases/scoped-class/004-portability-derived-from-scope.yaml
-  adr: '023'
-- file: use-cases/scoped-class/005-compile-type-to-flat-spec.yaml
-  adr: '023'
-- file: use-cases/scoped-class/006-multi-provider-engine-swap.yaml
-  adr: '023'

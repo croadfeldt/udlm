@@ -67,7 +67,7 @@ A typed cross-entity pointer to another **resource**, written as a **URF referen
 (`docs/spec/contracts/identifier-scheme.md` §9): `[//authority/]path[@pin]`, resolving to exactly
 one target — more than one match refuses `ambiguous` rather than narrowing silently.
 
-Authored by handle (`cexample/orders-db` — ADR-025 adopting **AEP-124 resource association**),
+Authored by handle (`cexample/orders-db` — DCM ADR-025 adopting **AEP-124 resource association**),
 resolved to the uuid form (`uuid/<v4>`) at reserve; both ends are the same grammar, and resolution
 tolerates a not-yet-existing target — the resource stays `Requested` until it resolves
 (claim-before-define). The uuid is the target's frozen **identity** (ADR-051); a consumer needing

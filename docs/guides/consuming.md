@@ -172,7 +172,7 @@ wrap the mature tool as a Provider, don't have the control plane reimplement it*
 provider MUST report realized/discovered state back per resource with an identity correlation (your
 native id ↔ the UDLM `uuid`) — without that read-back the control plane is blind to reality and cannot
 own the lifecycle. The scale-of-integration model for that read-back and config projection is **DCM
-ADR-023** (in the DCM repo, cited throughout `provider-contract.md`; note this repo's own ADR-023 is a
+ADR-023** (in the DCM repo, cited throughout `provider-contract.md`; note this repo's own DCM ADR-023 is a
 different subject — host networking as data).
 
 What this buys you: your backend's specifics stay yours, the portable model stays portable, and any

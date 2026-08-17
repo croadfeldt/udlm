@@ -42,7 +42,7 @@ scenario:
   - domain: policy
     interaction: placement re-evaluates eligibility to include the new cloud without changing the intent
   - domain: provider
-    interaction: the new cloud naturalizes portable intent at its edge and stays swappable (T9 / ADR-023)
+    interaction: the new cloud naturalizes portable intent at its edge and stays swappable (T9 / DCM ADR-023)
   - domain: audit
     interaction: the added provider and the provider-portable placement are recorded
 generated_by:

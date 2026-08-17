@@ -64,7 +64,7 @@ environments. The floor is deliberately the smallest that runs the whole archite
 **homelab vs dev in one line:** identical wire contracts, opposite *durability* orientation — homelab is a tiny
 prod, dev is a scratchpad. That axis is why both exist.
 
-## standard — baseline production (ADR-019)
+## standard — baseline production (DCM ADR-019)
 
 **Floor:** `dev`'s **plus** the three things that separate "runs" from "operates" —
 `policy/governance-matrix` (boundary enforcement on every DCM→Provider crossing),
@@ -82,7 +82,7 @@ cadence). `standard ⊃ dev` — profiles compare by floor-containment (profile-
 
 **Expected use cases:** the default choice for real workloads without a regulatory driver.
 
-## prod — hardened production (ADR-020)
+## prod — hardened production (DCM ADR-020)
 
 **Floor:** `standard`'s **plus** blast-radius-aware change control and bounded execution —
 `policy/blast-radius-impact` (changes gated against what they actually reach),
@@ -100,7 +100,7 @@ terminal-failure surface, so convergence cannot loop indefinitely). `prod ⊃ st
 
 **Expected use cases:** production with uptime/cost governance obligations but no sector regulator.
 
-## fsi — regulated financial services (ADR-021)
+## fsi — regulated financial services (DCM ADR-021)
 
 **Floor:** `prod`'s **plus** the compliance dimension — tamper-evident Merkle-transparency
 audit with inclusion/consistency proofs (universal-audit §8, RFC 9162); attestation-gated,
@@ -119,7 +119,7 @@ regulatory retention. A distinct *kind* of set (a compliance posture), not merel
 
 **Expected use cases:** FSI estates where the regulator reads the audit trail.
 
-## sovereign — data sovereignty, the strictest floor (ADR-022)
+## sovereign — data sovereignty, the strictest floor (DCM ADR-022)
 
 **Floor:** `fsi`'s **plus** the sovereignty dimension — in-boundary key material (audit
 signing keys never leave the boundary, AUD-012); sovereign-only placement with the sovereignty

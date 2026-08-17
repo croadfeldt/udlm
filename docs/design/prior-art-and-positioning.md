@@ -36,11 +36,11 @@ Prior art is already load-bearing in the model, just never collected in one plac
 
 | Area | What UDLM already adopts / aligns to | Where |
 |---|---|---|
-| Edge/relationship vocabulary | OASIS **TOSCA** root relationship types (`depends_on`/`contained_by`/`binds_to`/`references`), RFC 8288 link relations, Neo4j relationship-type | ADR-026, ADR-014, dependency-modeling.md, graph-integrity.md |
+| Edge/relationship vocabulary | OASIS **TOSCA** root relationship types (`depends_on`/`contained_by`/`binds_to`/`references`), RFC 8288 link relations, Neo4j relationship-type | ADR-026, DCM ADR-014, dependency-modeling.md, graph-integrity.md |
 | Class extension (Base/Type/Provider) | **TOSCA** `derived_from`, **OData** `BaseType`, **XSD** extension/restriction, **RDF/RDFS** `subClassOf`, DMTF **CIM** | ADR-038 |
 | Assembly / template tier | **TOSCA Service Template**, **OAM** Application (chosen over the vendor term "Blueprint") | ADR-033, ADR-034 |
 | Desired/observed seam | **K8s** spec/status, **Crossplane** XRD/Composition, **Terraform** `Computed`, **OAM** `output` — generalized to four states + strong typing | registry-design-notes §6/§8, ADR-016 |
-| Networking model | IETF **RFC 8343/8344**, **NMstate**, **NetBox**, **Redfish** (noted as converging → committed) | ADR-023 |
+| Networking model | IETF **RFC 8343/8344**, **NMstate**, **NetBox**, **Redfish** (noted as converging → committed) | DCM ADR-023 |
 | Versioning | **NIST OSCAL** two-axis, **CloudEvents** major.minor, **SCIM** additive-only, **Redfish** deprecation annotation | registry-design-notes §6 |
 | Adopt-by-reference mechanism | core-tenet **T5** ("adopt outward"), `adopts[]` / `adopted_standard_support`, the standards-adoption register (per-standard governing **Body**) | ADR-042, adopted-standards.md |
 | Cost | **FinOps FOCUS** (by reference) | cost-metering-linkage |

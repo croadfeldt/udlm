@@ -40,7 +40,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
 2. **Component chain** — where a dependency routes through a *managed* component, model it on the
    component, not the whole resource. Canonically **network fabric**: a `Hardware.NetworkInterface`
    `contained_by` a host `connects_to` a switch port, and a consumer follows `host → NIC → port`
-   transitively. This applies only to components DCM actually manages/configures (ADR-013 — DCM is not
+   transitively. This applies only to components DCM actually manages/configures (DCM ADR-013 — DCM is not
    a hardware system-of-record); inert inventory like a PSU is *not* modeled, so **power** is a direct
    host dependency instead — see pattern 1 / the multi-edge redundancy case below.
 3. **Bundling (via a node)** — to share a set of dependencies across resources, declare them on a

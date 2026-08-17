@@ -30,7 +30,7 @@
 # cloud providers, UC-04), information-provider-owner (INF- contract, change-control/013),
 # federation-peer-operator (FED- contract / peer DCMs), integrator (ADR-044 consumer surface),
 # sovereignty-authority (the
-# sovereignty-first data model), tenancy-authority (ADR-014 isolation + cross-tenant XTA), regulator
+# sovereignty-first data model), tenancy-authority (DCM ADR-014 isolation + cross-tenant XTA), regulator
 # (AUD-006 external verification).
 # Mirror this file byte-identical to dav/use-cases/PERSONAS.yaml in croadfeldt/dcm.
 version: "1.0.0"
@@ -151,7 +151,7 @@ personas:
     tier: governance
     framing: "the party accountable for tenant isolation and cross-tenant authorization across the whole estate"
     objectives:
-      - "tenant isolation holds across the whole estate — no tenant can read or dispatch into another, provable from the model, not asserted per-tenant (ADR-014)"
+      - "tenant isolation holds across the whole estate — no tenant can read or dispatch into another, provable from the model, not asserted per-tenant (DCM ADR-014)"
       - "every cross-tenant flow is an explicit, audited authorization grant (the XTA capability), never an implicit reach"
 
   - id: regulator

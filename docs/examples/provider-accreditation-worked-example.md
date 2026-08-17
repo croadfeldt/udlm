@@ -142,7 +142,7 @@ proof: { type: DataIntegrityProof, verification_method: "did:web:mn-data-soverei
 For a **sovereign/restricted** placement request, a capability's residency claim is honored only if an
 active, **cryptographically verified** accreditation matches it on all axes (provider × capability ×
 jurisdiction × data-classification × plane). Otherwise the claim is `self_asserted` and the placement is
-**not** honored (ADR-022). The axes that vary in this scenario are capability and jurisdiction, so the
+**not** honored (DCM ADR-022). The axes that vary in this scenario are capability and jurisdiction, so the
 table keys on those:
 
 | Request | Matching accreditation | Trusted for sovereign placement? |

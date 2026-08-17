@@ -31,7 +31,7 @@ scenario:
   - domain: policy
     interaction: the assembly/placement engine reads the compiled spec; portability derives from scope
   - domain: provider
-    interaction: a provider naturalizes the class's elements at its edge (T9 / ADR-023)
+    interaction: a provider naturalizes the class's elements at its edge (T9 / DCM ADR-023)
   - domain: audit
     interaction: the class version, its elements, and any promotion/compile are recorded
 generated_by:
