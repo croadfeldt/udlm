@@ -1,0 +1,35 @@
+# Which ADR numbers the control plane actually has.
+#
+# A citation written `DCM ADR-0XX` is checked against this list. Without it, a number missing
+# from BOTH repos reads as resolved: the citation gate sees a repo named and stops asking.
+# That is how 69 citations came to name control-plane records that do not exist.
+#
+# Refresh with: python3 tests/refresh_dcm_adr_index.py  (needs gh auth to croadfeldt/dcm)
+source: croadfeldt/dcm architecture/adr/
+adrs:
+  '001': why dcm exists
+  '002': three abstractions
+  '003': four lifecycle states
+  '004': service catalog consumer experience
+  '005': provider abstraction
+  '006': policy engine
+  '007': placement engine
+  '008': dependency resolution
+  '009': api gateway control plane
+  '010': audit tamper evidence
+  '011': sovereignty data residency
+  '012': data assembly layering
+  '013': override exception governance
+  '014': multi tenancy isolation
+  '015': minimal infrastructure
+  '016': application definition language
+  '017': brownfield greening discovered ingestion
+  '018': wire serialization event conventions
+  '019': placement policy
+  '020': migration and operational gating
+  '021': adopting external standards
+  '022': trust model
+  '023': provider naturalization boundary
+  '024': reference resolution and change impact
+  '025': scoped class realization
+  '027': policy firewall realization

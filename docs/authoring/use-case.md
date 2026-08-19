@@ -18,7 +18,7 @@ example instance.
 Do **not** reach here for:
 
 - a **worked instance** of a type — that is `spec.examples`, in the spec itself ([`adr.md`](adr.md)
-  neighbor: DCM ADR-055 — the example lives in the spec, validated against its own schema, not as a side
+  neighbor: ADR-055 — the example lives in the spec, validated against its own schema, not as a side
   file);
 - a **lifecycle narrative** across several types — that is a flow ([`flow.md`](flow.md));
 - a **decision** about the model — that is an ADR ([`adr.md`](adr.md)).

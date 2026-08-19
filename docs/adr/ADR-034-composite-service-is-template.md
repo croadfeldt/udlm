@@ -2,7 +2,7 @@
 
 **Status:** Accepted (2026-07-20) — a **discussion card for engineering review**; binds nothing until ratified.
 **Realized by:** `registry/classes/resource/template/` (the Template class tree) · `docs/flows/template-assembly.md` · `tests/check_tier_state_conflation.py`
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-033 (Templates — the tier this unifies into); ADR-027 (the shape — now **derived** `has_constituents`, ADR-027 addendum); `docs/spec/foundations/template-composition-model.md` + `registry/catalog-item.schema.json` (the Composite Service model this absorbs); DCM ADR-028 / DCM ADR-024 (the rule-ID registry the `CMP-*`→`TPL-*` rename rides).
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-033 (Templates — the tier this unifies into); ADR-027 (the shape — now **derived** `has_constituents`, ADR-027 addendum); `docs/spec/foundations/template-composition-model.md` + `registry/catalog-item.schema.json` (the Composite Service model this absorbs); ADR-028 / DCM ADR-024 (the rule-ID registry the `CMP-*`→`TPL-*` rename rides).
 
 ## The problem — two terms for one objective
 
@@ -24,7 +24,7 @@ These are the same tier. **Two names for one objective is not simple** — this 
 
 - **Composite Service (catalog item) → `Template`.** Template **adopts `catalog-item.schema.json` as its 0.1 schema**; ADR-033's "+ **bound processes**" becomes the *post-1.0 generalization* on top. A Composite Service is simply a Template whose consumables are **resources only**.
 - **Composite Entity (runtime) → `System`** (a realized Template).
-- **`CMP-*` rule family → `TPL-*`** — a rule-ID renumber that rides the registry work (DCM ADR-028 / DCM ADR-024), not a behavior change.
+- **`CMP-*` rule family → `TPL-*`** — a rule-ID renumber that rides the registry work (ADR-028 / DCM ADR-024), not a behavior change.
 
 **Why `Template`, not `Pattern`.** A catalog item is *concrete and orderable* — every part names something a provider can realize, which is what makes it a **Template**. A `Pattern` leaves parts open (they name capabilities rather than realizable classes), so it is not orderable. An abstracted version of a Template would be a Pattern; the catalog artifact itself is a Template. Pattern, Template and System are two definitions and one instance, related by reference — ADR-033.
 

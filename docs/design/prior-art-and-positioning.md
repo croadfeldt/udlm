@@ -36,7 +36,7 @@ Prior art is already load-bearing in the model, just never collected in one plac
 
 | Area | What UDLM already adopts / aligns to | Where |
 |---|---|---|
-| Edge/relationship vocabulary | OASIS **TOSCA** root relationship types (`depends_on`/`contained_by`/`binds_to`/`references`), RFC 8288 link relations, Neo4j relationship-type | DCM ADR-026, DCM ADR-014, dependency-modeling.md, graph-integrity.md |
+| Edge/relationship vocabulary | OASIS **TOSCA** root relationship types (`depends_on`/`contained_by`/`binds_to`/`references`), RFC 8288 link relations, Neo4j relationship-type | ADR-026, DCM ADR-014, dependency-modeling.md, graph-integrity.md |
 | Class extension (Base/Type/Provider) | **TOSCA** `derived_from`, **OData** `BaseType`, **XSD** extension/restriction, **RDF/RDFS** `subClassOf`, DMTF **CIM** | ADR-038 |
 | Assembly / template tier | **TOSCA Service Template**, **OAM** Application (chosen over the vendor term "Blueprint") | ADR-033, ADR-034 |
 | Desired/observed seam | **K8s** spec/status, **Crossplane** XRD/Composition, **Terraform** `Computed`, **OAM** `output` — generalized to four states + strong typing | registry-design-notes §6/§8, ADR-016 |
@@ -126,7 +126,7 @@ and Crossplane.
 ## 7. The strongest challengers — TOSCA and Crossplane
 
 - **TOSCA** is the closest *standard* and deserves the most honest treatment. UDLM already adopts its
-  relationship types, `derived_from`, and Service-Template concept (DCM ADR-026/033/038). The reasons we
+  relationship types, `derived_from`, and Service-Template concept (ADR-026/033/038). The reasons we
   extended rather than authored *in* TOSCA: it is orchestration-template-first (not data/intent-first),
   its lifecycle model doesn't carry the four-state intent/rehydration semantics or sovereignty, and its
   tooling/adoption is thinner than the IaC/K8s world our consumers live in. **This is a defensible

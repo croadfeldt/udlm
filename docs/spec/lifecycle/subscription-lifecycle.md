@@ -109,13 +109,13 @@ Subscription (binding — terms, entitlements, renewal)
     └── manages → Entity D (process — monthly patching job)
 ```
 
-The `manages` relationship uses the standard Entity Relationship model (`docs/spec/foundations/entity-relationships.md`), authored as `edge_type: depends_on` refined by the declared relation `subscription_binding` (DCM ADR-026: `edge_type` is the closed vocabulary; nature is derived, not stored):
+The `manages` relationship uses the standard Entity Relationship model (`docs/spec/foundations/entity-relationships.md`), authored as `edge_type: depends_on` refined by the declared relation `subscription_binding` (ADR-026: `edge_type` is the closed vocabulary; nature is derived, not stored):
 
 ```yaml
 relationship:
   source_uuid: <subscription_uuid>
   target_uuid: <entity_uuid>
-  edge_type: depends_on            # closed edge vocabulary (DCM ADR-026)
+  edge_type: depends_on            # closed edge vocabulary (ADR-026)
   relation: subscription_binding   # declared refinement of the edge
   role: managed_entity
   lifecycle_policy:

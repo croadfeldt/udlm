@@ -48,7 +48,7 @@ the decision before you record a new one.
    (active, one decision-area, numbered clauses), `## Consequences` (only the non-obvious
    easier/harder). Cut anything that doesn't move the decision.
 5. **Add `## The standards, and what each settles here`** — a table: each adopted standard → the rule
-   it contributes → how it is realized here. (DCM ADR-055's table adopts JSON Schema / OpenAPI / Spectral
+   it contributes → how it is realized here. (ADR-055's table adopts JSON Schema / OpenAPI / Spectral
    this way.)
 6. **Add the `## Data · Policy · Provider` lens** — the three foundational abstractions, required on
    every ADR: *Data* = what UDLM models/holds, *Policy* = what DCM decides/computes, *Provider* = what
@@ -68,7 +68,7 @@ record discipline the whole registry uses for immutable artifacts.
 | Ships with the ADR | Enforced by |
 |---|---|
 | No retired terminology in the prose (e.g. no `provider_extensions`, no merged-away policy names) | `tests/check_terminology.py` — TERM-001 |
-| Any rule-ID you *define* lives only in its registered home file; elsewhere you *cite* it | `tests/check_single_source.py` — one prefix = one home (DCM ADR-028); an out-of-home definition fails |
+| Any rule-ID you *define* lives only in its registered home file; elsewhere you *cite* it | `tests/check_single_source.py` — one prefix = one home (ADR-028); an out-of-home definition fails |
 | Every relative Markdown link resolves (Background refs, the index row, the DCM/spec pointers) | `tests/check_links.py` |
 | The Data · Policy · Provider lens is present | convention (the required lens; the instance schema makes it a required field) |
 | The Background on-ramp cites each dependency once, with its gist | DOC-001 (author's job — no gate writes the clear sentence) |

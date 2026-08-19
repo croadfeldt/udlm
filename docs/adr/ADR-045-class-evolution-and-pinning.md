@@ -10,7 +10,7 @@ versioning doctrine it extends (VERSIONING.md § "Identity, version, digest" —
 identity, the version bumps under the publish law, the digest names the exact bytes), the
 pin-behind precedent it generalizes (the estate's
 type-version pinning: behind is legal, enumerated debt — never silent), the consumer surface
-the blast radius reads (DCM ADR-044 — consumers declare what they read), and the corpus that
+the blast radius reads (ADR-044 — consumers declare what they read), and the corpus that
 measures it ([`use-cases/class-versioning/`](../../use-cases/class-versioning/README.md) —
 cases 001–006 and 009 encode this ADR's rulings as testable contracts).
 
@@ -48,7 +48,7 @@ visible debt, adopted under their own change policies (the operational response 
 
 **2. The blast radius is machine-enumerated, never hand-listed.** A class change carries the
 computed set of affected artifacts, derived from the class graph, plus the downstream
-consumers that will accrue version debt, derived from the DCM ADR-044 manifests. The enumeration
+consumers that will accrue version debt, derived from the ADR-044 manifests. The enumeration
 is part of the durable change record.
 
 **3. The software-industry mapping is adopted: the registry is the library, an organization's
@@ -70,7 +70,7 @@ pin exactly and own their upgrades. Concretely:
 - **Pin-behind is legal, enumerated debt.** The version distance appears per pinned artifact
   in the estate's own validation output and re-opens when the estate's registry ref advances —
   the standing estate discipline, applied unchanged to classes. **Pin-ahead or
-  pin-to-nonexistent is refused**, typed distinctly from legal debt (the DCM ADR-044
+  pin-to-nonexistent is refused**, typed distinctly from legal debt (the ADR-044
   `noted_version` rule, generalized).
 
 This dissolves the apparent conflict between organizational control and the versioning model:

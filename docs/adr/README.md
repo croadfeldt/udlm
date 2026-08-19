@@ -134,17 +134,25 @@ control-plane decisions by their `DCM ADR-0XX` name; they are not defined here:
 |---|---|
 | DCM ADR-012 | How organizational data merges with consumer requests — the assembly engine behind UDLM's layer model |
 | DCM ADR-013 | Override model (control-plane side of policy override) |
-| DCM ADR-014 | Layer/authority seam |
-| DCM ADR-016 / 017 / 018 | Discovery/inventory control-plane decisions |
+| DCM ADR-014 | Multi-tenancy isolation (RLS, tenant groups, per-tenant key binding) |
+| DCM ADR-016 | Application definition language |
+| DCM ADR-017 | Brownfield greening — ingesting discovered estate |
+| DCM ADR-018 | Wire serialization and event conventions |
 | DCM ADR-019 | Placement (the placement engine + algorithm) |
 | DCM ADR-020 | Migration & operational gating — the control-plane rules that gate a workload's migration/rehydration |
 | DCM ADR-022 | Trust model (the control plane brokers trust, never custodies it) |
 | DCM ADR-023 | Scale-of-integration / denaturalization tiers |
 
-The local sequence below is UDLM's own — ADR-001…051 all have files here. The **the control plane** ADR numbers
-referenced above overlap these same integers, so a bare "ADR-014" is ambiguous between the local
-ADR-014 and DCM ADR-014. Always qualify a control-plane reference as `DCM ADR-0XX` (it resolves in the
-DCM repo `architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.
+The local sequence below is UDLM's own, and it has gaps — not every number in the range has a file.
+The control-plane numbers above use the same integers, so some numbers exist in both repos: a bare
+"ADR-008" could mean the local boundary rule or the control plane's dependency resolution.
+Always qualify a control-plane reference as `DCM ADR-0XX` (it resolves in the DCM repo
+`architecture/adr/`, not here); an unqualified `ADR-0XX` means the local file below.
+
+**A missing local file does not make a citation a control-plane one.** Control-plane ADRs run
+001–027, so anything above that is UDLM's own whether or not the file exists yet. Cited numbers with
+no local file are tracked in #513, and `tests/check_adr_citations.py` fails a qualified citation
+naming a number the control plane does not have.
 
 **Instance-backed decision records (`ADR-<FAMILY>-NNN`).** A third namespace: decisions recorded as
 prose here (this directory) and, for project/process decisions, in [`../dr/`](../dr/), not as machine records

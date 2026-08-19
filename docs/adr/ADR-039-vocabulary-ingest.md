@@ -6,7 +6,7 @@
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** DCM ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
 `proposed → under-review → canonical → deprecated` (`docs/spec/foundations/four-states.md`); ADR-PROV-002 (capability
-declaration); DCM ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
+declaration); ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
 machine-readable reference graph this consumes); provenance `source_type` (context-and-purpose §4.4); the vocabulary-intake ladder
 (`docs/design/vocabulary-intake-ladder.md` — the operational rubric of this ADR: match/mint/promote,
 profile-priced, PVD-001 as the destination)
