@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/provider-adopted-standards.schema.json",
   "title": "UDLM Provider — Capability Declaration (adopted standards + docs/spec/foundations/mobility/operational/sovereignty)",
-  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, the control plane ADS-001; ADR-PROV-002). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-PROV-002 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (the control plane).",
+  "description": "The provider-authored capability declaration (adopted-standards.md §3.2, the control plane ADS-001; ADR-PROV-002). Carries (a) `adopted_standard_support` — which versions of each adopted external standard the provider can emit/consume — and (b) `capabilities`: the provider's declared, VERSIONED, accreditable capabilities. A capability is the accreditation/version unit (its `capability_uuid` + `version` is what an accreditation binds to, docs/spec/governance/accreditation-and-authorization-matrix.md §3.3.1) and may realize MORE THAN ONE `(verb × domain)` category (ADR-PROV-002); docs/spec/foundations/mobility/operational/sovereignty vary per category WITHIN it (ADR-PROV-002 — the accreditable unit is coarser than the per-category grain). Per-category blocks OVERRIDE `provider_defaults` (finest-granularity-wins, DCM ADR-004 §0/§4). This is DATA; matching/negotiation and the 1-1 claim↔accreditation reconciliation are Policy (the control plane).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -122,7 +122,7 @@
         "version",
         "categories"
       ],
-      "description": "One declared, VERSIONED, accreditable capability — the accreditation/version unit (ADR-004 §5; accreditation §3.3.1 grain 3 binds `capability_uuid` + `version`). It realizes one or more `(verb × domain)` categories; docs/spec/foundations/mobility/operational/sovereignty are per-category, WITHIN this capability.",
+      "description": "One declared, VERSIONED, accreditable capability — the accreditation/version unit (DCM ADR-004 §5; accreditation §3.3.1 grain 3 binds `capability_uuid` + `version`). It realizes one or more `(verb × domain)` categories; docs/spec/foundations/mobility/operational/sovereignty are per-category, WITHIN this capability.",
       "properties": {
         "capability_uuid": {
           "type": "string",
@@ -225,7 +225,7 @@
     "topology_capability": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The topologies this category can FULFILL (ADR-004 §1) — NOT a Topology instance (which is realized/discovered, ADR-001).",
+      "description": "The topologies this category can FULFILL (DCM ADR-004 §1) — NOT a Topology instance (which is realized/discovered, DCM ADR-001).",
       "properties": {
         "kinds_supported": {
           "type": "array",
@@ -301,7 +301,7 @@
     "operational_capability": {
       "type": "object",
       "additionalProperties": true,
-      "description": "SRE-pattern primitives (ADR-004 §3). Open (additionalProperties) so a provider can advertise more; the named ones feed fault-domain gating, rehearsal validation (T6), and rolling cutover.",
+      "description": "SRE-pattern primitives (DCM ADR-004 §3). Open (additionalProperties) so a provider can advertise more; the named ones feed fault-domain gating, rehearsal validation (T6), and rolling cutover.",
       "properties": {
         "drain": {
           "type": "boolean"

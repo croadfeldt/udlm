@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.3",
   "conforms_to": "udlm/0.1",
   "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270",
   "resource_type": "Storage.Volume",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Storage.Volume",
-          "version": "0.11.2",
+          "version": "0.11.3",
           "uuid": "aff9e319-cfb9-44da-8c35-fa47f3ea6270"
         }
       ]
@@ -56,7 +56,7 @@
         "description": "Filesystem-mounted vs raw block device (Kubernetes PVC volumeMode)."
       },
       "storage_class": {
-        "description": "Resource reference to a Platform.StorageClass (common-elements §2.5, ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
+        "description": "Resource reference to a Platform.StorageClass (common-elements §2.5, DCM ADR-025). Authored by handle; deferred resolution supported (claim-before-define).",
         "$ref": "../common-elements.schema.json#/$defs/Reference"
       },
       "retain_on_release": {

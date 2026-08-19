@@ -133,7 +133,7 @@ request is validated and reserved. *How* an implementation gets there is control
   `docs/spec/foundations/service-dependencies.md` §11), so the whole reserved graph is **auditable before commit**. A
   reserve **builds nothing** and writes **no** Realized State.
 - **Reserved facts feed dependents.** A dependency whose criteria derive from a parent's realize-time state
-  (`fulfillment: provider`, ADR-009) is satisfiable from the parent's *reserved* facts — nothing is built
+  (`fulfillment: provider`, DCM ADR-009) is satisfiable from the parent's *reserved* facts — nothing is built
   to resolve the graph.
 - **Commit is all-or-nothing at a barrier.** Nothing commits until **every** reservation in the effective
   graph is held-and-valid **and** all applicable policy (placement, governance-matrix, cycle, quota) is

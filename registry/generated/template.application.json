@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Template.Application/0.1.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Template.Application/0.1.1",
   "conforms_to": "udlm/0.1",
   "uuid": "d1769eb5-e8ce-4012-ba5e-18dcc9820d87",
   "resource_type": "Template.Application",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Template.Application",
-          "version": "0.1.0",
+          "version": "0.1.1",
           "uuid": "d1769eb5-e8ce-4012-ba5e-18dcc9820d87"
         }
       ]

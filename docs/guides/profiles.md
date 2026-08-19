@@ -14,14 +14,14 @@ instances (`registry/profiles/*.yaml`, the floors themselves), and
 [`registry/profile-settings-index.md`](../../registry/profile-settings-index.md) (one home per profile-governed
 setting — **the** index for "what settings does a profile turn").
 
-The ladder: **`homelab → dev → standard → prod → fsi → sovereign`**. (`minimal` is the retired pre-ADR-017 name
+The ladder: **`homelab → dev → standard → prod → fsi → sovereign`**. (`minimal` is the retired pre-DCM ADR-017 name
 for `homelab` — naming charter.) Two facts frame everything: **a floor is a minimum, not a filter** (nothing
 above the floor is disabled), and **every security property exists in every profile** (DPO-001) — profiles turn
 strictness, thresholds, and automation, never existence.
 
 ---
 
-## homelab — the single-operator on-ramp (ADR-017)
+## homelab — the single-operator on-ramp (DCM ADR-017)
 
 **Floor (the guaranteed minimum):** the `dev`-sized substrate — structural validation,
 single-tenant ownership, resolved-profile evaluation, append-only audit, four-state tracking.
@@ -41,7 +41,7 @@ making one of these floor-required is the custom-profile fork path.
 **Expected use cases:** personal infrastructure under real management; learning the system by living on it;
 the adoption on-ramp that later grows into `standard`. **Not** for teams or anything customer-facing.
 
-## dev — the evaluation & co-engineering target (ADR-018; the shipped default)
+## dev — the evaluation & co-engineering target (DCM ADR-018; the shipped default)
 
 **Floor:** the smallest set that still runs the release use cases — structural validation,
 single-tenant ownership, resolved-profile evaluation, append-only audit, four-state tracking,

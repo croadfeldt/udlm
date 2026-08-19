@@ -137,7 +137,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.7.5)
+### Compute.Container (0.7.6)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -158,7 +158,7 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.5.3)
+### Compute.VM (1.5.4)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
 
@@ -466,7 +466,7 @@ An account for something that is not a person: a pipeline, an agent, an integrat
 
 ## Job
 
-### Job (1.2.3)
+### Job (1.2.4)
 
 **Purpose:** The source of truth for executions — start, stop, track, and inspect a run of anything as one governed object, with results readable and every transition sealed.
 
@@ -747,7 +747,7 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.Namespace (0.5.2)
+### Platform.Namespace (0.5.3)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -766,7 +766,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 - Platform.ResourceQuota — hard limits scoped to this namespace.
 - Compute.Container / Software.Service — workloads placed into it.
 
-### Platform.NodePool (0.5.2)
+### Platform.NodePool (0.5.3)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -784,7 +784,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - Compute.Cluster — the cluster the pool belongs to.
 - Platform.Namespace — namespaces whose workloads schedule onto pools.
 
-### Platform.ResourceQuota (0.5.2)
+### Platform.ResourceQuota (0.5.3)
 
 **Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
 
@@ -1057,7 +1057,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.11.2)
+### Storage.Volume (0.11.3)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1101,7 +1101,7 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Template
 
-### Template.Application (0.1.0)
+### Template.Application (0.1.1)
 
 **Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
 

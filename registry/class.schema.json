@@ -395,7 +395,7 @@
     },
     "spec_examples": {
       "type": "array",
-      "description": "Worked example payload(s) for the compiled spec (rule-36 / ADR-055: every type ships one, in-spec). Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per ADR-055/051."
+      "description": "Worked example payload(s) for the compiled spec (rule-36 / DCM ADR-055: every type ships one, in-spec). Type tier, or a CHILDLESS base (an instantiable base with no descendants is served directly — the Liskov gate enforces childlessness, where children are visible). Compile: emitted as the generated flat spec's `spec.examples` — validated by the example gate against the compiled spec itself; digest-excluded per DCM ADR-055/051."
     },
     "spec_constraints": {
       "type": "object",

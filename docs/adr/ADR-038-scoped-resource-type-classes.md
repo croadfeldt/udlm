@@ -5,7 +5,7 @@
 **Realized by:** `registry/class.schema.json` · `tests/check_class_liskov.py` · `registry/tools/containment.py`
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (foundational — meta-model)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-027 (entity-family model — this extends it); ADR-024 (filling provider-required inputs — the policy-fill); ADR-PROV-002 (provider capability declaration); ADR-019 (Placement); ADR-012 (data-references + lineage); ADR-008 (wire-compatibility); ADR-010 (dependency-graph completion — the governed cross-entity surface §10 must not bypass); **T4** (cross-entity flow is edge, not address); **the provider-extension rule** (provider extensions + Vendor.Type fork — *subsumed*); core-tenets **T1/T2/T3** (data is not logic), **T5** (adopt, don't re-express), **T7** (reduce to existing); the reference-discipline set (PVD-001 / ADR-035–037 — *recast as applications*)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-027 (entity-family model — this extends it); DCM ADR-024 (filling provider-required inputs — the policy-fill); ADR-PROV-002 (provider capability declaration); DCM ADR-019 (Placement); DCM ADR-012 (data-references + lineage); ADR-008 (wire-compatibility); ADR-010 (dependency-graph completion — the governed cross-entity surface §10 must not bypass); **T4** (cross-entity flow is edge, not address); **the provider-extension rule** (provider extensions + Vendor.Type fork — *subsumed*); core-tenets **T1/T2/T3** (data is not logic), **T5** (adopt, don't re-express), **T7** (reduce to existing); the reference-discipline set (PVD-001 / ADR-035–037 — *recast as applications*)
 
 **Settles:** resource types are layered **Base / Type / Provider Classes** of scoped `SharedDataElement`s — one meta-model that unifies base fields, shared vocabularies, and provider extensions, and makes portability legible from the name.
 
@@ -37,7 +37,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
 
 2. **`SharedDataElement` is the unit at every layer** — `{scope, element, schema, values, state}`: a data
    element + its value vocabulary, curated `proposed → canonical`. The distinctions "base field vs shared
-   vocabulary vs extension" collapse into **scope**. Value lists are reference-data (ADR-012); the element is a
+   vocabulary vs extension" collapse into **scope**. Value lists are reference-data (DCM ADR-012); the element is a
    declarative field (T1).
 
 3. **Two-axis portability, read off scope.** An element's Class *is* its portability: Base = portable across
@@ -48,8 +48,8 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    and the type axis with one construct.
 
 4. **All Classes are instantiable; the instantiation level is the portability commitment.**
-   - Instantiate the **Base Class** (`Compute`) → maximum portability; Placement (ADR-019) resolves Type +
-     Provider; policy-fill (ADR-024) completes the blanks. *Portability at its highest level.*
+   - Instantiate the **Base Class** (`Compute`) → maximum portability; Placement (DCM ADR-019) resolves Type +
+     Provider; policy-fill (DCM ADR-024) completes the blanks. *Portability at its highest level.*
    - Instantiate the **Type Class** (`Compute.VM`) → portable across VM providers; Placement picks the provider.
    - Instantiate the **Provider Class** (`Compute.VM.OCPVirt`) → narrowed to the providers that declare this
      class. Portability does **not** drop to zero here: **multiple providers can declare the same Provider Class**
@@ -83,7 +83,7 @@ this settles the meta-model: **resource types are layered Classes composed of sc
    - **A re-port is a rebuild, not a lift-and-shift.** Moving to a different provider **rebuilds** the resource
      from its requirements + dependencies on the target's *native* services — equivalent to redeploying to a new
      cloud. The substrate carries the **intent to rebuild**, never a copy of the source's native form (T1/T2,
-     naturalization boundary ADR-023): a VMware VM on NSX becomes an OCPVirt VM on OVN by *re-realizing the
+     naturalization boundary DCM ADR-023): a VMware VM on NSX becomes an OCPVirt VM on OVN by *re-realizing the
      requirements*, not by translating NSX.
    - **Portability is bounded.** Source-specific features with no target equivalent **cannot** re-port; a
      partial/assisted re-port is the expected outcome. The model makes the *achievable* portion explicit and
@@ -93,10 +93,10 @@ this settles the meta-model: **resource types are layered Classes composed of sc
      (the NSX→OVN class). Scoping an element higher extends portability wherever a target can honour it.
    - **`how` is the implementation's concern.** The migration/rebuild mechanics, per-source/target limitations, and
      automation live in the control plane's own decision records (e.g. DCM ADR-025 engine, ADR-003 migration,
-ADR-023 naturalization) — non-normative here. This
+DCM ADR-023 naturalization) — non-normative here. This
      section defines what re-porting *means*; the implementation docs carry the concrete process and its limits.
 
-5. **Policy-fill completes the blanks (ADR-024).** Type/provider-specific elements left blank at instantiation
+5. **Policy-fill completes the blanks (DCM ADR-024).** Type/provider-specific elements left blank at instantiation
    are filled by policy for the resolved Class — precedence **consumer-set ≻ policy-fill ≻ provider-default**,
    `source_type: policy`, audited. The fill is Policy (computed, recorded), never embedded in the portable data
    (T1/T2), and each fill is a recorded decision, so the contract stays reproducible (T3). This is what makes
@@ -159,7 +159,7 @@ ADR-023 naturalization) — non-normative here. This
       (`eq`/`ne`/`in`/`exists`). Both are **design criteria**: the review sweep checks every example and spec for
       consistent notation and for any parallel filter/selector construct (which is a finding — reduce to the
       coordinate predicate).
-    - **Resolvability.** The anchor pins the version — a uuid → an immutable version (ADR-012); a Class name →
+    - **Resolvability.** The anchor pins the version — a uuid → an immutable version (DCM ADR-012); a Class name →
       that Class's definition version — and the path resolves against the *typed* target schema, so a renamed
       field breaks loudly, never silently.
     - **Dual anchor (every reference carries two).** Not one anchor but **two**: an **immutable anchor**
@@ -168,7 +168,7 @@ ADR-023 naturalization) — non-normative here. This
       name points at *now*). The head follows the **name**, not the version lineage — a name is a mutable,
       repointable indirection, so it can move to a new version **or a different record entirely** (always within
       the same `reference_data_type`). Consumer/policy chooses which to resolve — the **pin** for reproducibility,
-      the **named head** for currency, or both. This **resolves ADR-012's silent-rebind concern**: name
+      the **named head** for currency, or both. This **resolves DCM ADR-012's silent-rebind concern**: name
       resolution is safe *because* it is paired with the immutable pin — you are never silently rebound, and
       opting into the head is explicit. Drift = the pin vs what the named head resolves to now.
     - **Updating a named reference is governed, audited, and blast-radius-computable *in advance*.** Repointing a
@@ -176,7 +176,7 @@ ADR-023 naturalization) — non-normative here. This
       repoint and with what approval — and an **audited event** (AUD-*, tamper-evident per AUD-002): old target →
       new target, actor, timestamp, justification. **The substrate records it; an implementation enforces it — no silent repoint.** Its
       **blast radius is pre-calculable *before* committing**, from the **reverse-reference index + `impact_report()`**
-      (ADR-012): the affected set is exactly the **named-head followers**, cascading transitively —
+      (DCM ADR-012): the affected set is exactly the **named-head followers**, cascading transitively —
       **immutable-pin references are insulated**, so the dual anchor *bounds* the blast radius to whoever opted
       into currency. The pre-computed blast radius **informs the policy gate**: a repoint touching many, critical,
       or cross-sovereign resources escalates (dual approval / break-glass). So the dual anchor is not only a
@@ -207,7 +207,7 @@ ADR-023 naturalization) — non-normative here. This
       Policy + peer. Demand-driven — start with the **`peer`** root (the federation case); add others when a
       use case makes them distinct authorities, not speculatively.
     - **Cross-boundary resolve is governed** — the §10 rule at federation scale. A rooted address you *name*
-      freely; *resolving* it across a peer or sovereignty border fires the sovereignty hard-gate (ADR-024 §1) and
+      freely; *resolving* it across a peer or sovereignty border fires the sovereignty hard-gate (DCM ADR-024 §1) and
       is attributed via `resolving_authority`. A fully-qualified cross-border address never bypasses that gate.
     - **Native URL is the primary form** (OData/REST-shaped — the standard set §Prior-art aligns to), each part a
       URL component (above). The **authority is the host** — a *logical* authority name resolved by the
@@ -252,7 +252,7 @@ each piece lands in.
 | **Addressing** | the coordinate grammar (dotted/URL, `$id`, dual-anchor shape, `covers`/`skip` declarations, notation convention) | resolution, the governed resolver, routing, the federation resolver, sovereignty gate at the wire |
 | **References** | `data_reference`, the references-context **classified edge**, dual anchor | reference resolution, blast-radius computation (`impact_report` run), repoint enforcement |
 | **Layers** | the layer **contract** — `covers`/`skip`/precedence/`narrow_only` grammar | the layer **definitions** (org-level) + assembly engine (gather-by-`covers`, precedence, override), group/request binding, skip authorization, optional example/default layers |
-| **Instantiation** | the intent (Class + requirements) + the four-state shape | Placement (pick Type/Provider/instance, ADR-019), policy-fill (ADR-024), requirements↔capability matching |
+| **Instantiation** | the intent (Class + requirements) + the four-state shape | Placement (pick Type/Provider/instance, DCM ADR-019), policy-fill (DCM ADR-024), requirements↔capability matching |
 | **Composite (`multi`)** | the `catalog-item` constituent / edge / binding declaration | expansion into a Composite Entity, orchestration |
 | **Re-porting** | the requirements (updatable intent) | migration / rehydration, re-placement (ADR-003) |
 | **Naturalization** | the generic/portable form (the contract) | the provider's native translation (naturalize / denaturalize) |
@@ -293,7 +293,7 @@ test (ADR-008) along the **authorship** axis:
   `SharedDataElement`/vocabularies share **one** pipeline — **register → validate against the UDLM spec for that
   kind → bind/resolve → promote (`proposed → canonical`)** — the same process, differing only in the **data spec**
   validated against (Class spec, layer contract, element spec). This **subsumes vocab ingest (ADR-039) and
-  Provider-Class registration into one engine**; who may contribute/promote is policy/profile + trust (ADR-022).
+  Provider-Class registration into one engine**; who may contribute/promote is policy/profile + trust (DCM ADR-022).
   **An implementation MAY ship examples or defaults** (a starter class, a default compliance layer) —
   conveniences, never canon. (The control-plane side, non-normative: DCM ADR-025.)
 
@@ -363,7 +363,7 @@ paradigm exists to provide.
 | Org wants | Mechanism | Not |
 |---|---|---|
 | **Template** (reusable pre-filled intent — "our standard VM") | ADR-033 **Template** — a definition written over `Compute.VM`, not a redefinition of it | an org fork of the class |
-| **Defaults** ("VMs default to RHEL9, gold storage, cost-center tag") | **policy-fill** (ADR-024) via the org **Profile** (ADR-007) | a class |
+| **Defaults** ("VMs default to RHEL9, gold storage, cost-center tag") | **policy-fill** (DCM ADR-024) via the org **Profile** (ADR-007) | a class |
 | **Standards / constraints** ("MUST be encrypted, approved OS images only, size ≤ X") | **constraint profile** (E1) — *narrows* class fields (required / tighter enum / bounds), never widens or redefines | a class |
 | **Genuinely-new org data** (`cost_center`, `compliance_id`) | an org-scoped `SharedDataElement` — additive, portability-degrading, must-ignore-unknown; usually **cross-category** (a tenancy overlay), not Compute-specific | a Compute class |
 
@@ -488,7 +488,7 @@ peer — the host pattern is illustrative)
   trail — the model answers *were* and *are* with one attribute on different time axes.
 
 ## Prior art / standards alignment
-Every component lands on a mature standard — which is the **convergence signal** (ADR-023's argument: independent
+Every component lands on a mature standard — which is the **convergence signal** (DCM ADR-023's argument: independent
 standards agreeing on a shape is the strongest reason to adopt it, not invent). The synthesis is UDLM's; the
 parts are not.
 

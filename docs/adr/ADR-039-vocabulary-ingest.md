@@ -4,9 +4,9 @@
 **Status:** Accepted — **deferred post-1.0** (ruled 2026-08-05): build the staging fields deliberately when vocabulary federation lands  **Date:** 2026-07-21
 **Realized by:** `registry/common-elements.schema.json#/$defs/curation_state` · `registry/vocabulary-term.schema.json`
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** DCM ADR-012 (data-references **and** lineage — the cleaning primitive); the curation lifecycle
 `proposed → under-review → canonical → deprecated` (`docs/spec/foundations/four-states.md`); ADR-PROV-002 (capability
-declaration); ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
+declaration); DCM ADR-029 (inventory / discovery-sourced types); PVD-001 (the reference discipline — the
 machine-readable reference graph this consumes); provenance `source_type` (context-and-purpose §4.4); the vocabulary-intake ladder
 (`docs/design/vocabulary-intake-ladder.md` — the operational rubric of this ADR: match/mint/promote,
 profile-priced, PVD-001 as the destination)
@@ -33,7 +33,7 @@ The capability needs **no new types or primitives** — it assembles mechanisms 
    honors the `proposed`/`canonical` distinction so consumers can require canonical vocabulary. *No dedicated
    "staging" or "import" type* (T7).
 
-2. **Cleaning *is* lineage (ADR-012).** Dedupe = **supersede many → one**; normalize / rename = **supersede-
+2. **Cleaning *is* lineage (DCM ADR-012).** Dedupe = **supersede many → one**; normalize / rename = **supersede-
    with-rename**; consolidation is a sequence of lineage ops, **not deletion** — every merge is an auditable,
    record-level, reversible act. *No dedicated "cleaning" primitive* (T7).
 
@@ -62,7 +62,7 @@ The capability needs **no new types or primitives** — it assembles mechanisms 
 
 ## Options considered
 - **(A) A dedicated staging/import type + a cleaning/merge primitive.** Rejected — the curation states already
-  give a dirty-safe stage and `canonical` gate, and ADR-012 lineage already expresses dedupe/normalize as
+  give a dirty-safe stage and `canonical` gate, and DCM ADR-012 lineage already expresses dedupe/normalize as
   supersession. Coining either is a T7 finding.
 - **(B) Add-on-use writes `canonical` directly.** Rejected — that is the Jira label-sprawl failure mode, and it
   re-opens the exact portability hole PVD-001 closed. Sprawl belongs in `proposed`, behind a promotion gate.

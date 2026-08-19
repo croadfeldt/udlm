@@ -9,7 +9,7 @@
   "properties": {
     "record_type": {"const": "decision_record"},
     "uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
-    "handle": {"type": "string", "description": "e.g. 'ADR-017'-style within an owning scope; advisory. Deliberately NOT held to the entity-handle grammar (WIR-003, identifier-scheme \u00a73): that grammar is lowercase and governs estate handles, and a DecisionRecord is a Knowledge-family record whose identity convention is the ADR number the industry already reads. Patterning it would force adr-066 and buy nothing."},
+    "handle": {"type": "string", "description": "e.g. 'DCM ADR-017'-style within an owning scope; advisory. Deliberately NOT held to the entity-handle grammar (WIR-003, identifier-scheme \u00a73): that grammar is lowercase and governs estate handles, and a DecisionRecord is a Knowledge-family record whose identity convention is the ADR number the industry already reads. Patterning it would force adr-066 and buy nothing."},
     "conforms_to": {"type": "string", "pattern": "^udlm/[0-9]+\\.[0-9]+$"},
     "title": {"type": "string"},
     "tenant_uuid": {

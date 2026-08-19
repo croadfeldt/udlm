@@ -58,5 +58,5 @@ contract — never the secret itself.
 | Reference-never-value (portable-value discipline) | ADR-037 (PVD-001) |
 | Refusal ⇒ audit record | `use-cases/audit/refusal-emits-audit-record`; AUD-006 |
 | Escrow replay during recovery | rehydration = replay original intent |
-| The shapes + examples | `registry/generated/{security,access}.*` (`spec.examples`, ADR-055) |
+| The shapes + examples | `registry/generated/{security,access}.*` (`spec.examples`, DCM ADR-055) |
 | Corpus | `use-cases/security/`, `use-cases/access/` |

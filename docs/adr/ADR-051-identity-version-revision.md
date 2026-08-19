@@ -8,7 +8,7 @@
 (VERSIONING.md § "UUID rotation", now § "Identity, version, digest" — every change to a
 uuid-bearing document minted a new uuid); the ADR this amends (ADR-045 — class evolution and
 pinning; its pin, provenance, and provider-surface clauses are restated below and marked
-amended in place); the reference shape that was already right (ADR-012 — data references
+amended in place); the reference shape that was already right (DCM ADR-012 — data references
 point at immutable records, so an identity pin on one is exact by construction); the
 attestation surface that exposed the conflict (`registry/accreditation.schema.json` — an
 accreditation binds a provider and capability by uuid); and the gates that enforce the ruling
@@ -64,7 +64,7 @@ construction, with nothing to remember to mint.
 *What identity covers.* The digest is taken over the document's **normative** bytes. A small,
 named set of **non-normative documentation surfaces is excluded**: top-level `coverage` (the Use
 Cases / examples / flows that exercise a spec — rule-36) and `spec.examples` (the JSON Schema
-`examples` annotation, which that spec defines as having *no effect on validation* — ADR-055).
+`examples` annotation, which that spec defines as having *no effect on validation* — DCM ADR-055).
 Both grow or refresh over a spec's life: adding a UC that exercises an **unchanged** spec, or
 refreshing a worked example, must not rev its identity or force a version bump. The strip is one
 function (`_strip_nonnormative` over `IDENTITY_EXCLUDED_FIELDS` + `spec.examples`, in

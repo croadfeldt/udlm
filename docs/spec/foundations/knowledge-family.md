@@ -123,7 +123,7 @@ validation**. It records *why* a decision was made — the rationale resolving a
 Capability / dependency / spec element — so any implementation carries decision provenance natively (pairs with
 [Universal Audit](../contracts/universal-audit.md) + field-level provenance). **An ADR = a DecisionRecord whose
 anchor is architecture;** process/enablement decisions are DecisionRecords too.
-- **Fields:** title (handle, e.g. `ADR-017`-style within an owning scope), **`rationale` / body (the prose ADR
+- **Fields:** title (handle, e.g. `DCM ADR-017`-style within an owning scope), **`rationale` / body (the prose ADR
   narrative — kept first-class; the structure is an *envelope* around it, never a replacement)**, question/finding
   refs, options_considered, decision, action (`answer | clarify | change-spec | defer | wontfix`),
   validation_evidence *(optional — see Note)*, supersedes, provenance (proposed_by: human + model/prompt version),
@@ -188,7 +188,7 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 - **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV / NVD-CVE (+ VEX for
   status). Terminal in the chain; blast-radius reverse-walks from here.
 - **Lifecycle:** curated upstream (NVD/OSV), **`Discovered`** locally (a scanner is a discovery avenue,
-  dcm ADR-017) — never provider-realized.
+  dcm DCM ADR-017) — never provider-realized.
 - **Edges** are `edge_type: references` (non-ordering, so outside the shutdown sort) but **walked by
   blast-radius/impact in reverse** — "everything pointing to `Vulnerability#X`" = the affected package → image →
   container → app → host set.

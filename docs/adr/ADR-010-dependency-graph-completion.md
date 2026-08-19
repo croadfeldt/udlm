@@ -4,7 +4,7 @@
 **Realized by:** `registry/taxonomies/dependency-diagnostic.yaml`
 **Date:** 2026-07-13
 **Type:** Architecture Decision Record (`DecisionRecord`, architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/guides/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/guides/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); ADR-009 (relationships are guidance, not a gate); ADR-008 (the substrate and its control plane boundary)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/guides/graph-integrity.md` (acyclicity + `DependencyCycle` — the first graph consumer made first-class); `docs/guides/foundational-resources.md` (roots that anchor fault domains); ADR-006 (convergence — terminal surface on a hard-unmet dependency); DCM ADR-009 (relationships are guidance, not a gate); ADR-008 (the substrate and its control plane boundary)
 **Tracking:** September 0.1 gap analysis P4/P5 — UC-73071912 ("represent the dependency graph as first-class"), UC-4908573a ("surface a broken cross-resource dependency before implementation").
 
 ## Context
@@ -67,7 +67,7 @@ The **diagnostic shapes and the derivation definitions** are UDLM (a peer must i
 - **Author fault domains as their own edge kind (or a first-class `FaultDomain` type).** Rejected — a fault domain is fully determined by which foundational resources members co-reference; authoring it separately is redundant work that drifts from the edges it should track. Derived from foundational-resource references, no new authored edges.
 - **Compute blast radius / redundancy imperatively, outside the graph.** Rejected — impact analysis, ordered-shutdown, rehydration, and policy would each derive reach independently and disagree. It must fall out of the one graph so every consumer agrees by construction.
 - **Surface unmet dependencies only at dispatch time (fail the implementation when the edge can't be resolved).** Rejected — that discovers the break mid-dispatch. `UnmetDependency` surfaces it pre-realization as a diagnostic siblings act on (ADR-006 terminal surface), like `DependencyCycle`.
-- **Coin a fixed type vocabulary the shapes require (e.g. mandate `Network.VirtualNetwork`).** Rejected — the shapes read whatever typed edges exist; the org ratifies anchors and providers offer base/variant types via policy. Fixing the vocabulary would break the guidance-plus-policy-hook principle and provider variation (ADR-009).
+- **Coin a fixed type vocabulary the shapes require (e.g. mandate `Network.VirtualNetwork`).** Rejected — the shapes read whatever typed edges exist; the org ratifies anchors and providers offer base/variant types via policy. Fixing the vocabulary would break the guidance-plus-policy-hook principle and provider variation (DCM ADR-009).
 
 ## Consequences
 

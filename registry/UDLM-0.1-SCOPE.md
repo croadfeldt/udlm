@@ -34,7 +34,7 @@ siblings (small substrate, low ceremony), not rungs on the production ladder:
 | Profile | Role | Floor adds (over the one below) |
 |---|---|---|
 | **dev** (default) | **September implementation / evaluation target** | baseline: structural validation, tenant isolation, resolved-profile eval, append-only audit, four-state; causal-only time; no attestation |
-| **homelab** | **single-operator on-ramp (community/value/feedback — ADR-017)** | dev's substrate + drift/recovery/discovery pre-tuned *on* at low ceremony via `operational_config`; governance-matrix/attestation/merkle available but not mandated (nothing shut off) |
+| **homelab** | **single-operator on-ramp (community/value/feedback — DCM ADR-017)** | dev's substrate + drift/recovery/discovery pre-tuned *on* at low ceremony via `operational_config`; governance-matrix/attestation/merkle available but not mandated (nothing shut off) |
 | standard | baseline production | governance-matrix, recovery, drift reconciliation |
 | prod | hardened production | blast-radius impact (ADR-010), dual-approval-destructive, bounded convergence |
 | **fsi** | regulated (architected, not the impl target) | Merkle transparency audit, attestation-gated admission, override-approval, regulatory retention, attested time |
@@ -57,7 +57,7 @@ but executed by the control plane (ADR-008).
 | 5 | libvirt-vm-provider/vm-status-provenance | `realized-entity` field-level `provenance`/`status`/`drift` | Covered |
 | 6 | storage/provision-volume-bound-to-pool | `storage.volume`; tenancy; **quota** (now defined) | **Closed this release (P7)** |
 | 7 | dcm-core/udlm-dependency-graph-data-model | ordering `edge_type`s; ADR-010 derived fault-domain/blast-radius; graph-integrity | Covered |
-| 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
+| 8 | libvirt-vm-provider/cross-provider-dependency-ordering | graph-integrity DAG; DCM ADR-009; ADR-011 reserve ordering | Covered (convergence = DCM ADR-006) |
 | 9 | intent-fulfillment/operational-dependency-cascade | ADR-010 `UnmetDependency` (blocking, blast_radius) | Covered |
 | 10 | cross-domain/dynamic-rehydration | four-states §5 (replay intent, UUID preserved) | Covered (plan derivation = the control plane) |
 | 11 | compute/vm-provision-provider-failure-refused | policy §13 recovery; four-states §2.5 conditions; ADR-011 release | Covered |

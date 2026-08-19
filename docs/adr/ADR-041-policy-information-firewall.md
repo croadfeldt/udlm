@@ -4,8 +4,8 @@
 **Realized by:** `registry/taxonomies/policy-fact.yaml` (`reference-graph`) · `docs/spec/contracts/policy-contract.md` §2.1 · `docs/spec/contracts/identifier-scheme.md` `PROJ-006`
 **Date:** 2026-07-22
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-001..005`, to which this adds `PROJ-006`); ADR-038 (the scoped-Class paradigm those sit on); ADR-012 (data-references,
-dual anchor); ADR-025 (the control plane implementation); ADR-008 (the substrate and its control plane peer test); ADR-011 (sovereignty & residency);
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-054 (the references-context axis + the projection mechanism + `PROJ-001..005`, to which this adds `PROJ-006`); ADR-038 (the scoped-Class paradigm those sit on); DCM ADR-012 (data-references,
+dual anchor); DCM ADR-025 (the control plane implementation); ADR-008 (the substrate and its control plane peer test); ADR-011 (sovereignty & residency);
 `docs/spec/contracts/policy-contract.md` **§2.1** (the policy match sources this extends), **§7** (Evaluation Context); the
 `POL` / `TEN` / `SOV` rule families; core-tenets **T2** (transformation is Policy) / **T4** (address ≠ dereference).
 
@@ -46,7 +46,7 @@ setting a firewall (and, at high assurance, a **cross-domain guard**) exists for
    | Complete-vs-boundary (profile dial) | inspect-every-packet vs stateful-flow; default-deny posture |
 
    **Scope.** This governs policy's **flow role** only. Policy
-   also composes the spec — assembly, constraint-narrowing, policy-fill (ADR-024). That **composition role is not
+   also composes the spec — assembly, constraint-narrowing, policy-fill (DCM ADR-024). That **composition role is not
    firewalling** and this ADR does not restate or constrain it. Same engine, two hats.
 
 2. **Two inspection surfaces — structural and value.** Policy matches on either, and needs both:

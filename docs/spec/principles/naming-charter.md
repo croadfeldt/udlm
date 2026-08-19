@@ -93,8 +93,8 @@ archetype — an identity is maintained, not one-shot.)*
 | **has_constituents** (derived) | constituent shape (is it a composite?) | the stored `entity_type` shape · Atomic/Composite · single/multi — all retired (derived, ADR-027 addendum) |
 | **edge_type** | the relationship-kind field | `kind` (for edges) |
 | **Converge** | the single lifecycle act | realize/reconcile/rehydrate/teardown (colloquial shortcuts, not distinct acts) |
-| **implementation** | a system that implements UDLM's interfaces (UDLM is *implementation-neutral*) — DCM and DAV are non-normative examples | *realization* (system sense) — retired 2026-07-28 (ADR-056). The lifecycle sense is unchanged: **realize** (verb), **Realized** (state), **two-phase realization** (act) all keep their names |
-| **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (ADR-017; registry `profile-homelab.yaml`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine; `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
+| **implementation** | a system that implements UDLM's interfaces (UDLM is *implementation-neutral*) — DCM and DAV are non-normative examples | *realization* (system sense) — retired 2026-07-28 (DCM ADR-056). The lifecycle sense is unchanged: **realize** (verb), **Realized** (state), **two-phase realization** (act) all keep their names |
+| **homelab** (profile) | the single-operator on-ramp — the relaxed end of the six-profile ladder (DCM ADR-017; registry `profile-homelab.yaml`) | `minimal` — retired 2026-07-23 ("fewer is better" ruling): completed rename, swept both repos + the DAV engine; `posture-minimal`/`core-minimal` group handles are a **different vocabulary** and keep their names |
 
 *(Note a residual collision to resolve: "family" is also used for a **rule-ID prefix family** — an unrelated
 sense. If `family` is retired as an entity axis, keep it only in the rule-ID sense, or rename that too.)*
@@ -118,10 +118,10 @@ Real-world usage of these words varies by group — the charter should map onto 
 
 - **`family` vs `kind` / `type`** (review feedback — *"why `family` and not `kind` or even `type`?"*). A fair
   poke, and it lands on a term this charter is already reconsidering. **Not `kind`** — it collides head-on with
-  Kubernetes' object `kind` (`kind: Pod`); ADR-026 *retired* `kind` for exactly this reason (edges became
+  Kubernetes' object `kind` (`kind: Pod`); DCM ADR-026 *retired* `kind` for exactly this reason (edges became
   `edge_type`), and since the control plane naturalizes **to** Kubernetes, reusing `kind` for our own top classification
   re-introduces the collision at the provider edge. **Not bare `type`** — `type` is deliberately noun-namespaced
-  (`resource_type` / `entity_type` / `edge_type`, ADR-026's `<noun>_type` convention); bare `type` is ambiguous
+  (`resource_type` / `entity_type` / `edge_type`, DCM ADR-026's `<noun>_type` convention); bare `type` is ambiguous
   (*type of what?*) and overloads those fields. `family` names a **different tier** — the coarse
   `Resource / Process / Knowledge / Access` grouping. **Resolution:** the reviewer's instinct is right that
   `family` earns scrutiny — but the answer is not `kind` or `type`, it is **collapse `family` into `nature`** (the

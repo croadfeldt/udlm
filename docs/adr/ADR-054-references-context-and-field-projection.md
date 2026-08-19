@@ -8,10 +8,10 @@ layer scoping shipped in #317; the `reference_data` retirement is **gated on [AD
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited
 once with what it settles. ADR-038 — the scoped-Class hierarchy (`SharedDataElement`, the `§10`
 dotted coordinate + dual anchor this builds on); this ADR is the third relationship axis alongside
-its *is-a* and *has-a*. ADR-012 — data references point at immutable records (the linkage this
+its *is-a* and *has-a*. DCM ADR-012 — data references point at immutable records (the linkage this
 classifies and projects). ADR-041 — the policy information firewall *over* projection (it adds
 `PROJ-006` to the invariants below and governs data entering by reference). `docs/spec/foundations/layering-and-versioning.md`
-— the assembly/layer model (`covers`/`skip` extend it). T1/T2 + ADR-023 — the naturalization
+— the assembly/layer model (`covers`/`skip` extend it). T1/T2 + DCM ADR-023 — the naturalization
 boundary the anti-exfil invariants protect.
 
 ## Context
@@ -173,7 +173,7 @@ a tenant-A request's `from_layers` includes only `tenant-a/*` — it never recei
 | Classified edge with governed dereference | **Linked Data** (URI identity, governed dereference); OData `@odata.id` |
 | Two-sided `covers` ⋈ `from_layers` scoping | **DNS** wildcards; **LDAP** DN + filters; **OData** `$filter`; AMQP/MQTT topic routing (publish ⋈ subscribe) |
 
-Convergence signal (ADR-023's argument): independent standards agreeing is the reason to adopt the
+Convergence signal (DCM ADR-023's argument): independent standards agreeing is the reason to adopt the
 shape, not invent. The synthesis — sovereignty-gated dereference over a portability-scoped graph — is
 UDLM's own.
 
