@@ -62,5 +62,5 @@ reserves, and realizes.
 | Requirements-floor intent (never a named host/native class) | ADR-036 |
 | Capability eligibility + pins-prefer-not-confer | ADR-050 |
 | Operational dependency, root-cause surfacing, reserve-not-activate | ADR-052 / ADR-011 |
-| The resource shapes + their examples | `registry/generated/compute.*` (`spec.examples`, DCM ADR-055) |
+| The resource shapes + their examples | `registry/generated/compute.*` (`spec.examples`, ADR-055) |
 | Corpus | `use-cases/compute/`, `use-cases/bare-metal/`, `use-cases/multi-cluster/` |

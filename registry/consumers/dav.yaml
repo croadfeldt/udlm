@@ -1,4 +1,4 @@
-# Consumer manifest (DCM ADR-044) — self-reported read surface; gated by
+# Consumer manifest (ADR-044) — self-reported read surface; gated by
 # tests/check_consumer_conformance.py.
 #
 # dav consumes the use-case corpus today and, per its data-model-validation design

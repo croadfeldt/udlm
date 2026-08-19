@@ -28,7 +28,7 @@
 # chain (executive, director, manager); and the stakeholders the platform's own contracts imply but
 # no persona spoke for — provider-owner (ADR-005 / OIS), cloud-operator (OSAC — building sovereign
 # cloud providers, UC-04), information-provider-owner (INF- contract, change-control/013),
-# federation-peer-operator (FED- contract / peer DCMs), integrator (DCM ADR-044 consumer surface),
+# federation-peer-operator (FED- contract / peer DCMs), integrator (ADR-044 consumer surface),
 # sovereignty-authority (the
 # sovereignty-first data model), tenancy-authority (DCM ADR-014 isolation + cross-tenant XTA), regulator
 # (AUD-006 external verification).
@@ -115,13 +115,13 @@ personas:
     framing: "the operator of a peer DCM in a federation, receiving dispatched intent from other instances"
     objectives:
       - "cross-instance dispatch is sovereignty-scoped and on-behalf-of — I receive only what a peer is authorized to send, with the requester's identity intact"
-      - "I stay forward-compatible — unknown fields from a newer peer don't break me (must-ignore-unknown, DCM ADR-044 / federation forward-compat)"
+      - "I stay forward-compatible — unknown fields from a newer peer don't break me (must-ignore-unknown, ADR-044 / federation forward-compat)"
 
   - id: integrator
     tier: operational
     framing: "an integrator building an external system on the UDLM data model — consuming or federating it"
     objectives:
-      - "I declare the read surface I depend on and the registry gates on it; unknown fields I don't consume never break me (must-ignore-unknown, DCM ADR-044)"
+      - "I declare the read surface I depend on and the registry gates on it; unknown fields I don't consume never break me (must-ignore-unknown, ADR-044)"
       - "the contract is versioned with a compatibility promise I can pin to (ADR-051), so forward change doesn't silently break my integration"
 
   # ---- governance: set, enforce, and validate the rules ----

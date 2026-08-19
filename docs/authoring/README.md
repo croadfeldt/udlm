@@ -25,7 +25,7 @@ you can run it yourself (all run in `.github/workflows/validate.yml`; `./scripts
    (ADR-051).
 3. **It travels with its story** — a resource type / Class ships a **Use Case + in-spec example + flow**,
    declared in a `coverage:` block. *Gates:* `registry/tools/spec_coverage.py` (COV-001/002),
-   `tests/check_spec_examples.py` (EXG-001/002). (rule-36; DCM ADR-055.)
+   `tests/check_spec_examples.py` (EXG-001/002). (rule-36; ADR-055.)
 4. **It reduces to existing where it can** — before coining a new mechanism, show no existing one
    (classification, profiles, references, edges, a Class) composes to cover it. *Check:* review sweep
    tenet T7.

@@ -4,7 +4,7 @@
 **Realized by:** `tests/check_portable_values.py` (`PVD-001`) · `docs/spec/principles/portable-values.md`
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); DCM ADR-012 (data-references); DCM ADR-028
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); DCM ADR-012 (data-references); ADR-028
 (rule-ID naming + registry); core-tenets **T5** (adopt outward) / **T7** (reduce inward); `check_single_source.py`
 + SPEC-DESIGN §33 (the single-source precedent this mirrors). **Home of the `PVD` rule family:**
 `docs/spec/principles/portable-values.md`.
@@ -31,7 +31,7 @@ discipline is load-bearing for portability.
      (adopt by reference — T5) or the **shape of a referenceable resource type** (bind by an DCM ADR-025 reference —
      T7).
 2. **Home + family.** `docs/spec/principles/portable-values.md` is the `PVD` family's home; the prefix is registered
-   in `registry/rule-id-registry.yaml` (DCM ADR-028). PVD is the third sibling of T5 (adopt *outward*) and T7 (reduce
+   in `registry/rule-id-registry.yaml` (ADR-028). PVD is the third sibling of T5 (adopt *outward*) and T7 (reduce
    *inward*): **reference what the model already owns, don't restate it inline.**
 3. **The automated check (planned).** `tests/check_portable_values.py` — planned, to be CI-wired like
    `check_single_source.py` — will enforce both rules: PVD-001 hard-fails; PVD-002 runs as a review-flag until

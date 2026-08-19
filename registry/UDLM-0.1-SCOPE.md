@@ -7,7 +7,7 @@ the `0.1 → 1.0` tag, and the **profile posture** (implement against dev/eval; 
 sovereign/fsi). It turns the scattered `P1–P7` gap references into one checkable definition.
 
 UDLM is the **data / contract / type** layer. The control plane is the orchestration/runtime. The boundary rule
-(DCM ADR-008): *"could a peer implement this differently and still be valid? Yes → the control plane; No → UDLM."*
+(ADR-008): *"could a peer implement this differently and still be valid? Yes → the control plane; No → UDLM."*
 Many use-case success criteria are satisfied by **control-plane runtime** behavior over a UDLM shape — those are
 called out below and are **not** 0.1 spec gaps.
 
@@ -26,7 +26,7 @@ called out below and are **not** 0.1 spec gaps.
 ## 2. Profile posture — implement dev/eval, architect for sovereign/fsi
 
 The architecture and wire contracts are **identical across profiles**; only the required *floor*
-differs (DCM ADR-007 — a profile is a composed set with a floor, not a level). The six built-in
+differs (ADR-007 — a profile is a composed set with a floor, not a level). The six built-in
 profiles are now defined as `policy_profile` records (`registry/profiles/*.yaml`), floors
 nesting by set-containment (`docs/guides/profile-resolution.md`). **dev** and **homelab** are on-ramp
 siblings (small substrate, low ceremony), not rungs on the production ladder:

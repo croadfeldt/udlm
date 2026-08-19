@@ -65,5 +65,5 @@ declarative policy floors, the service→database dependency, and the surfacing 
 | Requirements-floor data tier (engine/HA, not a native class) | ADR-036 |
 | Operational dependency + root-cause surfacing | ADR-052 |
 | Profile-driven policy floors (CVE / signature gates) | ADR-007 profiles |
-| The artifact/service/database shapes + examples | `registry/generated/{knowledge,software,data}.*` (`spec.examples`, DCM ADR-055) |
+| The artifact/service/database shapes + examples | `registry/generated/{knowledge,software,data}.*` (`spec.examples`, ADR-055) |
 | Corpus | `use-cases/software/`, the three-tier composite (`registry/examples/example-catalog-item.yaml`) |

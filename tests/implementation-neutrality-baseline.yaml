@@ -28,7 +28,7 @@ known:
 - file: docs/adr/README.md
   hash: 1c3a23355e42813f
 - file: docs/adr/README.md
-  hash: a3d40491276fa0d4
+  hash: ed05b20400b3f459
 - file: docs/adr/README.md
   hash: 7f9e32d9a8412735
 - file: docs/spec/foundations/entity-type-families.md

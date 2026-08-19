@@ -9,7 +9,7 @@
 A recurring need: order and manage **a set of resources together with the processes that stand them up and operate them** — a stack of VMs/DBs plus its provisioning workflow, nightly backup, and monthly patch — as **one** lifecycle-coupled unit spanning **Day 0/1/2**. Modelling it raised a fork: *widen the definition of "Composite," or introduce a term above it?*
 
 Two facts decided it:
-1. **The process↔resource link is operational *binding*, not containment.** A backup isn't a *part* of the stack the way a VM is — it *operates on* it. Widening `Composite` (structural, same-family, `contained_by`) to "own" processes would relabel a binding as containment, re-blurring the line DCM ADR-026's edge model just sharpened. → **a term above Composite; the `Composite` entity_type is untouched.**
+1. **The process↔resource link is operational *binding*, not containment.** A backup isn't a *part* of the stack the way a VM is — it *operates on* it. Widening `Composite` (structural, same-family, `contained_by`) to "own" processes would relabel a binding as containment, re-blurring the line ADR-026's edge model just sharpened. → **a term above Composite; the `Composite` entity_type is untouched.**
 2. **The tiers we kept reaching for already exist in the model — as the definition/instance split.** "Reusable design → orderable definition → running instance" is not a new taxonomy; it is `resource_type → realized entity` at assembly scale, with one extra definition tier because a design can be refined before it is cut. So the decision is to *name* that projection, not invent a parallel one.
 
 ## Decision
@@ -84,7 +84,7 @@ A Template is essentially a **TOSCA Service Template** — a topology of nodes (
 
 ### Scope
 
-Per DCM ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change**, nothing existing is touched. It is implemented only when a use case needs it (the combine-Day-0/1/2 case) — reusing catalog items, the subscription binding, and consumables, and adding only the Template packaging.
+Per ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change**, nothing existing is touched. It is implemented only when a use case needs it (the combine-Day-0/1/2 case) — reusing catalog items, the subscription binding, and consumables, and adding only the Template packaging.
 
 ## Data · Policy · Provider
 - **Data** — a Template and a Pattern are **definitions** (a class when offered, a `composition` record when not); a System is a realized composite + bound-activity records, and the only one of the three carrying `states`.
@@ -100,7 +100,7 @@ Per DCM ADR-031/032 this is a **direction**, not a 0.1 build: **no schema change
   - **Emit** — render a System / the estate *as* LikeC4 / C4. The model already carries the dependency graph, so a UDLM-data visualizer is a natural (post-1.0) control-plane capability; the rendering is a formatter over that graph.
   - **Derive** — build a Template *from* deployed architecture: capture a running System (Realized / Discovered) as a reusable Template or Pattern. The reverse of instantiation; ties to brownfield ingestion and rehydration-from-intent.
   Because UDLM carries intent **and** realized and converges between them (ADR-030), an emitted or derived view is **never stale** — it can render the intended topology, the actual one, and the drift. Adopt the formats as I/O, don't reinvent; graduate to its own ADR when a use case makes it real.
-- Deferred until a UC pulls it in (DCM ADR-031).
+- Deferred until a UC pulls it in (ADR-031).
 
 ## Alternatives considered
 - **Widen `Composite` to mixed-family constituents** — rejected: relabels operational binding as structural containment, blurring the edge model.

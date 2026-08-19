@@ -118,7 +118,7 @@ Without a filter the resolver can order tiers but cannot select which overlay ap
 3. **Compose** per setting: take the value from the highest-tier selected bundle that is **≤ the setting's ceiling**; reject any value set above the ceiling; if the setting is `tighten_only`, reject a finer value that weakens the coarser one.
 4. The result is the **effective value** + its provenance (the winning bundle's filter).
 
-Step 2 orders *tiers*; ordering **within** one tier is DCM ADR-047 — same-tier composition follows explicit `precedence_order` (the `layer.schema.json` primitive), and two same-tier bundles setting the same setting with no declared order are a typed, refused conflict naming both sources.
+Step 2 orders *tiers*; ordering **within** one tier is ADR-047 — same-tier composition follows explicit `precedence_order` (the `layer.schema.json` primitive), and two same-tier bundles setting the same setting with no declared order are a typed, refused conflict naming both sources.
 
 That is what makes precedence *effective* rather than merely ordered: the setting says how far down it may be pushed and in which direction; each overlay says which slice of the estate it is; the resolver matches, orders, and composes.
 

@@ -85,6 +85,47 @@ def violations():
     return out
 
 
+def dcm_adrs():
+    """The ADR numbers the control plane actually has.
+
+    Checked in rather than fetched, so the gate runs offline. Refresh with
+    tests/refresh_dcm_adr_index.py."""
+    p = os.path.join(ROOT, "tests", "dcm-adr-index.yaml")
+    if not os.path.exists(p):
+        return set()
+    d = yaml.safe_load(open(p, encoding="utf-8")) or {}
+    return {str(k) for k in (d.get("adrs") or {})}
+
+
+def misqualified(known_dcm):
+    """A `DCM ADR-NNN` naming a number the control plane does not have (ADR-CITE-002).
+
+    ADR-CITE-001 asks whether a citation resolves locally OR names a repo. It never asks whether the
+    named repo HAS that number, so writing `DCM ` in front of an unknown number silences it. 69
+    citations were fixed that way: a sweep read "no local file" as "must be the control plane's",
+    when the control plane's ADRs stop well short of those numbers. The citations pointed at nothing
+    and the gate went green.
+
+    A number above the control plane's range is UDLM's own whether or not the file exists yet.
+    Missing local files are #513; this arm keeps them visible there instead of laundering them into
+    a repo that cannot answer for them."""
+    out = []
+    for pat in SCAN:
+        for path in sorted(glob.glob(os.path.join(ROOT, pat), recursive=True)):
+            rel = os.path.relpath(path, ROOT)
+            if rel.startswith("tests/"):
+                continue
+            try:
+                lines = open(path, encoding="utf-8", errors="ignore").read().splitlines()
+            except OSError:
+                continue
+            for n, line in enumerate(lines, 1):
+                for m in re.finditer(r"\bDCM\s+ADR-(\d{3})\b", line):
+                    if m.group(1) not in known_dcm:
+                        out.append((rel, n, m.group(1)))
+    return out
+
+
 def main():
     found = violations()
     baseline = yaml.safe_load(open(BASELINE, encoding="utf-8")) if os.path.exists(BASELINE) else {}
@@ -127,6 +168,21 @@ def main():
               f"overlap, so a bare citation resolves to the WRONG decision for a reader who assumes "
               f"it is local.")
 
+    known_dcm = dcm_adrs()
+    bad = misqualified(known_dcm) if known_dcm else []
+    if not known_dcm:
+        print("  FAIL [ADR-CITE-002] the control-plane ADR index is missing or empty — every "
+              "qualified citation would pass without being checked")
+        new.append(("index", 0, ""))
+    else:
+        hi = max(known_dcm)
+        for rel, ln, num in bad:
+            print(f"  FAIL [ADR-CITE-002] {rel}:{ln} — cites `DCM ADR-{num}`, but the control "
+                  f"plane's ADRs run 001-{hi} and have no {num}.")
+            print(f"       The qualifier makes this read as resolved while it points at nothing. If "
+                  f"ADR-{num} is UDLM's own, drop `DCM ` — a missing local file belongs in #513.")
+        new.extend(bad)
+
     # self-test: the qualification arm must actually discriminate, in both directions.
     if CITE.findall(QUALIFIED.sub("", "see DCM ADR-023 for tiers")):
         print("FAIL [ADR-SELF] a qualified `DCM ADR-023` was treated as a bare citation")
@@ -134,6 +190,13 @@ def main():
     if not CITE.findall("see ADR-023 for tiers"):
         print("FAIL [ADR-SELF] a bare citation did not match")
         new.append(("self-test", 0, ""))
+    # ADR-CITE-002 must fire on a number the control plane lacks and stay quiet on one it has —
+    # a one-directional check would either miss the defect or ban every valid qualified citation.
+    if known_dcm:
+        probe = max(known_dcm)
+        if str(int(probe) + 40).zfill(3) in known_dcm or probe not in known_dcm:
+            print("FAIL [ADR-SELF] the control-plane index does not discriminate by number")
+            new.append(("self-test", 0, ""))
 
     if new:
         print(f"FAILED — {len(new)} new unresolvable ADR citation(s)")

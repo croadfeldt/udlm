@@ -19,7 +19,7 @@ gate fails** — so it doubles as a local pre-flight for the CI in `.github/work
 |---|---|
 | registry valid-by-construction · meta-schema | every type/instance/provider matrix validates (`ADOPT-001`, `$id`↔version) |
 | **estate-token scrub** | no hostnames / IPs / private identifiers leak into a shared repo |
-| single-source (rule IDs + definitions) | one rule / one definition, one home, one ID (`SPEC-DESIGN §33`, DCM ADR-028) |
+| single-source (rule IDs + definitions) | one rule / one definition, one home, one ID (`SPEC-DESIGN §33`, ADR-028) |
 | model vocabulary · profile tables · session narration | settled terms only; structural conventions hold |
 | compat-check compiles · version/compat gate | a changed type declares a sufficient version bump vs base |
 | standards registered *(report-only)* | a standard cited in prose has a register row |

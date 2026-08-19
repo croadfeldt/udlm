@@ -78,7 +78,7 @@ elements:
     schema:
       type: boolean
 
-# The worked example every spec ships (DCM ADR-055), and it is deliberately a JOINT sovereignty case:
+# The worked example every spec ships (ADR-055), and it is deliberately a JOINT sovereignty case:
 # the whole application must land inside one declared zone, which is the constraint no
 # single-resource intent can express and the reason a composite is not merely a bag of parts.
 spec_examples:

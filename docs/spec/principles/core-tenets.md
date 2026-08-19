@@ -129,7 +129,7 @@ references, and typed edges. Most "we need a new X" is an existing mechanism und
 coined primitive is permanent surface — every peer must implement it and every reader must learn it.
 **This is an active review gate, not advice:** a PR that introduces a net-new mechanism must show, in its
 *Why*, that no existing mechanism (or composition of them) covers the need — otherwise the finding is
-"reduce to existing." (This is exactly how DCM ADR-029 dropped a proposed "inventory module" in favor of a
+"reduce to existing." (This is exactly how ADR-029 dropped a proposed "inventory module" in favor of a
 `classification` tag + profile inclusion + capability declaration + an optional conformance tier.) T5 is
 this tenet aimed **outward** — don't re-express an external standard; T7 aims it **inward** — don't
 multiply internal primitives. Occam's razor as a contract obligation.

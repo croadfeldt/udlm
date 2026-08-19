@@ -61,7 +61,7 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 | Every `data_reference` to this vocabulary resolves — active target, matching kind, pin naming the resolved version | Referential integrity (DCM ADR-012 `check_data_references`) | `registry/tools/validate.py` |
 | Each `supersedes` uuid resolves to a same-type record at a strictly lower version | Lineage integrity (`check_layer_lineage`) | `registry/tools/validate.py` |
 | Fresh `uuid`; a revision is a new record, never an in-place edit | Immutable-record family (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
-| Any normative rule the vocabulary doc introduces uses a registered, single-home prefix | One definition per rule (DCM ADR-028) | `tests/check_single_source.py` |
+| Any normative rule the vocabulary doc introduces uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |
 
 ## 4. A worked pointer
 
