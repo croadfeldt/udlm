@@ -4,7 +4,7 @@
 **Realized by:** `tests/check_portable_values.py` (`PVD-001`) · `docs/spec/principles/portable-values.md`
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); ADR-012 (data-references); ADR-028
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-035 / ADR-036 (the two mechanisms this gate points at); DCM ADR-012 (data-references); DCM ADR-028
 (rule-ID naming + registry); core-tenets **T5** (adopt outward) / **T7** (reduce inward); `check_single_source.py`
 + SPEC-DESIGN §33 (the single-source precedent this mirrors). **Home of the `PVD` rule family:**
 `docs/spec/principles/portable-values.md`.
@@ -16,7 +16,7 @@ The review surfaced **two faces of the same discipline breach — a portable val
 referenced.** (1) `guest_os` and `storage_class` were free strings where §3.7 *already* sanctioned a reference
 kind; a sweep found several more across the registry. (2) A VM `networks[]` block carried an `ip_mode` /
 `address_config` shape that re-expressed `Network.IPAddress.allocation` + `address` — the RFC 8344/NMState form
-UDLM already adopts (ADR-023) — inline, a pure T5/T7 breach with no free string in sight. Nothing catches either:
+UDLM already adopts (DCM ADR-023) — inline, a pure T5/T7 breach with no free string in sight. Nothing catches either:
 there is no check for "a selectable value as an unconstrained string" or for "an adopted-standard/typed shape
 re-expressed inline," so both re-enter with every new type. Single-source and settled-vocabulary are held to
 account exactly the way this should be — a **rule + an automated check + a review-sweep line** — and this
@@ -25,13 +25,13 @@ discipline is load-bearing for portability.
 ## Decision
 1. **The rules — one family, two findings** (defined in `docs/spec/principles/portable-values.md`, the `PVD` home):
    - **PVD-001 (free-string vocabulary).** A selectable value MUST be a `data_reference` to a reference-data kind
-     (ADR-012/035), a bounded **codelist** (T5), or a **requirements descriptor** (ADR-036) — never an
+     (DCM ADR-012/035), a bounded **codelist** (T5), or a **requirements descriptor** (ADR-036) — never an
      unconstrained string.
    - **PVD-002 (inline re-expression).** A field MUST NOT restate, inline, an **adopted standard's body**
-     (adopt by reference — T5) or the **shape of a referenceable resource type** (bind by an ADR-025 reference —
+     (adopt by reference — T5) or the **shape of a referenceable resource type** (bind by an DCM ADR-025 reference —
      T7).
 2. **Home + family.** `docs/spec/principles/portable-values.md` is the `PVD` family's home; the prefix is registered
-   in `registry/rule-id-registry.yaml` (ADR-028). PVD is the third sibling of T5 (adopt *outward*) and T7 (reduce
+   in `registry/rule-id-registry.yaml` (DCM ADR-028). PVD is the third sibling of T5 (adopt *outward*) and T7 (reduce
    *inward*): **reference what the model already owns, don't restate it inline.**
 3. **The automated check (planned).** `tests/check_portable_values.py` — planned, to be CI-wired like
    `check_single_source.py` — will enforce both rules: PVD-001 hard-fails; PVD-002 runs as a review-flag until

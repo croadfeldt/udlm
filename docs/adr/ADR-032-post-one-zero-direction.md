@@ -2,7 +2,7 @@
 
 **Status:** Proposed (2026-07-19)
 **Realized by:** _not yet_ — post-1.0 direction, deliberately unbuilt while 0.1 ships.
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle — the direction this protects); ADR-031 (1.0 focus); ADR-029 (inventory / observed provenance); ADR-027 (the family axis this eventually refines); the intent-vs-realized split; the managed-vs-observed axis.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-030 (the convergence lifecycle — the direction this protects); DCM ADR-031 (1.0 focus); DCM ADR-029 (inventory / observed provenance); ADR-027 (the family axis this eventually refines); the intent-vs-realized split; the managed-vs-observed axis.
 
 ## Context
 
@@ -23,11 +23,11 @@ n/a — a **direction / meta** decision. The Data·Policy·Provider specifics li
 
 ## Consequences
 
-- 0.1 ships focused (ADR-031); the future stays open at zero cost.
+- 0.1 ships focused (DCM ADR-031); the future stays open at zero cost.
 - When a use case finally needs the unified model, the groundwork is already written — we build, we don't re-derive.
 - A future superseding ADR promotes the convergence model + nature + archetypes and carries the migration; ADR-027's family axis becomes the archetype layer.
 
 ## Alternatives considered
 
 - **Don't record the direction; just build 0.1** — rejected: future-us re-derives it and risks contradicting it in the meantime.
-- **Adopt the direction now** — rejected: violates ADR-031 (scope) and would migrate before the tag.
+- **Adopt the direction now** — rejected: violates DCM ADR-031 (scope) and would migrate before the tag.

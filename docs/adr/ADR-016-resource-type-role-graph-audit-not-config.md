@@ -3,7 +3,7 @@
 **Status:** Accepted (2026-07-15)
 **Realized by:** `registry/resource-type-spec.schema.json` · `registry/class.schema.json`
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (the substrate and its control plane boundary — *could a peer realize this differently and still be valid? yes → the control plane*); ADR-014 (optionality with conformity — the data carries transport + conformity, not the provider's policy); ADR-012 (data references — an image ref builds the dependency map) + DCM ADR-024 (reference resolution & change-impact); `docs/spec/contracts/provider-contract.md` §1a.3 (config-projection); ADR-038 (provider-specific data is a Provider-Class `SharedDataElement`); DCM ADR-023 (naturalization). **Prior art:** Kubernetes CRD `spec` vs controller-owned behaviour; Crossplane Composition (the claim is thin, the composition is the provider's); OAM Component vs Trait.
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-008 (the substrate and its control plane boundary — *could a peer realize this differently and still be valid? yes → the control plane*); DCM ADR-014 (optionality with conformity — the data carries transport + conformity, not the provider's policy); DCM ADR-012 (data references — an image ref builds the dependency map) + DCM ADR-024 (reference resolution & change-impact); `docs/spec/contracts/provider-contract.md` §1a.3 (config-projection); ADR-038 (provider-specific data is a Provider-Class `SharedDataElement`); DCM ADR-023 (naturalization). **Prior art:** Kubernetes CRD `spec` vs controller-owned behaviour; Crossplane Composition (the claim is thin, the composition is the provider's); OAM Component vs Trait.
 
 ## Context
 
@@ -18,7 +18,7 @@ A resource-type spec is tempting to grow into a full model of everything a resou
 The base resource-type spec defines **what the resource *is*** in the control plane, provider-neutrally — grounded in the adopted standard(s) for that resource (OAM Component + Kubernetes Container for a `Compute.Container`; Metal3 + Redfish for a bare-metal host). It carries, all portable:
 
 - **Required + portable config** — the fields that *define* the resource and that **every provider of the type accepts**: a container's `image`, `resources`, `command`/`args`, `ports`, `mounts`, restart behaviour — the OAM/k8s shape. This is what a consumer authors to get *a container*, not *this vendor's container*.
-- **Graph-bearing elements** — fields that form dependency edges: a `data_reference` (image → blast-radius, ADR-024), a relationship (`binds_to` a `Storage.Volume`, `contained_by` a `Cluster`, `references` a `Security.CredentialRef`), a network/route/port in the service graph.
+- **Graph-bearing elements** — fields that form dependency edges: a `data_reference` (image → blast-radius, DCM ADR-024), a relationship (`binds_to` a `Storage.Volume`, `contained_by` a `Cluster`, `references` a `Security.CredentialRef`), a network/route/port in the service graph.
 - **Audit / provenance / identity / observability** — what the audit chain, sovereignty gate, tenancy, and drift baseline need.
 
 The line that keeps the base thin is **portable vs provider-specific**, *not* config-vs-not-config: portable config that defines the resource belongs in the base; **provider-specific** config (a vendor's knobs) is the extra tier (§2). The per-field test: **is this portable across providers of this type (base), or specific to one provider (§2)?**
@@ -37,7 +37,7 @@ Ownership of the config *schema* is the provider's (§2). Ownership of the confi
 
 **the control plane stores the config values — base *and* provider-specific — because that is what a system-of-record is for: drift is a diff** (Requested vs Realized vs Discovered), and **you cannot diff what you did not store.** This is consistent, not halfway: **if we store one component's config we store every component's, end to end across an application stack** — otherwise the stack's state is un-diffable and the control plane is not the SoR. There is no "track the pointer instead of the values" shortcut; a `config_interface` reference (`{interface_type, endpoint | handle, schema_ref?}`) MAY *additionally* record where the provider exposes its edit UI, but it **never replaces** storing the state — it is a navigation/audit convenience only.
 
-Provider-specific config values are stored as provider-namespaced state (formerly `provider_extensions`, §2) — governed like any state (audit, provenance, tenancy) and portability-flagged — but stored. (This is *not* the ADR-013 case: ADR-013 declines to be the SoR for hardware components the control plane does **not** manage; config of a resource the control plane **does** manage is exactly its to record.)
+Provider-specific config values are stored as provider-namespaced state (formerly `provider_extensions`, §2) — governed like any state (audit, provenance, tenancy) and portability-flagged — but stored. (This is *not* the DCM ADR-013 case: DCM ADR-013 declines to be the SoR for hardware components the control plane does **not** manage; config of a resource the control plane **does** manage is exactly its to record.)
 
 **Corollary — complete coverage.** Every resource the control plane manages has a **resource record type**, so its state (including config) is a stored, diffable record. Nothing the control plane manages is a black box.
 
@@ -48,7 +48,7 @@ Provider-specific config values are stored as provider-namespaced state (formerl
 ## Data · Policy · Provider (required lens — SPEC-DESIGN §29)
 - **Data (UDLM):** the graph/audit/observability-bearing subset — the portable, conformity-bearing base type.
 - **Policy (the control plane/org):** which projected config a consumer may set; the config interface control-plane projects across the lifecycle.
-- **Provider:** owns the concrete config schema, declares its config-projection depth, and naturalizes it (ADR-023).
+- **Provider:** owns the concrete config schema, declares its config-projection depth, and naturalizes it (DCM ADR-023).
 
 ## Options considered
 - **(A) Model the full config surface in the type** — rejected: breaks the substrate/implementation boundary, swells the model into a copy of every runtime's API, and the moment two providers differ the spec can no longer be shared.

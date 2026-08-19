@@ -9,7 +9,7 @@
 - **ADR-054** (references-context is a classified edge): moved *orthogonal context* — data **about** a resource — onto a context edge to a linked entity (an `edge_type: references` edge with a declared `relation`; nature is derived, never stored). It addressed **only** context, not vocabulary — and it did not retire `reference_data`, which marks a layer other layers reference.
 - **ADR-038 §2–§3** (`SharedDataElement`, `registry/class.schema.json` `$defs.shared_data_element`): the composable unit of the Class hierarchy — "**base field, shared vocabulary, and provider extension collapse into one shape distinguished only by `scope`**," and **"the scope position IS the element's portability."** An element's `values.reference_data_type` already declares a **governed vocabulary** (not an inline enum).
 - **ADR-039 + `docs/design/vocabulary-intake-ladder.md`** (the vocabulary-intake ladder): `proposed → canonical` curation + **profile-gated strictness** (homelab mint-on-write … sovereign canonical-only, unknown **refused**; near-matches never bind silently). Scope promotion is the class system's portability-improvement operation.
-- **ADR-012** (data references / dual anchor): the binding a `values`-typed element uses to resolve one canonical term.
+- **DCM ADR-012** (data references / dual anchor): the binding a `values`-typed element uses to resolve one canonical term.
 
 **Settles:** where a **curated vocabulary** lives once `reference_data` is no longer a `layer_type` — **and** why that placement makes portability and standardization *structural*, not optional.
 
@@ -59,4 +59,4 @@ never layer-shaped. The terms now live in `registry/vocabulary-term.schema.json`
 
 ## Related
 
-ADR-054 (references-context — the half this completes) · ADR-038 (`SharedDataElement`, scope = portability) · ADR-039 (vocabulary-intake ladder, standardization) · ADR-007 (profile floors) · ADR-012 (data references / dual anchor) · #189 (the retirement program) · #217 (engineering ratification).
+ADR-054 (references-context — the half this completes) · ADR-038 (`SharedDataElement`, scope = portability) · ADR-039 (vocabulary-intake ladder, standardization) · ADR-007 (profile floors) · DCM ADR-012 (data references / dual anchor) · #189 (the retirement program) · #217 (engineering ratification).

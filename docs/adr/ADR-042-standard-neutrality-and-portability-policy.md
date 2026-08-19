@@ -14,7 +14,7 @@ absorb/embed/adopt dispositions) and the **existing** per-standard record
 evaluation rides the policy firewall ([ADR-041](ADR-041-policy-information-firewall.md)); the neutral-vs-provider
 trade-off is the same **portability-by-scope** it has in the data-element domain
 ([ADR-038](ADR-038-scoped-resource-type-classes.md)). Putting the *stance* in a profile rather than the data
-applies the established **strictness-is-Policy** pattern ([ADR-025 §6](README.md),
+applies the established **strictness-is-Policy** pattern ([DCM ADR-025 §6](README.md),
 [`DPO-001`](../spec/principles/design-priorities.md)); *deriving* the property rather than storing it follows
 [ADR-027](ADR-027-entity-family-model.md)'s addendum discipline. The **the control plane implementation** belongs on the
 control-plane side — **DCM ADR-021** (adopting external standards) + `adopted-standards-dcm.md`. Throughout,
@@ -59,7 +59,7 @@ To make a governance stance over adopted standards **opt-in without UDLM decidin
 2. **Mechanism — policy *may* evaluate it (ADR-041).** The adoption is an authoring/ingress crossing; the firewall
    *can* evaluate the property there. UDLM ships the **ability**, never a rule that fires by default.
 3. **Stance — the org's profile sets it.** The org dials the response for **its own estate** — the established
-   **strictness-is-Policy** pattern (ADR-025 §6 / `DPO-001`): the stance is a **profile dial, never a data field.**
+   **strictness-is-Policy** pattern (DCM ADR-025 §6 / `DPO-001`): the stance is a **profile dial, never a data field.**
 
 **The line:** UDLM **classifies / describes** the standard; the **org governs its own estate.** An
 approved-standards *list* is UDLM mandating one answer for everyone; a *derivable property + a profile knob* is

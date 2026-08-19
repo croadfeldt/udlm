@@ -1,7 +1,7 @@
-# Consumer manifest (ADR-044) — self-reported read surface; gated by
+# Consumer manifest (DCM ADR-044) — self-reported read surface; gated by
 # tests/check_consumer_conformance.py.
 #
-# KNOWN COVERAGE GAP (the ADR-044 motivating incident): the servicetype generator maps only
+# KNOWN COVERAGE GAP (the DCM ADR-044 motivating incident): the servicetype generator maps only
 # the five types below — every other registry type has no control-plane service-type
 # projection. The small set here is exact, read from the generator's mapping table
 # (cmd/udlm-servicetype-gen/main.go, `var mappings`); widening it is control-plane work.

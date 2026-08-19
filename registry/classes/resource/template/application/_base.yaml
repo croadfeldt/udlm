@@ -14,14 +14,14 @@
 # exactly that — abstract slots naming capabilities rather than classes. A category is not a
 # pattern: `Application` is what KIND of service this is, not which parts it has. The concrete
 # composition sits at the provider tier, where opinions are legal.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.1.1
 conforms_to: udlm/0.1
 uuid: d1769eb5-e8ce-4012-ba5e-18dcc9820d87
 record_type: class
 class: type
 resource_type: Template.Application
 parent: Template
-version: 0.1.0
+version: 0.1.1
 family: Resource
 status: active
 
@@ -78,7 +78,7 @@ elements:
     schema:
       type: boolean
 
-# The worked example every spec ships (ADR-055), and it is deliberately a JOINT sovereignty case:
+# The worked example every spec ships (DCM ADR-055), and it is deliberately a JOINT sovereignty case:
 # the whole application must land inside one declared zone, which is the constraint no
 # single-resource intent can express and the reason a composite is not merely a bag of parts.
 spec_examples:

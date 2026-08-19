@@ -47,6 +47,13 @@ implementation separate again and this rule is revisited — that is a decision,
                 TIME, including where that turned out to be wrong; editing an accepted one destroys
                 the only thing it was keeping. Exposure is one record today and grows with every
                 ratification, so this lands before the #217 pass rather than after.
+                A REFERENCE QUALIFIER IS NOT A REWRITE. Adding `DCM `/`DAV ` in front of an
+                `ADR-NNN` already in the text does not change what was decided — it makes an
+                existing pointer land on the record it always meant, in a repo where both projects
+                number from 1 and a bare number resolves to the wrong decision. Bodies are compared
+                with those qualifiers normalised away, so a citation fix passes and any other change
+                to the same sentence still fails.
+
                 THE BODY IS WHAT IS IMMUTABLE, not the whole file. The header fields —
                 `Status`, `Realized by`, `Superseded by` — record where the decision STANDS and
                 where it LIVES, and both move by definition: a status that could never change would
@@ -98,8 +105,14 @@ BASE = os.environ.get("UDLM_BASE_REF", "origin/main")
 HEADER_LINE = re.compile(r"^\*\*[A-Za-z][A-Za-z /—-]{2,30}:\*\*")
 
 
+# An owner qualifier on a citation. Normalised out before comparing bodies: adding one corrects
+# where a reference points, it does not change the decision.
+QUALIFIER = re.compile(r"\b(?:DCM|DAV)\s+(ADR-)")
+
+
 def _body(text):
-    """A record's reasoning, normalized — header fields and whitespace removed."""
+    """A record's reasoning, normalized — header fields, citation qualifiers and whitespace
+    removed."""
     lines, seen_section = [], False
     for ln in text.splitlines():
         if ln.startswith("## "):
@@ -107,7 +120,7 @@ def _body(text):
         if not seen_section and (HEADER_LINE.match(ln) or ln.startswith("# ")):
             continue
         lines.append(ln)
-    return re.sub(r"\s+", " ", "\n".join(lines)).strip()
+    return re.sub(r"\s+", " ", QUALIFIER.sub(r"\1", "\n".join(lines))).strip()
 
 
 def accepted_edits():

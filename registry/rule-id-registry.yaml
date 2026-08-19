@@ -1,7 +1,7 @@
 # UDLM Rule-ID Registry — the single source of truth for normative rule-ID prefixes.
 #
 # Convention: registry/rule-id-naming.md (normative). Enforced by tests/check_single_source.py
-# (CI). ADR-028 records the decision.
+# (CI). DCM ADR-028 records the decision.
 #
 # One prefix = one rule family = one home file. A rule DEFINITION (a `| `PFX-NNN` | … |` table
 # row) may appear ONLY in that prefix's `home`; every other mention is a citation. To add a

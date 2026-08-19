@@ -46,7 +46,7 @@ Each hard constraint cites the UDLM contract it derives from.
     point, MUST NOT **commit** (build) any target until the **whole reserved graph is held-and-valid and
     all applicable policy is green** (the commit barrier), and MUST **release** any uncommitted hold on
     failure/cancellation/TTL-expiry. Providers expose `reserve` / `commit` / `release`, all idempotent
-    (`docs/spec/contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (ADR-009)
+    (`docs/spec/contracts/provider-contract.md` §6a). This is what makes `fulfillment: provider` (DCM ADR-009)
     side-effect-free: cross-dependency criteria are computed against **reserved** facts before anything
     is built. A `reserve` request carries a `requested_ttl` bounded by the provider-advertised
     `min_hold_ttl` / `max_hold_ttl`; **TTL expiry is an implied release** and MUST emit

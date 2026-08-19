@@ -141,7 +141,7 @@ authority from declaring — default-deny: every declared capability is unusable
 The provider learns its effective (admitted) set back from the control plane (the OAuth 'server echoes the
 granted scope' pattern) and can never invoke beyond it. A provider-initiated capability
 amendment re-enters pending; the provider cannot self-admit or self-provision (mirrors the control plane
-ADR-022 / trust: never self-declared).
+DCM ADR-022 / trust: never self-declared).
 
 ## Alternatives considered
 

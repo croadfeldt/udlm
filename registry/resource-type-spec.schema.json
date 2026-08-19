@@ -226,7 +226,7 @@
     },
     "relationships": {
       "type": "array",
-      "description": "Relationship TEMPLATES this resource illustrates — guidance and placement hints, NOT a closed allowlist (UDLM ADR-009 §4). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). docs/spec/foundations/entity-relationships.md, service-dependencies.md.",
+      "description": "Relationship TEMPLATES this resource illustrates — guidance and placement hints, NOT a closed allowlist (UDLM DCM ADR-009 §4). A catalog item or provider MAY declare relationships not listed here; the platform cannot pre-validate what a provider will create. Only relationships marked enforcement=structural are required/validated (REL-002); all others are examples (REL-001 advisory). docs/spec/foundations/entity-relationships.md, service-dependencies.md.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -248,7 +248,7 @@
               "structural"
             ],
             "default": "example",
-            "description": "example (default) = an illustrative/placement-hint relationship a provider may satisfy, override, or ignore (REL-001 advisory). structural = an invariant true by the nature of the resource (a dataset cannot exist without its pool) — required and validated (REL-002). UDLM ADR-009 §4."
+            "description": "example (default) = an illustrative/placement-hint relationship a provider may satisfy, override, or ignore (REL-001 advisory). structural = an invariant true by the nature of the resource (a dataset cannot exist without its pool) — required and validated (REL-002). UDLM DCM ADR-009 §4."
           },
           "target_field": {
             "type": "string",
@@ -470,7 +470,7 @@
         "use_cases",
         "flows"
       ],
-      "description": "Spec-completeness link (rule-36 — CONTRIBUTING 'a spec travels with its story'): the Use Case(s) and flow(s) that exercise this spec. The worked example lives in `spec.examples` (ADR-055), so `examples` here is optional — spec_coverage.py satisfies the example leg from spec.examples and only needs `examples` when an external instance is also cited. It resolves each referent and, in --check, fails on a dangling one; a spec with no coverage block is carried in registry/spec-coverage-backlog.yaml (the backfill list), never silently uncovered.",
+      "description": "Spec-completeness link (rule-36 — CONTRIBUTING 'a spec travels with its story'): the Use Case(s) and flow(s) that exercise this spec. The worked example lives in `spec.examples` (DCM ADR-055), so `examples` here is optional — spec_coverage.py satisfies the example leg from spec.examples and only needs `examples` when an external instance is also cited. It resolves each referent and, in --check, fails on a dangling one; a spec with no coverage block is carried in registry/spec-coverage-backlog.yaml (the backfill list), never silently uncovered.",
       "properties": {
         "use_cases": {
           "type": "array",

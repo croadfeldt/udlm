@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.6
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
 class: type
 resource_type: Compute.Container
 parent: Compute
-version: 0.7.5
+version: 0.7.6
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -26,12 +26,12 @@ elements:
   state: canonical
   description: The container image — either the inline OCI reference (first branch) OR a data_reference
     to a governed container_image reference-data layer. The reference form lets the control plane compute the change-impact
-    blast radius when a base image or embedded library is bumped (UDLM ADR-012; DCM ADR-024) — an inline
+    blast radius when a base image or embedded library is bumped (UDLM DCM ADR-012; DCM ADR-024) — an inline
     OCI string cannot be cascaded.
   schema:
     description: The container image — either the inline OCI reference (first branch) OR a data_reference
       to a governed container_image reference-data layer. The reference form lets the control plane compute the change-impact
-      blast radius when a base image or embedded library is bumped (UDLM ADR-012; DCM ADR-024) — an inline
+      blast radius when a base image or embedded library is bumped (UDLM DCM ADR-012; DCM ADR-024) — an inline
       OCI string cannot be cascaded.
     oneOf:
     - type: object

@@ -50,7 +50,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
    `lifecycle_scope.operations` names which operations it evaluates on — compliance-class validation and
    `governance_matrix_rule` must include `all`.
 5. **If the policy states a normative rule, give it a rule-ID.** A normative policy rule carries a registered
-   `PREFIX-NNN` (e.g. `POL-003`) — **ADR-028: one prefix = one rule family = one home file; the prefix is
+   `PREFIX-NNN` (e.g. `POL-003`) — **DCM ADR-028: one prefix = one rule family = one home file; the prefix is
    registered in `registry/rule-id-registry.yaml` before use, and a rule is *defined* in exactly one home.**
    Register the prefix first; an unregistered one fails CI.
 
@@ -69,7 +69,7 @@ rule. The schema's `policy_type` enum is the menu: `validation`, `transformation
 |---|---|---|
 | Validates against `policy.schema.json` (required fields; type-correct `output` for its `policy_type`) | Valid by construction | `registry/tools/validate.py` |
 | Fresh `uuid`; a change to a published policy bumps `version` (never edits in place) | Identity is honest (ADR-051) | `registry/tools/validate.py`, `tests/check_identity_integrity.py` |
-| Every normative rule-ID uses a registered, single-home prefix | One definition per rule (ADR-028) | `tests/check_single_source.py` |
+| Every normative rule-ID uses a registered, single-home prefix | One definition per rule (DCM ADR-028) | `tests/check_single_source.py` |
 | No retired vocabulary in the prose (use the current term — e.g. "Validation Policy") | Terminology discipline (TERM-001) | `tests/check_terminology.py` |
 
 ## 4. A worked pointer

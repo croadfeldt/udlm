@@ -4,7 +4,7 @@
 **Realized by:** `registry/realized-entity.schema.json` (`portability`)
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-PROV-002 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` **T6** (pre-validated outcomes), T2/T5; DCM ADR-001 (`Topology`); ADR-002 (capacity/utilization served overlay); ADR-PROV-002 (provider capability declaration); **DCM ADR-020** (migration policy + gating)
 **Tracking:** placement-data family — "how is data migration handled, and how do we pre-validate it?"
 
 ## Context
@@ -72,7 +72,7 @@ Both **rehearsals and real incidents** write this — a real DR event *is* a val
 
 ## Consequences
 - New common-elements `data_mobility` + `process_validation` (declarable at resource/composite/policy layers); a provider `mobility` capability block; an observed `mobility_validation` overlay. No new top-level type.
-- Makes ADR-001's "change topology → rebuild" **provable**: the rebuild path is rehearsed + freshness-tracked; the db tier's "not instant" caveat becomes a *matched, validated, policy-gated* contract.
+- Makes DCM ADR-001's "change topology → rebuild" **provable**: the rebuild path is rehearsed + freshness-tracked; the db tier's "not instant" caveat becomes a *matched, validated, policy-gated* contract.
 - Ties to the rehydration demo (#213): a rehearsed rehydration is a validated one.
 - control-plane side (DCM ADR-020): migration **policy** (sovereignty/windows/approval/serialization) + **gate-on-stale** enforcement + rehearsal **scheduling**.
 

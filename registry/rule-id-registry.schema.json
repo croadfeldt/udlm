@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/rule-id-registry.schema.json",
   "title": "UDLM Rule-ID Registry",
-  "description": "The single source of truth for normative rule-ID prefixes: one prefix = one rule family = one home file. See registry/rule-id-naming.md and ADR-028.",
+  "description": "The single source of truth for normative rule-ID prefixes: one prefix = one rule family = one home file. See registry/rule-id-naming.md and DCM ADR-028.",
   "type": "object",
   "required": ["version", "prefixes"],
   "additionalProperties": false,

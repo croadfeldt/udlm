@@ -4,7 +4,7 @@
 **Realized by:** `registry/common-elements.schema.json#/$defs/StorageUsage` — capacity + utilization as served Quantities on the shapes that need them, never a type of their own
 **Date:** 2026-06-27
 **Type:** Architecture Decision Record (a `DecisionRecord` with architecture scope — `docs/spec/foundations/knowledge-family.md` §4.5)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` (Data⇄Policy boundary, T5 adopt-by-reference); the **cost** decision (FOCUS adopted + served, not modeled — `../design/resource-type-registry-design-notes.md` §4a); ADR-001 (`Topology`); **DCM ADR-019 (Placement Policy)** — a consumer
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** `docs/spec/principles/core-tenets.md` (Data⇄Policy boundary, T5 adopt-by-reference); the **cost** decision (FOCUS adopted + served, not modeled — `../design/resource-type-registry-design-notes.md` §4a); DCM ADR-001 (`Topology`); **DCM ADR-019 (Placement Policy)** — a consumer
 **Tracking:** placement-informing data family — "is capacity/utilization a record type, or data on the resource?"
 
 ## Context
@@ -24,7 +24,7 @@ Placement scoring needs capacity/utilization. But:
 | **Available / utilization** | provider **+** 3rd-party (fast, multi-source) | **served observational overlay** referencing the resource by id — provided by an information / `serve_data` provider, **adopt-by-reference** (K8s `capacity`/`allocatable` + Metrics API; OpenStack Placement `inventories`/`usages`; OpenMetrics). Multi-source provenance handled by source attribution + the existing **field-level provenance** (realized-entity schema). **Not a UDLM type.** |
 | **Allocated** | The control plane (it made the placements) | **derived projection** over the control plane's own Realized entities — not a new type |
 
-**This follows the cost pattern exactly.** Cost was deliberately *not* modeled as a UDLM type — it is adopted (FOCUS) and **served** by an information provider, referencing resources by id (`uuid ↔ ResourceId`). Capacity/utilization is the same shape (a multi-source observational overlay) and gets the same treatment. The principled line: **declared *structure* → a type (e.g. `Topology`, ADR-001); observed *measurement* → a served overlay (cost, capacity/utilization).**
+**This follows the cost pattern exactly.** Cost was deliberately *not* modeled as a UDLM type — it is adopted (FOCUS) and **served** by an information provider, referencing resources by id (`uuid ↔ ResourceId`). Capacity/utilization is the same shape (a multi-source observational overlay) and gets the same treatment. The principled line: **declared *structure* → a type (e.g. `Topology`, DCM ADR-001); observed *measurement* → a served overlay (cost, capacity/utilization).**
 
 It is **DATA** (Data⇄Policy): the control plane Placement Policy (DCM ADR-019) consumes it; the engine computes; no embedded expressions.
 

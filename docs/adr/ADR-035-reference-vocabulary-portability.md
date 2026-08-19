@@ -4,15 +4,15 @@
 **Realized by:** `registry/taxonomies/network-zone.yaml` · `registry/vocabulary-term.schema.json` (`scope` — the portability position)
 **Date:** 2026-07-21
 **Type:** Architecture Decision Record (a `DecisionRecord`, architecture scope)
-**Background — read first (the cold reader's on-ramp; skip if you have the context).** ADR-012 (data-references — the in-field reference shape); ADR-PROV-002 (provider capability declaration);
-ADR-023 (host networking as data / naturalization); ADR-024 (filling provider-required inputs); ADR-037 (the PVD
+**Background — read first (the cold reader's on-ramp; skip if you have the context).** DCM ADR-012 (data-references — the in-field reference shape); ADR-PROV-002 (provider capability declaration);
+DCM ADR-023 (host networking as data / naturalization); DCM ADR-024 (filling provider-required inputs); ADR-037 (the PVD
 family this applies); core-tenets **T5** (adopt standards by reference); layering-and-versioning §3.7
 (reference-data kinds)
 
 **Settles:** how a *referenced* vocabulary (`os_image`, `storage_class`, …) is made portable across providers — adopted identity + advertised eligibility + validated membership.
 
 ## Context
-`data_reference` (ADR-012) lets a field point at a governed `reference_data` layer instead of inlining a value,
+`data_reference` (DCM ADR-012) lets a field point at a governed `reference_data` layer instead of inlining a value,
 and §3.7 pre-enumerates the reference kinds — `os_image`, `storage_class`, `vm_size`, `network_zone`,
 `gpu_profile`, `location`, `topology_capability`, `environment`. The mechanism guarantees referential
 **integrity**: a dangling ref, a type mismatch, or a wrong advisory name is a hard failure.
@@ -28,12 +28,12 @@ For any reference kind whose vocabulary must **federate across providers**:
 
 1. **Portable identity (UDLM, T5).** The kind adopts a standard for its *identity* — a Tier-1 codelist. OS →
    **CPE 2.3** or **os-release** (`ID` / `VERSION_ID`). The `reference_data` layer's identity conforms to it;
-   provider-native names are **naturalized** to that identity at the provider edge (ADR-023), never leaked raw.
+   provider-native names are **naturalized** to that identity at the provider edge (DCM ADR-023), never leaked raw.
 2. **Advertised eligibility (UDLM contract → provider data).** Each provider advertises the subset it realizes
    via capability discovery (ADR-PROV-002): the provider support matrix carries *which* `os_image` / `storage_class`
    / `vm_size` identities it offers.
 3. **Validated membership (the control plane / Policy).** At request, the control plane validates the declared reference ∈
-   *(portable vocabulary ∩ provider-advertised set)*; a miss is a placement/validation finding (ADR-024).
+   *(portable vocabulary ∩ provider-advertised set)*; a miss is a placement/validation finding (DCM ADR-024).
    Selection is *from the advertised set*, never a guessed string; a net-new string enters the vocabulary via
    the intake ladder (`docs/design/vocabulary-intake-ladder.md` / ADR-039 — minted `proposed`, profile-priced),
    never by being guessed into a request.

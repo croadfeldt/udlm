@@ -121,7 +121,7 @@ To translate to/from other ecosystems, a type carries its alternative names with
 
 This section governs the **casing of the data model itself** (the keys in a resource definition). The
 *runtime* concerns — how the API / event bus serialize it, Go/Python mapping, CloudEvents envelope,
-broker routing — are a **the control plane** concern: see the control plane **ADR-018 (Wire serialization & event conventions)**.
+broker routing — are a **the control plane** concern: see the control plane **DCM ADR-018 (Wire serialization & event conventions)**.
 The control plane follows the same casing for the reason below, so there is no translation seam.
 
 **Decision: `snake_case` keys.** UDLM is a **canonical data model meant to be consumed natively** by
@@ -151,7 +151,7 @@ an **export adapter** at that domain boundary (not native consumption).
 
 **Event-type identifiers** (UDLM event-catalog names, e.g. `resource.discovered`, `entity.realized`) use
 lowercase **dot notation** so brokers can wildcard-route — distinct from payload property keys. The
-routing mechanics live in the control plane (ADR-018).
+routing mechanics live in the control plane (DCM ADR-018).
 
 ### Carve-outs — keep foreign / idiomatic casing
 - **Adopted vocabulary is referenced, not minted as a live key.** The live field name is always the

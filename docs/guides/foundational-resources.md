@@ -22,7 +22,7 @@ UDLM ships the **base definition** of each foundational resource as **guidance**
 | **`Facility.Location`** (site/room/rack/row) | platform data layer and/or a facilities/location provider | placement — `references Facility.Location` |
 | **`Network.VirtualNetwork`** (segment/VLAN/overlay) | platform data layer and/or a network provider | attachment — `references Network.VirtualNetwork` |
 | **`Network.VLAN`** (802.1Q id / overlay VNI) | network/fabric provider and/or platform layer | segment — `references Network.VLAN` (a VirtualNetwork or interface rides it) |
-| **`Network.IPAddress`** | IPAM / network provider | `depends_on` (dynamic/static/byo — ADR-009 fulfillment) |
+| **`Network.IPAddress`** | IPAM / network provider | `depends_on` (dynamic/static/byo — DCM ADR-009 fulfillment) |
 | **`Storage.Pool` / `Storage.Cluster`** | storage provider | volumes provisioned from — `depends_on` |
 | **`Security.DirectoryService`** (realm/identity) | identity provider | scope-derived from `tenant_uuid` (the pervasive realm edge) |
 | **`Facility.PowerFeed`** | facilities provider | power — `Compute.BareMetalHost depends_on Facility.PowerFeed` (`0..n`; one edge per feed, so redundancy is authored) |
@@ -40,7 +40,7 @@ This keeps one source of truth per foundational resource, lets policy govern sel
 
 ## Consequences
 
-- **Resource types that consume a foundational resource declare a `references`/`depends_on` relationship to it** (guidance/example per ADR-009 §4 — a template, not a gate), and put the *selection* (`*_ref`) in their spec.
+- **Resource types that consume a foundational resource declare a `references`/`depends_on` relationship to it** (guidance/example per DCM ADR-009 §4 — a template, not a gate), and put the *selection* (`*_ref`) in their spec.
 - **Providers of foundational resources advertise their inventory + capacity** at registration (feeds placement — the September P3 capacity gap), and **policy governs eligibility** over that data.
 - **Foundational resources anchor fault domains** — a `Facility.Location` is the natural home for the shared-fault-domain reasoning the dependency graph needs (the September P4 gap): resources selecting the same location share its fault domain.
 

@@ -6,7 +6,7 @@
 
 **Background — read first (the cold reader's on-ramp; skip if you have the context).** Each cited once with what it settles.
 - **ADR-038** (scoped Classes): a type is defined Base → Type → Provider, and **scope IS portability**. This ADR is what keeps a *value* portable once the shape is.
-- **ADR-012 / ADR-039** (reference data, and the vocabulary intake ladder): a governed vocabulary is a versioned, curated reference-data record, with `proposed → canonical` curation. The floors below live on those records.
+- **DCM ADR-012 / ADR-039** (reference data, and the vocabulary intake ladder): a governed vocabulary is a versioned, curated reference-data record, with `proposed → canonical` curation. The floors below live on those records.
 - **ADR-007** (profile model): posture decides rigor — which is how this ADR scales from a homelab to a sovereign estate without two mechanisms.
 - **T5** (adopt by reference) and **T9** (the substrate never translates into a provider's native spec): the two tenets this exists to protect.
 - **NDF-001 / rule 41** (UDLM ships no defaults) — a floor is not a default; the distinction is in *Consequences*.

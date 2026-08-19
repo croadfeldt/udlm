@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.4",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
   "resource_type": "Compute.VM",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -25,7 +25,7 @@
         },
         {
           "class": "Compute.VM",
-          "version": "1.5.3",
+          "version": "1.5.4",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -258,7 +258,7 @@
       },
       "placement": {
         "type": "object",
-        "description": "Placement INTENT expressed as a SELECTION of an existing Facility.Location (populated by a platform data layer and/or a Facility.Location provider), plus affinity relative to other existing resources. Policy governs which locations a given consumer may select; the VM only references one — it does not define locations itself (ADR-009 §4: guidance, not a gate).",
+        "description": "Placement INTENT expressed as a SELECTION of an existing Facility.Location (populated by a platform data layer and/or a Facility.Location provider), plus affinity relative to other existing resources. Policy governs which locations a given consumer may select; the VM only references one — it does not define locations itself (DCM ADR-009 §4: guidance, not a gate).",
         "properties": {
           "location_ref": {
             "type": "string",
@@ -280,7 +280,7 @@
               "properties": {
                 "target": {
                   "type": "string",
-                  "description": "Handle OR label-selector of an existing resource to co-locate with / avoid, resolved at reserve (ADR-025/AEP-124) - you do not need its UUID in advance."
+                  "description": "Handle OR label-selector of an existing resource to co-locate with / avoid, resolved at reserve (DCM ADR-025/AEP-124) - you do not need its UUID in advance."
                 },
                 "rule": {
                   "enum": [
@@ -406,7 +406,7 @@
     },
     "target_segment": {
       "type": "string",
-      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a Network.IPAddress allocated on the reachable segment (ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
+      "description": "Realize-time placement fact (ADR-011 two-phase reserve): a reference to the Network.VLAN segment the reserved/realized placement can reach (adopt-not-absorb — the segment id/encapsulation live on the Network.VLAN). This is the declarable binding source for a fulfillment:provider dependency whose criteria are simply the target segment — e.g. a Network.IPAddress allocated on the reachable segment (DCM ADR-009 §3 worked example: bind target_segment -> the IP request's segment_ref). It is a shared-reference fact, NOT the vNIC/MAC/host-networking (those are the VM provider's own internal facts, never cross-provider criteria)."
     }
   },
   "immutable": [

@@ -55,5 +55,5 @@ requirements-floor capacity contract, and the surfacing contract; DCM's engine p
 |---|---|
 | Requirements-floor capacity (tier = named requirements, not native class) | ADR-036 |
 | Operational dependency, root-cause surfacing, reserve-not-activate | ADR-052 / ADR-011 |
-| The resource shapes + their examples | `registry/generated/storage.*` (`spec.examples`, ADR-055) |
+| The resource shapes + their examples | `registry/generated/storage.*` (`spec.examples`, DCM ADR-055) |
 | Corpus | `use-cases/storage/`, `use-cases/storage-redundancy/` |

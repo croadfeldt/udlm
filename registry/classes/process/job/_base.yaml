@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.4
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.3
+version: 1.2.4
 family: Process
 status: active
 metadata:
@@ -65,7 +65,7 @@ elements:
   optional: true
   state: canonical
   description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme
-    §9), never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored;
+    §9), never inventory strings. Each is authored by handle (DCM ADR-025 §2 — a uuid is never hand-authored;
     the control plane resolves it to the uuid form at reserve). Part of the portable automation intent: the target set
     i'
   schema:
@@ -73,7 +73,7 @@ elements:
     items:
       $ref: ../../../common-elements.schema.json#/$defs/Reference
     description: 'The resources this job operates on — typed resource references — URF strings (identifier-scheme
-      §9), never inventory strings. Each is authored by handle (ADR-025 §2 — a uuid is never hand-authored;
+      §9), never inventory strings. Each is authored by handle (DCM ADR-025 §2 — a uuid is never hand-authored;
       the control plane resolves it to the uuid form at reserve). Part of the portable automation intent: the target
       set is engine-neutral and unchanged by an engine migration. Distinct from the informational affected_entities
       edge: targets is authored intent (what the job is FOR); affected_entities records what a run actually

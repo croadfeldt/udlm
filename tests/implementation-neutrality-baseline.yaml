@@ -50,7 +50,7 @@ known:
 - file: docs/spec/principles/adopted-standards.md
   hash: 7706a44039e2cdf4
 - file: docs/spec/principles/naming-charter.md
-  hash: 50ae2485c6b0178e
+  hash: 032b46b411e6484f
 - file: docs/spec/principles/naming-charter.md
   hash: ac8a85d2449fea7a
 - file: registry/classes/knowledge/capability/_base.yaml
