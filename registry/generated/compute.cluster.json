@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.3",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "Compute.Cluster",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.3",
+          "version": "1.2.4",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Compute.Cluster",
-          "version": "0.5.2",
+          "version": "0.5.3",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -34,7 +34,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, DCM ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
       },
       "cpu": {
         "type": "object",
@@ -173,7 +173,7 @@
             },
             "instance_size": {
               "type": "string",
-              "description": "Provider-neutral node size class (small|medium|large) — sizes each node in the pool; the provider maps it to a concrete node shape at naturalization (common-elements §2.2, DCM ADR-014)."
+              "description": "Provider-neutral node size class (small|medium|large) — sizes each node in the pool; the provider maps it to a concrete node shape at naturalization (common-elements §2.2, ADR-014)."
             }
           }
         },

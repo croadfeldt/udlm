@@ -116,7 +116,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Compute.VM — the guests the host runs.
 
-### Compute.Cluster (0.5.2)
+### Compute.Cluster (0.5.3)
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -137,7 +137,7 @@ The request for a whole container platform: which release, how many nodes of wha
 - Compute.Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.7.6)
+### Compute.Container (0.7.7)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -184,7 +184,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## Data
 
-### Data.Database (0.7.3)
+### Data.Database (0.7.4)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 

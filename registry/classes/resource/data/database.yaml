@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Data.Database/0.7.4
 conforms_to: udlm/0.1
 uuid: c199bb49-3ed4-4ed5-a902-2ebccd0a8337
 record_type: class
 class: type
 resource_type: Data.Database
 parent: Data
-version: 0.7.3
+version: 0.7.4
 family: Resource
 status: active
 metadata:
@@ -34,7 +34,7 @@ elements:
   state: canonical
   description: 'Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints,
     E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults
-    to `latest`. Because the value may be abstract, two provider obligations apply (DCM ADR-014; provider-contract
+    to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract
     §8.1a): (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable
     against a pinned requirement and across compatible providers (declared, not live-queried); (2) the
     concrete version provisioned is recorded in outputs.applied_version for audit. Intent carries the
@@ -43,7 +43,7 @@ elements:
     type: string
     description: 'Engine version. Concrete (e.g. `16`, engine-dependent — see registry conditional-constraints,
       E3) OR an abstract channel the PROVIDER resolves (`latest`, `lts`). Optional: when omitted it defaults
-      to `latest`. Because the value may be abstract, two provider obligations apply (DCM ADR-014; provider-contract
+      to `latest`. Because the value may be abstract, two provider obligations apply (ADR-014; provider-contract
       §8.1a): (1) the provider DECLARES its channel→version resolution so an abstract request stays comparable/conformable/validatable
       against a pinned requirement and across compatible providers (declared, not live-queried); (2) the
       concrete version provisioned is recorded in outputs.applied_version for audit. Intent carries the

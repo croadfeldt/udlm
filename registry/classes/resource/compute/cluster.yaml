@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.3
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: type
 resource_type: Compute.Cluster
 parent: Compute
-version: 0.5.2
+version: 0.5.3
 family: Resource
 status: active
 metadata:
@@ -56,7 +56,7 @@ elements:
           type: string
           description: Provider-neutral node size class (small|medium|large) — sizes each node in the
             pool; the provider maps it to a concrete node shape at naturalization (common-elements §2.2,
-            DCM ADR-014).
+            ADR-014).
 - element: network
   scope: Compute.Cluster
   optional: true

@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.2.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.2.4
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
 resource_type: Compute
-version: 1.2.3
+version: 1.2.4
 family: Resource
 status: active
 metadata:
@@ -24,14 +24,14 @@ elements:
   scope: Compute
   optional: true
   state: proposed
-  description: 'Provider-neutral size class (DCM ADR-014: small|medium|large, ordered/comparable — common-elements
+  description: 'Provider-neutral size class (ADR-014: small|medium|large, ordered/comparable — common-elements
     §2.2): size by class IN PLACE OF explicit cpu+memory; the provider maps it to concrete resources at
     naturalization (DCM ADR-023). Added for parity with the flat Compute.VM spec (2026-07-29 reconciliation,
     bare-instantiation philosophy): a compute consumer may be declared by size class alone.'
   schema:
     type: string
     description: Provider-neutral size class (small|medium|large, ordered/comparable — common-elements
-      §2.2, DCM ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources
+      §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources
       at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw.
 - element: cpu
   scope: Compute

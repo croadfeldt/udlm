@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.3",
+          "version": "1.2.4",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
@@ -34,7 +34,7 @@
     "properties": {
       "instance_size": {
         "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, DCM ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
       },
       "cpu": {
         "type": "object",

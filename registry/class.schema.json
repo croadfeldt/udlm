@@ -647,7 +647,7 @@
         "optional": {
           "type": "boolean",
           "default": false,
-          "description": "Whether the element is optional at its scope (DCM ADR-014 optionality-with-conformity)."
+          "description": "Whether the element is optional at its scope (ADR-014 optionality-with-conformity)."
         },
         "description": {
           "type": "string",
