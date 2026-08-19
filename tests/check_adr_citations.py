@@ -67,9 +67,42 @@ SCAN = ["registry/**/*.yaml", "registry/**/*.json", "registry/**/*.md",
         "use-cases/**/*.yaml", "use-cases/**/*.md"]
 
 
+REGISTER = os.path.join(ROOT, "docs", "adr", "README.md")
+ROW = re.compile(r"^\|\s*(?:\[)?(\d{3})(?:\])?", re.M)
+
+
+def adr_files():
+    """The ADR numbers that have a prose file. `ADR-038-scoped-...md`[4:7] -> '038'.
+
+    Numeric only. `ADR-<FAMILY>-NNN` (ADR-COS-001, ADR-PRO-002) is the instance-backed namespace the
+    register describes separately — it is indexed by family, not by this sequence."""
+    return {n for n in (os.path.basename(p)[4:7]
+                        for p in glob.glob(os.path.join(ADR_DIR, "ADR-*.md"))) if n.isdigit()}
+
+
+def register_rows():
+    """The ADR numbers with a row in the decisions register."""
+    try:
+        return set(ROW.findall(open(REGISTER, encoding="utf-8").read()))
+    except OSError:
+        return set()
+
+
 def local_adrs():
-    """The ADR numbers that have a file here. `ADR-038-scoped-...md`[4:7] -> '038'."""
-    return {os.path.basename(p)[4:7] for p in glob.glob(os.path.join(ADR_DIR, "ADR-*.md"))}
+    """Every ADR number this repo has decided — prose file OR register row.
+
+    A ROW-ONLY RULING IS A RECORD, not a missing file. The register says so in its own opening: every
+    ruling gets a row, and a ruling earns prose "only when the why needs a page". 26 of the 65
+    rulings are row-only, with their normative content at a named home.
+
+    Resolving against files alone made all 26 read as dangling, and that misreading has already cost
+    real damage: a sweep took "no local file" to mean "must be the control plane's" and qualified 69
+    citations into a repo that had never decided them. ADR-014 is the sharpest case — optionality
+    with conformity is a row-only ruling HERE, and 28 citations were pointing at the control plane's
+    tenancy ADR instead.
+
+    A citation is unresolvable only when the number has neither a file nor a row."""
+    return adr_files() | register_rows()
 
 
 def violations():
@@ -157,16 +190,35 @@ def main():
           f"({still} baselined, {len(new)} new) · {len(local)} local ADR(s) · "
           f"{len(ambiguous)} qualified-but-locally-ambiguous")
     if ambiguous:
-        print("  Qualified citations whose number ALSO exists locally — both readings are "
-              "well-formed and this repo cannot tell which was meant. Confirm each against the DCM "
-              "tree; if it meant the local one, drop the qualifier:")
-        for rel, cite in sorted(ambiguous):
-            print(f"    ? {rel}: {cite}  (local ADR-{cite.split('-')[-1]} also exists)")
+        # Grouped by number rather than listed per occurrence. Per-occurrence output ran to 219
+        # lines, which is a wall rather than a finding — the unit of review is the NUMBER (one
+        # reading is right for all its citations), so that is the unit reported.
+        by_num = {}
+        for rel, cite in ambiguous:
+            by_num.setdefault(cite.split("-")[-1], set()).add(rel)
+        print(f"  {len(by_num)} number(s) decided BOTH here and by the control plane. One reading "
+              f"is right for all of a number's citations; confirm against the control-plane tree "
+              f"and drop the qualifier where it meant the local ruling:")
+        for num, rels in sorted(by_num.items(), key=lambda kv: -len(kv[1])):
+            where = ", ".join(sorted(rels)[:2]) + (f", +{len(rels) - 2} more" if len(rels) > 2 else "")
+            print(f"    ? ADR-{num} — {len(rels)} file(s): {where}")
     for rel, ln, num in new:
-        print(f"  FAIL [ADR-CITE-001] {rel}:{ln} — cites ADR-{num}, which has no local file.")
+        print(f"  FAIL [ADR-CITE-001] {rel}:{ln} — cites ADR-{num}, which this repo has neither "
+              f"ruled on (no register row) nor written up (no prose file).")
         print(f"       If it is the control plane's, write `DCM ADR-{num}` — the numbering spaces "
               f"overlap, so a bare citation resolves to the WRONG decision for a reader who assumes "
               f"it is local.")
+
+    # ADR-CITE-003 — the register's own rule, checked. "Every ruling gets a row in the table below —
+    # that row is the decision record of note." A prose ADR with no row is invisible in the one
+    # place that indexes decisions, and it is what makes the register safe to resolve citations
+    # against: if a decision can exist without a row, an absent row proves nothing.
+    unrowed = sorted(adr_files() - register_rows())
+    for num in unrowed:
+        print(f"  FAIL [ADR-CITE-003] ADR-{num} has a prose file but no row in "
+              f"docs/adr/README.md — the register indexes every ruling, and citation resolution "
+              f"trusts it. Add the row.")
+        new.append(("register", 0, num))
 
     known_dcm = dcm_adrs()
     bad = misqualified(known_dcm) if known_dcm else []
