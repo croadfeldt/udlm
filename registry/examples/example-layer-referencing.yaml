@@ -1,5 +1,5 @@
 # A consuming layer that BINDS the governed network zone BY REFERENCE, not by copying its fields.
-# The `network_zone` field is a data reference (UDLM DCM ADR-012), written as a URF string (identifier-scheme
+# The `network_zone` field is a data reference (UDLM ADR-012), written as a URF string (identifier-scheme
 # §9): the uuid path resolves the target, the @pin names the immutable version, and the
 # `reference_data_type` query term declares the kind the target must be. registry/tools/validate.py
 # (check_data_references) fails this record if the uuid does not resolve to an ACTIVE reference_data layer,
