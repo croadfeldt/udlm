@@ -4,11 +4,10 @@
   - registry/profiles/*        against  profile.schema.json                   (deployment PROFILES)
   - registry/taxonomies/*      against  the taxonomy-seed shape               (governed VOCABULARY seeds)
   - registry/examples/*        against  realized-entity.schema.json           (worked EXAMPLE records)
-                        or against  policy / layer / catalog-item / audit / accreditation schemas
+                        or against  policy / layer / audit / accreditation schemas
                         or against  profile.schema.json                       (PROFILE records — activatable postures)
-                        or against  catalog-item.schema.json                  (Composite Service catalog items)
-Instance dispatch: `record_type` is the dispatch key going forward (catalog_item → catalog
-schema); legacy discriminators remain — a document with `record_type: profile` is a profile;
+Instance dispatch: `record_type` is the dispatch key; legacy discriminators remain — a
+document with `record_type: profile` is a profile;
 grouping; one with `resource_type` is a realized entity (data-model-core §5 — Tenants ARE
 groupings). Catalog items additionally get semantic checks JSON Schema cannot express
 (component_id uniqueness, sibling depends_on/binding resolution, cycle rejection,
@@ -60,8 +59,6 @@ def _validator(name):
 TYPE_VALIDATOR = _validator("resource-type-spec.schema.json")
 INSTANCE_VALIDATOR = _validator("realized-entity.schema.json")
 PROFILE_VALIDATOR = _validator("profile.schema.json")
-_CATALOG_SCHEMA = json.loads((ROOT / "catalog-item.schema.json").read_text())
-CATALOG_VALIDATOR = None   # bound below, once _ref_store() is defined
 CONFORMANCE_DECL_VALIDATOR = _validator("conformance-declaration.schema.json")
 POLICY_VALIDATOR = _validator("policy.schema.json")
 EVAL_CONTEXT_VALIDATOR = _validator("evaluation-context.schema.json")
@@ -84,12 +81,6 @@ _CLASS_SCHEMA = json.loads((ROOT / "class.schema.json").read_text())
 _CLASS_RESOLVER = RefResolver(base_uri=(ROOT / "class.schema.json").as_uri(), referrer=_CLASS_SCHEMA,
                               store=_ref_store())
 CLASS_VALIDATOR = Draft202012Validator(_CLASS_SCHEMA, resolver=_CLASS_RESOLVER)
-# catalog-item $refs the shared composition shape (composition.schema.json), so it resolves the
-# same way a class does rather than as a self-contained document.
-CATALOG_VALIDATOR = Draft202012Validator(
-    _CATALOG_SCHEMA,
-    resolver=RefResolver(base_uri=(ROOT / "catalog-item.schema.json").as_uri(),
-                         referrer=_CATALOG_SCHEMA, store=_ref_store()))
 # A composition record $refs the same shared composition shape a class does — one shape, so
 # promotion is not a translation. Resolved the same way for the same reason.
 COMPOSITION_RECORD_VALIDATOR = Draft202012Validator(
@@ -100,7 +91,7 @@ TAXONOMY_SEED_VALIDATOR = Draft202012Validator({"type": "object", "required": ["
 
 
 def _type_outputs_index():
-    """resource_type -> set(declared output names). The typed-outputs surface a catalog-item
+    """resource_type -> set(declared output names). The typed-outputs surface a constituent
     binding resolves against (data-model-core §2 [D8.3])."""
     index = {}
     for base in (ROOT / "resource-types", ROOT / "generated"):
@@ -178,13 +169,13 @@ def validate_dir(subdir: str, pick) -> int:
 
 def check_class_constituents(doc):
     """Composite-definition semantic checks for a Class carrying `constituents` — the SAME
-    cross-field constraints as a composite catalog item (one shape, one checker: reuse
-    check_catalog_item), plus namespace resolution: each constituent's resource_type must
+    cross-field constraints any composition carries (one shape, one checker: reuse
+    check_composition_constraints), plus namespace resolution: each constituent's resource_type must
     resolve to a registered Class or a flat resource type (both legal during the migration —
     the one dotted namespace)."""
     if not doc.get("constituents"):
         return []
-    errors = check_catalog_item(doc) + check_constituent_edges(doc)
+    errors = check_composition_constraints(doc) + check_constituent_edges(doc)
     known = _known_type_names()
     for c in doc.get("constituents", []):
         rt = c.get("resource_type")
@@ -208,7 +199,7 @@ def check_constituent_edges(doc):
     silent ownership transfer of a resource other tenants are also using.
 
     What cannot be checked here: whether a `contained_by` constituent's target is actually co-tenant.
-    At catalog time a constituent names a TYPE, not an instance, so there is no owner to compare —
+    At definition time a constituent names a TYPE, not an instance, so there is no owner to compare —
     that check belongs at realization, where check_group_invariants already makes it.
     """
     errors = []
@@ -336,11 +327,11 @@ def _known_type_names():
     return _KNOWN_TYPES
 
 
-def check_catalog_item(doc):
-    """Semantic checks for Composite Service catalog items — the cross-field constraints
-    JSON Schema cannot express (catalog-item.schema.json description; composite-service-model.md
-    §2.3/§10 registration rejection rules):
-      (a) component_id unique within the item
+def check_composition_constraints(doc):
+    """Cross-field constraints on a composition, which JSON Schema cannot express
+    (template-composition-model.md §2.3/§10 registration rejection rules). A composition is
+    carried by a Class; these run wherever `constituents` appear:
+      (a) component_id unique within the composition
       (b) every depends_on / bindings.from_component resolves to a sibling component_id
       (c) the depends_on graph is acyclic (CMP-002 ordering derives from it)
       (d) a binding's from_component appears in that constituent's depends_on
@@ -986,12 +977,8 @@ def check_profile(doc):
 
 
 def pick_instance(doc):
-    """Dispatch: `record_type` first (catalog_item ⇒ catalog item, + semantic checks);
-`record_type: profile` ⇒ an activatable posture; `resource_type` ⇒ realized entity."""
-    if isinstance(doc, dict) and doc.get("record_type") == "catalog_item":
-        return (CATALOG_VALIDATOR,
-                lambda d: f"catalog item {d['name']} v{d['version']} {d['uuid'][:8]} ({len(d['constituents'])} constituents)",
-                lambda d: check_catalog_item(d) + check_constituent_edges(d))
+    """Dispatch: `record_type` first (`class` ⇒ a Class, + semantic checks;
+`profile` ⇒ an activatable posture); `resource_type` ⇒ realized entity."""
     # A class record validates as a CLASS wherever it lives. Worked-example classes mirror the
     # class hierarchy under examples/classes/, and an example that is not checked the same way as
     # the real thing is an illustration rather than a demonstration.

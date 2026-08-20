@@ -105,6 +105,26 @@ def citations_in(path):
     return out
 
 
+def _is_decision_record(path):
+    """A decision record cites the surface AS IT STOOD when the decision was made.
+
+    ADR-034 names `catalog-item.schema.json` because that is what it decided against. The file
+    retired when the catalog item became a provider Class, and the citation became a dead pointer —
+    but the sentence is still a true statement about a decision taken in July.
+
+    Two gates were pulling opposite ways here. CSF-001 wanted the ADR edited; ADR-REAL-004 refuses
+    an edit to an accepted record's body, which is the whole point of accepting it. Following
+    CSF-001 would make locked records mutable every time a file moved, and the record would end up
+    describing a world its authors never decided in.
+
+    So a decision record is out of scope, and the honest cost is stated rather than hidden: a reader
+    following a schema path out of an old ADR can land on a file that no longer exists. Supersession
+    is what carries them forward — the record's status and the register row, not a rewritten body.
+    """
+    rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+    return rel.startswith("docs/adr/") or rel.startswith("docs/dr/")
+
+
 def scan():
     files = []
     for pat in ("registry/**/*.json", "registry/**/*.yaml", "registry/**/*.md", "docs/**/*.md"):
@@ -113,6 +133,8 @@ def scan():
     for path in sorted(set(files)):
         if os.sep + "generated" + os.sep in path:
             continue            # generated artifacts mirror their sources; the source is the subject
+        if _is_decision_record(path):
+            continue            # see _is_decision_record — a record cites what existed then
         for citation, rel in citations_in(path):
             if (citation, rel) in seen:
                 continue

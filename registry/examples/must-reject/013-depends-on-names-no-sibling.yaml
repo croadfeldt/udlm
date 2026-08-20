@@ -1,6 +1,6 @@
 must_reject:
   rule: CMP-010
-  gate: check_catalog_item
+  gate: check_composition_constraints
   because: >-
     A constituent depending on a component that was never declared. Ordering is derived from these
     edges, so an edge pointing at nothing leaves a constituent that can never become dispatchable —

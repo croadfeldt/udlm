@@ -1,3 +1,6 @@
+# asserts: CMP-002, CMP-009
+# proves: constituents, acyclic depends_on, and bindings resolved against declared outputs
+#
 # Template.Application.AcmeThreeTier — the concrete composition. This is the thing you order.
 #
 # "PROVIDER" HERE MEANS AUTHORING AUTHORITY — a platform team that composed this and stands behind

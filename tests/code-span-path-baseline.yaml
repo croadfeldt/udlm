@@ -14,10 +14,6 @@ known:
   path: docs/runbook-overnight-sweep.md
 - file: README.md
   path: architecture/00-split-manifest.md
-- file: docs/adr/ADR-002-capacity-utilization-served-overlay.md
-  path: ../design/resource-type-registry-design-notes.md
-- file: docs/adr/ADR-051-identity-version-revision.md
-  path: tests/check_uuid_rotation.py
 - file: docs/guides/consumer-perspective.md
   path: architecture/operator-perspective.md
 - file: docs/guides/graph-integrity.md

@@ -2,7 +2,7 @@
 """Composition hammer: the catalog-item semantic checks proven against GENERATED graphs.
 
 registry/tools/validate.py carries the cross-field checks JSON Schema cannot express
-(check_catalog_item: component_id uniqueness, sibling depends_on/binding resolution, cycle
+(check_composition_constraints: component_id uniqueness, sibling depends_on/binding resolution, cycle
 rejection, binding⊆depends_on ordering, and (e) binding-output type-safety against the
 producer type's declared outputs). This hammer imports validate.py as a module and drives
 those checks with constituent graphs generated in memory from the registry — adversarial
@@ -41,15 +41,28 @@ def det_uuid(n: int) -> str:
 
 
 def item(constituents, n=0):
-    """A schema-valid catalog item around the generated constituent graph."""
+    """A schema-valid provider Class around the generated constituent graph.
+
+    A catalog item IS a provider Class (maintainer ruling 2026-08-09), so the hammer builds the
+    thing the model actually has rather than the retired record kind."""
     return {
-        "record_type": "catalog_item",
+        "$id": "https://udlm.dev/registry/udlm/0.1/class/"
+                 "Template.Application.CompositionHammer/1.0.0",
+        "record_type": "class",
         "uuid": det_uuid(n),
-        "handle": "cexample/catalog/composition-hammer",
         "conforms_to": "udlm/0.1",
-        "name": "CompositionHammer.Generated",
+        "resource_type": "Template.Application.CompositionHammer",
+        "class": "provider",
+        "parent": "Template.Application",
+        "family": "Resource",
+        "status": "active",
         "version": "1.0.0",
-        "tenant_uuid": det_uuid(999999),
+        "metadata": {
+            "display_name": "Composition hammer (generated)",
+            "maintainer": "cexample platform engineering",
+            "origination_timestamp": "2026-08-20T00:00:00Z",
+        },
+        "elements": [],
         "constituents": constituents,
     }
 
@@ -75,8 +88,8 @@ def binding(src, output, to_field="spec.injected_input"):
 def run(doc):
     """(schema_errors, semantic_errors) for a generated item — schema first, exactly like
     validate.py's dispatch (semantic checks run only on schema-valid documents)."""
-    schema_errors = [e.message for e in V.CATALOG_VALIDATOR.iter_errors(doc)]
-    semantic = V.check_catalog_item(doc) if not schema_errors else []
+    schema_errors = [e.message for e in V.CLASS_VALIDATOR.iter_errors(doc)]
+    semantic = V.check_composition_constraints(doc) if not schema_errors else []
     return schema_errors, semantic
 
 

@@ -73,9 +73,19 @@ def main() -> int:
             if not os.path.exists(os.path.join(REPO, os.path.normpath(os.path.join(base, p)))):
                 broken.append((f, p))
 
+        # A DECISION RECORD NAMES THE SURFACE AS IT STOOD. ADR-034 says it decided against
+        # `catalog-item.schema.json`; that file retired when a catalog item became a provider Class,
+        # and the sentence is still a true statement about a decision taken in July. Repointing it
+        # would edit an accepted record's body, which ADR-REAL-004 refuses and which would leave the
+        # record describing a world its authors never decided in. The baseline is not the answer
+        # either — its own rule is "fix the pointer, never add a line here", and this pointer cannot
+        # be fixed. Markdown LINKS in a record are still checked: a link promises you can click it,
+        # while a path in prose describes what was there.
+        span_exempt = f.startswith(("docs/adr/", "docs/dr/"))
+
         for m in SPAN.finditer(text):
             p = m.group(1)
-            if "/" not in p or p.startswith(SIBLING) or "..." in p:
+            if span_exempt or "/" not in p or p.startswith(SIBLING) or "..." in p:
                 continue
             if resolves(p, base) or (f, p) in seen:
                 continue

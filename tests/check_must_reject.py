@@ -60,11 +60,11 @@ def _group_invariants(record):
     return m.evaluate(record, m.load_index())
 
 
-def _catalog_item(record):
-    """CMP-002 and the other composite cross-field rules — already per-record, already citing its
+def _composition_constraints(record):
+    """CMP-002 and the other composition cross-field rules — already per-record, already citing its
     rule. Bindable with no change to the gate."""
     m = _load("registry/tools/validate.py", "_val2")
-    return m.check_catalog_item(record)
+    return m.check_composition_constraints(record)
 
 
 def _schema(record):
@@ -97,7 +97,7 @@ def _schema(record):
 def _class_constituents(record):
     """CMP-010/011 — the composite cross-field rules PLUS namespace resolution (a constituent's
     resource_type must resolve to a registered Class or a flat type). Superset of
-    check_catalog_item, which is why a resolution case names this one."""
+    check_composition_constraints, which is why a resolution case names this one."""
     m = _load("registry/tools/validate.py", "_val3")
     return m.check_class_constituents(record)
 
@@ -125,7 +125,7 @@ GATES = {
     "check_grant_derivation": _grant_derivation,
     "check_ownership_declaration": _ownership,
     "check_group_invariants": _group_invariants,
-    "check_catalog_item": _catalog_item,
+    "check_composition_constraints": _composition_constraints,
     "schema": _schema,
     "check_class_constituents": _class_constituents,
     "check_composition_promotion": _composition_promotion,
