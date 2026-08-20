@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Template.Application/0.1.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Template.Application/0.2.0",
   "conforms_to": "udlm/0.1",
   "uuid": "d1769eb5-e8ce-4012-ba5e-18dcc9820d87",
   "resource_type": "Template.Application",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Template.Application",
-          "version": "0.1.1",
+          "version": "0.2.0",
           "uuid": "d1769eb5-e8ce-4012-ba5e-18dcc9820d87"
         }
       ]
@@ -67,11 +67,33 @@
       "high_availability": {
         "type": "boolean",
         "description": "Whether this application is composed to survive the loss of a single fault domain — a property of the WHOLE, not of any one part, which is exactly why it had no home before. A constituent may be individually redundant while the application still fails as a unit, so this is a statement about the composition rather than a rollup of its parts. It constrains placement and the shape of the constituents a provider projection may offer; it never asserts that the requirement was met, which is realized state."
+      },
+      "exposure": {
+        "type": "string",
+        "enum": [
+          "internal",
+          "private_network",
+          "public"
+        ],
+        "description": "How the application is reachable. Portable intent: the shape of reachability, never a hostname, a load balancer, or an ingress class — those are the provider's naturalization."
+      },
+      "release_channel": {
+        "type": "string",
+        "description": "Governed vocabulary `release_channel` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+      },
+      "transport_security": {
+        "type": "boolean",
+        "description": "Whether transport encryption is required of the realized exposure. A requirement, not a certificate: the certificate is a Security.CredentialRef constituent."
       }
     },
+    "required": [
+      "exposure"
+    ],
     "examples": [
       {
         "high_availability": true,
+        "exposure": "private_network",
+        "transport_security": true,
         "sovereignty_floor": {
           "zone": "udlm://knowledge/sovereignty-zone/eu-west",
           "classification": "restricted",

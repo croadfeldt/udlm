@@ -1,0 +1,45 @@
+# A VOCABULARY TERM (registry/vocabulary-term.schema.json) — one canonical term of the
+# `release_channel` vocabulary that `Template.Application`'s `release_channel` SharedDataElement is
+# governed by (ADR-038 §2). The vocabulary is the set of them, curated proposed → canonical.
+#
+# WHY A VOCABULARY AND NOT AN INLINE ENUM. Release streams are curated and they change — a team adds
+# an `lts` channel, retires a `beta` one, renames what it calls `edge`. Every one of those is a spec
+# edit if the values live in an enum, and none of them is a spec change (ADR-058). The element names
+# the KIND; records of that kind carry the terms.
+#
+# THE SCOPE IS `Template.Application`, because scope is where the ELEMENT that binds the vocabulary
+# lives, not where the subject sounds like it belongs (ADR-038 §3). A release channel sounds like it
+# belongs to software delivery; what is being selected here is the stream an APPLICATION TEMPLATE
+# tracks, so the contract is with the providers that offer application templates.
+#
+# ONE TERM, NOT A SET, AND THAT IS THE POINT (NDF-001). UDLM does not ship the channel list — an
+# estate's channels are its own. This is a worked example of the SHAPE a term takes; `cexample` is
+# the anonymization vocabulary, so nothing here is a default anyone inherits.
+record_type: vocabulary_term
+uuid: 4c8f1a3e-6d29-4b07-9e51-2a7c34f08b6d
+handle: cexample/release-channels/stable
+conforms_to: udlm/0.1
+name: Release channel — stable
+description: >-
+  Governed definition of the 'stable' release channel — the shared source of truth for what an
+  application template promises when it says it tracks stable.
+version: 1.0.0
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+status:
+  state: active
+vocabulary_kind: release_channel
+scope: Template.Application
+term: stable
+curation_state: canonical
+contributor:
+  contributor_type: platform_admin
+  review: dual_approval
+requirements:
+  # WHAT THE TERM DENOTES — a floor, not a label (ADR-036). Two estates both saying "stable" are
+  # only comparable if the word carries obligations; without these it is a string that happens to
+  # match.
+  max_age_days: 90
+  supersedes_within_days: 30
+  description: >-
+    Generally-available releases only. A release enters this channel after it has held in a
+    pre-release channel, and the channel carries at most one current version per application.
