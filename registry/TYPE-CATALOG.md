@@ -1101,7 +1101,7 @@ A term with an authoritative definition, living in a named vocabulary tree (its 
 
 ## Template
 
-### Template.Application (0.1.1)
+### Template.Application (0.2.0)
 
 **Purpose:** Let a consumer order an application as ONE thing — the whole shape, wired, placed and reconciled together — instead of ordering the parts and re-deriving how they connect every time.
 

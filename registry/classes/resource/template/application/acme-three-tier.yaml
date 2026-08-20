@@ -25,14 +25,14 @@
 # may not cross a tenant boundary. So every `contained_by` part below MUST be co-tenant with the
 # realized System. Anything cross-tenant — a shared platform namespace, someone else's VLAN — is a
 # `binds_to` stake behind an authorization, never a part.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.2.0
 conforms_to: udlm/0.1
 uuid: f2cdec7e-b363-43be-b020-aefc9f3d8e10
 record_type: class
 class: provider
 resource_type: Template.Application.AcmeThreeTier
 parent: Template.Application
-version: 0.1.1
+version: 0.2.0
 family: Resource
 status: active
 
@@ -141,6 +141,44 @@ elements:
       - values: [500Gi, 1Ti, 4Ti]
         when:
           tier_size: large
+
+  # NARROWING AN INHERITED ENUM. The parent offers three exposures; this platform team serves two.
+  # A subset is Liskov-legal — a consumer holding a Template.Application intent can still be
+  # satisfied here, as long as what they selected is one of the two on offer. Widening it would not
+  # be legal, and check_class_liskov is what makes that a rule rather than a convention.
+  - element: exposure
+    scope: Template.Application.AcmeThreeTier
+    optional: false
+    state: proposed
+    description: Acme serves internal and private-network exposure. Public exposure is not offered.
+    schema:
+      type: string
+      enum: [internal, private_network]
+    supports:
+      - values: [internal, private_network]
+
+  # A DEFAULT IS LEGAL HERE AND NOWHERE ABOVE. NDF-001 forbids UDLM shipping opinions; a provider
+  # tier IS an opinion, so this is the one place `true` can be written down.
+  #
+  # THE CLAUSES ARE THE POINT. On a private network this team requires TLS — the only supported
+  # value is `true`, so `false` is not selectable. Internally both are on offer. Same element, two
+  # different answers depending on `exposure`, which is why `supports` is a list with `when` rather
+  # than a single range: a value can be individually supported and still be an invalid combination.
+  - element: transport_security
+    scope: Template.Application.AcmeThreeTier
+    optional: true
+    state: proposed
+    description: Acme requires TLS on private-network exposure and offers it on internal.
+    schema:
+      type: boolean
+      default: true
+    supports:
+      - values: [true]
+        when:
+          exposure: private_network
+      - values: [true, false]
+        when:
+          exposure: internal
 
 coverage:
   use_cases:

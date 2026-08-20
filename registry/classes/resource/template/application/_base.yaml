@@ -14,14 +14,14 @@
 # exactly that — abstract slots naming capabilities rather than classes. A category is not a
 # pattern: `Application` is what KIND of service this is, not which parts it has. The concrete
 # composition sits at the provider tier, where opinions are legal.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.1.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application/0.2.0
 conforms_to: udlm/0.1
 uuid: d1769eb5-e8ce-4012-ba5e-18dcc9820d87
 record_type: class
 class: type
 resource_type: Template.Application
 parent: Template
-version: 0.1.1
+version: 0.2.0
 family: Resource
 status: active
 
@@ -78,11 +78,57 @@ elements:
     schema:
       type: boolean
 
+  # HOW IT IS REACHED, as portable intent. The shape of reachability travels; a hostname, a load
+  # balancer or an ingress class does not — those are what a provider naturalizes this into.
+  # Required, because an application nobody can state the reachability of is not orderable.
+  - element: exposure
+    scope: Template.Application
+    optional: false
+    state: proposed
+    description: >-
+      How the application is reachable. Portable intent: the shape of reachability, never a hostname,
+      a load balancer, or an ingress class — those are the provider's naturalization.
+    schema:
+      type: string
+      enum: [internal, private_network, public]
+      # No default. An opinionated org supplies it from a layer, where it carries provenance.
+
+  # A GOVERNED VOCABULARY rather than an inline enum, because the set is curated and changes on its
+  # own schedule. An inline enum would make adding a channel a spec edit (ADR-058).
+  - element: release_channel
+    scope: Template.Application
+    optional: true
+    state: proposed
+    description: >-
+      The release stream this application tracks. Governed vocabulary rather than an inline enum —
+      channels are curated and change without a spec edit (ADR-058).
+    values:
+      reference_data_type: release_channel
+    schema:
+      type: string
+
+  # A REQUIREMENT, NOT A CERTIFICATE. The distinction is the whole point: this says encryption is
+  # required of the realized exposure. The certificate that satisfies it is a Security.CredentialRef
+  # constituent, with its own lifecycle, rotation and custody.
+  - element: transport_security
+    scope: Template.Application
+    optional: true
+    state: proposed
+    description: >-
+      Whether transport encryption is required of the realized exposure. A requirement, not a
+      certificate: the certificate is a Security.CredentialRef constituent.
+    schema:
+      type: boolean
+      # No default. A fixed `true` here would be one org's opinion shipped to every consumer
+      # (NDF-001); a provider tier is where that opinion is legal.
+
 # The worked example every spec ships (ADR-055), and it is deliberately a JOINT sovereignty case:
 # the whole application must land inside one declared zone, which is the constraint no
 # single-resource intent can express and the reason a composite is not merely a bag of parts.
 spec_examples:
 - high_availability: true
+  exposure: private_network
+  transport_security: true
   sovereignty_floor:
     zone: udlm://knowledge/sovereignty-zone/eu-west
     classification: restricted

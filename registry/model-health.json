@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4749,
-    "mutations_rejected": 4749,
+    "mutations_attempted": 4770,
+    "mutations_rejected": 4770,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -228,8 +228,8 @@
         "rejected": 61
       },
       "Template.Application": {
-        "attempted": 48,
-        "rejected": 48
+        "attempted": 69,
+        "rejected": 69
       },
       "Topology": {
         "attempted": 171,

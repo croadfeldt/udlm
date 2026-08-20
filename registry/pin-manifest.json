@@ -1177,19 +1177,21 @@
   }
  },
  "type:Template.Application": {
-  "current": "0.1.1",
+  "current": "0.2.0",
   "path": "registry/classes/resource/template/application/_base.yaml",
   "versions": {
    "0.1.0": "sha256:75d346dd9580ae0bcb93f68cd3d55e31bf7cd54784fb8dd184f6d8c733392f98",
-   "0.1.1": "sha256:9b6a6d129e60d2b73ad2f7f5c71da281afb21b882fa341d44edd7d9c98c7fe41"
+   "0.1.1": "sha256:9b6a6d129e60d2b73ad2f7f5c71da281afb21b882fa341d44edd7d9c98c7fe41",
+   "0.2.0": "sha256:ee2ea537ca78e1300e72e647a8a948d25b1f79ac8f841f5bebbf70dc2585c8e5"
   }
  },
  "type:Template.Application.AcmeThreeTier": {
-  "current": "0.1.1",
+  "current": "0.2.0",
   "path": "registry/classes/resource/template/application/acme-three-tier.yaml",
   "versions": {
    "0.1.0": "sha256:c507c6e918f8be5ef56beac75729253737e63a9b116772685a384c7e62289e42",
-   "0.1.1": "sha256:37984708482271743cee240038da5368a2e29277584118ca0698a014d2358162"
+   "0.1.1": "sha256:37984708482271743cee240038da5368a2e29277584118ca0698a014d2358162",
+   "0.2.0": "sha256:d82f4aaa24cda0faa03bc5dda00d0e4b146f5a349a70e1cebb05e3c4a6fa11b9"
   }
  },
  "type:Topology": {
@@ -1209,6 +1211,13 @@
    "0.1.1": "sha256:16e6e1c0de0d263e087a6a86de8f362198fb88af06f303725fe8bbbad82f4684",
    "0.2.0": "sha256:2a092769f9a41c7f7c091552047cd2571bc5e9e0452a66388d806c95d81ab3ae",
    "0.2.1": "sha256:34aaf44e5cc866ad0d1a8839f3ec3e48529ba54ce8b3479837795b0795d8be81"
+  }
+ },
+ "vocabulary_term:cexample/release-channels/stable": {
+  "current": "1.0.0",
+  "path": "registry/examples/example-vocabulary-term-release-channel.yaml",
+  "versions": {
+   "1.0.0": "sha256:c1559b8bdc5814ee6232310c0f68a9cf5d22054c86fd9910e984e4b4776e41b5"
   }
  },
  "vocabulary_term:platform/network-tiers/high-throughput": {
