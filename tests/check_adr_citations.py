@@ -130,6 +130,35 @@ def dcm_adrs():
     return {str(k) for k in (d.get("adrs") or {})}
 
 
+DOUBLE = re.compile(r"\b(UDLM|DCM|DAV)\s+(UDLM|DCM|DAV)\s+ADR-\d{3}\b")
+
+
+def double_qualified():
+    """A citation carrying two owners (ADR-CITE-004).
+
+    `UDLM DCM ADR-012` claims one record belongs to both projects. It is never a judgement call and
+    never intentional — it is the fingerprint of a sweep that prefixed a citation somebody had
+    already qualified. 14 of these existed, all from one such sweep: the author wrote `UDLM ADR-012`
+    to say "the local one, deliberately", and the sweep read the bare number and added `DCM `.
+
+    Cheap to detect and worth detecting, because the result still resolves — the reader sees a
+    qualified citation and trusts it, pointing at the wrong project's decision."""
+    out = []
+    for pat in SCAN:
+        for path in sorted(glob.glob(os.path.join(ROOT, pat), recursive=True)):
+            rel = os.path.relpath(path, ROOT)
+            if rel.startswith("tests/"):
+                continue
+            try:
+                lines = open(path, encoding="utf-8", errors="ignore").read().splitlines()
+            except OSError:
+                continue
+            for n, line in enumerate(lines, 1):
+                for m in DOUBLE.finditer(line):
+                    out.append((rel, n, m.group(0)))
+    return out
+
+
 def misqualified(known_dcm):
     """A `DCM ADR-NNN` naming a number the control plane does not have (ADR-CITE-002).
 
@@ -219,6 +248,13 @@ def main():
               f"docs/adr/README.md — the register indexes every ruling, and citation resolution "
               f"trusts it. Add the row.")
         new.append(("register", 0, num))
+
+    for rel, ln, cite in double_qualified():
+        print(f"  FAIL [ADR-CITE-004] {rel}:{ln} — `{cite}` names two owners for one record. A "
+              f"citation belongs to one project; this is what a sweep leaves behind when it "
+              f"prefixes something already qualified. Keep the owner that is right and drop "
+              f"the other.")
+        new.append((rel, ln, cite))
 
     known_dcm = dcm_adrs()
     bad = misqualified(known_dcm) if known_dcm else []

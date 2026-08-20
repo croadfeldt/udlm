@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.7",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.8",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Compute.Container",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Compute.Container",
-          "version": "0.7.7",
+          "version": "0.7.8",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -146,7 +146,7 @@
         ]
       },
       "image": {
-        "description": "The container image — either the inline OCI reference (first branch) OR a data_reference to a governed container_image reference-data layer. The reference form lets the control plane compute the change-impact blast radius when a base image or embedded library is bumped (UDLM DCM ADR-012; DCM ADR-024) — an inline OCI string cannot be cascaded.",
+        "description": "The container image — either the inline OCI reference (first branch) OR a data_reference to a governed container_image reference-data layer. The reference form lets the control plane compute the change-impact blast radius when a base image or embedded library is bumped (UDLM ADR-012; DCM ADR-024) — an inline OCI string cannot be cascaded.",
         "oneOf": [
           {
             "type": "object",

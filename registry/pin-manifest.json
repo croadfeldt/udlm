@@ -473,7 +473,7 @@
   }
  },
  "type:Compute.Container": {
-  "current": "0.7.7",
+  "current": "0.7.8",
   "path": "registry/classes/resource/compute/container.yaml",
   "versions": {
    "0.5.3": "sha256:29907df2e288fa5f975674597e9853c53d02cd2adf29d561bec0286529b6fb8e",
@@ -485,7 +485,8 @@
    "0.7.4": "sha256:7c5be16f77589978e8efb1af64c206306afd632a932864f41510e45c612b92ec",
    "0.7.5": "sha256:1d6b69b653c7b6e069a8633c6ab060af1d8fce83cfcc6b31b299ba99371c437f",
    "0.7.6": "sha256:8dadd3a5340562646e80898bc7e8627996b2400b7d69a96494d0606af9d720a0",
-   "0.7.7": "sha256:f30fce7d3491aeba44f94c8b5878f514fcdd91f235bce9f169be8dfe4e9d7e13"
+   "0.7.7": "sha256:f30fce7d3491aeba44f94c8b5878f514fcdd91f235bce9f169be8dfe4e9d7e13",
+   "0.7.8": "sha256:0d060ad3a08290b99f5b9f55bf7120a1d8b25949009a18d2ee84ef0817f554be"
   }
  },
  "type:Compute.VM": {
