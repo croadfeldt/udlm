@@ -127,8 +127,7 @@
             "provider",
             "configuration",
             "authorization",
-            "audit_record",
-            "catalog_item"
+            "audit_record"
           ]
         },
         "entity_handle": {

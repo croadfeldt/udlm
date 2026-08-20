@@ -19,12 +19,12 @@
 > [#405](https://github.com/croadfeldt/udlm/issues/405); the tier they name is the one above.
 
 > **Bindings are **output-resolved** — the validator checks each `bindings[].output` against the producer type's declared outputs (wave-3.2 deferral closed, wave 3.3). Machine-validatable schema:** Composite Service catalog items validate against
-> [`registry/catalog-item.schema.json`](../../../registry/catalog-item.schema.json)
-> (`registry/tools/validate.py` dispatches any instance carrying `record_type: catalog_item`
+> [`registry/composition.schema.json`](../../../registry/composition.schema.json)
+> (`registry/tools/validate.py` dispatches any instance carrying `record_type: class`
 > to it, and additionally enforces the cross-field rules JSON Schema cannot express:
 > component_id uniqueness, sibling depends_on/binding resolution, cycle rejection, and
 > binding⊆depends_on ordering). Worked example:
-> [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml).
+> [`registry/classes/resource/template/application/acme-three-tier.yaml`](../../../registry/classes/resource/template/application/acme-three-tier.yaml).
 
 > A Composite Service is a catalog item that delivers a composite payload — multiple constituent resource types, with declared dependencies and delivery requirements — through a single request. It is fulfilled by ordinary Service Providers (one or more), governed by ordinary control-plane policies, and produces a Composite Entity at runtime. There is no separate "meta provider" type. A Service Provider that registers a Composite Service simply declares the composition definition and fulfills the constituents whose `provided_by: self` flag points at it; everything else is the control plane's standard machinery.
 
@@ -58,7 +58,7 @@ A Service Provider that registers a Composite Service operates as a standard Ser
 
 ### 1.2 Applications Are Composite Catalog Items
 
-An "application" is modeled as a Composite catalog item — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/examples/example-catalog-item.yaml`](../../../registry/examples/example-catalog-item.yaml) is a three-tier application expressed this way.
+An "application" is modeled as a composition — constituents + dependency edges + bindings — not as a flat resource type. The application's structure (a database tier, an application tier bound to the database's connection output, a web tier bound to the application's endpoint) is exactly the constituent/`depends_on`/`bindings` declaration this document defines, and its provision/teardown ordering is the forward/reverse topological projection of those same edges (data-model-core §4). The worked example [`registry/classes/resource/template/application/acme-three-tier.yaml`](../../../registry/classes/resource/template/application/acme-three-tier.yaml) is a three-tier application expressed this way.
 
 ---
 

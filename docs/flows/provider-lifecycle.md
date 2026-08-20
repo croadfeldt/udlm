@@ -708,7 +708,7 @@ Provider                          System                           Consumer
 - Capability advertisement shape: `docs/spec/contracts/provider-contract.md` §2 (registration) + §10 (discovery protocol)
 - How required inputs get filled: `docs/adr/DCM ADR-024-filling-provider-required-inputs.md`
 - Policy contract (enrichment policies): `docs/spec/contracts/policy-contract.md` §12
-- Catalog item schema: `registry/catalog-item.schema.json`
+- Composition shape (what a catalog item carries): `registry/composition.schema.json`
 - Provider-specific data model: UDLM ADR-038 (Provider-Class `SharedDataElement`s); portability: `registry/realized-entity.schema.json` `portability` block
 - Realized entity schema: `registry/realized-entity.schema.json`
 - Provider registration UC: [UC-17](uc-17-provider-registration-capability.md)

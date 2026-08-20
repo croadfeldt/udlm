@@ -538,7 +538,7 @@ adopted-standard support, sovereignty posture) — is the provider contract
 ([provider-contract §2](../contracts/provider-contract.md); wire shape
 `registry/provider-adopted-standards.schema.json`). **Catalog items** — a provider's concrete
 offerings, each pinned to a Resource Type Specification version and only ever *narrower* than
-it — validate against `registry/catalog-item.schema.json` (constituents, bindings, and the
+it — validate against `registry/class.schema.json` (constituents, bindings, and the
 composition checks in `registry/tools/validate.py`). What this hierarchy contributes is the
 pinning discipline: a catalog item names its `resource_type_uuid` + version, and request
 resolution (§7) narrows from the specification through the catalog item to a dispatchable

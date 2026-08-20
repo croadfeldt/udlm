@@ -1,6 +1,6 @@
 must_reject:
   rule: CMP-002
-  gate: check_catalog_item
+  gate: check_composition_constraints
   because: >-
     The three tiers depend on each other in a ring: web needs app, app needs database, database
     needs web. Ordering a composite means walking its dependency graph to decide what to build

@@ -41,9 +41,9 @@ it governs.
   spec, realized-entity, provider-adopted-standards, profile. **[D8] Committed program**, in
   priority order: (1) Tenant + grouping — **DONE** (`registry/profile.schema.json` / `Grouping` + required
   instance `tenant_uuid`; `registry/tools/validate.py` dispatches instances on `record_type`),
-  (2) catalog item — **DONE** (`registry/catalog-item.schema.json`, dispatched on
-  `record_type: catalog_item` + validate.py semantic checks; the application model — an
-  application IS a Composite catalog item — and the ADR-016 evidence;
+  (2) catalog item — **DONE** (a catalog item is a provider Class: `registry/class.schema.json`
+  carrying the `registry/composition.schema.json` constituents shape, + validate.py semantic
+  checks; the application model — an application IS a composition — and the ADR-016 evidence;
   `docs/spec/foundations/template-composition-model.md` §1.4/§2.5), (3) policy record + typed outputs **[DONE — registry/policy.schema.json; type-spec outputs are the referenceable typed binding surface, output-resolved by the validator]**, (4) layer record **[DONE — registry/layer.schema.json]**, (5) audit record +
   Commit Log entry, (6) DecisionRecord **[DONE — registry/decision-record.schema.json; the WHY becomes a queryable, Data·Policy·Provider-decomposed record]**, (7) Process Resource **[DONE — the `process` execution axis on realized-entity; execution_state separate from lifecycle_state per D7; validate.py enforces it on Process-family entities]**. **The D8 schema program is COMPLETE.** Until an artifact's schema
   exists, its prose definition is explicitly marked *pre-schema* and is not citable as
@@ -186,7 +186,7 @@ A rule may claim **[enforced]** only if a running validator checks it. Current h
 schema validation (type spec, realized-entity — incl. required `tenant_uuid` [D3] — provider
 matrices, grouping via `registry/profile.schema.json` / `Grouping` with per-class conditionals:
 tenant `ownership`/`isolation_level`/`membership_policy.exclusive: true`, cross-tenant-auth
-grant fields, and Composite Service catalog items via `registry/catalog-item.schema.json` —
+grant fields, and compositions via `registry/composition.schema.json` —
 incl. required `tenant_uuid` — plus validate.py semantic checks: component_id uniqueness,
 sibling depends_on/binding resolution, depends_on cycle rejection, and binding⊆depends_on
 ordering) + $id/version cross-checks + ADOPT-001 + PII-001 (registry CI); uuid

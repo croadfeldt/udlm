@@ -5,7 +5,6 @@
 accreditation.schema.json
 audit-leaf.schema.json
 audit-record.schema.json
-catalog-item.schema.json
 commit-log-entry.schema.json
 data-reference.schema.json
 decision-record.schema.json

@@ -16,6 +16,7 @@
  "catalog_item:org/catalog/example-three-tier-app": {
   "current": "1.1.0",
   "path": "registry/examples/example-catalog-item.yaml",
+  "stranded": true,
   "versions": {
    "1.0.0": "sha256:6e0a318d621b3e431a344c12c66b3718728db702c6c4a5c30bb05915658c74ea",
    "1.1.0": "sha256:8ba9715067306555a9a7bfbd7002def4869c235e6e8278dcdf12d4c6130c2858"
