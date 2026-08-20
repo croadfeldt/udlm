@@ -22,9 +22,18 @@ class **only** when nothing above it fits:
 | a **value / default / constraint** on an existing type (must-encrypt, size ≤ X) | **Policy / Profile / layer value** | it's still a canonical `Compute.VM` — a class here fragments interop for zero schema gain (the most common mistake) |
 | **extra org data** on an existing type (`cost_center`) | an org-scoped **`SharedDataElement`** (additive, must-ignore-unknown) | additive data is not a new type; peers ignore the unknown |
 | **orthogonal context** (a DC bundle, an app profile) | a **references-context edge** (ADR-038) | context is *linked*, not a type |
+| a **reusable pre-filled intent** you want others to order ("our standard three-tier app") | a **Template as a provider class** — `Template.Application.YourThing`, with `supports` for what the consumer picks | ✅ this is the tool, and it *is* a class (ADR-067) |
+| the **same shape written down** but not offered to anyone — an ingested diagram, your own bundle | a **`composition` record** — same composition shape, no class machinery | it carries a `tenant_uuid`; it belongs to you rather than being shared vocabulary |
 | a genuinely **new type** the canonical library lacks, *with its own schema* | a **custom Type class** under your authority | ✅ this is the tool |
 | a genuinely **new category** the library lacks entirely | a **custom Base class** under your authority | ✅ this is the tool (rare) |
 | a genuinely **provider-specific** datum with no vendor-neutral form | a **Provider Class element**, provider-authored | ✅ the provider-scoped tool (§3) |
+
+The gate for the two Template rows is one question: **is someone standing behind this as an offer, or did
+someone write it down?** An offer is a class — it carries `supports` (what a consumer may pick), a parent it
+narrows, a version, and a Liskov check against that parent. A record of a shape is a `composition` record — same
+composition shape, so promotion is never a translation, but none of the class machinery, and a `tenant_uuid`
+because it belongs to you rather than being shared vocabulary (ADR-067). The same three-tier application can be
+either; what decides is whether anyone is offering it.
 
 The gate for the custom-type / custom-base rows is the **earns-its-keep test** (ADR-038 *Naming depth*): real
 *shared-then-specialized schema* — fields/vocabulary nothing canonical provides — not a policy or a single extra
