@@ -2,7 +2,7 @@ uuid: uc-db30537e-49a6-43d4-88f9-d1f724797692
 handle: compute/container-image-unavailable-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer deploys a Compute.Container workload whose declared image reference is
+  description: 'A platform engineer deploys a Container workload whose declared image reference is
     unresolvable — the image does not exist, the tag is not published, or the registry cannot serve it.
     Success for this use case is the REFUSAL: the deployment must be rejected before scheduling, never left
     crash-looping as replicas pull-fail forever, and never reported Realized when nothing runnable exists.

@@ -67,7 +67,7 @@ layer:
 
   scope:
     resource_types:
-      - Compute.Container
+      - Container
       - Compute.Pod
     # Empty list = type-agnostic (applies to all resource types)
 

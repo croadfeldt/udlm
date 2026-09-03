@@ -202,15 +202,15 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Compute — Container
 
 ### OCI Image Specification — CANONICAL
-**Covers:** `OCI Image Specification` · **Body:** Open Container Initiative · **Since:** 2026-07-11T00:00:00Z · **Where:** `Compute.Container` image reference (`image.reference` + content-addressable digest).
+**Covers:** `OCI Image Specification` · **Body:** Open Container Initiative · **Since:** 2026-07-11T00:00:00Z · **Where:** `Container` image reference (`image.reference` + content-addressable digest).
 **Why:** the vendor-neutral image-reference + digest vocabulary; adopting it keeps container image identity portable across any OCI runtime. *Alternatives:* Docker legacy image refs (subsumed by OCI). **License:** Apache-2.0 — compatible-reference.
 
 ### Open Application Model — CANONICAL
-**Covers:** `Open Application Model` · **Body:** OAM (CNCF lineage) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Compute.Container` infra-neutral workload shape (image, resources, env, ports).
+**Covers:** `Open Application Model` · **Body:** OAM (CNCF lineage) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Container` infra-neutral workload shape (image, resources, env, ports).
 **Why:** an infrastructure-neutral component/workload model matching UDLM's portable-intent goal — the shape is provider-agnostic and the provider naturalizes it. *Alternatives:* raw K8s PodSpec (runtime-coupled; used only as the field vocabulary below). **License:** MIT — compatible-reference.
 
 ### Kubernetes Container (core/v1) — PATTERN
-**Covers:** `Kubernetes Container (core/v1)` · **Body:** Kubernetes (CNCF) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Compute.Container` runtime field vocabulary (command/args, ports, mounts, restart) — naturalized by the provider, not restated in the base.
+**Covers:** `Kubernetes Container (core/v1)` · **Body:** Kubernetes (CNCF) · **Since:** 2026-07-11T00:00:00Z · **Where:** `Container` runtime field vocabulary (command/args, ports, mounts, restart) — naturalized by the provider, not restated in the base.
 **Why:** the de-facto runtime container field vocabulary, absorbed as a naming pattern the provider naturalizes — consumers get familiar fields without coupling the base type to K8s. *Alternatives:* per-provider bespoke runtime fields (fragmenting). **License:** CC-BY-4.0 (docs) — reference-only.
 
 ## Storage

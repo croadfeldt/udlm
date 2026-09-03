@@ -25,14 +25,14 @@
 # may not cross a tenant boundary. So every `contained_by` part below MUST be co-tenant with the
 # realized System. Anything cross-tenant — a shared platform namespace, someone else's VLAN — is a
 # `binds_to` stake behind an authorization, never a part.
-$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.2.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Template.Application.AcmeThreeTier/0.2.1
 conforms_to: udlm/0.1
 uuid: f2cdec7e-b363-43be-b020-aefc9f3d8e10
 record_type: class
 class: provider
 resource_type: Template.Application.AcmeThreeTier
 parent: Template.Application
-version: 0.2.0
+version: 0.2.1
 family: Resource
 status: active
 
@@ -71,7 +71,7 @@ constituents:
       engine: postgresql           # an opinion, legal only at this tier
 
   - component_id: app
-    resource_type: Compute.Container
+    resource_type: Container
     provided_by: external
     failure_effect: required
     edge_type: contained_by
@@ -85,7 +85,7 @@ constituents:
         to_field: env.DATABASE_URL
 
   - component_id: web
-    resource_type: Compute.Container
+    resource_type: Container
     provided_by: external
     failure_effect: required
     edge_type: contained_by

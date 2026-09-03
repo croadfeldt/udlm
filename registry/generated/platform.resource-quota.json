@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.ResourceQuota/0.5.4",
   "conforms_to": "udlm/0.1",
   "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a",
   "resource_type": "Platform.ResourceQuota",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Platform.ResourceQuota",
-          "version": "0.5.3",
+          "version": "0.5.4",
           "uuid": "a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a"
         }
       ]
@@ -118,12 +118,12 @@
       "You need admission or placement to check remaining headroom before dispatching a workload."
     ],
     "not_for": [
-      "Per-container resource requests — those live on the workload (Compute.Container resources).",
+      "Per-container resource requests — those live on the workload (Container resources).",
       "Node capacity — Platform.NodePool advertises capacity; a quota caps consumption within a namespace."
     ],
     "works_with": [
       "Platform.Namespace — the one namespace this quota constrains.",
-      "Compute.Container — workloads whose aggregate consumption the quota caps."
+      "Container — workloads whose aggregate consumption the quota caps."
     ]
   }
 }

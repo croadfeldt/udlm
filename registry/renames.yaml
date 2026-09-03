@@ -163,3 +163,10 @@ retired:
   # 2026-08-09 — the orderable composite tier is a Template; the document naming it Composite
   # Service described a concept that does not exist beside it. Rule IDs are unchanged (CMP-*).
   docs/spec/foundations/composite-service-model.md: docs/spec/foundations/template-composition-model.md
+
+  # 2026-09-03 — Container leaves Compute and becomes its own Base Class. Compute grouped four
+  # things with four different portability contracts; a Container inherited `guest_os`, which no
+  # container provider can honor, and carried `instance_size`/`cpu`/`memory` both at top level and
+  # inside its own `resources` object. A Base is earned by a shared portability contract
+  # (maintainer ruling 2026-09-03), and "run this image" is its own contract.
+  registry/classes/resource/compute/container.yaml: registry/classes/resource/container/_base.yaml

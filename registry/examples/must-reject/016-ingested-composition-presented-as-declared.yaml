@@ -20,4 +20,4 @@ record:
     display_name: Laundered import
     origination_timestamp: '2026-08-10T00:00:00Z'
   constituents:
-  - {component_id: web, resource_type: Compute.Container, provided_by: external, failure_effect: required}
+  - {component_id: web, resource_type: Container, provided_by: external, failure_effect: required}

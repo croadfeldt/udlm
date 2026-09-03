@@ -56,9 +56,9 @@ status:
 uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
 handle: cexample/app/orders-api
 conforms_to: udlm/0.1
-resource_type: Compute.Container
+resource_type: Container
 type_version: 0.7.3
-type_ref: https://udlm.dev/registry/udlm/0.1/Compute.Container/0.7.3
+type_ref: https://udlm.dev/registry/udlm/0.1/Container/0.7.3
 lifecycle_state: Requested
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 metadata:

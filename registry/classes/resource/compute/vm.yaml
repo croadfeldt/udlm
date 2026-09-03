@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.5.4
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.5.5
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
 resource_type: Compute.VM
 parent: Compute
-version: 1.5.4
+version: 1.5.5
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -434,7 +434,7 @@ context:
     records rather than duplicate them.
   not_for:
   - The physical machine it runs on — Compute.BareMetalHost.
-  - A containerized workload — Compute.Container; the VM carries a full guest OS.
+  - A containerized workload — Container; the VM carries a full guest OS.
   - The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
   - The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's
     networks list declares attachment intent, not device inventory.

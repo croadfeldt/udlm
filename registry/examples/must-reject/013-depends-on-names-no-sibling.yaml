@@ -19,7 +19,7 @@ record:
   status: active
   constituents:
     - component_id: app
-      resource_type: Compute.Container
+      resource_type: Container
       provided_by: self
       failure_effect: required
       depends_on: [database]

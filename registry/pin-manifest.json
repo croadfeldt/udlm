@@ -436,7 +436,7 @@
   }
  },
  "type:Compute": {
-  "current": "1.2.4",
+  "current": "1.2.5",
   "path": "registry/classes/resource/compute/_base.yaml",
   "versions": {
    "1.0.0": "sha256:e08b92ed9111a2db31dd98e25628e0fa843a1e8190fb524fe3e2efc07c79c63a",
@@ -445,7 +445,8 @@
    "1.2.1": "sha256:38ef06cd7113e68f120e1a00faf0e238be5924e7ea10f84e90918e5563c50353",
    "1.2.2": "sha256:3750aa0e511de9abad070623dcaabb3f1815ea5a715447b631543b5d15230ba3",
    "1.2.3": "sha256:8dd7a5bca236fba0616fdc5015f9949b9dafb2671d4d366e9b66a26a5ecc78b2",
-   "1.2.4": "sha256:1da909ba399b22054fc8b33fd07ea6845c0349e5cc65bbd77eb2532ab0ff8098"
+   "1.2.4": "sha256:1da909ba399b22054fc8b33fd07ea6845c0349e5cc65bbd77eb2532ab0ff8098",
+   "1.2.5": "sha256:93109b09ae88e98e5de2bf302b2d22a585690927e76cc17bfbc490862f59fc32"
   }
  },
  "type:Compute.BareMetalHost": {
@@ -462,19 +463,21 @@
   }
  },
  "type:Compute.Cluster": {
-  "current": "0.5.3",
+  "current": "0.5.4",
   "path": "registry/classes/resource/compute/cluster.yaml",
   "versions": {
    "0.4.4": "sha256:9ffd39423da92445d258c7f65b97d4297d7d4cf57d09112e004950fd5f6bb823",
    "0.5.0": "sha256:1ed9cb2583705a09cb9d4f8d3d281009b4bf6ce76c9498c48252e476a943ed76",
    "0.5.1": "sha256:2f34d63a18470cfcfc902a0ed5f53993aa03e218f9e49ad764356bfc504bf312",
    "0.5.2": "sha256:a12074ef874939b9883c6866e6bafa4d071b483e32eff7325d11b5c237fc0d59",
-   "0.5.3": "sha256:cdf599b74e7bb29091355c9a0e5506fc1b916fad16d57ce030098adcd56127c0"
+   "0.5.3": "sha256:cdf599b74e7bb29091355c9a0e5506fc1b916fad16d57ce030098adcd56127c0",
+   "0.5.4": "sha256:f3680e5c09afc1e14d2fcc9032c354c6d821efea094a40b852192de76c631cf5"
   }
  },
  "type:Compute.Container": {
   "current": "0.7.8",
   "path": "registry/classes/resource/compute/container.yaml",
+  "stranded": true,
   "versions": {
    "0.5.3": "sha256:29907df2e288fa5f975674597e9853c53d02cd2adf29d561bec0286529b6fb8e",
    "0.6.0": "sha256:7386ff4d11c7c43c8af3454b9fac921f5dc8650e4ab6690fed95745c3f5a651e",
@@ -490,7 +493,7 @@
   }
  },
  "type:Compute.VM": {
-  "current": "1.5.4",
+  "current": "1.5.5",
   "path": "registry/classes/resource/compute/vm.yaml",
   "versions": {
    "1.0.0": "sha256:8b76a47f27b5ba199b9db80ca956099c7848ebc46d08221808541838b13fe6a7",
@@ -504,7 +507,8 @@
    "1.5.1": "sha256:b357fa537c93c4f6bf2e23a8865cd685df309a6524121d86276fb57bedb12450",
    "1.5.2": "sha256:b0121aba91119d47a6d09870c89d5ba7c887e16fd6c20b2d20da042d9fa325de",
    "1.5.3": "sha256:f87a1ba8988013bdb087a56381d4219cc7ae32e02a24d76c5aed217f49a7e8a5",
-   "1.5.4": "sha256:522ac31aa2895c6140934e2a4aec7234fc20e9bf03788ccee801bc2b88f0c8d5"
+   "1.5.4": "sha256:522ac31aa2895c6140934e2a4aec7234fc20e9bf03788ccee801bc2b88f0c8d5",
+   "1.5.5": "sha256:13d37c7630954b437af9cc278a364865bcdb1c10f42142946a17139e8d159646"
   }
  },
  "type:Compute.VM.CExampleCloud": {
@@ -532,6 +536,13 @@
    "1.0.0": "sha256:a5a2471d0755a7f585822e5bd9c632405642b64f1cbba18f95324b27d1a8a147"
   }
  },
+ "type:Container": {
+  "current": "1.0.0",
+  "path": "registry/classes/resource/container/_base.yaml",
+  "versions": {
+   "1.0.0": "sha256:92633f880404503be454c87a88d699228f45eb88096b70d708c510ed2472a10d"
+  }
+ },
  "type:Data": {
   "current": "1.0.0",
   "path": "registry/classes/resource/data/_base.yaml",
@@ -540,7 +551,7 @@
   }
  },
  "type:Data.Database": {
-  "current": "0.7.4",
+  "current": "0.7.5",
   "path": "registry/classes/resource/data/database.yaml",
   "versions": {
    "0.4.2": "sha256:9179520d8a077400930f5f41971789bba82dd2f1dfa55c32f91f844a263e5b62",
@@ -550,7 +561,8 @@
    "0.7.1": "sha256:a2893905d400bd4cf07d650732d94ae25a751d4498672bbb81f97b7d47a365b8",
    "0.7.2": "sha256:29e2919f28bdcd6f522e94e389ed0f768d8b29d4159362b8a30ec1bb61762f40",
    "0.7.3": "sha256:a228d54c45066eaf2f360c7564776e80b803cd0384d2e608af1b454347b79f9b",
-   "0.7.4": "sha256:2e4be3dfd5f7976050b4d783acf49a75ac2149f17c362f5de66b1d55b327739b"
+   "0.7.4": "sha256:2e4be3dfd5f7976050b4d783acf49a75ac2149f17c362f5de66b1d55b327739b",
+   "0.7.5": "sha256:691f27dbf3156c0ed8265c483e009fa94fa4569221be20fe532634c7ca825076"
   }
  },
  "type:Facility": {
@@ -923,7 +935,7 @@
   }
  },
  "type:Platform.Namespace": {
-  "current": "0.5.3",
+  "current": "0.5.4",
   "path": "registry/classes/resource/platform/namespace.yaml",
   "versions": {
    "0.3.5": "sha256:f5ed275ae9c7e3540ea6bbba365da7118b614c40fa78d49887607082a447389a",
@@ -931,7 +943,8 @@
    "0.5.0": "sha256:933360e7282916dafa9154f6cf4d6bc7c26b7c4ae790446a4b15281f3f92b4ad",
    "0.5.1": "sha256:9aadcca6f0d87f8b00ef244a3f6976652192f1ce2f3e8d1213e7ef8f972e4555",
    "0.5.2": "sha256:261f34c150c67c5e494e53f6f1b98844bb57bc2f712440b901d3ddf280867692",
-   "0.5.3": "sha256:8934b19475a2aa3e0c39f9dffe55d12615f396e1ea4ec4cb108fa4a045f11037"
+   "0.5.3": "sha256:8934b19475a2aa3e0c39f9dffe55d12615f396e1ea4ec4cb108fa4a045f11037",
+   "0.5.4": "sha256:17d4b1f84079dd74efe03a5640d3ffb891a50719047a4ab49b6745fe253b8efd"
   }
  },
  "type:Platform.NodePool": {
@@ -947,7 +960,7 @@
   }
  },
  "type:Platform.ResourceQuota": {
-  "current": "0.5.3",
+  "current": "0.5.4",
   "path": "registry/classes/resource/platform/resource-quota.yaml",
   "versions": {
    "0.3.2": "sha256:fcedd1f1742857b1244b9efe822c449e87cea4799c70b1bbcb35ed81d55af527",
@@ -955,7 +968,8 @@
    "0.5.0": "sha256:89e50641a8187970479681b8985eca0ac314b1a006a9cfa20ea2e1a43ac24902",
    "0.5.1": "sha256:02c8c5734953b5f5074100f11c36cc51e9b5986b4a262b83d8af843c2486b6b9",
    "0.5.2": "sha256:18d6a60ab72c6166d4c8e016ea3d4f31a027277eefc02a4d6830d05964756efd",
-   "0.5.3": "sha256:6833205a4b4e1d14b90e7fa0a180b6f0c5f656f54d22edfa5959137bdfe8a661"
+   "0.5.3": "sha256:6833205a4b4e1d14b90e7fa0a180b6f0c5f656f54d22edfa5959137bdfe8a661",
+   "0.5.4": "sha256:86455067d74e1cb22db6eba4aa0b531b4ae4e6932efbd4193f88797f7a9aeb00"
   }
  },
  "type:Platform.StorageClass": {
@@ -1011,7 +1025,7 @@
   }
  },
  "type:Security.CredentialRef": {
-  "current": "0.6.3",
+  "current": "0.6.4",
   "path": "registry/classes/resource/security/credential-ref.yaml",
   "versions": {
    "0.3.2": "sha256:d13551d2f7184ea480a3b4c13a34ae21358b4c206359f0d6587ea4b9a332f934",
@@ -1021,7 +1035,8 @@
    "0.6.0": "sha256:e6a01b6083bbda10a8e897d7feed9f16fb336bc840355a7f5f4545d999e6bdca",
    "0.6.1": "sha256:33bc6e0a2a2f111ae6fffbda82ca6ebaa712ad823be335720b2e0dcdb8aa72d1",
    "0.6.2": "sha256:fd39764277d424b30f6f1b6a67c523ddc165f92021ebadcd325288f287d518f7",
-   "0.6.3": "sha256:ac56e6e21e8dd331b0a42aa89ae6b5292d8199d30ea6c7dca05649dfd9eda763"
+   "0.6.3": "sha256:ac56e6e21e8dd331b0a42aa89ae6b5292d8199d30ea6c7dca05649dfd9eda763",
+   "0.6.4": "sha256:9d4badd6ca85e3ffe75fec1780c80d84ac8d231036f057157a3bd1d5bd87b83f"
   }
  },
  "type:Security.DirectoryService": {
@@ -1043,7 +1058,7 @@
   }
  },
  "type:Software.Service": {
-  "current": "0.7.2",
+  "current": "0.7.3",
   "path": "registry/classes/resource/software/service.yaml",
   "versions": {
    "0.4.3": "sha256:6d8aacdba0daa30116d2dbac6f7bccf2618d6c6b2bef848022f404e0b4c32794",
@@ -1051,16 +1066,18 @@
    "0.6.0": "sha256:ffea3c1cb4763d63c30d8da7ba6f6bd6bfa5f5ad7555710990d2f34ca14b84ac",
    "0.7.0": "sha256:058edbed7797538440c1d350df0cd8b54e04304a306db17814527e869cd263cd",
    "0.7.1": "sha256:c7a400a73e875a074cebfd30b348f99d5852035b2844351e2c055fb8c01cd8ea",
-   "0.7.2": "sha256:bd5675d10de4c69b5bbf7a1678277b3674aa6de65aba04309b7b36d6d3989b79"
+   "0.7.2": "sha256:bd5675d10de4c69b5bbf7a1678277b3674aa6de65aba04309b7b36d6d3989b79",
+   "0.7.3": "sha256:745f8446b1c50bdd07bb43306ff5270c0e7c7a6eac6fda717a07acac1380c466"
   }
  },
  "type:SoftwareImage": {
-  "current": "0.2.1",
+  "current": "0.2.2",
   "path": "registry/classes/knowledge/software-image/_base.yaml",
   "versions": {
    "0.1.1": "sha256:2249bb711492dd03d8c84650a919c67ea637730ef2fe681c96430545cc10bc70",
    "0.2.0": "sha256:adb81aac308780f6cc8f548cd7de36b3fd03c23dedfce869253b90997aefd068",
-   "0.2.1": "sha256:cff09c3602483415b4a2fb8b855fa572cd617fe8860157e2a21bc30520861a37"
+   "0.2.1": "sha256:cff09c3602483415b4a2fb8b855fa572cd617fe8860157e2a21bc30520861a37",
+   "0.2.2": "sha256:613cdcf66a16ae9b9af7d6855e3632641e896d54611d86d961c1512daf78a8d5"
   }
  },
  "type:SoftwarePackage": {
@@ -1109,7 +1126,7 @@
   }
  },
  "type:Storage.FileShare": {
-  "current": "0.6.3",
+  "current": "0.6.4",
   "path": "registry/classes/resource/storage/file-share.yaml",
   "versions": {
    "0.3.4": "sha256:a165d1433734c395a30bdc3a8e1f17267fe826a4b49fc4e4127d27539e258545",
@@ -1118,7 +1135,8 @@
    "0.6.0": "sha256:f7d04d6327477a6fab6af08ebb596762f9a5d4bd93725e147c5f5f031931d044",
    "0.6.1": "sha256:10882704821f80d32bc20e5775964a838933f9a487d75c3ae8e9b1691738e7c0",
    "0.6.2": "sha256:6cfe7b7566c4f17b5c2e96be87c4618909a51c24c72411401768de61994ec60f",
-   "0.6.3": "sha256:866580275ae31c84be4d9bdb1267cc4eb0794b299600c81abf6a1c7f63ebaebb"
+   "0.6.3": "sha256:866580275ae31c84be4d9bdb1267cc4eb0794b299600c81abf6a1c7f63ebaebb",
+   "0.6.4": "sha256:bd5e1e92d868b6bb5a8f09dd541cda569728cf3e8135128e1407628dca64d71a"
   }
  },
  "type:Storage.Layout": {
@@ -1186,12 +1204,13 @@
   }
  },
  "type:Template.Application.AcmeThreeTier": {
-  "current": "0.2.0",
+  "current": "0.2.1",
   "path": "registry/classes/resource/template/application/acme-three-tier.yaml",
   "versions": {
    "0.1.0": "sha256:c507c6e918f8be5ef56beac75729253737e63a9b116772685a384c7e62289e42",
    "0.1.1": "sha256:37984708482271743cee240038da5368a2e29277584118ca0698a014d2358162",
-   "0.2.0": "sha256:d82f4aaa24cda0faa03bc5dda00d0e4b146f5a349a70e1cebb05e3c4a6fa11b9"
+   "0.2.0": "sha256:d82f4aaa24cda0faa03bc5dda00d0e4b146f5a349a70e1cebb05e3c4a6fa11b9",
+   "0.2.1": "sha256:cd2fa7120e2a62da656521bf7e21b4197b37aa14426896f64e3a60cfccfd2913"
   }
  },
  "type:Topology": {

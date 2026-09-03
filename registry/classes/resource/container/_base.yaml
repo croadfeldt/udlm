@@ -1,11 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Container/0.7.8
+$id: https://udlm.dev/registry/udlm/0.1/class/Container/1.0.0
 conforms_to: udlm/0.1
 uuid: 941d9211-6d64-47b8-9e1d-ccb4ccac2d49
 record_type: class
-class: type
-resource_type: Compute.Container
-parent: Compute
-version: 0.7.8
+class: base
+resource_type: Container
+version: 1.0.0
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -21,7 +20,7 @@ metadata:
   origination_timestamp: '2026-06-17T18:31:11Z'
 elements:
 - element: image
-  scope: Compute.Container
+  scope: Container
   optional: false
   state: canonical
   description: The container image — either the inline OCI reference (first branch) OR a data_reference
@@ -54,7 +53,7 @@ elements:
           reference_data_type:
             const: container_image
 - element: command
-  scope: Compute.Container
+  scope: Container
   optional: true
   state: canonical
   description: Entrypoint override.
@@ -64,19 +63,19 @@ elements:
       type: string
     description: Entrypoint override.
 - element: args
-  scope: Compute.Container
+  scope: Container
   optional: true
   state: canonical
-  description: Converted verbatim from the flat Compute.Container spec.
+  description: Converted verbatim from the flat Container spec.
   schema:
     type: array
     items:
       type: string
 - element: resources
-  scope: Compute.Container
+  scope: Container
   optional: true
   state: canonical
-  description: Converted verbatim from the flat Compute.Container spec.
+  description: Converted verbatim from the flat Container spec.
   schema:
     type: object
     properties:
@@ -92,10 +91,10 @@ elements:
         type: string
         pattern: ^[0-9]+(Mi|Gi|MB|GB)$
 - element: process
-  scope: Compute.Container
+  scope: Container
   optional: true
   state: canonical
-  description: Converted verbatim from the flat Compute.Container spec.
+  description: Converted verbatim from the flat Container spec.
   schema:
     type: object
     properties:
@@ -138,10 +137,10 @@ elements:
             read_only:
               type: boolean
 - element: network
-  scope: Compute.Container
+  scope: Container
   optional: true
   state: canonical
-  description: Converted verbatim from the flat Compute.Container spec.
+  description: Converted verbatim from the flat Container spec.
   schema:
     type: object
     properties:
@@ -172,10 +171,10 @@ elements:
               - internal
               - external
 - element: runtime
-  scope: Compute.Container
+  scope: Container
   optional: true
   state: canonical
-  description: Converted verbatim from the flat Compute.Container spec.
+  description: Converted verbatim from the flat Container spec.
   schema:
     type: object
     properties:

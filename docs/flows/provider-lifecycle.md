@@ -126,7 +126,7 @@ provider:
         - type: Compute.VM
           required_inputs: [namespace, storage_class]
           extension_schema_ref: "urn:udlm:schema:k8s-vm-extensions:1.0"
-        - type: Compute.Container
+        - type: Container
           required_inputs: [namespace, resource_quota]
           extension_schema_ref: "urn:udlm:schema:k8s-container-extensions:1.0"
       operations: [create, update, scale, decommission]
@@ -247,7 +247,7 @@ constituents:
       high_availability: false
 
   - component_id: app
-    resource_type: Compute.Container
+    resource_type: Container
     depends_on: [database]
     bindings:
       - from_component: database
@@ -258,7 +258,7 @@ constituents:
       replicas: 2
 
   - component_id: web
-    resource_type: Compute.Container
+    resource_type: Container
     depends_on: [app]
     bindings:
       - from_component: app

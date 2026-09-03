@@ -51,7 +51,7 @@ constituents:
     edge_type: contained_by
 
   - component_id: app
-    resource_type: Compute.Container
+    resource_type: Container
     provided_by: external
     failure_effect: required
     edge_type: contained_by
@@ -62,7 +62,7 @@ constituents:
         to_field: env.DATABASE_URL
 
   - component_id: web
-    resource_type: Compute.Container
+    resource_type: Container
     provided_by: external
     failure_effect: required
     edge_type: contained_by

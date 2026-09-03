@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.4",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "Compute.Cluster",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,12 +17,12 @@
       "sources": [
         {
           "class": "Compute",
-          "version": "1.2.4",
+          "version": "1.2.5",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
           "class": "Compute.Cluster",
-          "version": "0.5.3",
+          "version": "0.5.4",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -307,7 +307,7 @@
       "Platform.Namespace — the isolation boundaries carved inside the cluster.",
       "Platform.NodePool — homogeneous slices of the cluster's node capacity.",
       "Network.VirtualNetwork — the network the cluster is realized onto.",
-      "Compute.Container — the workloads scheduled onto the cluster.",
+      "Container — the workloads scheduled onto the cluster.",
       "Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target"
     ]
   }

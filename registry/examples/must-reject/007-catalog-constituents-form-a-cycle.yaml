@@ -24,12 +24,12 @@ record:
       failure_effect: required
       depends_on: [web]
     - component_id: app
-      resource_type: Compute.Container
+      resource_type: Container
       provided_by: self
       failure_effect: required
       depends_on: [database]
     - component_id: web
-      resource_type: Compute.Container
+      resource_type: Container
       provided_by: self
       failure_effect: required
       depends_on: [app]

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.5.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.Namespace/0.5.4",
   "conforms_to": "udlm/0.1",
   "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8",
   "resource_type": "Platform.Namespace",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Platform.Namespace",
-          "version": "0.5.3",
+          "version": "0.5.4",
           "uuid": "ae8d0510-221a-4500-b201-3b3e429c34e8"
         }
       ]
@@ -122,7 +122,7 @@
     "works_with": [
       "Compute.Cluster — the cluster the namespace exists within.",
       "Platform.ResourceQuota — hard limits scoped to this namespace.",
-      "Compute.Container / Software.Service — workloads placed into it."
+      "Container / Software.Service — workloads placed into it."
     ]
   }
 }

@@ -116,7 +116,7 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Compute.VM — the guests the host runs.
 
-### Compute.Cluster (0.5.3)
+### Compute.Cluster (0.5.4)
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -134,10 +134,36 @@ The request for a whole container platform: which release, how many nodes of wha
 - Platform.Namespace — the isolation boundaries carved inside the cluster.
 - Platform.NodePool — homogeneous slices of the cluster's node capacity.
 - Network.VirtualNetwork — the network the cluster is realized onto.
-- Compute.Container — the workloads scheduled onto the cluster.
+- Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
-### Compute.Container (0.7.8)
+### Compute.VM (1.5.5)
+
+**Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
+
+The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
+
+**Use when:**
+- You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
+- You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
+- You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress records rather than duplicate them.
+
+**Not for:**
+- The physical machine it runs on — Compute.BareMetalHost.
+- A containerized workload — Container; the VM carries a full guest OS.
+- The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
+- The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
+
+**Works with:**
+- Storage.Layout — the disk layout the VM realizes (per-disk shape, boot designation).
+- Network.VirtualNetwork — the networks the VM's NICs attach to.
+- Storage.Volume — the consumable volumes realizing its layout entries.
+- Facility.Location — where the VM is placed (selected from existing places, policy-governed).
+- Network.IPAddress — pre-allocated addresses the VM consumes.
+
+## Container
+
+### Container (1.0.0)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -158,33 +184,9 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
-### Compute.VM (1.5.4)
-
-**Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
-
-The request for one VM: how big — a named size class (`instance_size`), or explicit `cpu` and `memory` in its place — what `guest_os`, what storage it needs (`storage` minima and a governed `storage_tier`), which Storage.Layout describes its disks (`layout_ref`), and which existing networks its NICs attach to (`networks`, each entry naming a `network_ref`). Placement is a selection of an existing location, not an invention. Once the provider builds it, the record carries realized facts back: IP addresses, hostname, provider handle. The hypervisor (KubeVirt, libvirt, a cloud) is a provider detail, never part of the type.
-
-**Use when:**
-- You need to request a VM with declared size, OS, storage requirements, and network attachments, portable across hypervisors.
-- You need VM records in the dependency graph so ordering (host before VM, VM before its services) is derivable.
-- You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress records rather than duplicate them.
-
-**Not for:**
-- The physical machine it runs on — Compute.BareMetalHost.
-- A containerized workload — Compute.Container; the VM carries a full guest OS.
-- The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
-- The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory.
-
-**Works with:**
-- Storage.Layout — the disk layout the VM realizes (per-disk shape, boot designation).
-- Network.VirtualNetwork — the networks the VM's NICs attach to.
-- Storage.Volume — the consumable volumes realizing its layout entries.
-- Facility.Location — where the VM is placed (selected from existing places, policy-governed).
-- Network.IPAddress — pre-allocated addresses the VM consumes.
-
 ## Data
 
-### Data.Database (0.7.4)
+### Data.Database (0.7.5)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -201,7 +203,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 **Works with:**
 - Storage.Volume — the persistent volume backing the data directory.
 - Compute.VM / Compute.Cluster — where the database runs, when self-hosted.
-- Software.Service / Compute.Container — the consumers that bind to its connection outputs.
+- Software.Service / Container — the consumers that bind to its connection outputs.
 
 ## Facility
 
@@ -747,7 +749,7 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.Namespace (0.5.3)
+### Platform.Namespace (0.5.4)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -764,7 +766,7 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 **Works with:**
 - Compute.Cluster — the cluster the namespace exists within.
 - Platform.ResourceQuota — hard limits scoped to this namespace.
-- Compute.Container / Software.Service — workloads placed into it.
+- Container / Software.Service — workloads placed into it.
 
 ### Platform.NodePool (0.5.3)
 
@@ -784,7 +786,7 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - Compute.Cluster — the cluster the pool belongs to.
 - Platform.Namespace — namespaces whose workloads schedule onto pools.
 
-### Platform.ResourceQuota (0.5.3)
+### Platform.ResourceQuota (0.5.4)
 
 **Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
 
@@ -795,12 +797,12 @@ The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod c
 - You need admission or placement to check remaining headroom before dispatching a workload.
 
 **Not for:**
-- Per-container resource requests — those live on the workload (Compute.Container resources).
+- Per-container resource requests — those live on the workload (Container resources).
 - Node capacity — Platform.NodePool advertises capacity; a quota caps consumption within a namespace.
 
 **Works with:**
 - Platform.Namespace — the one namespace this quota constrains.
-- Compute.Container — workloads whose aggregate consumption the quota caps.
+- Container — workloads whose aggregate consumption the quota caps.
 
 ### Platform.StorageClass (0.7.1)
 
@@ -824,7 +826,7 @@ The Kubernetes StorageClass construct: a named policy — its `name` and `provis
 
 ## Security
 
-### Security.CredentialRef (0.6.3)
+### Security.CredentialRef (0.6.4)
 
 **Purpose:** Points at a credential held by an issuing provider — which credential, held where, at what assurance — without the value ever entering the model.
 
@@ -841,7 +843,7 @@ A reference to a secret, never the secret. It names the kind of credential (the 
 
 **Works with:**
 - Identity.Person / Identity.ServiceAccount — whose credential this is.
-- Compute.Container / Software.Service / Storage.FileShare — consumers that reference it from env, mounts, or config.
+- Container / Software.Service / Storage.FileShare — consumers that reference it from env, mounts, or config.
 
 ### Security.DirectoryService (0.7.1)
 
@@ -866,7 +868,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## Software
 
-### Software.Service (0.7.2)
+### Software.Service (0.7.3)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -878,19 +880,19 @@ The application layer: the mail service, the registry, model serving — a named
 - You need host services (systemd units) and containerized services modeled uniformly.
 
 **Not for:**
-- A single container's runtime spec — Compute.Container; the service references containers as constituents.
+- A single container's runtime spec — Container; the service references containers as constituents.
 - A bounded-runtime task — Automation.Job.
 - The database a service uses — Data.Database, referenced as a dependency.
 
 **Works with:**
-- Compute.Container — containerized constituents, by reference.
+- Container — containerized constituents, by reference.
 - Compute.Cluster / Compute.BareMetalHost / Compute.VM — where the constituents run.
 - Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
 - Security.CredentialRef — the service's secrets, by reference.
 
 ## SoftwareImage
 
-### SoftwareImage (0.2.1)
+### SoftwareImage (0.2.2)
 
 **Purpose:** Records a container image as a digest-identified fact — the anchor a container's software bill of materials hangs from.
 
@@ -901,11 +903,11 @@ One container image, identified by its content digest (one observed `tag` is rec
 - You need a bill-of-materials anchor: image → packages → vulnerabilities, walkable in both directions.
 
 **Not for:**
-- The running workload — Compute.Container runs an image; this is the image as a fact.
+- The running workload — Container runs an image; this is the image as a fact.
 - A package inside the image — SoftwarePackage; the image contains packages.
 
 **Works with:**
-- Compute.Container — workloads that run this image.
+- Container — workloads that run this image.
 - SoftwarePackage — the packages the image contains (the software bill of materials).
 
 ## SoftwarePackage
@@ -992,7 +994,7 @@ The consumable unit of host-local storage — its required `dataset_kind` says w
 - Compute.BareMetalHost — the host the dataset is local to.
 - Storage.Dataset — the parent dataset, when nested.
 
-### Storage.FileShare (0.6.3)
+### Storage.FileShare (0.6.4)
 
 **Purpose:** Declares a file-sharing service and its exported shares — who may reach which path over which protocol.
 
@@ -1009,7 +1011,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 **Works with:**
 - Security.DirectoryService — authenticates the share principals.
 - Storage.Volume — the underlying storage the shares expose.
-- Compute.BareMetalHost / Compute.Container — where the file service runs.
+- Compute.BareMetalHost / Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
 ### Storage.Layout (0.5.1)

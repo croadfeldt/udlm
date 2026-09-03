@@ -112,7 +112,7 @@ A ruling here feeds four pieces of work, in this order:
 ## Out of scope
 
 - The `Compute` → `Machine` split and the Container / Cluster re-parent. Those are a consequence of
-  H2, not a test of it, and they carry a rename cost (126 references to `Compute.Container`, 96 to
+  H2, not a test of it, and they carry a rename cost (126 references to `Container`, 96 to
   `Compute.Cluster`) that should not be spent before the criterion is ruled.
 - Naming. Whether the neutral cluster base is `Cluster` or `ContainerPlatform` is a separate
   question and does not affect whether three tiers suffice.
