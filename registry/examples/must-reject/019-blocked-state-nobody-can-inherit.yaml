@@ -12,7 +12,7 @@ record:
   uuid: 7f4b1d63-9a25-4c80-b3e7-2d5a8f0e6c14
   handle: cexample/app/misspelled
   conforms_to: udlm/0.1
-  resource_type: Compute.Container
+  resource_type: Container
   lifecycle_state: Requested
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   status:

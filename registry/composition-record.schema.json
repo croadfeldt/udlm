@@ -182,7 +182,7 @@
         },
         {
           "component_id": "web",
-          "resource_type": "Compute.Container",
+          "resource_type": "Container",
           "provided_by": "external",
           "failure_effect": "required",
           "depends_on": [

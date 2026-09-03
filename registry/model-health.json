@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4770,
-    "mutations_rejected": 4770,
+    "mutations_attempted": 4671,
+    "mutations_rejected": 4671,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -39,13 +39,13 @@
         "attempted": 203,
         "rejected": 203
       },
-      "Compute.Container": {
-        "attempted": 334,
-        "rejected": 334
-      },
       "Compute.VM": {
         "attempted": 246,
         "rejected": 246
+      },
+      "Container": {
+        "attempted": 235,
+        "rejected": 235
       },
       "Data.Database": {
         "attempted": 70,
@@ -253,8 +253,8 @@
       "Capability": 1,
       "Compute.BareMetalHost": 5,
       "Compute.Cluster": 4,
-      "Compute.Container": 2,
       "Compute.VM": 7,
+      "Container": 2,
       "Data.Database": 5,
       "Facility.Location": 1,
       "Facility.PowerFeed": 3,
@@ -373,8 +373,8 @@
       "Capability",
       "Compute.BareMetalHost",
       "Compute.Cluster",
-      "Compute.Container",
       "Compute.VM",
+      "Container",
       "Data.Database",
       "Job",
       "Network.AddressService",
@@ -440,10 +440,10 @@
       "Compute.Cluster": [
         "control-plane-servicetype-gen"
       ],
-      "Compute.Container": [
+      "Compute.VM": [
         "control-plane-servicetype-gen"
       ],
-      "Compute.VM": [
+      "Container": [
         "control-plane-servicetype-gen"
       ],
       "Data.Database": [

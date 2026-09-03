@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.6.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.FileShare/0.6.4",
   "conforms_to": "udlm/0.1",
   "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27",
   "resource_type": "Storage.FileShare",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Storage.FileShare",
-          "version": "0.6.3",
+          "version": "0.6.4",
           "uuid": "83f66b92-ad66-4415-aa94-01327dec4f27"
         }
       ]
@@ -140,7 +140,7 @@
     },
     {
       "edge_type": "contained_by",
-      "target": "Compute.Container",
+      "target": "Container",
       "cardinality": "0..1",
       "description": "Or runs as a containerized service."
     },
@@ -189,7 +189,7 @@
     "works_with": [
       "Security.DirectoryService — authenticates the share principals.",
       "Storage.Volume — the underlying storage the shares expose.",
-      "Compute.BareMetalHost / Compute.Container — where the file service runs.",
+      "Compute.BareMetalHost / Container — where the file service runs.",
       "Security.CredentialRef — service credentials (e.g. a keytab), by reference."
     ]
   }

@@ -182,7 +182,7 @@ method: a discovery avenue → Knowledge classes → references-context edges �
 > [udlm#188](https://github.com/croadfeldt/udlm/issues/188) (SBOM SoR),
 > [dcm#66](https://github.com/croadfeldt/dcm/issues/66) (OCP/gitops SOR, control-plane-at-home).
 - **`SoftwareImage`** — a container image (correlation id: **digest**). *Adopts:* OCI image-spec. `contains`
-  (→ SoftwarePackage) is its SBOM; referenced by `Compute.Container` via `runs_image`.
+  (→ SoftwarePackage) is its SBOM; referenced by `Container` via `runs_image`.
 - **`SoftwarePackage`** — a library/package (correlation id: **purl**). *Adopts:* Package-URL + SPDX/CycloneDX
   component. One record per purl, shared by every image that contains it. `affected_by` (→ Vulnerability).
 - **`Vulnerability`** — a CVE / GHSA / OSV advisory (correlation id: **id**). *Adopts:* OSV / NVD-CVE (+ VEX for

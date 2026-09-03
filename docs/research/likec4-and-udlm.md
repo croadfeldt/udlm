@@ -43,8 +43,8 @@ external actor (`customer`) isn't provisioned — it informs public-facing confi
 | LikeC4 | Constituent (`component_id`) | `resource_type` | `provided_by` (back-end provider) |
 |---|---|---|---|
 | `db` | `db` | `Data.Database` | external — DCM places a DB provider |
-| `api` (`depends_on: [db]`) | `api` | `Compute.Container` | external — a container provider |
-| `web` (`depends_on: [api]`) | `web` | `Compute.Container` | external — a container provider |
+| `api` (`depends_on: [db]`) | `api` | `Container` | external — a container provider |
+| `web` (`depends_on: [api]`) | `web` | `Container` | external — a container provider |
 | `web -> api`, `api -> db` | dependency edges | — | drive the DAG |
 
 ```yaml
@@ -58,14 +58,14 @@ compositeService:
       depends_on: []
       required_for_delivery: required
     - component_id: api
-      resource_type: Compute.Container
+      resource_type: Container
       provided_by: external
       depends_on: [db]                # from  api -> db
       required_for_delivery: required
       bindings:                       # typed references over the edge (core-tenets T4)
         - { field: process.env.DATABASE_URL, from: db.connection_string }
     - component_id: web
-      resource_type: Compute.Container
+      resource_type: Container
       provided_by: external
       depends_on: [api]               # from  web -> api
       required_for_delivery: required

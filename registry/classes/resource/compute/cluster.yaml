@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.4
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: type
 resource_type: Compute.Cluster
 parent: Compute
-version: 0.5.3
+version: 0.5.4
 family: Resource
 status: active
 metadata:
@@ -162,6 +162,6 @@ context:
   - Platform.Namespace — the isolation boundaries carved inside the cluster.
   - Platform.NodePool — homogeneous slices of the cluster's node capacity.
   - Network.VirtualNetwork — the network the cluster is realized onto.
-  - Compute.Container — the workloads scheduled onto the cluster.
+  - Container — the workloads scheduled onto the cluster.
   - 'Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on
     (soft) when imported; a cluster hosting a hub is just its contained_by target'

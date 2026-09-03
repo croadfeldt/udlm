@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.3
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.7.2
+version: 0.7.3
 family: Resource
 status: active
 metadata:
@@ -15,7 +15,7 @@ metadata:
     layer of the estate — Kubernetes workloads (web apps, registries, observability, model serving) and
     host services (CI, mail, DNS/identity daemons) — as first-class nodes so their runtime dependencies
     carry order. Secret material is never inline; env/mounts reference a Security.CredentialRef. Fine-grained
-    per-container detail, when wanted, hangs off `constituents` as Compute.Container references.
+    per-container detail, when wanted, hangs off `constituents` as Container references.
   maintainer: udlm-registry
   origination_timestamp: '2026-07-12T00:00:00Z'
 elements:
@@ -41,11 +41,11 @@ elements:
   scope: Software.Service
   optional: true
   state: canonical
-  description: The workloads that make up the service. Container form references a Compute.Container;
+  description: The workloads that make up the service. Container form references a Container;
     systemd form names host + units.
   schema:
     type: array
-    description: The workloads that make up the service. Container form references a Compute.Container;
+    description: The workloads that make up the service. Container form references a Container;
       systemd form names host + units.
     items:
       type: object
@@ -57,7 +57,7 @@ elements:
           - container
           - systemd
         container_ref:
-          description: Reference to Compute.Container — the container realizing this constituent. Common-elements
+          description: Reference to Container — the container realizing this constituent. Common-elements
             Reference shape (handle string or {uuid, handle} object); resolvable and policy-walkable,
             never an opaque string.
           $ref: ../../../common-elements.schema.json#/$defs/Reference
@@ -101,7 +101,7 @@ spec_examples:
 - service_kind: application
   constituents:
   - form: container
-    container_ref: estate/storefront-web?resource_type==Compute.Container
+    container_ref: estate/storefront-web?resource_type==Container
   endpoints:
   - name: https
     url: https://storefront.svc.internal
@@ -168,7 +168,7 @@ adopts:
 - standard: Open Application Model
   version: '>=0.3'
   standard_name: Application (set of Components)
-  role: grounds `constituents[]` — an application is a set of component workloads, one level up from Compute.Container
+  role: grounds `constituents[]` — an application is a set of component workloads, one level up from Container
   source: https://oam.dev/
   license: MIT
   license_compatibility: compatible-reference
@@ -197,11 +197,11 @@ context:
     drive shutdown/startup order.
   - You need host services (systemd units) and containerized services modeled uniformly.
   not_for:
-  - A single container's runtime spec — Compute.Container; the service references containers as constituents.
+  - A single container's runtime spec — Container; the service references containers as constituents.
   - A bounded-runtime task — Automation.Job.
   - The database a service uses — Data.Database, referenced as a dependency.
   works_with:
-  - Compute.Container — containerized constituents, by reference.
+  - Container — containerized constituents, by reference.
   - Compute.Cluster / Compute.BareMetalHost / Compute.VM — where the constituents run.
   - Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
   - Security.CredentialRef — the service's secrets, by reference.

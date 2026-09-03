@@ -714,7 +714,7 @@ layer:
 
   # COMPATIBILITY METADATA — what this layer applies to
   compatibility:
-    resource_types: [Compute.VM, Compute.Container]
+    resource_types: [Compute.VM, Container]
     resource_type_versions: "^1.0.0"
     provider_types: []              # empty = all providers
     profile_constraints: []         # empty = all profiles; or: [standard, prod, fsi]

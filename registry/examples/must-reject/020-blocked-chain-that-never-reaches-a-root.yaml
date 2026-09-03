@@ -10,7 +10,7 @@ record:
   uuid: 2a9c5e08-6b71-4f3d-8c94-1e7b0d2f5a63
   handle: cexample/app/dangling
   conforms_to: udlm/0.1
-  resource_type: Compute.Container
+  resource_type: Container
   lifecycle_state: Requested
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   status:

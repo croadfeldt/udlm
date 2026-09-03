@@ -29,7 +29,7 @@ A **capability** is the versioned, accreditable unit (`capability_uuid` + `versi
 | Capability (`capability_uuid`, v1.0.0) | Realizes these categories (constituent capabilities) |
 |---|---|
 | **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VM) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
-| **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Compute.Container) · `…/Network` · `…/Storage` |
+| **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Container) · `…/Network` · `…/Storage` |
 | **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (Compute.Cluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
 
 So "full lifecycle of X and all its constituent capabilities" = **one capability that spans the
@@ -77,7 +77,7 @@ they carry no per-category override and inherit the provider default):
 
     { "capability_uuid": "a26c91c8-…", "version": "1.0.0", "name": "Container Lifecycle",
       "categories": [
-        { "category": "realize_resources/Container", "resource_types": ["Compute.Container"],
+        { "category": "realize_resources/Container", "resource_types": ["Container"],
           "operational_capability": { "drain": true, "rolling_update": true, "online_migrate": true, "rehearsal_support": ["rehearsal"] },
           "sovereignty": { "operating_jurisdictions": ["US","CA"], "data_residency_zones": ["us-mn"], "enforcement_plane": "both" } },
         { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress"] },

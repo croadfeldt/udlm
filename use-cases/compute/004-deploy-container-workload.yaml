@@ -2,7 +2,7 @@ uuid: uc-184f95c5-f7b1-4684-b566-1016815b9b7c
 handle: compute/deploy-container-workload
 version: 1.0.0
 scenario:
-  description: 'A platform engineer deploys a Compute.Container workload by intent — a container image
+  description: 'A platform engineer deploys a Container workload by intent — a container image
     reference, the resource limits it runs under (CPU and memory), and its replica count — without naming a
     scheduling node or a runtime handle. The compute provider pulls the declared image, admits it under the
     declared limits, schedules the declared replicas, and the workload reaches Realized with those properties

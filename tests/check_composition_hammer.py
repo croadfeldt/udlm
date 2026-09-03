@@ -67,7 +67,7 @@ def item(constituents, n=0):
     }
 
 
-def constituent(cid, rtype="Compute.Container", depends_on=(), bindings=()):
+def constituent(cid, rtype="Container", depends_on=(), bindings=()):
     c = {
         "component_id": cid,
         "resource_type": rtype,
@@ -119,7 +119,7 @@ def main():
             failures.append(f"{label}: legal graph rejected by semantic checks — {msg}")
 
     # a real producer type with a known first output, for the adversarial graphs
-    producer_type = "Compute.Container"
+    producer_type = "Container"
     real_output = sorted(outputs_index[producer_type])[0] if outputs_index.get(producer_type) else "endpoint"
 
     # (a) binding to an undeclared output of a known type -> must error

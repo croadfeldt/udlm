@@ -12,7 +12,7 @@ consumer:
 consumes:
   - resource_type: Compute.VM
     noted_version: 0.6.2
-  - resource_type: Compute.Container
+  - resource_type: Container
     noted_version: 0.5.2
   - resource_type: Data.Database
     noted_version: 0.4.1
