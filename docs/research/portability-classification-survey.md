@@ -1,213 +1,194 @@
-# Research: portability classification across the data-center and homelab stack
+# Research: what earns a Base Class, tested against the data-center and homelab stack
 
-**What this settles:** a survey of the technology stacks found in a data center or a homelab, and
-for each, what the portability contract is and where it sits in Base / Type / Provider under
-ruling 068. It answers one question that came up while applying 068 to `Compute.Cluster` — *if a
-Kubernetes cluster gets its own Base, what about a storage cluster, or a VM-host cluster?* — and
-turns the answer into a Base roster and a rule for clusters. It is a proposal with decisions
-called out at the end, not a ruling.
+**What this settles:** the working definition of a Base Class after ruling 068 was applied to
+`Compute`, and where every technology stack found in a data center or homelab lands under it.
+Ruling 068 said a Base is earned by a shared portability contract. This brief sharpens that into
+three checkable conditions, replaces the "members one intent can move between" wording, and
+derives the class roster and the plan from them. It is a research brief with a plan attached;
+the decisions it needs from the maintainer are listed at the end.
 
-**Status:** research. Nothing here is applied. The plan for the `Compute` split (the applied list in ruling 068) changes if
-the recommendations hold; the changes are listed in the last section.
+**Status:** research. Nothing here is applied. The `Compute` split plan changes as listed in the
+last section.
 
 ## The question under test
 
-Ruling 068 says a Base Class is earned by a shared portability contract: its members are things
-one consumer intent can move between, and a grouping whose members share no contract is a folder.
-Applying it to `Compute` produced `Container` (PR #568) and proposed a `KubernetesCluster` Base.
+Applying ruling 068 to `Compute.Cluster` raised a question the ruling did not answer: if a
+Kubernetes cluster earns a Base, what about a storage cluster, a VM-host cluster, a database
+cluster, a switch stack? "Cluster" recurs at every layer, so being a cluster cannot be what earns
+a class. And "things one intent can move between" invites a thought experiment — how often does
+anything move from a VM to bare metal? — that never happens in practice and so cannot be the test.
 
-"Cluster" recurs at every layer of an estate. Ceph is a cluster. vSphere and Proxmox are clusters.
-Patroni, Galera, Kafka, etcd, OpenSearch are clusters. A switch stack, a firewall pair, and a Kea
-HA pair are clusters. If the Kubernetes cluster earns a Base because it is a cluster, every one of
-these does too, and the tier model collapses into a list of products. So the real question is not
-what to call `Compute.Cluster`; it is **what makes a cluster a class at all, and under which Base
-it belongs when it is one.**
+## What the model is for
 
-## What is already established — do not re-derive
+UDLM is the matrix a provider declares its offerings against, so that an intent written once can
+be realized by any provider whose offering is compatible, and its lifecycle managed afterwards.
+The portability events in the use cases are not migrations. They are:
 
-| Established | Where | Consequence here |
-|---|---|---|
-| Base = category scope; Type extends Base; Provider extends Type; portability is read off scope | ADR-038 §Decision 1–4 | the classification is a placement of each stack at a scope |
-| A Base is earned by a shared portability contract | ruling 068, register row (PR #569, open) | the test applied throughout |
-| The concrete technology is the **provider**, never in the type name | `Storage.Cluster`, `Storage.Pool`, `Storage.Volume` record descriptions | stated only in three class records; nowhere in the spec |
-| `Platform` is defined as "Kubernetes clusters, application platforms" | `resource-type-hierarchy.md` §2.2 | by 068 that is a folder: two members, no shared contract |
-| 9 of 12 Resource Bases describe themselves as "Empty category base — the promotion target" | `registry/classes/resource/*/_base.yaml` | none states a contract; by 068 none is yet earned |
-| Only `Network` (`zone`, `tier`), `Hardware` (`device_class`) and `Compute` carry Base elements | same | the three that already say what they are |
-| Adopting a standard's object by name is existing practice | `Storage.Volume` "Adopts Kubernetes PersistentVolumeClaim/CSI + SNIA Swordfish"; Redfish `ComputerSystem` spelling for firmware (068) | a standard's name in a class is not a vendor's name |
-| Field-level portability classes `universal / conditional / provider-specific / exclusive` | `resource-type-hierarchy.md` §4 | orthogonal to this survey: that classifies fields, this classifies classes |
+- **placement at order time** — the intent is written once and realized by whichever member the
+  provider set offers (UC-04);
+- **rebuild from stored intent** after loss, on the same or a different provider (UC-10, UC-18);
+- **provider substitution** when a vendor exits.
 
-## Method
+In all three the intent stays put and a different member realizes it. Converting realized state
+from one implementation to another (a libvirt guest from a VMware one) is a provider or DCM
+operation and is outside the intent model. This homelab is the everyday case: an OpenShift
+cluster whose workers came from one intent, "a worker with these resources", and are realized as
+two bare-metal hosts and two KVM guests. Nothing moved; two members satisfied one order.
 
-For every stack I recorded four things and derived the placement from them:
+## The definition
 
-1. **Intent** — what a consumer actually asks for, in their words.
-2. **Contract** — what any provider must honor for that intent to be realized.
-3. **Movement set** — the implementations one intent moves between without rewriting it.
-4. **Placement** — Base, Type, element, or provider, by these rules:
-   - Two things with the same contract share a Base. A different contract is a different Base,
-     even if the things look alike (068).
-   - A cluster is a **Type** only when the cluster itself is what the consumer asks for. When a
-     cluster is how a provider delivers HA for something else the consumer asked for, it is a
-     **topology element** on that Type (`replicas`, `ha`), not a class.
-   - A technology name belongs in a class name only when the technology **is the contract**: a
-     conformance-tested API standard (Kubernetes, OCI, Redfish, Swordfish). A vendor or
-     distribution (OpenShift, EKS, Ceph, vSphere, Proxmox) is a provider and never appears.
-   - A Type lives under the Base whose API it serves, not under the Base of what it is built from.
-     `Storage.Cluster` serves the storage contract even though it is built from machines.
+> **A Base Class is a deliverable that any member can realize.** A resource declared at the Base
+> must be satisfiable by every provider that declares an offering anywhere beneath it.
 
-Examples are drawn from both ends of the range: an enterprise data center and this homelab (an
-OpenShift cluster whose control plane and two workers are KVM guests on one libvirt host, three Ceph
-VMs on the same host, a ZFS workstation, Kea DHCP in HA on two Raspberry Pis, FreeIPA, a Quay
-registry on Ceph RGW, GPU inference under KServe).
+Three conditions, each checkable:
+
+1. **An existing, widely used API already abstracts over the members.** OpenStack Nova serves VMs
+   and Ironic bare metal behind one compute API; Cluster API's `Machine` is a VM or a bare-metal
+   host by infrastructure provider; TOSCA's `Compute` node type is the same. Kubernetes
+   conformance is the abstraction for clusters, OCI for containers, CSI for volumes. Where no
+   credible API treats the members as one thing — a storage volume and a storage pool — the
+   grouping is a folder. This is T5 adopt-by-reference applied to the tier model.
+2. **Every Base element is honorable by every Type and every Provider beneath it.** This is how
+   `Compute` failed: `Container` inherited `guest_os`, which no container provider can honor. It is
+   a mechanical gate: a Type may add or refine Base elements (ADR-038's Liskov invariant) and may
+   never leave one unhonorable.
+3. **Declaring an offering at a tier accepts orders at every tier above it.** A provider that
+   declares `Machine.VM.KubeVirt` satisfies `Machine.VM` and bare `Machine`. Policy-fill (DCM
+   ADR-024) completes the blanks a Base-level order leaves. ADR-038 §4 already says every Class is
+   instantiable; this is what makes that true rather than nominal.
+
+The three tiers are the field-level portability classes of `resource-type-hierarchy.md` §4 seen
+structurally: Base elements are `universal`, Type elements `conditional`, Provider elements
+`provider-specific` or `exclusive`. The tree names and validates; field classification plus
+capability advertisement (ADR-PROV-002) compute the portability of a given request. Neither
+replaces the other.
+
+### What this does to folder Bases
+
+A category whose members fail condition 1 is a folder. Folders are harmless as names and harmful
+as classes only because ADR-038 makes every Class instantiable: "give me a Storage" is not an
+order any provider can fill. The fix is to mark such Bases **non-instantiable**, not to rename
+their members. A kind is promoted to a Base of its own only when its family needs category, kind,
+dialect and offering at once and overflows three segments — which is what forced `Container` out
+and what the Kubernetes family hits below.
+
+### What the Type tier is spent on
+
+Whatever carries the definition structure for that family (ADR-038's shared-then-specialized
+test), and it differs by family:
+
+- **Form**, where the members realize one deliverable differently and each form adds elements.
+  `Machine.VM` adds an image and hot-plug; `Machine.BareMetalHost` a BMC and boot order;
+  `Machine.LPAR` processor units, capped or uncapped sharing, VIOS-backed I/O. Dialects (KubeVirt,
+  libvirt, vSphere, the Power HMC) land at Provider.
+- **Dialect**, where the deliverable has no form worth a tier and the distributions diverge.
+  `KubernetesCluster.OpenShift` adds channel, FIPS, network type; `KubernetesCluster.EKS` adds
+  authentication mode and add-ons. Offerings (ROSA, ARO, self-managed, OSAC-hosted) land at
+  Provider, each with its own consumer-supplied data (account, region, IAM roles).
+
+The normative section should say the axis is whatever carries the structure, not fix one. It
+should also say plainly that an offering can require consumer-supplied data and therefore earns a
+Provider Class; ADR-038 treats two deployments of one dialect as instances on the authority axis
+differing only by advertised capability, and ROSA versus ARO shows that is not always enough.
 
 ## The survey
 
-### Physical and machine layers
+Each row records what a consumer asks for, the abstraction condition 1 relies on, and the
+placement. Examples span an enterprise data center and this homelab (OpenShift on a mix of bare
+metal and KVM guests on one libvirt host, Ceph on VMs, a ZFS workstation, Kea DHCP in HA on two
+Raspberry Pis, FreeIPA, a Quay registry on Ceph RGW, GPU inference under KServe).
 
-| Stack | Intent | Contract | Moves between | Placement |
-|---|---|---|---|---|
-| Rack, room, PDU feed, cooling, cabling | "a rack position with two power feeds" | physical placement: position, power, cooling budget | any site | **`Facility`** Base (exists; contract unstated) |
-| Server chassis, CPU, GPU, NIC, drive, BMC, BIOS profile, switch hardware | "a host with 2×25GbE and one GPU" | a device requirement, discriminated by `device_class` | any vendor meeting the spec | **`Hardware`** Base (exists; `device_class` is its discriminator) |
-| Bare metal via Redfish / iPXE / Ignition / kickstart | "a host booted into this image" | boot an image with cpu, memory, disk, nic, firmware, guest init | any BMC-managed server | **`Machine.BareMetalHost`** (`Compute` split, step 2) |
-| VM on KVM/libvirt, Proxmox, vSphere, Hyper-V, Xen, Nutanix AHV, OpenStack Nova, KubeVirt / OpenShift Virtualization, EC2, GCE, Azure | "a VM with 4 vCPU, 16 GiB, this image" | same contract as bare metal, plus an image | every hypervisor and cloud listed | **`Machine.VM`** (`Compute` split, step 2) |
-| Hypervisor cluster: vSphere DRS/HA, Proxmox VE, oVirt, Nutanix, Hyper-V failover, Harvester, OpenStack host aggregates, a single libvirt host | "a VM-host cluster of N hosts with shared storage, live migration and HA" | hypervisor management: membership, shared storage attach, migration domain, HA policy | every product listed | **new `Virtualization` Base, `Virtualization.Cluster`** — see D2 |
+### Machines and what hosts them
 
-The hypervisor cluster is the case that decides the pattern. It does **not** share `Machine`'s
-contract (nobody boots an image into a vSphere cluster), so it is not `Machine.HostCluster` — the
-same reason `Container` left `Compute`. It is the platform that realizes `Machine.VM`, the way a
-Kubernetes cluster is the platform that realizes `Container`. That symmetry is the shape of the
-whole roster: **workload contracts** and **platform contracts** are different Bases.
-
-### Container and orchestration layers
-
-| Stack | Intent | Contract | Moves between | Placement |
-|---|---|---|---|---|
-| podman, docker, quadlets, a Kubernetes pod | "run this image" | OCI image + runtime | all of them | **`Container`** Base (PR #568) |
-| Kubernetes cluster: OpenShift, OKD, EKS, AKS, GKE, RKE2, k3s, Talos, kubeadm, MicroShift, HyperShift hosted control planes | "a cluster at release 1.30 with these node pools" | the Kubernetes API (conformance-tested) | every distribution listed | **`Kubernetes.Cluster`** — see D1 |
-| Namespace, NodePool, ResourceQuota, StorageClass | "a namespace with an 8-CPU quota on cluster X" | Kubernetes API objects | every distribution | **`Kubernetes.Namespace`** etc. (today `Platform.*`) |
-| Fleet hub: ACM / OCM, HyperShift management cluster | "a hub managing these spokes" | OCM ManagedCluster semantics | OCM-family only | **`Kubernetes.Hub`** (today `Platform.Hub`) |
-| Nomad, Docker Swarm, ECS | "run this workload with 3 replicas" | not the Kubernetes API; Nomad has namespaces and node pools, ECS has clusters, Swarm has neither | the workload moves (`Container`, `Template.Application`); the platform objects do not | provider of `Container`; **no** shared platform Base with Kubernetes |
-
-Why `Kubernetes` and not `Platform` or `Orchestrator`: the contract *is* the Kubernetes API.
-`pod_cidr`, `service_cidr`, `StorageClass`, `ResourceQuota`, and the hub's ManagedCluster semantics
-have no meaning outside it. A neutral name over a Kubernetes-only contract is the folder 068
-forbids. Kubernetes is a CNCF conformance standard, not a vendor, so naming it obeys the same rule
-as adopting Redfish or OCI. OpenShift, EKS and k3s are the providers.
-
-Why not `KubernetesCluster` as its own Base (ruling 068 as rowed): it strands Namespace, NodePool,
-StorageClass and Hub in `Platform`, three of which already carry edges to the cluster. The family
-has one contract; it should have one Base.
-
-### Storage and data layers
-
-| Stack | Intent | Contract | Moves between | Placement |
-|---|---|---|---|---|
-| Ceph (RBD/CephFS/RGW), Gluster, Longhorn, Rook, MinIO, Linstor/DRBD, vSAN, NetApp/Pure/Dell arrays, TrueNAS | "a storage cluster serving block and object, 200 TiB, 3× replicated" | protocols served + capacity + data protection | every product listed | **`Storage.Cluster`** (exists — the precedent this survey generalizes) |
-| ZFS pool, LVM VG, mdraid, hardware RAID, btrfs | "a redundant pool on this host's drives" | host-local capacity with a redundancy topology | every product listed | **`Storage.Pool`** (exists) |
-| PVC/CSI volume, EBS, NFS share, iSCSI LUN, dataset | "500 GiB block, attach to this workload" | block/file volume with class and size | every provisioner | **`Storage.Volume`**, `Storage.FileShare`, `Storage.Dataset` (exist) |
-| PostgreSQL via Patroni, CloudNativePG, Crunchy, RDS; MySQL Galera / InnoDB Cluster; SQL Server AG; MongoDB replica set | "a Postgres 16, 100 GiB, highly available" | engine + version + resources + availability | every operator and managed service | **`Data.Database`** with a **topology element** (`replicas`, `ha`) — the cluster is the provider's HA mechanism, not the ask |
-| Redis Cluster, etcd, OpenSearch / Elasticsearch | same shape as above | same | same | `Data.Database` engines, topology element |
-| Kafka, RabbitMQ, NATS, pipelines | "a stream with 3 partitions, 7-day retention" | stream/queue semantics | every broker | `Data.Stream` / `Data.Queue` — **gap**, category table names them, no Type exists |
-
-`Storage` and `Data` are both earned by 068 and both currently describe themselves as empty. The
-contract lines above are what their Base records should say.
-
-### Network, identity, security, observability
-
-| Stack | Intent | Contract | Moves between | Placement |
-|---|---|---|---|---|
-| VLAN, subnet, IP, pool, virtual network, gateway, DNS zone, DHCP scope, connection profile | "a /24 on VLAN 20 with a gateway" | connectivity, discriminated by `zone` and `tier` | every switch, SDN and IPAM | **`Network`** Base (exists; contract already stated) |
-| Switch stack / MLAG pair, firewall HA pair, Kea HA pair, BIND primaries, HAProxy pair, MetalLB | "DHCP for this subnet" (not "a Kea pair") | the service; the pair is how the provider makes it survive | any implementation | **topology on the Type**, or the provider's own concern. The homelab's Kea HA on two Pis is one `Network.DHCPScope` |
-| FreeIPA, Active Directory, LDAP, Keycloak; Vault, cert-manager, step-ca, HSM | "a directory for this realm", "a credential reference" | directory service semantics; credential reference | every implementation | **`Security.DirectoryService`**, `Security.CredentialRef` (exist). Multi-master replicas are topology |
-| Person, Group, ServiceAccount | information, not a resource | identity data | any IdP | **`Identity`** Base (information family, exists) |
-| Prometheus / Thanos / Mimir, Loki, OpenTelemetry collector, Elastic, Grafana | "ship logs from these hosts", "scrape these endpoints" | OTLP and Prometheus exposition — both standards, adopt by name | every backend | **`Observability`** Base (exists; `LogShipper` only) |
-
-### Automation, batch, serving, edge
-
-| Stack | Intent | Contract | Moves between | Placement |
-|---|---|---|---|---|
-| AAP / AWX, Terraform / OpenTofu, ArgoCD / Flux, Foreman / Satellite, MAAS, Flightctl | "run this automation against these targets" | what a run is, regardless of engine | every engine | **`Automation`** (Process family; contract stated); `Job` is the receipt |
-| Slurm, PBS, HTCondor, Ray, Kueue | "a batch cluster with 8 GPU nodes" / "run this job" | job-scheduler API | every scheduler | **gap.** `Job` covers the run; nothing covers the cluster. Record, do not add — no use case asks for one yet |
-| vLLM, KServe, Triton, Ray Serve, Ollama | "an inference endpoint for model X" | a served service with replicas | every server | **`Software.Service`** (exists, `service_kind`) on `Kubernetes` or `Machine`; the homelab's `llm-serving` is this |
-| Flightctl fleets, MicroShift, Raspberry Pi, field laptops | "this device runs this image" / "these devices form a fleet" | `Machine` + `Kubernetes`; a fleet is a `Grouping` | — | existing classes; no new Base |
-| Application composition | "the three-tier app" | composition mechanism | — | **`Template.Application`** (exists) |
-
-## The cluster rule
-
-Reading the survey down the placement column gives one rule:
-
-> **"Cluster" is a topology, not a kind.** A cluster is a Type only when the cluster itself is the
-> deliverable, and then it lives under the Base whose API it serves. A cluster that exists to make
-> some other deliverable highly available is a topology element on that deliverable's Type.
-
-| Cluster | Is the cluster the ask? | Where it goes |
-|---|---|---|
-| Kubernetes cluster | yes | `Kubernetes.Cluster` |
-| Fleet hub | yes | `Kubernetes.Hub` |
-| VM-host cluster | yes, by the infrastructure operator | `Virtualization.Cluster` (new) |
-| Storage cluster | yes | `Storage.Cluster` (exists) |
-| Database cluster | no — the ask is a database | `Data.Database` topology element |
-| Kafka / Redis / etcd / OpenSearch cluster | no | `Data.*` topology element |
-| Switch stack, firewall pair, DHCP HA pair | no — the ask is the network service | `Network.*` topology, or the provider's concern |
-| Directory replicas | no | `Security.DirectoryService` topology |
-| Batch / HPC cluster | yes | gap; no Base until a use case asks |
-
-## The Base roster after 068
-
-Only the Resource family Bases that a technology stack lands in. Knowledge, Access, Grouping,
-Template, Topology and SovereigntyZone are not "stacks" and are out of scope here.
-
-| Base | Contract, in one line | Today | Action |
+| Stack | Intent | Abstraction | Placement |
 |---|---|---|---|
-| `Facility` | physical placement: position, power, cooling | empty | state the contract |
-| `Hardware` | a device requirement, by `device_class` | discriminator present | state the contract |
-| `Machine` (was `Compute`) | boot an image: cpu, memory, disk, nic, firmware, guest init | VM + BareMetalHost | `Compute` split, step 2 |
-| `Virtualization` | hypervisor management: membership, shared storage, migration, HA | does not exist | **new** — D2 |
-| `Container` | OCI: run this image | PR #568 | merge |
-| `Kubernetes` (was `Platform`) | the Kubernetes API | folder named `Platform` | **rename**, absorb `Compute.Cluster` — D1 |
-| `Storage` | protocols served, capacity, data protection | empty | state the contract |
-| `Data` | a managed data service: engine, version, resources, availability | empty | state the contract; `Stream`/`Queue` gap |
-| `Network` | connectivity, by `zone` and `tier` | stated | none |
-| `Security` | directory and credential semantics | empty | state the contract |
-| `Observability` | telemetry: OTLP, Prometheus exposition | empty | state the contract |
-| `Software` | installed or served software | empty | state the contract |
+| Bare metal via Redfish, iPXE, Ignition, kickstart | "a host booted into this image" | Nova/Ironic, CAPI `Machine`, TOSCA `Compute` | `Machine.BareMetalHost` |
+| VM on KVM/libvirt, Proxmox, vSphere, Hyper-V, Xen, Nutanix, OpenStack, KubeVirt, EC2, GCE, Azure | "a VM with 4 vCPU, 16 GiB, this image" | same | `Machine.VM`; hypervisors are Provider Classes |
+| IBM Power or z logical partition | "a Linux host with 8 cores, 64 GiB" | same intent, HMC-realized | **`Machine.LPAR`** (new Type) |
+| Hypervisor cluster: vSphere DRS/HA, Proxmox VE, oVirt, Nutanix, Hyper-V failover, a single libvirt host | none from a workload consumer | — | a **provider instance** of `Machine.VM.<dialect>` on the authority axis. Whether an infrastructure operator can order a hypervisor cluster as a deliverable is an open gap (D3); no use case asks yet |
+| Rack, PDU feed, cooling; chassis, CPU, GPU, NIC, drive, BMC | "a rack position with two feeds"; "a host with 2×25GbE and a GPU" | none across members | `Facility.*`, `Hardware.*` stay; both Bases become non-instantiable folders |
 
-"State the contract" means the Base record's description says what its members share and what a
-provider must honor, replacing "Empty category base — the promotion target". That is a description
-change; whether it is a patch or a minor bump is D5.
+### Containers and Kubernetes
+
+| Stack | Intent | Abstraction | Placement |
+|---|---|---|---|
+| podman, docker, quadlets, a pod | "run this image" | OCI | **`Container`** Base (PR #568) |
+| OpenShift, OKD, EKS, AKS, GKE, RKE2, k3s, Talos, kubeadm, MicroShift, HyperShift | "a cluster at release 1.30 with these node pools" | Kubernetes conformance | **`KubernetesCluster`** Base as ruling 068 rowed it; Types are distributions; Providers are offerings |
+| Namespace / Project | "a namespace on cluster X with an 8-CPU quota" — ordered by a tenant on an existing cluster, with its own lifecycle | Kubernetes conformance | **`KubernetesNamespace`** Base (today `Platform.Namespace`); Types are distributions where they diverge (an OpenShift Project adds elements) |
+| Node pool / MachineSet / managed node group | "add a GPU pool to cluster X" — ordered, scaled and upgraded on its own | Kubernetes conformance, CAPI `MachineDeployment` | **`KubernetesNodePool`** Base (today `Platform.NodePool`); the cluster's inline `node_pools` element then references it or goes (T7) |
+| ResourceQuota, LimitRange | never ordered apart from a namespace | — | elements of `KubernetesNamespace` |
+| StorageClass | emitted by a storage provider, not ordered | — | an output of `Storage.Cluster` / the storage provider, as its own record already says |
+| ACM / OCM hub, HyperShift management cluster | "make this cluster a hub" | OCM | role elements on `KubernetesCluster` (`fleet_manager`, `hosted_control_planes`), not a class |
+| Nomad, Swarm, ECS | "run this workload" | not the Kubernetes API | providers of `Container` and `Template.Application`; no shared Base with Kubernetes |
+
+`Platform` dissolves: three members become Bases, two become elements or outputs, one becomes a
+role. Each of the three Kubernetes Bases is named for its deliverable and spells the standard out.
+Distribution names come from one shared vocabulary so `.OpenShift` means the same under each.
+
+### Storage and data
+
+| Stack | Intent | Abstraction | Placement |
+|---|---|---|---|
+| Ceph, Gluster, Longhorn, Rook, MinIO, Linstor, vSAN, arrays, TrueNAS | "a storage cluster serving block and object, 3× replicated" | SNIA Swordfish `StorageSystem` | `Storage.Cluster` (exists) |
+| ZFS pool, LVM VG, mdraid, hardware RAID | "a redundant pool on this host" | — | `Storage.Pool` (exists) |
+| PVC/CSI, EBS, NFS share, iSCSI LUN | "500 GiB block, attach here" | CSI, Swordfish `Volume` | `Storage.Volume`, `.FileShare`, `.Dataset` (exist) |
+| PostgreSQL (Patroni, CloudNativePG, RDS), MySQL Galera, SQL Server AG, MongoDB, Redis, etcd, OpenSearch | "a Postgres 16, 100 GiB, highly available" | the engine's own API | `Data.Database`; the cluster is the provider's HA mechanism, expressed as a topology element (`replicas`, `ha`) |
+| Kafka, RabbitMQ, NATS | "a stream with 3 partitions" | broker API | gap: the category table names `Data.Stream`; no Type exists |
+
+`Storage` and `Data` are folders: no order moves between a volume and a pool, or a database and a
+stream. Both become non-instantiable; their members stay as they are.
+
+### Network, identity, security, observability, automation, batch
+
+| Stack | Intent | Placement |
+|---|---|---|
+| VLAN, subnet, IP, pool, virtual network, gateway, DNS zone, DHCP scope | "a /24 on VLAN 20 with a gateway" | `Network.*` stay; `Network` becomes a non-instantiable folder. `zone` and `tier` stay as the shared elements every member cites |
+| Switch stack, firewall pair, Kea HA pair, BIND primaries, HAProxy pair | "DHCP for this subnet" | topology on the member, or the provider's concern. The homelab's Kea pair is one `Network.DHCPScope` |
+| FreeIPA, AD, LDAP, Keycloak, Vault, cert-manager, step-ca | "a directory for this realm" | `Security.DirectoryService`, `.CredentialRef` (exist); replicas are topology |
+| Prometheus, Loki, OpenTelemetry, Elastic | "ship logs from these hosts" | `Observability.LogShipper` (exists); OTLP and Prometheus exposition are the abstractions to adopt by name |
+| AAP, Terraform, ArgoCD, Foreman, Flightctl | "run this automation" | **`Automation`** Base — earned: a run is realizable by any engine (condition 1: every engine exposes run / status / cancel) |
+| Slurm, PBS, Ray, Kueue | "a batch cluster with 8 GPU nodes" | gap; `Job` covers the run; nothing covers the cluster, no use case asks |
+| vLLM, KServe, Triton, Ollama | "an inference endpoint for model X" | `Software.Service` (exists) on a cluster or a machine |
+| Flightctl fleets, MicroShift, Pi, field laptops | "this device runs this image" | `Machine` and `KubernetesCluster`; a fleet is a `Grouping` |
+
+## The roster after the definition
+
+| Base | Passes condition 1 by | Instantiable | Action |
+|---|---|---|---|
+| `Machine` (was `Compute`) | Nova/Ironic, CAPI `Machine`, TOSCA `Compute` | yes | `Compute` split step 2, plus `Machine.LPAR` |
+| `Container` | OCI | yes | PR #568 |
+| `KubernetesCluster` | Kubernetes conformance | yes | ruling 068 as rowed; absorbs `Compute.Cluster`; Types become distributions |
+| `KubernetesNamespace` | Kubernetes conformance | yes | promoted from `Platform.Namespace` |
+| `KubernetesNodePool` | Kubernetes conformance, CAPI | yes | promoted from `Platform.NodePool` |
+| `Automation` | every engine's run API | yes | none |
+| `Job` | — (one class for every execution) | yes | none |
+| `Storage`, `Data`, `Network`, `Security`, `Observability`, `Software`, `Facility`, `Hardware` | no shared abstraction | **no** | mark non-instantiable; members unchanged; state what the folder groups |
+| `Platform` | — | — | dissolved as above |
 
 ## What this changes in the `Compute` split plan
 
 | Step | Change |
 |---|---|
-| **Merge #569** | the 068 row names `KubernetesCluster`. If D1 holds, edit the row before merge to say `Kubernetes` Base and `Kubernetes.Cluster`; the PR is still open so this is a plain edit, not an amendment |
-| **Step 1** (`Compute.Cluster` → new Base) | becomes two moves in one PR: `Platform` → `Kubernetes` (6 Types, 193 references) and `Compute.Cluster` → `Kubernetes.Cluster` (98 references). Same sweep discipline: `registry/renames.yaml`, patch bumps with `$id` in step, regenerate, `docs/adr/` excluded |
-| **Step 2** (`Compute` → `Machine`) | unchanged; the sweep now also catches `Storage.Cluster`'s two `depends_on` edges to `Compute.VM` / `Compute.BareMetalHost` |
-| **new Step 2b** | `Virtualization` Base + `Virtualization.Cluster`, after `Machine` exists. Small: one Base record, one Type record, edges `depends_on Machine.BareMetalHost`, and `Machine.VM` gains an optional `contained_by Virtualization.Cluster` |
-| **Step 3** (normative spec section) | gains three rules from this survey: every Base states its contract; the cluster rule; standard-in-the-name, vendor-never. And the nine "state the contract" edits above land with it |
-| **Step 4, 5** | unchanged |
-| **Follow-up** | `Compute.Cluster.node_pools` (inline array) and `Platform.NodePool` (a Type with `contained_by` the cluster) model the same thing twice. T7 reduce-to-existing says keep one. Not in this sweep |
+| **Merge #569** | the 068 row's *applied* clauses stand (`Container`, `KubernetesCluster`, `Machine`, Redfish firmware). Its *test* clause — "its members are things one consumer intent can move between" — is replaced by "a deliverable any member can realize", with the three conditions. One-line edit while the PR is open |
+| **Step 1** (`Compute.Cluster` → `KubernetesCluster`) | unchanged in mechanics (98 references). In the same PR, `Platform.Namespace` → `KubernetesNamespace` and `Platform.NodePool` → `KubernetesNodePool`; `Platform.ResourceQuota` folds into the namespace, `Platform.StorageClass` into storage outputs, `Platform.Hub` into cluster role elements; `Platform` is deleted. 193 `Platform.*` references |
+| **Step 2** (`Compute` → `Machine`) | unchanged, plus a `Machine.LPAR` Type and `Storage.Cluster`'s two edges to `Compute.*` |
+| **Step 3** (normative spec section) | now the centre of the program and should land **before** steps 1–2 rather than after: the definition and three conditions, the tier axis rule, offerings earn a Provider Class, folder Bases are non-instantiable, technology in a name only when it is the standard. The eight folder Bases get their `instantiable: false` and a one-line "what this groups" in the same PR |
+| **CI** | a gate for condition 2: no Type or Provider Class leaves a Base element unhonorable. Pairs with the existing Liskov check |
+| **Steps 4, 5** | unchanged |
+| **Dropped** | a `Virtualization` Base; `Kubernetes.Cluster` as a name; the registry-wide re-tiering considered mid-research |
 
 ## Decisions for the maintainer
 
-- **D1 — `Kubernetes` as the Base name.** Recommended. The alternative is to keep `Platform` and
-  write "contract: the Kubernetes API" in its record, which keeps a neutral name over a
-  non-neutral contract. `KubernetesCluster` as a standalone Base is the weakest option and is what
-  #569 currently records.
-- **D2 — add `Virtualization` now or defer.** Recommended now, as step 2b, because the homelab
-  already needs it: the single libvirt host carrying every OpenShift and Ceph VM, and today there is no
-  class for it. Deferring costs nothing in the sweep, so this is about whether a use case demands it
-  yet.
-- **D3 — a single libvirt host.** Is the single libvirt host a `Virtualization.Cluster` of one, or a
-  `Machine.BareMetalHost` with a role? `Storage.Pool` vs `Storage.Cluster` is the precedent for a
-  host-local / distributed split, which argues for `Virtualization.Host` alongside `.Cluster`. I
-  lean cluster-of-one until a second consumer asks for the host shape.
-- **D4 — the batch/HPC gap.** Record only. No use case in the 22 asks for a scheduler cluster.
-- **D5 — bump class for stating a contract on an empty Base.** Description-only, so patch by the
-  letter of the rules; but it changes what the Base *means*, so minor is the honest call.
+- **D1 — the wording of the 068 test clause.** Proposed: *"A Base Class is a deliverable that any
+  member can realize: a resource declared at the Base must be satisfiable by every provider that
+  declares an offering beneath it."*
+- **D2 — `instantiable: false` as a Base record field, or a spec rule keyed on an empty
+  `elements` list.** A field is explicit and survives a folder gaining shared elements later
+  (`Network` has `zone` and `tier` and is still a folder). Recommended: a field.
+- **D3 — an orderable hypervisor cluster.** Gap, record only, until a use case asks.
+- **D4 — ordering.** Step 3 first, so the mechanical PRs cite a rule that exists.
 
 ## Out of scope
 
-Field-level portability classification (`universal / conditional / provider-specific /
-exclusive`) is a separate axis and is not revisited. Provider Class naming is untouched. The
+Field-level portability metadata (§4) is unchanged. Provider Class naming is unchanged. The
 Knowledge family is untouched.
