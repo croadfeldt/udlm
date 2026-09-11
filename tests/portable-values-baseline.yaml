@@ -45,9 +45,9 @@ known:
   element: protocol
 - resource_type: Identity.Person
   element: external_subject
-- resource_type: Platform.StorageClass
+- resource_type: Storage.Class
   element: provisioner
-- resource_type: Platform.StorageClass
+- resource_type: Storage.Class
   element: tier
 - resource_type: Security.CredentialRef
   element: required_assurance

@@ -3,7 +3,7 @@ handle: platform/provision-namespace-with-quota
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests a KubernetesNamespace by intent alone — the isolation boundary
-    workloads are placed into — together with a Platform.ResourceQuota that caps its aggregate consumption
+    workloads are placed into — together with `hard` limits that cap its aggregate consumption
     (CPU, memory, pods, storage). The quota references the namespace it bounds as a first-class edge; the
     request names no cluster-native object, admission controller, or provider handle. The platform provider
     realizes the namespace and its quota, and both reach Realized with their properties published on their

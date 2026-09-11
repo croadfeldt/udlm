@@ -153,11 +153,11 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** the provider-capability model needed a standard shape for "a request for authorization to do specific actions on specific resources"; RAR's typed `authorization_details` *is* our `verb × domain`, and it pairs with the IAM permission-boundary / OAuth-scope intersection semantics already adopted. **Adopt the mechanism (PATTERN), not a specific OAuth server.** *Alternatives:* plain OAuth scopes (flat strings, no resource/action structure), an invented request grammar (rejected on the don't-reinvent rule). **License:** IETF Trust — compatible-reference.
 
 ### Cluster API — CANONICAL
-**Covers:** `Cluster API` `CAPI` · **Body:** CNCF (Kubernetes SIG Cluster Lifecycle) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the management-cluster / workload-cluster vocabulary.
-**Why:** CAPI names exactly the multi-cluster split UDLM models: a management cluster provisions and manages workload clusters. Platform.Hub is the management-cluster identity; the KubernetesCluster hub edges are the workload side. Apache-2.0, compatible-reference.
+**Covers:** `Cluster API` `CAPI` · **Body:** CNCF (Kubernetes SIG Cluster Lifecycle) · **Since:** registered 2026-07-24 (formerly Platform.Hub `adopts[]`). · **Where:** the fleet-manager Software.Service and the KubernetesCluster hub edges — the management-cluster / workload-cluster vocabulary.
+**Why:** CAPI names exactly the multi-cluster split UDLM models: a management cluster provisions and manages workload clusters. the fleet-manager Software.Service is the management-cluster identity; the KubernetesCluster hub edges are the workload side. Apache-2.0, compatible-reference.
 
 ### Open Cluster Management — CANONICAL
-**Covers:** `Open Cluster Management` `OCM` · **Body:** CNCF (ACM's upstream) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the hub / ManagedCluster model.
+**Covers:** `Open Cluster Management` `OCM` · **Body:** CNCF (ACM's upstream) · **Since:** registered 2026-07-24 (formerly Platform.Hub `adopts[]`). · **Where:** the fleet-manager Software.Service and the KubernetesCluster hub edges — the hub / ManagedCluster model.
 **Why:** OCM's non-destructive import/detach of ManagedClusters is the semantic the imported-spoke edge mirrors (`depends_on` soft — an imported cluster survives hub loss). Apache-2.0, compatible-reference.
 
 ### OCI Image Format Specification — CANONICAL

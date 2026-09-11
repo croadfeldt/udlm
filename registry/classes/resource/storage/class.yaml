@@ -1,26 +1,26 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.StorageClass/0.7.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Class/0.8.0
 conforms_to: udlm/0.1
 uuid: 8bca0919-e6b1-483a-8b46-841cea6e4b6f
 record_type: class
 class: type
-resource_type: Platform.StorageClass
-parent: Platform
-version: 0.7.2
+resource_type: Storage.Class
+parent: Storage
+version: 0.8.0
 family: Resource
 status: active
 metadata:
   display_name: Storage Class
-  description: 'A storage class — the named policy by which a platform provisions storage volumes. Models
-    the construct that Kubernetes calls a StorageClass: a provisioner, a reclaim policy, volume binding
-    mode, and provider-specific parameters (IOPS, encryption, replication). Storage.Volume references
-    this type to declare what kind of storage it needs; placement and enrichment policies select the right
-    storage class for a request based on its capabilities. Provider-specific because storage class semantics
-    and parameters vary across provisioners.'
+  description: 'A storage class — the named policy by which a storage provider provisions volumes, and the
+    record that carries the provider''s reported `tier` and `capabilities` (provider-contract: the party
+    that knows is the party that reports). Moved from the former Platform folder to Storage (maintainer
+    ruling 2026-09-11, applying ADR-069): a storage class is published by a storage provider and selected
+    by a volume, never ordered on its own, so it is a Type under the Storage folder rather than a Base;
+    its contract is the Kubernetes StorageClass object every CSI-backed provider exposes.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-17T00:00:00Z'
 elements:
 - element: name
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: false
   state: canonical
   description: The storage class name (e.g. 'ceph-rbd-fast', 'gp3-encrypted'). Unique within the cluster.
@@ -28,7 +28,7 @@ elements:
     type: string
     description: The storage class name (e.g. 'ceph-rbd-fast', 'gp3-encrypted'). Unique within the cluster.
 - element: provisioner
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: false
   state: canonical
   description: The storage provisioner that handles volumes of this class (a CSI driver name, e.g. 'block.csi.example.com').
@@ -36,7 +36,7 @@ elements:
     type: string
     description: The storage provisioner that handles volumes of this class (a CSI driver name, e.g. 'block.csi.example.com').
 - element: reclaim_policy
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: true
   state: canonical
   description: What happens to the underlying storage when a volume is released.
@@ -48,7 +48,7 @@ elements:
     - Recycle
     description: What happens to the underlying storage when a volume is released.
 - element: volume_binding_mode
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: true
   state: canonical
   description: When volume binding and provisioning occur — immediately at PVC creation or deferred until
@@ -61,7 +61,7 @@ elements:
     description: When volume binding and provisioning occur — immediately at PVC creation or deferred
       until a consumer is scheduled.
 - element: allow_volume_expansion
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: true
   state: canonical
   description: Whether volumes of this class can be expanded after creation.
@@ -69,7 +69,7 @@ elements:
     type: boolean
     description: Whether volumes of this class can be expanded after creation.
 - element: tier
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: true
   state: canonical
   description: 'The governed `storage_tier` this class satisfies (ADR-038 §2 vocabulary; each term denotes
@@ -86,7 +86,7 @@ elements:
       is recorded consumer-side as a realized fact (e.g. a Storage.Layout entry''s `storage_backing`),
       never in portable intent.'
 - element: capabilities
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: true
   state: canonical
   description: Queryable capability advertisements for placement policies.
@@ -110,7 +110,7 @@ elements:
         type: boolean
         description: Whether volume snapshots are supported.
 - element: parameters
-  scope: Platform.StorageClass
+  scope: Storage.Class
   optional: true
   state: canonical
   description: Provider-specific parameters passed to the provisioner (e.g., pool name, fsType, compression).

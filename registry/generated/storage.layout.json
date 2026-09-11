@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.5.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Layout/0.5.3",
   "conforms_to": "udlm/0.1",
   "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89",
   "resource_type": "Storage.Layout",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Storage.Layout",
-          "version": "0.5.2",
+          "version": "0.5.3",
           "uuid": "d8a30490-9b8f-410c-9894-c43eeee43b89"
         }
       ]
@@ -56,7 +56,7 @@
             },
             "storage_tier": {
               "type": "string",
-              "description": "Optional requested storage performance class for this entry — the GOVERNED `storage_tier` vocabulary (ADR-038 §2: canonical terms are reference-data records, each denoting a requirements floor). Name-selectable but requirements-authoritative (ADR-036); mirrors the consumer-side `storage_tier` element. Never a provider class name: providers exposing storage classes MUST map each class to a tier (Platform.StorageClass `tier`), and the class the provider chose is recorded per entry as `storage_backing` in the realization map (maintainer ruling 2026-08-02)."
+              "description": "Optional requested storage performance class for this entry — the GOVERNED `storage_tier` vocabulary (ADR-038 §2: canonical terms are reference-data records, each denoting a requirements floor). Name-selectable but requirements-authoritative (ADR-036); mirrors the consumer-side `storage_tier` element. Never a provider class name: providers exposing storage classes MUST map each class to a tier (Storage.Class `tier`), and the class the provider chose is recorded per entry as `storage_backing` in the realization map (maintainer ruling 2026-08-02)."
             },
             "role": {
               "type": "string",
@@ -115,7 +115,7 @@
     ],
     "not_for": [
       "The consumable volume itself — Storage.Volume; a layout entry may be realized by one.",
-      "The provisioning policy — Platform.StorageClass; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).",
+      "The provisioning policy — Storage.Class; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).",
       "A shared multi-consumer layout record — one record per consumer; sharing is the ADR-033 Template tier.",
       "Host-local ZFS/LVM layout a host service mounts — Storage.Dataset / Storage.Pool.",
       "The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor."
@@ -123,7 +123,7 @@
     "works_with": [
       "Machine.VM — the consumer that realizes this layout (spec.layout_ref).",
       "Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).",
-      "Platform.StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map)."
+      "Storage.Class — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map)."
     ]
   }
 }

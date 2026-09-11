@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.StorageClass/0.7.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Class/0.8.0",
   "conforms_to": "udlm/0.1",
   "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f",
-  "resource_type": "Platform.StorageClass",
-  "version": "0.7.2",
+  "resource_type": "Storage.Class",
+  "version": "0.8.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Storage Class",
-    "description": "A storage class — the named policy by which a platform provisions storage volumes. Models the construct that Kubernetes calls a StorageClass: a provisioner, a reclaim policy, volume binding mode, and provider-specific parameters (IOPS, encryption, replication). Storage.Volume references this type to declare what kind of storage it needs; placement and enrichment policies select the right storage class for a request based on its capabilities. Provider-specific because storage class semantics and parameters vary across provisioners.",
+    "description": "A storage class — the named policy by which a storage provider provisions volumes, and the record that carries the provider's reported `tier` and `capabilities` (provider-contract: the party that knows is the party that reports). Moved from the former Platform folder to Storage (maintainer ruling 2026-09-11, applying ADR-069): a storage class is published by a storage provider and selected by a volume, never ordered on its own, so it is a Type under the Storage folder rather than a Base; its contract is the Kubernetes StorageClass object every CSI-backed provider exposes.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z",
     "generated": true,
@@ -16,13 +16,13 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Platform",
+          "class": "Storage",
           "version": "1.0.0",
-          "uuid": "84aca79d-e5fe-4a87-8fce-59fe0483a390"
+          "uuid": "54aeaeac-0d9a-4531-8502-c92ea418ba26"
         },
         {
-          "class": "Platform.StorageClass",
-          "version": "0.7.2",
+          "class": "Storage.Class",
+          "version": "0.8.0",
           "uuid": "8bca0919-e6b1-483a-8b46-841cea6e4b6f"
         }
       ]

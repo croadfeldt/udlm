@@ -2,7 +2,7 @@ uuid: uc-2aa0365f-8c4c-4df4-b8f2-4234ae87b62a
 handle: platform/register-storage-class
 version: 1.0.0
 scenario:
-  description: 'A platform engineer registers a Platform.StorageClass by intent alone — the named policy by
+  description: 'A platform engineer registers a Storage.Class by intent alone — the named policy by
     which the platform provisions volumes: a provisioner, a reclaim policy, and a volume-binding mode —
     without naming a CSI driver deployment, a cluster object, or any provider-native handle. The platform
     provider realizes the storage class as an available provisioning policy, and it reaches Realized with

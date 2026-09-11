@@ -3,7 +3,7 @@ handle: platform/namespace-quota-exceeded-refused
 version: 1.0.0
 scenario:
   description: 'A platform engineer requests a workload into a KubernetesNamespace whose aggregate demand
-    would exceed the namespace''s Platform.ResourceQuota — the requested CPU or memory pushes the namespace
+    would exceed the namespace''s `hard` limits — the requested CPU or memory pushes the namespace
     total past a declared hard limit. Success for this use case is that the request is REFUSED at admission,
     not admitted over-quota: it must be driven to a typed terminal refusal that names the exceeded limit and
     by how much, never quietly admitted to overcommit the namespace (which would starve co-tenants or evict

@@ -22,7 +22,7 @@ vocabulary or a value the name heuristic could not tell from one.
 ## Selection rule (which of the three, for PVD-001)
 
 - **Reference** — when the vocabulary is itself portable: a first-class type/catalog the provider advertises, whose *identity* is portable (e.g. `os_image` keyed to an adopted OS-identity standard, ADR-035).
-- **Requirement** — when the candidate set is inherently **vendor-native** (storage classes: `Platform.StorageClass` adopts Kubernetes and does not port). State the requirements (tier / IOPS / durability / …); the provider matches; the chosen native class is a realized fact, never portable intent (ADR-036).
+- **Requirement** — when the candidate set is inherently **vendor-native** (storage classes: `Storage.Class` adopts Kubernetes and does not port). State the requirements (tier / IOPS / durability / …); the provider matches; the chosen native class is a realized fact, never portable intent (ADR-036).
 - **Codelist** — for a small, neutral, bounded set (`enum`, or an adopted Tier-1 codelist).
 
 Do not default to "reference": a reference to a *non-portable* type just relocates the leak — that is the trap

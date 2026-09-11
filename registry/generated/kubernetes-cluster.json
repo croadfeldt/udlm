@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/1.0.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/1.1.0",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "KubernetesCluster",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Kubernetes cluster",
-    "description": "A Kubernetes cluster as one orderable deliverable — release, node pools, and network ranges. A Base Class in its own right (ADR-068): its contract is the Kubernetes API, which every conformant distribution honors, so an order placed here can be realized by any provider offering one. Named for the standard, never for a product — distributions (OpenShift, EKS, k3s, …) are the Type tier beneath it and offerings the Provider tier. `pod_cidr`/`service_cidr` are Kubernetes vocabulary, which is why this left `Compute`: a VM or a bare-metal host cannot honor them. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
+    "description": "A Kubernetes cluster as one orderable deliverable — release, node pools, and network ranges. A Base Class in its own right (ADR-068): its contract is the Kubernetes API, which every conformant distribution honors, so an order placed here can be realized by any provider offering one. Named for the standard, never for a product — distributions (OpenShift, EKS, k3s, …) are the Type tier beneath it and offerings the Provider tier. `pod_cidr`/`service_cidr` are Kubernetes vocabulary, which is why this left `Compute`: a VM or a bare-metal host cannot honor them. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); target Network.VirtualNetwork is registered; the fleet manager is a Software.Service of service_kind fleet-manager (ADR-043 relationship semantics).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T19:57:00Z",
     "generated": true,
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesCluster",
-          "version": "1.0.1",
+          "version": "1.1.0",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -135,13 +135,13 @@
     },
     {
       "edge_type": "contained_by",
-      "target": "Platform.Hub",
+      "target": "Software.Service",
       "cardinality": "0..1",
-      "description": "Provisioned and managed by a hub (a fleet manager / hosted control planes): the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on (soft) edge instead. Unnamed per ADR-043."
+      "description": "Provisioned and managed by a hub — a Software.Service of service_kind fleet-manager (hosted control planes): the hub has lifecycle authority — hosted control planes run inside it. For imported clusters use the depends_on (soft) edge instead. Unnamed per ADR-043."
     },
     {
       "edge_type": "depends_on",
-      "target": "Platform.Hub",
+      "target": "Software.Service",
       "cardinality": "0..1",
       "description": "Imported/adopted into a hub's fleet (OCM ManagedCluster semantics): managed, not contained — strength soft because an imported cluster survives hub loss (degrade-don't-break). Mutually exclusive with the contained_by hub edge per cluster-hub pair; unnamed per ADR-043 — the typed target is the context."
     }
@@ -190,7 +190,7 @@
       "KubernetesNodePool — homogeneous slices of the cluster's node capacity.",
       "Network.VirtualNetwork — the network the cluster is realized onto.",
       "Container — the workloads scheduled onto the cluster.",
-      "Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target"
+      "Software.Service (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target"
     ]
   }
 }

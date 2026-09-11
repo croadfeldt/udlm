@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.8.0
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.7.5
+version: 0.8.0
 family: Resource
 status: active
 metadata:
@@ -23,8 +23,7 @@ elements:
   scope: Software.Service
   optional: false
   state: canonical
-  description: Coarse classification for grouping/ordering (an infrastructure-daemon shuts down after
-    applications).
+  description: Coarse classification for grouping/ordering (an infrastructure-daemon shuts down after applications; a fleet-manager — the multi-cluster management plane the former Platform.Hub modelled, maintainer ruling 2026-09-11 — shuts down after the clusters it manages, which its spokes express as contained_by / depends_on edges to it per ADR-043).
   schema:
     type: string
     enum:
@@ -34,9 +33,9 @@ elements:
     - gateway
     - registry
     - monitoring
+    - fleet-manager
     - other
-    description: Coarse classification for grouping/ordering (an infrastructure-daemon shuts down after
-      applications).
+    description: Coarse classification for grouping/ordering (an infrastructure-daemon shuts down after applications; a fleet-manager — the multi-cluster management plane the former Platform.Hub modelled, maintainer ruling 2026-09-11 — shuts down after the clusters it manages, which its spokes express as contained_by / depends_on edges to it per ADR-043).
 - element: constituents
   scope: Software.Service
   optional: true

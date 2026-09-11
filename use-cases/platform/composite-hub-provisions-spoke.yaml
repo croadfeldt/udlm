@@ -2,7 +2,7 @@ uuid: uc-a765babe-bc4e-4866-be23-f801ee227223
 handle: platform/composite-hub-provisions-spoke
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a fleet slice as one composite intent: a Platform.Hub — the
+  description: 'A platform engineer requests a fleet slice as one composite intent: a fleet-manager Software.Service — the
     multi-cluster management plane — provisions a spoke KubernetesNamespace onto a managed cluster it governs.
     The two resources form a hub-to-spoke dependency: the spoke namespace references the hub as its managing
     plane, so the spoke cannot bind until the hub is Realized and able to accept the provisioning request.

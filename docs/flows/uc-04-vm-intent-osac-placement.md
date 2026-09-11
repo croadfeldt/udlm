@@ -98,7 +98,7 @@ flowchart LR
     direction TB
     PROV["Provider registration<br/>declares capability, capacity,<br/>and what each thing IS (§2.5a)"]
     DISC["Discovery<br/>observes what actually exists"]
-    PROV --> EST[("Estate<br/>Network.VLAN · Network.Subnet<br/>Network.VirtualNetwork · Network.IPAddressPool<br/>Platform.StorageClass · KubernetesNamespace")]
+    PROV --> EST[("Estate<br/>Network.VLAN · Network.Subnet<br/>Network.VirtualNetwork · Network.IPAddressPool<br/>Storage.Class · KubernetesNamespace")]
     DISC --> EST
   end
 
