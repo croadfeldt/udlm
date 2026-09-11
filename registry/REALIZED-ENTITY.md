@@ -1,5 +1,11 @@
 # UDLM Realized Entity (instance) schema
 
+> **Read model, not the stored form (ruling 071, 2026-09-12).** An entity's four states are four
+> records — `registry/state-record.schema.json`, four-states.md §2.7 — each written by one party and
+> never edited. This merged shape is what a dashboard or a person asks for: the latest record of each
+> state, assembled. It is never written. The schema's rename to say so follows; until then read every
+> `states.*` below as "the body of that state's record".
+
 `resource-type-spec.schema.json` defines a **type**; `realized-entity.schema.json` defines an
 **instance** — the operational record of one entity (or Composite Entity) as it flows through the four
 states. It is the data substrate **the control plane reads and writes**; UDLM carries the records, the control plane applies the

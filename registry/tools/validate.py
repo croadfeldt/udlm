@@ -74,6 +74,8 @@ DECISION_VALIDATOR = _validator("decision-record.schema.json")
 REGENERATION_VALIDATOR = _validator("regeneration-manifest.schema.json")
 FINDING_ROUTING_VALIDATOR = _validator("finding-routing-record.schema.json")
 ACCREDITATION_VALIDATOR = _validator("accreditation.schema.json")
+STATE_RECORD_VALIDATOR = _validator("state-record.schema.json")   # one closed schema, four record kinds (ruling 071)
+STATE_RECORD_TYPES = ("intent_record", "requested_record", "realized_record", "discovered_record")
 _COMPOSITION_RECORD_SCHEMA = json.loads((ROOT / "composition-record.schema.json").read_text())
 COMPOSITION_RECORD_VALIDATOR = None   # bound below, once _ref_store() is defined
 _CLASS_SCHEMA = json.loads((ROOT / "class.schema.json").read_text())
@@ -1056,6 +1058,10 @@ def pick_instance(doc):
         return (TAXONOMY_SEED_VALIDATOR,
                 lambda d: f"taxonomy seed '{d.get('root', '?')}' ({len(d.get('terms', []))} terms)",
                 check_taxonomy_seed)
+    if isinstance(doc, dict) and doc.get("record_type") in STATE_RECORD_TYPES:
+        return (STATE_RECORD_VALIDATOR,
+                lambda d: f"{d['record_type']} {d['resource_type']} entity={d['entity_uuid'][:8]} record={d['record_uuid'][:8]}",
+                check_state_record)
     if isinstance(doc, dict) and doc.get("record_type") == "profile":
         return (PROFILE_VALIDATOR,
                 lambda d: f"profile {d['handle']} v{d['version']} {d['uuid'][:8]} "
@@ -1064,6 +1070,21 @@ def pick_instance(doc):
     return (INSTANCE_VALIDATOR,
             lambda d: f"{d['resource_type']} instance {d['uuid'][:8]} [{d['lifecycle_state']}]",
             check_realized_entity)
+
+
+def check_state_record(doc):
+    """A per-state record is one state, says so twice, and chains only within its stream (ruling 071)."""
+    errs = []
+    rt, st = doc.get("record_type"), doc.get("state")
+    if rt != f"{str(st).lower()}_record":
+        errs.append(f"record_type {rt!r} does not match state {st!r} — one record, one state")
+    if st == "requested" and not doc.get("intent_ref"):
+        errs.append("a requested record names the intent record it was assembled from (intent_ref)")
+    if st == "realized" and not doc.get("requested_ref"):
+        errs.append("a realized record names the requested record it realizes (requested_ref)")
+    if doc.get("record_uuid") in (doc.get("supersedes") or []):
+        errs.append("a record cannot supersede itself")
+    return errs
 
 
 def _reverse_reference_graph():

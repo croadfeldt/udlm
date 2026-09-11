@@ -286,12 +286,7 @@
         "states": {
           "type": "array",
           "items": {
-            "enum": [
-              "Intent",
-              "Requested",
-              "Realized",
-              "Discovered"
-            ]
+            "$ref": "common-elements.schema.json#/$defs/four_state"
           }
         },
         "decommission": {
