@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Observability/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Observability/1.1.0
 conforms_to: udlm/0.1
 uuid: f7f145c7-8706-40ff-b3ec-578a2ed7f18b
 record_type: class
 class: base
 resource_type: Observability
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
+instantiable: false
 metadata:
   authority: canonical
   display_name: Observability Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-08-04T00:00:00Z'
-  description: Empty Observability category base — the promotion target for elements the Observability.*
-    types share (ADR-039 scope promotion; factoring waves per family).
+  description: 'A folder, not a deliverable: telemetry is ordered as a log shipper (and, as the family grows, a scrape target or a collector), never as `Observability` (`instantiable: false`, CLS-003; ADR-069). It groups the observability records and holds the elements they come to share — OTLP and Prometheus exposition are the standards they adopt by name.'
 elements: []

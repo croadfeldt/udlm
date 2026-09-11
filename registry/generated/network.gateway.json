@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Network",
-          "version": "1.1.0",
+          "version": "1.2.0",
           "uuid": "b4309667-2eed-4330-88d3-96bc94d54436"
         },
         {

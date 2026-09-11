@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage/1.1.0
 conforms_to: udlm/0.1
 uuid: 54aeaeac-0d9a-4531-8502-c92ea418ba26
 record_type: class
 class: base
 resource_type: Storage
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
+instantiable: false
 metadata:
   authority: canonical
   display_name: Storage Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-08-04T00:00:00Z'
-  description: Empty Storage category base — the promotion target for elements the Storage.* types share
-    (ADR-039 scope promotion; factoring waves per family).
+  description: 'A folder, not a deliverable: no order moves between a volume, a pool, a cluster, a file share, a dataset and a layout, so nothing can be ordered at `Storage` itself (`instantiable: false`, CLS-003; ADR-069). It groups the storage records and holds the elements they come to share; each member is ordered — or published, in the case of `Storage.Class` — on its own.'
 elements: []

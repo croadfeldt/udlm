@@ -1,21 +1,19 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network/1.1.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Network/1.2.0
 conforms_to: udlm/0.1
 uuid: b4309667-2eed-4330-88d3-96bc94d54436
 record_type: class
 class: base
 resource_type: Network
-version: 1.1.0
+version: 1.2.0
 family: Resource
 status: active
+instantiable: false
 metadata:
   authority: canonical
   display_name: Network Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-08-04T00:00:00Z'
-  description: >-
-    The Network category base. Carries what every network type shares and every network provider must
-    be able to report — the first ADR-039 factoring wave for this family (#349).
-
+  description: 'The Network folder. Carries what every network type shares and every network provider must be able to report — `zone` (what kind) and `tier` (how good), the first ADR-039 factoring wave for this family (#349). A folder, not a deliverable: no order moves between a VLAN, a subnet, an address and a DNS zone, so nothing is ordered at `Network` itself (`instantiable: false`, CLS-003; ADR-069); the shared elements are inherited by every member and honored by every network provider.'
 elements:
 - element: zone
   scope: Network
