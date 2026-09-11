@@ -39,14 +39,14 @@ Intent carries **no** IP, vNIC, host, or volume — none exist yet. It carries *
 | `net-dmz` | `Network.VirtualNetwork` (`forward_mode: bridge`) | platform layer / network provider; `references net-vlan-20` |
 | `net-vlan-20` | `Network.VLAN` (`encapsulation: vlan`, `segment_id: 20`) | network/fabric provider — the shared segment `net-dmz` and `br0@host-a` ride |
 | `pool-fast` | `Storage.Pool` | storage provider |
-| `host-a` | `Compute.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
+| `host-a` | `Machine.BareMetalHost` (the hypervisor) | discovered; `contained_by fac-rack3` |
 | `br0@host-a` | `Hardware.NetworkInterface` `device_class: bridge`, vlan_membership→`net-vlan-20` (tagged) | the host bridge carrying the DMZ VLAN (the OVN-localnet path) |
 
 **Created by implementation (provider-reported, ADR-009 / provider-contract §1b):**
 
 | handle | type | key relationships |
 |---|---|---|
-| `vm-app` | `Compute.VM` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
+| `vm-app` | `Machine.VM` | `contained_by host-a` · `references fac-rack3` (placement) · `references net-dmz` (attachment) |
 | `vnic-app-eth0` | **`Hardware.NetworkInterface` `device_class: virtual`**, vlan_membership→`net-vlan-20` | `contained_by vm-app` · `references net-dmz` · `parent_device br0@host-a` (rides the host bridge) |
 | `ip-app` (192.0.2.55) | `Network.IPAddress` | `attaches_to vnic-app-eth0` — allocated by the network/IPAM provider |
 | `vol-app` (100Gi) | `Storage.Volume` | `provisioned_by pool-fast` · `attaches_to vm-app` |
@@ -94,7 +94,7 @@ Provisioning shows the storage/network/placement roots. The **operational lifecy
 
 | Phase | What happens | Shared references it introduces (owner) |
 |---|---|---|
-| **1. Provision** (`new_request`) | select foundational roots, provider allocates the rest | `Facility.Location` (facilities), `Network.VLAN`/`Network.VirtualNetwork` (network), `Network.IPAddress` (IPAM), `Storage.Pool`→`Storage.Volume` (storage), `Compute.BareMetalHost` (compute/hypervisor) |
+| **1. Provision** (`new_request`) | select foundational roots, provider allocates the rest | `Facility.Location` (facilities), `Network.VLAN`/`Network.VirtualNetwork` (network), `Network.IPAddress` (IPAM), `Storage.Pool`→`Storage.Volume` (storage), `Machine.BareMetalHost` (compute/hypervisor) |
 | **2. Operate** (running) | the VM serves; steady-state dependencies bind | `Security.DirectoryService` realm — identity/auth (identity provider, scope-derived from `tenant_uuid`); **`Network.DNSZone`** record — name→IP (DNS provider); `Security.CredentialRef` — secrets (credential/secrets provider); **time-sync** capability (ADR-005, provider-attested); **observability sink** — logs/metrics (observability provider); `Facility.PowerFeed` via the host (facilities — the fault-domain anchor) |
 | **3. Modify** (`modification`) | add a NIC / resize / re-home | new `Network.VirtualNetwork`+`IPAddress` refs; new `Storage.Volume` from the same `Storage.Pool`; the provider re-reports the changed realized relationships |
 | **4. Drift** (`drift_detection`) | discovered ≠ realized (an out-of-band IP change, a moved disk) | reconciles the VM's references against the **same shared resources** — the roots are the truth the drift is measured against |
@@ -114,7 +114,7 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 | DNS record/zone | `Network.DNSZone` | name→IP (operate; remap on rehydrate) | DNS | ✔ |
 | Storage pool | `Storage.Pool` / `Storage.Cluster` | volume source | storage | ✔ |
 | Volume | `Storage.Volume` | disk (`attaches_to`) | storage | — (consumable) |
-| Hypervisor host | `Compute.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, KubeVirt) | ✔ |
+| Hypervisor host | `Machine.BareMetalHost` | `contained_by` (placement result) | compute / hypervisor (libvirt, KubeVirt) | ✔ |
 | Realm / identity | `Security.DirectoryService` | auth (scope-derived from `tenant_uuid`) | identity (a directory service) | ✔ |
 | Secret | `Security.CredentialRef` | `references` (never inline) | credential / secrets | ✔ |
 | Power feed | `Facility.PowerFeed` | via the host's PSU (fault domain) | facilities | ✔ |
@@ -122,7 +122,7 @@ Every shared/foundational resource a VM touches across its whole life, and who o
 | Telemetry sink | observability provider surface | logs/metrics | observability | ✔ |
 | Backup / DR target | `Storage.*` | data replication (rehydrate) | backup / DR | ✔ |
 
-**What this tells us for September:** the roots are almost all already typed (`Facility.Location`, `Network.VLAN` (new), `Network.VirtualNetwork`, `Network.IPAddress`, `Network.DNSZone`, `Storage.Pool`, `Security.DirectoryService`, `Security.CredentialRef`, `Facility.PowerFeed`, `Compute.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (September P3 — every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption (P7). No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
+**What this tells us for September:** the roots are almost all already typed (`Facility.Location`, `Network.VLAN` (new), `Network.VirtualNetwork`, `Network.IPAddress`, `Network.DNSZone`, `Storage.Pool`, `Security.DirectoryService`, `Security.CredentialRef`, `Facility.PowerFeed`, `Machine.BareMetalHost`). The gaps are **capacity/inventory advertisement** on their owning providers (September P3 — every ✔ owner must advertise what it offers so placement can select) and **quota** on consumption (P7). No new resource *types* fall out of the full lifecycle — only the provider-advertisement + eligibility surface around the roots already named here.
 
 ## Gaps this example confirms (feeds the September plan)
 

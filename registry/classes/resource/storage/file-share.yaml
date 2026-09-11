@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.FileShare/0.6.4
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.FileShare/0.6.5
 conforms_to: udlm/0.1
 uuid: 83f66b92-ad66-4415-aa94-01327dec4f27
 record_type: class
 class: type
 resource_type: Storage.FileShare
 parent: Storage
-version: 0.6.4
+version: 0.6.5
 family: Resource
 status: active
 metadata:
@@ -114,7 +114,7 @@ outputs:
     description: Reachable share URI once Realized, e.g. //fileserver.example.com/export.
 relationships:
 - edge_type: contained_by
-  target: Compute.BareMetalHost
+  target: Machine.BareMetalHost
   cardinality: 0..1
   description: Runs on a host as a native service — or (below) as a container / on a cluster.
 - edge_type: contained_by
@@ -161,5 +161,5 @@ context:
   works_with:
   - Security.DirectoryService — authenticates the share principals.
   - Storage.Volume — the underlying storage the shares expose.
-  - Compute.BareMetalHost / Container — where the file service runs.
+  - Machine.BareMetalHost / Container — where the file service runs.
   - Security.CredentialRef — service credentials (e.g. a keytab), by reference.

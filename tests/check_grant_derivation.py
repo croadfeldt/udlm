@@ -161,7 +161,7 @@ def self_test(flags):
     be probed here."""
     out = []
     inst = {
-        "A": {"uuid": "A", "tenant_uuid": "T1", "resource_type": "Compute.VM", "_path": "probe",
+        "A": {"uuid": "A", "tenant_uuid": "T1", "resource_type": "Machine.VM", "_path": "probe",
               "dependencies": [{"edge_type": "binds_to", "target_uuid": "B"}]},
         "B": {"uuid": "B", "tenant_uuid": "T2", "resource_type": "Probe.Shareable", "_path": "probe"},
     }

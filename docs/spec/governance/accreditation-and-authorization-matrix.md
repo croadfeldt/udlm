@@ -141,7 +141,7 @@ accreditation:
       - capability_uuid: <uuid>                 # binds a specific capability (matches capabilities[].capability_uuid).
         version: "1.2.0"                        #   + version => GRAIN 3 (deterministic): a NEW capability version is not
                                                 #   covered, so a change reverts the claim to self_asserted until re-attested.
-        category: realize_resources/Compute     #   + category (OPTIONAL) narrows to one (verb × domain) category within it.
+        category: realize_resources/Machine     #   + category (OPTIONAL) narrows to one (verb × domain) category within it.
       # GRAIN 2 — capability_uuid WITHOUT version: attests that capability across versions (survives version bumps):
       #   - capability_uuid: <uuid>
       # GRAIN 1 — a single provider-wide entry (attests every capability; survives capability changes):
@@ -182,7 +182,7 @@ For the appraisal, an **active, verified accreditation** must match the claim **
 - **data classification** — `scope.data_classifications` covers the claim (a `sovereign`-data claim is not vouched for by an `internal`-scoped accreditation);
 - **plane** — `scope.plane` covers the claim's `enforcement_plane` (§3.8): data-plane residency and control-plane operator-access are attested separately.
 
-No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, DCM ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Compute` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes accreditation-and-authorization-matrix.md §3.3.1's **pipeline propagation** enforceable: each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
+No accreditation matching **all** axes → the claim is `self_asserted` and is **not honored** for sovereign/restricted placement (§3.1, DCM ADR-022). Because `capability_scope` is explicit, a FedRAMP accreditation scoped to `realize_resources/Machine` does **not** silently vouch for the same provider's `realize_resources/Storage` — the two are matched independently. And because the *same* key is checked at every hop, this is what makes accreditation-and-authorization-matrix.md §3.3.1's **pipeline propagation** enforceable: each downstream hop in a capability's implementation pipeline must present its **own** verified, 1-1-matching accreditation for the propagated constraint — trust is re-verified per hop, never inherited.
 
 **This generalizes beyond sovereignty (§3.7).** The same claim→attestation link governs every `conformance_claim` a subject declares: a declared adherence (ISO 27001, SOC 2, FedRAMP-Moderate, SecNumCloud, …) is `self_asserted` until an accreditation whose `framework` matches attests it for the scope.
 
@@ -579,7 +579,7 @@ federation_tunnel:
   # What the remote peer may request from this peer (inbound)
   inbound_authorization:
     - operation: catalog_query
-      permitted_resource_types: [Compute.VM, Network.VLAN]
+      permitted_resource_types: [Machine.VM, Network.VLAN]
       requires_cross_tenant_authorization: true
     - operation: allocation_request
       permitted_resource_types: [Network.IPAddress]
@@ -589,7 +589,7 @@ federation_tunnel:
   # What this peer may request from the remote (outbound)
   outbound_authorization:
     - operation: placement_query
-      permitted_resource_types: [Compute.VM]
+      permitted_resource_types: [Machine.VM]
     - operation: realized_state_query
       permitted_entity_uuids: [<uuid>]   # scoped to specific entities
 
@@ -618,7 +618,7 @@ federation_credential:
   issued_to_peer_uuid: <remote-uuid>
   expires_at: <ISO 8601>             # PT15M for fsi/sovereign
   operation_scope: catalog_query
-  scoped_resource_types: [Compute.VM]
+  scoped_resource_types: [Machine.VM]
   non_transferable: true
   tunnel_uuid: <uuid>                 # bound to specific tunnel
 ```

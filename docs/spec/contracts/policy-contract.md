@@ -931,7 +931,7 @@ policy_artifact:
   overrides: "sovereignty/eu-data-residency"
   scope:
     tenant_tags: ["payments"]
-    resource_types: ["Compute.VM"]
+    resource_types: ["Machine.VM"]
     operations: [rehydration, provider_migration]
   effect: relax                              # relax a deny → allow
   justification: "Payments team DR requires zone-c replica per BCP-2026-04"
@@ -952,7 +952,7 @@ exception_grant:
   policy_handle: "sovereignty/eu-data-residency"
   scope:
     tenants: ["payments-team"]
-    resource_types: ["Compute.VM"]
+    resource_types: ["Machine.VM"]
     operations: [rehydration, provider_migration]
   effect: relax
   compensating_controls:

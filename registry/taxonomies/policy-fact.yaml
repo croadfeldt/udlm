@@ -82,7 +82,7 @@ terms:
     root: policy-fact
     parent: request-payload
     curation_state: canonical
-    definition: The fully-qualified Class name being requested (e.g. Compute.VM). The primary specificity axis.
+    definition: The fully-qualified Class name being requested (e.g. Machine.VM). The primary specificity axis.
 
   - term: sovereignty_zone
     root: policy-fact

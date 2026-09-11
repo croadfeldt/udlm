@@ -28,13 +28,13 @@ A **capability** is the versioned, accreditable unit (`capability_uuid` + `versi
 
 | Capability (`capability_uuid`, v1.0.0) | Realizes these categories (constituent capabilities) |
 |---|---|
-| **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VM) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
+| **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Machine` (Machine.VM) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
 | **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Container) · `…/Network` · `…/Storage` |
-| **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (KubernetesCluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
+| **Cluster Lifecycle** `31aa387c…` | `realize_resources/KubernetesCluster` (KubernetesCluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
 
 So "full lifecycle of X and all its constituent capabilities" = **one capability that spans the
 categories X is built from**. Operational primitives (drain, online-migrate, rolling-update, rehearsal)
-are declared per category — e.g. the VM's Compute category advertises `online_migrate` + `drain`.
+are declared per category — e.g. the VM's Machine category advertises `online_migrate` + `drain`.
 
 **The declared sovereignty stance (a *claim*, not yet trust):**
 - `provider_defaults.sovereignty = { operating_jurisdictions: [US, CA] }` — the provider's default
@@ -69,7 +69,7 @@ they carry no per-category override and inherit the provider default):
   "capabilities": [
     { "capability_uuid": "44e7eb3d-…", "version": "1.0.0", "name": "Virtual Machine Lifecycle",
       "categories": [
-        { "category": "realize_resources/Compute", "resource_types": ["Compute.VM"],
+        { "category": "realize_resources/Machine", "resource_types": ["Machine.VM"],
           "topology_capability": { "kinds_supported": ["region","zone","host"], "max_separation": "zone" },
           "operational_capability": { "drain": true, "online_migrate": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
         { "category": "realize_resources/Network", "resource_types": ["Network.IPAddress","Network.VirtualNetwork"] },
@@ -85,7 +85,7 @@ they carry no per-category override and inherit the provider default):
 
     { "capability_uuid": "31aa387c-…", "version": "1.0.0", "name": "Cluster Lifecycle",
       "categories": [
-        { "category": "realize_resources/Compute", "resource_types": ["KubernetesCluster"],
+        { "category": "realize_resources/KubernetesCluster", "resource_types": ["KubernetesCluster"],
           "operational_capability": { "drain": true, "rolling_update": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
         { "category": "realize_resources/Network", "resource_types": ["Network.VirtualNetwork","Network.Gateway"] },
         { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume","Storage.Cluster"] } ] }
@@ -183,7 +183,7 @@ contract:
 - `gap_type: missing` · severity `critical` · the provider (`full-stack-sp`)
 - what required it: the VM intent requiring US-MN residency, under `framework: sovereign`
 - the **unmet match axes** at the capability grain: capability `44e7eb3d` (VM Lifecycle),
-  category `realize_resources/Compute`, no version pinned (country-grain requirement) —
+  category `realize_resources/Machine`, no version pinned (country-grain requirement) —
   and jurisdiction `US-MN`
 - the policy response taken: `NOTIFY_AND_WAIT` (the sovereign-profile default)
 

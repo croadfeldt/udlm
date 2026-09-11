@@ -11,15 +11,15 @@ A **Class** is the authoring layer of the resource-type system. It lives in
 built from **SharedDataElements**: a data element (`element` name), its declarative `schema` fragment,
 its curation `state` (`proposed` → `canonical`), and the `scope` it is held at. There are three tiers:
 
-- **Base** (`class: base`) — single-segment name (`Compute`). Elements here port across every type in
+- **Base** (`class: base`) — single-segment name (`Machine`). Elements here port across every type in
   the category.
-- **Type** (`class: type`) — two segments (`Compute.VM`), `parent: Compute`. Elements port across the
+- **Type** (`class: type`) — two segments (`Machine.VM`), `parent: Machine`. Elements port across the
   type's providers.
-- **Provider** (`class: provider`) — three segments (`Compute.VM.OCPVirt`), provider-authored. Elements
+- **Provider** (`class: provider`) — three segments (`Machine.VM.OCPVirt`), provider-authored. Elements
   are provider-bound.
 
 The scope position **is** the portability — there is no separate `portability` field to declare (ADR-038
-§3). An element at `Compute` scope is portable across the category *because* it sits there.
+§3). An element at `Machine` scope is portable across the category *because* it sits there.
 
 ## 1. When to use it — and when not
 
@@ -38,7 +38,7 @@ Do **not** author a Class when:
 ## 2. The steps, in order
 
 1. **Pick the tier and name.** Base, Type, or Provider — the segment-count of `resource_type` must match
-   `class` (`Compute` = base, `Compute.VM` = type). A Type or Provider Class names its `parent` (the
+   `class` (`Machine` = base, `Machine.VM` = type). A Type or Provider Class names its `parent` (the
    dotted name one segment shorter); a Base Class has none. **Produces:** `registry/classes/<name>.yaml`
    with a valid header (`$id`, `uuid`, `record_type: class`, `class`, `resource_type`, `family`,
    `version`, `status`, `metadata`).
@@ -111,7 +111,7 @@ DRV-001 violation, and it drifts.
 
 ```yaml
 - element: memory
-  scope: Compute.VM.CExampleCloud
+  scope: Machine.VM.CExampleCloud
   schema: { ... }                       # unchanged: what is VALID, and portable
   supports:
     - values: [512Mi, 1Gi, 2Gi, 4Gi]    # discrete — the small end is fixed sizes
@@ -148,15 +148,15 @@ declared clauses and every required element is present.
 
 ## 4. A worked pointer
 
-Copy the pair **`registry/classes/resource/compute/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
-`storage_tier`, `guest_os` at `Compute` scope) and **`registry/classes/resource/compute/vm.yaml`** (the Type Class
-— `parent: Compute`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
+Copy the pair **`registry/classes/resource/machine/_base.yaml`** (the Base Class — `cpu`, `memory`, `storage`,
+`storage_tier`, `guest_os` at `Machine` scope) and **`registry/classes/resource/machine/vm.yaml`** (the Type Class
+— `parent: Machine`, adding VM-only `firmware` and `boot_order`). Together they show a Base authored from
 scratch, a Type extending it under Liskov, a governed-vocabulary element (`storage_tier` →
 `values.reference_data_type`), and coverage pointing at `scoped-class/*` UCs. Their compiled output is
-`registry/generated/compute.vm.json` (7 properties). The flow is
+`registry/generated/machine.vm.json` (7 properties). The flow is
 `docs/flows/scoped-class-lifecycle.md` — author → extend → compile → resolve.
 
-For the **provider tier**, copy **`registry/examples/classes/resource/compute/vm/cexample-cloud.yaml`**.
+For the **provider tier**, copy **`registry/examples/classes/resource/machine/vm/cexample-cloud.yaml`**.
 Worked-example classes live under `registry/examples/classes/`, **mirroring the class hierarchy** —
 `check_class_paths` enforces the mirror, and `check_class_liskov` validates the example against its
 real parent, so a worked example that stops being a legal refinement fails CI like any other class.

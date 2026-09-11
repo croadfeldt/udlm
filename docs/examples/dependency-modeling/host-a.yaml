@@ -1,9 +1,9 @@
 uuid: a266ce49-e7a8-47b4-9a84-e50fa37d556c
 handle: host-a
 conforms_to: udlm/0.1
-resource_type: Compute.BareMetalHost
+resource_type: Machine.BareMetalHost
 type_version: 0.2.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.2.0
 lifecycle_state: Discovered
 tenant_uuid: 14230477-819f-4e9b-bfec-3fcec6ee3b79
 states:
@@ -18,7 +18,7 @@ dependencies:
 - edge_type: references
   target_uuid: aa5e9540-8e88-466f-9644-fdfea9b257b6
   target_handle: loc-rack
-# Power: the host draws from BOTH rails — two direct depends_on edges (Compute.BareMetalHost →
+# Power: the host draws from BOTH rails — two direct depends_on edges (Machine.BareMetalHost →
 # Facility.PowerFeed is 0..n). Losing one feed leaves the host up, so redundancy is authored, not
 # inferred through a component. The host stops before either feed in a reverse-topo shutdown.
 - edge_type: depends_on

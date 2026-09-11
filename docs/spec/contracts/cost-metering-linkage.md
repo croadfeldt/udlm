@@ -66,7 +66,7 @@ Given an `entity_uuid`, a conformant implementation MUST be able to resolve ever
 
 ## 3. Worked example — a bare-metal host, capex + opex
 
-`Compute.BareMetalHost` v0.2.0 carries (see `registry/generated/compute.bare-metal-host.json`):
+`Machine.BareMetalHost` v0.2.0 carries (see `registry/generated/machine.bare-metal-host.json`):
 
 | Dimension | class | source | Meaning |
 |-----------|-------|--------|---------|
@@ -76,7 +76,7 @@ Given an `entity_uuid`, a conformant implementation MUST be able to resolve ever
 | `provisioned_hours` | capex | lifecycle `realized_to_decommissioned` | its in-service window |
 | `power_kwh` | opex | telemetry `host.power.draw` | actual energy consumed |
 
-`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider, hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Compute.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
+`priced_by → onprem-baremetal-2026-q3` in the cost engine. The control plane resolves the capex dimensions from fields + the lifecycle clock and the opex dimension from a power-telemetry provider, hands them to the engine with the `priced_by` ref, and consumes the returned `cost.attributed {capex, opex}`, attributing it to the host's owning tenant. A **VM** (`Machine.VM`) follows the identical pattern — capex = allocated vCPU/memory/disk over `provisioned_hours`; opex = `cpu_hours_used`, `network_egress_gb`, `power_kwh`.
 
 ---
 

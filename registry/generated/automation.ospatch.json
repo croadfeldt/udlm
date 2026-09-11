@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.OSPatch/1.2.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Automation.OSPatch/1.2.2",
   "conforms_to": "udlm/0.1",
   "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2",
   "resource_type": "Automation.OSPatch",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "family": "Process",
   "status": "active",
   "metadata": {
@@ -24,7 +24,7 @@
         },
         {
           "class": "Automation.OSPatch",
-          "version": "1.2.1",
+          "version": "1.2.2",
           "uuid": "65a1d324-0d7e-44ef-bff6-d510ecf973e2"
         }
       ]
@@ -94,7 +94,7 @@
         "items": {
           "type": "string"
         },
-        "description": "The hosts to patch — references to Compute.* hosts or a grouping (refines the Base inputs)."
+        "description": "The hosts to patch — references to Machine.* hosts or a grouping (refines the Base inputs)."
       },
       "patch_policy": {
         "type": "string",
@@ -185,8 +185,8 @@
       "Ad-hoc one-host package installs"
     ],
     "works_with": [
-      "Compute.BareMetalHost — the patched substrate",
-      "Compute.VM — the patched substrate",
+      "Machine.BareMetalHost — the patched substrate",
+      "Machine.VM — the patched substrate",
       "Automation.OSPatch.EngineBlue / EngineGreen — the executing engines"
     ]
   }

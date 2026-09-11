@@ -291,7 +291,7 @@ def check_file(rel, old_docs, new_docs, fails, warns):
 def check_id_version_agreement(doc, rel, fails):
     """R7 — a record must not contradict itself about which version it is.
 
-    `$id` ends in the version (…/class/Compute.VM/0.12.0) and `version` states it too. Nothing
+    `$id` ends in the version (…/class/Machine.VM/0.12.0) and `version` states it too. Nothing
     compared them, so a bump that missed the `$id` produced a record claiming two versions at once,
     with every gate green. A consumer pinning by `$id` — which is what `$id` is for — then resolves
     a version the record does not claim to be.

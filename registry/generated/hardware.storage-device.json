@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.5.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Hardware.StorageDevice/0.5.2",
   "conforms_to": "udlm/0.1",
   "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b",
   "resource_type": "Hardware.StorageDevice",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Hardware.StorageDevice",
-          "version": "0.5.1",
+          "version": "0.5.2",
           "uuid": "b9b08521-7927-479c-8671-6d4fdadc9f1b"
         }
       ]
@@ -126,14 +126,14 @@
   },
   "relationships": [
     {
-      "target": "Compute.BareMetalHost",
+      "target": "Machine.BareMetalHost",
       "cardinality": "0..1",
       "name": "host",
       "description": "The host this drive is installed in; parent carries the reconciled storage rollup (§26).",
       "edge_type": "contained_by"
     },
     {
-      "target": "Compute.VM",
+      "target": "Machine.VM",
       "cardinality": "0..1",
       "name": "guest",
       "description": "For device_class=virtual/passthrough, the guest the disk is presented to.",
@@ -185,9 +185,9 @@
       "The aggregation layer over drives — Storage.Pool (host-local) or Storage.Cluster (distributed)."
     ],
     "works_with": [
-      "Compute.BareMetalHost — the host the drive is installed in.",
+      "Machine.BareMetalHost — the host the drive is installed in.",
       "Storage.Pool — pools whose vdevs group these drives.",
-      "Compute.VM — the guest a virtual disk is presented to."
+      "Machine.VM — the guest a virtual disk is presented to."
     ]
   }
 }

@@ -2,7 +2,7 @@ uuid: uc-8577b7d3-a4ae-455d-a675-3a365f97f0ed
 handle: change-control/out-of-window-refused
 version: 1.0.0
 scenario:
-  description: 'An operator attempts to re-pin a production estate to a new Compute Base revision on a
+  description: 'An operator attempts to re-pin a production estate to a new Machine Base revision on a
     Tuesday afternoon, outside the estate''s declared maintenance window, with no expedite authorization.
     The change-management policy refuses: typed (window violation), actionable (names the policy, the
     window, and the expedite path), and recorded. The estate is untouched.'

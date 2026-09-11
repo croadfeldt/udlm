@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.GraphicsProcessor/0.5.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.GraphicsProcessor/0.5.2
 conforms_to: udlm/0.1
 uuid: 7456b9f8-f215-4b75-ae6a-edd8cc854949
 record_type: class
 class: type
 resource_type: Hardware.GraphicsProcessor
 parent: Hardware
-version: 0.5.1
+version: 0.5.2
 family: Resource
 status: active
 metadata:
@@ -99,12 +99,12 @@ spec_examples:
     size: 48GB
   architecture: RDNA3
 relationships:
-- target: Compute.BareMetalHost
+- target: Machine.BareMetalHost
   cardinality: 0..1
   name: host
   description: The host the physical GPU is installed in.
   edge_type: contained_by
-- target: Compute.VM
+- target: Machine.VM
   cardinality: 0..1
   name: guest
   description: For passthrough / partition (vGPU), the guest the device is presented to.
@@ -142,6 +142,6 @@ context:
   - Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. Platform.NodePool
     capabilities), not a GPU component record.
   works_with:
-  - Compute.BareMetalHost — the host the physical card is installed in.
-  - Compute.VM — the guest a passthrough or partition is presented to.
+  - Machine.BareMetalHost — the host the physical card is installed in.
+  - Machine.VM — the guest a passthrough or partition is presented to.
   - 'Hardware.GraphicsProcessor — parent_device: the physical card a partition is carved from.'

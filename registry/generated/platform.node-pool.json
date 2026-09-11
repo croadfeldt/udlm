@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.5.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.5.5",
   "conforms_to": "udlm/0.1",
   "uuid": "ff7f0b01-d451-4aed-89da-83117923820f",
   "resource_type": "Platform.NodePool",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Platform.NodePool",
-          "version": "0.5.4",
+          "version": "0.5.5",
           "uuid": "ff7f0b01-d451-4aed-89da-83117923820f"
         }
       ]
@@ -173,7 +173,7 @@
     ],
     "not_for": [
       "The cluster — KubernetesCluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).",
-      "One physical machine — Compute.BareMetalHost; a pool is a cluster-level grouping, not a host record."
+      "One physical machine — Machine.BareMetalHost; a pool is a cluster-level grouping, not a host record."
     ],
     "works_with": [
       "KubernetesCluster — the cluster the pool belongs to.",

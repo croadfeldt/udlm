@@ -1,19 +1,19 @@
 record_type: finding_routing_record
-uuid: ee9f21a7-fea4-462b-bb70-6d02d5a4bd51
-supersedes: d08a3920-c574-4f12-a73d-dbe3cb542812
+uuid: ce4cb916-3b7b-41f3-b0b6-8c8afb956fa1
+supersedes: ee9f21a7-fea4-462b-bb70-6d02d5a4bd51   # the record that named the class by its former name (Compute -> Machine, ADR-068)
 handle: findings/example/compute-vm-boot-mode-output
 conforms_to: udlm/0.1
-title: Compute Base 1.1.0 → 1.2.0 was classified additive, but the candidate compilation changes two
-  declared Compute.VirtualMachine outputs
+title: Machine Base 1.1.0 → 1.2.0 was classified additive, but the candidate compilation changes two
+  declared Machine.VirtualMachine outputs
 contradicted_claim:
   artifact:
     artifact_kind: base_class
-    handle: Compute
+    handle: Machine
     version: 1.2.0
     digest: sha256:4d67aab0aa2f4dc3b9f6c110ac8b93ae61ec8dab5e550201dc0d9d90ddcd34ef
   previous:
     artifact_kind: base_class
-    handle: Compute
+    handle: Machine
     version: 1.1.0
     digest: sha256:1917a013c2af98f11fd1196db0eba1b11b8ebc4b9d85c04626c632b64bb47323
   declared_classification: additive
@@ -25,13 +25,13 @@ contradicted_claim:
 evidence:
   diff_summary:
     changed_outputs:
-    - handle: Compute.VirtualMachine
+    - handle: Machine.VirtualMachine
       output: boot_mode
       change: value_changed
       bound_consumer_count: 3
       note: the added element carries a default that the generator threads into the realized output,
         so the dry-run value differs from the pinned side on every instance
-    - handle: Compute.VirtualMachine
+    - handle: Machine.VirtualMachine
       output: firmware_state
       change: type_changed
       bound_consumer_count: 1
@@ -50,12 +50,12 @@ evidence:
   comparison:
     baseline_revisions:
     - artifact_kind: base_class
-      handle: Compute
+      handle: Machine
       version: 1.1.0
       digest: sha256:1917a013c2af98f11fd1196db0eba1b11b8ebc4b9d85c04626c632b64bb47323
     candidate_revisions:
     - artifact_kind: base_class
-      handle: Compute
+      handle: Machine
       version: 1.2.0
       digest: sha256:4d67aab0aa2f4dc3b9f6c110ac8b93ae61ec8dab5e550201dc0d9d90ddcd34ef
     dry_run: true
@@ -101,7 +101,7 @@ resolution:
     at 2.0.0 and its blast radius enumerated.
 reported_at: '2026-07-24T09:30:00Z'
 metadata:
-  display_name: Contradicted additive claim on Compute Base 1.2.0 (example)
+  display_name: Contradicted additive claim on Machine Base 1.2.0 (example)
   notes:
   - at: '2026-07-25T16:45:00Z'
     author: udlm-maintainers

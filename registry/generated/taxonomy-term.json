@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.4.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/TaxonomyTerm/0.4.1",
   "conforms_to": "udlm/0.1",
   "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17",
   "resource_type": "TaxonomyTerm",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "family": "Knowledge",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "TaxonomyTerm",
-          "version": "0.4.0",
+          "version": "0.4.1",
           "uuid": "0874c1b7-94c4-4682-a7a9-a29270c1ba17"
         }
       ]
@@ -41,7 +41,7 @@
       },
       "domain": {
         "type": "string",
-        "description": "Term domain (prefix + name). For a provider-capability term this is the resource-type domain the capability operates over (the Category segment of a resource-type $id, e.g. Storage, Compute, Network); ADR-PROV-002."
+        "description": "Term domain (prefix + name). For a provider-capability term this is the resource-type domain the capability operates over (the Category segment of a resource-type $id, e.g. Storage, Machine, Network); ADR-PROV-002."
       },
       "root": {
         "type": "string",
@@ -69,7 +69,7 @@
         "term": "workload-placement",
         "definition": "The capability to schedule a workload onto a suitable host or node according to declared placement constraints.",
         "pillar": "Operate",
-        "domain": "Compute",
+        "domain": "Machine",
         "root": "architecture-capability",
         "normalization_rules": "Map free-text mentions of scheduling, bin-packing, affinity/anti-affinity, and node selection onto this term.",
         "category": "dcm-capability-taxonomy",

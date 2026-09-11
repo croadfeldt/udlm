@@ -1,17 +1,17 @@
 {
   "scoreboard": "udlm-model-health/1",
   "totals": {
-    "types": 56,
+    "types": 57,
     "by_family": {
       "Access": 7,
       "Knowledge": 6,
       "Process": 2,
-      "Resource": 41
+      "Resource": 42
     }
   },
   "discrimination": {
-    "mutations_attempted": 4572,
-    "mutations_rejected": 4572,
+    "mutations_attempted": 4770,
+    "mutations_rejected": 4770,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -30,14 +30,6 @@
       "Capability": {
         "attempted": 43,
         "rejected": 43
-      },
-      "Compute.BareMetalHost": {
-        "attempted": 204,
-        "rejected": 204
-      },
-      "Compute.VM": {
-        "attempted": 246,
-        "rejected": 246
       },
       "Container": {
         "attempted": 235,
@@ -106,6 +98,18 @@
       "KubernetesCluster": {
         "attempted": 104,
         "rejected": 104
+      },
+      "Machine.BareMetalHost": {
+        "attempted": 215,
+        "rejected": 215
+      },
+      "Machine.LPAR": {
+        "attempted": 187,
+        "rejected": 187
+      },
+      "Machine.VM": {
+        "attempted": 246,
+        "rejected": 246
       },
       "Network.AddressService": {
         "attempted": 42,
@@ -242,8 +246,8 @@
     }
   },
   "strictness": {
-    "strict_specs": 56,
-    "total": 56
+    "strict_specs": 57,
+    "total": 57
   },
   "outputs": {
     "per_type": {
@@ -251,8 +255,6 @@
       "Access.IdentityEscrow": 4,
       "Automation.OSPatch": 3,
       "Capability": 1,
-      "Compute.BareMetalHost": 5,
-      "Compute.VM": 7,
       "Container": 2,
       "Data.Database": 5,
       "Facility.Location": 1,
@@ -270,6 +272,9 @@
       "Identity.ServiceAccount": 1,
       "Job": 3,
       "KubernetesCluster": 4,
+      "Machine.BareMetalHost": 5,
+      "Machine.LPAR": 3,
+      "Machine.VM": 7,
       "Network.AddressService": 1,
       "Network.ConnectionProfile": 2,
       "Network.DHCPScope": 1,
@@ -344,13 +349,13 @@
     ]
   },
   "context": {
-    "with_context": 56,
-    "total": 56,
+    "with_context": 57,
+    "total": 57,
     "missing": []
   },
   "relationships": {
-    "with_relationships": 45,
-    "total": 56,
+    "with_relationships": 46,
+    "total": 57,
     "missing": [
       "Access.Grouping",
       "Automation.OSPatch",
@@ -371,12 +376,12 @@
       "Access.IdentityEscrow",
       "Automation.OSPatch",
       "Capability",
-      "Compute.BareMetalHost",
-      "Compute.VM",
       "Container",
       "Data.Database",
       "Job",
       "KubernetesCluster",
+      "Machine.BareMetalHost",
+      "Machine.VM",
       "Network.AddressService",
       "Network.ConnectionProfile",
       "Network.DHCPScope",
@@ -419,6 +424,7 @@
       "Identity.Group",
       "Identity.Person",
       "Identity.ServiceAccount",
+      "Machine.LPAR",
       "Network.Subnet",
       "Network.Switch",
       "Network.VLAN",
@@ -437,9 +443,6 @@
       "records-mcp"
     ],
     "named_by_consumer": {
-      "Compute.VM": [
-        "control-plane-servicetype-gen"
-      ],
       "Container": [
         "control-plane-servicetype-gen"
       ],
@@ -447,6 +450,9 @@
         "control-plane-servicetype-gen"
       ],
       "KubernetesCluster": [
+        "control-plane-servicetype-gen"
+      ],
+      "Machine.VM": [
         "control-plane-servicetype-gen"
       ],
       "Storage.Volume": [
@@ -458,7 +464,6 @@
       "Access.IdentityEscrow",
       "Automation.OSPatch",
       "Capability",
-      "Compute.BareMetalHost",
       "Facility.Location",
       "Facility.PowerFeed",
       "Grouping.Authorization",
@@ -473,6 +478,8 @@
       "Identity.Person",
       "Identity.ServiceAccount",
       "Job",
+      "Machine.BareMetalHost",
+      "Machine.LPAR",
       "Network.AddressService",
       "Network.ConnectionProfile",
       "Network.DHCPScope",
@@ -506,7 +513,7 @@
       "Topology",
       "Vulnerability"
     ],
-    "consumed_by_at_least_one": 56
+    "consumed_by_at_least_one": 57
   },
   "expressibility_coverage": {
     "value": null,

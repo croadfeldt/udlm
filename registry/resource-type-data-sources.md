@@ -8,8 +8,8 @@ authoritative standards list) · [registry/resource-type-spec.schema.json](resou
 
 ## 1. Purpose
 
-A new wave of infrastructure Resource Types (Compute.BareMetalHost, Storage.Cluster, Network.Gateway,
-Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Compute.VM and
+A new wave of infrastructure Resource Types (Machine.BareMetalHost, Storage.Cluster, Network.Gateway,
+Network.AddressService, Security.DirectoryService, Facility.PowerFeed — plus Machine.VM and
 KubernetesCluster) bumps against well-established external
 schemas. Per **T5 / the Adopt disposition**, UDLM should **reference industry-standard data elements
 for validation and vocabulary** rather than re-express them, and remain **extensible by vendor-specific
@@ -31,7 +31,7 @@ there UDLM **adopts** — references the standard's element names so validation 
 canonical definition, and a standard rev never forces a UDLM schema change.
 
 The clean split, worked on bare metal:
-- **Intent** (provision *this* host, image, role, power target) → **absorb** into the Compute.BareMetalHost `spec`.
+- **Intent** (provision *this* host, image, role, power target) → **absorb** into the Machine.BareMetalHost `spec`.
 - **Discovered hardware** (cpu/ram/nics/disks/firmware) → **adopt** Metal3 `status.hardware` + Redfish
   `ComputerSystem` element names; do not re-express the hardware schema.
 
@@ -52,9 +52,9 @@ and take OSAC **VM** (`ComputeInstance`) and **Cluster** (`ClusterSpec`) nearly 
 
 | Resource Type | Adopt (reference vocabulary) | Absorb (UDLM-owned intent) | Vendor extension |
 |---|---|---|---|
-| **Compute.VM** | OSAC `ComputeInstance` (`cores`,`memory_gib`,`boot_disk`,`network_attachments[]`,`run_strategy`,`image`; status `state`+`conditions`+ips) — Tier 2 | the type itself | KubeVirt/libvirt specifics |
+| **Machine.VM** | OSAC `ComputeInstance` (`cores`,`memory_gib`,`boot_disk`,`network_attachments[]`,`run_strategy`,`image`; status `state`+`conditions`+ips) — Tier 2 | the type itself | KubeVirt/libvirt specifics |
 | **KubernetesCluster** | OSAC `ClusterSpec` (`node_sets{host_type,size}`,`release_image`,`network{pod,service cidr}`; `api_url`/`console_url`) + heatmiser day-0 VIPs/CIDRs — Tier 2 | the type | — |
-| **Compute.BareMetalHost** | **Metal3 `BareMetalHost`** (`bmc.address`,`bootMACAddress`,`online`,`image`,`rootDeviceHints`; `status.hardware.{cpu,ramMebibytes,nics[],storage[],firmware}`,`provisioning.state`) + **Redfish `ComputerSystem`** (`ProcessorSummary`,`MemorySummary`,`PowerState`,`Boot*`,`UUID`) + heatmiser discovery manifest — Tier 2 | provision intent (role, image, target) | iDRAC/a supported board BMC |
+| **Machine.BareMetalHost** | **Metal3 `BareMetalHost`** (`bmc.address`,`bootMACAddress`,`online`,`image`,`rootDeviceHints`; `status.hardware.{cpu,ramMebibytes,nics[],storage[],firmware}`,`provisioning.state`) + **Redfish `ComputerSystem`** (`ProcessorSummary`,`MemorySummary`,`PowerState`,`Boot*`,`UUID`) + heatmiser discovery manifest — Tier 2 | provision intent (role, image, target) | iDRAC/a supported board BMC |
 | **Storage.Cluster** (authored name; the Ceph-backed cluster type) | **Rook `CephCluster`** (`mon.count`,`storage`,`cephVersion.image`,`network`,`dashboard`; `status.ceph.{health,fsid}`) + native `ceph -s -f json` (`osdmap`,`pgmap`) — Tier 2 | cluster intent | — |
 | **Network.Gateway** | **K8s Gateway API `Gateway`** (`gatewayClassName`,`listeners[]`,`addresses[]`) + OSAC `SecurityGroup` rule shape; NAT 5-tuple absorbed — Tier 2 | routing/NAT intent | pfSense/OPNsense |
 | **Network.AddressService** | **ISC Kea `Dhcp4`** (`subnet4[]`,`pools`,`reservations[]`,`option-data`) + **DNS RRs** (RFC 1035 `A/PTR/CNAME/NS/SOA`, RFC 3596 `AAAA`) — Tier 2; *DHCP+DNS = two projections of one allocation* | the address-service intent | — |

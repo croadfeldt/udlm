@@ -88,7 +88,7 @@ Each constituent in the composition definition declares:
 ```yaml
 constituents:
   - component_id: vm           # local identifier within this composite
-    resource_type: Compute.VM
+    resource_type: Machine.VM
     provided_by: external      # placement selects the provider
     depends_on: []
     required_for_delivery: required
@@ -160,7 +160,7 @@ declaration shape (`service-dependencies.md` §14 and `operational-models.md` §
 ```yaml
 service_component:
   id: vm
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   required_for_delivery: <required|partial|optional>   # §2.4 — the one enum
 
   compensation_on_failure: <decommission_immediately|release_allocation|skip|notify>
@@ -231,7 +231,7 @@ catalog_ref: ApplicationStack.WebApp/v2
 constituents:
   - component_id: vm
     constituent_uuid: <vm_uuid>
-    resource_type: Compute.VM
+    resource_type: Machine.VM
     placement: { provider: dc1-vmware }
     payload: { ... }
   - component_id: ip
@@ -407,7 +407,7 @@ registration:
       - lb
     constituents:
       - component_id: vm
-        resource_type: Compute.VM
+        resource_type: Machine.VM
         provided_by: external
         depends_on: []
         required_for_delivery: required

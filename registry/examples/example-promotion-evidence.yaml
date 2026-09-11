@@ -15,9 +15,9 @@ conforms_to: udlm/0.1
 corpus_ref: sha256:9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5
 
 from_revisions:
-  - Compute.VM@0.3.0
+  - Machine.VM@0.3.0
 to_revisions:
-  - Compute.VM@0.4.0
+  - Machine.VM@0.4.0
 
 # THE DIFF IS THE ENTIRE GATE: empty, or every entry explicitly approved. Anything else refuses
 # outright — nothing partially promotes, because a half-promoted estate is one where both revisions

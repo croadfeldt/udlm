@@ -2,10 +2,10 @@ uuid: uc-c4ffe64b-6716-42c0-bd6c-4123428df66a
 handle: change-control/additive-deferred-to-window
 version: 1.0.0
 scenario:
-  description: The same additive Compute Base element reaches a production estate whose change-management
+  description: The same additive Machine Base element reaches a production estate whose change-management
     policy allows class re-pins only inside a weekly maintenance window. The change lands upstream mid-week;
     the estate's debt list shows the pending adoption immediately; nothing changes until the window opens,
-    when the orchestrated adoption job re-pins, regenerates downstream Compute.* records, and closes the
+    when the orchestrated adoption job re-pins, regenerates downstream Machine.* records, and closes the
     debt entry — all inside the window.
   actor:
     persona: platform-engineer
@@ -18,7 +18,7 @@ scenario:
   - No estate artifact changes before the declared window opens
   - The adoption job starts and completes inside the window, or defers whole to the next window — never
     straddles
-  - Downstream Compute.* records regenerate in the same windowed run
+  - Downstream Machine.* records regenerate in the same windowed run
   - The adoption record carries the window identity and the policy that scheduled it
   dimensions:
     lifecycle_phase: day2_operations

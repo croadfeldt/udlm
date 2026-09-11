@@ -1,32 +1,36 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute/1.2.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine/2.0.0
 conforms_to: udlm/0.1
 uuid: 4b772ff1-1cd0-4d48-99a9-4bb97067a3b9
 record_type: class
 class: base
-resource_type: Compute
-version: 1.2.5
+resource_type: Machine
+version: 2.0.0
 family: Resource
 status: active
 metadata:
   authority: canonical
-  display_name: Compute Base Class
+  display_name: Machine Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-07-27T21:00:00Z'
-  title: Compute Base Class
-  description: The Base Class of the Compute category (ADR-038). Every element here is a SharedDataElement
-    at `Compute` scope, inherited by every Compute Type Class (Compute.VM, Compute.BareMetalHost, Container,
-    …). Base-scope = portable across every type in the category. This is the first worked Class artifact
-    — the P0 substrate the class-gated queue composes against; the generator compiles each Type Class
-    extending it down to today's flat resource-type spec.
+  title: Machine Base Class
+  description: 'The Machine Base Class (renamed from Compute — ADR-068; the Base test is ADR-069, home
+    docs/spec/foundations/class-tiers.md). A Machine is an OS-bearing execution environment ordered as one
+    deliverable: an image booted onto cpu, memory, disk and network. Its members are the forms that
+    deliverable takes — Machine.VM, Machine.BareMetalHost, Machine.LPAR — and any provider offering one
+    of them can realize an order placed here; OpenStack Nova with Ironic, Cluster API''s Machine, and
+    TOSCA''s Compute node type are the industry abstractions that already treat them as one thing.
+    Every element here is a SharedDataElement at `Machine` scope, honorable by every form. Containers
+    and Kubernetes clusters are NOT machines: they left this Base because they cannot honor `guest_os`
+    (Container) or carry Kubernetes-only vocabulary (KubernetesCluster).'
   prompt_version: class-p0-keystone-2026-07-27
 elements:
 - element: instance_size
-  scope: Compute
+  scope: Machine
   optional: true
   state: proposed
   description: 'Provider-neutral size class (ADR-014: small|medium|large, ordered/comparable — common-elements
     §2.2): size by class IN PLACE OF explicit cpu+memory; the provider maps it to concrete resources at
-    naturalization (DCM ADR-023). Added for parity with the flat Compute.VM spec (2026-07-29 reconciliation,
+    naturalization (DCM ADR-023). Added for parity with the flat Machine.VM spec (2026-07-29 reconciliation,
     bare-instantiation philosophy): a compute consumer may be declared by size class alone.'
   schema:
     type: string
@@ -34,7 +38,7 @@ elements:
       §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources
       at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw.
 - element: cpu
-  scope: Compute
+  scope: Machine
   state: canonical
   description: Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under
     three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores,
@@ -57,7 +61,7 @@ elements:
         description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
   optional: true
 - element: memory
-  scope: Compute
+  scope: Machine
   state: canonical
   description: 'Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}):
     `hugepages` becomes an optional Base element.'
@@ -67,7 +71,7 @@ elements:
       size:
         type: string
         pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
-        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base
+        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base
           Class `memory.size`).
       hugepages:
         type: object
@@ -81,7 +85,7 @@ elements:
             description: e.g. 2Mi, 1Gi.
   optional: true
 - element: storage
-  scope: Compute
+  scope: Machine
   optional: true
   state: canonical
   description: The reference-discipline requirements descriptor (PVD-001) — the numeric storage requirements,
@@ -89,7 +93,7 @@ elements:
     is the governed `storage_tier` element below, not an inline enum here.
   schema:
     type: object
-    description: The reference-discipline storage requirements descriptor (PVD-001, Compute Base Class
+    description: The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class
       shape) — numeric minima the realizing storage must meet. The requested performance class is the
       governed `storage_tier` element, not an inline enum here.
     properties:
@@ -105,7 +109,7 @@ elements:
       encryption:
         type: boolean
 - element: storage_tier
-  scope: Compute
+  scope: Machine
   optional: true
   state: canonical
   description: 'The requested storage performance class — the neutral `tier` of ADR-036''s requirements
@@ -124,13 +128,13 @@ elements:
     description: 'The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical
       terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a
       requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare
-      string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element.
+      string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element.
       Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative
       (ADR-036). Profile decides bare-vs-reference.'
   values:
     reference_data_type: storage_tier
 - element: guest_os
-  scope: Compute
+  scope: Machine
   optional: true
   state: proposed
   description: 'The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4

@@ -34,7 +34,7 @@ dcm_instance_uuid: <uuid>           # identifies the control-plane instance (fed
 
 subject:
   entity_uuid: <uuid | null>        # primary entity this event concerns
-  entity_type: <string | null>      # entity type FQN (e.g. Compute.VM)
+  entity_type: <string | null>      # entity type FQN (e.g. Machine.VM)
   entity_handle: <string | null>    # human-readable identifier
   tenant_uuid: <uuid | null>        # tenant scope; null for system-scope events
   actor_uuid: <uuid | null>         # actor who triggered the event; null for system events
@@ -127,7 +127,7 @@ payload:
   request_uuid: <uuid>
   catalog_item_uuid: <uuid>
   catalog_item_handle: <string>
-  resource_type: <string>            # FQN e.g. Compute.VM
+  resource_type: <string>            # FQN e.g. Machine.VM
   submitted_fields: {}               # consumer-declared fields (may be partial)
 ```
 

@@ -33,7 +33,7 @@ Use for memory, storage, bandwidth, power (`"650W"`), etc.
   "cpu":    { "count": 8 },
   "memory": { "size": "32GB" } }      // Quantity
 ```
-Reused by anything that sizes compute: `Compute.VM`, a `KubernetesCluster` node pool, a
+Reused by anything that sizes compute: `Machine.VM`, a `KubernetesCluster` node pool, a
 `Data.Database` instance. `vcpu`/`cores`/`memory_gib` are **non-canonical synonyms** — normalize to
 `cpu.count` + `memory.size`.
 
@@ -73,7 +73,7 @@ tolerates a not-yet-existing target — the resource stays `Requested` until it 
 (claim-before-define). The uuid is the target's frozen **identity** (ADR-051); a consumer needing
 revision exactness pins with `@version` or `@sha256:<hex>` — ADR-051's grammar, carried verbatim as
 the URL's pin axis. A federated target carries its authority (`//state.mn/estate/…`, ADR-038 §10),
-and a type constraint rides as a query term (`?resource_type==Compute.VM`).
+and a type constraint rides as a query term (`?resource_type==Machine.VM`).
 
 ```yaml
 definition_ref: cexample/automation/nightly-backup-playbook      # authored by handle
@@ -104,7 +104,7 @@ How the existing types express shared concepts today, and the drift to normalize
 
 | Type | compute sizing | naming notes |
 |---|---|---|
-| `Compute.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
+| `Machine.VM` | `vcpu` + `memory.size` (Quantity) + `disks[]` | `vcpu` ≠ canonical `cpu.count` |
 | `KubernetesCluster` | `node_pools[]` (each carries its own cpu/memory) | node-pool sizing not a shared shape |
 | `Data.Database` | `resources` block | a *third* spelling of cpu/memory |
 | `Network.IPAddress` | — | `family` ≠ canonical `ip_family` |
@@ -115,7 +115,7 @@ consistently `snake_case` (`ip_address`/`api_url`/`console_url`/`connection_stri
 
 **Normalization plan (additive, MINOR bumps; no breaking renames until a MAJOR):**
 1. Define `ComputeResources` + `Quantity` + `ip_family` here (this doc) and as `$defs` the type specs `$ref`.
-2. New types (`Compute.BareMetalInstance`, `Storage.CephCluster`, …) use the canonical shapes from day one.
+2. New types (`Machine.BareMetalInstance`, `Storage.CephCluster`, …) use the canonical shapes from day one.
 3. Existing types add the canonical shape alongside the legacy field (deprecate the synonym), converging at the next MAJOR.
 
 ## 4. New types — apply the sweep up front
@@ -147,7 +147,7 @@ parent and reconciles against the parent's rollup. Post-DCM ADR-013 the only suc
 surfaced with provenance, never silently reconciled away. This is the same `transparent` composition
 that registers sub-resources as control-plane entities (service-dependencies §11d), applied below the device
 boundary. For memory/CPU/disk/GPU there is **no component entity** to reconcile against: capacity is a
-rollup *attribute* of the Compute host (`memory.size: "64GB"`, `cpu.count: 16`), full stop — the sum is
+rollup *attribute* of the Machine host (`memory.size: "64GB"`, `cpu.count: 16`), full stop — the sum is
 never re-derived from parts because the parts are out of scope (DCM ADR-013).
 
 **Why the rollup is always present** — it lets a homelab and an enterprise alike declare a host with

@@ -19,6 +19,6 @@ record:
   status: active
   constituents:
     - component_id: phantom
-      resource_type: Compute.NoSuchThing
+      resource_type: Machine.NoSuchThing
       provided_by: self
       failure_effect: required

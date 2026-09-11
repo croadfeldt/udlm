@@ -49,7 +49,7 @@ Dependencies declared at the Resource Type Specification level are **portable an
 
 **Example:**
 ```yaml
-resource_type: Compute.VM
+resource_type: Machine.VM
 type_level_dependencies:
   - dependency_uuid: <uuid>
     required_resource_type_uuid: <uuid of Network.IPAddress>
@@ -393,10 +393,10 @@ Service Catalog Items must declare their dependencies as part of their definitio
 catalog_item:
   uuid: <uuid>
   name: Web Server Service
-  resource_type_uuid: <uuid of Compute.WebServer>
+  resource_type_uuid: <uuid of Machine.WebServer>
   type_level_dependencies:
     - dependency_uuid: <uuid>
-      required_resource_type_uuid: <uuid of Compute.VM>
+      required_resource_type_uuid: <uuid of Machine.VM>
       strength: hard
       cardinality: one_to_one
   provider_specific_dependencies: []
@@ -511,7 +511,7 @@ composite_service_registration:
     #              Full dependency graph visible; drift detection on all
     # selective:   Provider declares which sub-resources are control-plane-visible
     dcm_visible_sub_resources:    # if selective
-      - resource_type: Compute.VM
+      - resource_type: Machine.VM
         role: control_plane_node
       - resource_type: Network.LoadBalancer
         role: api_endpoint

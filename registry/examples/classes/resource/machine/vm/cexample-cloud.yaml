@@ -1,4 +1,4 @@
-# Compute.VM.CExampleCloud — a PROVIDER CLASS, and the worked example of a provider declaring
+# Machine.VM.CExampleCloud — a PROVIDER CLASS, and the worked example of a provider declaring
 # WHAT IT OFFERS.
 #
 # This is the demonstration the model was missing. Provider Classes existed and the Liskov gate
@@ -20,21 +20,21 @@
 # the element is optional). Layers and policies perform that collapse; the convergence loop runs
 # until every range has become a value.
 
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM.CExampleCloud/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.1
 conforms_to: udlm/0.1
 uuid: 9d4e1f28-3a76-4b05-8c91-2e6f7a0b5d34
 record_type: class
 class: provider
-resource_type: Compute.VM.CExampleCloud
-parent: Compute.VM
-version: 1.0.0
+resource_type: Machine.VM.CExampleCloud
+parent: Machine.VM
+version: 1.0.1
 family: Resource
 status: active
 
 metadata:
   authority: proposed
-  display_name: Compute.VM on CExample Cloud
-  title: Compute.VM.CExampleCloud Provider Class
+  display_name: Machine.VM on CExample Cloud
+  title: Machine.VM.CExampleCloud Provider Class
   maintainer: UDLM maintainers
   origination_timestamp: "2026-08-07T14:00:00Z"
 
@@ -51,7 +51,7 @@ elements:
   # ---- NARROWED: what the portable Type Class allows, reduced to what this provider offers ----
 
   - element: cpu
-    scope: Compute.VM.CExampleCloud
+    scope: Machine.VM.CExampleCloud
     state: proposed
     optional: true
     description: >-
@@ -72,7 +72,7 @@ elements:
         reason: Largest shape CExample Cloud builds; above this the request is refused, not queued.
 
   - element: memory
-    scope: Compute.VM.CExampleCloud
+    scope: Machine.VM.CExampleCloud
     state: proposed
     optional: true
     description: >-
@@ -107,7 +107,7 @@ elements:
           A value can be individually supported and still be an invalid combination.
 
   - element: networks
-    scope: Compute.VM.CExampleCloud
+    scope: Machine.VM.CExampleCloud
     state: proposed
     optional: true
     description: Cardinality bound — this provider attaches at most 8 interfaces.
@@ -118,7 +118,7 @@ elements:
   # ---- ADDED + REQUIRED: what this provider needs that no portable intent carries ----
 
   - element: namespace
-    scope: Compute.VM.CExampleCloud
+    scope: Machine.VM.CExampleCloud
     state: proposed
     optional: false
     description: >-
@@ -130,7 +130,7 @@ elements:
       pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
 
   - element: instance_family
-    scope: Compute.VM.CExampleCloud
+    scope: Machine.VM.CExampleCloud
     state: proposed
     optional: false
     description: >-
@@ -144,7 +144,7 @@ elements:
       - values: [general, memory-optimized]
 
   - element: native_storage_class
-    scope: Compute.VM.CExampleCloud
+    scope: Machine.VM.CExampleCloud
     state: proposed
     optional: false
     description: >-

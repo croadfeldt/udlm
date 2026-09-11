@@ -19,7 +19,7 @@ class **only** when nothing above it fits:
 
 | If the need is… | Use | Not a class because… |
 |---|---|---|
-| a **value / default / constraint** on an existing type (must-encrypt, size ≤ X) | **Policy / Profile / layer value** | it's still a canonical `Compute.VM` — a class here fragments interop for zero schema gain (the most common mistake) |
+| a **value / default / constraint** on an existing type (must-encrypt, size ≤ X) | **Policy / Profile / layer value** | it's still a canonical `Machine.VM` — a class here fragments interop for zero schema gain (the most common mistake) |
 | **extra org data** on an existing type (`cost_center`) | an org-scoped **`SharedDataElement`** (additive, must-ignore-unknown) | additive data is not a new type; peers ignore the unknown |
 | **orthogonal context** (a DC bundle, an app profile) | a **references-context edge** (ADR-038) | context is *linked*, not a type |
 | a **reusable pre-filled intent** you want others to order ("our standard three-tier app") | a **Template as a provider class** — `Template.Application.YourThing`, with `supports` for what the consumer picks | ✅ this is the tool, and it *is* a class (ADR-067) |
@@ -41,7 +41,7 @@ field in disguise. The gate for the Provider Class row is **§3**.
 
 ## 2. Custom Type vs custom Base
 
-- **Custom Type — the common case.** `acme.example/Compute.GenomicsVM` **extends canonical `Compute`**
+- **Custom Type — the common case.** `acme.example/Machine.GenomicsVM` **extends canonical `Machine`**
   (cross-authority Liskov). A new type inside an existing category: inherit the canonical Base's
   `SharedDataElement`s, add only what's new. Maximal reuse, maximal interop.
 - **Custom Base — rare, higher bar.** `acme.example/Genomics` — only when the org owns a whole resource
@@ -50,7 +50,7 @@ field in disguise. The gate for the Provider Class row is **§3**.
 
 ## 3. Authoring a Provider Class — the provider-authored layer
 
-A **Provider Class** (`Compute.VM.OCPVirt`) extends a canonical **Type Class** with **provider-specific
+A **Provider Class** (`Machine.VM.OCPVirt`) extends a canonical **Type Class** with **provider-specific
 elements**. UDLM defines the *grammar*; the **provider authors the definition** (ADR-038 *Authorship & domain*).
 It is the sanctioned home for a genuinely provider-specific datum — a first-class, **provider-defined
 `SharedDataElement`**, not an opaque additive bag.
@@ -71,11 +71,11 @@ by:
 - **name / meaning** — what the datum represents.
 
 The element coordinate is addressable as a native URL — `https://<authority>/<Class-path>?<filter>#<field-path>`
-(filters are OData `$filter`, e.g. `?scope=Compute&name=isolation`); the dotted form (`Compute.isolation`) is the
+(filters are OData `$filter`, e.g. `?scope=Machine&name=isolation`); the dotted form (`Machine.isolation`) is the
 compact alias. If a shape exists, **`$ref` it** (`#/$defs/<Name>`) — don't restate it (§4.3; core-tenets **T7**).
 Author a new element only when the search comes up empty.
 
-**The element.** A `SharedDataElement` at Provider scope — `{scope: Compute.VM.OCPVirt, element, schema, values,
+**The element.** A `SharedDataElement` at Provider scope — `{scope: Machine.VM.OCPVirt, element, schema, values,
 state}`. The **provider owns the schema** of what is inside; UDLM **custodies** it (identity, provenance,
 versioning, tenancy) and passes it to the provider to apply. UDLM never renders it into a native spec —
 naturalization stays at the provider edge (DCM ADR-023). A Provider Class element carries provider-specific *data*,
@@ -98,7 +98,7 @@ declaring set* — flagged, and the consumer notified — never a silent pin to 
 **Define at the highest scope you're allowed — portability by scope.** A `SharedDataElement` in a Provider Class
 need not stay at Provider scope. A Class may define an element **at its own scope or any higher — Type or Base —
 when that scope's authority allows it** (ADR-038 §6; gated by governance, tightening with blast radius:
-Provider→Type affects all VM providers, →Base all of Compute). **Where your organization permits it, this is
+Provider→Type affects all VM providers, →Base all of Machine). **Where your organization permits it, this is
 encouraged:** an element defined at **Type or Base scope is reusable by every other provider compatible with that
 Type / Base**, so the datum *ports* instead of pinning to you — prefer the highest scope your authority permits.
 If you cannot write at the higher scope directly, define at Provider scope and **contribute upward**: the element
@@ -127,7 +127,7 @@ of what should become canonical.
 
 ## 5. Anti-patterns
 
-- **Class-where-a-profile-belongs** — authoring `acme/Compute.VM` for a *policy* need (encryption, tags).
+- **Class-where-a-profile-belongs** — authoring `acme/Machine.VM` for a *policy* need (encryption, tags).
   Fragments interop for no schema gain. The single most common error.
 - **Provider-scoping portable intent** — putting at Provider scope a datum another provider could satisfy
   natively (an `isolation` intent stored as a raw vendor construct). Kills portability that a Type-Class
@@ -158,7 +158,7 @@ Redefining a canonical class in place breaks wire-compatibility, violates Liskov
 governance into the substrate (core-tenets **T1/T2**), and fragments the shared type. The **only** legitimate
 change to canon is **versioned canonical evolution** — a new version behind the named-head anchor, the immutable
 anchor pinning the old (ADR-038 §10 dual anchor), produced by the **promote** stage and shared with everyone.
-There is no in-between where one org silently owns a different `Compute.VM`: keep it authority-scoped, or promote
+There is no in-between where one org silently owns a different `Machine.VM`: keep it authority-scoped, or promote
 it for all.
 
 | The need | Mechanism |

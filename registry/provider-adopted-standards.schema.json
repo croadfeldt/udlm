@@ -166,7 +166,7 @@
       "properties": {
         "category": {
           "type": "string",
-          "description": "The `(verb × domain)` capability category, e.g. realize_resources/Compute (ADR-PROV-002)."
+          "description": "The `(verb × domain)` capability category, e.g. realize_resources/Machine (ADR-PROV-002)."
         },
         "resource_types": {
           "type": "array",

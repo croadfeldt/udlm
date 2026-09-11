@@ -126,7 +126,7 @@ def main():
     probe_idx = {
         "T": {"uuid": "T", "resource_type": TENANT_TYPE, "tenant_uuid": "T"},
         "L": {"uuid": "L", "resource_type": "Grouping", "tenant_uuid": "T"},
-        "X": {"uuid": "X", "resource_type": "Compute.VM", "tenant_uuid": "T2"},
+        "X": {"uuid": "X", "resource_type": "Machine.VM", "tenant_uuid": "T2"},
     }
     arms = {
         "GRP-INV-001": evaluate({"uuid": "A", "handle": "a", "tenant_uuid": "L"}, probe_idx),

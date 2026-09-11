@@ -64,7 +64,7 @@ survivability within mirrors — so both personas report the same honest number.
 ## 3. Hardware RAID — declared as intent, built at provision
 
 ```yaml
-# contained_by -> the Compute.BareMetalHost; lifecycle Intent BEFORE the host provisions
+# contained_by -> the Machine.BareMetalHost; lifecycle Intent BEFORE the host provisions
 spec:
   pool_kind: hardware_raid
   vdevs:
@@ -74,7 +74,7 @@ spec:
 ```
 
 The bare-metal provisioning provider (Metal3/BMC-class) derives its controller configuration FROM
-this declared pool — the host type carries no RAID fields (see Compute.BareMetalHost 0.6.0's
+this declared pool — the host type carries no RAID fields (see Machine.BareMetalHost 0.6.0's
 provisioning-intent surface: image/root-hints/boot, with storage topology living here).
 
 ## Hot spares — scope by tree position

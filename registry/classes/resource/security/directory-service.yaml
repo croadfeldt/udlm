@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Security.DirectoryService/0.7.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Security.DirectoryService/0.7.2
 conforms_to: udlm/0.1
 uuid: b5a74015-f60e-49ff-9ff8-c704152cb958
 record_type: class
 class: type
 resource_type: Security.DirectoryService
 parent: Security
-version: 0.7.1
+version: 0.7.2
 family: Resource
 status: active
 metadata:
@@ -79,12 +79,12 @@ outputs:
     description: Realized base DN consumers bind under.
 relationships:
 - edge_type: contained_by
-  target: Compute.VM
+  target: Machine.VM
   cardinality: 0..1
   name: vm_host
   description: The VM the directory server runs on.
 - edge_type: contained_by
-  target: Compute.BareMetalHost
+  target: Machine.BareMetalHost
   cardinality: 0..1
   name: metal_host
   description: The bare-metal host the directory server runs on.
@@ -128,7 +128,7 @@ context:
   - The DNS zones a directory suite serves — Network.DNSZone; related, but its own record.
   - The bind credential — Security.CredentialRef.
   works_with:
-  - Compute.VM / Compute.BareMetalHost — where the directory runs.
+  - Machine.VM / Machine.BareMetalHost — where the directory runs.
   - Identity.Group — external groups sourced from this directory.
   - Software.Service — services requiring the directory, with hard/soft strength.
   - Network.DNSZone — zones served when DNS is directory-integrated.

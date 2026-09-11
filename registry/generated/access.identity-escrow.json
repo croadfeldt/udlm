@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Access.IdentityEscrow/0.4.2",
   "conforms_to": "udlm/0.1",
   "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b",
   "resource_type": "Access.IdentityEscrow",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Access",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Access.IdentityEscrow",
-          "version": "0.4.1",
+          "version": "0.4.2",
           "uuid": "ead1ea4f-d7db-4b90-887a-2bc67edf4b9b"
         }
       ]
@@ -151,7 +151,7 @@
   "relationships": [
     {
       "edge_type": "binds_to",
-      "target": "Compute.BareMetalHost",
+      "target": "Machine.BareMetalHost",
       "cardinality": "0..1",
       "enforcement": "example",
       "description": "The host entity whose re-realization triggers restore. Deliberately binds_to (soft), NOT contained_by — containment would cascade decommission and destroy identity state with the box (ESC-001/ESC-004). The binding is to the entity UUID, which re-provisioning preserves; that is the survives-re-realization mechanism stated structurally. Illustrative target: any realizable host type an adopter escrows identity for."
@@ -181,7 +181,7 @@
     ],
     "works_with": [
       "Security.CredentialRef — the custody leg each escrowed item wraps; the escrow store is the issuer.",
-      "Compute.BareMetalHost — the typical host entity whose re-realization triggers restore.",
+      "Machine.BareMetalHost — the typical host entity whose re-realization triggers restore.",
       "Identity.ServiceAccount — the acting identity an escrowed credential may authenticate."
     ]
   }

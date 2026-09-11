@@ -12,7 +12,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 ## 1. Type names — `Category.Type`
 
 - **Shape — domain-owned vs cross-cutting:**
-  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Compute.VM`,
+  - **Domain-owned types → `Category.Type`**, both segments **PascalCase** (`Machine.VM`,
     `Network.IPAddress`).
   - **Cross-cutting / foundational types (not owned by any single domain) → single-segment**
     PascalCase (`Capability`, `Topology`). This covers Knowledge-family entities *and* cross-domain
@@ -37,7 +37,7 @@ mirror the concept; only coin a UDLM name where no standard fits.
 ## 2. Categories
 
 The canonical categories (`docs/spec/foundations/resource-type-hierarchy.md` §2.2). Resource categories:
-`Compute`, `Network`, `Storage`, `Platform`, `Security`, `Observability`, `Data`. Information
+`Machine`, `Network`, `Storage`, `Platform`, `Security`, `Observability`, `Data`. Information
 categories: `Business`, `Identity`, `Compliance`, `Operations`.
 
 **Adding a category** is permitted ("implementors may define additional categories following the
@@ -51,7 +51,7 @@ New categories established by this work, each anchored to **DMTF Redfish** (data
   (`physical | virtual | passthrough | partition`, common-elements §7) lets the same types model a real
   DIMM, a guest's virtual disk, a passed-through GPU, or a vGPU/SR-IOV/VLAN **slice of a physical parent**
   (via a `parent_device` reference). Anchored to Redfish `Memory`/`Processor`/`Drive`/`NetworkAdapter`
-  (+ `NetworkDeviceFunction`/`PCIeFunction` for the derived cases). Distinct from `Compute` (the whole
+  (+ `NetworkDeviceFunction`/`PCIeFunction` for the derived cases). Distinct from `Machine` (the whole
   machine/instance).
 - **`Facility`** — physical-datacenter resources (power, later rack/cooling). Anchored to Redfish DCIM
   `PowerDistribution`/`Circuit`/`PowerDomain` (+ NUT for UPS telemetry).
@@ -93,22 +93,22 @@ reusable and avoids a `FreeIPA.Everything` corner.
 
 Before adding a type, check whether the concept is already expressed by an existing mechanism:
 - **An instance of a type** is a **realized entity** (`registry/realized-entity.schema.json`,
-  `registry/examples/`) — `host-01` is an instance of `Compute.BareMetalHost`. Don't create a type to
+  `registry/examples/`) — `host-01` is an instance of `Machine.BareMetalHost`. Don't create a type to
   mean "an instance of X."
 - **An allocation of a resource to a consumer** is the **Ownership/Allocation model**
   (`docs/spec/foundations/ownership-sharing-allocation.md`: whole-allocation / carved-allocation / shareable) —
-  not a new type. "Allocate a host to a tenant" = whole-allocation of `Compute.BareMetalHost`, not a
+  not a new type. "Allocate a host to a tenant" = whole-allocation of `Machine.BareMetalHost`, not a
   separate `BareMetalInstance` type.
 - **A new type** is warranted only for a genuinely distinct *kind of thing* with its own contract.
 
-So `Compute.BareMetalHost` is the **asset**; "instance" and "allocation" are existing mechanisms over it.
+So `Machine.BareMetalHost` is the **asset**; "instance" and "allocation" are existing mechanisms over it.
 
 ## 3b. Alternative names (AKA / cross-walk for compatibility)
 
 To translate to/from other ecosystems, a type carries its alternative names with provenance — the
 `{alternative name, spec, spec version}` shape:
 - **Names from a standard the type formally adopts** → set **`standard_name`** on that `adopts[]` entry
-  (it already carries `standard` + `version` + `source` + `license`). E.g. `Compute.BareMetalHost`
+  (it already carries `standard` + `version` + `source` + `license`). E.g. `Machine.BareMetalHost`
   adopts Redfish (`standard_name: ComputerSystem`, v2024.4) and Metal3 (`standard_name: BareMetalHost`).
   This *is* the {name, standard, standard_version} cross-walk, co-located with provenance — no duplication.
 - **Names NOT tied to an adopted standard** (vendor/colloquial AKAs) → the top-level **`aliases[]`**
@@ -167,7 +167,7 @@ routing mechanics live in the control plane (DCM ADR-018).
 ## 5. File names
 
 Registry type files are `category.type.<json|yaml>` — lowercase, dot-joined, with the PascalCase Type
-segment rendered **kebab-case**: word boundaries hyphenate (`compute.bare-metal-host.json`), and an
+segment rendered **kebab-case**: word boundaries hyphenate (`machine.bare-metal-host.json`), and an
 acronym run merges with the word it abuts (`network.ipaddress.json`, `automation.ospatch.json` —
 never `ip-address` / `os-patch`). The transform is `_standard_filename()` in
 `registry/tools/generate_class_specs.py` (self-tested). JSON is the canonical interchange form;
@@ -190,7 +190,7 @@ The new types, their category/tier, and the standard each adopts by reference. A
 | Type | Category (new?) | Adopts (by reference) | Notes |
 |---|---|---|---|
 | `Hardware.NetworkInterface` | Hardware ✚ | Redfish `NetworkAdapter`/`NetworkPort` | NIC: mac, speed |
-| `Compute.BareMetalHost` | Compute | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of Hardware.* (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
+| `Machine.BareMetalHost` | Machine | Redfish `ComputerSystem` + Metal3 `BareMetalHost` | the physical **asset** (raw resource, §28); rollup of Hardware.* (§26). An *allocation* to a consumer is the ownership model, not a separate type (§3a); a running *instance* is a realized entity. |
 | `Storage.Cluster` | Storage | SNIA Swordfish `StorageSystem` + Rook `CephCluster` (provider) | vendor-neutral; provider on instance; protocol outputs |
 | `Network.Gateway` | Network | K8s Gateway API (concept) / general L3 routing | routing/NAT/firewall edge |
 | `Network.DNSZone` | Network | RFC 1035 / 1034 | authoritative zone; external-dns `DNSEndpoint` as k8s-native ref |

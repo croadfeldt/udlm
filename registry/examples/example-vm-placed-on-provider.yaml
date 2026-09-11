@@ -3,7 +3,7 @@
 # A VM whose request has COLLAPSED onto a provider's offer — the other half of the worked
 # Provider Class, and the subject the collapse gate needs to be non-vacuous.
 #
-# The Provider Class (registry/examples/classes/resource/compute/vm/cexample-cloud.yaml) declares
+# The Provider Class (registry/examples/classes/resource/machine/vm/cexample-cloud.yaml) declares
 # RANGES. This record is that document with every range collapsed to ONE selected value:
 #
 #   memory  offered as [512Mi,1Gi,2Gi,4Gi] or 8Gi-384Gi (general) or 8Gi-768Gi (memory-optimized)
@@ -13,7 +13,7 @@
 #   the three REQUIRED elements the provider adds are all present, because a required element may
 #   not collapse to nothing.
 #
-# `resource_type` stays the PORTABLE two-segment name — the entity is a Compute.VM, and that does
+# `resource_type` stays the PORTABLE two-segment name — the entity is a Machine.VM, and that does
 # not change because of where it landed. `type_ref` pins WHICH spec it was realized against, and
 # after placement that is the Provider Class. No new field was needed to record the placement.
 
@@ -21,9 +21,9 @@ uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
 handle: cexample/web01
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
-resource_type: Compute.VM
+resource_type: Machine.VM
 type_version: 1.0.0
-type_ref: https://udlm.dev/registry/udlm/0.1/class/Compute.VM.CExampleCloud/1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
 lifecycle_state: Realized
 
 states:

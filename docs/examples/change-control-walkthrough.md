@@ -11,7 +11,7 @@ here are **proposed pending the change-control ADR** — this document and its u
 corpus-first input to that ruling.
 
 The running example: the maintainer adds a new optional element — say `memory.hugepages` — to
-the Compute Base Class. Upstream this is one atomic change: descendants regenerate, gates
+the Machine Base Class. Upstream this is one atomic change: descendants regenerate, gates
 re-prove them, and the change record carries the classification (**additive**) and the
 computed blast radius. Then it meets three very different estates.
 
@@ -33,7 +33,7 @@ schedule (windows, freezes, expedite paths). Two rules hold everywhere:
 
 The dev estate's policy says: additive changes adopt automatically at the nightly sync;
 breaking changes wait for a human. `hugepages` arrives overnight — the estate re-pins, its
-Compute.* records regenerate in the same orchestrated run, and the adoption record names the
+Machine.* records regenerate in the same orchestrated run, and the adoption record names the
 policy clause that authorized it. Nobody was asked, because the decision was made once, in the
 policy, instead of once per change.
 

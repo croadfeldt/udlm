@@ -53,10 +53,10 @@ def main():
     refuse("single = stored", lambda: U.parse("estate?page_size=50"))
     refuse("single = unknown key", lambda: U.parse("estate?zone=b"))
     refuse("reserved char in segment", lambda: U.parse("estate/bad@seg/x?a==1"))
-    refuse("bad pin", lambda: U.parse("Compute/VM@latest"))
-    refuse("wildcard in =in=", lambda: U.parse("estate?resource_type=in=(Compute.*,X)"))
+    refuse("bad pin", lambda: U.parse("Machine/VM@latest"))
+    refuse("wildcard in =in=", lambda: U.parse("estate?resource_type=in=(Machine.*,X)"))
     refuse("unbalanced paren", lambda: U.parse("estate?(a==1;b==2"))
-    refuse("bad fragment", lambda: U.parse("Compute/VM#Cpu.Count"))
+    refuse("bad fragment", lambda: U.parse("Machine/VM#Cpu.Count"))
     refuse("empty", lambda: U.parse(""))
     # URF-008 — a regex in a value parses as a LITERAL and silently never matches. On a deny
     # criterion that is a fail-OPEN, so it is refused rather than accepted-and-misleading.
@@ -80,15 +80,15 @@ def main():
     live = ok("keep-operational emit", lambda: U.canonicalize("estate?tenant_uuid==abc&page_size=50", keep_operational=True))
     if live and "page_size=50" not in live:
         fails.append(f"operational term lost at live dereference: {live!r}")
-    dotted = ok("dotted-name path input", lambda: U.canonicalize("Compute.VM@1.2.0"))
-    if dotted != "Compute/VM@1.2.0":
+    dotted = ok("dotted-name path input", lambda: U.canonicalize("Machine.VM@1.2.0"))
+    if dotted != "Machine/VM@1.2.0":
         fails.append(f"dotted-name path did not canonicalize to slash: {dotted!r}")
-    ok("glob value", lambda: U.parse("estate?resource_type==Compute.*"))
+    ok("glob value", lambda: U.parse("estate?resource_type==Machine.*"))
     ok("quoted comma", lambda: U.parse("estate?name=='a,b'"))
     ok("in list", lambda: U.parse("estate?uuid=in=(a,b,c)"))
     ok("self placeholder", lambda: U.parse("estate?tenant_uuid=={self}"))
-    ok("fragment", lambda: U.parse("Compute/VM@1.2.0#cpu.count"))
-    ok("authority", lambda: U.parse("//state.mn/Compute/VM#firmware"))
+    ok("fragment", lambda: U.parse("Machine/VM@1.2.0#cpu.count"))
+    ok("authority", lambda: U.parse("//state.mn/Machine/VM#firmware"))
     inl = ok("in-list sort", lambda: U.canonicalize("estate?uuid=in=(c,a,b)"))
     if inl != "estate?uuid=in=(a,b,c)":
         fails.append(f"in-list not sorted: {inl!r}")
@@ -111,7 +111,7 @@ def main():
         fails.append(f"§9.5: {{self}} must be literal in canonical form, got {slf!r}")
 
     # --- block round-trip ---
-    blk = {"path": "estate", "query": ["tenant_uuid=={self}", "resource_type==Compute.VM"]}
+    blk = {"path": "estate", "query": ["tenant_uuid=={self}", "resource_type==Machine.VM"]}
     s = ok("from_block", lambda: U.from_block(blk))
     if s:
         back = U.to_block(s)

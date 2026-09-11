@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.6.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.AddressService/0.6.3",
   "conforms_to": "udlm/0.1",
   "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc",
   "resource_type": "Network.AddressService",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.AddressService",
-          "version": "0.6.2",
+          "version": "0.6.3",
           "uuid": "2d2100a1-3813-4f01-8b55-12389cec51cc"
         }
       ]
@@ -105,14 +105,14 @@
     {
       "edge_type": "depends_on",
       "name": "served_by",
-      "target": "Compute.BareMetalHost",
+      "target": "Machine.BareMetalHost",
       "cardinality": "0..n",
       "description": "served_by — a host running this DHCP/DNS provider. The service stops before its host in a reverse-topo shutdown."
     },
     {
       "edge_type": "depends_on",
       "name": "served_by",
-      "target": "Compute.VM",
+      "target": "Machine.VM",
       "cardinality": "0..n",
       "description": "served_by — a VM running this DHCP/DNS provider. (One of BareMetalHost / VirtualMachine per instance.)"
     }
@@ -152,7 +152,7 @@
       "A single address — Network.IPAddress."
     ],
     "works_with": [
-      "Compute.BareMetalHost / Compute.VM — where the service runs; it stops before its host.",
+      "Machine.BareMetalHost / Machine.VM — where the service runs; it stops before its host.",
       "Network.DHCPScope — the per-subnet config this service serves.",
       "Network.DNSZone — the zones it answers for."
     ]

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.4.1",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Storage.Pool/0.4.2",
   "conforms_to": "udlm/0.1",
   "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520",
   "resource_type": "Storage.Pool",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Storage.Pool",
-          "version": "0.4.1",
+          "version": "0.4.2",
           "uuid": "643156a0-5c7b-4fa7-bcfb-089c0a06d520"
         }
       ]
@@ -215,7 +215,7 @@
   "relationships": [
     {
       "edge_type": "contained_by",
-      "target": "Compute.BareMetalHost",
+      "target": "Machine.BareMetalHost",
       "cardinality": "0..1",
       "name": "host",
       "description": "The host whose drives make up this pool (a pool is host-local)."
@@ -255,10 +255,10 @@
       "Distributed multi-node storage — Storage.Cluster.",
       "The consumable unit workloads mount — Storage.Dataset, carved from the pool.",
       "An allocatable range of IP addresses — Network.IPAddressPool is the same pool pattern in the network domain.",
-      "RAID fields on the host type — a host never carries RAID; it contains pools (see Compute.BareMetalHost)."
+      "RAID fields on the host type — a host never carries RAID; it contains pools (see Machine.BareMetalHost)."
     ],
     "works_with": [
-      "Compute.BareMetalHost — the host whose drives form the pool.",
+      "Machine.BareMetalHost — the host whose drives form the pool.",
       "Storage.Dataset — the datasets carved from the pool.",
       "Hardware.StorageDevice — the physical member drives of the vdevs."
     ]

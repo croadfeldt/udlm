@@ -1,0 +1,321 @@
+{
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.LPAR/0.1.0",
+  "conforms_to": "udlm/0.1",
+  "uuid": "6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63",
+  "resource_type": "Machine.LPAR",
+  "version": "0.1.0",
+  "family": "Resource",
+  "status": "active",
+  "metadata": {
+    "display_name": "Logical Partition",
+    "description": "A logical partition — the third form a Machine takes, beside a VM and a bare-metal host (ADR-068, ADR-069). An LPAR is an OS-bearing slice of a partitioned system (IBM Power via PowerVM and the HMC; IBM Z via PR/SM) that boots an image onto entitled processor capacity, memory and virtual I/O. It honors every Machine Base element: `cpu.count` is the virtual-processor count, `memory` the partition memory, `guest_os` the image, `storage` and `storage_tier` the disk requirement. What it adds is the partitioning vocabulary no VM or bare-metal host has — fractional processor entitlement, capped or uncapped sharing, a shared processor pool, and VIOS-backed virtual adapters. Those are Type-tier elements (conditional, class-tiers §7): Redfish has no partition profile beyond `SystemType`, so the names follow the HMC vocabulary. Dialects (PowerVM, PR/SM) and offerings land at the Provider tier.",
+    "maintainer": "udlm-registry",
+    "origination_timestamp": "2026-09-10T00:00:00Z",
+    "generated": true,
+    "compilation_provenance": {
+      "generator": "class-spec-gen/1.1.0",
+      "sources": [
+        {
+          "class": "Machine",
+          "version": "2.0.0",
+          "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
+        },
+        {
+          "class": "Machine.LPAR",
+          "version": "0.1.0",
+          "uuid": "6d2f8c1a-3b47-4e9d-a5c0-8f1e2b7d4a63"
+        }
+      ]
+    }
+  },
+  "spec": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "instance_size": {
+        "type": "string",
+        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
+      },
+      "cpu": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023)."
+          },
+          "sockets": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable."
+          },
+          "cores_per_socket": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional topology hint: cores per socket. Provider-support-dependent."
+          }
+        },
+        "description": "Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores, EC2 vCPUs)."
+      },
+      "memory": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "string",
+            "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
+            "description": "Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base Class `memory.size`)."
+          },
+          "hugepages": {
+            "type": "object",
+            "description": "Optional huge-page backing (provider-support-dependent; validated against provider capability).",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "page_size": {
+                "type": "string",
+                "description": "e.g. 2Mi, 1Gi."
+              }
+            }
+          }
+        },
+        "description": "Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}): `hugepages` becomes an optional Base element."
+      },
+      "storage": {
+        "type": "object",
+        "description": "The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
+        "properties": {
+          "min_iops": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "min_throughput_mbps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "min_replication": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "encryption": {
+            "type": "boolean"
+          }
+        }
+      },
+      "storage_tier": {
+        "type": "string",
+        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+      },
+      "guest_os": {
+        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with no os_image vocabulary entry — a review finding."
+              },
+              "version": {
+                "type": "string",
+                "description": "Inline OS version (e.g. 9.4)."
+              }
+            }
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "../data-reference.schema.json#/$defs/data_reference"
+              },
+              {
+                "required": [
+                  "reference_data_type"
+                ],
+                "properties": {
+                  "reference_data_type": {
+                    "const": "os_image"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "processor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entitled_capacity": {
+            "type": "number",
+            "minimum": 0.05,
+            "description": "Entitled processing units (fractions of a physical core; PowerVM minimum 0.05 per virtual processor)."
+          },
+          "sharing_mode": {
+            "enum": [
+              "dedicated",
+              "capped",
+              "uncapped"
+            ],
+            "description": "Dedicated cores, or shared capacity that is capped at the entitlement or may exceed it when the pool has headroom."
+          },
+          "uncapped_weight": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Priority for excess pool capacity; meaningful only with sharing_mode uncapped."
+          },
+          "shared_pool": {
+            "type": "string",
+            "description": "The shared processor pool the partition draws from, as the provider names it."
+          }
+        },
+        "description": "Processor entitlement for the partition — the HMC partition-profile processor settings. A request states how much physical capacity the partition is entitled to and how it shares; `cpu.count` (inherited) is the number of virtual processors the OS sees."
+      },
+      "virtual_io": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "vios_backed": {
+            "type": "boolean",
+            "description": "Storage and network are served through Virtual I/O Servers rather than dedicated adapters."
+          },
+          "adapters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "vscsi",
+                    "npiv",
+                    "vnic",
+                    "sriov",
+                    "virtual_ethernet"
+                  ]
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        },
+        "description": "Virtual I/O the partition is served through — VIOS-backed virtual SCSI, NPIV fibre channel, or virtual/SR-IOV network adapters. A requirement descriptor the provider satisfies from its VIOS pair; never a reference to a registered device."
+      },
+      "run_state": {
+        "type": "object",
+        "properties": {
+          "desired_state": {
+            "enum": [
+              "running",
+              "stopped"
+            ]
+          }
+        },
+        "description": "Desired partition run state the provider drives to (HMC activate / shut down). Distinct from the four-state lifecycle_state."
+      }
+    },
+    "examples": [
+      {
+        "cpu": {
+          "count": 4
+        },
+        "memory": {
+          "size": "64Gi"
+        },
+        "guest_os": {
+          "type": "linux-server-9",
+          "version": "9.6"
+        },
+        "processor": {
+          "entitled_capacity": 2.0,
+          "sharing_mode": "uncapped",
+          "uncapped_weight": 128,
+          "shared_pool": "DefaultPool"
+        },
+        "virtual_io": {
+          "vios_backed": true,
+          "adapters": [
+            {
+              "kind": "npiv",
+              "count": 2
+            },
+            {
+              "kind": "virtual_ethernet",
+              "count": 1
+            }
+          ]
+        },
+        "run_state": {
+          "desired_state": "running"
+        }
+      }
+    ]
+  },
+  "outputs": {
+    "partition_id": {
+      "type": "integer",
+      "description": "The partition identifier the managing system assigned."
+    },
+    "provider_handle": {
+      "type": "string",
+      "description": "The provider-native partition name (opaque; correlation only)."
+    },
+    "observed_run_state": {
+      "type": "string",
+      "description": "Observed partition state as the provider reports it."
+    }
+  },
+  "relationships": [
+    {
+      "edge_type": "contained_by",
+      "target": "Machine.BareMetalHost",
+      "cardinality": "1..1",
+      "description": "The partitioned system (the frame or CEC) the partition runs on — a managed bare-metal host."
+    },
+    {
+      "edge_type": "references",
+      "target": "Facility.Location",
+      "cardinality": "0..1",
+      "description": "Placement, as for any Machine."
+    }
+  ],
+  "adopts": [
+    {
+      "standard": "Redfish",
+      "version": "2024.4",
+      "standard_name": "ComputerSystem",
+      "role": "Vendor-neutral compute-system representation; an LPAR is a ComputerSystem whose SystemType is PhysicallyPartitioned (PR/SM) or VirtuallyPartitioned (PowerVM). Partition-profile settings have no Redfish profile and are named from the HMC vocabulary at this Type.",
+      "source": "https://www.dmtf.org/standards/redfish",
+      "license": "DMTF",
+      "license_compatibility": "compatible-reference",
+      "disposition": "tier1_value"
+    }
+  ],
+  "context": {
+    "purpose": "Declares a logical partition on a partitioned system as one provisionable Machine.",
+    "plain_description": "The request for a slice of a big partitioned server: how much processor capacity it is entitled to and whether it may borrow more, how much memory, which image, and how its disks and network are served. The provider (an HMC-managed Power system, a PR/SM-managed mainframe) activates the partition and reports its identifier and state.",
+    "use_when": [
+      "You need an OS instance on a partitioned system and want to state entitlement rather than pick a frame.",
+      "You are rebuilding an estate whose workloads run on Power or Z and need those hosts in the same graph as VMs and bare metal."
+    ],
+    "not_for": [
+      "A VM on a hypervisor — that is Machine.VM.",
+      "The partitioned system itself — that is Machine.BareMetalHost; the partition is contained_by it."
+    ],
+    "works_with": [
+      "Machine.BareMetalHost — the frame that hosts the partition.",
+      "Storage.Volume — the disks served through virtual I/O.",
+      "Network.VirtualNetwork — the network a virtual adapter attaches to."
+    ]
+  },
+  "ownership_model": "whole_allocation"
+}

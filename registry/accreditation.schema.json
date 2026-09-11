@@ -102,7 +102,7 @@
         "provider_wide": { "const": true, "description": "Attests every capability the provider declares; survives capability changes." },
         "capability_uuid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", "description": "The capability this attests (matches provider `capabilities[].capability_uuid`). Without `version` it attests that capability across versions; with `version` it binds the exact version." },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "Bind the EXACT capability version — a new version is not covered, so the sovereignty claim reverts to self_asserted until re-attested (the deterministic grain)." },
-        "category": { "type": "string", "description": "Optional — narrow the attestation to one (verb × domain) category within the capability (e.g. attest only realize_resources/Compute within a multi-category capability)." },
+        "category": { "type": "string", "description": "Optional — narrow the attestation to one (verb × domain) category within the capability (e.g. attest only realize_resources/Machine within a multi-category capability)." },
         "resource_types": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+)?$" } }
       },
       "oneOf": [

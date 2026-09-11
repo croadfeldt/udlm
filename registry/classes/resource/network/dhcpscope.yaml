@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.DHCPScope/0.8.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.DHCPScope/0.8.3
 conforms_to: udlm/0.1
 uuid: c71a7ad9-23ea-40fe-a07d-ee088a20cf42
 record_type: class
 class: type
 resource_type: Network.DHCPScope
 parent: Network
-version: 0.8.2
+version: 0.8.3
 family: Resource
 status: active
 metadata:
@@ -108,12 +108,12 @@ outputs:
       from this set.'
 relationships:
 - edge_type: depends_on
-  target: Compute.BareMetalHost
+  target: Machine.BareMetalHost
   cardinality: 0..n
   name: dhcp_server_host
   description: Host(s) running the DHCP server(s) serving this scope (e.g. an HA pair).
 - edge_type: depends_on
-  target: Compute.VM
+  target: Machine.VM
   cardinality: 0..n
   name: dhcp_server_vm
   description: DHCP server(s) hosted on VMs.
@@ -156,4 +156,4 @@ context:
   works_with:
   - Network.IPAddress — the address records whose static allocations project into reservations.
   - Network.AddressService — the operated service serving this scope.
-  - Compute.BareMetalHost / Compute.VM — the servers the scope is served from.
+  - Machine.BareMetalHost / Machine.VM — the servers the scope is served from.

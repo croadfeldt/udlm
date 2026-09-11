@@ -85,7 +85,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Hardware & platform
 
 ### DMTF Redfish — CANONICAL
-**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Compute/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
+**Covers:** `Redfish` · **Body:** DMTF · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine/Network/Facility types — ComputerSystem (host summary incl. aggregate memory/CPU/GPU capacity), NetworkAdapter, Switch, Circuit (Facility.PowerFeed); Bios + BiosAttributeRegistry (Hardware.BiosProfile); Manager + ComputerSystem.Reset (Hardware.BMC); Location/Placement (Facility.Location). (Per-component Processor/Memory/Drive/PowerSupply resources are out of scope — DCM ADR-013; the host carries their rollup.)
 **Why:** the vendor-neutral hardware-as-asset vocabulary, and the one the estate's producers actually speak (Redfish-capable BMCs; used for bare-metal provisioning). *Alternatives:* IPMI (no data model), DMTF CIM (superseded by Redfish for REST-era use — PRIOR-ART). **License:** DMTF — compatible-reference.
 
 ### IEEE 802.1AX / 802.1Q / 802.1AB — CANONICAL
@@ -115,11 +115,11 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Why:** k8s already solved "how does one object point at another and stay honest": ownerReferences carry `uid` (authoritative) AND `name` (advisory), the GC resolves on `uid`, and a `uid` that resolves to nothing is a *dangling* edge — never a silent rebind onto a same-named record. We adopt exactly that shape (uuid-authoritative, name-advisory) and its deterministic invalid-edge handling (`OwnerRefInvalidNamespace` → our dangling-reference failure). **Pattern, not vocabulary:** the reference *shape* and integrity discipline, not the k8s field names or the multi-doc apply model. Grounded in `docs/research/minimal-custom-surface-and-graph-resilience.md` findings #1/#2. Convergent with our own uuid+handle discipline (`docs/spec/contracts/identifier-scheme.md`). **License:** Apache-2.0 — compatible-reference.
 
 ### KubeVirt — CANONICAL
-**Covers:** `KubeVirt` · **Body:** CNCF · **Since:** 2026-07-13 · **Where:** Compute.VM (VirtualMachine/VirtualMachineInstance — domain cpu/memory, interfaces->networks, volumes, runStrategy/power).
+**Covers:** `KubeVirt` · **Body:** CNCF · **Since:** 2026-07-13 · **Where:** Machine.VM (VirtualMachine/VirtualMachineInstance — domain cpu/memory, interfaces->networks, volumes, runStrategy/power).
 **Why:** the k8s-native VM implementation the estate actually runs (OpenShift Virtualization), the parallel to Metal3 for bare metal — Redfish ComputerSystem gives the vendor-neutral system+power shape, KubeVirt the implementation vocabulary. *Alternatives:* OpenStack Nova (not the deployment reality), DMTF OVF (VM packaging/portability — PRIOR-ART, reference only). **License:** Apache-2.0 — compatible-reference.
 
 ### Metal3 — CANONICAL
-**Covers:** `Metal3` · **Since:** 2026-06-26T22:30:12Z · **Where:** Compute.BareMetalHost.
+**Covers:** `Metal3` · **Since:** 2026-06-26T22:30:12Z · **Where:** Machine.BareMetalHost.
 **Why:** k8s-native bare-metal lifecycle vocabulary (BareMetalHost CRD), OpenShift-aligned (deployment reality + OSS/Red Hat preference). *Alternatives:* pure Redfish (asset view only — no provisioning lifecycle), Ironic-standalone (Metal3 wraps it). **License:** Apache-2.0 — compatible-reference.
 
 ### Rook — CANONICAL
@@ -199,7 +199,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 **Covers:** `libvirt virtual network` · **Since:** 2026-07-05T02:10:32Z · **Where:** Network.VirtualNetwork (forward-mode vocabulary).
 **Why:** the host-bridge attachment producer on all four virt hosts. **License:** LGPL — reference-only.
 
-## Compute — Container
+## Container
 
 ### OCI Image Specification — CANONICAL
 **Covers:** `OCI Image Specification` · **Body:** Open Container Initiative · **Since:** 2026-07-11T00:00:00Z · **Where:** `Container` image reference (`image.reference` + content-addressable digest).

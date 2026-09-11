@@ -104,7 +104,7 @@
     "covers": {
       "type": "string",
       "format": "udlm-filter-url",
-      "description": "TARGET scoping (publish side; ADR-054 two-sided scoping): ONE URF filter (identifier-scheme §9) naming which resources this layer MAY inject into — e.g. estate?resource_type==Compute.* or estate?labels.concern==payments. The assembly engine GATHERS every layer whose covers matches the target, then orders by precedence; covers says *who may*, the request's from_layers says *who does*. OPTIONAL — do not duplicate resource_type: a type-scoped layer (resource_type: X) already targets X (≡ covers \"estate?resource_type==X.*\"), so its covers is DERIVED and omitted. When both are set, covers MUST match the layer's own resource_type (validate.py check_layer). covers is Data (the declaration); the match is Policy (the assembly engine)."
+      "description": "TARGET scoping (publish side; ADR-054 two-sided scoping): ONE URF filter (identifier-scheme §9) naming which resources this layer MAY inject into — e.g. estate?resource_type==Machine.* or estate?labels.concern==payments. The assembly engine GATHERS every layer whose covers matches the target, then orders by precedence; covers says *who may*, the request's from_layers says *who does*. OPTIONAL — do not duplicate resource_type: a type-scoped layer (resource_type: X) already targets X (≡ covers \"estate?resource_type==X.*\"), so its covers is DERIVED and omitted. When both are set, covers MUST match the layer's own resource_type (validate.py check_layer). covers is Data (the declaration); the match is Policy (the assembly engine)."
     },
     "applies_on": {
       "type": "array",

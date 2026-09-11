@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.Location/0.4.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Facility.Location/0.4.5",
   "conforms_to": "udlm/0.1",
   "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b",
   "resource_type": "Facility.Location",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Facility.Location",
-          "version": "0.4.4",
+          "version": "0.4.5",
           "uuid": "545ae44a-fa98-4e7c-a0d6-1cbabaa4903b"
         }
       ]
@@ -106,7 +106,7 @@
     ],
     "works_with": [
       "Facility.Location — the parent place this one nests inside.",
-      "Compute.BareMetalHost — the equipment that declares its location.",
+      "Machine.BareMetalHost — the equipment that declares its location.",
       "Topology — the failure-domain view of the same physical reality."
     ]
   }

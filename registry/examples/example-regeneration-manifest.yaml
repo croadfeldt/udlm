@@ -1,24 +1,24 @@
 record_type: regeneration_manifest
-uuid: a31e6621-d3ed-4505-92f3-76df925db58c
-supersedes: 3c72e0c0-715d-4126-a143-5eeae43cb597
+uuid: e5660e73-9a89-4bc5-a151-c9661f3c87fc
+supersedes: a31e6621-d3ed-4505-92f3-76df925db58c   # the record that named the class by its former name (Compute -> Machine, ADR-068)
 handle: regeneration/example/compute-base-scope-narrowing
 conforms_to: udlm/0.1
-title: Compute Base Class 1.2.0 → 2.0.0 — `firmware` moved Base → Type scope (breaking, no shape change)
+title: Machine Base Class 1.2.0 → 2.0.0 — `firmware` moved Base → Type scope (breaking, no shape change)
 registry_ref:
   commit: 0a1b2c3d4e5f60718293a4b5c6d7e8f900112233
   branch: main
 change:
   artifact:
     artifact_kind: base_class
-    handle: Compute
+    handle: Machine
     version: 2.0.0
     digest: sha256:c227f29fbf901f2f6d92d1fd74fc8be27ee5ed3ddcf7493eea537b0b190d7db9
   previous:
     artifact_kind: base_class
-    handle: Compute
+    handle: Machine
     version: 1.2.0
     digest: sha256:4d67aab0aa2f4dc3b9f6c110ac8b93ae61ec8dab5e550201dc0d9d90ddcd34ef
-  summary: The `firmware` element moved out of the Compute Base Class and into the Compute.VirtualMachine
+  summary: The `firmware` element moved out of the Machine Base Class and into the Machine.VirtualMachine
     Type Class. No field was added, removed, or reshaped — the element's scope narrowed, so everything
     that inherited `firmware` from the Base Class no longer carries it portably.
 classification:
@@ -30,7 +30,7 @@ classification:
   reasons:
   - level: major
     rule: element-scope narrowing
-    detail: element `firmware` moved from Base scope to Type scope on Compute.VirtualMachine; carriers
+    detail: element `firmware` moved from Base scope to Type scope on Machine.VirtualMachine; carriers
       outside that Type Class lose it from their portable surface
   - level: minor
     rule: element added
@@ -38,54 +38,54 @@ classification:
 affected_artifacts:
 - artifact:
     artifact_kind: type_class
-    handle: Compute.VirtualMachine
+    handle: Machine.VirtualMachine
     version: 1.1.0
     digest: sha256:9e6254fef141859a7cf2d6d4ba2168e0148ce0d4cf6fdab5de27e7adca4c6aa5
   previous:
     artifact_kind: type_class
-    handle: Compute.VirtualMachine
+    handle: Machine.VirtualMachine
     version: 1.0.0
     digest: sha256:a5ac27bada7332ff722a0a85ca46fb5938cee981cacae294b52493515f8737f2
   disposition: revalidated_bumped
   reached_via:
-  - Compute
-  - Compute.VirtualMachine
+  - Machine
+  - Machine.VirtualMachine
 - artifact:
     artifact_kind: generated_type_spec
-    handle: Compute.VirtualMachine
+    handle: Machine.VirtualMachine
     version: 0.7.0
     digest: sha256:360e86fcaa70be83bf87eefd81cf4683687c0aada15269f0648788158aa5dea6
   previous:
     artifact_kind: generated_type_spec
-    handle: Compute.VirtualMachine
+    handle: Machine.VirtualMachine
     version: 0.6.4
     digest: sha256:13bfb60b072571f65b76dc873e48822ceaae942799763281d98515c8dca8d369
   disposition: regenerated
   path: registry/resource-types/compute/compute.virtual-machine.json
   reached_via:
-  - Compute
-  - Compute.VirtualMachine
+  - Machine
+  - Machine.VirtualMachine
 - artifact:
     artifact_kind: provider_class
-    handle: Compute.VirtualMachine.ExampleHypervisor
+    handle: Machine.VirtualMachine.ExampleHypervisor
     version: 1.0.1
     digest: sha256:ed03d1032679911762b9b89def98f64cf7ae7d9b72337a0b500e1d2b3451a337
   disposition: revalidated_unchanged
   reached_via:
-  - Compute
-  - Compute.VirtualMachine
-  - Compute.VirtualMachine.ExampleHypervisor
+  - Machine
+  - Machine.VirtualMachine
+  - Machine.VirtualMachine.ExampleHypervisor
 consumer_debt:
 - consumer: control-plane-servicetype-gen
   manifest_ref: registry/consumers/control-plane-servicetype-gen.yaml
-  handle: Compute.VirtualMachine
+  handle: Machine.VirtualMachine
   noted_version: 0.6.2
   registry_version: 0.7.0
   debt: behind
   distance: one minor behind, across a breaking classification
 - consumer: graph-explorer
   manifest_ref: registry/consumers/graph-explorer.yaml
-  handle: Compute.VirtualMachine
+  handle: Machine.VirtualMachine
   debt: version_undeclared
 gate_suite:
   runner: udlm-ci (.github/workflows/validate.yml)
@@ -116,7 +116,7 @@ provenance:
   enumerator_version: 0.1.0
   at: '2026-07-25T18:41:12Z'
 metadata:
-  display_name: Compute Base scope-narrowing regeneration manifest (example)
+  display_name: Machine Base scope-narrowing regeneration manifest (example)
   notes:
   - at: '2026-07-25T18:41:12Z'
     author: udlm-maintainers

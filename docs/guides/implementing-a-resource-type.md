@@ -1,9 +1,9 @@
-# Implementing a resource type — a worked walkthrough (`Compute.VM`)
+# Implementing a resource type — a worked walkthrough (`Machine.VM`)
 
 **Audience:** an engineer building **provider** support for a UDLM resource type.
 **What this answers:** *"can we actually implement this?"* — yes, and here is the whole path for one type,
 each step pointing to the obligation that governs it (this is a map, not a re-spec — it never restates the
-contracts). It uses `Compute.VM` throughout and **extends the four-states worked example**
+contracts). It uses `Machine.VM` throughout and **extends the four-states worked example**
 ([`four-states.md`](../spec/foundations/four-states.md) §2.6) from *what each state record holds* to *what you do
 to produce it*.
 
@@ -18,9 +18,9 @@ over-building comes from crossing this line — see `sovereignty` / `policy` in 
 
 **0 · Declare what you support** — [`CONFORMANCE.md`](../../CONFORMANCE.md) §4. Pick a conformance level +
 profile; declare the surfaces you implement and the types + versions you support
-(`Compute.VM@<version>`). Register per [`provider-contract.md`](../spec/contracts/provider-contract.md) §2.
+(`Machine.VM@<version>`). Register per [`provider-contract.md`](../spec/contracts/provider-contract.md) §2.
 
-**1 · Read the type spec** — [`registry/generated/compute.vm.json`](../../registry/generated/compute.vm.json).
+**1 · Read the type spec** — [`registry/generated/machine.vm.json`](../../registry/generated/machine.vm.json).
 Its fields, typed `outputs`, edges, and `$id`/version are the **exact contract you validate against** — resolvable
 offline, no runtime late-binding (VERSIONING publish law; P4 offline closure).
 
@@ -62,7 +62,7 @@ evidence; DCM's Matrix decides.
 
 Run this checklist against the cited contracts. Every box should be checkable **from the spec alone**:
 
-- [ ] Read `compute.vm.json (generated — authored in registry/classes/resource/compute/vm.yaml)` **offline** and know every field's shape and every typed output.
+- [ ] Read `machine.vm.json (generated — authored in registry/classes/resource/machine/vm.yaml)` **offline** and know every field's shape and every typed output.
 - [ ] Naturalize using **only execution-role** data (data-roles).
 - [ ] Reserve returning a **hold + computed facts** without building anything (four-states §2.3a).
 - [ ] Commit **only** on the barrier signal.

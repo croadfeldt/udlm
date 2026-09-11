@@ -2,7 +2,7 @@
 """Guards dotted-address resolution over the scoped-Class hierarchy (ADR-038 / P0).
 
 Asserts the resolver (registry/tools/resolve_class_address.py) walks inheritance correctly across
-both the Compute (depth) and Process (multi-provider) chains, and that unresolvable addresses fail
+both the Machine (depth) and Process (multi-provider) chains, and that unresolvable addresses fail
 deterministically. Doubles as a regression guard: renaming or moving an element, or breaking a
 `parent` link, trips this. Exit 0 = all cases hold; 1 = a resolution changed.
 """
@@ -19,25 +19,25 @@ by_name = R.load_classes()
 CASES = [
     # address                              owning_class          inherited
     # --- dot / compact notation ---
-    ("Compute#cpu",                        "Compute",            False),   # declared on the Base itself
-    ("Compute.VM#storage_tier",            "Compute",            True),    # inherited from Base (cpu is redeclared-tightened at VM scope since the bulk conversion)
-    ("Compute.VM#firmware",                "Compute.VM",         False),   # declared on the Type
-    ("Compute.VM#storage_tier",            "Compute",            True),    # governed-vocab element, inherited
+    ("Machine#cpu",                        "Machine",            False),   # declared on the Base itself
+    ("Machine.VM#storage_tier",            "Machine",            True),    # inherited from Base (cpu is redeclared-tightened at VM scope since the bulk conversion)
+    ("Machine.VM#firmware",                "Machine.VM",         False),   # declared on the Type
+    ("Machine.VM#storage_tier",            "Machine",            True),    # governed-vocab element, inherited
     ("Automation.OSPatch#idempotency",        "Automation",            True),    # inherited from Process Base
     ("Automation.OSPatch#patch_policy",       "Automation.OSPatch",    False),   # declared on the Type
     ("Automation.OSPatch.EngineBlue#definition_ref", "Automation.OSPatch.EngineBlue", False),  # provider-scope
     ("Automation.OSPatch.EngineBlue#idempotency",    "Automation",     True),    # inherited two levels up
     # --- URL notation (the same coordinates, ADR-038's preferred form) ---
-    ("https://udlm.dev/class/Compute/VM#storage_tier",     "Compute",         True),   # local URL
-    ("https://state.mn/Compute/VM#firmware",              "Compute.VM",      False),  # federated authority
+    ("https://udlm.dev/class/Machine/VM#storage_tier",     "Machine",         True),   # local URL
+    ("https://state.mn/Machine/VM#firmware",              "Machine.VM",      False),  # federated authority
     ("https://udlm.dev/registry/udlm/0.1/class/Automation/OSPatch#idempotency", "Automation", True),  # $id-scaffolded URL
     ("https://peer.dcm.east/Automation/OSPatch/EngineBlue#definition_ref", "Automation.OSPatch.EngineBlue", False),
 ]
 UNRESOLVABLE = [
-    "Compute.VM#does_not_exist",   # no such element
+    "Machine.VM#does_not_exist",   # no such element
     "Nonexistent.Class#cpu",       # no such class
-    "Compute#firmware",            # firmware is on the Type, not visible from the Base
-    "Compute.VM",                  # not an address (no '#')
+    "Machine#firmware",            # firmware is on the Type, not visible from the Base
+    "Machine.VM",                  # not an address (no '#')
 ]
 
 
@@ -61,7 +61,7 @@ def main():
         except KeyError:
             pass
     # the two notations are the same coordinate — they must resolve identically
-    for dot, url in [("Compute.VM#storage_tier", "https://udlm.dev/class/Compute/VM#storage_tier"),
+    for dot, url in [("Machine.VM#storage_tier", "https://udlm.dev/class/Machine/VM#storage_tier"),
                      ("Automation.OSPatch.EngineBlue#idempotency", "https://x/Automation/OSPatch/EngineBlue#idempotency")]:
         rd, ru = R.resolve(dot, by_name), R.resolve(url, by_name)
         if (rd["owning_class"], rd["element"], rd["scope"]) != (ru["owning_class"], ru["element"], ru["scope"]):

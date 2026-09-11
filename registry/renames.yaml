@@ -177,3 +177,14 @@ retired:
   # nothing with the machines it sat beside. Named for the standard, never for a product;
   # distributions become its Types. Same uuid, version reset to 1.0.0 as a new Base.
   registry/classes/resource/compute/cluster.yaml: registry/classes/resource/kubernetes-cluster/_base.yaml
+
+  # 2026-09-10 — Compute becomes Machine (ADR-068 applied clause; the Base test is ADR-069). With
+  # Container and KubernetesCluster gone, what remained under Compute was VM and BareMetalHost, the
+  # two forms of one deliverable — an image booted onto cpu, memory, disk and network — and Nova/Ironic,
+  # Cluster API's Machine and TOSCA's Compute already treat them as one thing. Named for the deliverable.
+  # LPAR joins as the third form. Same uuids; MAJOR on the Base (the name is in every $id) and on VM
+  # (guest firmware `bios` -> `legacy`, the Redfish spelling BareMetalHost already used).
+  registry/classes/resource/compute/_base.yaml: registry/classes/resource/machine/_base.yaml
+  registry/classes/resource/compute/vm.yaml: registry/classes/resource/machine/vm.yaml
+  registry/classes/resource/compute/bare-metal-host.yaml: registry/classes/resource/machine/bare-metal-host.yaml
+  registry/examples/classes/resource/compute/vm/cexample-cloud.yaml: registry/examples/classes/resource/machine/vm/cexample-cloud.yaml

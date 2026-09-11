@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.VM/1.5.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
 conforms_to: udlm/0.1
 uuid: 5ad96ff6-2582-4d82-8943-496c8dbe3295
 record_type: class
 class: type
-resource_type: Compute.VM
-parent: Compute
-version: 1.5.5
+resource_type: Machine.VM
+parent: Machine
+version: 2.0.0
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -13,40 +13,38 @@ status: active
 ownership_model: whole_allocation
 metadata:
   authority: canonical
-  display_name: Compute.VM Type Class
+  display_name: Machine.VM Type Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-07-27T21:00:00Z'
-  title: Compute.VM Type Class
-  description: The VM Type Class — extends the Compute Base Class (cpu/memory/storage/storage_tier/guest_os,
+  title: Machine.VM Type Class
+  description: The VM Type Class — extends the Machine Base Class (cpu/memory/storage/storage_tier/guest_os,
     inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never contradict).
-    A provider Class (Compute.VM.OCPVirt, …) extends this further. The generator compiles this class +
-    its ancestors into today's flat Compute.VM resource-type spec.
+    A provider Class (Machine.VM.OCPVirt, …) extends this further. The generator compiles this class +
+    its ancestors into today's flat Machine.VM resource-type spec.
   prompt_version: class-p0-keystone-2026-07-27
 elements:
 - element: firmware
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
-  description: 'Guest firmware surface, flat-spec object shape adopted (2026-07-29 reconciliation, A7
-    — the flat VM''s firmware object won over the earlier bare-string draft): the firmware interface (`type`),
-    UEFI Secure Boot, and virtual TPM — portable across every major virtualization stack. The governed
-    `vm_firmware` vocabulary declared below governs the `type` sub-field''s values; the provider naturalizes
-    to its native setting.'
-  values:
-    reference_data_type: vm_firmware
+  description: 'Guest firmware surface: the firmware interface (`type`), UEFI Secure Boot, and a virtual
+    TPM — portable across every major virtualization stack. `type` uses the Redfish `ComputerSystem`
+    Boot.BootSourceOverrideMode spelling (`legacy` | `uefi`), the same element and the same vocabulary
+    Machine.BareMetalHost carries (ADR-068: guest firmware converges on the Redfish spelling; a MAJOR
+    on this class, `bios` -> `legacy`). The enum is the sole authority — the former governed vocabulary
+    for this field declared no terms (#564) and is withdrawn. Name-selectable but
+    requirements-authoritative (ADR-036).'
   schema:
     type: object
     additionalProperties: false
-    description: Guest firmware surface — portable across every major virtualization stack (Redfish Boot.BootSourceOverrideMode,
-      KubeVirt firmware/TPM, cloud UEFI/trusted-launch). Required by modern guests (Win11-class needs
-      uefi + secure_boot + vtpm). Governed vocabulary `vm_firmware` (ADR-038 §2); name-selectable but
-      requirements-authoritative (ADR-036). Profile decides bare-vs-reference.
+    description: Guest firmware surface (Redfish Boot.BootSourceOverrideMode, KubeVirt firmware/TPM, cloud
+      UEFI/trusted-launch). Required by modern guests (Win11-class needs uefi + secure_boot + vtpm).
     properties:
       type:
         enum:
-        - bios
+        - legacy
         - uefi
-        description: Firmware interface presented to the guest.
+        description: Firmware interface presented to the guest (Redfish spelling; `legacy` is BIOS).
       secure_boot:
         type: boolean
         description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
@@ -54,7 +52,7 @@ elements:
         type: boolean
         description: Virtual TPM 2.0 device presented to the guest.
 - element: boot_order
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: proposed
   description: Ordered boot device preference (VM-specific; not meaningful for BareMetal or Container).
@@ -63,7 +61,7 @@ elements:
     items:
       type: string
 - element: layout_ref
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: The Storage.Layout this VM realizes — handle/uuid reference to an existing Storage.Layout
@@ -76,7 +74,7 @@ elements:
       Also carried as a references->Storage.Layout relationship (storage_layout).
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: networks
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: >-
@@ -172,7 +170,7 @@ elements:
             means the address service allocates at realization). Common-elements Reference shape.
           $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: placement
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: Placement INTENT expressed as a SELECTION of an existing Facility.Location (populated by
@@ -218,7 +216,7 @@ elements:
               additionalProperties:
                 type: string
 - element: run_state
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: Desired guest RUN state the provider drives to (e.g. KubeVirt runStrategy). Distinct from
@@ -237,7 +235,7 @@ elements:
         - suspended
         description: Target guest run state.
 - element: guest_os
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: 'The requested operating system. Flat-spec shape adopted (2026-07-29 reconciliation, A4
@@ -273,7 +271,7 @@ elements:
           reference_data_type:
             const: os_image
 - element: cpu
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your
@@ -297,7 +295,7 @@ elements:
         minimum: 1
         description: 'Optional topology hint: cores per socket. Provider-support-dependent.'
 - element: memory
-  scope: Compute.VM
+  scope: Machine.VM
   optional: true
   state: canonical
   description: Redeclared at VM scope to TIGHTEN the base shape (required sub-fields) — tighten at your
@@ -310,7 +308,7 @@ elements:
       size:
         type: string
         pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
-        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base
+        description: Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base
           Class `memory.size`).
       hugepages:
         type: object
@@ -399,7 +397,7 @@ adopts:
   standard_name: ComputerSystem
   role: 'Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem
     SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for
-    the Compute.* family (shared with Compute.BareMetalHost). Provider-NATIVE realizations (KubeVirt,
+    the Machine.* family (shared with Machine.BareMetalHost). Provider-NATIVE realizations (KubeVirt,
     a hypervisor platform, a public cloud, ...) are declared on the provider support matrix, not on the
     substrate type.'
   source: https://www.dmtf.org/standards/redfish
@@ -433,7 +431,7 @@ context:
   - You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress
     records rather than duplicate them.
   not_for:
-  - The physical machine it runs on — Compute.BareMetalHost.
+  - The physical machine it runs on — Machine.BareMetalHost.
   - A containerized workload — Container; the VM carries a full guest OS.
   - The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.
   - The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's

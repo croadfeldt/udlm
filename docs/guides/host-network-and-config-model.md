@@ -95,7 +95,7 @@ estate, so "the DHCP provider's records live in UDLM format" is satisfied by con
 
 ## Applied to a host (worked example)
 
-1. `host-a` — a `Compute.BareMetalHost` record (workstation role).
+1. `host-a` — a `Machine.BareMetalHost` record (workstation role).
 2. `host-a-eth0` — a `Hardware.NetworkInterface`, `contained_by: host-a`, `mac_address: <new MAC>`.
 3. `host-a-ip` — a `Network.IPAddress`, `allocation: static`, `address: 192.0.2.91/24`,
    `depends_on: host-a-eth0`. **This record is the reservation.**

@@ -60,7 +60,7 @@
         "properties": {
           "capability": {
             "type": "string",
-            "description": "The declared capability or `<capability>/<Domain>` category, from `registry/taxonomies/provider-capability.yaml`. Domain granularity is inherent in the category: `realize_resources/Storage` may be approved while `realize_resources/Compute` is denied, because a category IS verb × domain.",
+            "description": "The declared capability or `<capability>/<Domain>` category, from `registry/taxonomies/provider-capability.yaml`. Domain granularity is inherent in the category: `realize_resources/Storage` may be approved while `realize_resources/Machine` is denied, because a category IS verb × domain.",
             "examples": [
               "realize_resources/Storage",
               "serve_data/Network"
@@ -133,7 +133,7 @@
           "at": "2026-08-12T09:14:00Z"
         },
         {
-          "capability": "realize_resources/Compute",
+          "capability": "realize_resources/Machine",
           "disposition": "denied",
           "actor": "platform-admin/alice",
           "reason": "No compute accreditation on file.",

@@ -35,7 +35,7 @@
       "minItems": 1,
       "items": { "type": "string" },
       "description": "The revision set the estate is pinned to — what it runs today. Pinned handles in `thing@version` or `thing@sha256:` form.",
-      "examples": [["Compute.VM@0.3.0", "Storage.Volume@1.2.0"]]
+      "examples": [["Machine.VM@0.3.0", "Storage.Volume@1.2.0"]]
     },
     "to_revisions": {
       "type": "array",
@@ -101,8 +101,8 @@
       "uuid": "b8d1f602-3a47-4c95-9e28-51f0a7c34d6b",
       "conforms_to": "udlm/0.1",
       "corpus_ref": "sha256:9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5",
-      "from_revisions": ["Compute.VM@0.3.0"],
-      "to_revisions": ["Compute.VM@0.4.0"],
+      "from_revisions": ["Machine.VM@0.3.0"],
+      "to_revisions": ["Machine.VM@0.4.0"],
       "diff": [
         {
           "output": "instance.boot_mode",
