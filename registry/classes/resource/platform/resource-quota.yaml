@@ -1,13 +1,19 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.ResourceQuota/0.5.5
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.ResourceQuota/0.6.0
 conforms_to: udlm/0.1
 uuid: a73731ab-dbf8-45cc-a8f3-d0b9fe8d5e9a
 record_type: class
 class: type
 resource_type: Platform.ResourceQuota
 parent: Platform
-version: 0.5.5
+version: 0.6.0
 family: Resource
-status: active
+status: deprecated
+deprecation:
+  date: '2026-09-11T00:00:00Z'
+  deprecated_in_version: 0.6.0
+  reason: 'A quota never exists apart from its namespace; it is an element of KubernetesNamespace, not a class (maintainer ruling 2026-09-11, applying ADR-069).'
+  replacement_uuid: ae8d0510-221a-4500-b201-3b3e429c34e8
+  migration_guidance: 'Set `hard` on the KubernetesNamespace record (KubernetesNamespace#hard, from 1.1.0); namespace_ref is the record itself. The `hard` schema is carried over unchanged.'
 metadata:
   display_name: Resource Quota
   description: A resource quota scoped to a namespace — hard limits on aggregate resource consumption

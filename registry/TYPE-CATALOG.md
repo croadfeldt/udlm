@@ -419,7 +419,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (1.0.1)
+### KubernetesCluster (1.1.0)
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -438,11 +438,11 @@ The request for a whole container platform: which release, how many nodes of wha
 - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
 - Network.VirtualNetwork — the network the cluster is realized onto.
 - Container — the workloads scheduled onto the cluster.
-- Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
+- Software.Service (service_kind fleet-manager) — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
 
 ## KubernetesNamespace
 
-### KubernetesNamespace (1.0.0)
+### KubernetesNamespace (1.1.0)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -454,11 +454,9 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 
 **Not for:**
 - The cluster itself — KubernetesCluster.
-- The consumption limits inside the boundary — Platform.ResourceQuota constrains a namespace; it doesn't define one.
 
 **Works with:**
 - KubernetesCluster — the cluster the namespace exists within.
-- Platform.ResourceQuota — hard limits scoped to this namespace.
 - Container / Software.Service — workloads placed into it.
 
 ## KubernetesNodePool
@@ -790,7 +788,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Platform
 
-### Platform.Hub (0.3.3)
+### Platform.Hub (0.4.0)
 
 **Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
 
@@ -811,7 +809,7 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.ResourceQuota (0.5.5)
+### Platform.ResourceQuota (0.6.0)
 
 **Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
 
@@ -828,26 +826,6 @@ The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod c
 **Works with:**
 - KubernetesNamespace — the one namespace this quota constrains.
 - Container — workloads whose aggregate consumption the quota caps.
-
-### Platform.StorageClass (0.7.2)
-
-**Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
-
-The Kubernetes StorageClass construct: a named policy — its `name` and `provisioner` are required — saying which provisioner builds volumes, what happens to data on release (`reclaim_policy`), when binding happens (`volume_binding_mode`, Kubernetes-cased: `Immediate` or `WaitForFirstConsumer`), whether volumes can grow (`allow_volume_expansion`), and what the class can do (`capabilities` — IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.
-
-**Use when:**
-- You need volumes to request storage by named policy instead of naming backends.
-- You need placement to pick storage by advertised capability (encrypted, fast, replicated).
-
-**Not for:**
-- The volume itself — Storage.Volume references a class.
-- The backing storage system — Storage.Cluster; the class is the policy naming what the cluster serves.
-- Host-local pools — Storage.Pool; a class is a platform-level provisioning policy.
-
-**Works with:**
-- Storage.Volume — volumes declare their class by reference.
-- Storage.Cluster — the storage cluster backing the class.
-- Machine.VM — VM disks select a storage class.
 
 ## Security
 
@@ -893,7 +871,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## Software
 
-### Software.Service (0.7.5)
+### Software.Service (0.8.0)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -979,7 +957,27 @@ What a zone name actually means. `eu-west` is Germany and the Netherlands, under
 
 ## Storage
 
-### Storage.Cluster (0.6.2)
+### Storage.Class (0.8.0)
+
+**Purpose:** Names a storage provisioning policy — provisioner, reclaim, binding mode, capabilities — that volumes request storage by.
+
+The Kubernetes StorageClass construct: a named policy — its `name` and `provisioner` are required — saying which provisioner builds volumes, what happens to data on release (`reclaim_policy`), when binding happens (`volume_binding_mode`, Kubernetes-cased: `Immediate` or `WaitForFirstConsumer`), whether volumes can grow (`allow_volume_expansion`), and what the class can do (`capabilities` — IOPS, encryption, replication, snapshots). A volume asks for storage by naming a class; placement policies select classes by capability. Provisioner-specific parameters ride along opaquely — the provisioner interprets them, the model does not.
+
+**Use when:**
+- You need volumes to request storage by named policy instead of naming backends.
+- You need placement to pick storage by advertised capability (encrypted, fast, replicated).
+
+**Not for:**
+- The volume itself — Storage.Volume references a class.
+- The backing storage system — Storage.Cluster; the class is the policy naming what the cluster serves.
+- Host-local pools — Storage.Pool; a class is a platform-level provisioning policy.
+
+**Works with:**
+- Storage.Volume — volumes declare their class by reference.
+- Storage.Cluster — the storage cluster backing the class.
+- Machine.VM — VM disks select a storage class.
+
+### Storage.Cluster (0.6.3)
 
 **Purpose:** Models a distributed storage system serving block, file, and/or object storage — the platform volumes are provisioned from.
 
@@ -992,12 +990,12 @@ A multi-node storage system — Ceph is the reference implementation, but the te
 **Not for:**
 - A host-local pool of drives (ZFS zpool, LVM VG) — Storage.Pool; a Storage.Cluster is distributed across nodes.
 - The consumable volume — Storage.Volume, provisioned from this cluster.
-- The provisioning policy name — Platform.StorageClass; the cluster backs a class, the class is the policy record.
+- The provisioning policy name — Storage.Class; the cluster backs a class, the class is the policy record.
 
 **Works with:**
 - Machine.BareMetalHost / Machine.VM — the nodes the cluster runs across.
 - Storage.Volume — volumes provisioned from the cluster.
-- Platform.StorageClass — the class records naming what this cluster serves.
+- Storage.Class — the class records naming what this cluster serves.
 
 ### Storage.Dataset (0.5.3)
 
@@ -1039,7 +1037,7 @@ A file server's sharing surface: the protocol (SMB today, extensible to NFS), th
 - Machine.BareMetalHost / Container — where the file service runs.
 - Security.CredentialRef — service credentials (e.g. a keytab), by reference.
 
-### Storage.Layout (0.5.2)
+### Storage.Layout (0.5.3)
 
 **Purpose:** Declares the per-disk shape of a compute consumer — named, sized entries with boot designation — as its own record, so disk layout is authored once and referenced, never duplicated inside each consumer.
 
@@ -1052,7 +1050,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 
 **Not for:**
 - The consumable volume itself — Storage.Volume; a layout entry may be realized by one.
-- The provisioning policy — Platform.StorageClass; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).
+- The provisioning policy — Storage.Class; an entry requests a governed `storage_tier`, and the provider's chosen class is recorded per entry in `outputs.realized_volumes` (ADR-036: the native class is a realized fact, not intent).
 - A shared multi-consumer layout record — one record per consumer; sharing is the ADR-033 Template tier.
 - Host-local ZFS/LVM layout a host service mounts — Storage.Dataset / Storage.Pool.
 - The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage` descriptor.
@@ -1060,7 +1058,7 @@ The list of disks a machine should have: each entry names a disk (`name`, the st
 **Works with:**
 - Machine.VM — the consumer that realizes this layout (spec.layout_ref).
 - Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
-- Platform.StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map).
+- Storage.Class — the provider-advertised class satisfying an entry's `storage_tier` (an advertised class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in the realization map).
 
 ### Storage.Pool (0.4.2)
 
@@ -1084,7 +1082,7 @@ The generic redundancy group — one shape for every backend, named by the requi
 - Storage.Dataset — the datasets carved from the pool.
 - Hardware.StorageDevice — the physical member drives of the vdevs.
 
-### Storage.Volume (0.11.4)
+### Storage.Volume (0.11.5)
 
 **Purpose:** Declares a consumable persistent volume — the block or file storage a workload attaches — independent of what provisions it.
 
@@ -1095,13 +1093,13 @@ The unit of storage a workload asks for and attaches: requested `capacity`, how 
 - You need volumes ordered in the graph: realized before their consumer, never outliving their provisioning cluster.
 
 **Not for:**
-- The provisioning policy — Platform.StorageClass; the volume references a class by name.
+- The provisioning policy — Storage.Class; the volume references a class by name.
 - The storage platform — Storage.Cluster provisions volumes.
 - Host-local ZFS/LVM storage a host service mounts — Storage.Dataset.
 - The physical drive — Hardware.StorageDevice.
 
 **Works with:**
-- Platform.StorageClass — the class declaring what kind of storage the volume gets.
+- Storage.Class — the class declaring what kind of storage the volume gets.
 - Storage.Cluster — the platform provisioning it.
 - Machine.VM — the consumer(s) it attaches to.
 - Data.Database — databases whose data directory it backs.

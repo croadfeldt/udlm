@@ -1,13 +1,19 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.3.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Platform.Hub/0.4.0
 conforms_to: udlm/0.1
 uuid: e22decb9-0931-43ee-897e-6548459fd35a
 record_type: class
 class: type
 resource_type: Platform.Hub
 parent: Platform
-version: 0.3.3
+version: 0.4.0
 family: Resource
-status: active
+status: deprecated
+deprecation:
+  date: '2026-09-11T00:00:00Z'
+  deprecated_in_version: 0.4.0
+  reason: 'A hub is a fleet-management service running on a cluster, not a class of its own (maintainer ruling 2026-09-11, applying ADR-069 and T7 reduce-to-existing).'
+  replacement_uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
+  migration_guidance: 'Model the hub as a Software.Service with service_kind fleet-manager that references its host KubernetesCluster. api_endpoint becomes an entry in endpoints[]; hosted_control_planes and managed_cluster_count are derived from the spokes'' edges (contained_by = hosted/provisioned, depends_on soft = imported, ADR-043) and are not stored; hub_ready is the service''s ready output.'
 metadata:
   display_name: Hub
   description: The multi-cluster management plane (an OCM-style hub / a hosted-control-planes management

@@ -116,6 +116,7 @@ def compile_spec(cls, by_name):
         "version": cls["version"],
         "family": cls["family"],
         "status": cls["status"],
+        **({"deprecation": cls["deprecation"]} if cls.get("deprecation") else {}),   # REG-DP-004: the successor rides with the flat spec
         "metadata": {**(cls.get("metadata") or {}),
                      "generated": True,
                      "compilation_provenance": {"generator": GENERATOR_VERSION, "sources": sources}},

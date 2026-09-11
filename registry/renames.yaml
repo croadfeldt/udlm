@@ -196,3 +196,10 @@ retired:
   # 1.0.0 as new Bases. The rest of Platform (ResourceQuota, StorageClass, Hub) folds in the next change.
   registry/classes/resource/platform/namespace.yaml: registry/classes/resource/kubernetes-namespace/_base.yaml
   registry/classes/resource/platform/node-pool.yaml: registry/classes/resource/kubernetes-node-pool/_base.yaml
+
+  # 2026-09-11 — Platform dissolves (maintainer ruling; ADR-068/069). StorageClass moves under Storage:
+  # a storage class is published by a storage provider and selected by a volume, never ordered, and it
+  # is where the provider reports tier and capabilities. Hub and ResourceQuota are DEPRECATED with
+  # successors (Software.Service fleet-manager; KubernetesNamespace#hard) rather than deleted —
+  # registry-governance REG-DP-004 — and stay at their paths until the sunset window closes.
+  registry/classes/resource/platform/storage-class.yaml: registry/classes/resource/storage/class.yaml

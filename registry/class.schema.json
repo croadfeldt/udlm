@@ -165,7 +165,7 @@
       "relationships": [
         {
           "edge_type": "binds_to",
-          "target": "Platform.StorageClass",
+          "target": "Storage.Class",
           "target_field": "name",
           "cardinality": "0..1",
           "description": "EXAMPLE — consumer-declared: this provider class consumes the advertised storage class it schedules volumes onto (declared HERE, on the consumer — the target never lists its consumers)."
@@ -293,6 +293,38 @@
         "retired"
       ],
       "description": "Lifecycle status of the Class definition itself."
+    },
+    "deprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "reason",
+        "migration_guidance"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+          "description": "RFC 3339 instant, normalized to UTC ('Z'), seconds precision minimum (common-elements.md §Timestamps). The producing clock is attributed via the nearest time_source."
+        },
+        "reason": {
+          "type": "string"
+        },
+        "replacement_uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "migration_guidance": {
+          "type": "string"
+        },
+        "deprecated_in_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "ENTITY version at which deprecation was declared (Redfish 'versionDeprecated' analog) — lets consumers know how long an element has been deprecated relative to the version they consume."
+        }
+      },
+      "description": "REQUIRED when status is deprecated or retired (registry-governance REG-DP-004: a deprecation declares a successor or explicit migration guidance). Same shape as the flat spec's `deprecation`; the generator carries it through."
     },
     "instantiable": {
       "type": "boolean",

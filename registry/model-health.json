@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4770,
-    "mutations_rejected": 4770,
+    "mutations_attempted": 4801,
+    "mutations_rejected": 4801,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -100,8 +100,8 @@
         "rejected": 104
       },
       "KubernetesNamespace": {
-        "attempted": 40,
-        "rejected": 40
+        "attempted": 71,
+        "rejected": 71
       },
       "KubernetesNodePool": {
         "attempted": 110,
@@ -175,10 +175,6 @@
         "attempted": 48,
         "rejected": 48
       },
-      "Platform.StorageClass": {
-        "attempted": 88,
-        "rejected": 88
-      },
       "Security.CredentialRef": {
         "attempted": 70,
         "rejected": 70
@@ -202,6 +198,10 @@
       "SovereigntyZone": {
         "attempted": 46,
         "rejected": 46
+      },
+      "Storage.Class": {
+        "attempted": 88,
+        "rejected": 88
       },
       "Storage.Cluster": {
         "attempted": 72,
@@ -291,13 +291,13 @@
       "Observability.LogShipper": 3,
       "Platform.Hub": 3,
       "Platform.ResourceQuota": 1,
-      "Platform.StorageClass": 1,
       "Security.CredentialRef": 3,
       "Security.DirectoryService": 3,
       "Software.Service": 1,
       "SoftwareImage": 0,
       "SoftwarePackage": 0,
       "SovereigntyZone": 0,
+      "Storage.Class": 1,
       "Storage.Cluster": 3,
       "Storage.Dataset": 1,
       "Storage.FileShare": 1,
@@ -338,8 +338,8 @@
       "Network.VLAN",
       "Network.VirtualNetwork",
       "Platform.ResourceQuota",
-      "Platform.StorageClass",
       "Software.Service",
+      "Storage.Class",
       "Storage.Dataset",
       "Storage.FileShare",
       "Storage.Layout",
@@ -393,14 +393,12 @@
       "Network.IPAddressPool",
       "Network.VirtualNetwork",
       "Observability.LogShipper",
-      "Platform.Hub",
-      "Platform.ResourceQuota",
-      "Platform.StorageClass",
       "Security.CredentialRef",
       "Security.DirectoryService",
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
+      "Storage.Class",
       "Storage.Dataset",
       "Storage.FileShare",
       "Storage.Pool",
@@ -428,6 +426,8 @@
       "Network.Subnet",
       "Network.Switch",
       "Network.VLAN",
+      "Platform.Hub",
+      "Platform.ResourceQuota",
       "SovereigntyZone",
       "Storage.Cluster",
       "Storage.Layout",
@@ -496,13 +496,13 @@
       "Observability.LogShipper",
       "Platform.Hub",
       "Platform.ResourceQuota",
-      "Platform.StorageClass",
       "Security.CredentialRef",
       "Security.DirectoryService",
       "Software.Service",
       "SoftwareImage",
       "SoftwarePackage",
       "SovereigntyZone",
+      "Storage.Class",
       "Storage.Cluster",
       "Storage.Dataset",
       "Storage.FileShare",
