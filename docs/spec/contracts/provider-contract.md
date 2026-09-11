@@ -110,11 +110,14 @@ provider_base_registration:
     owned_by: { display_name: "<team>" }
 
   # ONE DECLARATION, TWO PROJECTIONS (maintainer ruling 2026-08-03; ADR-038 addendum): the
-  # capability content below is a PROJECTION of the provider's registered Classes
-  # (registry/classes/ — Resource- and Process-family Provider Classes). Registration PRESENTS
-  # those classes as what the provider can support; the same declarations BECOME the catalog
-  # items presented for consumption. The class is the authored artifact; this payload and the
-  # catalog are two renderings of it. Wire shape unchanged.
+  # capability content below is a PROJECTION of the classes the provider binds to
+  # (registry/classes/). A provider binds at a Base or a Type — Machine.VM, Automation.OSPatch —
+  # and authors a Provider Class only when its offering needs data the Type does not carry
+  # (CLS-005, docs/spec/foundations/class-tiers.md). Declaring at a tier accepts orders at every
+  # tier above it: a provider bound to Machine.VM satisfies a bare Machine order (CLS-002 (c)).
+  # Registration PRESENTS those bindings as what the provider can support; the same declarations
+  # BECOME the catalog items presented for consumption. The class is the authored artifact; this
+  # payload and the catalog are two renderings of it. Wire shape unchanged.
   capabilities: [<verb × domain>, ...]   # the declared capability set (ADR-PROV-002); the accepted
                                          # capabilities/categories are governed by the Capability &
                                          # Category Registry (§9). provider_type, if present, is a
@@ -555,9 +558,12 @@ GET  {capabilities_endpoint}                  # return available options (networ
 **Capability declaration extension:**
 ```yaml
 service_provider_capabilities:
-  resource_types:                       # PROJECTION of the provider's Resource-family Provider
-                                        # Classes (one per class; the class is authored, this
-                                        # list is rendered — ADR-038 addendum)
+  resource_types:                       # PROJECTION of the Resource-family classes the provider
+                                        # binds to — a Base or a Type as listed, a Provider Class
+                                        # only where the offering carries provider-specific data
+                                        # (CLS-005); the class is authored, this list is rendered
+                                        # (ADR-038 addendum). Binding at a tier accepts orders at
+                                        # every tier above it (CLS-002 (c)).
     - fqn: Machine.VM
       spec_version: "2.1.0"
       catalog_item_uuid: <uuid>
@@ -811,7 +817,7 @@ POST {cancel_endpoint}/{job_id}  # cancel running execution (if supported)
 **Capability declaration extension:**
 ```yaml
 process_provider_capabilities:
-  supported_definitions:     # PROJECTION of the provider's Process-family Provider Classes (Automation.OSPatch.EngineBlue pattern) — the classes are authored, this list is rendered
+  supported_definitions:     # PROJECTION of the Process-family classes the provider binds to — the Type (Automation.OSPatch) when the engine needs nothing beyond it, a Provider Class (Automation.OSPatch.EngineBlue) only for engine-specific data (CLS-005); the classes are authored, this list is rendered
     - "Automation.OSPatch"
     - "Automation.Backup"
     - "Automation.ComplianceScan"
