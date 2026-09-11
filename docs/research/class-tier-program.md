@@ -29,77 +29,77 @@ Sizes are estimates against the reference point of PR #568, which swept 121 refe
 53 files for +268/−359. The cap is 3,000 lines and one subject per PR; any entry that overflows
 splits at the line marked.
 
-### PR 0 — land what is open
+**Reordered 2026-09-10.** `Machine` now lands third instead of fifth. The first order had the
+`Compute` rename waiting on the whole `Platform` dissolution; the only real dependency is that
+`Compute.Cluster` leaves `Compute` first, and that is one small PR. The register row 069 that
+rewords the Base test landed with PR 1 rather than before #569 merged, because #569 merged with
+the old clause.
+
+### PR 0 — land what was open ✔
+
+#568 (`Container` Base) and #569 (the 068 register row) merged 2026-09-10. #569 carries the old
+test clause; row 069 in PR 1 supersedes it.
+
+### PR 1 — the normative tier section and its two schema fields (#572)
 
 | | |
 |---|---|
-| Content | merge #568 (`Container` Base) and #569 (the 068 register row) |
-| Change first | reword #569's test clause to *"A Base Class is a deliverable that any member can realize: a resource declared at the Base must be satisfiable by every provider that declares an offering beneath it."* The applied clauses stand |
+| Content | the class-tiers spec document under docs/spec/foundations (`CLS-001`–`CLS-008`): the three tiers; the three Base conditions; the Type-axis rule; offerings earn a Provider Class; folder Bases are non-instantiable; a technology's name appears only when it is the contract; the `short_name` rule. Register row 069 |
+| Schema | `instantiable` (Base only, default true) and `short_name` on `registry/class.schema.json` |
+| Gates | a short-names gate under tests/: short names unique case-insensitively, never in a stored reference; `instantiable` only on a Base. Condition (b) is enforced by the existing Liskov gate plus the absence of an exclusion mechanism, so no separate gate |
+| Tooling | `registry/tools/resolve_class_address.py` accepts a short name and canonicalizes it |
 | Depends on | nothing |
-| Owner | maintainer; both merges are the maintainer's call |
 
-### PR 1 — the normative tier section and its two schema fields
-
-The centre of the program. It lands first so every later PR cites a rule that exists instead of
-an ADR that cannot be corrected.
+### PR 2 — `Compute.Cluster` becomes the `KubernetesCluster` Base
 
 | | |
 |---|---|
-| Content | a normative section in `docs/spec/foundations/` defining Base / Type / Provider Class; the three Base conditions; the Type-axis rule; offerings earn a Provider Class; folder Bases are non-instantiable; a technology's name appears only when it is the contract (Kubernetes, OCI, Redfish), never a vendor's; the `short_name` rule |
-| Schema | `instantiable` (boolean, default true) and `short_name` (string, `resource_type` pattern) on `registry/class.schema.json` |
-| Gates | **honorable-elements**: no Type or Provider Class leaves a Base element unhonorable — pairs with the Liskov check. **short-name uniqueness**: unique, case-insensitive, against every canonical name, every other short name, and every old name in `registry/renames.yaml`. **stored-canonical**: no short name in `$id`, `parent`, `scope`, an edge `target`, or an offering list |
-| Tooling | a resolver that accepts a canonical or short name at every input surface and canonicalizes on write |
-| Also | `registry-governance.md` stops delegating the model to ADR-038 and cites the section |
-| Size | ~300 lines of spec, ~60 of schema, ~250 of gates; no class records touched |
-| Depends on | PR 0 (cites the reworded row) |
+| Content | `registry/classes/resource/compute/cluster.yaml` moves to the kebab-cased Base path under registry/classes/resource (kubernetes-cluster/_base.yaml); `class: base`, no parent, version 1.0.0, same uuid; description states the contract (Kubernetes conformance) and that Types will be distributions |
+| Sweep | 98 references outside `docs/adr/` and `docs/research/`; 8 citing class records patch-bumped with `$id` in step; `renames.yaml`; regenerate class specs, type catalog, pin manifest, model health |
+| Not yet | `short_name: K8sCluster` waits for PR 1's schema field; PR 4 adds it |
+| Depends on | nothing (schema unchanged) |
 
-### PR 2 — folder Bases become non-instantiable
+### PR 3 — `Compute` becomes `Machine`
 
 | | |
 |---|---|
-| Content | `instantiable: false` and a one-line "what this groups" replacing "Empty category base — the promotion target" on `Storage`, `Data`, `Network`, `Security`, `Observability`, `Software`, `Facility`, `Hardware` |
-| Bump | minor on each: description-only by the letter, but it changes what the Base means (survey D5) |
-| Regenerate | class specs, type catalog, pin manifest (reset from `origin/main` first), model health |
-| Size | 8 records plus generated output; small |
-| Depends on | PR 1 (the field) |
-
-### PR 3 — `Platform` dissolves into the Kubernetes Bases
-
-| | |
-|---|---|
-| Content | `Compute.Cluster` → `KubernetesCluster` (Base, `short_name: K8sCluster`); `Platform.Namespace` → `KubernetesNamespace` (`K8sNamespace`); `Platform.NodePool` → `KubernetesNodePool` (`K8sNodePool`); `Platform.ResourceQuota` folds into namespace elements; `Platform.StorageClass` becomes a storage output; `Platform.Hub` becomes `fleet_manager` / `hosted_control_planes` role elements on the cluster; `Platform` deleted |
-| Also | `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (a class): keep the class, the inline array becomes references — T7 reduce-to-existing |
-| Sweep | 98 `Compute.Cluster` and 193 `Platform.*` references outside `docs/adr/`; every rename in `renames.yaml`; every citing record patch-bumped with `$id` in step; regenerate |
-| Size | at the cap. **Split line:** 3a = cluster rename + node-pool reference; 3b = namespace and node-pool promotion, the three folds, and the `Platform` delete |
-| Depends on | PR 1 (short names, gates) |
-
-### PR 4 — `Compute` becomes `Machine`
-
-| | |
-|---|---|
-| Content | `Compute` → `Machine`; `Compute.VM` → `Machine.VM`; `Compute.BareMetalHost` → `Machine.BareMetalHost` (`short_name: Machine.BMH`); guest firmware converges on Redfish `legacy` / `uefi` — VM's `bios` and BareMetalHost's `boot_mode` become one element; the `vm_firmware` vocabulary declaration is dropped and the enum is sole authority (closes #564); `Storage.Cluster`'s two `depends_on` edges follow |
+| Content | `Compute` → `Machine`; `Compute.VM` → `Machine.VM`; `Compute.BareMetalHost` → `Machine.BareMetalHost`; guest firmware converges on Redfish `legacy` / `uefi` — VM's `bios` and BareMetalHost's `boot_mode` become one element; the `vm_firmware` vocabulary declaration is dropped and the enum is sole authority (closes #564); `Storage.Cluster`'s two `depends_on` edges follow. The examples in `class-tiers.md` sweep to `Machine.*`; the history sentence about why `Compute` failed keeps its name |
 | New | `Machine.LPAR` Type: processor units, capped or uncapped sharing, VIOS-backed I/O; Redfish has no LPAR profile, so the elements are named from the HMC vocabulary and marked `conditional` |
 | Bump | MAJOR on `Machine.VM` (firmware rename); minor elsewhere |
-| Size | comparable to #568 |
-| Depends on | PR 3 (so `Compute` is empty of everything but VM and BareMetalHost when it renames) |
+| Short names | `Machine.BMH` once PR 1 has landed; otherwise a follow-up |
+| Depends on | PR 2 |
 
-### PR 5 — the provider contract describes itself correctly
+### PR 4 — `Platform` dissolves into the remaining Kubernetes Bases
+
+| | |
+|---|---|
+| Content | `Platform.Namespace` → `KubernetesNamespace` (`K8sNamespace`); `Platform.NodePool` → `KubernetesNodePool` (`K8sNodePool`); `Platform.ResourceQuota` folds into namespace elements; `Platform.StorageClass` becomes a storage output; `Platform.Hub` becomes `fleet_manager` / `hosted_control_planes` role elements on `KubernetesCluster`; `Platform` deleted; `KubernetesCluster` gains `short_name: K8sCluster` |
+| Also | `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (a class): keep the class, the inline array becomes references — T7 reduce-to-existing |
+| Sweep | 193 `Platform.*` references outside `docs/adr/` |
+| Size | near the cap. **Split line:** 4a = namespace and node-pool promotion; 4b = the three folds and the `Platform` delete |
+| Depends on | PR 1 (short names), PR 2 |
+
+### PR 5 — folder Bases become non-instantiable
+
+| | |
+|---|---|
+| Content | `instantiable: false` and a one-line "what this groups" on `Storage`, `Data`, `Network`, `Security`, `Observability`, `Software`, `Facility`, `Hardware` |
+| Bump | minor on each |
+| Depends on | PR 1 (the field) |
+
+### PR 6 — the provider contract describes itself correctly
 
 | | |
 |---|---|
 | Content | both projection comments in `docs/spec/contracts/provider-contract.md` say "PROJECTION of … Provider Classes" and list Types. Rewrite to: a provider binds at Base or Type; a Provider Class exists only for provider-specific data; declaring at a tier accepts orders at every tier above |
-| Size | prose only; small |
-| Depends on | PR 1 (cites the section) |
+| Depends on | PR 1 |
 
-### PR 6 — amend ADR-038
-
-Last, because an Accepted ADR is amended by addendum and the addendum should cite settled text.
+### PR 7 — amend ADR-038
 
 | | |
 |---|---|
-| Content | addendum recording that the depth cap is three and already enforced by the `resource_type` pattern (the prose says "unbounded, but governed"); that the tier definitions now live in the spec section; that offerings can earn a Provider Class; and that "all Classes are instantiable" is qualified by `instantiable: false` |
-| Size | one addendum |
-| Depends on | PRs 1–5 |
+| Content | addendum: the depth cap is three and already enforced by the `resource_type` pattern; the tier definitions live in `class-tiers.md`; offerings can earn a Provider Class; "all Classes are instantiable" is qualified by `instantiable: false` |
+| Depends on | PRs 1–6 |
 
 ## Gaps recorded, not built
 
