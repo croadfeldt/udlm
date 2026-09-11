@@ -171,7 +171,7 @@ the requirement range + the provider matrix are the implementor's inputs; Policy
 
 ## 5. Worked example — cost (FOCUS + OpenCost)
 
-- **Identity:** the `Compute.Cluster` resource's `uuid`/handle ↔ FOCUS `ResourceId`. UDLM owns this.
+- **Identity:** the `KubernetesCluster` resource's `uuid`/handle ↔ FOCUS `ResourceId`. UDLM owns this.
 - **Provider matrix:** the cost-SP (`dcm#57`) declares `FOCUS supports ">=1.2 <2.0" preferred 1.4`,
   `OpenCost supports "1.x"` — emit direction.
 - **Requirement:** a chargeback view needs allocation columns → requires `FOCUS >=1.3`.

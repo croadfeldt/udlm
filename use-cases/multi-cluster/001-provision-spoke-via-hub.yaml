@@ -6,7 +6,7 @@ scenario:
     \ capable) provisions the spoke and hosts its control plane. The request binds on the hub's realized\
     \ outputs (hub_ready) before dispatch; the resulting spoke is contained_by the hub \u2014 the hub\
     \ has lifecycle authority, and shutdown ordering tears spokes down before the hub. This stresses the\
-    \ hub-provisioned topology end to end: intent against Platform.Hub, a Compute.Cluster realized under\
+    \ hub-provisioned topology end to end: intent against Platform.Hub, a KubernetesCluster realized under\
     \ it, the containment edge authored by realization."
   actor:
     persona: platform-engineer

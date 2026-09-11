@@ -2,7 +2,7 @@ uuid: uc-0741a98b-92ca-489f-85f3-2dc0ef2898cc
 handle: compute/provision-compute-cluster
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Compute.Cluster by intent — a node count and a Kubernetes
+  description: 'A platform engineer requests a KubernetesCluster by intent — a node count and a Kubernetes
     version — without naming individual nodes, a control-plane host, or provider-native cluster internals.
     The compute provider provisions the control plane and the declared number of worker nodes at the declared
     version, and the cluster reaches Realized with those properties published on its outputs (Kubernetes

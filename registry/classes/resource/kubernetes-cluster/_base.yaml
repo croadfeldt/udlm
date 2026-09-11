@@ -1,25 +1,27 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.Cluster/0.5.4
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/1.0.0
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
-class: type
-resource_type: Compute.Cluster
-parent: Compute
-version: 0.5.4
+class: base
+resource_type: KubernetesCluster
+version: 1.0.0
 family: Resource
 status: active
 metadata:
-  display_name: Cluster
-  description: A managed Kubernetes cluster with one or more node pools and a network. Derived from OSAC's
-    `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent
-    contract a provider (e.g. OSAC Cluster Fulfillment via a fleet-manager hub + hosted control planes)
-    realizes. Target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship
-    semantics).
+  display_name: Kubernetes cluster
+  description: 'A Kubernetes cluster as one orderable deliverable — release, node pools, and network ranges.
+    A Base Class in its own right (ADR-068): its contract is the Kubernetes API, which every
+    conformant distribution honors, so an order placed here can be realized by any provider offering
+    one. Named for the standard, never for a product — distributions (OpenShift, EKS, k3s, …) are the
+    Type tier beneath it and offerings the Provider tier. `pod_cidr`/`service_cidr` are Kubernetes
+    vocabulary, which is why this left `Compute`: a VM or a bare-metal host cannot honor them. Derived
+    from OSAC''s `cluster` fulfillment type (osac-project/fulfillment-service); target
+    Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).'
   maintainer: udlm-registry
   origination_timestamp: '2026-06-17T19:57:00Z'
 elements:
 - element: release
-  scope: Compute.Cluster
+  scope: KubernetesCluster
   optional: false
   state: canonical
   description: Platform release, e.g. 1.30 (a Kubernetes minor release) or a distribution's release stream.
@@ -28,10 +30,10 @@ elements:
     description: Platform release, e.g. 1.30 (a Kubernetes minor release) or a distribution's release
       stream.
 - element: node_pools
-  scope: Compute.Cluster
+  scope: KubernetesCluster
   optional: false
   state: canonical
-  description: Converted verbatim from the flat Compute.Cluster spec.
+  description: Converted verbatim from the flat cluster spec.
   schema:
     type: array
     minItems: 1
@@ -58,10 +60,10 @@ elements:
             pool; the provider maps it to a concrete node shape at naturalization (common-elements §2.2,
             ADR-014).
 - element: network
-  scope: Compute.Cluster
+  scope: KubernetesCluster
   optional: true
   state: canonical
-  description: Converted verbatim from the flat Compute.Cluster spec.
+  description: Converted verbatim from the flat cluster spec.
   schema:
     type: object
     properties:

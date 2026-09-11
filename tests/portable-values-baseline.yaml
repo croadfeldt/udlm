@@ -17,7 +17,7 @@ known:
   element: instance_size
 - resource_type: Compute.BareMetalHost
   element: architecture
-- resource_type: Compute.Cluster
+- resource_type: KubernetesCluster
   element: release
 - resource_type: Facility.Location
   element: position

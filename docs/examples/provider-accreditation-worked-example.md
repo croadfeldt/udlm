@@ -30,7 +30,7 @@ A **capability** is the versioned, accreditable unit (`capability_uuid` + `versi
 |---|---|
 | **Virtual Machine Lifecycle** `44e7eb3d…` | `realize_resources/Compute` (Compute.VM) · `…/Network` (IPAddress, VirtualNetwork) · `…/Storage` (Volume) |
 | **Container Lifecycle** `a26c91c8…` | `realize_resources/Container` (Container) · `…/Network` · `…/Storage` |
-| **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (Compute.Cluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
+| **Cluster Lifecycle** `31aa387c…` | `realize_resources/Compute` (KubernetesCluster) · `…/Network` (VirtualNetwork, Gateway) · `…/Storage` (Volume, Cluster) |
 
 So "full lifecycle of X and all its constituent capabilities" = **one capability that spans the
 categories X is built from**. Operational primitives (drain, online-migrate, rolling-update, rehearsal)
@@ -85,7 +85,7 @@ they carry no per-category override and inherit the provider default):
 
     { "capability_uuid": "31aa387c-…", "version": "1.0.0", "name": "Cluster Lifecycle",
       "categories": [
-        { "category": "realize_resources/Compute", "resource_types": ["Compute.Cluster"],
+        { "category": "realize_resources/Compute", "resource_types": ["KubernetesCluster"],
           "operational_capability": { "drain": true, "rolling_update": true, "maintenance_mode": true, "rehearsal_support": ["rehearsal"] } },
         { "category": "realize_resources/Network", "resource_types": ["Network.VirtualNetwork","Network.Gateway"] },
         { "category": "realize_resources/Storage", "resource_types": ["Storage.Volume","Storage.Cluster"] } ] }

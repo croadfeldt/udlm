@@ -116,27 +116,6 @@ One physical server: its identity (serial, model, asset tag), its aggregate capa
 - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
 - Compute.VM — the guests the host runs.
 
-### Compute.Cluster (0.5.4)
-
-**Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
-
-The request for a whole container platform: which release, how many nodes of what shape in which pools, and what internal network ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.
-
-**Use when:**
-- You need to request a new Kubernetes cluster with a declared release and node shape rather than hand-building one.
-- You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive.
-
-**Not for:**
-- A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.
-- A group of nodes inside an existing cluster — that is Platform.NodePool (this spec also carries inline node_pools; single ownership between the two is an open decision).
-
-**Works with:**
-- Platform.Namespace — the isolation boundaries carved inside the cluster.
-- Platform.NodePool — homogeneous slices of the cluster's node capacity.
-- Network.VirtualNetwork — the network the cluster is realized onto.
-- Container — the workloads scheduled onto the cluster.
-- Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
-
 ### Compute.VM (1.5.5)
 
 **Purpose:** Declares a virtual machine — sizing, guest OS, storage requirements, network attachments, placement — as portable intent any virtualization provider can realize.
@@ -163,7 +142,7 @@ The request for one VM: how big — a named size class (`instance_size`), or exp
 
 ## Container
 
-### Container (1.0.0)
+### Container (1.0.1)
 
 **Purpose:** Declares one container workload — image, resources, environment, mounts, ports — for a provider to run.
 
@@ -179,14 +158,14 @@ A single containerized workload: the `image` it runs, the `resources` it needs (
 - A one-shot automation task with a bounded runtime — that is Automation.Job.
 
 **Works with:**
-- Compute.Cluster / Compute.BareMetalHost — exactly one of them is where the container runs.
+- KubernetesCluster / Compute.BareMetalHost — exactly one of them is where the container runs.
 - Security.CredentialRef — every secret the container consumes, by reference only.
 - SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.
 - Data.Database — connection outputs the container binds to.
 
 ## Data
 
-### Data.Database (0.7.5)
+### Data.Database (0.7.6)
 
 **Purpose:** Declares a managed relational database instance and publishes the connection facts other resources bind to.
 
@@ -202,7 +181,7 @@ The request for a database: engine (e.g. postgres), a version that may be concre
 
 **Works with:**
 - Storage.Volume — the persistent volume backing the data directory.
-- Compute.VM / Compute.Cluster — where the database runs, when self-hosted.
+- Compute.VM / KubernetesCluster — where the database runs, when self-hosted.
 - Software.Service / Container — the consumers that bind to its connection outputs.
 
 ## Facility
@@ -487,6 +466,29 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 - Automation.OSPatch — a definition this executes (executes_definition)
 - Automation.OSPatch.EngineBlue / EngineGreen — the engines a provider realizes the run through
 
+## KubernetesCluster
+
+### KubernetesCluster (1.0.0)
+
+**Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
+
+The request for a whole container platform: which release, how many nodes of what shape in which pools, and what internal network ranges it uses. A provider (e.g. hosted control planes behind a management hub) turns this into a running cluster and publishes back the API URL, console URL, and admin access that everything deployed onto the cluster then uses. Namespaces, quotas, node pools, and workloads all hang off a cluster record.
+
+**Use when:**
+- You need to request a new Kubernetes cluster with a declared release and node shape rather than hand-building one.
+- You need cluster-scoped resources (namespaces, node pools, storage classes) to have a single parent record they cannot outlive.
+
+**Not for:**
+- A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.
+- A group of nodes inside an existing cluster — that is Platform.NodePool (this spec also carries inline node_pools; single ownership between the two is an open decision).
+
+**Works with:**
+- Platform.Namespace — the isolation boundaries carved inside the cluster.
+- Platform.NodePool — homogeneous slices of the cluster's node capacity.
+- Network.VirtualNetwork — the network the cluster is realized onto.
+- Container — the workloads scheduled onto the cluster.
+- Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
+
 ## Network
 
 ### Network.AddressService (0.6.2)
@@ -665,7 +667,7 @@ One physical L2/L3 switch: chassis identity keyed by its LLDP chassis id (normal
 - Facility.PowerFeed — the power the switch draws; UPS-backed fabric stops last.
 - Network.VLAN — segments carried on the fabric, including the referenced management VLAN.
 
-### Network.VLAN (0.5.3)
+### Network.VLAN (0.5.4)
 
 **Purpose:** Names a network segment — an 802.1Q VLAN or an overlay VNI — once, as the shared object everything that rides it references.
 
@@ -685,7 +687,7 @@ The segment itself: its `encapsulation` — spelled `vlan` for an 802.1Q tag, `v
 - Network.Switch — the fabric carrying the segment.
 - Network.Gateway — edge segments each ride a referenced VLAN.
 
-### Network.VirtualNetwork (0.8.3)
+### Network.VirtualNetwork (0.8.4)
 
 **Purpose:** Models the attachment point workloads plug into — the host- or cluster-scoped network a guest names when it says attach me here.
 
@@ -701,7 +703,7 @@ The network a VM's or pod's NIC attaches to: a libvirt network, a Kubernetes Net
 - Per-guest NIC intent — that lives on Compute.VM's own networks list.
 
 **Works with:**
-- Compute.VM / Compute.Cluster — the guests that attach, and the scope that hosts the network.
+- Compute.VM / KubernetesCluster — the guests that attach, and the scope that hosts the network.
 - Network.VLAN — the underlying segment, selected by reference.
 - Hardware.NetworkInterface — the supporting bridge or uplink on the host.
 - Network.IPAddressPool — the address pool scoped to this segment.
@@ -728,7 +730,7 @@ A statement of outcome: logs from a target host — the `target` object naming i
 
 ## Platform
 
-### Platform.Hub (0.3.2)
+### Platform.Hub (0.3.3)
 
 **Purpose:** The multi-cluster management plane: the thing that provisions, imports, and lifecycle-manages a fleet of clusters.
 
@@ -740,16 +742,16 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - you need the management plane's own sovereignty position (which jurisdiction governs the manager, distinct from its spokes)
 
 **Not for:**
-- the cluster a hub happens to run on — that host is a plain Compute.Cluster, and hub-ness on it is a derived role marker, never authored
+- the cluster a hub happens to run on — that host is a plain KubernetesCluster, and hub-ness on it is a derived role marker, never authored
 - single-cluster platform services (GitOps controllers, ingress operators) — those are Software.Service on the cluster
 - a peer control plane instance in federation — that is the federate capability on the provider contract, not a Hub
 
 **Works with:**
-- Compute.Cluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster
+- KubernetesCluster — spokes point at the hub (contained_by when hub-provisioned/hosted-control-plane; depends_on soft when imported), and a hosted hub points contained_by at its own host cluster
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.Namespace (0.5.4)
+### Platform.Namespace (0.5.5)
 
 **Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
 
@@ -760,15 +762,15 @@ What Kubernetes calls a Namespace (and some distributions overlay as a project):
 - You need quota and placement policy to operate on a governed namespace record, not an ad-hoc string.
 
 **Not for:**
-- The cluster itself — Compute.Cluster.
+- The cluster itself — KubernetesCluster.
 - The consumption limits inside the boundary — Platform.ResourceQuota constrains a namespace; it doesn't define one.
 
 **Works with:**
-- Compute.Cluster — the cluster the namespace exists within.
+- KubernetesCluster — the cluster the namespace exists within.
 - Platform.ResourceQuota — hard limits scoped to this namespace.
 - Container / Software.Service — workloads placed into it.
 
-### Platform.NodePool (0.5.3)
+### Platform.NodePool (0.5.4)
 
 **Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
 
@@ -779,11 +781,11 @@ A named group of like nodes in a cluster — its `name` is required: how many (`
 - You need placement to select capacity by declared capability (architecture, memory tier) rather than by node names.
 
 **Not for:**
-- The cluster — Compute.Cluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).
+- The cluster — KubernetesCluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).
 - One physical machine — Compute.BareMetalHost; a pool is a cluster-level grouping, not a host record.
 
 **Works with:**
-- Compute.Cluster — the cluster the pool belongs to.
+- KubernetesCluster — the cluster the pool belongs to.
 - Platform.Namespace — namespaces whose workloads schedule onto pools.
 
 ### Platform.ResourceQuota (0.5.4)
@@ -868,7 +870,7 @@ The identity directory as a running server: which `protocols` it serves — requ
 
 ## Software
 
-### Software.Service (0.7.3)
+### Software.Service (0.7.4)
 
 **Purpose:** Models a logical running service — one or more containers and/or systemd units acting as one thing — so application-level dependencies carry order.
 
@@ -886,7 +888,7 @@ The application layer: the mail service, the registry, model serving — a named
 
 **Works with:**
 - Container — containerized constituents, by reference.
-- Compute.Cluster / Compute.BareMetalHost / Compute.VM — where the constituents run.
+- KubernetesCluster / Compute.BareMetalHost / Compute.VM — where the constituents run.
 - Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
 - Security.CredentialRef — the service's secrets, by reference.
 
