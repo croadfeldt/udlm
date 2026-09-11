@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/1.0.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/1.0.1",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
   "resource_type": "KubernetesCluster",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "KubernetesCluster",
-          "version": "1.0.0",
+          "version": "1.0.1",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -183,11 +183,11 @@
     ],
     "not_for": [
       "A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.",
-      "A group of nodes inside an existing cluster — that is Platform.NodePool (this spec also carries inline node_pools; single ownership between the two is an open decision)."
+      "A group of nodes inside an existing cluster — that is KubernetesNodePool (this spec also carries inline node_pools; single ownership between the two is an open decision)."
     ],
     "works_with": [
-      "Platform.Namespace — the isolation boundaries carved inside the cluster.",
-      "Platform.NodePool — homogeneous slices of the cluster's node capacity.",
+      "KubernetesNamespace — the isolation boundaries carved inside the cluster.",
+      "KubernetesNodePool — homogeneous slices of the cluster's node capacity.",
       "Network.VirtualNetwork — the network the cluster is realized onto.",
       "Container — the workloads scheduled onto the cluster.",
       "Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target"

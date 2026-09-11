@@ -2,7 +2,7 @@ uuid: uc-0ad9d534-585e-437f-a77e-45085db215db
 handle: platform/provision-namespace-with-quota
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Platform.Namespace by intent alone — the isolation boundary
+  description: 'A platform engineer requests a KubernetesNamespace by intent alone — the isolation boundary
     workloads are placed into — together with a Platform.ResourceQuota that caps its aggregate consumption
     (CPU, memory, pods, storage). The quota references the namespace it bounds as a first-class edge; the
     request names no cluster-native object, admission controller, or provider handle. The platform provider

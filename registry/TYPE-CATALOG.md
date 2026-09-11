@@ -259,7 +259,7 @@ A named set of BIOS settings, written once and applied to many hosts. The attrib
 - Hardware.BiosProfile — an optional base profile this one derives from.
 - Hardware.BMC — the out-of-band path the profile is applied through.
 
-### Hardware.GraphicsProcessor (0.5.2)
+### Hardware.GraphicsProcessor (0.5.3)
 
 **Purpose:** Inventories a GPU or accelerator — physical card, whole-GPU passthrough, or a vGPU/MIG partition — as a component of its host or guest.
 
@@ -271,7 +271,7 @@ One GPU as a component record. The same type covers three shapes, distinguished 
 
 **Not for:**
 - CPU sockets — Hardware.Processor.
-- Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. Platform.NodePool capabilities), not a GPU component record.
+- Requesting GPU capacity for a workload — that is placement against advertised capability (e.g. KubernetesNodePool capabilities), not a GPU component record.
 
 **Works with:**
 - Machine.BareMetalHost — the host the physical card is installed in.
@@ -419,7 +419,7 @@ A Job is one run. Starting something means submitting intent for a Job bound to 
 
 ## KubernetesCluster
 
-### KubernetesCluster (1.0.0)
+### KubernetesCluster (1.0.1)
 
 **Purpose:** Declares a managed Kubernetes cluster — release, node pools, and network ranges — as one provisionable intent.
 
@@ -431,14 +431,55 @@ The request for a whole container platform: which release, how many nodes of wha
 
 **Not for:**
 - A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration platform.
-- A group of nodes inside an existing cluster — that is Platform.NodePool (this spec also carries inline node_pools; single ownership between the two is an open decision).
+- A group of nodes inside an existing cluster — that is KubernetesNodePool (this spec also carries inline node_pools; single ownership between the two is an open decision).
 
 **Works with:**
-- Platform.Namespace — the isolation boundaries carved inside the cluster.
-- Platform.NodePool — homogeneous slices of the cluster's node capacity.
+- KubernetesNamespace — the isolation boundaries carved inside the cluster.
+- KubernetesNodePool — homogeneous slices of the cluster's node capacity.
 - Network.VirtualNetwork — the network the cluster is realized onto.
 - Container — the workloads scheduled onto the cluster.
 - Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on (soft) when imported; a cluster hosting a hub is just its contained_by target
+
+## KubernetesNamespace
+
+### KubernetesNamespace (1.0.0)
+
+**Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
+
+What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. Its `name` is required and authored as intent — the same name is published back at realization alongside the platform UID. It binds a tenant (`tenant_uuid`), references its cluster (`cluster_ref`), carries `labels` and `annotations`, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in.
+
+**Use when:**
+- You need workloads partitioned per tenant, team, or environment inside a shared cluster.
+- You need quota and placement policy to operate on a governed namespace record, not an ad-hoc string.
+
+**Not for:**
+- The cluster itself — KubernetesCluster.
+- The consumption limits inside the boundary — Platform.ResourceQuota constrains a namespace; it doesn't define one.
+
+**Works with:**
+- KubernetesCluster — the cluster the namespace exists within.
+- Platform.ResourceQuota — hard limits scoped to this namespace.
+- Container / Software.Service — workloads placed into it.
+
+## KubernetesNodePool
+
+### KubernetesNodePool (1.0.0)
+
+**Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
+
+A named group of like nodes in a cluster — its `name` is required: how many (`node_count`), what they offer — `capabilities`, where advertisements are structured objects, not booleans (`gpu` carries available/models/count_per_node, beside `architecture` and `memory_tier`) — what `labels` they carry, and what `taints` a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.
+
+**Use when:**
+- You need GPU or otherwise-special nodes grouped so only workloads that need (and tolerate) them land there.
+- You need placement to select capacity by declared capability (architecture, memory tier) rather than by node names.
+
+**Not for:**
+- The cluster — KubernetesCluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).
+- One physical machine — Machine.BareMetalHost; a pool is a cluster-level grouping, not a host record.
+
+**Works with:**
+- KubernetesCluster — the cluster the pool belongs to.
+- KubernetesNamespace — namespaces whose workloads schedule onto pools.
 
 ## Machine
 
@@ -770,44 +811,7 @@ A Hub is whatever sits above your clusters and manages them as a fleet — an OC
 - Facility.Location — where the hub's control plane runs, for the sovereignty question
 - Security.CredentialRef — the fleet-management credentials the hub holds are references, never inline
 
-### Platform.Namespace (0.5.5)
-
-**Purpose:** Declares the isolation boundary inside a cluster that workloads are placed into and tenancy binds to.
-
-What Kubernetes calls a Namespace (and some distributions overlay as a project): a named partition of a cluster that workloads live in. Its `name` is required and authored as intent — the same name is published back at realization alongside the platform UID. It binds a tenant (`tenant_uuid`), references its cluster (`cluster_ref`), carries `labels` and `annotations`, and cannot outlive its cluster. Providers and placement policies use it to answer which namespace a request lands in.
-
-**Use when:**
-- You need workloads partitioned per tenant, team, or environment inside a shared cluster.
-- You need quota and placement policy to operate on a governed namespace record, not an ad-hoc string.
-
-**Not for:**
-- The cluster itself — KubernetesCluster.
-- The consumption limits inside the boundary — Platform.ResourceQuota constrains a namespace; it doesn't define one.
-
-**Works with:**
-- KubernetesCluster — the cluster the namespace exists within.
-- Platform.ResourceQuota — hard limits scoped to this namespace.
-- Container / Software.Service — workloads placed into it.
-
-### Platform.NodePool (0.5.5)
-
-**Purpose:** Declares a homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that placement matches workloads against.
-
-A named group of like nodes in a cluster — its `name` is required: how many (`node_count`), what they offer — `capabilities`, where advertisements are structured objects, not booleans (`gpu` carries available/models/count_per_node, beside `architecture` and `memory_tier`) — what `labels` they carry, and what `taints` a workload must tolerate to land there. Placement reads the capability advertisements to match a workload's requirements to a pool. Cloud platforms call this a node pool or machine set.
-
-**Use when:**
-- You need GPU or otherwise-special nodes grouped so only workloads that need (and tolerate) them land there.
-- You need placement to select capacity by declared capability (architecture, memory tier) rather than by node names.
-
-**Not for:**
-- The cluster — KubernetesCluster (whose spec also carries inline node_pools; single ownership between the two is an open decision).
-- One physical machine — Machine.BareMetalHost; a pool is a cluster-level grouping, not a host record.
-
-**Works with:**
-- KubernetesCluster — the cluster the pool belongs to.
-- Platform.Namespace — namespaces whose workloads schedule onto pools.
-
-### Platform.ResourceQuota (0.5.4)
+### Platform.ResourceQuota (0.5.5)
 
 **Purpose:** Declares hard consumption limits for one namespace so capacity questions are answerable before a workload is dispatched.
 
@@ -819,10 +823,10 @@ The Kubernetes ResourceQuota construct as a record: aggregate CPU, memory, pod c
 
 **Not for:**
 - Per-container resource requests — those live on the workload (Container resources).
-- Node capacity — Platform.NodePool advertises capacity; a quota caps consumption within a namespace.
+- Node capacity — KubernetesNodePool advertises capacity; a quota caps consumption within a namespace.
 
 **Works with:**
-- Platform.Namespace — the one namespace this quota constrains.
+- KubernetesNamespace — the one namespace this quota constrains.
 - Container — workloads whose aggregate consumption the quota caps.
 
 ### Platform.StorageClass (0.7.2)

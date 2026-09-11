@@ -99,6 +99,14 @@
         "attempted": 104,
         "rejected": 104
       },
+      "KubernetesNamespace": {
+        "attempted": 40,
+        "rejected": 40
+      },
+      "KubernetesNodePool": {
+        "attempted": 110,
+        "rejected": 110
+      },
       "Machine.BareMetalHost": {
         "attempted": 215,
         "rejected": 215
@@ -162,14 +170,6 @@
       "Platform.Hub": {
         "attempted": 22,
         "rejected": 22
-      },
-      "Platform.Namespace": {
-        "attempted": 40,
-        "rejected": 40
-      },
-      "Platform.NodePool": {
-        "attempted": 110,
-        "rejected": 110
       },
       "Platform.ResourceQuota": {
         "attempted": 48,
@@ -272,6 +272,8 @@
       "Identity.ServiceAccount": 1,
       "Job": 3,
       "KubernetesCluster": 4,
+      "KubernetesNamespace": 2,
+      "KubernetesNodePool": 2,
       "Machine.BareMetalHost": 5,
       "Machine.LPAR": 3,
       "Machine.VM": 7,
@@ -288,8 +290,6 @@
       "Network.VirtualNetwork": 1,
       "Observability.LogShipper": 3,
       "Platform.Hub": 3,
-      "Platform.Namespace": 2,
-      "Platform.NodePool": 2,
       "Platform.ResourceQuota": 1,
       "Platform.StorageClass": 1,
       "Security.CredentialRef": 3,
@@ -380,6 +380,8 @@
       "Data.Database",
       "Job",
       "KubernetesCluster",
+      "KubernetesNamespace",
+      "KubernetesNodePool",
       "Machine.BareMetalHost",
       "Machine.VM",
       "Network.AddressService",
@@ -392,8 +394,6 @@
       "Network.VirtualNetwork",
       "Observability.LogShipper",
       "Platform.Hub",
-      "Platform.Namespace",
-      "Platform.NodePool",
       "Platform.ResourceQuota",
       "Platform.StorageClass",
       "Security.CredentialRef",
@@ -478,6 +478,8 @@
       "Identity.Person",
       "Identity.ServiceAccount",
       "Job",
+      "KubernetesNamespace",
+      "KubernetesNodePool",
       "Machine.BareMetalHost",
       "Machine.LPAR",
       "Network.AddressService",
@@ -493,8 +495,6 @@
       "Network.VirtualNetwork",
       "Observability.LogShipper",
       "Platform.Hub",
-      "Platform.Namespace",
-      "Platform.NodePool",
       "Platform.ResourceQuota",
       "Platform.StorageClass",
       "Security.CredentialRef",

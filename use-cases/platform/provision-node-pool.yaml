@@ -2,7 +2,7 @@ uuid: uc-30d25fda-ee89-4617-9c18-ba499072f761
 handle: platform/provision-node-pool
 version: 1.0.0
 scenario:
-  description: 'A platform engineer requests a Platform.NodePool by intent alone — a homogeneous slice of
+  description: 'A platform engineer requests a KubernetesNodePool by intent alone — a homogeneous slice of
     cluster compute declared by node count and instance type (the shared capabilities, labels, and
     scheduling constraints of its members) — without naming a machine set, a cloud API, or any
     provider-native node handle. The platform provider selects an eligible backend, realizes the pool to the

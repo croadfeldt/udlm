@@ -1,10 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesCluster/1.0.1
 conforms_to: udlm/0.1
 uuid: 3909934c-4b06-48ae-9431-a19083e59a6c
 record_type: class
 class: base
 resource_type: KubernetesCluster
-version: 1.0.0
+short_name: K8sCluster
+version: 1.0.1
 family: Resource
 status: active
 metadata:
@@ -158,11 +159,11 @@ context:
   not_for:
   - A distributed storage cluster (Ceph and kin) — that is Storage.Cluster; this type is the container-orchestration
     platform.
-  - A group of nodes inside an existing cluster — that is Platform.NodePool (this spec also carries inline
+  - A group of nodes inside an existing cluster — that is KubernetesNodePool (this spec also carries inline
     node_pools; single ownership between the two is an open decision).
   works_with:
-  - Platform.Namespace — the isolation boundaries carved inside the cluster.
-  - Platform.NodePool — homogeneous slices of the cluster's node capacity.
+  - KubernetesNamespace — the isolation boundaries carved inside the cluster.
+  - KubernetesNodePool — homogeneous slices of the cluster's node capacity.
   - Network.VirtualNetwork — the network the cluster is realized onto.
   - Container — the workloads scheduled onto the cluster.
   - 'Platform.Hub — the fleet manager above this cluster: contained_by when hub-provisioned/hosted, depends_on
