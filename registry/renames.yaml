@@ -188,3 +188,11 @@ retired:
   registry/classes/resource/compute/vm.yaml: registry/classes/resource/machine/vm.yaml
   registry/classes/resource/compute/bare-metal-host.yaml: registry/classes/resource/machine/bare-metal-host.yaml
   registry/examples/classes/resource/compute/vm/cexample-cloud.yaml: registry/examples/classes/resource/machine/vm/cexample-cloud.yaml
+
+  # 2026-09-11 — Platform.Namespace and Platform.NodePool become Bases of their own (ADR-068 applied;
+  # the Base test is ADR-069). Platform was a folder — "Kubernetes clusters, application platforms" — and
+  # both members are deliverables a tenant orders and manages on their own, on any conformant cluster,
+  # which is what earns a Base. Named for the standard, never a product. Same uuids; version reset to
+  # 1.0.0 as new Bases. The rest of Platform (ResourceQuota, StorageClass, Hub) folds in the next change.
+  registry/classes/resource/platform/namespace.yaml: registry/classes/resource/kubernetes-namespace/_base.yaml
+  registry/classes/resource/platform/node-pool.yaml: registry/classes/resource/kubernetes-node-pool/_base.yaml

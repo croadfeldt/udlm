@@ -204,10 +204,10 @@ consumer_fields:
     required: false
     default: 8192
   - name: namespace
-    type: reference                 # a reference to a Platform.Namespace, not a free-form string
-    reference_type: Platform.Namespace
+    type: reference                 # a reference to a KubernetesNamespace, not a free-form string
+    reference_type: KubernetesNamespace
     required: false
-    description: "Kubernetes namespace — optional; a reference to an existing Platform.Namespace, resolved by policy if omitted"
+    description: "Kubernetes namespace — optional; a reference to an existing KubernetesNamespace, resolved by policy if omitted"
   - name: storage_class
     type: reference
     reference_type: Platform.StorageClass
@@ -222,7 +222,7 @@ post-placement. The provider declares *what* it needs at registration (Phase 1);
 exposes *whether* the consumer can supply it directly.
 
 Note the **field definition itself is a reference**, not free-form text: `namespace` and `storage_class`
-are `type: reference` pointing at `Platform.Namespace` / `Platform.StorageClass` records — the same shape
+are `type: reference` pointing at `KubernetesNamespace` / `Platform.StorageClass` records — the same shape
 used in the fill-strategy example below, the dispatch payload (Phase 4), and the "References, not strings"
 principle. That is what lets the field be presented as a drop-down of real, tenant-visible records and
 validated as a graph edge, rather than a string typed from memory. A field is defined as free-form text
@@ -343,7 +343,7 @@ The provider-specific sections are **grouped by provider** and collapsed by defa
 disclosure). Expanding a provider group and filling a field narrows placement to that provider.
 Filling fields in two provider groups is a contradiction — the UI prevents it (expanding one
 collapses the others, or a radio-select at the group level picks the target provider). Drop-downs
-are populated from the provider's registered resources — namespaces from `Platform.Namespace`
+are populated from the provider's registered resources — namespaces from `KubernetesNamespace`
 records the consumer's tenant has access to, storage classes from `Platform.StorageClass` records
 on the selected cluster.
 
@@ -404,7 +404,7 @@ allowed.
 Key UX principles for Stage 2:
 
 - **Drop-downs, not free text.** Every provider-specific field is populated from the provider's
-  registered resources (Platform.Namespace, Platform.StorageClass, Platform.NodePool) filtered to
+  registered resources (KubernetesNamespace, Platform.StorageClass, KubernetesNodePool) filtered to
   what the consumer's tenant has access to. The consumer picks from valid options, not from memory.
 - **Policy defaults pre-selected.** The enrichment policy selects a default before the consumer
   sees the form. The consumer can change it, but the happy path is "accept and submit."
@@ -448,7 +448,7 @@ consumer_fields:
   # Provider-specific fields — fill strategy governs UX
   - name: namespace
     type: reference
-    reference_type: Platform.Namespace
+    reference_type: KubernetesNamespace
     required: false
     fill_strategy: auto_with_override
     description: "Kubernetes namespace — defaulted by policy, overridable"
@@ -460,7 +460,7 @@ consumer_fields:
     description: "Storage class — choose based on performance/cost needs"
   - name: node_pool
     type: reference
-    reference_type: Platform.NodePool
+    reference_type: KubernetesNodePool
     required: false
     fill_strategy: auto
     description: "Node pool — selected automatically from workload requirements"
@@ -524,7 +524,7 @@ spec:
 # Provider-specific references are Provider-Class `SharedDataElement`s (ADR-038), declared by
 # the provider's Class; schema implementation is tracked in #199 (the retired provider_extensions
 # carrier is removed). For k8s-prod-east, addressed compute.vm.k8s-prod-east#<element>:
-#   namespace_ref     → Platform.Namespace     "tenant-alpha-prod"  (e2f3a4b5-...)
+#   namespace_ref     → KubernetesNamespace     "tenant-alpha-prod"  (e2f3a4b5-...)
 #   storage_class_ref → Platform.StorageClass  "ceph-rbd-fast"      (c6d7e8f9-...)
 
 request_context:
@@ -539,7 +539,7 @@ Every field that points at another resource carries a URF reference (identifier-
 string whose uuid path resolves the target and whose optional `@pin` names an immutable version.
 
 - `network_ref` → `Network.VirtualNetwork`
-- `namespace_ref` → `Platform.Namespace`
+- `namespace_ref` → `KubernetesNamespace`
 - `storage_class_ref` → `Platform.StorageClass`
 - `ip_address` → `Network.IPAddress`
 - Storage volume attachments → `Storage.Volume`

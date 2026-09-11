@@ -661,7 +661,7 @@
   }
  },
  "type:Hardware.GraphicsProcessor": {
-  "current": "0.5.2",
+  "current": "0.5.3",
   "path": "registry/classes/resource/hardware/graphics-processor.yaml",
   "versions": {
    "0.2.2": "sha256:bc8baa019d3e3f74b21bd28c4ce204027de3e0915fc713c4621575bcbc779d77",
@@ -669,7 +669,8 @@
    "0.4.0": "sha256:e1ecafcdd582464551cc245c8a3460bffbcddc530a1c2d832fee39186ccb3b88",
    "0.5.0": "sha256:42ca7143bf528ac8a69a6e8a361cbea269fba55ab830ca95474ade39dd1a2c49",
    "0.5.1": "sha256:33520b9bca7dd647d2e7d98e86aec7c8b2843d7ce62e23d57618772216e15363",
-   "0.5.2": "sha256:5d2d136a4cbdf692f8c30c2d8b0cb63aff92a046a4c98908b6c4814cc2d99a73"
+   "0.5.2": "sha256:5d2d136a4cbdf692f8c30c2d8b0cb63aff92a046a4c98908b6c4814cc2d99a73",
+   "0.5.3": "sha256:dac6a7713f474541fd101c7fbe94ad2ae11b82af036b85d9b72610b9e0a5788a"
   }
  },
  "type:Hardware.NetworkInterface": {
@@ -783,10 +784,25 @@
   }
  },
  "type:KubernetesCluster": {
-  "current": "1.0.0",
+  "current": "1.0.1",
   "path": "registry/classes/resource/kubernetes-cluster/_base.yaml",
   "versions": {
-   "1.0.0": "sha256:63ac01bc1f59283bbca00463f1854007cc80dca120f820a24d348b3e94cd379d"
+   "1.0.0": "sha256:63ac01bc1f59283bbca00463f1854007cc80dca120f820a24d348b3e94cd379d",
+   "1.0.1": "sha256:020421ca5495f5bc507cce1f1160816eefe56f6de359d4026fba931265249515"
+  }
+ },
+ "type:KubernetesNamespace": {
+  "current": "1.0.0",
+  "path": "registry/classes/resource/kubernetes-namespace/_base.yaml",
+  "versions": {
+   "1.0.0": "sha256:55ac98400ff778439395fcd60fe85712312b867c613b695aea2ccf98b77f2d30"
+  }
+ },
+ "type:KubernetesNodePool": {
+  "current": "1.0.0",
+  "path": "registry/classes/resource/kubernetes-node-pool/_base.yaml",
+  "versions": {
+   "1.0.0": "sha256:00f2fec962aa6b864fef384deae079c7c1564a88c2fdbd1b556aa4dcbd9ef245"
   }
  },
  "type:Machine": {
@@ -1015,6 +1031,7 @@
  "type:Platform.Namespace": {
   "current": "0.5.5",
   "path": "registry/classes/resource/platform/namespace.yaml",
+  "stranded": true,
   "versions": {
    "0.3.5": "sha256:f5ed275ae9c7e3540ea6bbba365da7118b614c40fa78d49887607082a447389a",
    "0.4.0": "sha256:83f41ea89533ac4251a982d7b61ace2a2c6ac3cfaa9548849c7b3a6432fd6e33",
@@ -1029,6 +1046,7 @@
  "type:Platform.NodePool": {
   "current": "0.5.5",
   "path": "registry/classes/resource/platform/node-pool.yaml",
+  "stranded": true,
   "versions": {
    "0.3.4": "sha256:0835f34e2cb455a59acfa2fe2cb1d128f0be6455f8178cfdb3a1905ab8b23dcf",
    "0.4.0": "sha256:47f2a966badf67461940eedd14044d758438c1088b7e2294622fef54365eb937",
@@ -1041,7 +1059,7 @@
   }
  },
  "type:Platform.ResourceQuota": {
-  "current": "0.5.4",
+  "current": "0.5.5",
   "path": "registry/classes/resource/platform/resource-quota.yaml",
   "versions": {
    "0.3.2": "sha256:fcedd1f1742857b1244b9efe822c449e87cea4799c70b1bbcb35ed81d55af527",
@@ -1050,7 +1068,8 @@
    "0.5.1": "sha256:02c8c5734953b5f5074100f11c36cc51e9b5986b4a262b83d8af843c2486b6b9",
    "0.5.2": "sha256:18d6a60ab72c6166d4c8e016ea3d4f31a027277eefc02a4d6830d05964756efd",
    "0.5.3": "sha256:6833205a4b4e1d14b90e7fa0a180b6f0c5f656f54d22edfa5959137bdfe8a661",
-   "0.5.4": "sha256:86455067d74e1cb22db6eba4aa0b531b4ae4e6932efbd4193f88797f7a9aeb00"
+   "0.5.4": "sha256:86455067d74e1cb22db6eba4aa0b531b4ae4e6932efbd4193f88797f7a9aeb00",
+   "0.5.5": "sha256:2aaf2e0f7eceb04a6fc04c4cce8566c59200c25fbda912bd4505c8be602ac682"
   }
  },
  "type:Platform.StorageClass": {

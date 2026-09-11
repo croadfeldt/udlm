@@ -1,24 +1,28 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Platform.NodePool/0.5.5
+$id: https://udlm.dev/registry/udlm/0.1/class/KubernetesNodePool/1.0.0
 conforms_to: udlm/0.1
 uuid: ff7f0b01-d451-4aed-89da-83117923820f
 record_type: class
-class: type
-resource_type: Platform.NodePool
-parent: Platform
-version: 0.5.5
+class: base
+resource_type: KubernetesNodePool
+short_name: K8sNodePool
+version: 1.0.0
 family: Resource
 status: active
 metadata:
   display_name: Node Pool
-  description: A group of compute nodes within a cluster that share capabilities, labels, and scheduling
-    constraints. Models the construct that cloud platforms call a node pool or machine set — a homogeneous
-    slice of cluster capacity with specific hardware characteristics (GPU, architecture, memory tier).
-    Placement policies query node pool capabilities to match workload requirements to available capacity.
+  description: 'A Kubernetes node pool as one orderable deliverable — a Base Class in its own right
+    (ADR-068, ADR-069; promoted out of the former Platform folder). A homogeneous slice of a cluster''s
+    node capacity — shared hardware traits, labels, taints — that is ordered, scaled and upgraded on its
+    own (a cloud node pool, a MachineSet, a Cluster API MachineDeployment), which is why it is a class
+    and not only the cluster''s inline `node_pools` element. Its contract is the Kubernetes node model:
+    every conformant distribution exposes nodes with labels and taints that placement matches workloads
+    against. Named for the standard, never for a product; distribution-specific pool shapes are the
+    Type tier beneath it.'
   maintainer: udlm-registry
   origination_timestamp: '2026-07-17T00:00:00Z'
 elements:
 - element: name
-  scope: Platform.NodePool
+  scope: KubernetesNodePool
   optional: false
   state: canonical
   description: The node pool name within the cluster (e.g. 'gpu-large', 'general-purpose', 'infra').
@@ -26,7 +30,7 @@ elements:
     type: string
     description: The node pool name within the cluster (e.g. 'gpu-large', 'general-purpose', 'infra').
 - element: cluster_ref
-  scope: Platform.NodePool
+  scope: KubernetesNodePool
   optional: true
   state: canonical
   description: Resource reference to a KubernetesCluster (common-elements §2.5, DCM ADR-025). Authored by handle;
@@ -36,7 +40,7 @@ elements:
       handle; deferred resolution supported (claim-before-define).
     $ref: ../../../common-elements.schema.json#/$defs/Reference
 - element: node_count
-  scope: Platform.NodePool
+  scope: KubernetesNodePool
   optional: true
   state: canonical
   description: Target number of nodes in this pool.
@@ -45,7 +49,7 @@ elements:
     minimum: 0
     description: Target number of nodes in this pool.
 - element: capabilities
-  scope: Platform.NodePool
+  scope: KubernetesNodePool
   optional: true
   state: canonical
   description: Queryable capability advertisements — placement policies select pools by capability.
@@ -72,7 +76,7 @@ elements:
         type: string
         description: Memory class (e.g., standard, high-memory).
 - element: labels
-  scope: Platform.NodePool
+  scope: KubernetesNodePool
   optional: true
   state: canonical
   description: Labels applied to all nodes in this pool (Kubernetes label semantics).
@@ -82,7 +86,7 @@ elements:
       type: string
     description: Labels applied to all nodes in this pool (Kubernetes label semantics).
 - element: taints
-  scope: Platform.NodePool
+  scope: KubernetesNodePool
   optional: true
   state: canonical
   description: Taints applied to all nodes — workloads must tolerate these to be scheduled on the pool.
@@ -157,4 +161,4 @@ context:
   - One physical machine — Machine.BareMetalHost; a pool is a cluster-level grouping, not a host record.
   works_with:
   - KubernetesCluster — the cluster the pool belongs to.
-  - Platform.Namespace — namespaces whose workloads schedule onto pools.
+  - KubernetesNamespace — namespaces whose workloads schedule onto pools.

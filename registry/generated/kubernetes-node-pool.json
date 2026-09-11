@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Platform.NodePool/0.5.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesNodePool/1.0.0",
   "conforms_to": "udlm/0.1",
   "uuid": "ff7f0b01-d451-4aed-89da-83117923820f",
-  "resource_type": "Platform.NodePool",
-  "version": "0.5.5",
+  "resource_type": "KubernetesNodePool",
+  "version": "1.0.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "display_name": "Node Pool",
-    "description": "A group of compute nodes within a cluster that share capabilities, labels, and scheduling constraints. Models the construct that cloud platforms call a node pool or machine set — a homogeneous slice of cluster capacity with specific hardware characteristics (GPU, architecture, memory tier). Placement policies query node pool capabilities to match workload requirements to available capacity.",
+    "description": "A Kubernetes node pool as one orderable deliverable — a Base Class in its own right (ADR-068, ADR-069; promoted out of the former Platform folder). A homogeneous slice of a cluster's node capacity — shared hardware traits, labels, taints — that is ordered, scaled and upgraded on its own (a cloud node pool, a MachineSet, a Cluster API MachineDeployment), which is why it is a class and not only the cluster's inline `node_pools` element. Its contract is the Kubernetes node model: every conformant distribution exposes nodes with labels and taints that placement matches workloads against. Named for the standard, never for a product; distribution-specific pool shapes are the Type tier beneath it.",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-07-17T00:00:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Platform",
+          "class": "KubernetesNodePool",
           "version": "1.0.0",
-          "uuid": "84aca79d-e5fe-4a87-8fce-59fe0483a390"
-        },
-        {
-          "class": "Platform.NodePool",
-          "version": "0.5.5",
           "uuid": "ff7f0b01-d451-4aed-89da-83117923820f"
         }
       ]
@@ -177,7 +172,7 @@
     ],
     "works_with": [
       "KubernetesCluster — the cluster the pool belongs to.",
-      "Platform.Namespace — namespaces whose workloads schedule onto pools."
+      "KubernetesNamespace — namespaces whose workloads schedule onto pools."
     ]
   }
 }
