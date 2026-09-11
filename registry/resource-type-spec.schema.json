@@ -101,11 +101,6 @@
       ],
       "description": "Lifecycle status of this version (docs/spec/foundations/layering-and-versioning.md universal deprecation model)."
     },
-    "instantiable": {
-      "type": "boolean",
-      "default": true,
-      "description": "Whether an order may be placed at this class. False on a folder Base — a category whose members share no abstraction one order could be realized against (CLS-003, docs/spec/foundations/class-tiers.md; ADR-069). Absent means true. Carried verbatim from the class record by the generator."
-    },
     "deprecation": {
       "type": "object",
       "additionalProperties": false,
