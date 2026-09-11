@@ -1,14 +1,14 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.Cluster/0.5.4",
+  "$id": "https://udlm.dev/registry/udlm/0.1/KubernetesCluster/1.0.0",
   "conforms_to": "udlm/0.1",
   "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c",
-  "resource_type": "Compute.Cluster",
-  "version": "0.5.4",
+  "resource_type": "KubernetesCluster",
+  "version": "1.0.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
-    "display_name": "Cluster",
-    "description": "A managed Kubernetes cluster with one or more node pools and a network. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); the spec is the vendor-neutral Intent contract a provider (e.g. OSAC Cluster Fulfillment via a fleet-manager hub + hosted control planes) realizes. Target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
+    "display_name": "Kubernetes cluster",
+    "description": "A Kubernetes cluster as one orderable deliverable — release, node pools, and network ranges. A Base Class in its own right (ADR-068): its contract is the Kubernetes API, which every conformant distribution honors, so an order placed here can be realized by any provider offering one. Named for the standard, never for a product — distributions (OpenShift, EKS, k3s, …) are the Type tier beneath it and offerings the Provider tier. `pod_cidr`/`service_cidr` are Kubernetes vocabulary, which is why this left `Compute`: a VM or a bare-metal host cannot honor them. Derived from OSAC's `cluster` fulfillment type (osac-project/fulfillment-service); target Network.VirtualNetwork is registered; Platform.Hub is registered (ADR-043 relationship semantics).",
     "maintainer": "udlm-registry",
     "origination_timestamp": "2026-06-17T19:57:00Z",
     "generated": true,
@@ -16,13 +16,8 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Compute",
-          "version": "1.2.5",
-          "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
-        },
-        {
-          "class": "Compute.Cluster",
-          "version": "0.5.4",
+          "class": "KubernetesCluster",
+          "version": "1.0.0",
           "uuid": "3909934c-4b06-48ae-9431-a19083e59a6c"
         }
       ]
@@ -32,119 +27,6 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "instance_size": {
-        "type": "string",
-        "description": "Provider-neutral size class (small|medium|large, ordered/comparable — common-elements §2.2, ADR-014). Size by class IN PLACE OF cpu+memory; the provider maps it to concrete resources at naturalization (DCM ADR-023). anyOf enforces sizing by class OR raw."
-      },
-      "cpu": {
-        "type": "object",
-        "properties": {
-          "count": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Total virtual CPUs. The provider naturalizes this to its native cpu model (a KubeVirt domain cpu, a hypervisor platform's sockets*cores, a public cloud's vCPUs) at realization (DCM ADR-023)."
-          },
-          "sockets": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Optional topology hint: sockets. Provider-support-dependent; ignored where not applicable."
-          },
-          "cores_per_socket": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Optional topology hint: cores per socket. Provider-support-dependent."
-          }
-        },
-        "description": "Unifies vcpu (VM) / cpu (BareMetal) / resources.cpu (Container) — the same concept under three names today. The provider naturalizes to its native model (kubevirt domain cpu, vSphere sockets×cores, EC2 vCPUs)."
-      },
-      "memory": {
-        "type": "object",
-        "properties": {
-          "size": {
-            "type": "string",
-            "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
-            "description": "Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base Class `memory.size`)."
-          },
-          "hugepages": {
-            "type": "object",
-            "description": "Optional huge-page backing (provider-support-dependent; validated against provider capability).",
-            "properties": {
-              "enabled": {
-                "type": "boolean"
-              },
-              "page_size": {
-                "type": "string",
-                "description": "e.g. 2Mi, 1Gi."
-              }
-            }
-          }
-        },
-        "description": "Reconciles the drift the sweep found (VM had {hugepages,size}, BareMetal had {size}): `hugepages` becomes an optional Base element."
-      },
-      "storage": {
-        "type": "object",
-        "description": "The reference-discipline storage requirements descriptor (PVD-001, Compute Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
-        "properties": {
-          "min_iops": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "min_throughput_mbps": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "min_replication": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "encryption": {
-            "type": "boolean"
-          }
-        }
-      },
-      "storage_tier": {
-        "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
-      },
-      "guest_os": {
-        "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
-        "oneOf": [
-          {
-            "type": "object",
-            "required": [
-              "type"
-            ],
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "type": "string",
-                "description": "Inline OS identifier (e.g. linux-server-9). portability_breaking: a value with no os_image vocabulary entry — a review finding."
-              },
-              "version": {
-                "type": "string",
-                "description": "Inline OS version (e.g. 9.4)."
-              }
-            }
-          },
-          {
-            "allOf": [
-              {
-                "$ref": "../data-reference.schema.json#/$defs/data_reference"
-              },
-              {
-                "required": [
-                  "reference_data_type"
-                ],
-                "properties": {
-                  "reference_data_type": {
-                    "const": "os_image"
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      },
       "release": {
         "type": "string",
         "description": "Platform release, e.g. 1.30 (a Kubernetes minor release) or a distribution's release stream."
@@ -177,7 +59,7 @@
             }
           }
         },
-        "description": "Converted verbatim from the flat Compute.Cluster spec."
+        "description": "Converted verbatim from the flat cluster spec."
       },
       "network": {
         "type": "object",
@@ -191,7 +73,7 @@
             "pattern": "^[0-9./]+$"
           }
         },
-        "description": "Converted verbatim from the flat Compute.Cluster spec."
+        "description": "Converted verbatim from the flat cluster spec."
       }
     },
     "required": [

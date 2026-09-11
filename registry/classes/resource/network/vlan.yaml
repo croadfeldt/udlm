@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.VLAN/0.5.4
 conforms_to: udlm/0.1
 uuid: 009c7bcb-53ae-4a3b-96fd-12ee35b3b426
 record_type: class
 class: type
 resource_type: Network.VLAN
 parent: Network
-version: 0.5.3
+version: 0.5.4
 family: Resource
 status: active
 # OWN-007 — the canonical `shareable` case (ownership-sharing-allocation §2.3): one VLAN entity exists,
@@ -69,7 +69,7 @@ relationships:
   cardinality: 0..n
   description: The switch(es)/fabric that carry this segment (where the provider manages it).
 - edge_type: contained_by
-  target: Compute.Cluster
+  target: KubernetesCluster
   name: scope
   cardinality: 0..1
   description: Optional cluster/fabric scope the segment is defined within.

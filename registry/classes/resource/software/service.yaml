@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Software.Service/0.7.4
 conforms_to: udlm/0.1
 uuid: 905fef1c-3384-4a49-9c44-71420d07eedd
 record_type: class
 class: type
 resource_type: Software.Service
 parent: Software
-version: 0.7.3
+version: 0.7.4
 family: Resource
 status: active
 metadata:
@@ -114,7 +114,7 @@ outputs:
 relationships:
 - edge_type: references
   name: runs_on
-  target: Compute.Cluster
+  target: KubernetesCluster
   cardinality: 0..1
   description: Runs on a cluster (its container constituents are scheduled there). TOSCA HostedOn.
 - edge_type: references
@@ -202,6 +202,6 @@ context:
   - The database a service uses — Data.Database, referenced as a dependency.
   works_with:
   - Container — containerized constituents, by reference.
-  - Compute.Cluster / Compute.BareMetalHost / Compute.VM — where the constituents run.
+  - KubernetesCluster / Compute.BareMetalHost / Compute.VM — where the constituents run.
   - Data.Database / Security.DirectoryService / Network.AddressService — what the service requires.
   - Security.CredentialRef — the service's secrets, by reference.

@@ -154,7 +154,7 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 
 ### Cluster API — CANONICAL
 **Covers:** `Cluster API` `CAPI` · **Body:** CNCF (Kubernetes SIG Cluster Lifecycle) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the management-cluster / workload-cluster vocabulary.
-**Why:** CAPI names exactly the multi-cluster split UDLM models: a management cluster provisions and manages workload clusters. Platform.Hub is the management-cluster identity; the Compute.Cluster hub edges are the workload side. Apache-2.0, compatible-reference.
+**Why:** CAPI names exactly the multi-cluster split UDLM models: a management cluster provisions and manages workload clusters. Platform.Hub is the management-cluster identity; the KubernetesCluster hub edges are the workload side. Apache-2.0, compatible-reference.
 
 ### Open Cluster Management — CANONICAL
 **Covers:** `Open Cluster Management` `OCM` · **Body:** CNCF (ACM's upstream) · **Since:** registered 2026-07-24 (Platform.Hub `adopts[]`). · **Where:** Platform.Hub — the hub / ManagedCluster model.
@@ -222,11 +222,11 @@ not) · `RETIRED` (was adopted, withdrawn) · `REJECTED` (evaluated, not adopted
 ## Cost
 
 ### FOCUS — CANONICAL (scoped) / RETIRED (as the platform-wide cost model)
-**Covers:** `FOCUS` · **Body:** FinOps Foundation · **Since:** 2026-06-18T01:17:10Z · **Where:** cost-field vocabulary on Compute.Cluster + Data.Database and the cost-management provider matrix.
+**Covers:** `FOCUS` · **Body:** FinOps Foundation · **Since:** 2026-06-18T01:17:10Z · **Where:** cost-field vocabulary on KubernetesCluster + Data.Database and the cost-management provider matrix.
 **Why:** billing-data column vocabulary where cost fields exist. The earlier *platform-wide* cost-model adoption was **retired** (2026-06, adopt-by-reference thesis review) — cost is a projection, not a core modeling axis; the scoped field-vocabulary use remains. **License:** FinOps Foundation — compatible-reference.
 
 ### OpenCost — CANONICAL
-**Covers:** `OpenCost` · **Since:** 2026-06-18T01:34:51Z · **Where:** Compute.Cluster cost fields, cost-sp provider. **Why:** the CNCF in-cluster cost implementation matching FOCUS-shaped output. **License:** Apache-2.0 — compatible-reference.
+**Covers:** `OpenCost` · **Since:** 2026-06-18T01:34:51Z · **Where:** KubernetesCluster cost fields, cost-sp provider. **Why:** the CNCF in-cluster cost implementation matching FOCUS-shaped output. **License:** Apache-2.0 — compatible-reference.
 
 ## Orchestration & transactions
 

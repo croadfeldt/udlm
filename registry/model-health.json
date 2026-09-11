@@ -10,8 +10,8 @@
     }
   },
   "discrimination": {
-    "mutations_attempted": 4671,
-    "mutations_rejected": 4671,
+    "mutations_attempted": 4572,
+    "mutations_rejected": 4572,
     "density": 1.0,
     "findings": 0,
     "per_type": {
@@ -34,10 +34,6 @@
       "Compute.BareMetalHost": {
         "attempted": 204,
         "rejected": 204
-      },
-      "Compute.Cluster": {
-        "attempted": 203,
-        "rejected": 203
       },
       "Compute.VM": {
         "attempted": 246,
@@ -106,6 +102,10 @@
       "Job": {
         "attempted": 85,
         "rejected": 85
+      },
+      "KubernetesCluster": {
+        "attempted": 104,
+        "rejected": 104
       },
       "Network.AddressService": {
         "attempted": 42,
@@ -252,7 +252,6 @@
       "Automation.OSPatch": 3,
       "Capability": 1,
       "Compute.BareMetalHost": 5,
-      "Compute.Cluster": 4,
       "Compute.VM": 7,
       "Container": 2,
       "Data.Database": 5,
@@ -270,6 +269,7 @@
       "Identity.Person": 1,
       "Identity.ServiceAccount": 1,
       "Job": 3,
+      "KubernetesCluster": 4,
       "Network.AddressService": 1,
       "Network.ConnectionProfile": 2,
       "Network.DHCPScope": 1,
@@ -372,11 +372,11 @@
       "Automation.OSPatch",
       "Capability",
       "Compute.BareMetalHost",
-      "Compute.Cluster",
       "Compute.VM",
       "Container",
       "Data.Database",
       "Job",
+      "KubernetesCluster",
       "Network.AddressService",
       "Network.ConnectionProfile",
       "Network.DHCPScope",
@@ -437,9 +437,6 @@
       "records-mcp"
     ],
     "named_by_consumer": {
-      "Compute.Cluster": [
-        "control-plane-servicetype-gen"
-      ],
       "Compute.VM": [
         "control-plane-servicetype-gen"
       ],
@@ -447,6 +444,9 @@
         "control-plane-servicetype-gen"
       ],
       "Data.Database": [
+        "control-plane-servicetype-gen"
+      ],
+      "KubernetesCluster": [
         "control-plane-servicetype-gen"
       ],
       "Storage.Volume": [

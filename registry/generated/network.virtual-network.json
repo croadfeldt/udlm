@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.3",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Network.VirtualNetwork/0.8.4",
   "conforms_to": "udlm/0.1",
   "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e",
   "resource_type": "Network.VirtualNetwork",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Network.VirtualNetwork",
-          "version": "0.8.3",
+          "version": "0.8.4",
           "uuid": "fddc45aa-8643-4a8d-8a6b-72ecf9315c1e"
         }
       ]
@@ -125,7 +125,7 @@
     },
     {
       "edge_type": "contained_by",
-      "target": "Compute.Cluster",
+      "target": "KubernetesCluster",
       "cardinality": "0..1",
       "name": "cluster",
       "description": "Cluster-scoped virtual networks (NetworkAttachmentDefinition / OVN logical networks)."
@@ -191,7 +191,7 @@
       "Per-guest NIC intent — that lives on Compute.VM's own networks list."
     ],
     "works_with": [
-      "Compute.VM / Compute.Cluster — the guests that attach, and the scope that hosts the network.",
+      "Compute.VM / KubernetesCluster — the guests that attach, and the scope that hosts the network.",
       "Network.VLAN — the underlying segment, selected by reference.",
       "Hardware.NetworkInterface — the supporting bridge or uplink on the host.",
       "Network.IPAddressPool — the address pool scoped to this segment."

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.0",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Container/1.0.1",
   "conforms_to": "udlm/0.1",
   "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49",
   "resource_type": "Container",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -17,7 +17,7 @@
       "sources": [
         {
           "class": "Container",
-          "version": "1.0.0",
+          "version": "1.0.1",
           "uuid": "941d9211-6d64-47b8-9e1d-ccb4ccac2d49"
         }
       ]
@@ -292,9 +292,9 @@
   "relationships": [
     {
       "edge_type": "contained_by",
-      "target": "Compute.Cluster",
+      "target": "KubernetesCluster",
       "cardinality": "0..1",
-      "description": "Runs on a cluster (exactly one of Compute.Cluster / Compute.BareMetalHost)."
+      "description": "Runs on a cluster (exactly one of KubernetesCluster / Compute.BareMetalHost)."
     },
     {
       "edge_type": "contained_by",
@@ -365,7 +365,7 @@
       "A one-shot automation task with a bounded runtime — that is Automation.Job."
     ],
     "works_with": [
-      "Compute.Cluster / Compute.BareMetalHost — exactly one of them is where the container runs.",
+      "KubernetesCluster / Compute.BareMetalHost — exactly one of them is where the container runs.",
       "Security.CredentialRef — every secret the container consumes, by reference only.",
       "SoftwareImage — the digest-identified image the container runs; the anchor for vulnerability analysis.",
       "Data.Database — connection outputs the container binds to."
