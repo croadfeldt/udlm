@@ -101,6 +101,38 @@ test clause; row 069 in PR 1 supersedes it.
 | Content | addendum: the depth cap is three and already enforced by the `resource_type` pattern; the tier definitions live in `class-tiers.md`; offerings can earn a Provider Class; "all Classes are instantiable" is qualified by `instantiable: false` |
 | Depends on | PRs 1–6 |
 
+## Status — 2026-09-11, end of day
+
+| PR | What | State |
+|---|---|---|
+| 0 | #568 `Container` Base; #569 ruling 068 | merged |
+| 1 | #572 class-tiers spec section, `instantiable` + `short_name`, gate, row 069 | merged |
+| — | #573 series reorder; #570 survey; #571 per-state records brief | merged |
+| 2 | #574 `Compute.Cluster` → `KubernetesCluster` | merged |
+| 3 | #575 `Compute` → `Machine`, `LPAR`, Redfish firmware, closes #564 | merged |
+| 4a | #576 `KubernetesNamespace`, `KubernetesNodePool`, the `K8s*` short names | merged |
+| 4b | #577 `Storage.Class`, fleet-manager service kind, quota folded, `Platform` deprecated | **open** |
+| 5 | folder Bases `instantiable: false` — eight records, minor bumps | not started; small |
+| 6 | provider-contract projection prose | not started; prose only |
+| 7 | ADR-038 addendum | not started; last |
+
+**Rulings waiting on the maintainer**
+
+- `KubernetesCluster.node_pools` (inline) versus `KubernetesNodePool` (class): single ownership.
+  Flagged on the node-pool record since July; PR 4a and 4b left it alone.
+- Removing `Platform`, `Platform.Hub` and `Platform.ResourceQuota` after the sunset window
+  (REG-DP-002, twelve months for Tier 1) or on a pre-1.0 override.
+
+**Follow-ups outside the series**
+
+- The per-state records program (#571): four record schemas replacing the folded one;
+  coordinated with the DCM control plane; lands after PR 7.
+- `realize_resources/Container` and `/KubernetesCluster` were added to the capability taxonomy
+  in PR 3 because the triad gate required it; the `compute-provisioning` grouping label under
+  them was not renamed.
+- Gaps recorded, not built: an orderable hypervisor cluster; `Data.Stream`; a batch cluster;
+  segment aliases; the #474 rule-ID renumber.
+
 ## Gaps recorded, not built
 
 Each becomes an issue when the series is under way; none blocks it.
