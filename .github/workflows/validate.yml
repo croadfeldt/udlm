@@ -95,6 +95,8 @@ jobs:
       - run: python3 registry/tools/generate_pin_manifest.py --check
       # Scoped-Class substrate (ADR-038 / P0): Liskov extension gate + generated-spec freshness
       - run: python3 tests/check_class_liskov.py
+      # Class tiers (ADR-069 / CLS-007, CLS-008): short_name unique + never stored; instantiable only on a Base
+      - run: python3 tests/check_class_short_names.py
       # The collapse: a request is the provider's offer with each range collapsed to one
       # selected value. This proves the collapse landed INSIDE the offer — which is what makes
       # placement eligibility computable rather than asserted.

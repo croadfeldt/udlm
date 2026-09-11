@@ -68,6 +68,7 @@ NAMES = {
     "python3 tests/check_type_standard.py": "type base standard (rule 36)",
     "python3 tests/check_identity_integrity.py": "identity integrity (ADR-051)",
     "python3 tests/check_class_liskov.py": "class Liskov (refine, never contradict)",
+    "python3 tests/check_class_short_names.py": "class short names (unique, never stored) + instantiable on Base only",
     "python3 tests/check_class_paths.py": "class path <-> record (CLS-PATH-001)",
     "python3 registry/tools/generate_class_specs.py --check": "generated specs are fresh (GEN-001)",
     "python3 registry/tools/generate_type_catalog.py --check": "TYPE-CATALOG is fresh",

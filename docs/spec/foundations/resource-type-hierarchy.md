@@ -179,6 +179,12 @@ registry_entry:
 
 ## 3. Resource Type Hierarchy Levels
 
+> **The class tiers are defined in [class-tiers.md](class-tiers.md).** The registry's class model
+> is Base / Type / Provider Class (`CLS-*`; ADR-038 holds the why, ADR-069 the Base test). Levels 1
+> and 2 below correspond to the Base and Type tiers; Level 3 is the class record itself; Level 4
+> (Catalog Item) was retired with the `catalog_item` record kind. This section is retained for the
+> field-constraint and portability material that hangs off it and is not a second definition of the tiers.
+
 The hierarchy has four levels, from most abstract to most concrete. Each level builds on the one above it.
 
 ### Level 1 — Resource Type Category

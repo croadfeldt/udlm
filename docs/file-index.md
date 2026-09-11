@@ -73,7 +73,8 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`entity-relationships.md`** — everything built ON the edge model (which is data-model-core §4 / common-elements §9). *Owns:* `XTA-*` cross-tenant rules, the allocated- and shared-resource operational models, relationship lifecycle policies, declaration tiers, bundled expansion, notification traversal (`REL-022..024`), and `ERL-*` graph integrity.
 - **`service-dependencies.md`** — *Owns:* the dependency graph, rehydration ordering, `DEP-*`.
 - **`resource-grouping.md`** — *Owns:* grouping, tenant boundaries, the grouping / `GRP-*` model.
-- **`resource-type-hierarchy.md`** — *Owns:* the four hierarchy levels (Category → Type → Specification → Catalog Item), the canonical categories (§2.2), the field-constraint model (§3a/2.1b), portability classification, request-resolution narrowing (§7), the hierarchy deprecation cascade rules, and the FQN/uuid type-reference contract. Specialization defers to ADR-038 class composition; registration to provider-contract §2; versioning to VERSIONING.md.
+- **`class-tiers.md`** — *normative*. *Owns:* the Base / Type / Provider Class tier model — what earns a Base, folders (`instantiable`), the Type axis, Provider Classes, class naming and `short_name` (`CLS-*`). ADR-038 holds the why; this holds the rule.
+- **`resource-type-hierarchy.md`** — *Owns:* the canonical categories (§2.2), the field-constraint model (§3a/2.1b), portability classification, request-resolution narrowing (§7), the hierarchy deprecation cascade rules, and the FQN/uuid type-reference contract. Specialization defers to ADR-038 class composition; registration to provider-contract §2; versioning to VERSIONING.md.
 - **`knowledge-family.md`** — *Owns:* the Knowledge entity family (Capability, TaxonomyTerm) — anchored by DAV.
 - **`identity-escrow.md`** — *Owns:* the identity-escrow contract (identity state surviving host re-realization), `ESC-*`.
 

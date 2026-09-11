@@ -32,6 +32,11 @@ CANONICAL = [
         "home": "docs/spec/principles/design-priorities.md",
     },
     {
+        "concept": "Class tiers (Base / Type / Provider Class)",
+        "heading": re.compile(r"^class tiers\b", re.I),
+        "home": "docs/spec/foundations/class-tiers.md",
+    },
+    {
         "concept": "The Four States",
         "heading": re.compile(r"^(the )?four[- ]state(s)?( lifecycle| model)?$", re.I),
         "home": "docs/spec/foundations/four-states.md",
