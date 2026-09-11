@@ -294,6 +294,16 @@
       ],
       "description": "Lifecycle status of the Class definition itself."
     },
+    "instantiable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether an order may be placed at this Class. Meaningful on a Base Class only (class: base): a category whose members share no abstraction is a folder and MUST set false (CLS-003, docs/spec/foundations/class-tiers.md). Absent means true. A Type or Provider Class never carries it (CLS-008; gate tests/check_class_short_names.py)."
+    },
+    "short_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+(\\.[A-Z][A-Za-z0-9]+){0,2}$",
+      "description": "OPTIONAL — the one short handle this Class is also known by on INPUT (`K8sCluster` for `KubernetesCluster`), modelled on Kubernetes shortNames. Resolved to the canonical `resource_type` on every input surface; unique case-insensitively against every canonical name and every other short_name; NEVER stored in `$id`, `parent`, an element `scope`, a relationship `target`, or an offering list (CLS-007; gate tests/check_class_short_names.py; resolver registry/tools/resolve_class_address.py)."
+    },
     "adopts": {
       "type": "array",
       "description": "External standards this Class adopts by reference (T5) — items ARE the flat spec's `adopted_standard_ref` ($ref — one shape, single source). Compile: pass-through, union down the chain, deduplicated by standard+standard_name. A Base Class adoption is inherited by every descendant's compiled spec (#323).",

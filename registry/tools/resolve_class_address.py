@@ -45,9 +45,29 @@ def load_classes():
     return by_name
 
 
+def short_names(by_name):
+    """{short_name -> canonical resource_type} — CLS-007: a short name is an INPUT handle only."""
+    return {doc["short_name"]: name for name, doc in by_name.items() if doc.get("short_name")}
+
+
+def canonical_name(name, by_name):
+    """The canonical `resource_type` for a name given in either form (CLS-007). Case-sensitive on
+    the canonical form; a short name matches case-insensitively, the way `kubectl get SVC` does."""
+    if name in by_name:
+        return name
+    shorts = short_names(by_name)
+    if name in shorts:
+        return shorts[name]
+    low = {k.lower(): v for k, v in shorts.items()}
+    if name.lower() in low:
+        return low[name.lower()]
+    raise KeyError(f"unknown Class {name!r}")
+
+
 def _chain(name, by_name):
-    """[self, parent, …, Base] — self first, then ancestors."""
+    """[self, parent, …, Base] — self first, then ancestors. `name` may be a short name."""
     order, seen = [], set()
+    name = canonical_name(name, by_name)
     while name and name not in seen:
         seen.add(name)
         cls = by_name.get(name)
@@ -81,7 +101,8 @@ def canonical_url(class_name, element, authority="udlm.dev"):
 def resolve(address, by_name=None):
     by_name = by_name or load_classes()
     authority, cls_name, element = _parse_address(address)
-    chain = _chain(cls_name, by_name)  # self → Base; raises on unknown Class
+    chain = _chain(cls_name, by_name)  # self → Base; raises on unknown Class (short name accepted)
+    cls_name = chain[0]["resource_type"]  # canonicalize: a short name never leaves the resolver (CLS-007)
     for depth, cls in enumerate(chain):
         for el in cls.get("elements") or []:
             if el["element"] == element:

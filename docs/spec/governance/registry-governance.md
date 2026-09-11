@@ -376,8 +376,9 @@ Air-gapped deployment
 ## 6a. Class-evolution gates — what the registry refuses about its own artifacts
 
 The registry governs artifacts that other artifacts are compiled from. Under the scoped-Class
-model (ADR-038 — Base, Type, and Provider Classes composed of shared data elements, with
-portability derived from where an element sits), one Base element serves dozens of descendants,
+model (defined in `docs/spec/foundations/class-tiers.md`, `CLS-*`; ADR-038 holds the why — Base,
+Type, and Provider Classes composed of shared data elements, with portability derived from where an
+element sits), one Base element serves dozens of descendants,
 so an edit to it is not a local change: it is a change to every flat spec generated from it and
 every estate compiled against those. Software inheritance met this as the fragile-base-class
 problem and never solved it in general, because behavioral compatibility is undecidable. Here it

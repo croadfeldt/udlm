@@ -11,7 +11,7 @@
 # (the dedup debt from 2026-07-15 / the ADR-027 collisions). These are burned down in the
 # follow-up renumber PR; a baseline that no longer spreads is reported stale.
 
-version: "1.0.9"
+version: "1.0.10"
 
 prefixes:
   - prefix: ACC
@@ -38,6 +38,11 @@ prefixes:
     name: Auth capability & identity contract
     home: docs/spec/governance/auth-providers.md
     domain: The authentication capability and Identity contract (UDLM carries the contract, never authenticates)
+    status: active
+  - prefix: CLS
+    name: Class tiers
+    home: docs/spec/foundations/class-tiers.md
+    domain: The Base / Type / Provider Class tier model — what earns a Base, folders, the Type axis, Provider Classes, class naming and short names
     status: active
   - prefix: CMP
     name: Composite service composition
