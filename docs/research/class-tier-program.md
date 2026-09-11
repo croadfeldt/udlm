@@ -101,7 +101,7 @@ test clause; row 069 in PR 1 supersedes it.
 | Content | addendum: the depth cap is three and already enforced by the `resource_type` pattern; the tier definitions live in `class-tiers.md`; offerings can earn a Provider Class; "all Classes are instantiable" is qualified by `instantiable: false` |
 | Depends on | PRs 1–6 |
 
-## Status — 2026-09-11, end of day
+## Status — 2026-09-12
 
 | PR | What | State |
 |---|---|---|
@@ -111,10 +111,10 @@ test clause; row 069 in PR 1 supersedes it.
 | 2 | #574 `Compute.Cluster` → `KubernetesCluster` | merged |
 | 3 | #575 `Compute` → `Machine`, `LPAR`, Redfish firmware, closes #564 | merged |
 | 4a | #576 `KubernetesNamespace`, `KubernetesNodePool`, the `K8s*` short names | merged |
-| 4b | #577 `Storage.Class`, fleet-manager service kind, quota folded, `Platform` deprecated | **open** |
-| 5 | folder Bases `instantiable: false` — eight records, minor bumps | not started; small |
-| 6 | provider-contract projection prose | not started; prose only |
-| 7 | ADR-038 addendum | not started; last |
+| 4b | #577 `Storage.Class`, fleet-manager service kind, quota folded, `Platform` deprecated | merged |
+| 5 | #579 folder Bases `instantiable: false` — eight records, minor bumps | merged |
+| 6 | #580 provider-contract projection prose | merged |
+| 7 | register row 070 amending ADR-038 (an Accepted record is immutable — ADR-REAL-004 — so the amendment is a row, as 069 was for 068) | **open** |
 
 **Rulings waiting on the maintainer**
 
