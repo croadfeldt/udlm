@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Software/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Software/1.1.0
 conforms_to: udlm/0.1
 uuid: e2f48d85-0f75-4015-9e92-be500701b108
 record_type: class
 class: base
 resource_type: Software
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
+instantiable: false
 metadata:
   authority: canonical
   display_name: Software Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-08-04T00:00:00Z'
-  description: Empty Software category base — the promotion target for elements the Software.* types share
-    (ADR-039 scope promotion; factoring waves per family).
+  description: 'A folder, not a deliverable: installed or served software is ordered as a `Software.Service` (of a declared `service_kind`), never as `Software` (`instantiable: false`, CLS-003; ADR-069). It groups the software records and holds the elements they come to share.'
 elements: []

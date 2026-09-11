@@ -116,6 +116,7 @@ def compile_spec(cls, by_name):
         "version": cls["version"],
         "family": cls["family"],
         "status": cls["status"],
+        **({"instantiable": False} if cls.get("instantiable") is False else {}),   # CLS-003: a folder says so in the flat spec too
         **({"deprecation": cls["deprecation"]} if cls.get("deprecation") else {}),   # REG-DP-004: the successor rides with the flat spec
         "metadata": {**(cls.get("metadata") or {}),
                      "generated": True,

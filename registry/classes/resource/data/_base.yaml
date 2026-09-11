@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Data/1.0.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Data/1.1.0
 conforms_to: udlm/0.1
 uuid: 34093415-4089-44f3-b395-07103e5f4779
 record_type: class
 class: base
 resource_type: Data
-version: 1.0.0
+version: 1.1.0
 family: Resource
 status: active
+instantiable: false
 metadata:
   authority: canonical
   display_name: Data Base Class
   maintainer: UDLM maintainers
   origination_timestamp: '2026-08-04T00:00:00Z'
-  description: Empty Data category base — the promotion target for elements the Data.* types share (ADR-039
-    scope promotion; factoring waves per family).
+  description: 'A folder, not a deliverable: a managed data service is ordered as a `Data.Database` (and, when the gap closes, a stream or a queue), never as `Data` (`instantiable: false`, CLS-003; ADR-069). It groups the data-service records and holds the elements they come to share.'
 elements: []
