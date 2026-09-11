@@ -33,7 +33,7 @@ UUID = "b7a3f0c1-1010-4d20-8a40-0f1e2d3c4b50"
 
 # ---- the axes (§9.1) ----------------------------------------------------------------
 AUTHORITIES = ["", "//state.mn/", "//peer.dcm.east/"]
-PATHS       = ["Compute/VM", "Compute/VM/OCPVirt", f"uuid/{UUID}", "estate", "estate/web-tier"]
+PATHS       = ["Machine/VM", "Machine/VM/OCPVirt", f"uuid/{UUID}", "estate", "estate/web-tier"]
 PINS        = ["", "@1.2.0", "@sha256:" + "a" * 64]
 FRAGMENTS   = ["", "#cpu", "#cpu.count"]
 
@@ -43,7 +43,7 @@ SET_OPS     = ["=in=", "=out="]
 SELECTORS   = ["tenant_uuid", "resource_type", "labels.concern", "spec.cpu.count"]
 VALUES      = [
     "abc",                    # bare unreserved
-    "Compute.VM",             # dotted NAME as a value
+    "Machine.VM",             # dotted NAME as a value
     "{self}",                 # RFC 6570 level 1
     "'quoted value'",         # single-quote quoting
     "'a,b'",                  # separator inside quotes
@@ -137,7 +137,7 @@ def gen_equivalence():
         ("in-list-order",  ["estate?z=in=(a,b,c)", "estate?z=in=(c,b,a)"]),
         ("or-order",       ["estate?a==1,b==2", "estate?b==2,a==1"]),
         ("operational",    ["estate?a==1", "estate?a==1&page_size=50", "estate?a==1&page_size=99"]),
-        ("dotted-path",    ["Compute.VM@1.2.0", "Compute/VM@1.2.0"]),
+        ("dotted-path",    ["Machine.VM@1.2.0", "Machine/VM@1.2.0"]),
     ]
     for label, spellings in classes:
         canons = {}
@@ -159,7 +159,7 @@ def gen_projection():
         "estate?tenant_uuid=={self}",
         "estate?a==1;b==2",
         f"uuid/{UUID}@1.2.0?reference_data_type==network_zone",
-        "//state.mn/Compute/VM@1.2.0#cpu.count",
+        "//state.mn/Machine/VM@1.2.0#cpu.count",
         "estate?z=in=(a,b);q=='has space'",
     ]:
         try:
@@ -181,9 +181,9 @@ NEGATIVE = {
     "URF-005": ["estate?page_size=50", "estate?zone=b", "estate?unknown_op=1"],
     "URF-008": ["estate?name==^vm", "estate?name==vm$", "estate?name=='[0-9]'",
                 "estate?name=='a|b'", "estate?name=='a\\b'", "estate?name=='{4}'"],
-    "pin":     ["Compute/VM@latest", "Compute/VM@1.2", "Compute/VM@sha256:short"],
-    "set-op":  ["estate?z=in=(Compute.*,X)", "estate?z=in=a", "estate?z=in=()"],
-    "fragment": ["Compute/VM#Cpu.Count", "Compute/VM#-bad"],
+    "pin":     ["Machine/VM@latest", "Machine/VM@1.2", "Machine/VM@sha256:short"],
+    "set-op":  ["estate?z=in=(Machine.*,X)", "estate?z=in=a", "estate?z=in=()"],
+    "fragment": ["Machine/VM#Cpu.Count", "Machine/VM#-bad"],
 }
 
 

@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.7.6",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Data.Database/0.7.7",
   "conforms_to": "udlm/0.1",
   "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337",
   "resource_type": "Data.Database",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -22,7 +22,7 @@
         },
         {
           "class": "Data.Database",
-          "version": "0.7.6",
+          "version": "0.7.7",
           "uuid": "c199bb49-3ed4-4ed5-a902-2ebccd0a8337"
         }
       ]
@@ -131,7 +131,7 @@
     {
       "edge_type": "contained_by",
       "name": "host",
-      "target": "Compute.VM",
+      "target": "Machine.VM",
       "cardinality": "0..1",
       "description": "The compute host/guest the database runs on, when self-hosted (vs a managed DBaaS provider)."
     },
@@ -171,7 +171,7 @@
     ],
     "works_with": [
       "Storage.Volume — the persistent volume backing the data directory.",
-      "Compute.VM / KubernetesCluster — where the database runs, when self-hosted.",
+      "Machine.VM / KubernetesCluster — where the database runs, when self-hosted.",
       "Software.Service / Container — the consumers that bind to its connection outputs."
     ]
   }

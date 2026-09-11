@@ -13,9 +13,9 @@ known:
   element: domain
 - resource_type: Capability
   element: pillar
-- resource_type: Compute
+- resource_type: Machine
   element: instance_size
-- resource_type: Compute.BareMetalHost
+- resource_type: Machine.BareMetalHost
   element: architecture
 - resource_type: KubernetesCluster
   element: release

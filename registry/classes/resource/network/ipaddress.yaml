@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.3
+$id: https://udlm.dev/registry/udlm/0.1/class/Network.IPAddress/0.10.4
 conforms_to: udlm/0.1
 uuid: 6b7a4336-da9c-4b42-883d-44c96940f45a
 record_type: class
 class: type
 resource_type: Network.IPAddress
 parent: Network
-version: 0.10.3
+version: 0.10.4
 family: Resource
 status: active
 # OWN-007 — the ownership model is a type-level invariant, declared here and not settable per entity.
@@ -127,4 +127,4 @@ context:
   works_with:
   - Hardware.NetworkInterface — the interface the address is configured on.
   - Network.IPAddressPool — the pool the address was carved from.
-  - Compute.VM — consumers that request or bring addresses.
+  - Machine.VM — consumers that request or bring addresses.

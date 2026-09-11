@@ -11,7 +11,7 @@ record:
   uuid: c7d2e8a1-4f36-4b90-a5c8-19e07b4d6f23
   handle: payments/greedy-01
   conforms_to: udlm/0.1
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   dependencies:
     - edge_type: contained_by          # the defect — this is a stake, not a part

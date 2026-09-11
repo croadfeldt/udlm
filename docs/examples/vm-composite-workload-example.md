@@ -35,7 +35,7 @@ constituents:
       allocation: static
 
   - component_id: game_vm
-    resource_type: Compute.VM
+    resource_type: Machine.VM
     type_version: 0.6.3
     provided_by: self
     failure_effect: required

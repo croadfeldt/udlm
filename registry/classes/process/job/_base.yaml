@@ -1,10 +1,10 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.4
+$id: https://udlm.dev/registry/udlm/0.1/class/Job/1.2.5
 conforms_to: udlm/0.1
 uuid: 343f2efd-0fb5-4679-a02f-ade22378e242
 record_type: class
 class: base
 resource_type: Job
-version: 1.2.4
+version: 1.2.5
 family: Process
 status: active
 metadata:
@@ -176,7 +176,7 @@ relationships:
     Automation.* class member (the target widens if a second family-Process category of definitions ever
     exists). The domain facet (family/category filters) derives from this edge.'
 - edge_type: depends_on
-  target: Compute.BareMetalHost
+  target: Machine.BareMetalHost
   cardinality: 0..n
   name: executor_host
   description: 'Executor host(s) — where the job runs. A running job pins its executor: in a reverse-topological
@@ -195,7 +195,7 @@ relationships:
   description: Name/address resolution the job uses to reach targets (typically soft — inventories can
     pin IPs).
 - edge_type: references
-  target: Compute.VM
+  target: Machine.VM
   cardinality: 0..n
   description: 'affected_entities (§6.3) — entities this job creates/modifies/decommissions. Informational;
     §6.4 makes the provenance obligation flow the OTHER way (affected entity cites the job uuid). NOTE:

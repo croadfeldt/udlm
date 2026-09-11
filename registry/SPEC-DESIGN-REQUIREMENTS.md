@@ -18,7 +18,7 @@ Each hard constraint cites the UDLM contract it derives from.
 ### Identity & naming
 5. **UUIDv4** identity, immutable for the type's life; Handles are mutable/rebindable, References are
    typed cross-doc pointers (`docs/spec/contracts/identifier-scheme.md`). **[enforced: format]**
-6. **Vendor-neutral `Category.Type` name**, e.g. `Compute.VM`
+6. **Vendor-neutral `Category.Type` name**, e.g. `Machine.VM`
    (`docs/spec/foundations/resource-type-hierarchy.md`). Full conventions — tiered namespaces (Tier-1 `Category.Type`
    vendor-neutral / Tier-2 `Vendor.Type`), when to add a category, field/output/file naming, and the
    *name-to-an-existing-standard-before-inventing* rule — live in **`registry/naming-conventions.md`**.
@@ -189,7 +189,7 @@ Each hard constraint cites the UDLM contract it derives from.
 
 ### Component granularity (entity vs data element)
 26. **A physical component (DIMM, disk, NIC, GPU, CPU) is representable BOTH ways, and the parent
-    always carries the rollup.** The containing resource (e.g. `Compute.BareMetalInstance`) MUST carry
+    always carries the rollup.** The containing resource (e.g. `Machine.BareMetalInstance`) MUST carry
     the **aggregate as a data element** (`memory.size`, `cpu.count`) — the base contract never depends
     on components being modeled. A component MAY *also* be a **first-class entity** (`Hardware.*`,
     `contained_by` the parent) for independent tracking (serial, slot, firmware, RMA, lifecycle),

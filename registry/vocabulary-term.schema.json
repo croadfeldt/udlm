@@ -69,7 +69,7 @@
       "examples": [
         "Network",
         "Storage",
-        "Compute.VM"
+        "Machine.VM"
       ]
     },
     "term": {

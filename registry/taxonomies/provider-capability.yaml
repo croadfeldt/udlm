@@ -70,13 +70,27 @@ terms:
     domain: Storage
     curation_state: canonical
     definition: Provision/manage Storage.* resources (volumes, file shares, buckets). e.g. the Samba/Ceph providers.
-  - term: realize_resources/Compute
+  - term: realize_resources/Machine
     category: compute-provisioning
     root: provider-capability
     parent: realize_resources
-    domain: Compute
+    domain: Machine
     curation_state: canonical
-    definition: Provision/manage Compute.* resources (VMs, containers, bare-metal). e.g. libvirt, podman, a Kubernetes cluster.
+    definition: Provision/manage Machine.* resources (VMs, bare-metal hosts, logical partitions). e.g. libvirt, a Redfish/Metal3 host provider, an HMC. Renamed from realize_resources/Compute (ADR-068).
+  - term: realize_resources/Container
+    category: compute-provisioning
+    root: provider-capability
+    parent: realize_resources
+    domain: Container
+    curation_state: canonical
+    definition: Provision/manage Container workloads (run this image). e.g. podman, a Kubernetes cluster acting as a container provider. Split from realize_resources/Compute when Container became its own Base (ADR-068).
+  - term: realize_resources/KubernetesCluster
+    category: compute-provisioning
+    root: provider-capability
+    parent: realize_resources
+    domain: KubernetesCluster
+    curation_state: canonical
+    definition: Provision/manage KubernetesCluster resources (a conformant cluster as one deliverable). e.g. hosted control planes behind a fleet hub, a managed Kubernetes service. Split from realize_resources/Compute (ADR-068).
   - term: realize_resources/Network
     category: network-provisioning
     root: provider-capability

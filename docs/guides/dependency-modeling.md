@@ -35,7 +35,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
 1. **Direct edge (incl. multi-edge redundancy)** — a resource names its dependency explicitly. Highest
    fidelity, per-edge effort. The base case; everything else composes from it. Redundancy is just
    *more than one* direct edge: a host declares `depends_on feed-a` **and** `depends_on feed-b`
-   (`Compute.BareMetalHost → Facility.PowerFeed` is `0..n`), so a single feed loss leaves a second
+   (`Machine.BareMetalHost → Facility.PowerFeed` is `0..n`), so a single feed loss leaves a second
    path across a distinct fault domain — authored, not inferred.
 2. **Component chain** — where a dependency routes through a *managed* component, model it on the
    component, not the whole resource. Canonically **network fabric**: a `Hardware.NetworkInterface`
@@ -59,7 +59,7 @@ difference is *how many* edges an implementor authors and *where* they sit.
 | Pattern | Type(s) |
 |---|---|
 | Direct edge | every resource type (`dependencies[]`) |
-| Power | `Compute.BareMetalHost` `depends_on` → `Facility.PowerFeed` (`0..n`; one edge per feed) |
+| Power | `Machine.BareMetalHost` `depends_on` → `Facility.PowerFeed` (`0..n`; one edge per feed) |
 | Managed-component chain | `Hardware.NetworkInterface` `connects_to` → switch port |
 | Bundling | *any* node the members `depends_on` — its deps become theirs transitively (no dedicated type) |
 | Physical scope | `Facility.Location` (adopts Redfish Location) |

@@ -54,7 +54,7 @@ test clause; row 069 in PR 1 supersedes it.
 
 | | |
 |---|---|
-| Content | `registry/classes/resource/compute/cluster.yaml` moves to the kebab-cased Base path under registry/classes/resource (kubernetes-cluster/_base.yaml); `class: base`, no parent, version 1.0.0, same uuid; description states the contract (Kubernetes conformance) and that Types will be distributions |
+| Content | the cluster record moves out of the former compute directory to the kebab-cased Base path under registry/classes/resource (kubernetes-cluster/_base.yaml); `class: base`, no parent, version 1.0.0, same uuid; description states the contract (Kubernetes conformance) and that Types will be distributions |
 | Sweep | 98 references outside `docs/adr/` and `docs/research/`; 8 citing class records patch-bumped with `$id` in step; `renames.yaml`; regenerate class specs, type catalog, pin manifest, model health |
 | Not yet | `short_name: K8sCluster` waits for PR 1's schema field; PR 4 adds it |
 | Depends on | nothing (schema unchanged) |

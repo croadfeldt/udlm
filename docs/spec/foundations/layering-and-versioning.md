@@ -257,11 +257,11 @@ type_scope:
 - Cached in the Service Layer Cache at Service Provider registration time
 
 **Examples:**
-- VM sizing layer (small, medium, large configurations for `Compute.VM`)
-- Web server configuration layer for `Compute.VM`
+- VM sizing layer (small, medium, large configurations for `Machine.VM`)
+- Web server configuration layer for `Machine.VM`
 - Network port configuration layer for `Network.Port`
-- CL Web Service Data Layer for `Compute.VM` (exact scope)
-- General compute placement layer for `Compute.VM` and descendants
+- CL Web Service Data Layer for `Machine.VM` (exact scope)
+- General compute placement layer for `Machine.VM` and descendants
 
 ---
 
@@ -430,7 +430,7 @@ layer:
 
   layer_type: reference_data
   reference_data_type: vm_size
-  scope: type_agnostic   # applies across providers for Compute.VM
+  scope: type_agnostic   # applies across providers for Machine.VM
 
   data:
     size_name: "Medium — General Purpose"
@@ -455,7 +455,7 @@ one-way pull. Each side declares its half as **data** on the layer record; the c
 computes the match (the acting side).
 
 - **Target (the layer publishes):** `covers` — ONE URF filter (identifier-scheme §9;
-  e.g. `estate?resource_type==Compute.*` or `estate?labels.concern==payments`) naming which
+  e.g. `estate?resource_type==Machine.*` or `estate?labels.concern==payments`) naming which
   resources the layer *may* inject into; and
   `applies_on` — the convergence scenario(s) it injects during, named by ADR-030's vocabulary
   (`realize` · `reconcile` · `reconfigure` · `rehydrate` · `decommission`; absent = every scenario).
@@ -714,7 +714,7 @@ layer:
 
   # COMPATIBILITY METADATA — what this layer applies to
   compatibility:
-    resource_types: [Compute.VM, Container]
+    resource_types: [Machine.VM, Container]
     resource_type_versions: "^1.0.0"
     provider_types: []              # empty = all providers
     profile_constraints: []         # empty = all profiles; or: [standard, prod, fsi]
@@ -1647,7 +1647,7 @@ Policy may override the profile default per field or resource type:
 policy:
   type: transformation
   rule: >
-    If resource_type == Compute.VM
+    If resource_type == Machine.VM
     AND field.name == cpu_count
     THEN set: constraint_visibility.level = full
 ```

@@ -2,7 +2,7 @@ uuid: uc-aed8499a-4a62-4c71-8e65-822ca13fc3be
 handle: compute/baremetal-host-hardware-mismatch-refused
 version: 1.0.0
 scenario:
-  description: 'A platform engineer declares a Compute.BareMetalHost intent whose required hardware — a GPU
+  description: 'A platform engineer declares a Machine.BareMetalHost intent whose required hardware — a GPU
     of a named class, or a NIC of a required speed — no eligible physical host in the pool actually
     satisfies. Success for this use case is the REFUSAL: the request must be rejected before provisioning,
     never force-fit onto a host missing the required hardware (a machine the intent did not ask for) and

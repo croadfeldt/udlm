@@ -227,7 +227,7 @@ dcm_registration_verdict:                # the control plane-OWNED — reference
   capability_admissions:                 # ADR-PROV-003 — PLATFORM-LEVEL admin disposition of each DECLARED
     - capability: realize_resources/Storage   # capability/category. DEFAULT-DENY: a declared capability is
       disposition: approved              # UNUSABLE until admitted; each starts `pending` at registration.
-    - capability: realize_resources/Compute   # disposition: pending | approved | provisional | denied — COARSE,
+    - capability: realize_resources/Machine   # disposition: pending | approved | provisional | denied — COARSE,
       disposition: denied                # platform-wide. GRANULAR approval (per tenant/zone/resource/context) is
     - capability: serve_data/Network           # POLICY (Governance Matrix), not here. Domain granularity is inherent:
       disposition: provisional           # a category IS verb×domain (approve /Storage, deny /Compute independently).
@@ -558,7 +558,7 @@ service_provider_capabilities:
   resource_types:                       # PROJECTION of the provider's Resource-family Provider
                                         # Classes (one per class; the class is authored, this
                                         # list is rendered — ADR-038 addendum)
-    - fqn: Compute.VM
+    - fqn: Machine.VM
       spec_version: "2.1.0"
       catalog_item_uuid: <uuid>
   two_phase_realization:                # reserve/commit/release — base MUST for realize_resources (§6a)
@@ -607,7 +607,7 @@ Placement and consumer-selection only work over **real** resources. A `realize_r
 resource_advertisement:                 # returned from {capabilities_endpoint}, refreshed by lifecycle events
   category: realize_resources/Network    # the capability category this advertises for
   inventory:                             # the resources the provider OFFERS, as referenceable resources
-    - resource_ref: net-vlan-20          # identity of an offered foundational resource (Network.VLAN, Facility.Location, Storage.Pool, Compute.BareMetalHost, ...)
+    - resource_ref: net-vlan-20          # identity of an offered foundational resource (Network.VLAN, Facility.Location, Storage.Pool, Machine.BareMetalHost, ...)
       resource_type: Network.VLAN
       selectable: true                   # part of the consumer-selectable set (subject to eligibility)
   capacity:                              # the QUANTITATIVE input placement decides against, per offered resource
@@ -715,7 +715,7 @@ composite_service_capabilities:
     - fqn: ApplicationStack.WebApp
       version: "2.0.0"
       constituents:
-        - resource_type: Compute.VM
+        - resource_type: Machine.VM
           required_for_delivery: required
         - resource_type: Network.IPAddress
           required_for_delivery: required
@@ -780,10 +780,10 @@ peer_dcm_capabilities:
   # peer may request" is set locally. A peer cannot widen its own grants by declaring them here.
   inbound_authorization:                 # requested (advisory)
     - operation: catalog_query
-      resource_types: [Compute.VM]
+      resource_types: [Machine.VM]
   outbound_authorization:                # requested (advisory)
     - operation: placement_query
-      resource_types: [Compute.VM]
+      resource_types: [Machine.VM]
   data_boundary:
     max_classification: restricted
   # trust_posture is NOT declared here (DCM ADR-022). A federating peer submits attestation EVIDENCE
@@ -913,7 +913,7 @@ External systems MUST be able to query for specific capabilities:
 GET /api/v1/capabilities?domain=cost
 GET /api/v1/capabilities?domain=audit
 GET /api/v1/capabilities?data_stream=true
-GET /api/v1/capabilities?operation=create&resource_type=Compute.VM
+GET /api/v1/capabilities?operation=create&resource_type=Machine.VM
 ```
 
 The response MUST include only matching capabilities with their API endpoints and subscription mechanisms.

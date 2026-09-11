@@ -2,7 +2,7 @@ uuid: uc-5dff5cce-219d-4b7f-826b-5b328f21d44c
 handle: change-control/intra-estate-ordered-propagation
 version: 1.0.0
 scenario:
-  description: Inside one estate, adopting a Compute Base change touches many downstream Compute.* records
+  description: Inside one estate, adopting a Machine Base change touches many downstream Machine.* records
     whose workloads depend on each other. The adoption job derives its update order from the estate's
     own dependency graph (the same edges that derive shutdown order), updates in batches with per-batch
     verification, and halts leaving a recorded partial-adoption state if a batch fails verification —

@@ -31,7 +31,7 @@ capability_admissions:
     at: '2026-08-12T09:14:00Z'
   # Domain granularity is inherent in a category — a category IS verb × domain — so this provider is
   # trusted for storage and not for compute, with no extra mechanism.
-  - capability: realize_resources/Compute
+  - capability: realize_resources/Machine
     disposition: denied
     actor: platform-admin/alice
     reason: No compute accreditation on file.
@@ -43,7 +43,7 @@ capability_admissions:
 # input can only NARROW, which is why it is a ceiling and not a setting — no single party can widen
 # it, so compromising one cannot grant authority the others withhold.
 #
-# `realize_resources/Compute` is absent because it was denied; `serve_data/Network` because it was
+# `realize_resources/Machine` is absent because it was denied; `serve_data/Network` because it was
 # never admitted. Putting either here would be authority nobody granted, and validate.py refuses it.
 effective_capabilities:
   - realize_resources/Storage

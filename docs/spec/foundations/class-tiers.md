@@ -19,8 +19,8 @@ A **class** is a named data contract. There are three tiers, keyed to the name:
 | Tier | Name shape | Example | What an order here commits to |
 |---|---|---|---|
 | **Base Class** | one segment | `Container` | any provider that offers anything beneath it |
-| **Type Class** | two segments | `Compute.VM` | any provider that offers this Type or a Provider Class under it |
-| **Provider Class** | three segments | `Compute.VM.OCPVirt` | the providers that declare this class — a set, never one |
+| **Type Class** | two segments | `Machine.VM` | any provider that offers this Type or a Provider Class under it |
+| **Provider Class** | three segments | `Machine.VM.OCPVirt` | the providers that declare this class — a set, never one |
 
 Each tier extends the one above it by adding or refining elements, never by contradicting them.
 Where an element sits is its portability: an element on the Base is honored by every provider in
@@ -52,7 +52,7 @@ This is testable. A grouping earns a Base when all three hold:
    ancestors declared — and the class schema offers no way to exclude an inherited element, so
    the other half holds by construction.
 3. **An offering declared at any tier accepts orders at every tier above it.** A provider that
-   declares `Compute.VM.OCPVirt` satisfies `Compute.VM` and bare `Compute`. Policy-fill
+   declares `Machine.VM.OCPVirt` satisfies `Machine.VM` and bare `Machine`. Policy-fill
    (DCM ADR-024) completes the blanks a Base-level order leaves. This is what makes "every Class is
    instantiable" (ADR-038 §4) a fact rather than a sentence; the provider contract carries the
    obligation (see `PRV-*`).
@@ -117,7 +117,7 @@ technology is the provider, never the type name.
 
 Canonical names are long on purpose; short names are for people. Modelled on Kubernetes
 `shortNames`, a class may declare one `short_name` (`K8sCluster` for `KubernetesCluster`,
-`Compute.BMH` for `Compute.BareMetalHost`). A short name is accepted wherever a class name is
+`Machine.BMH` for `Machine.BareMetalHost`). A short name is accepted wherever a class name is
 accepted and is resolved to the canonical name on input. It is never stored: not in `$id`, a
 `parent`, an element's `scope`, a relationship `target`, or a provider's offering list. It must
 be unique, compared case-insensitively, against every canonical name and every other short name,

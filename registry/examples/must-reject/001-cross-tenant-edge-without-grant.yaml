@@ -14,7 +14,7 @@ record:
   uuid: e1f9a3c4-6b20-4d7a-9c58-2a4e8b0d5f31
   handle: research/ungranted-01
   conforms_to: udlm/0.1
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   type_version: 0.12.0
   lifecycle_state: Realized
   tenant_uuid: 3fb1d7e0-9c44-4a2b-8e16-7d05c9a3b284   # a third tenant; holds no grant

@@ -8,7 +8,7 @@
 #
 # THE THIRD AXIS. The matrix's ten were labelled `capability`, which is a different thing:
 #   capability  what a PROVIDER can do             realize_resources, serve_data   (provider-capability.yaml)
-#   thing       what it offers                     Compute.VM, Storage.Volume      (the class system)
+#   thing       what it offers                     Machine.VM, Storage.Volume      (the class system)
 #   action      what may be DONE to that thing     read, create, replicate         (this file)
 # Only `federate` reads both ways, which is why the collision went unnoticed.
 #

@@ -1,11 +1,12 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Compute.BareMetalHost/0.10.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Machine.BareMetalHost/0.11.0
 conforms_to: udlm/0.1
 uuid: 7196d55a-d584-40e5-8b47-5247dad7d421
 record_type: class
 class: type
-resource_type: Compute.BareMetalHost
-parent: Compute
-version: 0.10.2
+resource_type: Machine.BareMetalHost
+short_name: Machine.BMH
+parent: Machine
+version: 0.11.0
 family: Resource
 status: active
 metadata:
@@ -21,7 +22,7 @@ metadata:
   origination_timestamp: '2026-06-27T00:31:44Z'
 elements:
 - element: lifecycle_state
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Allocation state (common-elements §6, §28). available = inventoried/unallocated raw asset;
@@ -35,7 +36,7 @@ elements:
     description: Allocation state (common-elements §6, §28). available = inventoried/unallocated raw asset;
       allocated = adopted into the managed lifecycle. Adopts Metal3 BareMetalHost.status.provisioning.state.
 - element: composition_visibility
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Whether the host's kept components (Hardware.NetworkInterface) are modeled as first-class
@@ -51,7 +52,7 @@ elements:
       entities vs a rollup (§26, docs/spec/foundations/service-dependencies.md §11d); memory/CPU/disk/GPU are aggregate
       host attributes, not component records (DCM ADR-013). opaque = rollup only.
 - element: identity
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Chassis/system identity (SPEC-DESIGN-REQUIREMENTS §27).
@@ -75,7 +76,7 @@ elements:
         type: string
         description: Redfish SKU.
 - element: cpu
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Reconciled CPU rollup (§26) — aggregate host CPU. Adopts Redfish ProcessorSummary.
@@ -96,7 +97,7 @@ elements:
         minimum: 1
         description: Total logical processors (Redfish ProcessorSummary.LogicalProcessorCount).
 - element: memory
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Reconciled memory rollup (§26) — aggregate host memory. Adopts Redfish MemorySummary.
@@ -109,7 +110,7 @@ elements:
         pattern: ^[0-9]+(MB|GB|TB|MiB|GiB|TiB)$
         description: Total system memory, e.g. 64GB (Redfish MemorySummary.TotalSystemMemoryGiB).
 - element: storage
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Reconciled local-storage rollup (§26) — aggregate host local storage.
@@ -122,7 +123,7 @@ elements:
         pattern: ^[0-9]+(MB|GB|TB|PB|MiB|GiB|TiB|PiB)$
         description: Total raw local capacity.
 - element: architecture
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: System ISA, e.g. x86-64, aarch64.
@@ -130,7 +131,7 @@ elements:
     type: string
     description: System ISA, e.g. x86-64, aarch64.
 - element: bios_version
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Firmware/BIOS version (Redfish BiosVersion).
@@ -138,7 +139,7 @@ elements:
     type: string
     description: Firmware/BIOS version (Redfish BiosVersion).
 - element: image
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: 'The provisioning image for this host (Metal3 image): what gets written to the root device
@@ -172,7 +173,7 @@ elements:
         - live-iso
         description: Image format (Metal3 DiskFormat).
 - element: root_device_hints
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: Which disk receives the image (Metal3 rootDeviceHints, the portable core) — the §27 Identity
@@ -196,7 +197,7 @@ elements:
         type: integer
         description: Smallest acceptable root device.
 - element: boot_mac_address
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: The NIC MAC the host network-boots from (Metal3 bootMACAddress) — ties provisioning to
@@ -207,7 +208,7 @@ elements:
     description: The NIC MAC the host network-boots from (Metal3 bootMACAddress) — ties provisioning to
       a concrete port; pairs with that NIC's Hardware.NetworkInterface record.
 - element: online
-  scope: Compute.BareMetalHost
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
   description: 'Desired power target (Metal3 online): true = powered on and kept on. The intent counterpart
@@ -216,20 +217,28 @@ elements:
     type: boolean
     description: 'Desired power target (Metal3 online): true = powered on and kept on. The intent counterpart
       of the observed power_state output — the host analogue of the VM''s run_state.desired_state.'
-- element: boot_mode
-  scope: Compute.BareMetalHost
+- element: firmware
+  scope: Machine.BareMetalHost
   optional: true
   state: canonical
-  description: 'Firmware boot mode (Metal3 bootMode / Redfish Boot). Fleet note: converging this with
-    the VM''s firmware block into a common element is a candidate next MINOR — adopted vocabulary kept
-    verbatim until then.'
+  description: 'Host firmware surface: the firmware interface (`type`) and UEFI Secure Boot. Replaces the
+    former boot-mode string (Metal3 bootMode) with the SAME element and vocabulary Machine.VM carries —
+    Redfish `ComputerSystem` Boot.BootSourceOverrideMode spelling, `legacy` | `uefi` (ADR-068). Not
+    promoted to the Machine Base because an LPAR cannot honor it (CLS-002 (b)). No `vtpm` here: a
+    physical TPM is a Hardware fact, not a request.'
   schema:
-    enum:
-    - uefi
-    - legacy
-    description: 'Firmware boot mode (Metal3 bootMode / Redfish Boot). Fleet note: converging this with
-      the VM''s firmware block into a common element is a candidate next MINOR — adopted vocabulary kept
-      verbatim until then.'
+    type: object
+    additionalProperties: false
+    description: Host firmware surface (Redfish Boot.BootSourceOverrideMode; Metal3 bootMode).
+    properties:
+      type:
+        enum:
+        - legacy
+        - uefi
+        description: Firmware interface the host boots with (Redfish spelling; `legacy` is BIOS).
+      secure_boot:
+        type: boolean
+        description: 'UEFI Secure Boot. Only valid with type: uefi (policy-validated).'
 spec_examples:
 - lifecycle_state: allocated
   composition_visibility: selective
@@ -260,7 +269,8 @@ spec_examples:
     min_size_gigabytes: 480
   boot_mac_address: 00:11:22:33:44:55
   online: true
-  boot_mode: uefi
+  firmware:
+    type: uefi
 outputs:
   power_state:
     type: string
@@ -334,7 +344,7 @@ context:
   - you need host provisioning to be replayable intent — image, root device, boot MAC, power target —
     so a lost host rebuilds from the estate (the bare-metal leg of rehydration)
   not_for:
-  - A virtual machine — that is Compute.VM; a host is hardware you can touch.
+  - A virtual machine — that is Machine.VM; a host is hardware you can touch.
   - The host's out-of-band management controller — that is Hardware.BMC, its own record with its own address
     and power-control surface.
   - Individual NICs, GPUs, or drives inside the host — those are Hardware.NetworkInterface / Hardware.GraphicsProcessor
@@ -343,4 +353,4 @@ context:
   - Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.
   - Hardware.BiosProfile — the firmware configuration the host converges to.
   - Hardware.NetworkInterface — the host's NICs, modeled as contained components.
-  - Compute.VM — the guests the host runs.
+  - Machine.VM — the guests the host runs.

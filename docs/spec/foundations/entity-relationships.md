@@ -53,7 +53,7 @@ dependencies:
   - target_handle: "storage/primary"     # its boot disk
     edge_type: depends_on
     strength: hard                       # cannot function without it → constituent (derived)
-    relation: disk                       # declared by Compute.VM (REL-001)
+    relation: disk                       # declared by Machine.VM (REL-001)
 
   - target_handle: "business-units/payments"
     edge_type: references                # informational (derived) — no lifecycle coupling
@@ -464,7 +464,7 @@ entity:
     # notify:  notify owner, entity enters PENDING_DECISION
 ```
 
-**`shareability.allowed: false`** on a Resource Type (e.g., `Compute.BootDisk`) means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
+**`shareability.allowed: false`** on a Resource Type (e.g., `Machine.BootDisk`) means the Policy Engine rejects any attempt to create a second active constituent or operational relationship to an instance. Boot disks, primary network interfaces, and similar exclusively-owned resources are non-shareable by type definition (REL-017).
 
 ### 9.3 Reference Count Lifecycle
 
@@ -539,7 +539,7 @@ Relationship declarations exist at multiple levels, each building on the previou
 Declares what relationships are **possible** for a resource type. Sets the ceiling — lower levels can only declare relationships within these bounds.
 
 ```yaml
-resource_type: Compute.VM
+resource_type: Machine.VM
 relationships:
   - name: disk
     edge_type: depends_on
@@ -590,7 +590,7 @@ The consumer declares relationships in their request. Bundled declarations (stor
 ```yaml
 # Explicit relationship declaration in a request
 request:
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   # ... other fields ...
   relationships:
     - relation: disk
@@ -602,7 +602,7 @@ request:
 
 # Bundled declaration — expanded automatically
 request:
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   storage:
     disks:
       - name: boot

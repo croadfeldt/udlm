@@ -2,7 +2,7 @@ uuid: uc-7f2e48bc-f671-4363-aebf-60e52212abd7
 handle: change-control/breaking-full-ceremony
 version: 1.0.0
 scenario:
-  description: 'A breaking Compute Base change (properly declared upstream, blast radius enumerated) reaches
+  description: 'A breaking Machine Base change (properly declared upstream, blast radius enumerated) reaches
     a production estate. Its policy requires the full ceremony for breaking classes: blue/green dry-run
     evidence first, a named approver''s sign-off on the diff, then execution only inside the maintenance
     window, then post-adoption verification before the debt entry closes. Each gate is a policy clause;

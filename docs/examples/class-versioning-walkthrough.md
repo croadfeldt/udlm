@@ -6,7 +6,7 @@ reaches for. Every section is backed by a corpus case (`use-cases/class-versioni
 those cases ride every normal analysis run like the rest of the corpus — the documentation and
 the validation share one source of truth.
 
-The running example: Base Class `Compute` carries a `memory` element (a Quantity object) that
+The running example: Base Class `Machine` carries a `memory` element (a Quantity object) that
 every compute descendant — VM, Container, BareMetalHost — includes at Base scope.
 
 ## The worked scenario: one element, three changes
@@ -46,7 +46,7 @@ digest where the profile demands byte-proof:
 
 ```yaml
 class_pins:
-  - class: Compute                # the handle names the thing…
+  - class: Machine                # the handle names the thing…
     version: 0.4.1                # …the version names the published revision…
     digest: sha256:2f6c1a9e...    # …and the digest (from the pin manifest) proves the bytes
 ```
@@ -55,7 +55,7 @@ The estate compiles and realizes against the pinned revision completely. The cos
 line, not a capability:
 
 ```
-PIN-BEHIND (legal): Compute pinned 0.4.1 (sha256:2f6c1a9e…); registry current 1.0.0 — 1 major behind
+PIN-BEHIND (legal): Machine pinned 0.4.1 (sha256:2f6c1a9e…); registry current 1.0.0 — 1 major behind
 ```
 
 The list re-opens whenever the estate's registry ref advances. Two things are refused, typed

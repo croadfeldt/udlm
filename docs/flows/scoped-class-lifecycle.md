@@ -30,7 +30,7 @@ flowchart TD
     E --> F{"--check: faithful recompilation"}
     F -->|"stale"| F1["Refuse — regenerate"]
     F -->|"fresh"| G["Consumers read the flat spec<br/>unchanged; cut over to class-aware<br/>reads at their own pace"]
-    G --> H["Address any element<br/>Compute.VM#cpu or<br/>https://auth/Compute/VM#cpu"]
+    G --> H["Address any element<br/>Machine.VM#cpu or<br/>https://auth/Machine/VM#cpu"]
     H --> I["Portability derived from<br/>most-specific populated scope"]
 ```
 
@@ -47,7 +47,7 @@ flowchart TD
   (the same move as derived shape and derived nature).
 - **Governed values are reference-data, requirements-authoritative** (PVD-001 / ADR-036): a tier is a
   named requirements floor, name-selectable but requirements-driven; the profile decides bare-vs-reference.
-- **One coordinate, two notations.** `Compute.VM#cpu` (dot) and `https://auth/Compute/VM#cpu` (URL)
+- **One coordinate, two notations.** `Machine.VM#cpu` (dot) and `https://auth/Machine/VM#cpu` (URL)
   resolve identically; the URL form is preferred (OData/Redfish `@odata.id`).
 
 ## What UDLM does not decide

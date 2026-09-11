@@ -225,14 +225,14 @@ block form §9.4, JSON embedding, English renderings) — never a second parse s
 - **Authored by handle, resolved to uuid — both ends one grammar** (AEP-124 unchanged):
   `estate/jobs/nightly-backup` resolves to `uuid/4c1f8e2a-…@sha256:…`; a sealed citation is
   itself a valid URF.
-- **Names are not paths.** Dotted PascalCase (`Compute.VM`) is the type NAME and appears in
-  *values* (`resource_type==Compute.VM`); the slash form is the *path* spelling of the same
-  identity (`Compute/VM` — lossless bijection, since name segments never contain dots).
+- **Names are not paths.** Dotted PascalCase (`Machine.VM`) is the type NAME and appears in
+  *values* (`resource_type==Machine.VM`); the slash form is the *path* spelling of the same
+  identity (`Machine/VM` — lossless bijection, since name segments never contain dots).
   Casing separates the two dot notations: `PascalCase.Dotted` = name, `snake_case.dotted` =
   field path. Selector dots address **within one record only** — crossing an edge is never
   a dot (virtual fields §9.2 are the sanctioned bridge).
 - **The class address is the URF registry subset.** ADR-038 §10's coordinate
-  (`https://udlm.dev/class/Compute/VM#cpu`) IS a URF; `registry/tools/resolve_class_address.py`
+  (`https://udlm.dev/class/Machine/VM#cpu`) IS a URF; `registry/tools/resolve_class_address.py`
   is the registry half of the URF resolver.
 
 ### 9.2 The query axis — uniform RSQL
@@ -314,12 +314,12 @@ name alone:
 Examples:
 
 ```
-estate?resource_type==Compute.VM;tenant_uuid==abc;zone!=b
-estate?resource_type==Compute.*                       # glob over the name
+estate?resource_type==Machine.VM;tenant_uuid==abc;zone!=b
+estate?resource_type==Machine.*                       # glob over the name
 estate?uuid=in=(89d02cc3-…,4c1f8e2a-…)                # explicit set (the marked exception)
 estate?tenant_uuid==abc;member_of!=access/groupings/maintenance-hold
-Compute/VM@1.2.0#cpu                                  # pinned element projection
-//state.mn/Compute/VM#firmware                        # federated authority
+Machine/VM@1.2.0#cpu                                  # pinned element projection
+//state.mn/Machine/VM#firmware                        # federated authority
 estate?via(located_in)#network.fabric_id              # a field on the other end of a declared edge
 ```
 
@@ -340,12 +340,12 @@ axis's delimiter; splitting is the inverse. One parser validates both forms (blo
 parse). A native YAML/JSON *map* form is *rejected* — it would be a second parse surface.
 
 ```yaml
-criterion: "estate?tenant_uuid=={self};resource_type==Compute.VM"   # canonical
+criterion: "estate?tenant_uuid=={self};resource_type==Machine.VM"   # canonical
 criterion:                                                          # SAME value
   path: estate
   query:
     - tenant_uuid=={self}
-    - resource_type==Compute.VM
+    - resource_type==Machine.VM
 ```
 
 ### 9.5 Canonical form

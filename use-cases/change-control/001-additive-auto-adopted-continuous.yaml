@@ -2,9 +2,9 @@ uuid: uc-807d3061-57d9-4baf-9cfb-4a813473d453
 handle: change-control/additive-auto-adopted-continuous
 version: 1.0.0
 scenario:
-  description: 'A new optional element lands on the Compute Base Class upstream. A development estate''s
+  description: 'A new optional element lands on the Machine Base Class upstream. A development estate''s
     change-management policy declares continuous adoption for additive (compatible) changes: on its next
-    scheduled registry sync the estate re-pins automatically, downstream Compute.* records regenerate,
+    scheduled registry sync the estate re-pins automatically, downstream Machine.* records regenerate,
     and the adoption is recorded — no human in the loop, because the policy put the human decision in
     the policy itself, once.'
   actor:
@@ -17,7 +17,7 @@ scenario:
   - The estate's change-management policy declares adoption mode per change class (additive vs breaking),
     not per event
   - The additive change re-pins automatically at the next policy-declared sync point
-  - Downstream Compute.* records regenerate in the same orchestrated adoption run
+  - Downstream Machine.* records regenerate in the same orchestrated adoption run
   - The adoption run is recorded with the change class, the policy that authorized it, and the artifacts
     updated
   - A breaking change arriving the same day does NOT auto-adopt — the policy branches on change class

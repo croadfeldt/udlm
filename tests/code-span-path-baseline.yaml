@@ -23,7 +23,7 @@ known:
 - file: docs/spec/foundations/four-states.md
   path: operations/rehydration.md
 - file: docs/spec/foundations/resource-type-hierarchy.md
-  path: registry/classes/resource/compute/vm/cexample-cloud.yaml
+  path: registry/classes/resource/machine/vm/cexample-cloud.yaml
 - file: registry/REALIZED-ENTITY.md
   path: instances/example-tenant.yaml
 - file: registry/REALIZED-ENTITY.md

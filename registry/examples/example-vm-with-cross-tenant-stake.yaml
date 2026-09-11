@@ -9,9 +9,9 @@
 uuid: 9452b93b-5525-43e9-94ed-0eca2bfa38ca
 handle: payments/app-01
 conforms_to: udlm/0.1
-resource_type: Compute.VM
+resource_type: Machine.VM
 type_version: 0.12.0
-type_ref: https://udlm.dev/registry/udlm/0.1/Compute.VM/0.12.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Machine.VM/0.12.0
 lifecycle_state: Realized
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 metadata:
@@ -75,6 +75,6 @@ provider_preference:
   set_by: platform-admin/alice
 
 integrity:
-  head: sha256:ce42653a322968c6cf26dbe26de34fcc07d9bb85aedd8cca1c4ddbfa9f4f2a50
-  previous: null
+  head: sha256:6f0f0a5a846b9d5a0065b1679f6f0b5c8353cec7d7810e2e406907b549dc2aa2
+  previous: sha256:ce42653a322968c6cf26dbe26de34fcc07d9bb85aedd8cca1c4ddbfa9f4f2a50   # the version that named the class Compute.VM; this version renames it (ADR-068)
   algorithm: sha256-jcs

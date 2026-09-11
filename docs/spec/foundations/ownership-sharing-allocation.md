@@ -47,7 +47,7 @@ There is no relationship between VM-A and the infrastructure Tenant — the cons
 **Resource Type Spec declaration:**
 ```yaml
 resource_type_spec:
-  fqn: Compute.VM
+  fqn: Machine.VM
   ownership_model: whole_allocation
   # Each consumer request produces an entity owned entirely by the requesting Tenant
 ```

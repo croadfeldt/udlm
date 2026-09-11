@@ -13,7 +13,7 @@ record:
   handle: payments/offset-clock
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   conforms_to: udlm/0.1
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   type_version: 0.12.0
   lifecycle_state: Realized
   states:

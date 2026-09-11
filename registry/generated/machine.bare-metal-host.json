@@ -1,9 +1,9 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.BareMetalHost/0.10.2",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.BareMetalHost/0.11.0",
   "conforms_to": "udlm/0.1",
   "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421",
-  "resource_type": "Compute.BareMetalHost",
-  "version": "0.10.2",
+  "resource_type": "Machine.BareMetalHost",
+  "version": "0.11.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
@@ -16,13 +16,13 @@
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Compute",
-          "version": "1.2.5",
+          "class": "Machine",
+          "version": "2.0.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
-          "class": "Compute.BareMetalHost",
-          "version": "0.10.2",
+          "class": "Machine.BareMetalHost",
+          "version": "0.11.0",
           "uuid": "7196d55a-d584-40e5-8b47-5247dad7d421"
         }
       ]
@@ -81,7 +81,7 @@
       },
       "storage_tier": {
         "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
         "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
@@ -242,12 +242,23 @@
         "type": "boolean",
         "description": "Desired power target (Metal3 online): true = powered on and kept on. The intent counterpart of the observed power_state output — the host analogue of the VM's run_state.desired_state."
       },
-      "boot_mode": {
-        "enum": [
-          "uefi",
-          "legacy"
-        ],
-        "description": "Firmware boot mode (Metal3 bootMode / Redfish Boot). Fleet note: converging this with the VM's firmware block into a common element is a candidate next MINOR — adopted vocabulary kept verbatim until then."
+      "firmware": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Host firmware surface (Redfish Boot.BootSourceOverrideMode; Metal3 bootMode).",
+        "properties": {
+          "type": {
+            "enum": [
+              "legacy",
+              "uefi"
+            ],
+            "description": "Firmware interface the host boots with (Redfish spelling; `legacy` is BIOS)."
+          },
+          "secure_boot": {
+            "type": "boolean",
+            "description": "UEFI Secure Boot. Only valid with type: uefi (policy-validated)."
+          }
+        }
       }
     },
     "examples": [
@@ -287,7 +298,9 @@
         },
         "boot_mac_address": "00:11:22:33:44:55",
         "online": true,
-        "boot_mode": "uefi"
+        "firmware": {
+          "type": "uefi"
+        }
       }
     ]
   },
@@ -362,7 +375,7 @@
       "you need host provisioning to be replayable intent — image, root device, boot MAC, power target — so a lost host rebuilds from the estate (the bare-metal leg of rehydration)"
     ],
     "not_for": [
-      "A virtual machine — that is Compute.VM; a host is hardware you can touch.",
+      "A virtual machine — that is Machine.VM; a host is hardware you can touch.",
       "The host's out-of-band management controller — that is Hardware.BMC, its own record with its own address and power-control surface.",
       "Individual NICs, GPUs, or drives inside the host — those are Hardware.NetworkInterface / Hardware.GraphicsProcessor / Hardware.StorageDevice records contained by the host."
     ],
@@ -370,7 +383,7 @@
       "Facility.PowerFeed — the power source the host draws from; roots the shutdown ordering.",
       "Hardware.BiosProfile — the firmware configuration the host converges to.",
       "Hardware.NetworkInterface — the host's NICs, modeled as contained components.",
-      "Compute.VM — the guests the host runs."
+      "Machine.VM — the guests the host runs."
     ]
   }
 }

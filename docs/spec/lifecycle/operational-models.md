@@ -56,7 +56,7 @@ timeout_declarations:
       sovereign: PT30M
     resource_type_overrides:
       # Some resource types legitimately take longer to provision
-      Compute.BareMetalServer: PT4H
+      Machine.BareMetalServer: PT4H
       Storage.LargeVolume: PT2H
     on_timeout: trigger DISPATCH_TIMEOUT recovery policy
 
@@ -244,7 +244,7 @@ Discovery schedules are declared in the Resource Type Specification and in provi
 
 ```yaml
 resource_type_spec:
-  fqn: Compute.VM
+  fqn: Machine.VM
   discovery_schedule:
     default_interval: PT15M      # discover VMs every 15 minutes
     profile_overrides:
@@ -611,7 +611,7 @@ tenant_config:
 
 # Resource-type-level override (most specific; wins over Tenant and profile)
 resource_type_recovery_override:
-  resource_type: Compute.VM
+  resource_type: Machine.VM
   recovery_profile: recovery-aggressive-retry
 ```
 

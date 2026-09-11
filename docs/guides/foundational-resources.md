@@ -25,7 +25,7 @@ UDLM ships the **base definition** of each foundational resource as **guidance**
 | **`Network.IPAddress`** | IPAM / network provider | `depends_on` (dynamic/static/byo — DCM ADR-009 fulfillment) |
 | **`Storage.Pool` / `Storage.Cluster`** | storage provider | volumes provisioned from — `depends_on` |
 | **`Security.DirectoryService`** (realm/identity) | identity provider | scope-derived from `tenant_uuid` (the pervasive realm edge) |
-| **`Facility.PowerFeed`** | facilities provider | power — `Compute.BareMetalHost depends_on Facility.PowerFeed` (`0..n`; one edge per feed, so redundancy is authored) |
+| **`Facility.PowerFeed`** | facilities provider | power — `Machine.BareMetalHost depends_on Facility.PowerFeed` (`0..n`; one edge per feed, so redundancy is authored) |
 
 The list is open — the test is the four properties above, not membership on this table.
 
@@ -33,7 +33,7 @@ The list is open — the test is the four properties above, not membership on th
 
 A dependent resource's spec carries **the reference and the intent knobs it owns**, never a redefinition of the foundational resource:
 
-- **Right:** `Compute.VM.spec.placement.location_ref → <Facility.Location handle>`, `networks[].network_ref → <Network.VirtualNetwork handle>`, plus VM-owned knobs (`ip_mode`, affinity to other resources).
+- **Right:** `Machine.VM.spec.placement.location_ref → <Facility.Location handle>`, `networks[].network_ref → <Network.VirtualNetwork handle>`, plus VM-owned knobs (`ip_mode`, affinity to other resources).
 - **Wrong:** `placement.location: "rack-3"` or `networks[].segment: "dmz"` as free-form strings — that invents a location/network the platform can't govern, dedup, place against, or reason about for blast-radius.
 
 This keeps one source of truth per foundational resource, lets policy govern selection, and makes the dependency graph honest — the estate's ordered shutdown, blast-radius, and rehydration all traverse these references, so they must point at real resources, not strings.

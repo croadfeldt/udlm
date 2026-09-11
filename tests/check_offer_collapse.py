@@ -22,7 +22,7 @@ that sentence is only true if the satisfying can be evaluated. This is the evalu
            element may collapse to nothing; a required one may not.
 
 **Linkage.** An instance names its portable type in `resource_type` (two segments — it IS a
-Compute.VM) and pins the spec it was realized against in `type_ref`, the `$id` of that spec. After
+Machine.VM) and pins the spec it was realized against in `type_ref`, the `$id` of that spec. After
 placement that spec is the Provider Class, so `type_ref` is the existing carrier and no new field is
 needed. An instance whose `type_ref` names no known class is skipped, not failed — pinning a served
 type spec rather than a Provider Class is legitimate and common.

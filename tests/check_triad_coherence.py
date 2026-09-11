@@ -5,7 +5,7 @@
 nothing checked they lined up:
 
     capability   what a PROVIDER can do              realize_resources, serve_data
-    thing        what it offers                      Compute.VM, Storage.Volume
+    thing        what it offers                      Machine.VM, Storage.Volume
     action       what may be DONE to that thing      read, create, replicate
 
 Each was maintained on its own, and each drifted on its own. `provider-capability.yaml` had no gate
@@ -76,8 +76,8 @@ def class_domains():
     """The set of things a capability category may name.
 
     TWO GRAINS, both legitimate, and the gate accepts either. A category may name a NAME SEGMENT
-    (`Compute`, from `Compute.VM`) or a FAMILY (`Process`, which holds `Job.*` and `Automation.*`).
-    The shipped set uses both — `realize_resources/Compute` is a segment, `execute_workflows/Process`
+    (`Machine`, from `Machine.VM`) or a FAMILY (`Process`, which holds `Job.*` and `Automation.*`).
+    The shipped set uses both — `realize_resources/Machine` is a segment, `execute_workflows/Process`
     is a family — and neither is wrong: a capability that applies to every Process is honestly stated
     at the family grain.
 

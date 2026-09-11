@@ -3,9 +3,9 @@
 
 An address names an element as seen from a Class, in either of the two ADR-038 notations — they are
 the same coordinate and resolve identically:
-  - **dot / compact**:  `Compute.VM#cpu`                              (segments dotted; element after `#`)
-  - **URL** (preferred): `https://udlm.dev/class/Compute/VM#cpu`      (segments slashed; element as fragment)
-The URL form follows OData/Redfish addressing (`@odata.id`) and the ADR-038 `https://<authority>/Compute/VM`
+  - **dot / compact**:  `Machine.VM#cpu`                              (segments dotted; element after `#`)
+  - **URL** (preferred): `https://udlm.dev/class/Machine/VM#cpu`      (segments slashed; element as fragment)
+The URL form follows OData/Redfish addressing (`@odata.id`) and the ADR-038 `https://<authority>/Machine/VM`
 convention; any authority is accepted on input (federated addressing), and the canonical URL is emitted.
 
 Resolution walks the inheritance chain to the *owning* Class (the nearest scope, self→Base, that
@@ -14,14 +14,14 @@ and what query, impact, and RBAC scope against. One resolver, both notations.
 
   resolve(address) -> {"address", "url", "authority", "via_class", "owning_class", "scope",
                        "element", "schema", "inherited": bool}   (raises KeyError on unknown Class/element)
-  CLI:  resolve_class_address.py Compute.VM#cpu https://udlm.dev/class/Process/OSPatch#idempotency
+  CLI:  resolve_class_address.py Machine.VM#cpu https://udlm.dev/class/Process/OSPatch#idempotency
 
 Resolution rules:
 - The element is looked up from the addressed Class upward; the *nearest* declaring Class owns it
   (a descendant that refines an element owns the refined shape at its scope — Liskov guarantees it
   narrows, never contradicts).
 - `inherited` is true when the owning Class is an ancestor of the addressed Class (the common case:
-  `Compute.VM#cpu` is owned by the `Compute` Base Class).
+  `Machine.VM#cpu` is owned by the `Machine` Base Class).
 - An element the addressed Class cannot see (declared on neither it nor an ancestor) is a KeyError —
   the same dangling-reference discipline data references use (invalid edges resolve deterministically).
 """

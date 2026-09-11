@@ -118,10 +118,10 @@ CARRIERS = [
 
 PORTABLE_FILTERS = [
     ("estate", "tenant_uuid=={self}"),
-    ("estate", "resource_type==Compute.VM;lifecycle_state==active"),
+    ("estate", "resource_type==Machine.VM;lifecycle_state==active"),
     ("estate", "labels.concern==payments;tenant_uuid==abc"),
     ("estate", "sovereignty_zone=in=(eu-central,eu-west)"),
-    ("estate", "resource_type==Compute.*;cost_center!=*"),
+    ("estate", "resource_type==Machine.*;cost_center!=*"),
 ]
 
 

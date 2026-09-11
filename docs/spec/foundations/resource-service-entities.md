@@ -455,7 +455,7 @@ policy:
     - condition:
         notification_type: auto_scale
         provider_uuid: <approved-provider-uuid>
-        entity.resource_type: Compute.VM
+        entity.resource_type: Machine.VM
         changed_fields: [memory_gb, cpu_count]
         change_within_bounds:
           memory_gb: { max_increase_factor: 2 }
@@ -698,7 +698,7 @@ Bare metal Whole Allocation uses the same `shareability.allowed: false` mechanis
 
 ```yaml
 resource_type_spec:
-  fully_qualified_name: Compute.BareMetal
+  fully_qualified_name: Machine.BareMetal
   allocation_model: whole_unit         # whole_unit | fractional | pooled
   shareability:
     allowed: false                     # structural lock — cannot be changed by policy
@@ -755,7 +755,7 @@ policy:
   enforcement_class: compliance
   rule: >
     If resource.ownership_transfer_count > 5
-    AND resource_type == Compute.VM
+    AND resource_type == Machine.VM
     THEN deny: "VM has exceeded 5 ownership transfers — manual review required"
 ```
 

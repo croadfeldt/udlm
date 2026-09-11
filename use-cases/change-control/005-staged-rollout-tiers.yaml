@@ -3,7 +3,7 @@ handle: change-control/staged-rollout-tiers
 version: 1.0.0
 scenario:
   description: 'An organization runs three estates on one registry: development (continuous adoption),
-    staging (windowed), production (full ceremony). A breaking Compute Base change rolls out as a staged
+    staging (windowed), production (full ceremony). A breaking Machine Base change rolls out as a staged
     chain the policies themselves compose: development adopts first and soaks; its clean soak evidence
     is a precondition in staging''s policy; staging''s clean adoption is a precondition in production''s.
     A failure at any stage halts every later stage automatically — the chain is policy topology, not a

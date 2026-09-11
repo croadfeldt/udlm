@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Dataset/0.5.2
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Dataset/0.5.3
 conforms_to: udlm/0.1
 uuid: 90eb6692-1b70-4dc1-b43b-bfedf44c317f
 record_type: class
 class: type
 resource_type: Storage.Dataset
 parent: Storage
-version: 0.5.2
+version: 0.5.3
 family: Resource
 status: active
 metadata:
@@ -96,7 +96,7 @@ relationships:
   name: parent_dataset
   description: The parent dataset in the hierarchy (e.g. aspen/nc/data → aspen/nc), when nested.
 - edge_type: contained_by
-  target: Compute.BareMetalHost
+  target: Machine.BareMetalHost
   cardinality: 0..1
   name: host
   description: The host the pool (and thus this dataset) is local to.
@@ -129,5 +129,5 @@ context:
     storage itself.
   works_with:
   - Storage.Pool — the pool the dataset is carved from.
-  - Compute.BareMetalHost — the host the dataset is local to.
+  - Machine.BareMetalHost — the host the dataset is local to.
   - Storage.Dataset — the parent dataset, when nested.

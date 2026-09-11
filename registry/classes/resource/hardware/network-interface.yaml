@@ -1,11 +1,11 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.NetworkInterface/0.14.0
+$id: https://udlm.dev/registry/udlm/0.1/class/Hardware.NetworkInterface/0.14.1
 conforms_to: udlm/0.1
 uuid: 04f5c089-85b3-4a89-9b2e-d0c8d172ad23
 record_type: class
 class: type
 resource_type: Hardware.NetworkInterface
 parent: Hardware
-version: 0.14.0
+version: 0.14.1
 family: Resource
 status: active
 # OWN-007 — a type-level invariant, not settable per entity.
@@ -204,12 +204,12 @@ outputs:
     description: Realized MAC address (also a discriminator in identity).
 relationships:
 - edge_type: contained_by
-  target: Compute.BareMetalHost
+  target: Machine.BareMetalHost
   cardinality: 0..1
   name: host
   description: The host the physical NIC is installed in.
 - edge_type: contained_by
-  target: Compute.VM
+  target: Machine.VM
   cardinality: 0..1
   name: guest
   description: For virtual / passthrough / partition, the guest the interface is presented to.
@@ -327,7 +327,7 @@ context:
     configures the device this type inventories.
   - The VLAN segment itself — Network.VLAN; interfaces are members of a segment, they don't define it.
   works_with:
-  - Compute.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).
+  - Machine.BareMetalHost / Network.Switch — what contains the interface (host NIC vs switch port).
   - 'Hardware.NetworkInterface — parent_device, lower_layer, and connects_to: partition parentage, bond/bridge
     membership, cable adjacency.'
   - Network.VLAN — the segments the port is a member of.

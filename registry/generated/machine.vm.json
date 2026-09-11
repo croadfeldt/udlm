@@ -1,31 +1,31 @@
 {
-  "$id": "https://udlm.dev/registry/udlm/0.1/Compute.VM/1.5.5",
+  "$id": "https://udlm.dev/registry/udlm/0.1/Machine.VM/2.0.0",
   "conforms_to": "udlm/0.1",
   "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295",
-  "resource_type": "Compute.VM",
-  "version": "1.5.5",
+  "resource_type": "Machine.VM",
+  "version": "2.0.0",
   "family": "Resource",
   "status": "active",
   "metadata": {
     "authority": "canonical",
-    "display_name": "Compute.VM Type Class",
+    "display_name": "Machine.VM Type Class",
     "maintainer": "UDLM maintainers",
     "origination_timestamp": "2026-07-27T21:00:00Z",
-    "title": "Compute.VM Type Class",
-    "description": "The VM Type Class — extends the Compute Base Class (cpu/memory/storage/storage_tier/guest_os, inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never contradict). A provider Class (Compute.VM.OCPVirt, …) extends this further. The generator compiles this class + its ancestors into today's flat Compute.VM resource-type spec.",
+    "title": "Machine.VM Type Class",
+    "description": "The VM Type Class — extends the Machine Base Class (cpu/memory/storage/storage_tier/guest_os, inherited) with VM-specific SharedDataElements, under the Liskov invariant (add or refine, never contradict). A provider Class (Machine.VM.OCPVirt, …) extends this further. The generator compiles this class + its ancestors into today's flat Machine.VM resource-type spec.",
     "prompt_version": "class-p0-keystone-2026-07-27",
     "generated": true,
     "compilation_provenance": {
       "generator": "class-spec-gen/1.1.0",
       "sources": [
         {
-          "class": "Compute",
-          "version": "1.2.5",
+          "class": "Machine",
+          "version": "2.0.0",
           "uuid": "4b772ff1-1cd0-4d48-99a9-4bb97067a3b9"
         },
         {
-          "class": "Compute.VM",
-          "version": "1.5.5",
+          "class": "Machine.VM",
+          "version": "2.0.0",
           "uuid": "5ad96ff6-2582-4d82-8943-496c8dbe3295"
         }
       ]
@@ -72,7 +72,7 @@
           "size": {
             "type": "string",
             "pattern": "^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$",
-            "description": "Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Compute Base Class `memory.size`)."
+            "description": "Memory allocation, e.g. 16GB or 16Gi (class-aligned quantity pattern — Machine Base Class `memory.size`)."
           },
           "hugepages": {
             "type": "object",
@@ -92,7 +92,7 @@
       },
       "storage": {
         "type": "object",
-        "description": "The reference-discipline storage requirements descriptor (PVD-001, Compute Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
+        "description": "The reference-discipline storage requirements descriptor (PVD-001, Machine Base Class shape) — numeric minima the realizing storage must meet. The requested performance class is the governed `storage_tier` element, not an inline enum here.",
         "properties": {
           "min_iops": {
             "type": "integer",
@@ -113,7 +113,7 @@
       },
       "storage_tier": {
         "type": "string",
-        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Compute Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
+        "description": "The requested storage performance class — a GOVERNED vocabulary (ADR-038 §2): canonical terms are `storage_tier` reference-data records (standard/performance/archive), each denoting a requirements floor. Name-selectable but requirements-authoritative (ADR-036); profile decides bare string vs data_reference (ADR-007/ADR-039). Mirrors the Machine Base Class `storage_tier` element. Governed vocabulary `storage_tier` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference."
       },
       "guest_os": {
         "description": "Guest operating system. Portable form is a reference to an os_image reference-data vocabulary (DCM ADR-012; layering §3.7) the target provider advertises via capability discovery (ADR-PROV-002); policy validates membership at request. Inline is the portability_breaking escape. Optional at the data layer (bare-instantiation philosophy): a VM may be declared by sizing alone; a profile MAY require it.",
@@ -157,14 +157,14 @@
       "firmware": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Guest firmware surface — portable across every major virtualization stack (Redfish Boot.BootSourceOverrideMode, KubeVirt firmware/TPM, cloud UEFI/trusted-launch). Required by modern guests (Win11-class needs uefi + secure_boot + vtpm). Governed vocabulary `vm_firmware` (ADR-038 §2); name-selectable but requirements-authoritative (ADR-036). Profile decides bare-vs-reference.",
+        "description": "Guest firmware surface (Redfish Boot.BootSourceOverrideMode, KubeVirt firmware/TPM, cloud UEFI/trusted-launch). Required by modern guests (Win11-class needs uefi + secure_boot + vtpm).",
         "properties": {
           "type": {
             "enum": [
-              "bios",
+              "legacy",
               "uefi"
             ],
-            "description": "Firmware interface presented to the guest."
+            "description": "Firmware interface presented to the guest (Redfish spelling; `legacy` is BIOS)."
           },
           "secure_boot": {
             "type": "boolean",
@@ -454,7 +454,7 @@
       "standard": "Redfish",
       "version": "2024.4",
       "standard_name": "ComputerSystem",
-      "role": "Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for the Compute.* family (shared with Compute.BareMetalHost). Provider-NATIVE realizations (KubeVirt, a hypervisor platform, a public cloud, ...) are declared on the provider support matrix, not on the substrate type.",
+      "role": "Vendor-neutral compute-system representation spanning physical AND virtual (Redfish ComputerSystem SystemType: Physical | Virtual | Composed | Partitioned) - the single representative standard for the Machine.* family (shared with Machine.BareMetalHost). Provider-NATIVE realizations (KubeVirt, a hypervisor platform, a public cloud, ...) are declared on the provider support matrix, not on the substrate type.",
       "source": "https://www.dmtf.org/standards/redfish",
       "license": "DMTF",
       "license_compatibility": "compatible-reference",
@@ -480,7 +480,7 @@
       "You need a VM's disk shape and addresses to reference existing Storage.Layout / Network.IPAddress records rather than duplicate them."
     ],
     "not_for": [
-      "The physical machine it runs on — Compute.BareMetalHost.",
+      "The physical machine it runs on — Machine.BareMetalHost.",
       "A containerized workload — Container; the VM carries a full guest OS.",
       "The per-disk shape (sizes, boot designation) — Storage.Layout; the VM references one via layout_ref.",
       "The vNIC as a device record — that is Hardware.NetworkInterface with a virtual device_class; the VM's networks list declares attachment intent, not device inventory."

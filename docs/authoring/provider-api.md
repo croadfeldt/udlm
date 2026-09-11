@@ -50,7 +50,7 @@ and never enters the portable model.
    `{capability_uuid, version, categories[]}` (+ optional `name`, `covers_types`). The `capability_uuid` is
    **also a frozen accreditation anchor**; `version` bumps on any change to its attested surface and expires
    the grain-3 accreditation until re-attested. Each `category` in `categories[]` is a `(verb × domain)`
-   scope (e.g. `realize_resources/Compute`) carrying its own `topology_capability`, `mobility`,
+   scope (e.g. `realize_resources/Machine`) carrying its own `topology_capability`, `mobility`,
    `operational_capability`, and `sovereignty`. Per-category blocks override `provider_defaults`
    (finest-granularity-wins).
 

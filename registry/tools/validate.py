@@ -872,11 +872,11 @@ def check_layer_lineage(doc):
 def _selector_covers_type(sel, rt):
     """Does a §10 `covers` selector target resource_type `rt`? Authority prefix stripped; a bare
     `*`/`**` covers all; otherwise the selector's dotted type-path must be a prefix of `rt` (broader,
-    e.g. `Compute.*` covers `Compute.VM`) or `rt` a prefix of it (narrower provider, e.g.
-    `Compute.VM.OCPVirt`). Deliberately lenient — the authoritative matcher is DCM's assembly engine;
+    e.g. `Machine.*` covers `Machine.VM`) or `rt` a prefix of it (narrower provider, e.g.
+    `Machine.VM.OCPVirt`). Deliberately lenient — the authoritative matcher is DCM's assembly engine;
     this only catches a `covers` that plainly excludes the layer's own type."""
     s = sel.strip()
-    if "/" in s:                                  # strip authority (peer.dcm.east/Compute.VM.*)
+    if "/" in s:                                  # strip authority (peer.dcm.east/Machine.VM.*)
         s = s.rsplit("/", 1)[1]
     if s in ("*", "**"):
         return True

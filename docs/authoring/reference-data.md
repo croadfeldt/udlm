@@ -67,13 +67,13 @@ re-expression of a native value.** A vocabulary is the *reference* arm of that r
 
 Copy
 [`../../registry/examples/example-vocabulary-term-storage-tier.yaml`](../../registry/examples/example-vocabulary-term-storage-tier.yaml)
-— the `performance` term of the `storage_tier` vocabulary: `vocabulary_kind: storage_tier`, `scope: Compute`,
+— the `performance` term of the `storage_tier` vocabulary: `vocabulary_kind: storage_tier`, `scope: Machine`,
 `term: performance`, `curation_state: canonical`, `contributor.review: dual_approval`, and
 `requirements: {min_iops: 20000, min_throughput_mbps: 500, description: …}`. It is the canonical illustration
 of the rule in step 3 — the term *is* its requirements floor, not a string.
 
 **Read `scope` first.** It says how far the meaning travels, and it is the portability contract
-(ADR-038 §3, ADR-058 §2) rather than a label. `storage_tier` sits at `Compute` and not at `Storage`
+(ADR-038 §3, ADR-058 §2) rather than a label. `storage_tier` sits at `Machine` and not at `Storage`
 because scope is where the ELEMENT that binds the vocabulary lives — what is being selected is the
 storage performance a *compute* resource asks for. A term filed at the wrong scope promises the
 wrong providers. For lineage, the standing pattern is

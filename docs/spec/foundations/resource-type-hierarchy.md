@@ -32,11 +32,11 @@ The hierarchy serves four goals:
 
 These terms are frequently conflated. The distinction is architectural:
 
-**Resource Type** — the classification category. Groups catalog items for portability and discovery. Vendor-neutral by requirement. Defines the field schema that any provider offering this type must support. Examples: `Compute.VM`, `Network.IPAddress`, `Process.AnsiblePlaybook`.
+**Resource Type** — the classification category. Groups catalog items for portability and discovery. Vendor-neutral by requirement. Defines the field schema that any provider offering this type must support. Examples: `Machine.VM`, `Network.IPAddress`, `Process.AnsiblePlaybook`.
 
-**Resource Type Specification** — the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, and allowed relationship types. Stored in the Resource Type Registry. Providers implement against a specific version. Example: `Compute.VM v2.1.0`.
+**Resource Type Specification** — the versioned, formal definition of a Resource Type: field schema, constraints, lifecycle rules, portability classification, and allowed relationship types. Stored in the Resource Type Registry. Providers implement against a specific version. Example: `Machine.VM v2.1.0`.
 
-**Provider Catalog Item** — what a specific Service Provider is offering to consumers. The provider's declaration: "I can fulfill `Compute.VM v2.1.0` with these specific options, at this cost, with these availability characteristics, in this region." A catalog item is always linked to a specific Resource Type Specification version. Catalog items can represent resource allocations (a VM, a subnet) or processes (an automation job, a playbook execution, a pipeline run) — anything a provider offers for consumption.
+**Provider Catalog Item** — what a specific Service Provider is offering to consumers. The provider's declaration: "I can fulfill `Machine.VM v2.1.0` with these specific options, at this cost, with these availability characteristics, in this region." A catalog item is always linked to a specific Resource Type Specification version. Catalog items can represent resource allocations (a VM, a subnet) or processes (an automation job, a playbook execution, a pipeline run) — anything a provider offers for consumption.
 
 **The key relationship:** Consumers request by Resource Type (or Resource Type Specification version). The control plane resolves to a Provider Catalog Item through the specificity narrowing algorithm. The catalog item is what actually gets provisioned. The resource type is the portable, vendor-neutral expression of intent.
 
@@ -63,7 +63,7 @@ These two terms are frequently conflated throughout the documentation. They are 
 **Resource Type Specification (Registry entry):**
 - Vendor-neutral definition of a resource type's fields, constraints, lifecycle rules, and portability classification
 - Lives in the Resource Type Registry (Tier 1, 2, or 3)
-- Examples: `Compute.VM v2.1.0`, `Network.VLAN v1.0.0`
+- Examples: `Machine.VM v2.1.0`, `Network.VLAN v1.0.0`
 - Defines what the resource TYPE is, not what any specific provider offers
 
 **Provider Catalog Item (Service Catalog entry):**
@@ -105,7 +105,7 @@ loop runs until every range has become a value. This is what makes placement eli
 rather than asserted: a provider is eligible exactly when every selected value falls inside its
 declared clauses and every element it requires is present.
 
-Worked example: `registry/classes/resource/compute/vm/cexample-cloud.yaml`. Authoring guide:
+Worked example: `registry/classes/resource/machine/vm/cexample-cloud.yaml`. Authoring guide:
 `docs/authoring/scoped-class.md` §3a.
 
 ### 2.1 Registry Principles
@@ -125,7 +125,9 @@ The control plane ships with a default set of Resource Type Categories. Implemen
 
 | Category | Description |
 |----------|-------------|
-| `Compute` | Processing resources — virtual machines, containers, bare metal |
+| `Machine` | Machines — virtual machines, bare-metal hosts, logical partitions (one deliverable, three forms) |
+| `Container` | Container workloads — an OCI image run by a container provider |
+| `KubernetesCluster` | Kubernetes clusters — the Kubernetes API as one orderable deliverable |
 | `Network` | Networking resources — IP addresses, VLANs, firewall rules, load balancers |
 | `Storage` | Storage resources — block, object, file, databases |
 | `Platform` | Platform services — Kubernetes clusters, application platforms |
@@ -196,7 +198,7 @@ The broadest classification. Defines the domain of a resource without any specif
 - Categories have no data fields — they are organizational containers
 - Categories are versioned and can be deprecated
 
-**Example:** `Compute`, `Network`, `Storage`
+**Example:** `Machine`, `Network`, `Storage`
 
 ---
 
@@ -310,7 +312,7 @@ Defines an abstract resource within a category. A Resource Type represents a cla
 - Resource Types declare their **base field specification** (universal fields only)
 - Resource Types are versioned and can be deprecated
 
-**Example:** `Compute.VM`, `Network.IPAddress`, `Network.FirewallRule`
+**Example:** `Machine.VM`, `Network.IPAddress`, `Network.FirewallRule`
 
 ---
 
@@ -331,7 +333,7 @@ The data contract for a Resource Type. Defines all fields — universal, conditi
 - Specifications are versioned independently of their Resource Type
 - Specifications can be deprecated
 
-**Example:** `Compute.VM` specification defines: `cpu_count` (universal, required), `ram_gb` (universal, required), `storage_gb` (universal, required), `os_image` (universal, required), `high_availability` (conditional, optional)
+**Example:** `Machine.VM` specification defines: `cpu_count` (universal, required), `ram_gb` (universal, required), `storage_gb` (universal, required), `os_image` (universal, required), `high_availability` (conditional, optional)
 
 ---
 
@@ -347,7 +349,7 @@ A specific provider's concrete implementation of a Resource Type Specification. 
 - They declare their **sovereignty capabilities** (see Section 6)
 - They declare their **supported lifecycle operations** (see Section 7)
 
-**Example:** `Nutanix.VM.Small` implements `Compute.VM` with `cpu_count: 4`, `ram_gb: 16`, `storage_gb: 60`
+**Example:** `Nutanix.VM.Small` implements `Machine.VM` with `cpu_count: 4`, `ram_gb: 16`, `storage_gb: 60`
 
 ---
 
@@ -630,7 +632,7 @@ When consumers reference a resource type — in API calls, policy conditions, or
 
 | Form | Example | Notes |
 |------|---------|-------|
-| **FQN string** (recommended) | `Compute.VM` | Stable across deployments; human-readable; returned by the service catalog |
+| **FQN string** (recommended) | `Machine.VM` | Stable across deployments; human-readable; returned by the service catalog |
 | **Registry UUID** | `a1b2c3d4-e5f6-...` | Deployment-specific; obtained from catalog API; suitable for programmatic use |
 
 The control plane resolves either form to the canonical `(resource_type_uuid, resource_type_name)` pair during request assembly. The resolution happens in the **Request Payload Processor** before layer enrichment begins. Unresolvable references are rejected at validation time with a `422 Unprocessable Entity` response and code `RESOURCE_TYPE_NOT_FOUND`.

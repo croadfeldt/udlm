@@ -55,7 +55,7 @@ def nodes_and_edges():
 
 def resolves(target, nodes):
     """A target resolves to an exact node, or to a family (single-segment target matching the first
-    segment of some multi-segment node, e.g. `Compute` for `Compute.VM`)."""
+    segment of some multi-segment node, e.g. `Machine` for `Machine.VM`)."""
     if target in nodes:
         return True
     if "." not in target:

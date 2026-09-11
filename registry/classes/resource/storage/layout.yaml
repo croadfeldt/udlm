@@ -1,17 +1,17 @@
-$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Layout/0.5.1
+$id: https://udlm.dev/registry/udlm/0.1/class/Storage.Layout/0.5.2
 conforms_to: udlm/0.1
 uuid: d8a30490-9b8f-410c-9894-c43eeee43b89
 record_type: class
 class: type
 resource_type: Storage.Layout
 parent: Storage
-version: 0.5.1
+version: 0.5.2
 family: Resource
 status: active
 metadata:
   display_name: Storage Layout
   description: 'The declared DISK LAYOUT of a compute consumer (born from the 2026-07-29 Compute reconciliation:
-    per-disk shape left Compute.VM — one hand-authored source per concept). An ordered set of named entries
+    per-disk shape left Machine.VM — one hand-authored source per concept). An ordered set of named entries
     — each a disk-shaped unit with a size, an optional storage tier, an optional role, and an optional
     boot position. The entry `name` is the stable identity consumers join on; consumption is declared
     consumer-side (a consumer names its layout and the records realizing its entries declare the realization),
@@ -49,7 +49,7 @@ elements:
           type: string
           pattern: ^[0-9]+(Mi|Gi|MB|GB|TB|MiB|GiB|TiB)$
           description: Requested disk size, quantity form (e.g. 100Gi, 500GB) — the class-aligned size
-            pattern shared with Compute memory sizing.
+            pattern shared with Machine memory sizing.
         storage_tier:
           type: string
           description: 'Optional requested storage performance class for this entry — the GOVERNED `storage_tier`
@@ -119,7 +119,7 @@ context:
   - The VM's numeric storage requirements (min_iops, encryption) — those live on the consumer's `storage`
     descriptor.
   works_with:
-  - Compute.VM — the consumer that realizes this layout (spec.layout_ref).
+  - Machine.VM — the consumer that realizes this layout (spec.layout_ref).
   - Storage.Volume — the consumable volume(s) realizing entries — declared volume-side (realizes_layout_entry).
   - Platform.StorageClass — the provider-advertised class satisfying an entry's `storage_tier` (an advertised
     class MUST declare the tier it maps to, so tier-authored intent resolves; the chosen class lands in
