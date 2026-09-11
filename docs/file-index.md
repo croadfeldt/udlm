@@ -86,7 +86,8 @@ Rule-ID families (`INF-*`, `ENT-*`, `DPO-*`, …) each belong to exactly one fil
 - **`SPEC-DESIGN-REQUIREMENTS.md`** — *Owns:* the resource-type-spec rubric (MUST/SHOULD), including §33 the single-source rule.
 - **`standards-adoption-register.md`** — *Owns:* the per-standard adoption decision + license verdict (`ADOPT-001`). The single home for license verdicts.
 - **`resource-type-data-sources.md`** — per-type "what it adopts by reference" mapping (design input; license verdicts defer to the register).
-- **`REALIZED-ENTITY.md`** — the realized-entity instance schema, in prose.
+- **`state-record.schema.json`** — *normative*. *Owns:* the per-state record shape (ruling 071; four-states.md §2.7): one envelope, four kinds (`intent_record`, `requested_record`, `realized_record`, `discovered_record`), one author each. The stored form of an entity's states.
+- **`REALIZED-ENTITY.md`** — the realized-entity instance schema, in prose — the merged READ MODEL assembled from the per-state records (ruling 071), never written.
 - **`../registry/UDLM-0.1-SCOPE.md`** — the 0.1 scope + the 1.0 exit criteria.
 - **`README.md`** — registry overview.
 

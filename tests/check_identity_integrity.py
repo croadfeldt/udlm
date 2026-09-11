@@ -60,6 +60,9 @@ IMMUTABLE_RECORD_TYPES = {
     # pattern the reference-data corpus already used, never an edit under the reader's feet.
     "vocabulary_term",
     "accreditation", "regeneration_manifest", "finding_routing_record",
+    # One record per lifecycle state (ruling 071): each is written once by one party and replaced
+    # by a successor naming it in `supersedes` — the supersession chain four-states.md §2.3 asks for.
+    "intent_record", "requested_record", "realized_record", "discovered_record",
 }
 KNOWN_MUTABLE_RECORD_TYPES = {"policy", "catalog_item"}
 
@@ -120,7 +123,9 @@ def _has_supersedes(record_type):
             "commit_log_entry": "commit-log-entry", "decision_record": "decision-record",
             "finding_routing_record": "finding-routing-record",
             "regeneration_manifest": "regeneration-manifest",
-            "accreditation": "accreditation", "layer": "layer"}.get(record_type)
+            "accreditation": "accreditation", "layer": "layer",
+            "intent_record": "state-record", "requested_record": "state-record",
+            "realized_record": "state-record", "discovered_record": "state-record"}.get(record_type)
     if not name:
         return True          # unknown type: demand the link rather than quietly excusing it
     path = os.path.join(ROOT, "registry", f"{name}.schema.json")

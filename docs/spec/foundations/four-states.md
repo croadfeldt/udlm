@@ -193,7 +193,7 @@ The complete recovery-condition machine and Recovery Policy model — how an imp
 
 To make the records concrete, here is a single `Machine.VM` (entity UUID `…a1b2`) as it moves
 through the lifecycle. Each state is a **separate, immutable record**; the shared UUID links them. Field
-values are illustrative — the normative shapes are the resource-type spec + `realized-entity.schema.json`.
+values are illustrative — the normative shapes are the resource-type spec + `registry/state-record.schema.json` (§2.7); `realized-entity.schema.json` is the merged read model.
 
 | State | The record (illustrative) | Who wrote it |
 |-------|---------------------------|--------------|
@@ -207,6 +207,47 @@ values are illustrative — the normative shapes are the resource-type spec + `r
 - The transition Requested → Realized is where **two-phase reserve/commit** (§2.3a) sits: the `reservation_hold_uuid` proves the whole graph was reservable *before* anything was built.
 - If a later discovery saw `ip: 203.0.113.9` while Realized still said `198.51.100.20`, that mismatch **is drift** (§6) — Discovered never overwrites Realized; it only compares.
 - Had this VM been a pre-existing server instead, it would enter **Discovered-first** (§2.4) with `lifecycle_state: available`, then gain an Intent on adoption — same UUID, story running the other direction.
+
+## 2.7 The record of each state
+
+Each state is its own record. That is what §2.1–2.4 have said from the start, and it is now the
+schema too: `registry/state-record.schema.json` (ruling 071) defines one closed record shape with
+four kinds — `intent_record`, `requested_record`, `realized_record`, `discovered_record` — dispatched
+on `record_type`. Four different parties write four different records; nobody writes another's,
+and nobody edits one.
+
+**What every record carries — the envelope.**
+
+| Field | Plain meaning |
+|---|---|
+| `entity_uuid` | the thing the record is about; assigned at intent, never changes; what every edge points at (§3) |
+| `record_uuid` | this record; time-ordered (RFC 9562 v7), so a state's stream sorts by identity |
+| `state`, `record_type` | which of the four this is (`Realized`; `realized_record`), said twice so a reader and a dispatcher agree |
+| `generation` | which request cycle it belongs to |
+| `supersedes` | the record it replaced in the same state's stream — the supersession chain §2.3 asks for |
+| `tenant_uuid`, `resource_type`, `type_version`, `type_ref` | who owns the entity and what class it is, pinned |
+| `at`, `time_source` | when, and by which clock |
+| `integrity` | the record's own tamper-evidence link (ADR-059), per record |
+
+**What each kind carries — the body.**
+
+| Kind | Carries | Written by |
+|---|---|---|
+| intent | the fields as written; who wrote each one | the consumer |
+| requested | the fields after assembly and policy; what was applied and left unapplied; the intent it came from (`intent_ref`); the edges placement resolved | the control plane |
+| realized | the fields as built; the outputs other things bind to; which provider instance built it (`provider`, a reference, not a string); health; placement; the natural keys discovery recognizes it by; the requested record it realizes (`requested_ref`) | the provider |
+| discovered | what a sweep saw — fields, outputs — and which keys matched it to the entity | discovery |
+
+**Three consequences.** A realized record stands alone: a load balancer, a rebuild, an inventory
+reads it and nothing else. Drift is a comparison — the latest discovered record against the latest
+realized one (§6) — not a field on a record. And the merged "entity as it flows through the four
+states" shape (`realized-entity.schema.json`) is a **read model** assembled from the four records
+for a dashboard or a person; it is never written. Where the merged schema kept an `ownership`
+block to referee several writers on one document, the per-state records need none: one author
+each.
+
+Worked example: `registry/examples/example-vm-app01-{intent,requested,realized}-record.yaml`, one
+VM as three records sharing one `entity_uuid`.
 
 ---
 

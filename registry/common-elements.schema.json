@@ -353,6 +353,15 @@
         "rehydration",
         "override"
       ]
+    },
+    "four_state": {
+      "enum": [
+        "Intent",
+        "Requested",
+        "Realized",
+        "Discovered"
+      ],
+      "description": "The four states of an entity — the kinds a per-state record can be (state-record.schema.json `state`, ruling 071) and the stages a type's lifecycle may declare (resource-type-spec.schema.json `lifecycle.states`). One home (VOC-001). `lifecycle_state` on the merged read model adds Decommissioned and is data-model-core §3's five-value enum."
     }
   }
 }

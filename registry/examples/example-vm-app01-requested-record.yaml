@@ -1,0 +1,90 @@
+# asserts: ENT-006
+# proves: what policy and layers did to the order is its own record, naming the intent it came from and keeping the entity uuid.
+record_type: requested_record
+state: Requested
+record_uuid: 01a08ec1-3fb5-75a4-9db3-6b3e4b18f737
+intent_ref: 01a08ec1-3fb5-75a4-9db3-6b3dff63ae87
+entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Machine.VM
+type_version: 2.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
+handle: lab/vm/app-01
+generation: 1
+origin: declared
+at: '2026-09-03T14:02:14Z'
+time_source: dcm-api
+fields:
+  cpu:
+    count: 4
+    sockets: 1
+    cores_per_socket: 4
+  memory:
+    size: 16Gi
+  guest_os: uuid/6b1f2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d@1?reference_data_type==os_image
+  firmware:
+    type: uefi
+    secure_boot: true
+    vtpm: false
+  networks:
+  - name: eth0
+    vlan: lab/net/vlan-20
+    network_ref: lab/net/dmz
+  layout_ref: lab/storage/layout/app-01
+  placement:
+    location_ref: lab/facility/rack-3
+  run_state:
+    desired_state: running
+assembly:
+  unapplied: []
+  excluded_layers: []
+dependencies:
+- edge_type: references
+  target_uuid: 3c5e7a9b-1d2f-4e6a-8b0c-2d4f6a8b0c1e
+  target_handle: lab/facility/rack-3
+  resolved_at: '2026-09-03T14:02:14Z'
+- edge_type: references
+  target_uuid: 5d7f9b1c-3e4a-4f6b-9c1d-4e6a8b0c2d3f
+  target_handle: lab/net/dmz
+  resolved_at: '2026-09-03T14:02:14Z'
+- edge_type: references
+  target_uuid: 7e9a1c3d-5f6b-4a8c-8d2e-6a8b0c2d4e5f
+  target_handle: lab/storage/layout/app-01
+  resolved_at: '2026-09-03T14:02:14Z'
+provenance:
+  cpu.sockets:
+  - source:
+      kind: policy
+      id: lab/policy/cpu-topology-default
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:02:14Z'
+  cpu.cores_per_socket:
+  - source:
+      kind: policy
+      id: lab/policy/cpu-topology-default
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:02:14Z'
+  firmware.vtpm:
+  - source:
+      kind: policy
+      id: lab/policy/firmware-baseline
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:02:14Z'
+  networks[0].network_ref:
+  - source:
+      kind: policy
+      id: lab/policy/network-placement
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:02:14Z'
+  placement.location_ref:
+  - source:
+      kind: layer
+      id: lab/layers/tenant-location
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:02:14Z'

@@ -1,0 +1,118 @@
+# asserts: INT-001, ENT-006
+# proves: what the provider built stands alone — a load balancer or a rebuild reads this and nothing else — and it is sealed (head over the record minus `integrity`, previous null = chain root for this state's stream).
+record_type: realized_record
+state: Realized
+record_uuid: 01a08ec1-3fb5-75a4-9db3-6b3f36dea84b
+requested_ref: 01a08ec1-3fb5-75a4-9db3-6b3e4b18f737
+entity_uuid: 2f7c9a41-8e3d-4b6a-9c15-7d2e4f8a1b03
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Machine.VM
+type_version: 2.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM/2.0.0
+handle: lab/vm/app-01
+generation: 1
+origin: declared
+at: '2026-09-03T14:03:40Z'
+time_source: provider-callback
+provider: lab/providers/libvirt-host-a
+fields:
+  cpu:
+    count: 4
+    sockets: 1
+    cores_per_socket: 4
+  memory:
+    size: 16Gi
+  guest_os: uuid/6b1f2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d@1?reference_data_type==os_image
+  firmware:
+    type: uefi
+    secure_boot: true
+    vtpm: false
+  networks:
+  - name: eth0
+    vlan: lab/net/vlan-20
+    network_ref: lab/net/dmz
+  layout_ref: lab/storage/layout/app-01
+  placement:
+    location_ref: lab/facility/rack-3
+  run_state:
+    desired_state: running
+outputs:
+  ip_addresses:
+  - 192.0.2.55
+  primary_ip: 192.0.2.55
+  hostname: app-01.lab.example
+  mac_addresses:
+  - 52:54:00:ab:12:34
+  provider_handle: app-01
+  observed_run_state: running
+dependencies:
+- edge_type: contained_by
+  target_uuid: 8a4d1e6f-2b3c-4d5e-9f0a-1b2c3d4e5f60
+  target_handle: lab/host/host-a
+  strength: hard
+  resolved_at: '2026-09-03T14:03:40Z'
+- edge_type: depends_on
+  target_uuid: 9f1b3d5e-7a8c-4b0d-9e4f-8b0c2d4e6a71
+  target_handle: lab/storage/vol/app-01-root
+  strength: hard
+  resolved_at: '2026-09-03T14:03:40Z'
+- edge_type: depends_on
+  target_uuid: a1c3e5f7-9b0d-4c2e-8f6a-0c2d4e6a8b93
+  target_handle: lab/net/ip/192.0.2.55
+  target_field: address
+  bound_field: outputs.primary_ip
+  strength: hard
+  resolved_at: '2026-09-03T14:03:40Z'
+correlation_ids:
+- scheme: libvirt-domain-uuid
+  value: 4e2a7c19-6b3d-4f8e-a1c5-9d0b2e7f3a64
+- scheme: mac
+  value: 52:54:00:ab:12:34
+status:
+  state: Running
+  conditions:
+  - type: Ready
+    status: 'True'
+    reason: GuestAgentConnected
+    last_transition_time: '2026-09-03T14:03:52Z'
+sovereignty:
+  zone: us-mn
+  classification: internal
+  locality:
+    topology_ref: c2e4a6b8-0d1f-4a3c-9e5b-7f9a1c3e5d70
+    fault_domain: rack-3/host-a
+adopted_standards:
+- standard: Redfish/ComputerSystem
+  requested_version: '>=2023.1'
+  provider_version: '2024.4'
+  effective_version: '2024.4'
+  translated: false
+  resolved_at: '2026-09-03T14:03:40Z'
+portability:
+  classification: portable
+  portability_breaking: false
+  portability_notes: Realized entirely from Type-scope elements; strip outputs, provider and correlation ids and
+    `fields` is a valid new intent.
+expected_observation:
+  cadence: PT15M
+  on_exceeded: finding
+provenance:
+  outputs.ip_addresses:
+  - source:
+      kind: provider
+      id: lab/providers/libvirt-host-a
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:03:40Z'
+  outputs.mac_addresses:
+  - source:
+      kind: provider
+      id: lab/providers/libvirt-host-a
+    operation_type: set
+    sequence: 1
+    timestamp: '2026-09-03T14:03:40Z'
+integrity:
+  head: sha256:e8889df6cff24766f2dc1697342d6f7949a23c1a1364b45e6fdfb2f3eaa6b264
+  previous: null
+  algorithm: sha256-jcs
