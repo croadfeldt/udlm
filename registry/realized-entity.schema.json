@@ -961,6 +961,52 @@
                 }
               },
               "description": "Candidate layers dropped at resolution (LAY-003) and why."
+            },
+            "applied": {
+              "type": "array",
+              "description": "The layers and policies that CONTRIBUTED to this requested state, in precedence order — the positive half of the assembly record (`unapplied` and `excluded_layers` are the negative half). What ran, as a list; which field each set is per-field provenance.",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source"
+                ],
+                "properties": {
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "id"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "layer",
+                          "policy",
+                          "actor",
+                          "provider"
+                        ]
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "uuid of the layer/policy/actor/provider that offered it."
+                      }
+                    }
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "The version of the layer or policy that contributed."
+                  },
+                  "fields": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "dot-paths this contribution set or narrowed."
+                  }
+                }
+              }
             }
           }
         }

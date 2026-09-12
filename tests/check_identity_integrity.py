@@ -65,6 +65,7 @@ IMMUTABLE_RECORD_TYPES = {
     "intent_record", "requested_record", "realized_record", "discovered_record",
 }
 KNOWN_MUTABLE_RECORD_TYPES = {"policy", "catalog_item"}
+STATE_RECORD_TYPES = {"intent_record", "requested_record", "realized_record", "discovered_record"}
 
 
 def classify(doc, warns=None, rel=""):
@@ -148,6 +149,10 @@ def check_pair(rel, old_doc, new_doc, fails, warns):
         return
     family = classify(new_doc, warns, rel)
     old_uuid, new_uuid = _identity_uuid(old_doc), _identity_uuid(new_doc)
+    if (new_doc.get("record_type") in STATE_RECORD_TYPES and old_doc.get("record_type") is None
+            and isinstance(old_doc.get("states"), dict)):
+        return  # ruling 071: a folded instance (mutable, no record_type) rewritten as per-state records is a
+                # conversion — the records are new identities about the same entity, not edits of a record
 
     if family == "immutable":
         rt = new_doc.get("record_type")

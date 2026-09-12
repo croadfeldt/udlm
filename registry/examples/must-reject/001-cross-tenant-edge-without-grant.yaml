@@ -2,28 +2,33 @@
 must_reject:
   rule: GRD-001
   gate: check_grant_derivation
-  because: >-
-    A VM in a THIRD tenant binds to a VLAN the platform tenant owns. The shipped estate grants that
-    VLAN to the payments tenant and to nobody else, so this crossing has no grant behind it — and the
-    case is deliberately in a tenant the grant does not name, because a payments VM binding to the
-    same VLAN would be legitimately authorised and would prove nothing. CTX-001 requires one. Caught at admission it costs a rejected request;
-    caught at dispatch it costs a partially realized composite and a compensation path (CMP-009's
-    trade, which ADR-066 applies to authorization).
+  because: A VM in a THIRD tenant binds to a VLAN the platform tenant owns. The shipped estate grants that VLAN
+    to the payments tenant and to nobody else, so this crossing has no grant behind it — and the case is deliberately
+    in a tenant the grant does not name, because a payments VM binding to the same VLAN would be legitimately authorised
+    and would prove nothing. CTX-001 requires one. Caught at admission it costs a rejected request; caught at dispatch
+    it costs a partially realized composite and a compensation path (CMP-009's trade, which ADR-066 applies to authorization).
   use_case: must-reject/001-cross-tenant-reference-refused
 record:
-  uuid: e1f9a3c4-6b20-4d7a-9c58-2a4e8b0d5f31
-  handle: research/ungranted-01
+  record_type: realized_record
+  state: Realized
+  entity_uuid: e1f9a3c4-6b20-4d7a-9c58-2a4e8b0d5f31
+  record_uuid: 01a09385-caef-771f-915c-0476fdd90c88
+  tenant_uuid: 3fb1d7e0-9c44-4a2b-8e16-7d05c9a3b284
   conforms_to: udlm/0.1
   resource_type: Machine.VM
   type_version: 0.12.0
-  lifecycle_state: Realized
-  tenant_uuid: 3fb1d7e0-9c44-4a2b-8e16-7d05c9a3b284   # a third tenant; holds no grant
-  states:
-    realized:
-      fields: {cpu: {count: 2}, memory: {size: 8Gi}}
-      at: '2026-08-08T00:00:00Z'
-      time_source: authored case — no clock claim
+  handle: research/ungranted-01
+  at: '2026-08-08T00:00:00Z'
+  time_source: authored case — no clock claim
+  fields:
+    cpu:
+      count: 2
+    memory:
+      size: 8Gi
+  outputs: {}
+  requested_ref: 01a09385-caef-771f-915c-0475dd7cfc12
+  provider: estate/control-plane
   dependencies:
-    - edge_type: binds_to
-      target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22   # platform/vlan-1042, another tenant's
-      resolved_at: '2026-08-08T00:00:00Z'
+  - edge_type: binds_to
+    target_uuid: b448b93d-49b8-4c4a-bae5-56bef93edd22
+    resolved_at: '2026-08-08T00:00:00Z'

@@ -32,6 +32,9 @@ import glob
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import entity_view as _ev  # the merged read model, computed from per-state records (ruling 071)
+
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,22 +50,10 @@ def _fields(rec):
 
 
 def load_records():
-    """Every instance under examples/ and instances/, excluding the negative corpus — those are
-    inputs a case hands to a gate deliberately, not part of the estate being judged."""
-    out = []
-    for root in ("registry/examples", "registry/instances"):
-        for p in sorted(glob.glob(os.path.join(ROOT, root, "**", "*.yaml"), recursive=True)):
-            if "must-reject" in p.split(os.sep) or os.sep + "classes" + os.sep in p:
-                continue
-            try:
-                docs = list(yaml.safe_load_all(open(p, encoding="utf-8")))
-            except Exception:
-                continue
-            for d in docs:
-                if isinstance(d, dict) and d.get("uuid"):
-                    d.setdefault("_path", os.path.relpath(p, ROOT))
-                    out.append(d)
-    return out
+    """Every entity view under examples/ and instances/ (registry/tools/entity_view.py), excluding the
+    negative corpus — those are inputs a case hands to a gate deliberately, not part of the estate."""
+    roots = [os.path.join(ROOT, r) for r in ("registry/examples", "registry/instances")]
+    return list(_ev.load_views(roots).values())
 
 
 def declared_zones(records):

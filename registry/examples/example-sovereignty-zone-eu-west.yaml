@@ -4,24 +4,81 @@
 # The zone an entity's `sovereignty.zone: eu-west` resolves to. Without this record the label is a
 # string two peers can each read differently; with it, "is this placement covered by that
 # accreditation?" is arithmetic over ISO 3166 codes.
-uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
-handle: eu-west
+# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
+# read model, computed by registry/tools/entity_view.py; these records are what is stored.
+---
+record_type: intent_record
+state: Intent
+entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
+record_uuid: 01a09385-cae6-7482-8808-5dca49315792
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
-lifecycle_state: Realized
-tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+handle: eu-west
+at: '2026-08-09T00:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: EU West
-states:
-  realized:
-    fields:
-      jurisdictions: [DE, NL]
-      regimes: [EU]
-      description: >-
-        Western European zone. Two jurisdictions, so an accreditation covering only DE does not
-        cover the zone — an entity placed here could be sitting in NL.
-    outputs: {}
-    at: '2026-08-09T00:00:00Z'
-    time_source: authored example — no clock claim
+origin: backfilled
+fields:
+  jurisdictions:
+  - DE
+  - NL
+  regimes:
+  - EU
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
+    zone — an entity placed here could be sitting in NL.
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
+record_uuid: 01a09385-cae6-7482-8808-5dcb54583708
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+conforms_to: udlm/0.1
+resource_type: SovereigntyZone
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+handle: eu-west
+at: '2026-08-09T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: EU West
+fields:
+  jurisdictions:
+  - DE
+  - NL
+  regimes:
+  - EU
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
+    zone — an entity placed here could be sitting in NL.
+intent_ref: 01a09385-cae6-7482-8808-5dca49315792
+
+---
+record_type: realized_record
+state: Realized
+entity_uuid: bcd207ca-b000-4d68-86ef-16bb214dbaa8
+record_uuid: 01a09385-cae6-7482-8808-5dcc6f317582
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+conforms_to: udlm/0.1
+resource_type: SovereigntyZone
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+handle: eu-west
+at: '2026-08-09T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: EU West
+fields:
+  jurisdictions:
+  - DE
+  - NL
+  regimes:
+  - EU
+  description: Western European zone. Two jurisdictions, so an accreditation covering only DE does not cover the
+    zone — an entity placed here could be sitting in NL.
+outputs: {}
+requested_ref: 01a09385-cae6-7482-8808-5dcb54583708
+provider: estate/control-plane

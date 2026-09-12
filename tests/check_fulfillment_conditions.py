@@ -37,6 +37,9 @@ import glob
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import entity_view as _ev  # the merged read model, computed from per-state records (ruling 071)
+
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -68,23 +71,12 @@ def _looks_like_fulfillment(t):
 
 
 def load_index():
-    """uuid -> record, plus handle-tail aliases so a blocked_on written by handle resolves."""
+    """uuid -> the entity view, plus handle-tail aliases so a blocked_on written by handle resolves."""
     idx = {}
-    for root in SCAN_ROOTS:
-        for p in sorted(glob.glob(os.path.join(root, "**", "*.yaml"), recursive=True)):
-            if "must-reject" in p.split(os.sep):
-                continue
-            try:
-                docs = list(yaml.safe_load_all(open(p, encoding="utf-8")))
-            except Exception:
-                continue
-            for d in docs:
-                if not isinstance(d, dict) or not d.get("uuid"):
-                    continue
-                d.setdefault("_path", os.path.relpath(p, ROOT))
-                idx[d["uuid"]] = d
-                if d.get("handle"):
-                    idx.setdefault(_tail(d["handle"]), d)
+    for u, d in _ev.load_views(SCAN_ROOTS).items():
+        idx[u] = d
+        if d.get("handle"):
+            idx.setdefault(_tail(d["handle"]), d)
     return idx
 
 

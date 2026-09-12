@@ -362,6 +362,15 @@
         "Discovered"
       ],
       "description": "The four states of an entity — the kinds a per-state record can be (state-record.schema.json `state`, ruling 071) and the stages a type's lifecycle may declare (resource-type-spec.schema.json `lifecycle.states`). One home (VOC-001). `lifecycle_state` on the merged read model adds Decommissioned and is data-model-core §3's five-value enum."
+    },
+    "policy_decision": {
+      "enum": [
+        "allow",
+        "deny",
+        "pass",
+        "fail"
+      ],
+      "description": "What a policy evaluation decided (policy-contract §8, the validation output shape). One home (VOC-001): policy.schema.json's validation output and the requested record's `policies[]` both reference it. A transformation policy's effect is what it changed, recorded per field in provenance; its decision here is allow or pass."
     }
   }
 }

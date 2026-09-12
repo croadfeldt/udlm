@@ -31,8 +31,11 @@ Exit 0 = every selection sits inside its offer; 1 = at least one does not.
 """
 import glob
 import os
-import re
 import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import entity_view as _ev  # the merged read model, computed from per-state records (ruling 071)
+import re
 
 import yaml
 
@@ -141,22 +144,16 @@ def check_instance(inst, cls, where):
 def main():
     by_id, by_name = load_classes()
     fails, checked, skipped = [], 0, 0
-    for root in INSTANCE_ROOTS:
-        for p in sorted(glob.glob(os.path.join(root, "**", "*.yaml"), recursive=True)):
-            try:
-                docs = list(yaml.safe_load_all(open(p, encoding="utf-8")))
-            except Exception:
-                continue
-            rel = os.path.relpath(p, ROOT)
-            for inst in docs:
-                if not isinstance(inst, dict) or "states" not in inst:
-                    continue
-                cls = by_id.get(inst.get("type_ref")) or by_name.get(inst.get("resource_type"))
-                if not cls:
-                    skipped += 1
-                    continue
-                checked += 1
-                fails += check_instance(inst, cls, rel)
+    for inst in _ev.load_views(INSTANCE_ROOTS, skip_classes=False).values():   # views: per-state records folded (ruling 071)
+        if "states" not in inst:
+            continue
+        rel = inst.get("_path", "?")
+        cls = by_id.get(inst.get("type_ref")) or by_name.get(inst.get("resource_type"))
+        if not cls:
+            skipped += 1
+            continue
+        checked += 1
+        fails += check_instance(inst, cls, rel)
 
     # self-test: the gate must be able to fail, and the COMBINATION case is the one that matters
     probe_cls = {"resource_type": "T", "elements": [

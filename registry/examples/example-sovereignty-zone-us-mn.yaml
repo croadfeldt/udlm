@@ -3,23 +3,72 @@
 #
 # The subsumption case §3.8 turns on: an accreditation scoped `US` covers RESIDENCY here, because
 # US-MN is inside US. It does not cover a distinct Minnesota state REGIME, which matches exactly.
-uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
-handle: us-mn-sovereign
+# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
+# read model, computed by registry/tools/entity_view.py; these records are what is stored.
+---
+record_type: intent_record
+state: Intent
+entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
+record_uuid: 01a09385-caeb-71ab-ba43-94f9cfa401a8
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
 conforms_to: udlm/0.1
 resource_type: SovereigntyZone
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
-lifecycle_state: Realized
-tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+handle: us-mn-sovereign
+at: '2026-08-09T00:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: Minnesota (state-sovereign)
-states:
-  realized:
-    fields:
-      jurisdictions: [US-MN]
-      description: >-
-        A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring
-        one here would claim an exact-match scope that does not exist.
-    outputs: {}
-    at: '2026-08-09T00:00:00Z'
-    time_source: authored example — no clock claim
+origin: backfilled
+fields:
+  jurisdictions:
+  - US-MN
+  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here
+    would claim an exact-match scope that does not exist.
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
+record_uuid: 01a09385-caeb-71ab-ba43-94fad145dc7e
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+conforms_to: udlm/0.1
+resource_type: SovereigntyZone
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+handle: us-mn-sovereign
+at: '2026-08-09T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Minnesota (state-sovereign)
+fields:
+  jurisdictions:
+  - US-MN
+  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here
+    would claim an exact-match scope that does not exist.
+intent_ref: 01a09385-caeb-71ab-ba43-94f9cfa401a8
+
+---
+record_type: realized_record
+state: Realized
+entity_uuid: 52e4eb99-c7c2-4d52-a062-fff06a125b24
+record_uuid: 01a09385-caeb-71ab-ba43-94fbf79d86f6
+tenant_uuid: 0696f0b2-8a2e-4e95-b3aa-f355d058ddfe
+conforms_to: udlm/0.1
+resource_type: SovereigntyZone
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/SovereigntyZone/0.1.0
+handle: us-mn-sovereign
+at: '2026-08-09T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Minnesota (state-sovereign)
+fields:
+  jurisdictions:
+  - US-MN
+  description: A single subdivision. No `regimes` — Minnesota is not a supranational regime, and declaring one here
+    would claim an exact-match scope that does not exist.
+outputs: {}
+requested_ref: 01a09385-caeb-71ab-ba43-94fad145dc7e
+provider: estate/control-plane

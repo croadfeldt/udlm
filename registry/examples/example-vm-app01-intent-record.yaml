@@ -22,7 +22,9 @@ fields:
     count: 4
   memory:
     size: 16Gi
-  guest_os: uuid/6b1f2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d@1?reference_data_type==os_image
+  guest_os:
+    type: linux-server-9
+    version: '9.6'
   firmware:
     type: uefi
     secure_boot: true

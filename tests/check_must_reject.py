@@ -30,6 +30,9 @@ import sys
 
 import yaml
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import entity_view as _ev  # a per-state record case is judged as the view it folds into (ruling 071)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CASES = os.path.join(ROOT, "registry", "examples", "must-reject")
 
@@ -149,7 +152,8 @@ def main():
             fails.append(f"MRJ-002 {rel}: a case must name the rule it violates and say why")
             continue
         checked += 1
-        errors = GATES[gate](doc.get("record") or {})
+        case = doc.get("record") or {}
+        errors = GATES[gate](case if gate == "schema" else _ev.as_view(case))
         if not errors:
             fails.append(f"MRJ-001 {rel}: {gate} ACCEPTED it. The case claims {rule} refuses this; "
                          f"either the model stopped refusing it, or the case no longer provokes it.")
