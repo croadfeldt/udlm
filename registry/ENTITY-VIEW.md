@@ -5,7 +5,8 @@
 > edited. This merged shape is what a dashboard, a person, or a gate asks for: the latest record of
 > each state, assembled by `registry/tools/entity_view.py`. It is never written. Every `states.*`
 > below is the body of that state's record; `drift` and `ownership` are gone (computed; no writers to
-> referee). `examples/orders-db.json` is a worked VIEW, not a stored record.
+> referee). `examples/orders-db.json` is a worked VIEW, not a stored record — the only one allowed;
+> authoring another folded document anywhere in the corpus fails CI (`RHY-006`, `tests/check_state_records_only.py`).
 
 `resource-type-spec.schema.json` defines a **type**; `entity-view.schema.json` defines the
 **entity view** — one entity (or Composite Entity) as it flows through the four states, in one document. It is the data substrate **the control plane reads and writes**; UDLM carries the records, the control plane applies the

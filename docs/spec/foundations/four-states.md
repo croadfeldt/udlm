@@ -247,7 +247,7 @@ block to referee several writers on one document, the per-state records need non
 each.
 
 Worked example: `registry/examples/example-vm-app01-{intent,requested,realized}-record.yaml`, one
-VM as three records sharing one `entity_uuid`.
+VM as three records sharing one `entity_uuid`. Enforced: `RHY-006` — a folded record fails CI.
 
 ---
 
@@ -317,6 +317,7 @@ Everything genuinely data-model about rehydration reduces to two rules:
 |--------|------|
 | `RHY-001` | Tenancy, sovereignty, and cross-tenant authorizations always use **current** policies during rehydration — they cannot be pinned to a historical version (only resource-configuration policy may be pinned). |
 | `RHY-005` | On a **restore in place** (Faithful mode) the entity **UUID is preserved** and only the provider-side identifier changes (recorded in `provider_entity_id_history`); a **rebuild** (Provider-Portable mode — the original is gone) is a **new entity with a new UUID**, kept traceable to its source by lineage (§5.2). Rehydration is transactional either way — a failed target leaves the pre-rehydration state intact. |
+| `RHY-006` | **One record per state — never a folded record.** An entity's four states are stored as four separate records (`registry/state-record.schema.json`), each written once by one party and superseded, never edited. A document carrying a `states` block is the **entity view** — a read model assembled on demand (`registry/entity-view.schema.json`) — and MUST NOT be authored, stored, or validated as a record; the only authored view is the worked example `registry/examples/orders-db.json`. `drift` and `ownership` are never stored on any record. This is the model as originally specified; the folded instance schema that replaced it for a year was the deviation. Gate: `tests/check_state_records_only.py` (SRO-001/002/003). |
 
 *The rest is implementation/policy, not data model, and lives in control-plane operational model: the placement × policy-version **"modes"** (Faithful / Provider-Portable / Historical) are operational request flags; **`min_auth_level`** rehydration constraints are an authorization policy; and the pipeline, leases, TTL, concurrency, and PENDING_REVIEW pause are runtime (`RHY-002/003/004/006/007/008/010/011/012`).*
 

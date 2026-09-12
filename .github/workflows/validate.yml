@@ -72,6 +72,8 @@ jobs:
       - run: python3 tests/check_duplicate_yaml_keys.py
       - run: python3 tests/check_precedence_ladders.py
       - run: python3 tests/check_integrity_chain.py
+      # One record per state, never a folded record (RHY-006): the model as specified; the gate keeps it so
+      - run: python3 tests/check_state_records_only.py
       - run: python3 tests/check_status_claims.py
       - run: python3 tests/check_seal_facets.py
       - run: python3 tests/check_adr_realization.py
