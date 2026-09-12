@@ -385,12 +385,7 @@
             ],
             "properties": {
               "decision": {
-                "enum": [
-                  "allow",
-                  "deny",
-                  "pass",
-                  "fail"
-                ]
+                "$ref": "common-elements.schema.json#/$defs/policy_decision"
               }
             }
           }

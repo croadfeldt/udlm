@@ -25,97 +25,153 @@
 # LIFECYCLE_STATE IS UNTOUCHED. All three are `Requested`. Blocking is an overlay on a lifecycle
 # that never leaves its five values, exactly as recovery and health are — there is no BLOCKED
 # lifecycle state and adding one would put the same fact on two axes.
+# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
+# read model, computed by registry/tools/entity_view.py; these records are what is stored.
 ---
-uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-handle: cexample/storage/orders-data
+record_type: intent_record
+state: Intent
+entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
+record_uuid: 01a09385-cad9-72da-a308-da5b40f056be
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Storage.Volume
 type_version: 0.11.2
 type_ref: https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2
-lifecycle_state: Requested
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+handle: cexample/storage/orders-data
+at: '2026-08-10T09:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: Orders data volume
-states:
-  requested:
-    fields:
-      capacity: 500Gi
-      access_mode: read_write_once
-    at: '2026-08-10T09:00:00Z'
-    time_source: authored example — no clock claim
+origin: backfilled
+fields:
+  capacity: 500Gi
+  access_mode: read_write_once
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
+record_uuid: 01a09385-cad9-72da-a308-da5c87c92f33
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Storage.Volume
+type_version: 0.11.2
+type_ref: https://udlm.dev/registry/udlm/0.1/Storage.Volume/0.11.2
+handle: cexample/storage/orders-data
+at: '2026-08-10T09:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Orders data volume
+fields:
+  capacity: 500Gi
+  access_mode: read_write_once
+intent_ref: 01a09385-cad9-72da-a308-da5b40f056be
 status:
   state: pending
   conditions:
-    # THE ROOT. `refused` carries no `blocked_on` and the schema conditional exempts it: it IS the
-    # root of the chain, so there is nothing upstream to point at. Its cause is its own reason.
-    - type: refused
-      status: 'True'
-      reason: no pool in this zone can satisfy 500Gi, and none is planned
-      last_transition_time: '2026-08-10T09:00:05Z'
+  - type: refused
+    status: 'True'
+    reason: no pool in this zone can satisfy 500Gi, and none is planned
+    last_transition_time: '2026-08-10T09:00:05Z'
+
 ---
-uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-handle: cexample/app/orders-api
+record_type: intent_record
+state: Intent
+entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
+record_uuid: 01a09385-cad9-72da-a308-da5dba42d6c4
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Container
 type_version: 0.7.3
 type_ref: https://udlm.dev/registry/udlm/0.1/Container/0.7.3
-lifecycle_state: Requested
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+handle: cexample/app/orders-api
+at: '2026-08-10T09:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: Orders API container
-states:
-  requested:
-    fields:
-      image: registry.cexample/orders-api:1.4.2
-    at: '2026-08-10T09:00:00Z'
-    time_source: authored example — no clock claim
+origin: backfilled
+fields:
+  image: registry.cexample/orders-api:1.4.2
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
+record_uuid: 01a09385-cad9-72da-a308-da5eeb6f6ec6
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Container
+type_version: 0.7.3
+type_ref: https://udlm.dev/registry/udlm/0.1/Container/0.7.3
+handle: cexample/app/orders-api
+at: '2026-08-10T09:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Orders API container
+fields:
+  image: registry.cexample/orders-api:1.4.2
+intent_ref: 01a09385-cad9-72da-a308-da5dba42d6c4
 dependencies:
-  - edge_type: depends_on
-    strength: hard
-    target_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
-    target_handle: cexample/storage/orders-data
-    relation: mounts
+- edge_type: depends_on
+  strength: hard
+  target_uuid: 36e9e2a4-385c-4efc-8ac6-2e4a1f0c0c36
+  target_handle: cexample/storage/orders-data
+  relation: mounts
 status:
   state: pending
   conditions:
-    # INHERITED, one hop. The volume's refusal is permanent, so this inherits blocked-permanent
-    # rather than blocked-transient — transient waits, permanent refuses, and the distinction is
-    # what decides whether anyone should be woken up.
-    - type: blocked-permanent
-      status: 'True'
-      reason: the volume this container mounts was permanently refused
-      blocked_on: udlm://estate/cexample/storage/orders-data
-      last_transition_time: '2026-08-10T09:00:06Z'
+  - type: blocked-permanent
+    status: 'True'
+    reason: the volume this container mounts was permanently refused
+    blocked_on: udlm://estate/cexample/storage/orders-data
+    last_transition_time: '2026-08-10T09:00:06Z'
+
 ---
-uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
-handle: cexample/app/orders
+record_type: intent_record
+state: Intent
+entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
+record_uuid: 01a09385-cad9-72da-a308-da5f4335b1e4
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Software.Service
 type_version: 0.7.2
 type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.2
-lifecycle_state: Requested
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+handle: cexample/app/orders
+at: '2026-08-10T09:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: Orders service
-states:
-  requested:
-    fields: {}
-    at: '2026-08-10T09:00:00Z'
-    time_source: authored example — no clock claim
+origin: backfilled
+fields: {}
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 38d2232e-3ab6-4853-80b3-5fd09f2b84c0
+record_uuid: 01a09385-cad9-72da-a308-da60f47ce055
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Software.Service
+type_version: 0.7.2
+type_ref: https://udlm.dev/registry/udlm/0.1/Software.Service/0.7.2
+handle: cexample/app/orders
+at: '2026-08-10T09:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Orders service
+fields: {}
+intent_ref: 01a09385-cad9-72da-a308-da5f4335b1e4
 dependencies:
-  - edge_type: depends_on
-    strength: hard
-    target_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
-    target_handle: cexample/app/orders-api
-    relation: runs_on
+- edge_type: depends_on
+  strength: hard
+  target_uuid: b7baccf6-8c86-4a75-88df-d37e1c454be2
+  target_handle: cexample/app/orders-api
+  relation: runs_on
 status:
   state: pending
   conditions:
-    # TWO HOPS from the root, and it still names only ONE hop. Walk it and you reach the volume;
-    # that walk is the root-naming obligation, and it is why blocked_on is required rather than
-    # advisory. An app that says "blocked" and nothing else tells an operator nothing to act on.
-    - type: blocked-permanent
-      status: 'True'
-      reason: the container this service runs on is blocked
-      blocked_on: udlm://estate/cexample/app/orders-api
-      last_transition_time: '2026-08-10T09:00:07Z'
+  - type: blocked-permanent
+    status: 'True'
+    reason: the container this service runs on is blocked
+    blocked_on: udlm://estate/cexample/app/orders-api
+    last_transition_time: '2026-08-10T09:00:07Z'

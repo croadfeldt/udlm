@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://udlm.dev/registry/udlm/0.1/state-record.schema.json",
   "title": "UDLM state record — one record per lifecycle state",
-  "description": "Ruling 071 (four-states.md §2.7). An entity's four states are four records — intent, requested, realized, discovered — each written by exactly one party, each immutable, each carrying one envelope plus one body. The envelope: entity_uuid (the identity every edge points at; never changes), record_uuid (this record, time-ordered), state, generation, supersedes, the tenant, the class pin, when and by which clock. The bodies: intent carries the fields as written and actor provenance; requested carries the fields after assembly and policy, what was applied and left unapplied, and the intent it came from; realized carries the fields as built, the outputs other things bind to, which provider instance built it, health, placement, the natural keys discovery recognizes it by, and the requested record it realizes; discovered carries what a sweep saw and how it was matched. One closed schema for the four kinds, dispatched on record_type; per-state rules say which body fields belong. The merged 'entity as it flows through the four states' shape (realized-entity.schema.json) is a READ MODEL assembled from these records, never written; the big blocks are shared with it by $ref so the two can never disagree about a shape.",
+  "description": "Ruling 071 (four-states.md §2.7). An entity's four states are four records — intent, requested, realized, discovered — each written by exactly one party, each immutable, each carrying one envelope plus one body. The envelope: entity_uuid (the identity every edge points at; never changes), record_uuid (this record, time-ordered), state, generation, supersedes, the tenant, the class pin, when and by which clock. The bodies: intent carries the fields as written and actor provenance; requested carries the fields after assembly and policy, the layers applied and left unapplied, the policies evaluated with their decisions, the fulfillment status when the request is refused or blocked, and the intent it came from; realized carries the fields as built, the outputs other things bind to, which provider instance built it, health, placement, the natural keys discovery recognizes it by, and the requested record it realizes; discovered carries what a sweep saw and how it was matched. One closed schema for the four kinds, dispatched on record_type; per-state rules say which body fields belong. The merged 'entity as it flows through the four states' shape (realized-entity.schema.json) is a READ MODEL assembled from these records, never written; the big blocks are shared with it by $ref so the two can never disagree about a shape.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -83,11 +83,12 @@
       "description": "The `$id` of the pinned class or served spec."
     },
     "handle": {
-      "type": "string",
-      "description": "ADVISORY human-readable identity of the ENTITY (identifier-scheme §3); the uuid is authoritative."
+      "$ref": "realized-entity.schema.json#/properties/handle",
+      "description": "ADVISORY human-readable identity of the ENTITY (identifier-scheme §3), in the wire grammar (WIR-003); the uuid is authoritative."
     },
     "at": {
-      "$ref": "common-elements.schema.json#/$defs/Timestamp"
+      "$ref": "realized-entity.schema.json#/$defs/realized_snapshot/properties/at",
+      "description": "When this record was written, RFC 3339 normalized to UTC 'Z' (WIR-007); the clock is named by time_source."
     },
     "time_source": {
       "type": "string",
@@ -180,6 +181,43 @@
         "type": "string"
       },
       "description": "Discovered only: which correlation-id schemes matched this observation to `entity_uuid` (dcm ADR-017 Decision C). Empty on an unclaimed observation."
+    },
+    "policies": {
+      "type": "array",
+      "description": "Requested only: the policies evaluated for this request cycle and what each decided — the statement of what ran, beside the per-field provenance that says what each changed.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policy",
+          "decision"
+        ],
+        "properties": {
+          "policy": {
+            "$ref": "common-elements.schema.json#/$defs/Reference",
+            "description": "The policy record, by handle or uuid."
+          },
+          "version": {
+            "type": "string"
+          },
+          "policy_type": {
+            "$ref": "policy.schema.json#/properties/policy_type"
+          },
+          "decision": {
+            "$ref": "common-elements.schema.json#/$defs/policy_decision"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "dot-paths the policy set, narrowed or stripped, if any."
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "allOf": [
@@ -212,7 +250,8 @@
           "expected_observation": false,
           "matched_by": false,
           "dependencies": false,
-          "constituents": false
+          "constituents": false,
+          "policies": false
         },
         "required": [
           "fields"
@@ -238,7 +277,6 @@
           "outputs": false,
           "requested_ref": false,
           "provider": false,
-          "status": false,
           "sovereignty": false,
           "correlation_ids": false,
           "adopted_standards": false,
@@ -271,7 +309,8 @@
           "intent_ref": false,
           "assembly": false,
           "provider_preference": false,
-          "matched_by": false
+          "matched_by": false,
+          "policies": false
         },
         "required": [
           "fields",
@@ -308,7 +347,8 @@
           "priced_by": false,
           "constituents": false,
           "dependencies": false,
-          "sovereignty": false
+          "sovereignty": false,
+          "policies": false
         },
         "required": [
           "fields"
@@ -342,7 +382,10 @@
         "memory": {
           "size": "16Gi"
         },
-        "guest_os": "uuid/6b1f2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d@1?reference_data_type==os_image",
+        "guest_os": {
+          "type": "linux-server-9",
+          "version": "9.6"
+        },
         "firmware": {
           "type": "uefi",
           "secure_boot": true
@@ -475,7 +518,10 @@
         "memory": {
           "size": "16Gi"
         },
-        "guest_os": "uuid/6b1f2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d@1?reference_data_type==os_image",
+        "guest_os": {
+          "type": "linux-server-9",
+          "version": "9.6"
+        },
         "firmware": {
           "type": "uefi",
           "secure_boot": true,
@@ -555,7 +601,7 @@
         ]
       },
       "sovereignty": {
-        "zone": "us-mn",
+        "zone": "us-mn-sovereign",
         "classification": "internal",
         "locality": {
           "topology_ref": "c2e4a6b8-0d1f-4a3c-9e5b-7f9a1c3e5d70",
@@ -606,7 +652,7 @@
         ]
       },
       "integrity": {
-        "head": "sha256:e8889df6cff24766f2dc1697342d6f7949a23c1a1364b45e6fdfb2f3eaa6b264",
+        "head": "sha256:5176f5779240eaea164947f6da195b11f898c72520b3e8b36ff09b02d18fad84",
         "previous": null,
         "algorithm": "sha256-jcs"
       }

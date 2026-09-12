@@ -1,24 +1,25 @@
 must_reject:
   rule: WIR-007
   gate: schema
-  expect_path: $.states.realized.at
-  because: >-
-    A timestamp with a `+02:00` offset instead of `Z`. Two peers comparing instants written in
-    different offsets have to agree on a conversion before they can agree on ordering, and audit
-    chains depend on that ordering. Normalising to UTC at the wire is what makes an instant mean the
-    same thing on both sides; an offset is readable and still wrong here.
+  expect_path: $.at
+  because: A timestamp with a `+02:00` offset instead of `Z`. Two peers comparing instants written in different
+    offsets have to agree on a conversion before they can agree on ordering, and audit chains depend on that ordering.
+    Normalising to UTC at the wire is what makes an instant mean the same thing on both sides; an offset is readable
+    and still wrong here.
 record:
-  __schema__: realized-entity.schema.json
-  uuid: c9bd301f-c0f2-4871-91d7-916378cad4c4
-  handle: payments/offset-clock
+  record_type: realized_record
+  state: Realized
+  entity_uuid: c9bd301f-c0f2-4871-91d7-916378cad4c4
+  record_uuid: 01a09385-cafd-779d-a0dd-72648ac5c857
   tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
   conforms_to: udlm/0.1
   resource_type: Machine.VM
   type_version: 0.12.0
-  lifecycle_state: Realized
-  states:
-    realized:
-      fields: {}
-      outputs: {}
-      at: '2026-08-08T00:00:00+02:00'
-      time_source: authored case — no clock claim
+  handle: payments/offset-clock
+  at: '2026-08-08T00:00:00+02:00'
+  time_source: authored case — no clock claim
+  fields: {}
+  outputs: {}
+  requested_ref: 01a09385-cafd-779d-a0dd-7263ba137d0b
+  provider: estate/control-plane
+  __schema__: state-record.schema.json

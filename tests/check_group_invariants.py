@@ -33,6 +33,9 @@ import glob
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import entity_view as _ev  # the merged read model, computed from per-state records (ruling 071)
+
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,22 +54,9 @@ def _fields(rec):
 
 
 def load_index():
-    """uuid -> record, over the shipped estate. must-reject cases are excluded: they are inputs a
-    case hands in deliberately, not part of the estate being judged."""
-    idx = {}
-    for root in INSTANCE_ROOTS:
-        for p in sorted(glob.glob(os.path.join(root, "**", "*.yaml"), recursive=True)):
-            if "must-reject" in p.split(os.sep) or os.sep + "classes" + os.sep in p:
-                continue
-            try:
-                docs = list(yaml.safe_load_all(open(p, encoding="utf-8")))
-            except Exception:
-                continue
-            for d in docs:
-                if isinstance(d, dict) and d.get("uuid"):
-                    d.setdefault("_path", os.path.relpath(p, ROOT))
-                    idx[d["uuid"]] = d
-    return idx
+    """uuid -> the entity view, over the shipped estate (registry/tools/entity_view.py). must-reject
+    cases are excluded: they are inputs a case hands in deliberately, not part of the estate being judged."""
+    return _ev.load_views(INSTANCE_ROOTS)
 
 
 def evaluate(record, index):

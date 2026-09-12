@@ -3,26 +3,66 @@
 # Worked-example Resource Group: a Grouping using the EXPLICIT-set criterion —
 # the marked exception (identifier-scheme §9). A derivable criterion (labels, ownership)
 # is preferred wherever one exists; membership is still derived, never stored as a list.
-uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
-handle: org/resource-group/example-orders-deployment
+# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
+# read model, computed by registry/tools/entity_view.py; these records are what is stored.
+---
+record_type: intent_record
+state: Intent
+entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
+record_uuid: 01a09385-cabc-718b-a328-0cd96a00da64
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping
 type_version: 0.2.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
-lifecycle_state: Realized
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+handle: org/resource-group/example-orders-deployment
+at: '2026-08-06T00:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: Example Orders Deployment
   description: Groups the resources that make up the example orders deployment.
-  notes:
-  - at: '2026-08-06T00:00:00Z'
-    author: profile/grouping cutover
-    text: non-exclusive advisory grouping; explicit membership is the marked exception — a derivable criterion
-      (labels/ownership) is preferred where one exists
-states:
-  realized:
-    fields:
-      membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
-    outputs: {}
-    at: '2026-08-06T00:00:00Z'
-    time_source: authored example — no clock claim
+origin: backfilled
+fields:
+  membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
+record_uuid: 01a09385-cabc-718b-a328-0cda5db64f84
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Grouping
+type_version: 0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
+handle: org/resource-group/example-orders-deployment
+at: '2026-08-06T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Example Orders Deployment
+  description: Groups the resources that make up the example orders deployment.
+fields:
+  membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
+intent_ref: 01a09385-cabc-718b-a328-0cd96a00da64
+
+---
+record_type: realized_record
+state: Realized
+entity_uuid: 66d85dc6-b02b-456f-be07-2f1ffa2bede1
+record_uuid: 01a09385-cabc-718b-a328-0cdb01c9ac44
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Grouping
+type_version: 0.2.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping/0.2.0
+handle: org/resource-group/example-orders-deployment
+at: '2026-08-06T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Example Orders Deployment
+  description: Groups the resources that make up the example orders deployment.
+fields:
+  membership_criterion: estate?uuid=in=(7e3a1c44-2b9d-4e8a-9f12-0a6b5c4d3e21)
+outputs: {}
+requested_ref: 01a09385-cabc-718b-a328-0cda5db64f84
+provider: estate/control-plane

@@ -22,7 +22,9 @@ fields:
     cores_per_socket: 4
   memory:
     size: 16Gi
-  guest_os: uuid/6b1f2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d@1?reference_data_type==os_image
+  guest_os:
+    type: linux-server-9
+    version: '9.6'
   firmware:
     type: uefi
     secure_boot: true
@@ -37,6 +39,32 @@ fields:
   run_state:
     desired_state: running
 assembly:
+  applied:
+  - source:
+      kind: layer
+      id: lab/layers/tenant-location
+    version: 1.0.0
+    fields:
+    - placement.location_ref
+  - source:
+      kind: policy
+      id: lab/policy/cpu-topology-default
+    version: 1.2.0
+    fields:
+    - cpu.sockets
+    - cpu.cores_per_socket
+  - source:
+      kind: policy
+      id: lab/policy/firmware-baseline
+    version: 1.0.0
+    fields:
+    - firmware.vtpm
+  - source:
+      kind: policy
+      id: lab/policy/network-placement
+    version: 2.1.0
+    fields:
+    - networks[0].network_ref
   unapplied: []
   excluded_layers: []
 dependencies:
@@ -88,3 +116,28 @@ provenance:
     operation_type: set
     sequence: 1
     timestamp: '2026-09-03T14:02:14Z'
+policies:
+- policy: lab/policy/cpu-topology-default
+  version: 1.2.0
+  policy_type: transformation
+  decision: allow
+  fields:
+  - cpu.sockets
+  - cpu.cores_per_socket
+- policy: lab/policy/firmware-baseline
+  version: 1.0.0
+  policy_type: transformation
+  decision: allow
+  fields:
+  - firmware.vtpm
+- policy: lab/policy/network-placement
+  version: 2.1.0
+  policy_type: transformation
+  decision: allow
+  fields:
+  - networks[0].network_ref
+- policy: lab/policy/tenant-quota
+  version: 3.0.0
+  policy_type: validation
+  decision: pass
+  reason: 4 vCPU / 16Gi within the tenant's remaining quota

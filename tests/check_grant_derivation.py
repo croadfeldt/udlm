@@ -36,8 +36,11 @@ Exit 0 = every cross-boundary edge is accounted for; 1 = at least one is not.
 """
 import glob
 import os
-import re
 import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "registry", "tools"))
+import entity_view as _ev  # the merged read model, computed from per-state records (ruling 071)
+import re
 
 import yaml
 
@@ -61,19 +64,12 @@ def _fields(rec):
 
 
 def load_instances():
+    """uuid -> the entity view (registry/tools/entity_view.py): per-state records fold by entity_uuid,
+    a document already in the folded shape is itself. Gate logic reads the view."""
     out = {}
-    for root in INSTANCE_ROOTS:
-        for p in sorted(glob.glob(os.path.join(root, "**", "*.yaml"), recursive=True)):
-            if os.sep + "classes" + os.sep in p:
-                continue                      # worked-example CLASSES, not instances
-            try:
-                docs = list(yaml.safe_load_all(open(p, encoding="utf-8")))
-            except Exception:
-                continue
-            for d in docs:
-                if isinstance(d, dict) and d.get("uuid") and d.get("tenant_uuid"):
-                    d["_path"] = os.path.relpath(p, ROOT)
-                    out[d["uuid"]] = d
+    for u, v in _ev.load_views(INSTANCE_ROOTS).items():
+        if v.get("tenant_uuid"):
+            out[u] = v
     return out
 
 

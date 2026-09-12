@@ -16,65 +16,82 @@
 # `resource_type` stays the PORTABLE two-segment name — the entity is a Machine.VM, and that does
 # not change because of where it landed. `type_ref` pins WHICH spec it was realized against, and
 # after placement that is the Provider Class. No new field was needed to record the placement.
-
-uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
-handle: cexample/web01
+# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
+# read model, computed by registry/tools/entity_view.py; these records are what is stored.
+---
+record_type: intent_record
+state: Intent
+entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
+record_uuid: 01a09385-caa0-7144-936d-bc6ca95177a2
 tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Machine.VM
 type_version: 1.0.0
 type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
-lifecycle_state: Realized
+handle: cexample/web01
+at: '2026-08-07T09:14:02Z'
+time_source: dcm-api
+metadata:
+  display_name: web01 on CExample Cloud
+fields:
+  cpu:
+    count: 16
+  memory:
+    size: 512Gi
 
-states:
-  intent:
-    # What the consumer asked for — portable, and deliberately incomplete. No provider, no
-    # namespace, no instance family: those are not the consumer's to choose.
-    fields:
-      cpu: {count: 16}
-      memory: {size: 512Gi}
-    at: "2026-08-07T09:14:02Z"
-    time_source: dcm-api
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
+record_uuid: 01a09385-caa1-7243-bdc5-9c105557c19d
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Machine.VM
+type_version: 1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
+handle: cexample/web01
+at: '2026-08-07T09:14:06Z'
+time_source: dcm-api
+metadata:
+  display_name: web01 on CExample Cloud
+fields:
+  cpu:
+    count: 16
+  memory:
+    size: 512Gi
+  instance_family: memory-optimized
+  namespace: tenant-dev
+  native_storage_class: cexample/ssd-nvme
+intent_ref: 01a09385-caa0-7144-936d-bc6ca95177a2
 
-  requested:
-    # The CONVERGED selection: every range collapsed to a value. The three provider-required
-    # elements were filled by layers and policy during the loop, not by the consumer.
-    fields:
-      cpu: {count: 16}
-      memory: {size: 512Gi}
-      instance_family: memory-optimized
-      namespace: tenant-dev
-      native_storage_class: cexample/ssd-nvme
-    at: "2026-08-07T09:14:06Z"
-    time_source: dcm-api
-
-  realized:
-    fields:
-      cpu: {count: 16}
-      memory: {size: 512Gi}
-      instance_family: memory-optimized
-      namespace: tenant-dev
-      native_storage_class: cexample/ssd-nvme
-    outputs:
-      instance_id: cexample-i-0a1b2c3d
-      power_state: running
-    at: "2026-08-07T09:15:31Z"
-    time_source: provider-callback
-    provider: cexample-cloud
-
-# Placement decided the jurisdiction, so the record states it — and states it in a form that can be
-# checked. `eu-west` is not a coined label here: it resolves to a declared SovereigntyZone (DE, NL,
-# under EU), which is the vocabulary an accreditation's scope.geographic_scope already speaks.
+---
+record_type: realized_record
+state: Realized
+entity_uuid: 4c8e1b95-7d02-4a63-9f18-3b5e6c7a2d40
+record_uuid: 01a09385-caa1-7243-bdc5-9c1152fdbd8f
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Machine.VM
+type_version: 1.0.0
+type_ref: https://udlm.dev/registry/udlm/0.1/class/Machine.VM.CExampleCloud/1.0.0
+handle: cexample/web01
+at: '2026-08-07T09:15:31Z'
+time_source: provider-callback
+metadata:
+  display_name: web01 on CExample Cloud
+fields:
+  cpu:
+    count: 16
+  memory:
+    size: 512Gi
+  instance_family: memory-optimized
+  namespace: tenant-dev
+  native_storage_class: cexample/ssd-nvme
+outputs:
+  instance_id: cexample-i-0a1b2c3d
+  power_state: running
+requested_ref: 01a09385-caa1-7243-bdc5-9c105557c19d
+provider: cexample-cloud
 sovereignty:
   zone: eu-west
   classification: restricted
-
-metadata:
-  display_name: web01 on CExample Cloud
-  notes:
-    - at: "2026-08-07T15:00:00Z"
-      author: claude-opus-5 (provider-supports series)
-      text: >-
-        Worked example of the collapse. Exists so tests/check_offer_collapse.py has a real subject —
-        a gate whose only cases are its own self-tests proves the code runs, not that the model
-        holds.

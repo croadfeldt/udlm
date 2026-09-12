@@ -3,31 +3,75 @@
 # Worked-example Tenant: a Grouping — the tenancy anchor whose uuid every member
 # record carries as tenant_uuid (TEN-001/003; data-model-core §5 [D3]). Membership is DERIVED
 # from the criterion, never a stored member list.
-uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
-handle: org/tenant/example-payments
+# One entity as its per-state records (ruling 071): the folded form this file used to carry is the
+# read model, computed by registry/tools/entity_view.py; these records are what is stored.
+---
+record_type: intent_record
+state: Intent
+entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+record_uuid: 01a09385-caae-72fa-9c62-73757c48054e
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
 conforms_to: udlm/0.1
 resource_type: Grouping.Tenant
 type_version: 0.1.0
 type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
-lifecycle_state: Realized
-tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+handle: org/tenant/example-payments
+at: '2026-08-06T00:00:00Z'
+time_source: authored example — no clock claim
 metadata:
   display_name: Example Payments Tenant
-  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all
-    its costs, policy scope, drift scope, and audit scope roll up here.
-  notes:
-  - at: '2026-08-06T00:00:00Z'
-    author: profile/grouping cutover
-    text: 'isolation_level shared_rls; store_bindings: commit_log=postgresql-reference, state_store=postgresql-reference,
-      audit_store=postgresql-reference, discovered_stream=postgresql-reference'
-states:
-  realized:
-    fields:
-      membership_criterion: estate?tenant_uuid=={self}
-      obligations:
-        isolation: logical
-    outputs: {}
-    at: '2026-08-06T00:00:00Z'
-    time_source: authored example — no clock claim
-ownership:
-  owned_by: 01318b6c-0211-496b-8911-b778969a550e
+  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs,
+    policy scope, drift scope, and audit scope roll up here.
+origin: backfilled
+fields:
+  membership_criterion: estate?tenant_uuid=={self}
+  obligations:
+    isolation: logical
+
+---
+record_type: requested_record
+state: Requested
+entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+record_uuid: 01a09385-caae-72fa-9c62-7376982fd027
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Grouping.Tenant
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
+handle: org/tenant/example-payments
+at: '2026-08-06T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Example Payments Tenant
+  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs,
+    policy scope, drift scope, and audit scope roll up here.
+fields:
+  membership_criterion: estate?tenant_uuid=={self}
+  obligations:
+    isolation: logical
+intent_ref: 01a09385-caae-72fa-9c62-73757c48054e
+
+---
+record_type: realized_record
+state: Realized
+entity_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+record_uuid: 01a09385-caae-72fa-9c62-7377788d7120
+tenant_uuid: 75ccf4ff-3e8d-4963-bc51-459ae1014cb7
+conforms_to: udlm/0.1
+resource_type: Grouping.Tenant
+type_version: 0.1.0
+type_ref: https://udlm.dev/registry/udlm/0.1/Grouping.Tenant/0.1.0
+handle: org/tenant/example-payments
+at: '2026-08-06T00:00:00Z'
+time_source: authored example — no clock claim
+metadata:
+  display_name: Example Payments Tenant
+  description: Worked-example ownership and isolation boundary. Owns the orders-db example entity; all its costs,
+    policy scope, drift scope, and audit scope roll up here.
+fields:
+  membership_criterion: estate?tenant_uuid=={self}
+  obligations:
+    isolation: logical
+outputs: {}
+requested_ref: 01a09385-caae-72fa-9c62-7376982fd027
+provider: estate/control-plane

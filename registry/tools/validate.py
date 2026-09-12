@@ -1084,6 +1084,9 @@ def check_state_record(doc):
         errs.append("a realized record names the requested record it realizes (requested_ref)")
     if doc.get("record_uuid") in (doc.get("supersedes") or []):
         errs.append("a record cannot supersede itself")
+    errs += check_data_references(doc)                      # the same URF discipline the folded shape had
+    if st == "Realized":
+        errs += check_process_entity(doc)                   # a Process entity carries `process` on its realized record
     return errs
 
 
@@ -1106,7 +1109,7 @@ def _reverse_reference_graph():
             for doc in load_all(path):                   # multi-doc aware (`---` streams)
                 if not isinstance(doc, dict):
                     continue
-                src = doc.get("uuid")
+                src = doc.get("uuid") or doc.get("entity_uuid")   # a per-state record refers on behalf of its entity
                 if not src:
                     continue
                 nodes[src] = {
